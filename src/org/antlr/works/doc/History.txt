@@ -1,0 +1,54 @@
+04/14/05
+- rename
+
+04/06/05
+- improved interface
+- all icons have been re-created (no more IntelliJ dependency)
+
+- find usages
+- local/remote debugger
+- gutter: position of each rule
+- gutter: toggle breakpoint
+
+- goto previous and next breakpoint
+- goto line or character
+
+- expand all tree nodes after running the interpreter
+
+- copy and cut now correctly copy any hidden action(s)
+- fixed the problem where hidden actions were removed when applying syntax coloring
+
+03/16/05
+- correctly handle escape sequence in lexer
+- fix a bug where complex comment would not be lexed if end of text reached
+- improved syntax coloring speed and accuracy
+
+03/10/05
+- display now correctly multiple errors for the same rule
+- improved display speed when selecting a rule in the list (using the thread sleep threshold)
+
+03/08/05
+- syntax colorization
+- improved thread management when typing text (new latch method - wait that the user is not typing for a
+  certain amount of time before computing in the background)
+- if error paths exist, the enabled path is displayed by default automatically
+- if a graph is not referenced by any error paths, it is removed from the GGroupPath
+- fixed a bug where a non-existent link between two states would be added to a path
+
+03/02/05
+- save as image (jpg, png)
+- threaded NFA/SD display
+- threaded NFA/SD errors display
+- cache display (using BufferedImage)
+- auto-complete rules in editor
+- drag-and-drop rule in list
+- move up/down each rule with ctrl-up/ctrl-down
+- hide all/show all action
+- hide current action
+
+02/07/05:
+- added emacs key bindings (ctlr-b, f, p, n and k)
+
+02/06/05:
+- added show/hide (all) actions using JButton component to store the hidden
+  action in its tooltip.

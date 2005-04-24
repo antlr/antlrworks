@@ -1,0 +1,40 @@
+
+Now:
+- problem when more than one same LT between mark/rewind
+- interpreter loops when bad input (i.e. java code for SimpleGrammar)
+- look at making the interpreter working for a simple grammar
+- leave grayed hidden tokens
+- version in splash screen
+
+Release in May:
+- undo/redo in interpretor input text
+- | is not recolored when typed after a token
+- check copy/cut keyboard filter on Windows/Linux
+- why undo needs to be invoked twice in the grammar editor (probably event with parser is registered ?)
+- performance of debugger (when playing all events from start to end - takes too much time)
+
+- center the text when stepping with the debugger
+- can change L&F
+- optimize state arround external ref (negative state should be removed - see if it is always possible)
+- remove observer from notification when closing window
+
+Test
+- Windows/Linux: short-cuts, gutter position
+
+Issues:
+- TextEditorPane: wrapping doesn't always works on Mac OS X
+
+Later:
+- find
+- goto dialog
+- debugger: tokenize the input
+- show line number in gutter (via preferences and notification)
+- background for stepped line like in IntelliJ (jaune clair) - handle also debugger cursor when in use
+- debugger: implements input stream breakpoint
+- jump to a definition by double-click in the syntax diagram
+- split list between tokens (MAJ) and rules (min)
+- log file (check in preferences)
+
+Terence:
+- add an event when exiting a rule (location)
+- add missing first state for error paths
