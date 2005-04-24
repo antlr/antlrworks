@@ -52,7 +52,7 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
 
     public static final String remoteParserClassName = "Test";
     // @todo put this in the check-list
-    public static final String remoteParserTemplatePath = "edu/usfca/antlrworks/debugger/";
+    public static final String remoteParserTemplatePath = "org/antlr/works/debugger/";
     public static final String remoteParserTemplateName = "RemoteParserGlueCode";
 
     public static final String ST_ATTR_CLASSNAME = "class_name";

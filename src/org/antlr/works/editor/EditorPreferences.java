@@ -45,7 +45,7 @@ public class EditorPreferences {
     }
 
     public static String getOutputPath() {
-        return getPreferences().getString(KEY_OUTPUT_PATH, "/temp/antlrworks/");
+        return getPreferences().getString(KEY_OUTPUT_PATH, "/tmp/antlrworks/");
     }
 
     public static void setANTLR3Path(String path) {
