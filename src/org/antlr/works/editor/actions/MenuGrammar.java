@@ -90,9 +90,11 @@ public class MenuGrammar extends AbstractActions {
         String s = (String)JOptionPane.showInputDialog(null, "Rename '"+token.getAttribute()+"' and its usages to:", "Rename",
                 JOptionPane.QUESTION_MESSAGE, null, null, token.getAttribute());
         if(s != null && !s.equals(token.getAttribute())) {
-            editor.disableEditorTextPane();
+            editor.disableTextPane(false);
+            editor.beginTextPaneUndoGroup("Rename");
             renameToken(token, s);
-            editor.enableEditorTextPane();
+            editor.endTextPaneUndoGroup();
+            editor.enableTextPane(false);
             editor.colorize.reset();
             editor.rules.parseRules();
             editor.changeDone();

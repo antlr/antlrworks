@@ -4,6 +4,8 @@ import edu.usfca.xj.appkit.gview.timer.GTimer;
 import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
 import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.TextEditorPane;
+import org.antlr.works.editor.undo.Undo;
+import org.antlr.works.editor.undo.UndoDelegate;
 import org.antlr.works.parser.Parser;
 
 import javax.swing.*;
@@ -46,7 +48,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorGUI {
+public class EditorGUI implements UndoDelegate {
 
     public EditorWindow editor;
 
@@ -226,7 +228,38 @@ public class EditorGUI {
         infoLabel.setText(t);
     }
 
-    private class TabMouseListener extends MouseAdapter {
+    public void registerUndo(Undo undo, JComponent component) {
+        component.addFocusListener(new EditorFocusListener());
+    }
+
+    public void updateUndoRedo(Object source) {
+        Undo undo = editor.getUndo(source);
+        if(undo != null) {
+            updateUndoRedo(undo);
+        }
+    }
+
+    public void updateUndoRedo(Undo undo) {
+        editor.editorMenu.menuItemUndo.setEnabled(undo.canUndo());
+        editor.editorMenu.menuItemRedo.setEnabled(undo.canRedo());
+
+        if(undo.canUndo()) {
+            editor.editorMenu.menuItemUndo.setTitle("Undo "+undo.undoManager.getPresentationName());
+        } else {
+            editor.editorMenu.menuItemUndo.setTitle("Undo");
+        }
+        if(undo.canRedo()) {
+            editor.editorMenu.menuItemRedo.setTitle("Redo "+undo.undoManager.getPresentationName());
+        } else {
+            editor.editorMenu.menuItemRedo.setTitle("Redo");                        
+        }
+    }
+
+    public void undoStateDidChange(Undo undo) {
+        updateUndoRedo(undo);
+    }
+
+    protected class TabMouseListener extends MouseAdapter {
 
         public void mousePressed(MouseEvent event) {
             if(viewTabbedPane.getSelectedIndex()<3)
@@ -249,7 +282,7 @@ public class EditorGUI {
         }
     }
 
-    public class ActivityPanel extends JPanel implements GTimerDelegate {
+    protected class ActivityPanel extends JPanel implements GTimerDelegate {
 
         private GTimer timer = new GTimer(this, 500);
         private boolean color = false;
@@ -298,7 +331,7 @@ public class EditorGUI {
         }
     }
 
-    private class TextPaneCaretListener implements CaretListener {
+    protected class TextPaneCaretListener implements CaretListener {
 
         public boolean isUpdating = false;
 
@@ -324,7 +357,7 @@ public class EditorGUI {
 
     }
 
-    public class TextPaneListener implements DocumentListener {
+    protected class TextPaneListener implements DocumentListener {
 
         private int enable = 0;
 
@@ -341,12 +374,7 @@ public class EditorGUI {
         }
 
         public void changeUpdate(int offset, int length) {
-            editor.changeDone();
-            editor.rules.parseRules();
-
-            editor.colorize.setColorizeLocation(offset, length);
-            // @todo performance!
-            editor.interpreter.setGrammarDirty(true, editor.getPlainText());
+            editor.changeUpdate(offset, length);
         }
 
         public void insertUpdate(DocumentEvent e) {
@@ -364,11 +392,16 @@ public class EditorGUI {
         }
 
         public void changedUpdate(DocumentEvent e) {
-            if(!isEnable())
-                return;
-
-            //editor.changeDone();
         }
     }
 
+    protected class EditorFocusListener implements FocusListener {
+
+        public void focusGained(FocusEvent event) {
+            updateUndoRedo(event.getSource());
+        }
+
+        public void focusLost(FocusEvent event) {
+        }
+    }
 }

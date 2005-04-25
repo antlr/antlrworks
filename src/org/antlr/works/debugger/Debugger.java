@@ -8,6 +8,7 @@ import org.antlr.tool.Grammar;
 import org.antlr.works.dialog.DialogBuildAndDebug;
 import org.antlr.works.dialog.DialogConnectDebugRemote;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.util.IconManager;
 
@@ -411,6 +412,10 @@ public class Debugger {
     }
 
     public void launchLocalDebugger(boolean build) {
+        debuggerLocal.setOutputPath(EditorPreferences.getOutputPath());
+        debuggerLocal.setANTLR3Path(EditorPreferences.getANTLR3Path());
+        debuggerLocal.setStartRule(EditorPreferences.getStartSymbol());
+        
         if(build) {
             DialogBuildAndDebug dialog = new DialogBuildAndDebug(this);
             if(dialog.runModal() == XJDialog.BUTTON_OK) {

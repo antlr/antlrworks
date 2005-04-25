@@ -48,14 +48,28 @@ public class MenuEdit extends AbstractActions {
 
     public void performUndo() {
         Undo undo = editor.getCurrentUndo();
-        if(undo != null)
-            undo.performUndo();
+        if(undo != null) {
+            editor.disableTextPane(false);
+            try {
+                undo.performUndo();
+            } finally {
+                editor.enableTextPane(false);
+                editor.changeUpdate();
+            }
+        }
     }
 
     public void performRedo() {
         Undo undo = editor.getCurrentUndo();
-        if(undo != null)
-            undo.performRedo();
+        if(undo != null) {
+            editor.disableTextPane(false);
+            try {
+                undo.performRedo();
+            } finally {
+                editor.enableTextPane(false);
+                editor.changeUpdate();
+            }
+        }
     }
 
     public void performCutToClipboard() {

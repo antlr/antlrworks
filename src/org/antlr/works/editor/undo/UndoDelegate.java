@@ -1,10 +1,5 @@
 package org.antlr.works.editor.undo;
 
-import javax.swing.*;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
-import java.awt.event.ActionEvent;
-
 /*
 
 [The "BSD licence"]
@@ -36,38 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class UndoAction extends AbstractAction {
-
-    protected UndoManager undoManager;
-    protected RedoAction redoAction;
-
-    public UndoAction(UndoManager manager) {
-        super("Undo");
-        setEnabled(false);
-        this.undoManager = manager;
-    }
-
-    public void setRedoAction(RedoAction action) {
-        this.redoAction = action;
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        try {
-            if(undoManager.canUndo())
-                undoManager.undo();
-        } catch (CannotUndoException ex) {
-        }
-        updateUndoState();
-        redoAction.updateRedoState();
-    }
-
-    protected void updateUndoState() {
-        if (undoManager.canUndo()) {
-            setEnabled(true);
-            putValue(Action.NAME, undoManager.getUndoPresentationName());
-        } else {
-            setEnabled(false);
-            putValue(Action.NAME, "Undo");
-        }
-    }
+public interface UndoDelegate {
+    public void undoStateDidChange(Undo undo);
 }

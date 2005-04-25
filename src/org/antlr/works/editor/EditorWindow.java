@@ -135,11 +135,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             public void run() {
                 // @todo why ?
                 editorGUI.rulesTextSplitPane.setDividerLocation(0.3);
-                registerUndo(new Undo(), getTextPane());
             }
         });
 
-        textPaneRequestFocusLater();        
+        registerUndo(new Undo(editorGUI), getTextPane());
+        textPaneRequestFocusLater();
     }
 
     public void close() {
@@ -149,11 +149,16 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public void registerUndo(Undo undo, JTextPane component) {
         undo.bindTo(component);
+        editorGUI.registerUndo(undo, component);
         undos.put(component, undo);
     }
 
     public Undo getCurrentUndo() {
         return (Undo)undos.get(jFrame.getFocusOwner());
+    }
+
+    public Undo getUndo(Object object) {
+        return (Undo)undos.get(object);
     }
 
     public JTextPane getTextPane() {
@@ -194,16 +199,49 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         }
     }
 
-    public void enableEditorTextPane() {
-        editorGUI.textPaneListener.enable();
+    public void changeUpdate() {
+        changeUpdate(-1, -1);
     }
 
-    public void disableEditorTextPane() {
+    public void changeUpdate(int offset, int length) {
+        changeDone();
+        rules.parseRules();
+
+        colorize.setColorizeLocation(offset, length);
+        // @todo performance!
+        interpreter.setGrammarDirty(true, getPlainText());
+    }
+
+    public void enableTextPane(boolean undo) {
+        editorGUI.textPaneListener.enable();
+        if(undo)
+            enableTextPaneUndo();
+    }
+
+    public void disableTextPane(boolean undo) {
         editorGUI.textPaneListener.disable();
+        if(undo)
+            disableTextPaneUndo();
+    }
+
+    public void beginTextPaneUndoGroup(String name) {
+        getUndo(getTextPane()).beginUndoGroup(name);
+    }
+
+    public void endTextPaneUndoGroup() {
+        getUndo(getTextPane()).endUndoGroup();
+    }
+
+    public void enableTextPaneUndo() {
+        getUndo(getTextPane()).enableUndo();
+    }
+
+    public void disableTextPaneUndo() {
+        getUndo(getTextPane()).disableUndo();
     }
 
     public void setText(String text) {
-        disableEditorTextPane();
+        disableTextPane(true);
         try {
             getTextPane().setText(text);
            /* StyledDocument doc = getTextPane().getStyledDocument();
@@ -215,8 +253,9 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             interpreter.setGrammarDirty(true, text);
             parser.parse();
         } catch(Exception e) {
+        } finally {
+            enableTextPane(true);
         }
-        enableEditorTextPane();
     }
 
     public String getText() {

@@ -76,7 +76,9 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_BUILD_AND_DEBUG = 52;
     public static final int MI_DEBUG_REMOTE = 53;
 
-    private EditorWindow editor = null;
+    protected EditorWindow editor = null;
+    protected XJMenuItem menuItemUndo = null;
+    protected XJMenuItem menuItemRedo = null;
 
     public EditorMenu(EditorWindow editor) {
         this.editor = editor;
@@ -108,8 +110,8 @@ public class EditorMenu implements XJMenuItemDelegate {
 
         XJMenu menu = new XJMenu();
         menu.setTitle("Edit");
-        menu.addItem(new XJMenuItem("Undo", 'z', KeyEvent.VK_Z, MI_EDIT_UNDO, this));
-        menu.addItem(new XJMenuItem("Redo", 'z', KeyEvent.VK_Z, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EDIT_REDO, this));
+        menu.addItem(menuItemUndo = new XJMenuItem("Undo", 'z', KeyEvent.VK_Z, MI_EDIT_UNDO, this));
+        menu.addItem(menuItemRedo = new XJMenuItem("Redo", 'z', KeyEvent.VK_Z, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EDIT_REDO, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Cut", 'x', KeyEvent.VK_X, MI_EDIT_CUT, this));
         menu.addItem(new XJMenuItem("Copy", 'c', KeyEvent.VK_C, MI_EDIT_COPY, this));

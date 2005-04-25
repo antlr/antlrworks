@@ -239,7 +239,7 @@ public class DebuggerPlayer {
     public void playConsumeToken(Token token, boolean hidden) {
         if(recovering>0) {
             rewindLookAheadText();
-            inputText.consumeDeadToken(token);
+            inputText.consumeToken(token, DebuggerInputText.TOKEN_DEAD);
             return;
         }
 
@@ -254,7 +254,7 @@ public class DebuggerPlayer {
         }
 
         rewindLookAheadText();
-        inputText.consumeToken(token);
+        inputText.consumeToken(token, hidden?DebuggerInputText.TOKEN_HIDDEN:DebuggerInputText.TOKEN_NORMAL);
     }
 
     protected int lastLocationLine;
@@ -366,7 +366,7 @@ public class DebuggerPlayer {
 
         public void consumeToken(Token token, boolean hidden) {
             if(!mark)
-                inputText.consumeToken(token);
+                inputText.consumeToken(token, hidden?DebuggerInputText.TOKEN_HIDDEN:DebuggerInputText.TOKEN_NORMAL);
         }
 
         public void LT(int index, Token token) {

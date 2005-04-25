@@ -120,10 +120,10 @@ public class TColorize extends EditorThread {
     }
 
     public void removeColorization() {
-        editor.disableEditorTextPane();
+        editor.disableTextPane(true);
         StyledDocument doc = (StyledDocument) editor.getTextPane().getDocument();
         doc.setCharacterAttributes(0, doc.getLength(), standardAttr, false);
-        editor.enableEditorTextPane();
+        editor.enableTextPane(true);
     }
 
     private void adjustTokens() {
@@ -206,7 +206,7 @@ public class TColorize extends EditorThread {
         if(modifiedTokens.size() == 0)
             return;
 
-        editor.disableEditorTextPane();
+        editor.disableTextPane(true);
         try {
             //System.out.println("Colorize "+System.currentTimeMillis());
             
@@ -241,7 +241,7 @@ public class TColorize extends EditorThread {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        editor.enableEditorTextPane();
+        editor.enableTextPane(true);
     }
 
     public void threadRun() {

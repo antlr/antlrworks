@@ -4,6 +4,10 @@ import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.UndoManager;
+import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.UndoableEdit;
+import java.util.Stack;
 
 /*
 
@@ -38,11 +42,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class Undo {
 
-    private UndoManager undoManager = new UndoManager();
-    private UndoAction undoAction = new UndoAction(undoManager);
-    private RedoAction redoAction = new RedoAction(undoManager);
+    protected UndoDelegate delegate;
 
-    public Undo() {
+    public UndoManager undoManager = new UndoManager();
+    protected UndoAction undoAction = new UndoAction(undoManager);
+    protected RedoAction redoAction = new RedoAction(undoManager);
+
+    protected Stack groupEditEvent = new Stack();
+
+    protected int enable = 0;
+
+    public Undo(UndoDelegate delegate) {
+        this.delegate = delegate;
+
         undoAction.setRedoAction(redoAction);
         redoAction.setUndoAction(undoAction);
     }
@@ -53,19 +65,86 @@ public class Undo {
 
     public void performUndo() {
         undoAction.actionPerformed(null);
+        fireUndoStateDidChange();
     }
 
     public void performRedo() {
         redoAction.actionPerformed(null);
+        fireUndoStateDidChange();
+    }
+
+    public void beginUndoGroup(String name) {
+        groupEditEvent.push(new CustomCompoundEdit(name));
+    }
+
+    public void endUndoGroup() {
+        CustomCompoundEdit edit = (CustomCompoundEdit)groupEditEvent.pop();
+        edit.end();
+        addEditEvent(edit);
+    }
+
+    public CompoundEdit getUndoGroup() {
+        if(groupEditEvent.isEmpty())
+            return null;
+        else
+            return (CompoundEdit)groupEditEvent.peek();
+    }
+
+    public void enableUndo() {
+        enable--;
+    }
+
+    public void disableUndo() {
+        enable++;
+    }
+
+    public boolean isEnabled() {
+        return enable == 0;
+    }
+
+    public boolean canUndo() {
+        return undoManager.canUndo();
+    }
+
+    public boolean canRedo() {
+        return undoManager.canRedo();
+    }
+
+    protected void addEditEvent(UndoableEdit edit) {
+        undoManager.addEdit(edit);
+        undoAction.updateUndoState();
+        redoAction.updateRedoState();
+        fireUndoStateDidChange();
+    }
+
+    protected void fireUndoStateDidChange() {
+        delegate.undoStateDidChange(this);
     }
 
     protected class TextPaneUndoableEditListener implements UndoableEditListener {
         public void undoableEditHappened(UndoableEditEvent e) {
-            //Remember the edit and update the menus.
-            undoManager.addEdit(e.getEdit());
-            undoAction.updateUndoState();
-            redoAction.updateRedoState();
+            if(!isEnabled())
+                return;
+
+            CompoundEdit groupEdit = getUndoGroup();
+            if(groupEdit == null)
+                addEditEvent(e.getEdit());
+            else
+                groupEdit.addEdit(e.getEdit());
         }
     }
 
+    protected class CustomCompoundEdit extends CompoundEdit {
+
+        protected String name;
+
+        public CustomCompoundEdit(String name) {
+            this.name = name;
+        }
+
+        public String getPresentationName() {
+            return name;
+        }
+
+    }
 }

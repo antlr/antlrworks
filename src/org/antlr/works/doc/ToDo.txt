@@ -3,14 +3,11 @@ Now:
 - problem when more than one same LT between mark/rewind
 - interpreter loops when bad input (i.e. java code for SimpleGrammar)
 - look at making the interpreter working for a simple grammar
-- leave grayed hidden tokens
-- version in splash screen
+- undo: rename + addition -> redo doesn't show "rename" but "addition"
 
 Release in May:
-- undo/redo in interpretor input text
 - | is not recolored when typed after a token
 - check copy/cut keyboard filter on Windows/Linux
-- why undo needs to be invoked twice in the grammar editor (probably event with parser is registered ?)
 - performance of debugger (when playing all events from start to end - takes too much time)
 
 - center the text when stepping with the debugger

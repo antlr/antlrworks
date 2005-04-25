@@ -7,6 +7,8 @@ import org.antlr.works.util.IconManager;
 import javax.swing.*;
 import java.awt.*;
 
+import edu.usfca.xj.appkit.utils.XJLocalizable;
+
 /*
 
 [The "BSD licence"]
@@ -47,65 +49,74 @@ public class SplashScreen extends JWindow {
 	}
 
     // !!! Don't forget to update the icon path with a call to the IconManager
+    // as well as the parametrized texts
 
-	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		button1 = new JButton();
-		label1 = new JLabel();
-		label3 = new JLabel();
-		label2 = new JLabel();
-		CellConstraints cc = new CellConstraints();
+    private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        button1 = new JButton();
+        label1 = new JLabel();
+        label3 = new JLabel();
+        label4 = new JLabel();
+        label2 = new JLabel();
+        CellConstraints cc = new CellConstraints();
 
-		//======== this ========
-		Container contentPane = getContentPane();
-		contentPane.setLayout(new FormLayout(
-			new ColumnSpec[] {
-				new ColumnSpec(Sizes.dluX(15)),
-				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				new ColumnSpec(ColumnSpec.LEFT, Sizes.DLUX5, FormSpec.NO_GROW),
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-				new ColumnSpec(Sizes.dluX(15))
-			},
-			new RowSpec[] {
-				new RowSpec(Sizes.dluY(10)),
-				FormFactory.LINE_GAP_ROWSPEC,
-				new RowSpec(RowSpec.TOP, Sizes.DEFAULT, FormSpec.NO_GROW),
-				FormFactory.LINE_GAP_ROWSPEC,
-				new RowSpec(RowSpec.TOP, Sizes.dluY(20), FormSpec.NO_GROW),
-				FormFactory.LINE_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.LINE_GAP_ROWSPEC,
-				new RowSpec(Sizes.dluY(10))
-			}));
+        //======== this ========
+        Container contentPane = getContentPane();
+        contentPane.setLayout(new FormLayout(
+            new ColumnSpec[] {
+                new ColumnSpec(Sizes.dluX(15)),
+                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                FormFactory.DEFAULT_COLSPEC,
+                new ColumnSpec(ColumnSpec.LEFT, Sizes.DLUX5, FormSpec.NO_GROW),
+                FormFactory.DEFAULT_COLSPEC,
+                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                new ColumnSpec(Sizes.dluX(15))
+            },
+            new RowSpec[] {
+                new RowSpec(Sizes.dluY(10)),
+                FormFactory.LINE_GAP_ROWSPEC,
+                new RowSpec(RowSpec.TOP, Sizes.DEFAULT, FormSpec.NO_GROW),
+                FormFactory.LINE_GAP_ROWSPEC,
+                new RowSpec(RowSpec.TOP, Sizes.dluY(20), FormSpec.NO_GROW),
+                FormFactory.LINE_GAP_ROWSPEC,
+                FormFactory.DEFAULT_ROWSPEC,
+                FormFactory.LINE_GAP_ROWSPEC,
+                FormFactory.DEFAULT_ROWSPEC,
+                FormFactory.LINE_GAP_ROWSPEC,
+                new RowSpec(Sizes.dluY(10))
+            }));
 
-		//---- button1 ----
-		button1.setBorder(null);
-		button1.setBorderPainted(false);
-		button1.setIcon(IconManager.getIconApplication());
-		contentPane.add(button1, cc.xywh(3, 3, 1, 5));
+        //---- button1 ----
+        button1.setBorder(null);
+        button1.setBorderPainted(false);
+        button1.setIcon(IconManager.getIconApplication());
+        contentPane.add(button1, cc.xywh(3, 3, 1, 7));
 
-		//---- label1 ----
-		label1.setFont(new Font("Lucida Grande", Font.PLAIN, 48));
-		label1.setText("ANTLRWorks");
-		contentPane.add(label1, cc.xy(5, 3));
+        //---- label1 ----
+        label1.setFont(new Font("Lucida Grande", Font.PLAIN, 48));
+        label1.setText("ANTLRWorks");
+        contentPane.add(label1, cc.xy(5, 3));
 
-		//---- label3 ----
-		label3.setText("Edit, visualize and debug ANTLR grammar");
-		label3.setVerticalAlignment(SwingConstants.TOP);
-		contentPane.add(label3, cc.xy(5, 5));
+        //---- label3 ----
+        label3.setText("Edit, visualize and debug ANTLR grammar");
+        label3.setVerticalAlignment(SwingConstants.TOP);
+        contentPane.add(label3, cc.xy(5, 5));
 
-		//---- label2 ----
-		label2.setText("(c) 2005 Jean Bovet, Terence Parr");
-		contentPane.add(label2, cc.xy(5, 7));
-		// JFormDesigner - End of component initialization  //GEN-END:initComponents
-	}
+        //---- label4 ----
+        label4.setText("Version 1.0b5");
+        contentPane.add(label4, cc.xy(5, 7));
 
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	private JButton button1;
-	private JLabel label1;
-	private JLabel label3;
-	private JLabel label2;
-	// JFormDesigner - End of variables declaration  //GEN-END:variables
+        //---- label2 ----
+        label2.setText("(c) 2005 Jean Bovet & Terence Parr");
+        contentPane.add(label2, cc.xy(5, 9));
+        // JFormDesigner - End of component initialization  //GEN-END:initComponents
+    }
+
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    private JButton button1;
+    private JLabel label1;
+    private JLabel label3;
+    private JLabel label4;
+    private JLabel label2;
+    // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

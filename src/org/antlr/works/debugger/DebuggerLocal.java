@@ -82,7 +82,7 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
     protected CodeGenerate codeGenerator;
     protected Debugger debugger;
 
-    protected String inputText = "public static void main() {\n" +
+    protected String inputText = "public static void main() { // this is a comment\n" +
                 "    System.out.println(\"Hello, world!\");\n" +
                 "}";
 

@@ -46,6 +46,10 @@ public class DebuggerInputText {
 
     public static final boolean USE_PERSISTENCE = true;
 
+    public static final int TOKEN_NORMAL = 1;
+    public static final int TOKEN_HIDDEN = 2;
+    public static final int TOKEN_DEAD = 3;
+
     protected JTextPane textPane;
     // Location where the next token will be inserted
     protected int cursorIndex;
@@ -57,6 +61,7 @@ public class DebuggerInputText {
 
     protected SimpleAttributeSet attributeNonConsumed;
     protected SimpleAttributeSet attributeConsume;
+    protected SimpleAttributeSet attributeConsumeHidden;
     protected SimpleAttributeSet attributeConsumeDead;
     protected SimpleAttributeSet attributeLookahead;
 
@@ -67,13 +72,14 @@ public class DebuggerInputText {
         createTextAttributes();
     }
 
-    public void consumeToken(Token token) {
-        addText(token, attributeConsume);
-        addToken(token);
-    }
-
-    public void consumeDeadToken(Token token) {
-        addText(token, attributeConsumeDead);
+    public void consumeToken(Token token, int type) {
+        SimpleAttributeSet attr = null;
+        switch(type) {
+            case TOKEN_NORMAL: attr = attributeConsume; break;
+            case TOKEN_HIDDEN: attr = attributeConsumeHidden; break;
+            case TOKEN_DEAD: attr = attributeConsumeDead; break;
+        }
+        addText(token, attr);
         addToken(token);
     }
 
@@ -182,6 +188,9 @@ public class DebuggerInputText {
 
         attributeConsume = new SimpleAttributeSet();
         StyleConstants.setForeground(attributeConsume, Color.black);
+
+        attributeConsumeHidden = new SimpleAttributeSet();
+        StyleConstants.setForeground(attributeConsumeHidden, Color.lightGray);
 
         attributeConsumeDead = new SimpleAttributeSet();
         StyleConstants.setForeground(attributeConsumeDead, Color.red);

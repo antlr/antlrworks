@@ -9,6 +9,8 @@ import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.Grammar;
 import org.antlr.works.dialog.DialogProgress;
 import org.antlr.works.editor.swing.TreeUtilities;
+import org.antlr.works.editor.undo.Undo;
+import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.util.IconManager;
 
@@ -75,8 +77,12 @@ public class Interpreter implements Runnable {
     private Grammar parser;
     private Grammar lexer;
 
-    public Interpreter(XJFrame frame) {
-        progress = new DialogProgress(frame);
+    private EditorWindow editor;
+
+    public Interpreter(EditorWindow editor) {
+        this.editor = editor;
+
+        progress = new DialogProgress(editor);
 
         panel = new JPanel(new BorderLayout());
 
@@ -129,6 +135,8 @@ public class Interpreter implements Runnable {
 
         panel.add(createControlPanel(), BorderLayout.NORTH);
         panel.add(splitPane, BorderLayout.CENTER);
+
+        editor.registerUndo(new Undo(editor.editorGUI), textPane);
     }
 
     public Box createControlPanel() {
