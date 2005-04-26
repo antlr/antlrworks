@@ -52,6 +52,7 @@ public class IDE implements XJApplicationDelegate {
                 }
             });
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         XJApplication.run(new IDE());

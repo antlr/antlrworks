@@ -71,11 +71,13 @@ public class VisualDrawing extends EditorThread {
 
     public synchronized void setText(String text) {
         this.text = text;
+       // System.err.println("updating TEXT "+System.currentTimeMillis());
         awakeThread(500);
     }
 
     public synchronized void setRule(Parser.Rule rule, boolean immediate) {
         this.rule = rule;
+       // System.err.println("updating RULE "+System.currentTimeMillis());
         awakeThread(immediate?0:500);
     }
 
@@ -112,6 +114,7 @@ public class VisualDrawing extends EditorThread {
         try {
             visual.engine.setGrammarText(threadText);
         } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             // Flush all caches in cache because the grammar has changed
             cacheOptimizedNFA.clear();

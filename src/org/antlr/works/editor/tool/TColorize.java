@@ -2,12 +2,11 @@ package org.antlr.works.editor.tool;
 
 import org.antlr.works.editor.EditorThread;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Token;
 
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -207,10 +206,10 @@ public class TColorize extends EditorThread {
             return;
 
         editor.disableTextPane(true);
+        EditorStyledDocument doc = (EditorStyledDocument) editor.getTextPane().getDocument();
+        doc.lock();
+
         try {
-            //System.out.println("Colorize "+System.currentTimeMillis());
-            
-            StyledDocument doc = (StyledDocument) editor.getTextPane().getDocument();
             // Note: cannot remove the attribute because it may remove hidden
             // action attribute (and the hidden action cannot be expaned anymore)
             // So we simply apply a standard attribute that will reset the style without
@@ -241,6 +240,7 @@ public class TColorize extends EditorThread {
         } catch(Exception e) {
             e.printStackTrace();
         }
+        doc.unlock();
         editor.enableTextPane(true);
     }
 

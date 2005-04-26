@@ -54,6 +54,9 @@ import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
 
 import javax.swing.*;
+import javax.swing.text.Document;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.SimpleAttributeSet;
 import java.util.*;
 
 public class EditorWindow extends XJWindow implements ThreadedParserObserver,
@@ -206,6 +209,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public void changeUpdate(int offset, int length) {
         changeDone();
         rules.parseRules();
+        visual.cancelDrawingProcess();
 
         colorize.setColorizeLocation(offset, length);
         // @todo performance!
@@ -253,6 +257,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             interpreter.setGrammarDirty(true, text);
             parser.parse();
         } catch(Exception e) {
+            e.printStackTrace();
         } finally {
             enableTextPane(true);
         }

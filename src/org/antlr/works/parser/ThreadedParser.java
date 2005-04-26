@@ -96,19 +96,17 @@ public class ThreadedParser extends EditorThread {
         awakeThread(250);
     }
 
-    public void threadRun() {
-        //System.out.println("Parsing "+System.currentTimeMillis());
+    public void threadRun() throws Exception {
+        //long t = System.currentTimeMillis();
         setRules(parser.parse(provider.getText()));
-        try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                public void run() {
-                    for(int i=0; i<observers.size(); i++) {
-                        ThreadedParserObserver obs = (ThreadedParserObserver)observers.get(i);
-                        obs.parserDidComplete();
-                    }
+        //System.out.println("Parsing in "+(System.currentTimeMillis()-t));
+        SwingUtilities.invokeAndWait(new Runnable() {
+            public void run() {
+                for(int i=0; i<observers.size(); i++) {
+                    ThreadedParserObserver obs = (ThreadedParserObserver)observers.get(i);
+                    obs.parserDidComplete();
                 }
-            });
-        } catch (Exception e) {
-        }
+            }
+        });
     }
 }

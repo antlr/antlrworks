@@ -4,6 +4,7 @@ import edu.usfca.xj.appkit.gview.timer.GTimer;
 import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
 import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.TextEditorPane;
+import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.undo.UndoDelegate;
 import org.antlr.works.parser.Parser;
@@ -143,7 +144,7 @@ public class EditorGUI implements UndoDelegate {
     }
 
     public void createTextPane() {
-        textPane = new TextEditorPane();
+        textPane = new TextEditorPane(new EditorStyledDocument());
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
 
@@ -202,7 +203,8 @@ public class EditorGUI implements UndoDelegate {
         try {
             r = textPane.modelToView(start);
             textPane.scrollRectToVisible(r);
-        } catch (BadLocationException e1) {
+        } catch (BadLocationException e) {
+            e.printStackTrace();
         }
     }
 

@@ -101,7 +101,7 @@ public abstract class EditorThread implements Runnable, CancelObject {
         return !run;
     }
 
-    protected abstract void threadRun();
+    protected abstract void threadRun() throws Exception;
 
     public boolean threadSleep(int ms) {
         boolean interrupted = false;
@@ -139,6 +139,7 @@ public abstract class EditorThread implements Runnable, CancelObject {
             try {
                 threadRun();
             } catch(Exception e) {
+                // @todo display or not display ?
 //                e.printStackTrace();
             }
         }

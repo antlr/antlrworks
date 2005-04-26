@@ -296,6 +296,7 @@ public class Rules implements ThreadedParserObserver {
             r = textPane.modelToView(rule.start.start);
             textPane.scrollRectToVisible(r);
         } catch (BadLocationException e1) {
+            e1.printStackTrace();
         }
         delegate.rulesDidSelectRule();
     }

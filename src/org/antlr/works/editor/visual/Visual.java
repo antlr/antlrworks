@@ -103,6 +103,7 @@ public class Visual {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
+                // We don't care if sleep has been interrupted
             }
         }
     }
@@ -135,6 +136,10 @@ public class Visual {
 
     public void checkGrammar() {
         analysis.startAnalysis();
+    }
+
+    public void cancelDrawingProcess() {
+        drawing.skip();
     }
 
     public Container getContainer() {

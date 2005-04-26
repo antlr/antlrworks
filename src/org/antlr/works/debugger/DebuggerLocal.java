@@ -331,6 +331,7 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
+            // We don't care here if the sleep has been interrupted
         }
 
         return true;

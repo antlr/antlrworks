@@ -211,6 +211,7 @@ public class DebuggerRecorder {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
+                // We don't care if the sleep has been interrupted
             }
         }
 

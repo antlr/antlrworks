@@ -62,11 +62,14 @@ public class GPathAnimated extends GPath implements Runnable {
         return threadIndex;
     }
 
-    public void sleep(long sleep) {
+    public boolean sleep(long sleep) {
+        boolean completed = true;
         try {
             Thread.sleep(sleep);
         } catch (InterruptedException e) {
+            completed = false;
         }
+        return completed;
     }
 
     public void run() {
