@@ -60,6 +60,8 @@ public class DialogDebugInput extends XJDialog {
         return inputTextArea.getText();
     }
 
+    // Note: put 500 for the width of the scrollpane
+    
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         dialogPane = new JPanel();
@@ -104,7 +106,7 @@ public class DialogDebugInput extends XJDialog {
 
                 //======== scrollPane1 ========
                 {
-                    scrollPane1.setPreferredSize(new Dimension(300, 200));
+                    scrollPane1.setPreferredSize(new Dimension(500, 200));
 
                     //---- inputTextArea ----
                     inputTextArea.setLineWrap(false);

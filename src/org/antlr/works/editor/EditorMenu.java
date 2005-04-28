@@ -174,7 +174,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.setTitle("Run");
         menu.addItem(new XJMenuItem("Run Interpreter", 'r', KeyEvent.VK_R, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_RUN_INTERPRETER, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Debug", 'd', KeyEvent.VK_D, MI_DEBUG, this));
+        menu.addItem(new XJMenuItem("Debug...", 'd', KeyEvent.VK_D, MI_DEBUG, this));
         menu.addItem(new XJMenuItem("Build and Debug...", 'd', KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_BUILD_AND_DEBUG, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Debug Remote...", MI_DEBUG_REMOTE, this));

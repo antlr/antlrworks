@@ -52,8 +52,8 @@ public class DebuggerEvent {
     public static final int MARK = 13;
     public static final int REWIND = 14;
     public static final int RECOGNITION_EXCEPTION = 15;
-    public static final int RECOVER = 16;
-    public static final int RECOVERED = 17;
+    public static final int BEGIN_RESYNC = 16;
+    public static final int END_RESYNC = 17;
     public static final int COMMENCE = 18;
     public static final int TERMINATE = 19;
 
@@ -103,15 +103,15 @@ public class DebuggerEvent {
     public static String[] getEvents() {
         return new String[] { "None", "All",
                               "Consume token", "Consume hidden token",
-                              "Enter Rule", "Exit Rule",
+                              "Enter rule", "Exit rule",
                               "Enter subrule", "Exit subrule",
-                              "Enter Decision", "Exit Decision",
-                              "Enter Alternative",
+                              "Enter decision", "Exit decision",
+                              "Enter alternative",
                               "Location", "LT",
                               "Mark", "Rewind",
-                              "Recognition Exception",
-                              "Recover", "Recovered",
-                               "Commence", "Terminate"
+                              "Recognition exception",
+                              "Begin resync", "End resync",
+                              "Commence", "Terminate"
                               };
     }
 
@@ -131,8 +131,8 @@ public class DebuggerEvent {
             case MARK:     return "Mark "+int1;
             case REWIND:     return "Rewind "+int1;
             case RECOGNITION_EXCEPTION: return "Recognition exception "+exception;
-            case RECOVER:     return "Recover";
-            case RECOVERED:     return "Recovered";
+            case BEGIN_RESYNC:     return "Begin resync";
+            case END_RESYNC:     return "End resync";
             case COMMENCE:    return "Commence";
             case TERMINATE:     return "Terminate";
         }

@@ -374,12 +374,12 @@ public class DebuggerRecorder {
             event(new DebuggerEvent(DebuggerEvent.RECOGNITION_EXCEPTION, e));
         }
 
-        public void recover() {
-            event(new DebuggerEvent(DebuggerEvent.RECOVER));
+        public void beginResync() {
+            event(new DebuggerEvent(DebuggerEvent.BEGIN_RESYNC));
         }
 
-        public void recovered() {
-            event(new DebuggerEvent(DebuggerEvent.RECOVERED));
+        public void endResync() {
+            event(new DebuggerEvent(DebuggerEvent.END_RESYNC));
         }
 
         public void commence() {

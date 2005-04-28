@@ -52,7 +52,7 @@ public class DebuggerPlayer {
     protected LookAheadText lastLookAheadText;
     protected DebuggerInputText inputText;
 
-    protected int recovering = 0;
+    protected int resyncing = 0;
 
     public DebuggerPlayer(Debugger debugger) {
         this.debugger = debugger;
@@ -103,7 +103,7 @@ public class DebuggerPlayer {
         lastLookAheadText = null;
         lookAheadTextStack.clear();
 
-        recovering = 0;
+        resyncing = 0;
     }
 
     public void playEvents(List events) {
@@ -180,12 +180,12 @@ public class DebuggerPlayer {
                 playRecognitionException(event.exception);
                 break;
 
-            case DebuggerEvent.RECOVER:
-                playRecover();
+            case DebuggerEvent.BEGIN_RESYNC:
+                playBeginResync();
                 break;
 
-            case DebuggerEvent.RECOVERED:
-                playRecovered();
+            case DebuggerEvent.END_RESYNC:
+                playEndResync();
                 break;
 
             case DebuggerEvent.TERMINATE:
@@ -237,7 +237,7 @@ public class DebuggerPlayer {
     }
 
     public void playConsumeToken(Token token, boolean hidden) {
-        if(recovering>0) {
+        if(resyncing>0) {
             rewindLookAheadText();
             inputText.consumeToken(token, DebuggerInputText.TOKEN_DEAD);
             return;
@@ -310,12 +310,12 @@ public class DebuggerPlayer {
         debugger.addException(e);
     }
 
-    public void playRecover() {
-        recovering++;
+    public void playBeginResync() {
+        resyncing++;
     }
 
-    public void playRecovered() {
-        recovering--;
+    public void playEndResync() {
+        resyncing--;
     }
 
     protected class LookAheadText {
