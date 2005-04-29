@@ -119,11 +119,24 @@ public class GrammarEngine {
         error.setMessage("Decision can match input such as \""+input+"\" using multiple alternatives");
         //System.out.println("Input = "+input);
 
-        for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
+        int firstAlt = 0;
+		for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
             Integer displayAltI = (Integer) iter.next();
             NFAState nfaStart = nondetMsg.probe.dfa.getNFADecisionStartState();
 
-            int alt = displayAltI.intValue();
+			int tracePathAlt =
+				nfaStart.translateDisplayAltToWalkAlt(displayAltI.intValue());
+			if ( firstAlt == 0 ) {
+				firstAlt = tracePathAlt;
+			}
+			List path =
+				nondetMsg.probe.getNFAPathStatesForAlt(firstAlt,
+													   tracePathAlt,
+													   labels);
+			error.addPath(path, disabledAlts.contains(displayAltI));
+
+            /*
+			int alt = displayAltI.intValue();
             if ( nfaStart.getDecisionASTNode().getType()==ANTLRParser.EOB ) {
                 if ( alt==nondetMsg.probe.dfa.nfa.grammar.getNumberOfAltsForDecisionNFA(nfaStart) )
                     alt = 1;
@@ -135,6 +148,7 @@ public class GrammarEngine {
             List path = nondetMsg.probe.getNFAPathStatesForAlt(nondetMsg.problemState,alt,labels);
             error.addPath(path, disabledAlts.contains(displayAltI));
             //System.out.println(displayAltI+" = "+path);
+			*/
 
             // Find all rules enclosing each state (because a path can extend over multiple rules)
             for (Iterator iterator = path.iterator(); iterator.hasNext();) {
