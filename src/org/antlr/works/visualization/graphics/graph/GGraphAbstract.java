@@ -38,6 +38,8 @@ public abstract class GGraphAbstract extends GObject {
 
     private boolean rendered = false;
 
+    public abstract void setEnable(boolean flag);
+
     public abstract GDimension getDimension();
     public abstract float getWidth();
     public abstract void render(float ox, float oy);
@@ -50,4 +52,5 @@ public abstract class GGraphAbstract extends GObject {
     public synchronized boolean isRendered() {
         return rendered;
     }
+
 }

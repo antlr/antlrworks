@@ -236,24 +236,24 @@ public class EditorGUI implements UndoDelegate {
 
     public void updateUndoRedo(Object source) {
         Undo undo = editor.getUndo(source);
-        if(undo != null) {
-            updateUndoRedo(undo);
-        }
+        updateUndoRedo(undo);
     }
 
     public void updateUndoRedo(Undo undo) {
-        editor.editorMenu.menuItemUndo.setEnabled(undo.canUndo());
-        editor.editorMenu.menuItemRedo.setEnabled(undo.canRedo());
+        editor.editorMenu.menuItemUndo.setTitle("Undo");
+        editor.editorMenu.menuItemRedo.setTitle("Redo");
 
-        if(undo.canUndo()) {
-            editor.editorMenu.menuItemUndo.setTitle("Undo "+undo.undoManager.getPresentationName());
+        if(undo == null) {
+            editor.editorMenu.menuItemUndo.setEnabled(false);
+            editor.editorMenu.menuItemRedo.setEnabled(false);
         } else {
-            editor.editorMenu.menuItemUndo.setTitle("Undo");
-        }
-        if(undo.canRedo()) {
-            editor.editorMenu.menuItemRedo.setTitle("Redo "+undo.undoManager.getPresentationName());
-        } else {
-            editor.editorMenu.menuItemRedo.setTitle("Redo");                        
+            editor.editorMenu.menuItemUndo.setEnabled(undo.canUndo());
+            editor.editorMenu.menuItemRedo.setEnabled(undo.canRedo());
+
+            if(undo.canUndo())
+                editor.editorMenu.menuItemUndo.setTitle("Undo "+undo.undoManager.getPresentationName());
+            if(undo.canRedo())
+                editor.editorMenu.menuItemRedo.setTitle("Redo "+undo.undoManager.getPresentationName());
         }
     }
 
@@ -404,6 +404,7 @@ public class EditorGUI implements UndoDelegate {
         }
 
         public void focusLost(FocusEvent event) {
+            // @todo handle when focus is lost
         }
     }
 }

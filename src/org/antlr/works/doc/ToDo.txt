@@ -1,11 +1,9 @@
 
 Now:
+- display non-consumed token if available (even after a rewind)
 - problem when more than one same LT between mark/rewind
 - interpreter loops when bad input (i.e. java code for SimpleGrammar)
 - look at making the interpreter working for a simple grammar
-
-- | is not recolored when typed after a token
-- performance of debugger (when playing all events from start to end - takes too much time)
 
 - center the text when stepping with the debugger
 - can change L&F
@@ -16,7 +14,12 @@ Test
 - Windows/Linux: short-cuts, gutter position
 - check copy/cut keyboard filter on Windows/Linux
 
+Performance:
+- performance of debugger (when playing all events from start to end - takes too much time)
+
 Issues:
+- when debug&build, the input text is not correctly written to the disk
+- | is not recolored when typed after a token
 - TextEditorPane: wrapping doesn't always works on Mac OS X
 - undo: rename + addition -> redo doesn't show "rename" but "addition"
 

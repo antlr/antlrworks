@@ -54,6 +54,13 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     public GPathGroup() {
     }
 
+    public void setEnable(boolean flag) {
+        if(flag)
+            timer.start();
+        else
+            timer.stop();
+    }
+
     public void addPath(GPath path) {
         graphicPaths.add(path);
     }

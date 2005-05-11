@@ -50,6 +50,10 @@ public class GGraph extends GGraphAbstract {
     public float offsetX = 0;
     public float offsetY = 0;
 
+    public void setEnable(boolean flag) {
+        
+    }
+
     public void setContext(GContext context) {
         super.setContext(context);
         for (Iterator iterator = nodes.iterator(); iterator.hasNext();) {

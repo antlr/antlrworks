@@ -64,6 +64,10 @@ public class GGraphGroup extends GGraphAbstract {
         defaultContext.setSkin(new SDSkin());
     }
 
+    public void setEnable(boolean flag) {
+        pathGroup.setEnable(flag);
+    }
+
     public void setContext(GContext context) {
         super.setContext(context);
         for (Iterator iterator = graphs.iterator(); iterator.hasNext();) {

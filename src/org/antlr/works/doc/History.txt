@@ -1,3 +1,8 @@
+05/11/05
+- new tokens for (, ) and non white space characters -> they are now correctly colorized
+- simple comment token was not created correctly when end of text was reached instead of new line
+- disable GPathGroup timer when not visible (reduce CPU usage)
+
 04/14/05
 - rename
 

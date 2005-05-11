@@ -81,8 +81,12 @@ public class GPanel implements XJNotificationObserver {
     }
 
     public void setRule(Parser.Rule rule) {
+        if(view != null)
+            view.setEnable(false);
+
         this.rule = rule;
         createPanel();
+        view.setEnable(true);
     }
 
     public void update() {

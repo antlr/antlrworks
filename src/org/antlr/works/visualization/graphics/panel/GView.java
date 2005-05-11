@@ -84,6 +84,13 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         addKeyListener(new DefaultKeyListener());
     }
 
+    public void setEnable(boolean flag) {
+        for (Iterator iterator = graphs.iterator(); iterator.hasNext();) {
+            GGraphAbstract graph = (GGraphAbstract) iterator.next();
+            graph.setEnable(flag);
+        }
+    }
+
     public void setParent(XJFrame parent) {
       //  this.parent = parent;
     }

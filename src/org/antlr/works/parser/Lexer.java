@@ -44,6 +44,9 @@ public class Lexer {
     public static final int TOKEN_ID = 6;
     public static final int TOKEN_COLON = 7;
     public static final int TOKEN_SEMI = 8;
+    public static final int TOKEN_LPAREN = 9;
+    public static final int TOKEN_RPAREN = 10;
+    public static final int TOKEN_CHAR = 11;
 
     public String text;
     public int position;
@@ -65,23 +68,28 @@ public class Lexer {
         while(nextCharacter()) {
             Token token = null;
 
-            if(C(0) == '\'') {
+            if(C(0) == '\'')
                 token = matchSingleQuoteString();
-            } else if(C(0) == '\"') {
+            else if(C(0) == '\"')
                 token = matchDoubleQuoteString();
-            } else if(C(0) == '/' && C(1) == '/') {
+            else if(C(0) == '/' && C(1) == '/')
                 token = matchSingleComment();
-            } else if(C(0) == '/' && C(1) == '*') {
+            else if(C(0) == '/' && C(1) == '*')
                 token = matchComplexComment();
-            } else if(C(0) == '{') {
+            else if(C(0) == '{')
                 token = matchBlock();
-            } else if(C(0) == ':') {
+            else if(C(0) == ':')
                 token = new Token(TOKEN_COLON, position, position+1, line, linePosition, text);
-            } else if(C(0) == ';') {
+            else if(C(0) == ';')
                 token = new Token(TOKEN_SEMI, position, position+1, line, linePosition, text);
-            } else if(isLetter()) {
+            else if(isLetter())
                 token = matchID();
-            }
+            else if(C(0) == '(')
+                token = new Token(TOKEN_LPAREN, position, position+1, line, linePosition, text);
+            else if(C(0) == ')')
+                token = new Token(TOKEN_RPAREN, position, position+1, line, linePosition, text);
+            else if(C(0) != ' ')
+                token = new Token(TOKEN_CHAR, position, position+1, line, linePosition, text);
 
             if(token != null)
                 tokens.add(token);
@@ -120,7 +128,7 @@ public class Lexer {
             if(C(0) == '\n')
                 return new Token(TOKEN_SINGLE_COMMENT, sp, position+1, line, linePosition, text);
         }
-        return null;
+        return new Token(TOKEN_SINGLE_COMMENT, sp, position, line, linePosition, text);
     }
 
     public Token matchComplexComment() {
