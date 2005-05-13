@@ -1,6 +1,5 @@
 package org.antlr.works.interpreter;
 
-import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
@@ -8,9 +7,9 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.Grammar;
 import org.antlr.works.dialog.DialogProgress;
+import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.undo.Undo;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.util.IconManager;
 
@@ -239,7 +238,7 @@ public class Interpreter implements Runnable {
         ParseTree t = null;
         try {
             t = parseEngine.parse(startSymbol);
-        } catch (org.antlr.runtime.RecognitionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -268,8 +267,11 @@ public class Interpreter implements Runnable {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                run_();
-                progress.close();
+                try {
+                    run_();
+                } finally {
+                    progress.close();                    
+                }
             }
         });
     }

@@ -7,8 +7,6 @@ import org.antlr.works.util.IconManager;
 import javax.swing.*;
 import java.awt.*;
 
-import edu.usfca.xj.appkit.utils.XJLocalizable;
-
 /*
 
 [The "BSD licence"]

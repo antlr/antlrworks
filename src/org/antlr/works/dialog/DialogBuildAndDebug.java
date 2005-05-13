@@ -8,6 +8,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
+import edu.usfca.xj.appkit.app.XJApplication;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorPreferences;
 
@@ -105,6 +106,8 @@ public class DialogBuildAndDebug extends XJDialog {
         return (String)rulesCombo.getSelectedItem();
     }
 
+    // Note: - add the setCancelButton/setOKButton method calls!
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         dialogPane = new JPanel();
@@ -191,11 +194,17 @@ public class DialogBuildAndDebug extends XJDialog {
 
                 //---- okButton ----
                 okButton.setText("OK");
-                buttonBar.add(okButton, cc.xy(2, 1));
 
                 //---- cancelButton ----
                 cancelButton.setText("Cancel");
-                buttonBar.add(cancelButton, cc.xy(4, 1));
+
+                if(XJApplication.isMacOS()) {
+                    buttonBar.add(cancelButton, cc.xy(2, 1));
+                    buttonBar.add(okButton, cc.xy(4, 1));                                                             
+                } else {
+                    buttonBar.add(okButton, cc.xy(2, 1));
+                    buttonBar.add(cancelButton, cc.xy(4, 1));
+                }
             }
             dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }

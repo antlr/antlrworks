@@ -223,7 +223,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         if(getCurrentGraph().getDimension() == null)
             return 400;
         else
-            return (int)getCurrentGraph().getWidth();
+            return (int)getCurrentGraph().getWidth()+20;
     }
 
     public int getGraphHeight() {

@@ -1,7 +1,13 @@
-05/11/05
+05/12/05
 - new tokens for (, ) and non white space characters -> they are now correctly colorized
 - simple comment token was not created correctly when end of text was reached instead of new line
 - disable GPathGroup timer when not visible (reduce CPU usage)
+
+- Build & Debug: input text was correctly written but the remote parser was launched before ;-)
+- removed icons in Find Usages tree view
+- cancel/okButton OS compliant
+- default document size is now related to the available screen size
+- debugger tokens boxes can now be displayed
 
 04/14/05
 - rename

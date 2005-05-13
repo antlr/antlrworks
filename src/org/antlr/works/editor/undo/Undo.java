@@ -3,9 +3,8 @@ package org.antlr.works.editor.undo;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.UndoManager;
 import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import java.util.Stack;
 

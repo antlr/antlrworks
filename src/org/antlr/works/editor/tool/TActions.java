@@ -240,5 +240,4 @@ public class TActions implements ActionListener {
         return styleButton;
     }
 
-
 }

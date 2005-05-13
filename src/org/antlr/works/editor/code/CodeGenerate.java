@@ -119,7 +119,6 @@ public class CodeGenerate implements Runnable {
         String language = (String)grammar.getOption("language");
         if ( language!=null ) {
             CodeGenerator generator = new CodeGenerator(new MyTool(getOutputPath()), grammar, language);
-            generator.setOutputDirectory(getOutputPath());
             grammar.setCodeGenerator(generator);
             generator.setDebug(debug);
 

@@ -98,4 +98,9 @@ public class IconManager {
     public static ImageIcon getIconGoToEnd() {
         return createImageIcon(path+"gotoend.png");
     }
+
+    public static ImageIcon getIconTokens() {
+        return createImageIcon(path+"tokens.png");
+    }
+
 }

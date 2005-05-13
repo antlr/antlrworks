@@ -1,77 +1,68 @@
 package org.antlr.works.editor.swing;
 
-/*
-*  Copyright (c) 2000, Jacob Smullyan.
-*
-*  This is part of SkunkDAV, a WebDAV client.  See http://skunkdav.sourceforge.net/
-*  for the latest version.
-*
-*  SkunkDAV is free software; you can redistribute it and/or
-*  modify it under the terms of the GNU General Public License as published
-*  by the Free Software Foundation; either version 2, or (at your option)
-*  any later version.
-*
-*  SkunkDAV is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*  General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with SkunkDAV; see the file COPYING.  If not, write to the Free
-*  Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-*  02111-1307, USA.
-*/
+import org.antlr.works.debugger.DebuggerInputText;
 
 import javax.swing.*;
 import javax.swing.text.StyledDocument;
+import javax.swing.text.Document;
+import javax.swing.text.AbstractDocument;
 import java.awt.*;
+import java.util.Map;
+import java.util.Iterator;
 
-/**
- *  trivial subclass of JTextPane that supports turning off word wrap.
- *  It will be extended to support other functionality when syntax
- *  highlighting is added.
- */
+/*
+
+[The "BSD licence"]
+Copyright (c) 2004-05 Jean Bovet
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+3. The name of the author may not be used to endorse or promote products
+derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+
 public class TextEditorPane extends JTextPane
 {
-    private boolean wrap=false;
+    protected boolean wrap = false;
+    protected TextEditorPaneDelegate delegate = null;
 
-    /**
-     * constructs a TextEditorPane with a default document.
-     */
-    public TextEditorPane()
-    {
+    public TextEditorPane() {
         super();
     }
-
-    /**
-     * constructs a TextEditorPane with the specified document.
-     * @param doc the document
-     */
-    public TextEditorPane(StyledDocument doc)
-    {
+    
+    public TextEditorPane(StyledDocument doc) {
         super(doc);
     }
 
-    /**
-     * sets word wrap on or off.
-     * @param wrap whether the text editor pane should wrap or not
-     */
-    public void setWordWrap(boolean wrap)
-    {
-        this.wrap=wrap;
+    public void setWordWrap(boolean flag) {
+        this.wrap = flag;
     }
 
-    /**
-     * returns whether the editor wraps text.
-     * @return the value of the word wrap property
-     */
-    public boolean getWordWrap()
-    {
-        return this.wrap;
+    public boolean getWordWrap() {
+        return wrap;
     }
 
-    public boolean getScrollableTracksViewportWidth()
-    {
+    public boolean getScrollableTracksViewportWidth() {
         if (!wrap)
         {
             Component parent = getParent();
@@ -91,13 +82,16 @@ public class TextEditorPane extends JTextPane
             super.setBounds(x, y, width, height);
         }
     }
+
+    public void setDelegate(TextEditorPaneDelegate delegate) {
+        this.delegate = delegate;
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if(delegate != null)
+            delegate.paintTextEditorPane(g);
+    }
+
 }
-
-/* $Log: TextEditorPane.java,v $
-/* Revision 1.4  2001/01/04 06:02:49  smulloni
-/* added more javadoc documentation.
-/*
-/* Revision 1.3  2000/12/27 22:05:09  smulloni
-/* work on syntax highlighting.
-/* */
-

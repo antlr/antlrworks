@@ -158,13 +158,18 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
 
     public void run() {
         success = perform();
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 progress.close();
-                //@todo use interface here
-                if(build)
+                if(build) {
                     success = askUserForInputText();
-                debugger.debuggerLocalDidRun(success, inputText);
+                    if(success)
+                        success = generateGlueCode();
+                    if(success)
+                        success = launchRemoteParser();
+                }
+                debugger.debuggerLocalDidRun(success);
             }
         });
     }
@@ -200,6 +205,9 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
         progress.setProgress(3);
 
         // Launch the glue-code remote parser
+        if(build)
+            return true;
+
         progress.setInfo("Launching...");
         return launchRemoteParser();
     }

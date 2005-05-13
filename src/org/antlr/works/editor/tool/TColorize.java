@@ -6,7 +6,9 @@ import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Token;
 
-import javax.swing.text.*;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;

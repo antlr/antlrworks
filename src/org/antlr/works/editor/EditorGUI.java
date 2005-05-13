@@ -2,9 +2,9 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.gview.timer.GTimer;
 import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
+import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.TextEditorPane;
-import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.undo.UndoDelegate;
 import org.antlr.works.parser.Parser;
@@ -79,7 +79,8 @@ public class EditorGUI implements UndoDelegate {
     }
 
     public void createInterface() {
-        editor.getRootPane().setPreferredSize(new Dimension(1024, 700));
+        Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        editor.getRootPane().setPreferredSize(r.getSize());
 
         createTextPane();
 
@@ -140,6 +141,8 @@ public class EditorGUI implements UndoDelegate {
 
         editor.getContentPane().add(mainPanel);
         editor.pack();
+        editor.center();
+
         upDownSplitPane.setDividerLocation(0.5);
     }
 

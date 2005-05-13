@@ -56,7 +56,7 @@ public class GrammarEngine {
     }
 
     public void setGrammarFile(String filename, String file) throws Exception {
-        g = new Grammar(filename, new FileReader(file));
+        g = new Grammar(null, filename, new FileReader(file));
         g.createNFAs();
     }
 

@@ -1,6 +1,5 @@
 package org.antlr.works.debugger;
 
-import org.antlr.runtime.CharStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.DebugEventListener;
@@ -190,11 +189,11 @@ public class DebuggerRecorder {
         playEvents();
     }
 
-    public boolean start(CharStream input, String address, int port) {
-        eventListener = new EventListener(input);
+    public boolean start(String address, int port) {
+        eventListener = new EventListener();
 
         boolean connected = false;
-        int retryCount = 4;
+        int retryCount = 6;
         while(!connected && retryCount-- > 0) {
             listener = null;
             try {
@@ -307,10 +306,7 @@ public class DebuggerRecorder {
 
     protected class EventListener implements DebugEventListener {
 
-        public CharStream input;
-
-        public EventListener(CharStream input) {
-            this.input = input;
+        public EventListener() {
         }
 
         public void event(DebuggerEvent event) {

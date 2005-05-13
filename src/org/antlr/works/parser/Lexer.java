@@ -88,7 +88,7 @@ public class Lexer {
                 token = new Token(TOKEN_LPAREN, position, position+1, line, linePosition, text);
             else if(C(0) == ')')
                 token = new Token(TOKEN_RPAREN, position, position+1, line, linePosition, text);
-            else if(C(0) != ' ')
+            else if(!isWhitespace())
                 token = new Token(TOKEN_CHAR, position, position+1, line, linePosition, text);
 
             if(token != null)

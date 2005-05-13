@@ -2,14 +2,14 @@ package org.antlr.works.debugger;
 
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJAlert;
-import org.antlr.runtime.CharStream;
 import org.antlr.runtime.Token;
 import org.antlr.tool.Grammar;
 import org.antlr.works.dialog.DialogBuildAndDebug;
 import org.antlr.works.dialog.DialogConnectDebugRemote;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TreeUtilities;
+import org.antlr.works.editor.swing.TextEditorPane;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
@@ -63,7 +63,7 @@ public class Debugger {
     public static final int localPort = 2005;
 
     protected JPanel panel;
-    protected JTextPane textPane;
+    protected TextEditorPane textPane;
 
     protected JTree tree;
     protected DefaultTreeModel treeModel;
@@ -97,7 +97,6 @@ public class Debugger {
     protected Stack playCallStack;
 
     protected Grammar grammar;
-    protected CharStream input;
 
     public Debugger(EditorWindow editor) {
         this.editor = editor;
@@ -135,7 +134,7 @@ public class Debugger {
     }
 
     public JComponent createInputPanel() {
-        textPane = new JTextPane();
+        textPane = new TextEditorPane();
         textPane.setPreferredSize(new Dimension(200, 0));
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
@@ -146,7 +145,25 @@ public class Debugger {
         JScrollPane textScrollPane = new JScrollPane(textPane);
         textScrollPane.setWheelScrollingEnabled(true);
 
-        return textScrollPane;
+        JButton tokenButton = new JButton(IconManager.getIconTokens());
+        tokenButton.setToolTipText("Show/hide tokens boxes");
+        tokenButton.setFocusable(false);
+        tokenButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                player.inputText.setDrawTokensBox(!player.inputText.isDrawTokensBox());
+                textPane.repaint();
+            }
+        });
+
+        Box box = Box.createHorizontalBox();
+        box.add(Box.createHorizontalGlue());
+        box.add(tokenButton);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(textScrollPane, BorderLayout.CENTER);
+        panel.add(box, BorderLayout.SOUTH);
+
+        return panel;
     }
 
     public JComponent createTreePanel() {
@@ -428,7 +445,7 @@ public class Debugger {
             debuggerLocal.prepareAndLaunch(false, true);
     }
 
-    public void debuggerLocalDidRun(boolean success, String inputText) {
+    public void debuggerLocalDidRun(boolean success) {
         if(success) {
             debuggerLaunch(localAddress, localPort);
         }
@@ -447,7 +464,7 @@ public class Debugger {
             return;
         }
 
-        if(!recorder.start(input, address, port)) {
+        if(!recorder.start(address, port)) {
             XJAlert.display("Connection Error", "Cannot launch the debugger.\nTime-out waiting to connect to the remote parser.");
             return;
         }

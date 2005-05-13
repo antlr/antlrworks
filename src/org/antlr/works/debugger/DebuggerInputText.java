@@ -1,6 +1,8 @@
 package org.antlr.works.debugger;
 
 import org.antlr.runtime.Token;
+import org.antlr.works.editor.swing.TextEditorPane;
+import org.antlr.works.editor.swing.TextEditorPaneDelegate;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -10,6 +12,7 @@ import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 
 /*
 
@@ -42,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DebuggerInputText {
+public class DebuggerInputText implements TextEditorPaneDelegate {
 
     public static final boolean USE_PERSISTENCE = true;
 
@@ -50,7 +53,7 @@ public class DebuggerInputText {
     public static final int TOKEN_HIDDEN = 2;
     public static final int TOKEN_DEAD = 3;
 
-    protected JTextPane textPane;
+    protected TextEditorPane textPane;
     // Location where the next token will be inserted
     protected int cursorIndex;
     protected Map tokens;
@@ -65,11 +68,23 @@ public class DebuggerInputText {
     protected SimpleAttributeSet attributeConsumeDead;
     protected SimpleAttributeSet attributeLookahead;
 
-    public DebuggerInputText(JTextPane textPane) {
-        this.textPane = textPane;
+    protected boolean drawTokensBox;
+
+    public DebuggerInputText(TextEditorPane textPane) {
         tokens = new HashMap();
+        drawTokensBox = false;
+        this.textPane = textPane;
+        this.textPane.setDelegate(this);
         reset();
         createTextAttributes();
+    }
+
+    public void setDrawTokensBox(boolean flag) {
+        drawTokensBox = flag;
+    }
+
+    public boolean isDrawTokensBox() {
+        return drawTokensBox;
     }
 
     public void consumeToken(Token token, int type) {
@@ -198,6 +213,41 @@ public class DebuggerInputText {
         attributeLookahead = new SimpleAttributeSet();
         StyleConstants.setForeground(attributeLookahead, Color.blue);
         StyleConstants.setItalic(attributeLookahead, true);
+    }
+
+    public void paintTextEditorPane(Graphics g) {
+        if(!drawTokensBox)
+            return;
+
+        g.setColor(Color.red);
+
+        for (Iterator iterator = tokens.values().iterator(); iterator.hasNext();) {
+            TokenInfo info = (TokenInfo) iterator.next();
+
+            try {
+                Rectangle r1 = textPane.modelToView(info.start);
+                Rectangle r2 = textPane.modelToView(info.end);
+
+                if(r2.y > r1.y) {
+                    // Token is displayed on more than one line
+                    // (currently only handle two lines wrapping ;-))
+
+                    // Draw the first line
+                    int index = info.start+1;
+                    while(textPane.modelToView(index).y == r1.y) {
+                        index++;
+                    }
+                    Rectangle r11 = textPane.modelToView(index-1);
+                    g.drawRect(r1.x, r1.y, r11.x-r1.x, r1.height);
+
+                    // Then the second one
+                    Rectangle r20 = textPane.modelToView(index);
+                    g.drawRect(r20.x, r20.y, r2.x-r20.x, r20.height);                    
+                } else
+                    g.drawRect(r1.x, r1.y, r2.x-r1.x, r1.height);
+            } catch (BadLocationException e) {
+            }
+        }
     }
 
     private class TokenInfo {

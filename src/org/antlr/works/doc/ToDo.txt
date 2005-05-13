@@ -1,9 +1,13 @@
 
 Now:
+- interpreter doesn't work anymore
 - display non-consumed token if available (even after a rewind)
 - problem when more than one same LT between mark/rewind
 - interpreter loops when bad input (i.e. java code for SimpleGrammar)
 - look at making the interpreter working for a simple grammar
+
+- disable rename and another call to debug while debugging
+- stop the debugger when closing the document
 
 - center the text when stepping with the debugger
 - can change L&F
@@ -18,15 +22,13 @@ Performance:
 - performance of debugger (when playing all events from start to end - takes too much time)
 
 Issues:
-- when debug&build, the input text is not correctly written to the disk
-- | is not recolored when typed after a token
 - TextEditorPane: wrapping doesn't always works on Mac OS X
 - undo: rename + addition -> redo doesn't show "rename" but "addition"
 
 Later:
+- display LT in blue when exiting an alt (see Terence's email)
 - find
 - goto dialog
-- debugger: tokenize the input
 - show line number in gutter (via preferences and notification)
 - background for stepped line like in IntelliJ (jaune clair) - handle also debugger cursor when in use
 - debugger: implements input stream breakpoint
@@ -35,5 +37,15 @@ Later:
 - log file (check in preferences)
 
 Terence:
-- add an event when exiting a rule (location)
-- add missing first state for error paths
+- add last state (see example of a : (A | A) B) for error paths
+- problem to parse a rule when comment at the end of line without a return ?
+
+Example of OS-sensitive button:
+
+                if(XJApplication.isMacOS()) {
+                    buttonBar.add(cancelButton, cc.xy(2, 1));
+                    buttonBar.add(okButton, cc.xy(4, 1));
+                } else {
+                    buttonBar.add(okButton, cc.xy(2, 1));
+                    buttonBar.add(cancelButton, cc.xy(4, 1));
+                }

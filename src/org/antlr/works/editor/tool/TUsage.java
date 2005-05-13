@@ -6,6 +6,7 @@ import org.antlr.works.parser.Token;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -64,6 +65,13 @@ public class TUsage {
         tree = new JTree();
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
+
+        DefaultTreeCellRenderer treeRenderer = new DefaultTreeCellRenderer();
+        treeRenderer.setClosedIcon(null);
+        treeRenderer.setLeafIcon(null);
+        treeRenderer.setOpenIcon(null);
+
+        tree.setCellRenderer(treeRenderer);
 
         tree.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
