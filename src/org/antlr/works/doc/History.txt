@@ -1,3 +1,9 @@
+05/13/05
+- debugger location is now centered
+- debugger input text displays now tokens if they are available (i.e. after a rewind)
+- disable some menu items while the debugger is running
+- XJLibrary now closes the first created document if it is untouched and another document is opened
+
 05/12/05
 - new tokens for (, ) and non white space characters -> they are now correctly colorized
 - simple comment token was not created correctly when end of text was reached instead of new line

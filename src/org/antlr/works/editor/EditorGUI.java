@@ -161,8 +161,6 @@ public class EditorGUI implements UndoDelegate {
 
         textPane.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent event) {
-                // @todo check to see if this works on Windows/Linux
-
                 if(event.getKeyCode() == KeyEvent.VK_C && (event.isMetaDown() || event.isControlDown())) {
                     editor.menuEditActions.performCopyToClipboard();
                     event.consume();
@@ -407,7 +405,7 @@ public class EditorGUI implements UndoDelegate {
         }
 
         public void focusLost(FocusEvent event) {
-            // @todo handle when focus is lost
+            updateUndoRedo(null);
         }
     }
 }

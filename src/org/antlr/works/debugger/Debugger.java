@@ -2,6 +2,7 @@ package org.antlr.works.debugger;
 
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
 import org.antlr.tool.Grammar;
 import org.antlr.works.dialog.DialogBuildAndDebug;
@@ -58,9 +59,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class Debugger {
 
-    // @todo check to see if this is parametrizable
     public static final String localAddress = "localhost";
     public static final int localPort = 2005;
+
+    public static final String NOTIF_DEBUG_STARTED = "NOTIF_DEBUG_STARTED";
+    public static final String NOTIF_DEBUG_STOPPED = "NOTIF_DEBUG_STOPPED";
 
     protected JPanel panel;
     protected TextEditorPane textPane;
@@ -131,6 +134,10 @@ public class Debugger {
         breakCombo.setSelectedIndex(DebuggerEvent.CONSUME_TOKEN);
 
         updateStatusInfo();
+    }
+
+    public void close() {
+        debuggerStop(true);
     }
 
     public JComponent createInputPanel() {
@@ -281,7 +288,7 @@ public class Debugger {
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                debuggerStop();
+                debuggerStop(false);
             }
         });
         return button;
@@ -469,10 +476,12 @@ public class Debugger {
             return;
         }
 
+        XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STARTED);
+
         editor.getTextPane().setEditable(false);
         editor.getTextPane().requestFocus(false);
         previousGrammarAttributeSet = null;
-        player.resetPlayEvents();
+        player.resetPlayEvents(true);        
     }
 
     public boolean debuggerLaunchGrammar() {
@@ -485,11 +494,10 @@ public class Debugger {
         return true;
     }
 
-    public void debuggerStop() {
+    public void debuggerStop(boolean force) {
         if(recorder.getStatus() == DebuggerRecorder.STATUS_STOPPING) {
-            if(XJAlert.displayAlertYESNO("Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES) {
+            if(force || XJAlert.displayAlertYESNO("Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES)
                 recorder.forceStop();
-            }
         } else
             recorder.stop();
     }
@@ -608,10 +616,10 @@ public class Debugger {
             public void run() {
                 restorePreviousGrammarAttributeSet();
                 editor.getTextPane().setEditable(true);
+                XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STOPPED);
             }
         });
     }
-
 
     protected class StackListModel extends DefaultListModel {
         public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); };

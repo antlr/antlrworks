@@ -1,9 +1,14 @@
 package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.menu.*;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+
+import org.antlr.works.visualization.graphics.path.GPathGroup;
+import org.antlr.works.debugger.Debugger;
 
 /*
 
@@ -36,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorMenu implements XJMenuItemDelegate {
+public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public static final int MI_EDIT_UNDO = 0;
     public static final int MI_EDIT_REDO = 1;
@@ -77,11 +82,38 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_DEBUG_REMOTE = 53;
 
     protected EditorWindow editor = null;
+
     protected XJMenuItem menuItemUndo = null;
     protected XJMenuItem menuItemRedo = null;
 
+    protected XJMenuItem menuItemRename = null;
+    protected XJMenuItem menuItemDebug = null;
+    protected XJMenuItem menuItemBuildAndDebug = null;
+    protected XJMenuItem menuItemDebugRemote = null;
+
     public EditorMenu(EditorWindow editor) {
         this.editor = editor;
+        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
+        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STOPPED);
+    }
+
+    public void close() {
+        XJNotificationCenter.defaultCenter().removeObserver(this);
+    }
+
+    public void notificationFire(Object source, String name) {
+        boolean enable = true;
+        if(name.equals(Debugger.NOTIF_DEBUG_STARTED))
+            enable = false;
+        else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED))
+            enable = true;
+        else
+            return;
+
+        menuItemRename.setEnabled(enable);
+        menuItemDebug.setEnabled(enable);
+        menuItemBuildAndDebug.setEnabled(enable);
+        menuItemDebugRemote.setEnabled(enable);
     }
 
     public void customizeFileMenu(XJMenu menu) {
@@ -131,7 +163,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.addItem(new XJMenuItem("Find Usages", 'f', KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
         menu.addItem(new XJMenuItem("Go To Declaration", 'b', KeyEvent.VK_B, MI_GOTO_DECLARATION, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
+        menu.addItem(menuItemRename = new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Previous Breakpoint", MI_PREV_BREAKPOINT, this));
         menu.addItem(new XJMenuItem("Next Breakpoint", MI_NEXT_BREAKPOINT, this));
@@ -174,10 +206,10 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.setTitle("Run");
         menu.addItem(new XJMenuItem("Run Interpreter", 'r', KeyEvent.VK_R, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_RUN_INTERPRETER, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Debug...", 'd', KeyEvent.VK_D, MI_DEBUG, this));
-        menu.addItem(new XJMenuItem("Build and Debug...", 'd', KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_BUILD_AND_DEBUG, this));
+        menu.addItem(menuItemDebug = new XJMenuItem("Debug...", 'd', KeyEvent.VK_D, MI_DEBUG, this));
+        menu.addItem(menuItemBuildAndDebug = new XJMenuItem("Build and Debug...", 'd', KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_BUILD_AND_DEBUG, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Debug Remote...", MI_DEBUG_REMOTE, this));
+        menu.addItem(menuItemDebugRemote = new XJMenuItem("Debug Remote...", MI_DEBUG_REMOTE, this));
 
         menubar.addCustomMenu(menu);
     }

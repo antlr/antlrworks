@@ -70,8 +70,11 @@ public class GPanel implements XJNotificationObserver {
         this.container = new JPanel(new BorderLayout());
         createNormalPanel();
 
-        // @todo remove observer when window is closed
         XJNotificationCenter.defaultCenter().addObserver(this, GPathGroup.NOTIF_CURRENT_PATH_DID_CHANGE);
+    }
+
+    public void close() {
+        XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 
     public void setGraphs(List graphs) {

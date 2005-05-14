@@ -234,7 +234,7 @@ public class TColorize extends EditorThread {
                         doc.setCharacterAttributes(token.start, token.end-token.start, stringAttr, false);
                         break;
                     case Lexer.TOKEN_ID:
-                        if(token.isAllCapitals())
+                        if(token.isAllUpperCase())
                             doc.setCharacterAttributes(token.start, token.end-token.start, tokenAttr, false);
                         break;
                 }

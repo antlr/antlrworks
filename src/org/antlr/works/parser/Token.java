@@ -40,6 +40,9 @@ public class Token {
     public int linePos;
     public String text;
 
+    protected String attribute;
+    protected boolean isAllUpperCase;
+
     public Token(int type, int start, int end, int line, int linePos, String text) {
         this.type = type;
         this.start = start;
@@ -47,15 +50,17 @@ public class Token {
         this.line = line;
         this.linePos = linePos;
         this.text = text;
+
+        this.attribute = text.substring(start, end);
+        this.isAllUpperCase =  attribute.equals(getAttribute().toUpperCase());
     }
 
     public String getAttribute() {
-        return text.substring(start, end);
+        return attribute;
     }
 
-    public boolean isAllCapitals() {
-        // @todo performance! cache this thing
-        return getAttribute().equals(getAttribute().toUpperCase());
+    public boolean isAllUpperCase() {
+        return isAllUpperCase;
     }
 
     public boolean equals(Object otherObject) {

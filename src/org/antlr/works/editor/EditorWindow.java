@@ -143,6 +143,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void close() {
+        editorMenu.close();
+        debugger.close();
         visual.close();
         super.close();
     }

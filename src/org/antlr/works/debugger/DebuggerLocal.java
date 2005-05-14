@@ -310,8 +310,6 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
 
     public boolean compile() {
         String[] args = new String[] { "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
-        // @todo put this into a log file
-        System.out.println("compile = "+Arrays.asList(args));
         int result = com.sun.tools.javac.Main.compile(args);
         if(result != 0) {
             XJAlert.display("Compiler Error", "Cannot launch the local debugger.\nCompiler error: "+result);

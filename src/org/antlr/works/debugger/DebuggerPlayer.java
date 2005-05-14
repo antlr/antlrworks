@@ -95,10 +95,17 @@ public class DebuggerPlayer {
             return (LookAheadText)lookAheadTextStack.peek();
     }
 
-    public synchronized void resetPlayEvents() {
+    public synchronized void resetPlayEvents(boolean first) {
         debugger.resetGUI();
 
-        inputText.reset();
+        // Only reset the input text the first time
+        // the events are reset (when the debugger starts).
+        // Then, keep rewinding the input text so already received
+        // tokens are displayed
+        if(first)
+            inputText.reset();
+        else
+            inputText.rewindAll();
 
         lastLookAheadText = null;
         lookAheadTextStack.clear();
@@ -107,7 +114,7 @@ public class DebuggerPlayer {
     }
 
     public void playEvents(List events) {
-        resetPlayEvents();
+        resetPlayEvents(false);
 
         Iterator iterator = events.iterator();
         while(iterator.hasNext()) {
@@ -263,7 +270,7 @@ public class DebuggerPlayer {
     public void playLocation(int line, int pos) {
         // Remember the last position in order to display
         // it when the events are all consumed. This allows
-        // to remove the fast back/forth move of the cursor
+        // to remove the fast backward/forward movement of the cursor
         // in the grammar (not needed)
         lastLocationLine = line;
         lastLocationPos = pos;
@@ -283,12 +290,33 @@ public class DebuggerPlayer {
             // Select one character to be underlined
             debugger.editor.getTextPane().moveCaretPosition(index+1);
 
+            // Center the text based on the cursor position
+            centerLocation(lastLocationLine);
+
             StyleContext sc = StyleContext.getDefaultStyleContext();
             AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Background, Color.red);
             debugger.editor.getTextPane().setCharacterAttributes(aset, false);
 
         } catch(Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void centerLocation(int line) {
+        try {
+            int top_index = debugger.computeAbsoluteGrammarIndex(line-10, 0);
+            if(top_index == -1)
+                top_index = 0;
+            int bottom_index = debugger.computeAbsoluteGrammarIndex(line+10, 0);
+            if(bottom_index == -1)
+                bottom_index = debugger.editor.getText().length();
+
+            Rectangle r1 = debugger.editor.getTextPane().modelToView(top_index);
+            Rectangle r2 = debugger.editor.getTextPane().modelToView(bottom_index);
+
+            debugger.editor.getTextPane().scrollRectToVisible(new Rectangle(r1.x, r1.y, 100, r2.y-r1.y));
+        } catch(Exception e) {
+            // ignore
         }
     }
 

@@ -97,6 +97,7 @@ public class Visual {
     }
 
     public void close() {
+        panel.close();
         drawing.stop();
         analysis.stop();
         while(drawing.isRunning() || analysis.isRunning()) {
