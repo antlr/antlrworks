@@ -141,7 +141,6 @@ public class EditorGUI implements UndoDelegate {
 
         editor.getContentPane().add(mainPanel);
         editor.pack();
-        editor.center();
 
         upDownSplitPane.setDividerLocation(0.5);
     }

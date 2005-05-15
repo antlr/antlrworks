@@ -45,6 +45,7 @@ public class IDE implements XJApplicationDelegate {
     public static final SplashScreen sc = new SplashScreen();
 
     public static void main(String[] args) {
+        
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
                 public void run() {

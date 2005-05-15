@@ -7,6 +7,7 @@ import org.antlr.works.visualization.fa.FAFactory;
 import org.antlr.works.visualization.fa.FAState;
 import org.antlr.works.visualization.graphics.GFactory;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,7 +152,11 @@ public class VisualDrawing extends EditorThread {
 
         threadLastProcessedRule = threadRule;
 
-        refresh();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                refresh();
+            }
+        });
     }
 
     protected synchronized void createGraphsForRule(Parser.Rule rule) {
