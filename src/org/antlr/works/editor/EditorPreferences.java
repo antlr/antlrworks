@@ -36,35 +36,50 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorPreferences {
 
-    public static final String KEY_OUTPUT_PATH = "KEY_OUTPUT_PATH";
-    public static final String KEY_ANTLR3_PATH = "KEY_ANTLR3_PATH";
-    public static final String KEY_START_SYMBOL = "KEY_START_SYMBOL";
+    public static final String PREF_STARTUP_ACTION = "PREF_STARTUP_ACTION";
+    public static final String PREF_TAB_WIDTH = "PREF_TAB_WIDTH";
+    public static final String PREF_OUTPUT_PATH = "KEY_OUTPUT_PATH";
+    public static final String PREF_ANTLR3_PATH = "KEY_ANTLR3_PATH";
+    public static final String PREF_START_SYMBOL = "KEY_START_SYMBOL";
+
+    public static final int STARTUP_NEW_DOC = 0;
+    public static final int STARTUP_OPEN_LAST_DOC = 1;
+
+    public static final int DEFAULT_TAB_WIDTH = 8;
 
     public static void setOutputPath(String path) {
-        getPreferences().setString(KEY_OUTPUT_PATH, path);
+        getPreferences().setString(PREF_OUTPUT_PATH, path);
     }
 
     public static String getOutputPath() {
-        return getPreferences().getString(KEY_OUTPUT_PATH, "/tmp/antlrworks/");
+        return getPreferences().getString(PREF_OUTPUT_PATH, "/tmp/antlrworks/");
     }
 
     public static void setANTLR3Path(String path) {
-        getPreferences().setString(KEY_ANTLR3_PATH, path);
+        getPreferences().setString(PREF_ANTLR3_PATH, path);
     }
 
     public static String getANTLR3Path() {
-        return getPreferences().getString(KEY_ANTLR3_PATH, "/Users/bovet/Dev/Projects/ANTLREditor/classes");
+        return getPreferences().getString(PREF_ANTLR3_PATH, "");
     }
 
     public static void setStartSymbol(String startSymbol) {
-        getPreferences().setString(KEY_START_SYMBOL, startSymbol);
+        getPreferences().setString(PREF_START_SYMBOL, startSymbol);
     }
 
     public static String getStartSymbol() {
-        return getPreferences().getString(KEY_START_SYMBOL, "");
+        return getPreferences().getString(PREF_START_SYMBOL, "");
     }
 
-    private static XJPreferences getPreferences() {
+    public static int getStartupAction() {
+        return getPreferences().getInt(PREF_STARTUP_ACTION, STARTUP_OPEN_LAST_DOC);
+    }
+
+    public static int getTabWidth() {
+        return getPreferences().getInt(PREF_TAB_WIDTH, DEFAULT_TAB_WIDTH);
+    }
+
+    public static XJPreferences getPreferences() {
         return XJApplication.shared().getPreferences();
     }
 

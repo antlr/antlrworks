@@ -37,6 +37,8 @@ import edu.usfca.xj.appkit.document.XJDataPlainText;
 import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.utils.XJLocalizable;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.dialog.DialogPrefs;
 
 import javax.swing.*;
 
@@ -64,16 +66,22 @@ public class IDE implements XJApplicationDelegate {
         XJApplication.setPropertiesPath("org/antlr/works/properties/");
         XJApplication.addDocumentType(Document.class, EditorWindow.class, XJDataPlainText.class, "g", XJLocalizable.getString("strings", "GrammarDocumentType"));
 
-        if (XJApplication.shared().getDocuments().size() == 0) {
-            if (XJApplication.shared().openLastUsedDocument() == false)
+        switch (EditorPreferences.getStartupAction()) {
+            case EditorPreferences.STARTUP_NEW_DOC:
                 XJApplication.shared().newDocument();
+                break;
+            case EditorPreferences.STARTUP_OPEN_LAST_DOC:
+                if (XJApplication.shared().getDocuments().size() == 0) {
+                    if (XJApplication.shared().openLastUsedDocument() == false)
+                        XJApplication.shared().newDocument();
+                }
+                break;
         }
-
         sc.setVisible(false);
     }
 
     public Class appPreferencesPanelClass() {
-        return null;
+        return DialogPrefs.class;
     }
 
     public XJPanel appInstanciateAboutPanel() {
@@ -81,7 +89,7 @@ public class IDE implements XJApplicationDelegate {
     }
 
     public boolean appHasPreferencesMenuItem() {
-        return false;
+        return true;
     }
 
     public boolean appShouldQuitAfterLastWindowClosed() {

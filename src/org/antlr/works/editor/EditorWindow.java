@@ -103,7 +103,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         visual.setDelegate(this);
 
         interpreter = new Interpreter(this);
-        debugger = new Debugger(this);         // @todo delegate this
+        debugger = new Debugger(this);
 
         parser = new ThreadedParser(this);
         parser.addObserver(this);
@@ -211,8 +211,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         visual.cancelDrawingProcess();
 
         colorize.setColorizeLocation(offset, length);
-        // @todo performance!
-        interpreter.setGrammarDirty(true, getPlainText());
+        interpreter.setGrammarDirty(true);
     }
 
     public void enableTextPane(boolean undo) {
@@ -253,7 +252,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             getTextPane().setCaretPosition(0);
             getTextPane().moveCaretPosition(0);
             getTextPane().getCaret().setSelectionVisible(true);
-            interpreter.setGrammarDirty(true, text);
+            interpreter.setGrammarDirty(true);
             parser.parse();
         } catch(Exception e) {
             e.printStackTrace();
@@ -262,13 +261,13 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         }
     }
 
-    public String getText() {
+    public synchronized String getText() {
         if(editorCache.getString(EditorCache.CACHE_TEXT) == null)
             editorCache.setObject(EditorCache.CACHE_TEXT, getTextPane().getText());
         return editorCache.getString(EditorCache.CACHE_TEXT);
     }
 
-    public String getPlainText() {
+    public synchronized String getPlainText() {
         if(editorCache.getString(EditorCache.CACHE_PLAIN_TEXT) == null)
             editorCache.setObject(EditorCache.CACHE_PLAIN_TEXT, actions.getPlainText());
         return editorCache.getString(EditorCache.CACHE_PLAIN_TEXT);

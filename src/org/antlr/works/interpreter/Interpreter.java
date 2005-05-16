@@ -69,7 +69,6 @@ public class Interpreter implements Runnable {
     private DialogProgress progress;
 
     private boolean grammarDirty = true;
-    private String grammarText = null;
 
     private String startSymbol = null;
 
@@ -204,9 +203,8 @@ public class Interpreter implements Runnable {
         }
     }
 
-    public void setGrammarDirty(boolean flag, String text) {
+    public void setGrammarDirty(boolean flag) {
         grammarDirty = flag;
-        grammarText = text;
     }
 
     public void displayNodeInfo(Object node) {
@@ -254,7 +252,7 @@ public class Interpreter implements Runnable {
 
             try {
                 parser = new Grammar();
-                parser.setGrammarContent(grammarText);
+                parser.setGrammarContent(editor.getPlainText());
 
                 String lexerGrammarText = parser.getLexerGrammar();
                 lexer = new Grammar();

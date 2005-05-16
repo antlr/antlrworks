@@ -1,13 +1,8 @@
 
 Now:
 
-- check Debug for existing files and Build automatically
 - still need to know ANTLR 3 path ?
-- sort content of auto-completion menu
-- sort content of rules/tokens table
 - problems with SD: a : ((A {;}| B)* D (B | {;} "hello, world!")*)*;
-- problem with ANTLR when comment after a rule: normal ?
-- debugger: parametrize the tab length
 - problem when more than one same LT between mark/rewind
 
 - interpreter doesn't work anymore
@@ -29,6 +24,8 @@ Issues:
 - undo: rename + addition -> redo doesn't show "rename" but "addition"
 
 Later:
+- sort content of auto-completion menu
+- sort content of rules/tokens table
 - can change L&F
 - display LT in blue when exiting an alt (see Terence's email)
 - find
@@ -41,15 +38,3 @@ Later:
 - log file (check in preferences)
 
 Terence:
-- add last state (see example of a : (A | A) B) for error paths
-- problem to parse a rule when comment at the end of line without a return ?
-
-Example of OS-sensitive button:
-
-                if(XJApplication.isMacOS()) {
-                    buttonBar.add(cancelButton, cc.xy(2, 1));
-                    buttonBar.add(okButton, cc.xy(4, 1));
-                } else {
-                    buttonBar.add(okButton, cc.xy(2, 1));
-                    buttonBar.add(cancelButton, cc.xy(4, 1));
-                }

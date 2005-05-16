@@ -275,6 +275,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        //System.out.println("Repaint "+System.currentTimeMillis());
         if(!canDraw())
             return;
 

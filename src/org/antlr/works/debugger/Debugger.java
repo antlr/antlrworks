@@ -439,8 +439,8 @@ public class Debugger {
         debuggerLocal.setOutputPath(EditorPreferences.getOutputPath());
         debuggerLocal.setANTLR3Path(EditorPreferences.getANTLR3Path());
         debuggerLocal.setStartRule(EditorPreferences.getStartSymbol());
-        
-        if(build) {
+
+        if(build || !debuggerLocal.isRequiredFilesExisting()) {
             DialogBuildAndDebug dialog = new DialogBuildAndDebug(this);
             if(dialog.runModal() == XJDialog.BUTTON_OK) {
                 debuggerLocal.setOutputPath(dialog.getOutputPath());
@@ -552,8 +552,7 @@ public class Debugger {
         String t = editor.getText();
 
         // Compute also the tab position using a tab length of 8
-        // @todo parametrize the tab length
-        int tab = 8;
+        int tab = EditorPreferences.getTabWidth();
         int offset = 0;
         int c = 0;
         while(offset<pos) {

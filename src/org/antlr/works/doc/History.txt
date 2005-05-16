@@ -1,3 +1,7 @@
+05/15/05
+?- preferences panel: startup action and tab width
+- interpreter fetches the plain text representation only when running, not at each keystroke
+
 05/14/05
 - do not center the editor window at creation (Tiger compatibility)
 

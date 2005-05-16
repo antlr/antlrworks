@@ -311,7 +311,7 @@ public class DebuggerRecorder {
 
         public void event(DebuggerEvent event) {
             addEvent(event);
-            DebuggerRecorder.this.eventOccurred(event);
+            eventOccurred(event);
         }
 
         public void enterRule(String ruleName) {

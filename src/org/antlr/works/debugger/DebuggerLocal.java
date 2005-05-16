@@ -180,6 +180,8 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
         if(cancelled())
             return false;
 
+        new File(outputFileDir).mkdirs();
+
         if(build || generateGlueCode) {
             // Create the glue-code remote parser
             progress.setInfo("Generating...");
@@ -213,7 +215,6 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
     }
 
     public void prepare() {
-        // Setup some members
         fileParser = codeGenerator.getGeneratedTextFileName(false);
         fileLexer = codeGenerator.getGeneratedTextFileName(true);
 
@@ -221,8 +222,12 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
         fileRemoteParserInputText = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
 
         outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
+    }
 
-        new File(outputFileDir).mkdirs();
+    public boolean isRequiredFilesExisting() {
+        prepare();
+        return new File(fileParser).exists() && new File(fileLexer).exists() && new File(fileRemoteParser).exists()
+                && new File(fileRemoteParserInputText).exists();
     }
 
     public boolean generateGlueCode() {
