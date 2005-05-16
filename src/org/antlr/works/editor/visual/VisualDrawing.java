@@ -3,8 +3,6 @@ package org.antlr.works.editor.visual;
 import org.antlr.analysis.NFAState;
 import org.antlr.works.editor.EditorThread;
 import org.antlr.works.parser.Parser;
-import org.antlr.works.visualization.fa.FAFactory;
-import org.antlr.works.visualization.fa.FAState;
 import org.antlr.works.visualization.graphics.GFactory;
 
 import javax.swing.*;
@@ -49,8 +47,6 @@ public class VisualDrawing extends EditorThread {
 
     protected GFactory factory = new GFactory();
 
-    protected FAState state;
-
     protected String text;
     protected Parser.Rule rule;
 
@@ -61,7 +57,6 @@ public class VisualDrawing extends EditorThread {
 
     protected Parser.Rule threadLastProcessedRule;
 
-    protected Map cacheOptimizedNFA = new HashMap();
     protected Map cacheGraphs = new HashMap();
 
     public VisualDrawing(Visual visual) {
@@ -70,15 +65,18 @@ public class VisualDrawing extends EditorThread {
         start();
     }
 
+    public void toggleNFAOptimization() {
+        factory.toggleNFAOptimization();
+        clearCacheGraphs();
+    }
+
     public synchronized void setText(String text) {
         this.text = text;
-       // System.err.println("updating TEXT "+System.currentTimeMillis());
         awakeThread(500);
     }
 
     public synchronized void setRule(Parser.Rule rule, boolean immediate) {
         this.rule = rule;
-       // System.err.println("updating RULE "+System.currentTimeMillis());
         awakeThread(immediate?0:500);
     }
 
@@ -118,7 +116,6 @@ public class VisualDrawing extends EditorThread {
             e.printStackTrace();
         } finally {
             // Flush all caches in cache because the grammar has changed
-            cacheOptimizedNFA.clear();
             clearCacheGraphs();
         }
     }
@@ -138,16 +135,8 @@ public class VisualDrawing extends EditorThread {
             return;
         }
 
-        // Try to get the optimized NFA from cache first. If the grammar didn't change (i.e. user
+        // Try to get the optimized graph from cache first. If the grammar didn't change (i.e. user
         // only moving cursor in the text zone), the speed-up can be important.
-        state = (FAState)cacheOptimizedNFA.get(threadRule);
-        if(state == null) {
-            state = new FAFactory(visual.engine.g).buildOptimizedNFA(startState);
-            if(state != null)
-                cacheOptimizedNFA.put(threadRule, state);
-        }
-
-        // Try also to optimize the graph if the context or skin didn't change.
         createGraphsForRule(threadRule);
 
         threadLastProcessedRule = threadRule;

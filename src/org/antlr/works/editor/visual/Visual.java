@@ -117,6 +117,10 @@ public class Visual {
         return enable;
     }
 
+    public void toggleNFAOptimization() {
+        drawing.toggleNFAOptimization();
+    }
+
     public void setDelegate(VisualDelegate delegate) {
         this.delegate = delegate;
     }
@@ -175,7 +179,7 @@ public class Visual {
         if(dotFile == null)
             return;
 
-        FAState state = new FAFactory(engine.g).buildOptimizedNFA(engine.g.getRuleStartState(rule.name));
+        FAState state = new FAFactory(engine.g).buildNFA(engine.g.getRuleStartState(rule.name), true);
         if(state == null)
             return;
 
@@ -192,7 +196,7 @@ public class Visual {
         if(dotFile == null)
             return;
 
-        FAState state = new FAFactory(engine.g).buildRawNFA(engine.g.getRuleStartState(rule.name));
+        FAState state = new FAFactory(engine.g).buildNFA(engine.g.getRuleStartState(rule.name), false);
         if(state == null)
             return;
 

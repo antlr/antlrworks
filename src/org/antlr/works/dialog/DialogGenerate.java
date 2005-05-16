@@ -6,9 +6,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
-import edu.usfca.xj.appkit.app.XJApplication;
 import org.antlr.works.editor.EditorPreferences;
 
 import javax.swing.*;

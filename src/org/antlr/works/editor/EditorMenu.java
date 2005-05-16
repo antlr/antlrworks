@@ -3,12 +3,10 @@ package org.antlr.works.editor;
 import edu.usfca.xj.appkit.menu.*;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.works.debugger.Debugger;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-
-import org.antlr.works.visualization.graphics.path.GPathGroup;
-import org.antlr.works.debugger.Debugger;
 
 /*
 
@@ -51,6 +49,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_EDIT_SELECT_ALL = 5;
     public static final int MI_TOGGLE_SYNTAX_COLORING = 6;
     public static final int MI_TOGGLE_SYNTAX_DIAGRAM = 7;
+    public static final int MI_TOGGLE_NFA_OPTIMIZATION = 9;
 
     public static final int MI_FIND_USAGE = 10;
     public static final int MI_GOTO_DECLARATION = 11;
@@ -153,6 +152,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addSeparator();
         menu.addItem(new XJMenuItemCheck("Syntax Coloring", MI_TOGGLE_SYNTAX_COLORING, this, true));
         menu.addItem(new XJMenuItemCheck("Syntax Diagram", MI_TOGGLE_SYNTAX_DIAGRAM, this, true));
+        menu.addItem(new XJMenuItemCheck("Optimize Syntax Diagram", MI_TOGGLE_NFA_OPTIMIZATION, this, true));
 
         menubar.addCustomMenu(menu);
 
@@ -256,6 +256,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_TOGGLE_SYNTAX_DIAGRAM:
                 editor.toggleSyntaxDiagram();
+                break;
+
+            case MI_TOGGLE_NFA_OPTIMIZATION:
+                editor.toggleNFAOptimization();
                 break;
         }
     }

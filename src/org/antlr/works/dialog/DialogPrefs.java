@@ -1,17 +1,17 @@
 package org.antlr.works.dialog;
 
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.*;
-import com.jgoodies.forms.factories.*;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import org.antlr.works.editor.EditorPreferences;
-import edu.usfca.xj.appkit.utils.XJFileChooser;
-import edu.usfca.xj.appkit.frame.XJDialog;
-import edu.usfca.xj.appkit.frame.XJPanel;
-import edu.usfca.xj.appkit.app.XJPreferences;
 import edu.usfca.xj.appkit.app.XJApplication;
+import edu.usfca.xj.appkit.app.XJPreferences;
+import edu.usfca.xj.appkit.frame.XJPanel;
+import org.antlr.works.editor.EditorPreferences;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /*
 
@@ -80,7 +80,7 @@ public class DialogPrefs extends XJPanel {
 		CellConstraints cc = new CellConstraints();
 
 		//======== this ========
-        setTitle("Preferences");        
+        setTitle("Preferences");
 		Container contentPane2 = getContentPane();
 		contentPane2.setLayout(new BorderLayout());
 

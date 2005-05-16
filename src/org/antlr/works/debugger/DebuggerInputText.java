@@ -4,15 +4,14 @@ import org.antlr.runtime.Token;
 import org.antlr.works.editor.swing.TextEditorPane;
 import org.antlr.works.editor.swing.TextEditorPaneDelegate;
 
-import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Iterator;
+import java.util.Map;
 
 /*
 

@@ -201,6 +201,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         }
     }
 
+    public void toggleNFAOptimization() {
+        visual.toggleNFAOptimization();
+        updateVisualization(false);
+    }
+
     public void changeUpdate() {
         changeUpdate(-1, -1);
     }

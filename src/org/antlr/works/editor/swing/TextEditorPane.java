@@ -1,14 +1,8 @@
 package org.antlr.works.editor.swing;
 
-import org.antlr.works.debugger.DebuggerInputText;
-
 import javax.swing.*;
 import javax.swing.text.StyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.AbstractDocument;
 import java.awt.*;
-import java.util.Map;
-import java.util.Iterator;
 
 /*
 

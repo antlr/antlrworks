@@ -9,8 +9,8 @@ import org.antlr.works.dialog.DialogBuildAndDebug;
 import org.antlr.works.dialog.DialogConnectDebugRemote;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.swing.TextEditorPane;
+import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;

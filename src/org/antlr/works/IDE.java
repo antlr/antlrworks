@@ -36,9 +36,9 @@ import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
 import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.utils.XJLocalizable;
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.dialog.DialogPrefs;
+import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.EditorWindow;
 
 import javax.swing.*;
 

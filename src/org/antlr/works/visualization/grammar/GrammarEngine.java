@@ -107,17 +107,13 @@ public class GrammarEngine {
     private GrammarEngineError buildNonDeterministicError(GrammarNonDeterminismMessage nondetMsg) {
         GrammarEngineError error = new GrammarEngineError();
 
-        //System.err.println(nondetMsg.problemState);
         List nonDetAlts = nondetMsg.probe.getNonDeterministicAltsForState(nondetMsg.problemState);
-        //System.out.println("Non-det. alts = "+nonDetAlts);
-        //System.out.println("Start state = "+nondetMsg.probe.dfa.getNFADecisionStartState());
         error.setLine(nondetMsg.probe.dfa.getDecisionASTNode().getLine()-1);
 
         Set disabledAlts = nondetMsg.probe.getDisabledAlternatives(nondetMsg.problemState);
         List labels = nondetMsg.probe.getSampleNonDeterministicInputSequence(nondetMsg.problemState);
         String input = nondetMsg.probe.getInputSequenceDisplay(labels);
         error.setMessage("Decision can match input such as \""+input+"\" using multiple alternatives");
-        //System.out.println("Input = "+input);
 
         int firstAlt = 0;
 		for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
@@ -134,21 +130,6 @@ public class GrammarEngine {
 													   tracePathAlt,
 													   labels);
 			error.addPath(path, disabledAlts.contains(displayAltI));
-
-            /*
-			int alt = displayAltI.intValue();
-            if ( nfaStart.getDecisionASTNode().getType()==ANTLRParser.EOB ) {
-                if ( alt==nondetMsg.probe.dfa.nfa.grammar.getNumberOfAltsForDecisionNFA(nfaStart) )
-                    alt = 1;
-                else
-                    alt = alt+1;
-            }
-
-            // Get a list of all states (this is the error path)
-            List path = nondetMsg.probe.getNFAPathStatesForAlt(nondetMsg.problemState,alt,labels);
-            error.addPath(path, disabledAlts.contains(displayAltI));
-            //System.out.println(displayAltI+" = "+path);
-			*/
 
             // Find all rules enclosing each state (because a path can extend over multiple rules)
             for (Iterator iterator = path.iterator(); iterator.hasNext();) {
@@ -172,22 +153,18 @@ public class GrammarEngine {
         }
 
         public void info(String msg) {
-            //System.out.println("info: "+msg);
             infos.add(msg);
         }
 
         public void error(Message msg) {
-            //System.out.println("error: "+msg);
             errors.add(msg);
         }
 
         public void warning(Message msg) {
-            //System.out.println("warning: "+msg);
             warnings.add(msg);
         }
 
         public void error(ToolMessage msg) {
-            //System.out.println(msg);
             errors.add(msg);
         }
 

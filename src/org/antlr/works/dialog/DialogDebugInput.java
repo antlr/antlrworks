@@ -3,8 +3,8 @@ package org.antlr.works.dialog;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.app.XJApplication;
+import edu.usfca.xj.appkit.frame.XJDialog;
 
 import javax.swing.*;
 import java.awt.*;

@@ -149,7 +149,7 @@ public class VisualizationTest {
           //  dotgen.writeDOTFile("/dfa", dot);
         }
 
-        FAState state = new FAFactory(engine.g).buildOptimizedNFA(engine.g.getRuleStartState("a"));
+        FAState state = new FAFactory(engine.g).buildNFA(engine.g.getRuleStartState("a"), true);
         if(state != null) {
             DotGenerator jdot = new DotGenerator(state);
             jdot.writeToFile("/simplified");
@@ -272,7 +272,7 @@ public class VisualizationTest {
 
             NFAState startState = g.getRuleStartState("a");
 
-            FAState s = new FAFactory(g).buildOptimizedNFA(startState);
+            FAState s = new FAFactory(g).buildNFA(startState, true);
             List paths = new ArrayList();
             s.getPaths(new HashSet(), new String(), paths);
             if(!expectedPaths.equals(paths)) {

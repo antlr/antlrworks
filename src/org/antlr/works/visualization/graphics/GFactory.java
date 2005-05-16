@@ -48,8 +48,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class GFactory {
 
     protected GRenderer renderer = new GRenderer();
+    protected boolean optimize = true;
 
     public GFactory() {
+    }
+
+    public void toggleNFAOptimization() {
+        optimize = !optimize;
     }
 
     public List buildGraphsForRule(GrammarEngine engine, String rule, List errors) {
@@ -64,7 +69,7 @@ public class GFactory {
         if(startState == null)
             return null;
 
-        FAState state = new FAFactory(engine.g).buildOptimizedNFA(startState);
+        FAState state = new FAFactory(engine.g).buildNFA(startState, optimize);
         GGraph graph = renderer.render(state);
         graph.setName(rule);
         return Collections.singletonList(graph);
@@ -93,7 +98,7 @@ public class GFactory {
         for (int i = 0; i < error.rules.size(); i++) {
             String rule = (String)error.rules.get(i);
             NFAState startState = grammar.getRuleStartState(rule);
-            FAState state = factory.buildOptimizedNFA(startState);
+            FAState state = factory.buildNFA(startState, optimize);
 
             GGraph graph = renderer.render(state);
             graph.setName(rule);

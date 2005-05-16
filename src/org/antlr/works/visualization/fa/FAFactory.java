@@ -42,7 +42,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/** This class builds an "GUI" NFA from an "ANTLR" NFA by simplying redundant epsilon transition(s).
+/** This class builds an "GUI" NFA from an "ANTLR" NFA by removing redundant epsilon transition(s).
  *
  */
 
@@ -59,13 +59,8 @@ public class FAFactory {
         this.g = g;
     }
 
-    public FAState buildRawNFA(NFAState state) {
-        optimize = false;
-        return build(state);
-    }
-
-    public FAState buildOptimizedNFA(NFAState state) {
-        optimize = true;
+    public FAState buildNFA(NFAState state, boolean optimize) {
+        this.optimize = optimize;
         return build(state);
     }
 

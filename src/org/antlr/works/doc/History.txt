@@ -1,3 +1,6 @@
+05/16/05
+- user can now disable automatic optimization of NFA
+
 05/15/05
 ?- preferences panel: startup action and tab width
 - interpreter fetches the plain text representation only when running, not at each keystroke

@@ -2,22 +2,18 @@
 Now:
 
 - still need to know ANTLR 3 path ?
+
+- performance of debugger (when playing all events from start to end - takes too much time)
+- remove all ToDos
+
 - problems with SD: a : ((A {;}| B)* D (B | {;} "hello, world!")*)*;
 - problem when more than one same LT between mark/rewind
 
-- interpreter doesn't work anymore
-- interpreter loops when bad input (i.e. java code for SimpleGrammar)
-- look at making the interpreter working for a simple grammar
-
 - optimize state arround external ref (negative state should be removed - see if it is always possible)
-- remove all ToDos
 
 Test
 - Windows/Linux: short-cuts, gutter position
 - check copy/cut keyboard filter on Windows/Linux
-
-Performance:
-- performance of debugger (when playing all events from start to end - takes too much time)
 
 Issues:
 - TextEditorPane: wrapping doesn't always works on Mac OS X
