@@ -46,7 +46,7 @@ public class Document extends XJDocument {
     public void documentDidReadData() {
         EditorWindow w = (EditorWindow)getWindow();
         XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        w.setText(data.getText());
+        w.setLoadedText(data.getText());
     }
 
 }

@@ -1,8 +1,21 @@
-05/16/05
+Posted on 05/19/05
+- new editor font and size preferences
+- new compiler preferences (javac or jikes)
+- changed the default font of the editor to "Courier New" (better appearance on Windows)
+- removed ANTLR 3 path from Build & Debug dialog box: it is taken from the current class path
+- redirected the output of the compiler and launcher to ANTLRWorks standard err/output device
+
+- fixed a bug were the syntax diagram would not be updated on Mac OS 10.4, Linux and Windows (validate)
+- fixed a bug which would prevent drag and drop of rules to work under Windows/Linux
+- fixed a bug which would prevent ANTLRWorks to correctly compile under Windows
+- fixed a bug which would prevent ANTLRWorks to correctly launch the remote parser under Windows
+- fixed a bug which would prevent undo/redo to work under Windows/Linux (permanent focus owner)
+
+Posted on 05/16/05
 - user can now disable automatic optimization of NFA
 
 05/15/05
-?- preferences panel: startup action and tab width
+- preferences panel: startup action and tab width
 - interpreter fetches the plain text representation only when running, not at each keystroke
 
 05/14/05

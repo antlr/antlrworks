@@ -1,0 +1,13 @@
+Copy Manifest.mf to classes and execute line:
+
+* antlrworks.jar
+
+jar cmf Manifest.mf antlrworks.jar org/
+
+* jgoodies.jar
+
+jar cf jgoodies.jar com/
+
+* xj.jar
+
+jar cf xj.jar edu/

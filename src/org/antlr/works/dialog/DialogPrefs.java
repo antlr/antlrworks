@@ -6,6 +6,8 @@ import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJPreferences;
 import edu.usfca.xj.appkit.frame.XJPanel;
+import edu.usfca.xj.appkit.utils.XJFileChooser;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.works.editor.EditorPreferences;
 
 import javax.swing.*;
@@ -46,112 +48,267 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DialogPrefs extends XJPanel {
 
+    public static final String NOTIF_PREFS_APPLIED = "NOTIF_PREFS_APPLIED";
+    
     public DialogPrefs() {
 
         initComponents();
 
-        setSize(400, 200);
+        setSize(550, 300);
 
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 dialogPane.requestFocus();
                 getPreferences().applyPreferences();
+                XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_PREFS_APPLIED);
             }
         });
 
+        browseJikesPath.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if(XJFileChooser.shared().displayChooseDirectory(DialogPrefs.this)) {
+                    jikesPathField.setText(XJFileChooser.shared().getSelectedFilePath());
+                    EditorPreferences.setJikesPath(jikesPathField.getText());
+                }
+            }
+        });
+
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String fontNames[] = ge.getAvailableFontFamilyNames();
+
+        editorFontCombo.removeAllItems();
+        for (int i=0; i<fontNames.length; i++) {
+            editorFontCombo.addItem(fontNames[i]);
+        }
+
+        // General
         getPreferences().bindToPreferences(startupActionCombo, EditorPreferences.PREF_STARTUP_ACTION, EditorPreferences.STARTUP_OPEN_LAST_DOC);
         getPreferences().bindToPreferences(tabWidthField, EditorPreferences.PREF_TAB_WIDTH, EditorPreferences.DEFAULT_TAB_WIDTH);
+        getPreferences().bindToPreferences(editorFontCombo, EditorPreferences.PREF_EDITOR_FONT, EditorPreferences.DEFAULT_EDITOR_FONT);
+        getPreferences().bindToPreferences(editorFontSizeSpinner, EditorPreferences.PREF_EDITOR_FONT_SIZE, EditorPreferences.DEFAULT_EDITOR_FONT_SIZE);
+
+        // Compiler
+        getPreferences().bindToPreferences(jikesPathField, EditorPreferences.PREF_JIKES_PATH, EditorPreferences.DEFAULT_JIKES_PATH);
+        getPreferences().bindToPreferences(compilerRadioButtonGroup, EditorPreferences.PREF_COMPILER, EditorPreferences.DEFAULT_COMPILER);
     }
 
     private static XJPreferences getPreferences() {
         return XJApplication.shared().getPreferences();
     }
 
-	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		dialogPane = new JPanel();
-		contentPane = new JPanel();
-		label2 = new JLabel();
-		startupActionCombo = new JComboBox();
-		label1 = new JLabel();
-		tabWidthField = new JTextField();
-		buttonBar = new JPanel();
-		applyButton = new JButton();
-		CellConstraints cc = new CellConstraints();
+    // Note: make sure the actionCommand of each compiler radio button matches
+    // the string in EditorPreferences (i.e. COMPILER_JAVAC, etc.)
+    // Also make sure all these radio have the actionCommand() set!
 
-		//======== this ========
+    private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        dialogPane = new JPanel();
+        contentPane = new JPanel();
+        tabbedPane1 = new JTabbedPane();
+        panel1 = new JPanel();
+        label2 = new JLabel();
+        startupActionCombo = new JComboBox();
+        tabWidthField = new JTextField();
+        label1 = new JLabel();
+        label3 = new JLabel();
+        editorFontCombo = new JComboBox();
+        editorFontSizeSpinner = new JSpinner();
+        panel2 = new JPanel();
+        jikesRadio = new JRadioButton();
+        integratedRadio = new JRadioButton();
+        javacRadio = new JRadioButton();
+        label4 = new JLabel();
+        jikesPathField = new JTextField();
+        browseJikesPath = new JButton();
+        buttonBar = new JPanel();
+        applyButton = new JButton();
+        CellConstraints cc = new CellConstraints();
+
+        //======== this ========
         setTitle("Preferences");
-		Container contentPane2 = getContentPane();
-		contentPane2.setLayout(new BorderLayout());
+        Container contentPane2 = getContentPane();
+        contentPane2.setLayout(new BorderLayout());
 
-		//======== dialogPane ========
-		{
-			dialogPane.setBorder(Borders.DIALOG_BORDER);
-			dialogPane.setLayout(new BorderLayout());
+        //======== dialogPane ========
+        {
+            dialogPane.setBorder(Borders.DIALOG_BORDER);
+            dialogPane.setPreferredSize(new Dimension(550, 300));
+            dialogPane.setLayout(new BorderLayout());
 
-			//======== contentPane ========
-			{
-				contentPane.setLayout(new FormLayout(
-					new ColumnSpec[] {
-						FormFactory.DEFAULT_COLSPEC,
-						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-						new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
-					},
-					new RowSpec[] {
-						FormFactory.DEFAULT_ROWSPEC,
-						FormFactory.LINE_GAP_ROWSPEC,
-						FormFactory.DEFAULT_ROWSPEC,
-						FormFactory.LINE_GAP_ROWSPEC,
-						FormFactory.DEFAULT_ROWSPEC
-					}));
-				
-				//---- label2 ----
-				label2.setText("At startup:");
-				contentPane.add(label2, cc.xy(1, 1));
-				
-				//---- startupActionCombo ----
-				startupActionCombo.setModel(new DefaultComboBoxModel(new String[] {
-					"Create a new document",
-					"Open the last used document"
-				}));
-				contentPane.add(startupActionCombo, cc.xy(3, 1));
-				
-				//---- label1 ----
-				label1.setHorizontalAlignment(SwingConstants.RIGHT);
-				label1.setText("Tab width:");
-				contentPane.add(label1, cc.xy(1, 3));
-				contentPane.add(tabWidthField, cc.xy(3, 3));
-			}
-			dialogPane.add(contentPane, BorderLayout.CENTER);
-			
-			//======== buttonBar ========
-			{
-				buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
-				buttonBar.setLayout(new FormLayout(
-					new ColumnSpec[] {
-						FormFactory.GLUE_COLSPEC,
-						FormFactory.BUTTON_COLSPEC
-					},
-					RowSpec.decodeSpecs("pref")));
-				
-				//---- applyButton ----
-				applyButton.setText("Apply");
-				buttonBar.add(applyButton, cc.xy(2, 1));
-			}
-			dialogPane.add(buttonBar, BorderLayout.SOUTH);
-		}
-		contentPane2.add(dialogPane, BorderLayout.CENTER);
-		// JFormDesigner - End of component initialization  //GEN-END:initComponents
-	}
+            //======== contentPane ========
+            {
+                contentPane.setLayout(new FormLayout(
+                    "default, default:grow",
+                    "fill:default:grow"));
 
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	private JPanel dialogPane;
-	private JPanel contentPane;
-	private JLabel label2;
-	private JComboBox startupActionCombo;
-	private JLabel label1;
-	private JTextField tabWidthField;
-	private JPanel buttonBar;
-	private JButton applyButton;
-	// JFormDesigner - End of variables declaration  //GEN-END:variables
+                //======== tabbedPane1 ========
+                {
+
+                    //======== panel1 ========
+                    {
+                        panel1.setLayout(new FormLayout(
+                            new ColumnSpec[] {
+                                new ColumnSpec(Sizes.dluX(10)),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(Sizes.dluX(20)),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(Sizes.dluX(30)),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(Sizes.dluX(10))
+                            },
+                            new RowSpec[] {
+                                new RowSpec(Sizes.dluY(10)),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC
+                            }));
+
+                        //---- label2 ----
+                        label2.setText("At startup:");
+                        panel1.add(label2, cc.xy(3, 3));
+
+                        //---- startupActionCombo ----
+                        startupActionCombo.setModel(new DefaultComboBoxModel(new String[] {
+                            "Create a new document",
+                            "Open the last used document"
+                        }));
+                        panel1.add(startupActionCombo, cc.xywh(5, 3, 3, 1));
+
+                        //---- tabWidthField ----
+                        tabWidthField.setText("8");
+                        panel1.add(tabWidthField, cc.xy(5, 5));
+
+                        //---- label1 ----
+                        label1.setHorizontalAlignment(SwingConstants.RIGHT);
+                        label1.setText("Tab width:");
+                        panel1.add(label1, cc.xy(3, 5));
+
+                        //---- label3 ----
+                        label3.setText("Editor Font:");
+                        panel1.add(label3, cc.xy(3, 7));
+
+                        //---- editorFontCombo ----
+                        editorFontCombo.setActionCommand("editorFontCombo");
+                        panel1.add(editorFontCombo, cc.xywh(5, 7, 3, 1));
+
+                        //---- editorFontSizeSpinner ----
+                        editorFontSizeSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(8), null, new Integer(1)));
+                        panel1.add(editorFontSizeSpinner, cc.xy(9, 7));
+                    }
+                    tabbedPane1.addTab("General", panel1);
+
+                    //======== panel2 ========
+                    {
+                        panel2.setLayout(new FormLayout(
+                            new ColumnSpec[] {
+                                new ColumnSpec(Sizes.dluX(10)),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                FormFactory.DEFAULT_COLSPEC,
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                FormFactory.DEFAULT_COLSPEC,
+                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                                FormFactory.DEFAULT_COLSPEC,
+                                new ColumnSpec(Sizes.dluX(10))
+                            },
+                            new RowSpec[] {
+                                new RowSpec(Sizes.dluY(10)),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC
+                            }));
+
+                        //---- jikesRadio ----
+                        jikesRadio.setActionCommand("jikes");
+                        jikesRadio.setText("jikes");
+                        panel2.add(jikesRadio, cc.xy(5, 5));
+
+                        //---- integratedRadio ----
+                        integratedRadio.setActionCommand("integrated");
+                        integratedRadio.setText("com.sun.tools.javac");
+                        panel2.add(integratedRadio, cc.xywh(5, 9, 2, 1));
+
+                        //---- javacRadio ----
+                        javacRadio.setSelected(true);
+                        javacRadio.setActionCommand("javac");
+                        javacRadio.setText("javac");
+                        panel2.add(javacRadio, cc.xy(5, 3));
+
+                        //---- label4 ----
+                        label4.setText("Path:");
+                        panel2.add(label4, cc.xywh(5, 7, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+                        panel2.add(jikesPathField, cc.xy(6, 7));
+
+                        //---- browseJikesPath ----
+                        browseJikesPath.setText("Browse...");
+                        panel2.add(browseJikesPath, cc.xy(7, 7));
+                    }
+                    tabbedPane1.addTab("Compiler", panel2);
+                }
+                contentPane.add(tabbedPane1, cc.xywh(1, 1, 2, 1));
+            }
+            dialogPane.add(contentPane, BorderLayout.CENTER);
+
+            //======== buttonBar ========
+            {
+                buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
+                buttonBar.setLayout(new FormLayout(
+                    new ColumnSpec[] {
+                        FormFactory.GLUE_COLSPEC,
+                        FormFactory.BUTTON_COLSPEC
+                    },
+                    RowSpec.decodeSpecs("pref")));
+
+                //---- applyButton ----
+                applyButton.setText("Apply");
+                buttonBar.add(applyButton, cc.xy(2, 1));
+            }
+            dialogPane.add(buttonBar, BorderLayout.SOUTH);
+        }
+        contentPane2.add(dialogPane, BorderLayout.CENTER);
+
+        //---- buttonGroup1 ----
+        compilerRadioButtonGroup = new ButtonGroup();
+        compilerRadioButtonGroup.add(jikesRadio);
+        compilerRadioButtonGroup.add(integratedRadio);
+        compilerRadioButtonGroup.add(javacRadio);
+        // JFormDesigner - End of component initialization  //GEN-END:initComponents
+    }
+
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    private JPanel dialogPane;
+    private JPanel contentPane;
+    private JTabbedPane tabbedPane1;
+    private JPanel panel1;
+    private JLabel label2;
+    private JComboBox startupActionCombo;
+    private JTextField tabWidthField;
+    private JLabel label1;
+    private JLabel label3;
+    private JComboBox editorFontCombo;
+    private JSpinner editorFontSizeSpinner;
+    private JPanel panel2;
+    private JRadioButton jikesRadio;
+    private JRadioButton integratedRadio;
+    private JRadioButton javacRadio;
+    private JLabel label4;
+    private JTextField jikesPathField;
+    private JButton browseJikesPath;
+    private JPanel buttonBar;
+    private JButton applyButton;
+    private ButtonGroup compilerRadioButtonGroup;
+    // JFormDesigner - End of variables declaration  //GEN-END:variables
+
+
 }

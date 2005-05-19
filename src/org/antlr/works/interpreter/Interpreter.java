@@ -209,7 +209,7 @@ public class Interpreter implements Runnable {
 
     public void displayNodeInfo(Object node) {
         InterpreterTreeModel.NodeWrapper wrapper = (InterpreterTreeModel.NodeWrapper)node;
-        XJAlert.display("Node info", wrapper.getInfoString());
+        XJAlert.display(editor.getWindowComponent(), "Node info", wrapper.getInfoString());
     }
 
     public void interpret() {

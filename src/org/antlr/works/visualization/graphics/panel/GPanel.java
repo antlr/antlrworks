@@ -121,8 +121,9 @@ public class GPanel implements XJNotificationObserver {
 
     public void createNormalPanel() {
         container.removeAll();
-        container.add(createVisualizationPane(), BorderLayout.CENTER);
         container.add(createControlPane(), BorderLayout.NORTH);
+        container.add(createVisualizationPane(), BorderLayout.CENTER);
+        container.validate();
     }
 
     public void createErrorPanel() {
@@ -132,6 +133,7 @@ public class GPanel implements XJNotificationObserver {
         panel.add(createVisualizationPane(), BorderLayout.CENTER);
         container.add(panel, BorderLayout.CENTER);
         container.add(createControlPane(), BorderLayout.NORTH);
+        container.validate();
     }
 
     private Container createVisualizationPane() {

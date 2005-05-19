@@ -64,7 +64,7 @@ public class MenuExport extends AbstractActions {
             writer.write(text.toString());
             writer.close();
         } catch (IOException e) {
-            XJAlert.display("Error", "Cannot save text file: "+file+"\nError: "+e);
+            XJAlert.display(editor.getWindowComponent(), "Error", "Cannot save text file: "+file+"\nError: "+e);
         }
     }
 

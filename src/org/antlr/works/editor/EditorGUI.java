@@ -2,6 +2,10 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.gview.timer.GTimer;
 import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
+import edu.usfca.xj.appkit.swing.XJTable;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.TextEditorPane;
@@ -49,7 +53,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorGUI implements UndoDelegate {
+public class EditorGUI implements UndoDelegate, XJNotificationObserver {
 
     public EditorWindow editor;
 
@@ -57,7 +61,7 @@ public class EditorGUI implements UndoDelegate {
     public JScrollPane textScrollPane;
 
     public JScrollPane rulesScrollPane;
-    public JTable rulesTable;
+    public XJTable rulesTable;
 
     public JTabbedPane viewTabbedPane;
     public JPanel mainPanel;
@@ -80,6 +84,8 @@ public class EditorGUI implements UndoDelegate {
 
     public void createInterface() {
         Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        r.width *= 0.75;
+        r.height *= 0.75;
         editor.getRootPane().setPreferredSize(r.getSize());
 
         createTextPane();
@@ -90,9 +96,10 @@ public class EditorGUI implements UndoDelegate {
         textScrollPane.setWheelScrollingEnabled(true);
         textScrollPane.setRowHeaderView(gutter);
 
-        rulesTable = new JTable();
+        rulesTable = new XJTable();
         rulesTable.setBorder(null);
         rulesTable.setPreferredScrollableViewportSize(new Dimension(200, 0));
+        rulesTable.setShowGrid(false);
 
         rulesScrollPane = new JScrollPane(rulesTable);
         rulesScrollPane.setBorder(null);
@@ -143,6 +150,12 @@ public class EditorGUI implements UndoDelegate {
         editor.pack();
 
         upDownSplitPane.setDividerLocation(0.5);
+
+        XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
+    }
+
+    public void close() {
+        XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 
     public void createTextPane() {
@@ -150,7 +163,7 @@ public class EditorGUI implements UndoDelegate {
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
 
-        textPane.setFont(new Font("Courier", Font.PLAIN, 12));
+        applyFont();
         textPane.setWordWrap(false);
 
         textPaneListener = new TextPaneListener();
@@ -179,6 +192,10 @@ public class EditorGUI implements UndoDelegate {
                 gutter.setPreferredSize(d);
             }
         });
+    }
+
+    public void applyFont() {
+        textPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
     }
 
     public int getCaretPosition() {
@@ -259,6 +276,13 @@ public class EditorGUI implements UndoDelegate {
 
     public void undoStateDidChange(Undo undo) {
         updateUndoRedo(undo);
+    }
+
+    public void notificationFire(Object source, String name) {
+        if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
+            applyFont();
+            textScrollPane.repaint();
+        }
     }
 
     protected class TabMouseListener extends MouseAdapter {
@@ -404,7 +428,10 @@ public class EditorGUI implements UndoDelegate {
         }
 
         public void focusLost(FocusEvent event) {
-            updateUndoRedo(null);
+            // Update the menu only if the event is not temporary. Temporary
+            // focus lost can be, for example, when opening a menu on Windows/Linux.
+            if(!event.isTemporary())
+                updateUndoRedo(null);
         }
     }
 }

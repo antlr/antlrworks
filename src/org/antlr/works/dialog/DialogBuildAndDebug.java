@@ -64,7 +64,6 @@ public class DialogBuildAndDebug extends XJDialog {
         }
 
         outputPathField.setText(EditorPreferences.getOutputPath());
-        antlrPathField.setText(EditorPreferences.getANTLR3Path());
         rulesCombo.setSelectedItem(EditorPreferences.getStartSymbol());
 
         setDefaultButton(okButton);
@@ -78,28 +77,15 @@ public class DialogBuildAndDebug extends XJDialog {
                 }
             }
         });
-
-        browseANTLRPathButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                if(XJFileChooser.shared().displayChooseDirectory(DialogBuildAndDebug.this)) {
-                    antlrPathField.setText(XJFileChooser.shared().getSelectedFilePath());
-                }
-            }
-        });
     }
 
     public void dialogWillCloseOK() {
         EditorPreferences.setOutputPath(getOutputPath());
-        EditorPreferences.setANTLR3Path(getANTLR3Path());
         EditorPreferences.setStartSymbol(getRule());
     }
 
     public String getOutputPath() {
         return outputPathField.getText();
-    }
-
-    public String getANTLR3Path() {
-        return antlrPathField.getText();
     }
 
     public String getRule() {
@@ -115,9 +101,6 @@ public class DialogBuildAndDebug extends XJDialog {
         label1 = new JLabel();
         outputPathField = new JTextField();
         browseOutputPathButton = new JButton();
-        label3 = new JLabel();
-        antlrPathField = new JTextField();
-        browseANTLRPathButton = new JButton();
         label2 = new JLabel();
         rulesCombo = new JComboBox();
         buttonBar = new JPanel();
@@ -148,8 +131,6 @@ public class DialogBuildAndDebug extends XJDialog {
                     new RowSpec[] {
                         FormFactory.DEFAULT_ROWSPEC,
                         FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
                         FormFactory.DEFAULT_ROWSPEC
                     }));
 
@@ -163,20 +144,11 @@ public class DialogBuildAndDebug extends XJDialog {
                 browseOutputPathButton.setText("Browse...");
                 contentPane.add(browseOutputPathButton, cc.xy(5, 1));
 
-                //---- label3 ----
-                label3.setText("ANTLR 3.0 path:");
-                contentPane.add(label3, cc.xy(1, 3));
-                contentPane.add(antlrPathField, cc.xy(3, 3));
-
-                //---- browseANTLRPathButton ----
-                browseANTLRPathButton.setText("Browse...");
-                contentPane.add(browseANTLRPathButton, cc.xy(5, 3));
-
                 //---- label2 ----
                 label2.setHorizontalAlignment(SwingConstants.RIGHT);
                 label2.setText("Start symbol:");
-                contentPane.add(label2, cc.xy(1, 5));
-                contentPane.add(rulesCombo, cc.xy(3, 5));
+                contentPane.add(label2, cc.xy(1, 3));
+                contentPane.add(rulesCombo, cc.xy(3, 3));
             }
             dialogPane.add(contentPane, BorderLayout.CENTER);
 
@@ -200,7 +172,7 @@ public class DialogBuildAndDebug extends XJDialog {
 
                 if(XJApplication.isMacOS()) {
                     buttonBar.add(cancelButton, cc.xy(2, 1));
-                    buttonBar.add(okButton, cc.xy(4, 1));                                                             
+                    buttonBar.add(okButton, cc.xy(4, 1));
                 } else {
                     buttonBar.add(okButton, cc.xy(2, 1));
                     buttonBar.add(cancelButton, cc.xy(4, 1));
@@ -218,15 +190,13 @@ public class DialogBuildAndDebug extends XJDialog {
     private JLabel label1;
     private JTextField outputPathField;
     private JButton browseOutputPathButton;
-    private JLabel label3;
-    private JTextField antlrPathField;
-    private JButton browseANTLRPathButton;
     private JLabel label2;
     private JComboBox rulesCombo;
     private JPanel buttonBar;
     private JButton okButton;
     private JButton cancelButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
 
 
 }

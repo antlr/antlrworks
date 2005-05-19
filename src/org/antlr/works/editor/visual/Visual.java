@@ -170,7 +170,7 @@ public class Visual {
             writer.write(dot);
             writer.close();
         } catch (IOException e) {
-            XJAlert.display("Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
+            XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
     }
 
@@ -187,7 +187,7 @@ public class Visual {
         try {
             jdot.writeToFile(dotFile);
         } catch (Exception e) {
-            XJAlert.display("Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
+            XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
     }
 
@@ -204,7 +204,7 @@ public class Visual {
         try {
             jdot.writeToFile(dotFile);
         } catch (Exception e) {
-            XJAlert.display("Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
+            XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
     }
 
@@ -214,7 +214,7 @@ public class Visual {
 
     public void saveAsImage() {
         if(!canSaveImage()) {
-            XJAlert.display("Error", "Cannot save rule as image because there is no rule selected.");
+            XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save rule as image because there is no rule selected.");
             return;
         }
 
@@ -230,7 +230,7 @@ public class Visual {
             try {
                 ImageIO.write(panel.getImageOfView(), file.substring(file.lastIndexOf(".")+1), new File(file));
             } catch (IOException e) {
-                XJAlert.display("Error", "Image \""+file+"\" cannot be saved because:\n"+e);
+                XJAlert.display(parent.getJavaComponent(), "Error", "Image \""+file+"\" cannot be saved because:\n"+e);
             }
         }
     }

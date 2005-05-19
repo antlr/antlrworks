@@ -1,5 +1,6 @@
 package org.antlr.works.editor.rules;
 
+import edu.usfca.xj.appkit.swing.XJTable;
 import org.antlr.works.editor.swing.KeyBindings;
 import org.antlr.works.editor.tool.TActions;
 import org.antlr.works.parser.Parser;
@@ -15,6 +16,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -62,14 +64,17 @@ public class Rules implements ThreadedParserObserver {
     private boolean selectNextRule = false;
 
     private JTextPane textPane;
-    private JTable rulesTable;
+    private XJTable rulesTable;
+
+    private DragSource ds;
+    private StringSelection transferable;
 
     private AbstractTableModel rulesTableModel;
 
     private static final int COLUMN_RULE_NAME = 0;
     private static final int COLUMN_RULE_STATUS = 1;
 
-    public Rules(ThreadedParser parser, JTextPane textPane, JTable rulesTable) {
+    public Rules(ThreadedParser parser, JTextPane textPane, XJTable rulesTable) {
         this.parser = parser;
         this.textPane = textPane;
         this.rulesTable = rulesTable;
@@ -140,7 +145,8 @@ public class Rules implements ThreadedParserObserver {
 
         rulesTable.getColumnModel().getColumn(COLUMN_RULE_STATUS).setMaxWidth(20);
 
-        rulesTable.setDragEnabled(true);
+        ds = new DragSource();
+        DragGestureRecognizer dgr = ds.createDefaultDragGestureRecognizer(rulesTable, DnDConstants.ACTION_MOVE, new TableDragGestureListener());
         DropTarget dt = new DropTarget(rulesTable, new TableDropListener());
     }
 
@@ -360,7 +366,33 @@ public class Rules implements ThreadedParserObserver {
             return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
         }
     }
-    
+
+    public class TableDragGestureListener implements DragGestureListener {
+
+        public void dragGestureRecognized(DragGestureEvent event) {
+            transferable = new StringSelection(String.valueOf(rulesTable.getSelectedRow()));
+            ds.startDrag(event, DragSource.DefaultMoveDrop, transferable, new TableDragSourceListener());
+        }
+    }
+
+    public class TableDragSourceListener implements DragSourceListener {
+
+        public void dragEnter(DragSourceDragEvent event) {
+        }
+
+        public void dragOver(DragSourceDragEvent event) {
+        }
+
+        public void dropActionChanged(DragSourceDragEvent event) {
+        }
+
+        public void dragExit(DragSourceEvent event) {
+        }
+
+        public void dragDropEnd(DragSourceDropEvent event) {
+        }
+    }
+
     public class TableDropListener implements DropTargetListener {
 
         int oldSelectedRow = -1;

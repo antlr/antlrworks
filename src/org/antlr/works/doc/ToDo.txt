@@ -1,25 +1,33 @@
 
 Now:
 
-- still need to know ANTLR 3 path ?
+- verify all erase file on the disk
+
+- linux: cannot use ctrl-k to hide action because it is used for emacs binding
+- windows: short-cut for Debug command doesn't work
 
 - performance of debugger (when playing all events from start to end - takes too much time)
 - remove all ToDos
 
-- problems with SD: a : ((A {;}| B)* D (B | {;} "hello, world!")*)*;
-- problem when more than one same LT between mark/rewind
-
 - optimize state arround external ref (negative state should be removed - see if it is always possible)
 
+Terence:
+- problems with SD: a : ((A)*)*;
+
 Test
+- linux: remove grid lines in rules/tokens table
 - Windows/Linux: short-cuts, gutter position
+- success dialog after generation: does not stay modal on Linux (see if parent)
 - check copy/cut keyboard filter on Windows/Linux
+- windows/linux: compiler using exec()
+- windows/linux: check preferences font & size (see if default is ugly)
 
 Issues:
 - TextEditorPane: wrapping doesn't always works on Mac OS X
 - undo: rename + addition -> redo doesn't show "rename" but "addition"
 
 Later:
+- auto-scrolling when following ambiguous paths
 - sort content of auto-completion menu
 - sort content of rules/tokens table
 - can change L&F
@@ -33,4 +41,4 @@ Later:
 - split list between tokens (MAJ) and rules (min)
 - log file (check in preferences)
 
-Terence:
+- problem when more than one same LT between mark/rewind

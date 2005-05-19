@@ -42,8 +42,8 @@ public class SplashScreen extends JWindow {
 
 	public SplashScreen() {
 		initComponents();
-        this.pack();
-        this.setLocationRelativeTo(null);
+        pack();
+        setLocationRelativeTo(null);
 	}
 
     // !!! Don't forget to update the icon path with a call to the IconManager

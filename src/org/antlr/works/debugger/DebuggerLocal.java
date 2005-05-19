@@ -12,8 +12,7 @@ import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.code.CodeGenerate;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 
 /*
@@ -67,7 +66,6 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
     protected String fileRemoteParser;
     protected String fileRemoteParserInputText;
 
-    protected String classPathOfANTLR3;
     protected String startRule;
 
     protected Process remoteParserProcess;
@@ -93,15 +91,10 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
         this.progress = new DialogProgress(debugger.editor);
 
         setOutputPath(EditorPreferences.getOutputPath());
-        setANTLR3Path(EditorPreferences.getANTLR3Path());
     }
 
     public void setOutputPath(String path) {
         codeGenerator.setOutputPath(path);
-    }
-
-    public void setANTLR3Path(String path) {
-        this.classPathOfANTLR3 = path;
     }
 
     public void setStartRule(String rule) {
@@ -161,7 +154,7 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 progress.close();
-                if(build) {
+                if(build && success) {
                     success = askUserForInputText();
                     if(success)
                         success = generateGlueCode();
@@ -243,7 +236,7 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
             StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup");
             StringTemplate glueCode = group.getInstanceOf(remoteParserTemplatePath+remoteParserTemplateName);
             glueCode.setAttribute(ST_ATTR_CLASSNAME, remoteParserClassName);
-            glueCode.setAttribute(ST_ATTR_INPUT_FILE, fileRemoteParserInputText);
+            glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(fileRemoteParserInputText));
             glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(false));
             glueCode.setAttribute(ST_ATTR_JAVA_LEXER, codeGenerator.getGeneratedClassName(true));
             glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
@@ -252,7 +245,7 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
 
         } catch(Exception e) {
             e.printStackTrace();
-            XJAlert.display("Generate Error", "Cannot launch the local debugger.\nException while generating the glue-code: "+e);
+            XJAlert.display(debugger.editor.getWindowComponent(), "Generate Error", "Cannot launch the local debugger.\nException while generating the glue-code: "+e);
             return false;
         }
         return true;
@@ -260,7 +253,7 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
 
     public boolean generateCode() {
         if(false && new File(fileParser).exists() && new File(fileParser).exists() && new File(fileRemoteParser).exists()) {
-            switch(XJAlert.displayAlert("Debugger", "Generated code files already exists. Do you want to continue, re-generate the grammar or cancel ?",
+            switch(XJAlert.displayAlert(debugger.editor.getWindowComponent(), "Debugger", "Generated code files already exists. Do you want to continue, re-generate the grammar or cancel ?",
                     "Cancel", "Re-generate", "Continue", 2))
             {
                 case 0: // cancel
@@ -282,7 +275,7 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
             codeGenerator.generate(true);  // debug
         } catch (Exception e) {
             e.printStackTrace();            
-            XJAlert.display("Generate Error", "Cannot launch the local debugger.\nException while generating code: "+e);
+            XJAlert.display(debugger.editor.getWindowComponent(), "Generate Error", "Cannot launch the local debugger.\nException while generating code: "+e);
             return false;
         }
         return true;
@@ -292,7 +285,7 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
 
         File f = new File(outputFileDir);
         if(false && f.exists()) {
-            switch(XJAlert.displayAlert("Debugger", "Compiled code files already exists. Do you want to continue, re-compile or cancel ?",
+            switch(XJAlert.displayAlert(debugger.editor.getWindowComponent(), "Debugger", "Compiled code files already exists. Do you want to continue, re-compile or cancel ?",
                     "Cancel", "Re-compile", "Continue", 2))
             {
                 case 0: // cancel
@@ -313,25 +306,54 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
     }
 
     public boolean compile() {
-        String[] args = new String[] { "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
-        int result = com.sun.tools.javac.Main.compile(args);
+        int result = 0;
+        try {
+            String compiler = EditorPreferences.getCompiler();
+            String[] args;
+
+            if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JAVAC)) {
+                args = new String[] { "javac", "-classpath",  System.getProperty("java.class.path"), "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
+                Process p = Runtime.getRuntime().exec(args);
+                new StreamWatcher(p.getErrorStream(), "Compiler").start();
+                new StreamWatcher(p.getInputStream(), "Compiler").start();
+                result = p.waitFor();
+            } else if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JIKES)) {
+                String jikesPath = XJUtils.concatPath(EditorPreferences.getJikesPath(), "jikes");
+                args = new String[] { jikesPath, "-classpath",  System.getProperty("java.class.path"), "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
+                Process p = Runtime.getRuntime().exec(args);
+                new StreamWatcher(p.getErrorStream(), "Compiler").start();
+                new StreamWatcher(p.getInputStream(), "Compiler").start();
+                result = p.waitFor();
+            } else if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_INTEGRATED)) {
+                args = new String[] { "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
+                result = com.sun.tools.javac.Main.compile(args);
+            }
+
+        } catch(Error e) {
+            XJAlert.display(debugger.editor.getWindowComponent(), "Compiler Error", "An error occurred:\n"+e);
+            return false;
+        } catch(Exception e) {
+            XJAlert.display(debugger.editor.getWindowComponent(), "Compiler Error", "An exception occurred:\n"+e);
+            return false;
+        }
         if(result != 0) {
-            XJAlert.display("Compiler Error", "Cannot launch the local debugger.\nCompiler error: "+result);
+            XJAlert.display(debugger.editor.getWindowComponent(), "Compiler Error", "Cannot launch the local debugger.\nCompiler error: "+result);
             return false;
         }
         return true;
     }
 
     public boolean launchRemoteParser() {
-        String classPathOfGeneratedCode = outputFileDir;
-        String classPath = classPathOfGeneratedCode+":"+classPathOfANTLR3+":.";
+        String classPath = outputFileDir+File.pathSeparatorChar+System.getProperty("java.class.path")+File.pathSeparatorChar+".";
 
         try {
             // Use an array rather than a single string because white-space
             // are not correctly handled in a single string (why?)
             remoteParserProcess = Runtime.getRuntime().exec(new String[] { "java", "-classpath", classPath, remoteParserClassName});
+            new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher").start();
+            new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher").start();
         } catch (IOException e) {
-            XJAlert.display("Runtime Error", "Cannot launch the local debugger.\nCannot launch the remote parser: "+e);
+            XJAlert.display(debugger.editor.getWindowComponent(), "Runtime Error", "Cannot launch the local debugger.\nCannot launch the remote parser: "+e);
             return false;
         }
 
@@ -345,6 +367,28 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
         }
 
         return true;
+    }
+
+    private class StreamWatcher extends Thread {
+
+        InputStream is;
+        String type;
+
+        StreamWatcher(InputStream is, String type) {
+            this.is = is;
+            this.type = type;
+        }
+
+        public void run() {
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                String line=null;
+                while ( (line = br.readLine()) != null)
+                    System.out.println(type + ">" + line);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
     }
 
 }

@@ -1,0 +1,6 @@
+Windows 2000:
+
+- create user environment variables:
+    PATH = c:\j2sdk1.4.2_08\bin
+    CLASSPATH = .;c:\<installpath>\antlr.jar;c:\<installpath>\stringtemplate.jar;c:\<installpath>\antlrworks.jar
+ 

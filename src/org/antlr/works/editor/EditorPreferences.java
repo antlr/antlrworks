@@ -36,16 +36,33 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorPreferences {
 
+    // General
     public static final String PREF_STARTUP_ACTION = "PREF_STARTUP_ACTION";
     public static final String PREF_TAB_WIDTH = "PREF_TAB_WIDTH";
-    public static final String PREF_OUTPUT_PATH = "KEY_OUTPUT_PATH";
-    public static final String PREF_ANTLR3_PATH = "KEY_ANTLR3_PATH";
-    public static final String PREF_START_SYMBOL = "KEY_START_SYMBOL";
+    public static final String PREF_EDITOR_FONT = "PREF_EDITOR_FONT";
+    public static final String PREF_EDITOR_FONT_SIZE = "PREF_EDITOR_FONT_SIZE";
+
+    public static final int DEFAULT_TAB_WIDTH = 8;
+    public static final String DEFAULT_EDITOR_FONT = "Courier New";
+    public static final int DEFAULT_EDITOR_FONT_SIZE = 12;
 
     public static final int STARTUP_NEW_DOC = 0;
     public static final int STARTUP_OPEN_LAST_DOC = 1;
 
-    public static final int DEFAULT_TAB_WIDTH = 8;
+    // Compiler
+    public static final String PREF_JIKES_PATH = "PREF_JIKES_PATH";
+    public static final String PREF_COMPILER = "PREF_COMPILER";
+
+    public static final String DEFAULT_JIKES_PATH = "";
+    public static final String DEFAULT_COMPILER = "javac";
+
+    public static final String COMPILER_JAVAC = "javac";
+    public static final String COMPILER_JIKES = "jikes";
+    public static final String COMPILER_INTEGRATED = "integrated";
+
+    // Other
+    public static final String PREF_OUTPUT_PATH = "KEY_OUTPUT_PATH";
+    public static final String PREF_START_SYMBOL = "KEY_START_SYMBOL";
 
     public static void setOutputPath(String path) {
         getPreferences().setString(PREF_OUTPUT_PATH, path);
@@ -53,14 +70,6 @@ public class EditorPreferences {
 
     public static String getOutputPath() {
         return getPreferences().getString(PREF_OUTPUT_PATH, "/tmp/antlrworks/");
-    }
-
-    public static void setANTLR3Path(String path) {
-        getPreferences().setString(PREF_ANTLR3_PATH, path);
-    }
-
-    public static String getANTLR3Path() {
-        return getPreferences().getString(PREF_ANTLR3_PATH, "");
     }
 
     public static void setStartSymbol(String startSymbol) {
@@ -77,6 +86,26 @@ public class EditorPreferences {
 
     public static int getTabWidth() {
         return getPreferences().getInt(PREF_TAB_WIDTH, DEFAULT_TAB_WIDTH);
+    }
+
+    public static String getEditorFont() {
+        return getPreferences().getString(PREF_EDITOR_FONT, DEFAULT_EDITOR_FONT);
+    }
+
+    public static int getEditorFontSize() {
+        return getPreferences().getInt(PREF_EDITOR_FONT_SIZE, DEFAULT_EDITOR_FONT_SIZE);
+    }
+
+    public static void setJikesPath(String path) {
+        getPreferences().setString(PREF_JIKES_PATH, path);
+    }
+
+    public static String getJikesPath() {
+        return getPreferences().getString(PREF_JIKES_PATH, DEFAULT_JIKES_PATH);
+    }
+
+    public static String getCompiler() {
+        return getPreferences().getString(PREF_COMPILER, DEFAULT_COMPILER);
     }
 
     public static XJPreferences getPreferences() {

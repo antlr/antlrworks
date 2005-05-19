@@ -1,5 +1,7 @@
 package org.antlr.works.editor;
 
+import java.awt.*;
+
 /*
 
 [The "BSD licence"]
@@ -35,4 +37,5 @@ public interface EditorProvider {
     public void changeDone();
     public String getText();
     public String getPlainText();
+    public Component getWindowComponent();
 }

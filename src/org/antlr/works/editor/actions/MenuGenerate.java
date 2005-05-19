@@ -60,7 +60,7 @@ public class MenuGenerate extends AbstractActions {
 
     public boolean checkLanguage() {
         if(!isKnownLanguage()) {
-            XJAlert.display("Error", "Can only generate grammar for Java language");
+            XJAlert.display(editor.getWindowComponent(), "Error", "Can only generate grammar for Java language");
             return false;
         } else
             return true;
@@ -77,7 +77,7 @@ public class MenuGenerate extends AbstractActions {
 
     public void showRuleGeneratedCode() {
         if(editor.getCurrentRule() == null)
-            XJAlert.display("Error", "A rule must be selected first.");
+            XJAlert.display(editor.getWindowComponent(), "Error", "A rule must be selected first.");
         else
             showGeneratedCode(editor.getCurrentRule().name, false);
     }
@@ -87,7 +87,7 @@ public class MenuGenerate extends AbstractActions {
             return;
 
         if(!generateCode.isGeneratedTextFileExisting(lexer)) {
-            XJAlert.display("Error", "No generated files found. Please generate the file before perform this action.");
+            XJAlert.display(editor.getWindowComponent(), "Error", "No generated files found. Please generate the file before perform this action.");
             return;
         }
 
@@ -109,7 +109,7 @@ public class MenuGenerate extends AbstractActions {
                 text = text.substring(startIndex, stopIndex);
                 title = rule;
             } else {
-                XJAlert.display("Error", "Cannot find markers for rule \""+rule+"\"");
+                XJAlert.display(editor.getWindowComponent(), "Error", "Cannot find markers for rule \""+rule+"\"");
                 return;
             }
         }

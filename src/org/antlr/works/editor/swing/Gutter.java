@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class Gutter extends JComponent {
 
-    public static final int MARKER_HEIGHT = 12;
+    public static final int MARKER_HEIGHT = 6;
 
     protected Map bps = new HashMap();
     protected List rules = null;
@@ -109,7 +109,7 @@ public class Gutter extends JComponent {
         } catch (BadLocationException e) {
             return 0;
         }
-        return lineRectangle.y;
+        return lineRectangle.y+lineRectangle.height*0.5;
     }
 
     public void paintComponent(Graphics g) {
@@ -145,7 +145,7 @@ public class Gutter extends JComponent {
             if(bp != null && bp.booleanValue())
                 continue;
 
-            g.fillRect(r.x+r.width-(MARKER_HEIGHT-1), (int) (rule_y+(MARKER_HEIGHT*0.5-4)), 8, 8);
+            g.fillRect(r.x+r.width-(MARKER_HEIGHT+3), (int) (rule_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT);
         }
 
         g.setColor(Color.red);
@@ -158,7 +158,7 @@ public class Gutter extends JComponent {
                 continue;
 
             if(bp.booleanValue()) {
-                g.fillArc(r.x+r.width-(MARKER_HEIGHT-1), (int) (line_y+(MARKER_HEIGHT*0.5-4)), 8, 8, 0, 360);
+                g.fillArc(r.x+r.width-(MARKER_HEIGHT+3), (int) (line_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT, 0, 360);
             }
         }
     }

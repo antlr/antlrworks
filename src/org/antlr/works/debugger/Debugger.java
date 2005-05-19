@@ -112,7 +112,6 @@ public class Debugger {
         treeStackSplitPane.setLeftComponent(createTreePanel());
         treeStackSplitPane.setRightComponent(createListInfoPanel());
         treeStackSplitPane.setContinuousLayout(true);
-        treeStackSplitPane.setPreferredSize(new Dimension(400, 0));
         treeStackSplitPane.setOneTouchExpandable(true);
 
         JSplitPane splitPane = new JSplitPane();
@@ -121,7 +120,6 @@ public class Debugger {
         splitPane.setLeftComponent(createInputPanel());
         splitPane.setRightComponent(treeStackSplitPane);
         splitPane.setContinuousLayout(true);
-        splitPane.setPreferredSize(new Dimension(400, 0));
         splitPane.setOneTouchExpandable(true);
 
         panel.add(createControlPanel(), BorderLayout.NORTH);
@@ -202,7 +200,6 @@ public class Debugger {
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
         treeScrollPane.setWheelScrollingEnabled(true);
-        treeScrollPane.setPreferredSize(new Dimension(600, 0));
 
         Box box = Box.createHorizontalBox();
         box.add(Box.createHorizontalGlue());
@@ -212,6 +209,7 @@ public class Debugger {
         JPanel treePanel = new JPanel(new BorderLayout());
         treePanel.add(treeScrollPane, BorderLayout.CENTER);
         treePanel.add(box, BorderLayout.SOUTH);
+        tree.setPreferredSize(new Dimension(400, 0));
 
         return treePanel;
     }
@@ -424,7 +422,7 @@ public class Debugger {
 
     public void displayNodeInfo(Object node) {
         DebuggerTreeNode treeNode = (DebuggerTreeNode)node;
-        XJAlert.display("Node info", treeNode.getInfoString());
+        XJAlert.display(editor.getWindowComponent(), "Node info", treeNode.getInfoString());
     }
 
     public List getRules() {
@@ -437,14 +435,12 @@ public class Debugger {
 
     public void launchLocalDebugger(boolean build) {
         debuggerLocal.setOutputPath(EditorPreferences.getOutputPath());
-        debuggerLocal.setANTLR3Path(EditorPreferences.getANTLR3Path());
         debuggerLocal.setStartRule(EditorPreferences.getStartSymbol());
 
         if(build || !debuggerLocal.isRequiredFilesExisting()) {
             DialogBuildAndDebug dialog = new DialogBuildAndDebug(this);
             if(dialog.runModal() == XJDialog.BUTTON_OK) {
                 debuggerLocal.setOutputPath(dialog.getOutputPath());
-                debuggerLocal.setANTLR3Path(dialog.getANTLR3Path());
                 debuggerLocal.setStartRule(dialog.getRule());
                 debuggerLocal.prepareAndLaunch(true, true);
             }
@@ -467,12 +463,12 @@ public class Debugger {
 
     public void debuggerLaunch(String address, int port) {
         if(!debuggerLaunchGrammar()) {
-            XJAlert.display("Error", "Cannot launch the debugger.\nException while parsing grammar.");
+            XJAlert.display(editor.getWindowComponent(), "Error", "Cannot launch the debugger.\nException while parsing grammar.");
             return;
         }
 
         if(!recorder.start(address, port)) {
-            XJAlert.display("Connection Error", "Cannot launch the debugger.\nTime-out waiting to connect to the remote parser.");
+            XJAlert.display(editor.getWindowComponent(), "Connection Error", "Cannot launch the debugger.\nTime-out waiting to connect to the remote parser.");
             return;
         }
 
@@ -496,7 +492,7 @@ public class Debugger {
 
     public void debuggerStop(boolean force) {
         if(recorder.getStatus() == DebuggerRecorder.STATUS_STOPPING) {
-            if(force || XJAlert.displayAlertYESNO("Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES)
+            if(force || XJAlert.displayAlertYESNO(editor.getWindowComponent(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES)
                 recorder.forceStop();
         } else
             recorder.stop();
