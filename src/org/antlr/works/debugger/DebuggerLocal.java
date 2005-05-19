@@ -155,11 +155,7 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
             public void run() {
                 progress.close();
                 if(build && success) {
-                    success = askUserForInputText();
-                    if(success)
-                        success = generateGlueCode();
-                    if(success)
-                        success = launchRemoteParser();
+                    success = askUserForInputText() && generateGlueCode() && launchRemoteParser();
                 }
                 debugger.debuggerLocalDidRun(success);
             }

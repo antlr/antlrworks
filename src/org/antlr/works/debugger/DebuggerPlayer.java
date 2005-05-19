@@ -53,6 +53,7 @@ public class DebuggerPlayer {
     protected DebuggerInputText inputText;
 
     protected int resyncing = 0;
+    protected int eventPlayedCount = 0;
 
     public DebuggerPlayer(Debugger debugger) {
         this.debugger = debugger;
@@ -111,19 +112,23 @@ public class DebuggerPlayer {
         lookAheadTextStack.clear();
 
         resyncing = 0;
+        eventPlayedCount = 0;
     }
 
-    public void playEvents(List events) {
-        resetPlayEvents(false);
+    public void playEvents(List events, boolean reset) {
+        if(reset)
+            resetPlayEvents(false);
 
-        Iterator iterator = events.iterator();
-        while(iterator.hasNext()) {
+        for(int i=eventPlayedCount; i<events.size(); i++) {
             try {
-                playEvent((DebuggerEvent)iterator.next(), !iterator.hasNext());
+                DebuggerEvent event = (DebuggerEvent)events.get(i);
+                boolean lastEvent = i == events.size()-1;
+                playEvent(event, lastEvent);
             } catch(Exception e) {
                 e.printStackTrace();
             }
         }
+        eventPlayedCount = events.size();        
     }
 
     public void playEvent(DebuggerEvent event, boolean lastEvent) {

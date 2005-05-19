@@ -1,15 +1,7 @@
 
 Now:
 
-- verify all erase file on the disk
-
-- linux: cannot use ctrl-k to hide action because it is used for emacs binding
-- windows: short-cut for Debug command doesn't work
-
-- performance of debugger (when playing all events from start to end - takes too much time)
-- remove all ToDos
-
-- optimize state arround external ref (negative state should be removed - see if it is always possible)
+- geographical info
 
 Terence:
 - problems with SD: a : ((A)*)*;
@@ -27,6 +19,7 @@ Issues:
 - undo: rename + addition -> redo doesn't show "rename" but "addition"
 
 Later:
+- optimize state arround external ref (negative state should be removed - see if it is always possible)
 - auto-scrolling when following ambiguous paths
 - sort content of auto-completion menu
 - sort content of rules/tokens table

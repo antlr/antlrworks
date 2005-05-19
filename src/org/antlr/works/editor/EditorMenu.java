@@ -180,10 +180,11 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu = new XJMenu();
         menu.setTitle("Action");
 
-        menu.addItem(new XJMenuItem("Hide Action", 'k', KeyEvent.VK_K, MI_HIDE_ACTION, this));
+        menu.addItem(new XJMenuItem("Hide Action", '-', KeyEvent.VK_MINUS, MI_HIDE_ACTION, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show All Actions", MI_SHOW_ALL_ACTION, this));
-        menu.addItem(new XJMenuItem("Hide All Actions", MI_HIDE_ALL_ACTION, this));
+
+        menu.addItem(new XJMenuItem("Show All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_SHOW_ALL_ACTION, this));
+        menu.addItem(new XJMenuItem("Hide All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_HIDE_ALL_ACTION, this));
 
         menubar.addCustomMenu(menu);
 
@@ -204,12 +205,12 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
         menu = new XJMenu();
         menu.setTitle("Run");
-        menu.addItem(new XJMenuItem("Run Interpreter", 'r', KeyEvent.VK_R, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_RUN_INTERPRETER, this));
+        menu.addItem(new XJMenuItem("Run Interpreter", 'i', KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
         menu.addSeparator();
-        menu.addItem(menuItemDebug = new XJMenuItem("Debug...", 'd', KeyEvent.VK_D, MI_DEBUG, this));
-        menu.addItem(menuItemBuildAndDebug = new XJMenuItem("Build and Debug...", 'd', KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_BUILD_AND_DEBUG, this));
+        menu.addItem(menuItemDebug = new XJMenuItem("Debug...", 'd', KeyEvent.VK_F9, MI_DEBUG, this));
+        menu.addItem(menuItemBuildAndDebug = new XJMenuItem("Build and Debug...", 'b', KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
         menu.addSeparator();
-        menu.addItem(menuItemDebugRemote = new XJMenuItem("Debug Remote...", MI_DEBUG_REMOTE, this));
+        menu.addItem(menuItemDebugRemote = new XJMenuItem("Debug Remote...", 'g', KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
 
         menubar.addCustomMenu(menu);
     }

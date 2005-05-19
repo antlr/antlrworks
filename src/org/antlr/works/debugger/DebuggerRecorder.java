@@ -92,7 +92,7 @@ public class DebuggerRecorder {
     
     public synchronized List getCurrentEvents() {
         if(events.size() == 0)
-            return events;
+            return (List)events.clone();
 
         int toIndex = position+1;
         if(toIndex >= events.size())
@@ -146,12 +146,12 @@ public class DebuggerRecorder {
 
     public void stepBackward() {
         if(stepMove(-1))
-            playEvents();
+            playEvents(true);
     }
 
     public void stepForward() {
         if(stepMove(1))
-            playEvents();
+            playEvents(false);
         else
             threadNotify();
     }
@@ -181,12 +181,12 @@ public class DebuggerRecorder {
 
     public void goToStart() {
         position = 0;
-        playEvents();
+        playEvents(true);
     }
 
     public void goToEnd() {
         setPositionToEnd();
-        playEvents();
+        playEvents(false);
     }
 
     public boolean start(String address, int port) {
@@ -262,7 +262,7 @@ public class DebuggerRecorder {
             if(event.type == DebuggerEvent.TERMINATE) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        playEvents();
+                        playEvents(false);
                     }
                 });
                 debuggerReceivedTerminateEvent = true;
@@ -289,7 +289,7 @@ public class DebuggerRecorder {
     public synchronized void breaksOnEvent() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                playEvents();
+                playEvents(false);
             }
         });
 
@@ -300,8 +300,8 @@ public class DebuggerRecorder {
         }
     }
 
-    protected synchronized void playEvents() {
-        debugger.playEvents(getCurrentEvents());
+    protected synchronized void playEvents(boolean reset) {
+        debugger.playEvents(getCurrentEvents(), reset);
     }
 
     protected class EventListener implements DebugEventListener {

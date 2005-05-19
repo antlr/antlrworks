@@ -1,4 +1,9 @@
 Posted on 05/19/05
+- changed short-cuts for hiding action to Command-Minus (and with shift to hide/show all)
+- changed short-cuts for interpreter and debugger
+- improved speed of debugger when stepping forward (not reset)
+ 
+Posted on 05/19/05
 - new editor font and size preferences
 - new compiler preferences (javac or jikes)
 - changed the default font of the editor to "Courier New" (better appearance on Windows)

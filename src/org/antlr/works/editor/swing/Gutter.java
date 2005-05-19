@@ -57,8 +57,6 @@ public class Gutter extends JComponent {
 
         this.textPane = textPane;
 
-        setFont(textPane.getFont());
-
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 Point m = e.getPoint();

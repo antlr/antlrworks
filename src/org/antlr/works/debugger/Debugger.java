@@ -563,8 +563,8 @@ public class Debugger {
         return index+(c-1);
     }
 
-    public void playEvents(List events) {
-        player.playEvents(events);
+    public void playEvents(List events, boolean reset) {
+        player.playEvents(events, reset);
     }
 
     public void pushRule(String ruleName) {
