@@ -5,6 +5,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.util.IconManager;
+import org.antlr.works.util.Statistics;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;
 import org.antlr.works.visualization.graphics.path.GPathGroup;
@@ -389,6 +390,8 @@ public class GPanel implements XJNotificationObserver {
         button.setSelected(context.skin instanceof NFASkin);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
+                Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SD_NFA);
+
                 JCheckBox button = (JCheckBox)event.getSource();
                 if(button.isSelected())
                     context.setSkin(new NFASkin());

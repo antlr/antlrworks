@@ -6,6 +6,7 @@ import org.antlr.works.dialog.DialogGenerate;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.code.CodeDisplay;
 import org.antlr.works.editor.code.CodeGenerate;
+import org.antlr.works.util.Statistics;
 
 /*
 
@@ -55,6 +56,7 @@ public class MenuGenerate extends AbstractActions {
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
             generateCode.setOutputPath(dialog.getOutputPath());
             generateCode.generateInThread(editor, true);
+            Statistics.shared().recordEvent(Statistics.EVENT_GENERATE_CODE);
         }
     }
 
@@ -73,13 +75,16 @@ public class MenuGenerate extends AbstractActions {
 
     public void showGeneratedCode(boolean lexer) {
         showGeneratedCode(null, lexer);
+        Statistics.shared().recordEvent(lexer?Statistics.EVENT_SHOW_LEXER_GENERATED_CODE:Statistics.EVENT_SHOW_PARSER_GENERATED_CODE);                                
     }
 
     public void showRuleGeneratedCode() {
         if(editor.getCurrentRule() == null)
             XJAlert.display(editor.getWindowComponent(), "Error", "A rule must be selected first.");
-        else
+        else {
             showGeneratedCode(editor.getCurrentRule().name, false);
+            Statistics.shared().recordEvent(Statistics.EVENT_SHOW_RULE_GENERATED_CODE);
+        }
     }
 
     public void showGeneratedCode(String rule, boolean lexer) {

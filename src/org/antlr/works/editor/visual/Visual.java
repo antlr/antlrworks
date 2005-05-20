@@ -7,6 +7,7 @@ import org.antlr.tool.DOTGenerator;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.util.DotGenerator;
+import org.antlr.works.util.Statistics;
 import org.antlr.works.visualization.fa.FAFactory;
 import org.antlr.works.visualization.fa.FAState;
 import org.antlr.works.visualization.grammar.GrammarEngine;
@@ -172,6 +173,8 @@ public class Visual {
         } catch (IOException e) {
             XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
+
+        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_ANTLRNFA_DOT);
     }
 
     public void saveOptimizedNFA2DOT(Parser.Rule rule) {
@@ -189,6 +192,8 @@ public class Visual {
         } catch (Exception e) {
             XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
+
+        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_OPTIMIZEDNFA_DOT);
     }
 
     public void saveRawNFA2DOT(Parser.Rule rule) {
@@ -206,6 +211,8 @@ public class Visual {
         } catch (Exception e) {
             XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
+
+        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_RAWNFA_DOT);
     }
 
     public boolean canSaveImage() {
@@ -232,6 +239,7 @@ public class Visual {
             } catch (IOException e) {
                 XJAlert.display(parent.getJavaComponent(), "Error", "Image \""+file+"\" cannot be saved because:\n"+e);
             }
+            Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_RULE_IMAGE);
         }
     }
 

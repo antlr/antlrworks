@@ -7,6 +7,7 @@ import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
 import org.antlr.works.util.IconManager;
+import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -434,6 +435,8 @@ public class Rules implements ThreadedParserObserver {
                 rulesTable.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
                 return;
             }
+
+            Statistics.shared().recordEvent(Statistics.EVENT_DROP_RULE);
 
             event.acceptDrop(DnDConstants.ACTION_MOVE);
 

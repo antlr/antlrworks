@@ -5,6 +5,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
+import org.antlr.works.util.Statistics;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

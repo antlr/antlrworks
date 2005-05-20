@@ -96,6 +96,10 @@ public class IDE implements XJApplicationDelegate {
         }
     }
 
+    public void appShowHelp() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_HELP);
+    }
+
     public void appWillTerminate() {
         Statistics.shared().close();
     }

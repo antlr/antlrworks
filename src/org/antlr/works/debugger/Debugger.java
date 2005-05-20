@@ -158,6 +158,7 @@ public class Debugger {
             public void actionPerformed(ActionEvent e) {
                 player.inputText.setDrawTokensBox(!player.inputText.isDrawTokensBox());
                 textPane.repaint();
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
             }
         });
 
@@ -224,6 +225,7 @@ public class Debugger {
         displayEventButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 infoList.setModel(eventListModel);
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_SHOW_EVENTS_LIST);
             }
         });
 
@@ -232,6 +234,7 @@ public class Debugger {
         displayStackButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 infoList.setModel(stackListModel);
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_SHOW_RULES_STACK);
             }
         });
 
@@ -288,6 +291,7 @@ public class Debugger {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 debuggerStop(false);
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STOP);
             }
         });
         return button;
@@ -299,6 +303,7 @@ public class Debugger {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 recorder.stepBackward();
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_BACKWARD);
             }
         });
         return button;
@@ -310,6 +315,7 @@ public class Debugger {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 recorder.stepForward();
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_FORWARD);
             }
         });
         return button;
@@ -323,6 +329,7 @@ public class Debugger {
             public void actionPerformed(ActionEvent event) {
                 restorePreviousGrammarAttributeSet();
                 recorder.goToStart();
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_START);
             }
         });
         return button;
@@ -335,6 +342,7 @@ public class Debugger {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 recorder.goToEnd();
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_END);
             }
         });
         return button;

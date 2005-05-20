@@ -1,5 +1,7 @@
 package org.antlr.works.editor.swing;
 
+import org.antlr.works.util.Statistics;
+
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.text.BadLocationException;
@@ -197,6 +199,8 @@ public class AutoCompletionMenu extends JWindow {
 
     public void showAutoCompleteMenu(int index, List names, List words) {
         Rectangle rect = null;
+
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_AUTO_COMPLETION_MENU);
 
         try {
             rect = textComponent.getUI().modelToView(textComponent, index);

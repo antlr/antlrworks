@@ -10,6 +10,7 @@ import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 import java.awt.*;
@@ -99,6 +100,10 @@ public class DialogPrefs extends XJPanel {
         // Compiler
         getPreferences().bindToPreferences(jikesPathField, EditorPreferences.PREF_JIKES_PATH, EditorPreferences.DEFAULT_JIKES_PATH);
         getPreferences().bindToPreferences(compilerRadioButtonGroup, EditorPreferences.PREF_COMPILER, EditorPreferences.DEFAULT_COMPILER);
+    }
+
+    public void dialogWillDisplay() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_PREFERENCES);
     }
 
     private void changeLookAndFeel() {

@@ -52,6 +52,7 @@ import org.antlr.works.interpreter.Interpreter;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
+import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 import java.awt.*;
@@ -208,6 +209,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             colorize.colorize();
         } else
             colorize.removeColorization();
+
+        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_COLORING);
     }
 
     public void toggleSyntaxDiagram() {
@@ -216,11 +219,13 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             visual.setText(getPlainText());
             updateVisualization(false);
         }
+        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_DIAGRAM);
     }
 
     public void toggleNFAOptimization() {
         visual.toggleNFAOptimization();
         updateVisualization(false);
+        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_NFA_OPTIMIZATION);
     }
 
     public void changeUpdate() {

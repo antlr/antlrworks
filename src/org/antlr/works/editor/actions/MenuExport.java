@@ -3,6 +3,7 @@ package org.antlr.works.editor.actions;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.util.Statistics;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -66,6 +67,8 @@ public class MenuExport extends AbstractActions {
         } catch (IOException e) {
             XJAlert.display(editor.getWindowComponent(), "Error", "Cannot save text file: "+file+"\nError: "+e);
         }
+
+        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_EVENTS_TEXT);
     }
 
 }

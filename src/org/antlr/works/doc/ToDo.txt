@@ -6,6 +6,7 @@ Now:
 - stats reporter
 - think about the Mac OS X packaging
 - XJ: pouvoir indiquer la version de l'application
+- include date of last reset in stats
 
 Terence:
 - problems with SD: a : ((A)*)*;
