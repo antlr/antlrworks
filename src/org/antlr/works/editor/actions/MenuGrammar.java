@@ -4,6 +4,7 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.tool.TUsage;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,6 +69,8 @@ public class MenuGrammar extends AbstractActions {
                     usage.addMatch(matchedRule, candidate);
             }
         }
+
+        Statistics.shared().recordEvent(Statistics.EVENT_FIND_USAGES);
     }
 
     public void goToDeclaration() {
@@ -80,6 +83,7 @@ public class MenuGrammar extends AbstractActions {
             return;
 
         editor.rules.selectTextRule(rule);
+        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_DECLARATION);
     }
 
     public void rename() {
@@ -98,6 +102,7 @@ public class MenuGrammar extends AbstractActions {
             editor.colorize.reset();
             editor.rules.parseRules();
             editor.changeDone();
+            Statistics.shared().recordEvent(Statistics.EVENT_RENAME);
         }
     }
 
@@ -164,6 +169,7 @@ public class MenuGrammar extends AbstractActions {
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if(s != null) {
             moveCursorToLine(Integer.parseInt(s)-1);
+            Statistics.shared().recordEvent(Statistics.EVENT_GOTO_LINE);
         }
     }
 
@@ -176,11 +182,13 @@ public class MenuGrammar extends AbstractActions {
                 return;
 
             setCaretPosition(character);
+            Statistics.shared().recordEvent(Statistics.EVENT_GOTO_CHAR);
         }
     }
 
     public void checkGrammar() {
         editor.visual.checkGrammar();
+        Statistics.shared().recordEvent(Statistics.EVENT_CHECK_GRAMMAR);                    
     }
 
     public void moveCursorToLine(int line) {

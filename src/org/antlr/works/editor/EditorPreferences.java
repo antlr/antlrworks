@@ -41,6 +41,7 @@ public class EditorPreferences {
     public static final String PREF_TAB_WIDTH = "PREF_TAB_WIDTH";
     public static final String PREF_EDITOR_FONT = "PREF_EDITOR_FONT";
     public static final String PREF_EDITOR_FONT_SIZE = "PREF_EDITOR_FONT_SIZE";
+    public static final String PREF_LOOK_AND_FEEL = "PREF_LOOK_AND_FEEL";
 
     public static final int DEFAULT_TAB_WIDTH = 8;
     public static final String DEFAULT_EDITOR_FONT = "Courier New";
@@ -61,6 +62,8 @@ public class EditorPreferences {
     public static final String COMPILER_INTEGRATED = "integrated";
 
     // Other
+    public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
+
     public static final String PREF_OUTPUT_PATH = "KEY_OUTPUT_PATH";
     public static final String PREF_START_SYMBOL = "KEY_START_SYMBOL";
 
@@ -96,6 +99,10 @@ public class EditorPreferences {
         return getPreferences().getInt(PREF_EDITOR_FONT_SIZE, DEFAULT_EDITOR_FONT_SIZE);
     }
 
+    public static String getLookAndFeel() {
+        return getPreferences().getString(PREF_LOOK_AND_FEEL, null);
+    }
+
     public static void setJikesPath(String path) {
         getPreferences().setString(PREF_JIKES_PATH, path);
     }
@@ -106,6 +113,14 @@ public class EditorPreferences {
 
     public static String getCompiler() {
         return getPreferences().getString(PREF_COMPILER, DEFAULT_COMPILER);
+    }
+
+    public static void setUserRegistered(boolean flag) {
+        getPreferences().setBoolean(PREF_USER_REGISTERED, flag);
+    }
+
+    public static boolean isUserRegistered() {
+        return getPreferences().getBoolean(PREF_USER_REGISTERED, false);
     }
 
     public static XJPreferences getPreferences() {

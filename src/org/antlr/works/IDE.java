@@ -35,18 +35,24 @@ import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
 import edu.usfca.xj.appkit.frame.XJPanel;
+import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJLocalizable;
+import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 
 public class IDE implements XJApplicationDelegate {
 
-    public static SplashScreen sc = new SplashScreen();
+    public static SplashScreen sc;
 
     public static void main(String[] args) {
+
+        sc = new SplashScreen();
+
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
                 public void run() {
@@ -62,8 +68,12 @@ public class IDE implements XJApplicationDelegate {
 
     public void appDidLaunch() {
 
+        XJLookAndFeel.applyLookAndFeel(EditorPreferences.getLookAndFeel());
+
         XJApplication.setPropertiesPath("org/antlr/works/properties/");
         XJApplication.addDocumentType(Document.class, EditorWindow.class, XJDataPlainText.class, "g", XJLocalizable.getString("strings", "GrammarDocumentType"));
+
+        registerUser();
 
         switch (EditorPreferences.getStartupAction()) {
             case EditorPreferences.STARTUP_NEW_DOC:
@@ -77,6 +87,17 @@ public class IDE implements XJApplicationDelegate {
                 break;
         }
         sc.setVisible(false);
+    }
+
+    public void registerUser() {
+        if(!EditorPreferences.isUserRegistered()) {
+            new DialogPersonalInfo().runModal();
+            EditorPreferences.setUserRegistered(true);
+        }
+    }
+
+    public void appWillTerminate() {
+        Statistics.shared().close();
     }
 
     public Class appPreferencesPanelClass() {

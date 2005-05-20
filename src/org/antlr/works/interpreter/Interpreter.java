@@ -12,6 +12,7 @@ import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.util.IconManager;
+import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -152,6 +153,7 @@ public class Interpreter implements Runnable {
         button.setToolTipText("Run");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
+                Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_BUTTON);
                 interpret();
             }
         });

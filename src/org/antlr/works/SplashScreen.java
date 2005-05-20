@@ -101,7 +101,7 @@ public class SplashScreen extends JWindow {
         contentPane.add(label3, cc.xy(5, 5));
 
         //---- label4 ----
-        label4.setText("Version 1.0b5");
+        label4.setText("Version 1.0er1");
         contentPane.add(label4, cc.xy(5, 7));
 
         //---- label2 ----

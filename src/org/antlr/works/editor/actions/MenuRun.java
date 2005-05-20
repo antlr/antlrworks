@@ -1,6 +1,7 @@
 package org.antlr.works.editor.actions;
 
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.util.Statistics;
 
 /*
 
@@ -41,6 +42,8 @@ public class MenuRun extends AbstractActions {
 
     public void runInterpreter() {
         try {
+            Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_MENU);
+            editor.selectInterpreterTab();
             editor.interpreter.interpret();
         } catch (Exception e) {
             e.printStackTrace();

@@ -131,7 +131,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         getTabbedPane().addTab("Interpreter", interpreter.getContainer());
         getTabbedPane().addTab("Debugger", debugger.getContainer());
 
-        getTabbedPane().setSelectedIndex(0);
+        selectVisualizationTab();
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -150,6 +150,18 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         debugger.close();
         visual.close();
         super.close();
+    }
+
+    public void selectVisualizationTab() {
+        getTabbedPane().setSelectedIndex(0);
+    }
+
+    public void selectInterpreterTab() {
+        getTabbedPane().setSelectedIndex(1);
+    }
+
+    public void selectDebuggerTab() {
+        getTabbedPane().setSelectedIndex(2);        
     }
 
     public void registerUndo(Undo undo, JTextPane component) {

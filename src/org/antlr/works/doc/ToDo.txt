@@ -1,10 +1,19 @@
 
 Now:
-
 - geographical info
+- GUI stats
+- ANTLR stats fetcher
+- stats reporter
+- think about the Mac OS X packaging
+- XJ: pouvoir indiquer la version de l'application
 
 Terence:
 - problems with SD: a : ((A)*)*;
+
+Check-list:
+- version in SplashScreen.java
+- version in about.properties
+- remote private menu
 
 Test
 - linux: remove grid lines in rules/tokens table
@@ -33,5 +42,6 @@ Later:
 - jump to a definition by double-click in the syntax diagram
 - split list between tokens (MAJ) and rules (min)
 - log file (check in preferences)
+- localization of all strings in properties file ?
 
 - problem when more than one same LT between mark/rewind

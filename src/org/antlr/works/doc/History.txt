@@ -1,4 +1,10 @@
 Posted on 05/19/05
+- select interpreter tab when running the interpreter
+- select debugger tab when running the debugger
+- new preference to change the look and feel of the GUI
+?- first implementation of statistics (private menu)
+
+Posted on 05/19/05
 - changed short-cuts for hiding action to Command-Minus (and with shift to hide/show all)
 - changed short-cuts for interpreter and debugger
 - improved speed of debugger when stepping forward (not reset)

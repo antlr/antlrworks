@@ -12,6 +12,7 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextEditorPane;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.util.IconManager;
+import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -444,12 +445,17 @@ public class Debugger {
                 debuggerLocal.setStartRule(dialog.getRule());
                 debuggerLocal.prepareAndLaunch(true, true);
             }
-        } else
+        } else {
             debuggerLocal.prepareAndLaunch(false, true);
+        }
     }
 
-    public void debuggerLocalDidRun(boolean success) {
+    public void debuggerLocalDidRun(boolean built, boolean success) {
         if(success) {
+            if(built)
+                Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER_BUILD);
+            else
+                Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER);
             debuggerLaunch(localAddress, localPort);
         }
     }
@@ -457,6 +463,7 @@ public class Debugger {
     public void launchRemoteDebugger() {
         DialogConnectDebugRemote dialog = new DialogConnectDebugRemote();
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
+            Statistics.shared().recordEvent(Statistics.EVENT_REMOTE_DEBUGGER);
             debuggerLaunch(dialog.getAddress(), dialog.getPort());
         }
     }
@@ -473,6 +480,8 @@ public class Debugger {
         }
 
         XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STARTED);
+
+        editor.selectDebuggerTab();
 
         editor.getTextPane().setEditable(false);
         editor.getTextPane().requestFocus(false);
