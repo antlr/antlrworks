@@ -123,6 +123,10 @@ public class EditorPreferences {
         return getPreferences().getBoolean(PREF_USER_REGISTERED, false);
     }
 
+    public static void removeUserRegistration() {
+        getPreferences().remove(PREF_USER_REGISTERED);
+    }
+    
     public static XJPreferences getPreferences() {
         return XJApplication.shared().getPreferences();
     }

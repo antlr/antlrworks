@@ -148,8 +148,8 @@ public class GEngineGraphics extends GEngine {
     public void drawSpline(float x0, float y0, float x1, float y1, float startOffset, float endOffset, float flateness, boolean arrow) {
         link_arc.setStart(x0, y0);
         link_arc.setEnd(x1, y1);
-        link_arc.setStartOffset(startOffset);
-        link_arc.setEndOffset(endOffset);
+        link_arc.setStartTangentOffset(startOffset);
+        link_arc.setEndTangentOffset(endOffset);
         link_arc.setFlateness(flateness);
         link_arc.setArrowVisible(arrow);
         link_arc.update();

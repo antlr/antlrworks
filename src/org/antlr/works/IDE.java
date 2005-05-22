@@ -44,12 +44,29 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.io.File;
 
-public class IDE implements XJApplicationDelegate {
+public class IDE extends XJApplicationDelegate {
 
     public static SplashScreen sc;
 
     public static void main(String[] args) {
+
+       /* System.out.println("A: "+System.getProperty("user.dir"));
+        System.out.println("B: "+System.getProperty("user.home"));
+                try
+        {
+            File currDir = new File(".");
+
+            System.out.println ( "Dir : " + currDir );
+            System.out.println ( "Dir : " + currDir.getCanonicalPath() );
+        }
+        catch (IOException ioEx )
+        {
+            System.out.println ("Error : " + ioEx );
+        }
+        System.exit(0);   */
 
         sc = new SplashScreen();
 
@@ -91,6 +108,7 @@ public class IDE implements XJApplicationDelegate {
 
     public void registerUser() {
         if(!EditorPreferences.isUserRegistered()) {
+            sc.setVisible(false);
             new DialogPersonalInfo().runModal();
             EditorPreferences.setUserRegistered(true);
         }
@@ -106,10 +124,6 @@ public class IDE implements XJApplicationDelegate {
 
     public Class appPreferencesPanelClass() {
         return DialogPrefs.class;
-    }
-
-    public XJPanel appInstanciateAboutPanel() {
-        return null;
     }
 
     public boolean appHasPreferencesMenuItem() {

@@ -145,6 +145,10 @@ public class Statistics {
 
     public void reset() {
         getMap().clear();
+        initDate();
+    }
+
+    public void initDate() {
         setFromDate(new Date().toString());
     }
 
@@ -181,8 +185,10 @@ public class Statistics {
     protected Map getMap() {
         if(map == null) {
             map = (Map)EditorPreferences.getPreferences().getObject(PREF_KEY, null);
-            if(map == null)
+            if(map == null) {
                 map = new HashMap();
+                initDate();
+            }
         }
         return map;
     }

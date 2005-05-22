@@ -83,6 +83,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_DEBUG_REMOTE = 53;
 
     public static final int MI_PRIVATE_STATS = 100;
+    public static final int MI_PRIVATE_UNREGISTER = 101;
 
     protected EditorWindow editor = null;
 
@@ -223,6 +224,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu = new XJMenu();
         menu.setTitle("*");
         menu.addItem(new XJMenuItem("Statistics...", MI_PRIVATE_STATS, this));
+        menu.addItem(new XJMenuItem("Unregister user", MI_PRIVATE_UNREGISTER, this));
 
         menubar.addCustomMenu(menu);
 
@@ -374,6 +376,9 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         switch(itemTag) {
             case MI_PRIVATE_STATS:
                 new DialogStatistics().runModal();
+                break;
+            case MI_PRIVATE_UNREGISTER:
+                EditorPreferences.removeUserRegistration();
                 break;
         }
     }

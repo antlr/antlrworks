@@ -1,12 +1,16 @@
 
 Now:
+
+- interpreter tree doesn't display correctly (but debugger tree does)
+- use "load" on Linux/Windows when opening a document on an untouched one
+- remember last interpreter start symbol
+
 - geographical info
 - GUI stats
 - ANTLR stats fetcher
 - stats reporter
 - think about the Mac OS X packaging
 - XJ: pouvoir indiquer la version de l'application
-- include date of last reset in stats
 
 Terence:
 - problems with SD: a : ((A)*)*;
@@ -17,12 +21,6 @@ Check-list:
 - remote private menu
 
 Test
-- linux: remove grid lines in rules/tokens table
-- Windows/Linux: short-cuts, gutter position
-- success dialog after generation: does not stay modal on Linux (see if parent)
-- check copy/cut keyboard filter on Windows/Linux
-- windows/linux: compiler using exec()
-- windows/linux: check preferences font & size (see if default is ugly)
 
 Issues:
 - TextEditorPane: wrapping doesn't always works on Mac OS X

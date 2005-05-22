@@ -8,6 +8,8 @@ import edu.usfca.xj.appkit.frame.XJDialog;
 import javax.swing.*;
 import java.awt.*;
 
+import org.antlr.works.util.IconManager;
+
 /*
 
 [The "BSD licence"]
@@ -44,10 +46,14 @@ public class DialogPersonalInfo extends XJDialog {
     public DialogPersonalInfo() {
         initComponents();
 
+        setSize(new Dimension(750, 400));
+
         setDefaultButton(okButton);
         setOKButton(okButton);
     }
 
+    // Note: replace absolute path with IconManager.getIconApp();
+    
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         dialogPane = new JPanel();
@@ -120,7 +126,7 @@ public class DialogPersonalInfo extends XJDialog {
                 button1.setEnabled(true);
                 button1.setFocusPainted(false);
                 button1.setFocusable(false);
-                button1.setIcon(new ImageIcon("/Users/bovet/Dev/Projects/ANTLRWorks/classes/org/antlr/works/icons/app.png"));
+                button1.setIcon(IconManager.getIconApplication());
                 button1.setOpaque(false);
                 button1.setRequestFocusEnabled(false);
                 button1.setVerifyInputWhenFocusTarget(false);

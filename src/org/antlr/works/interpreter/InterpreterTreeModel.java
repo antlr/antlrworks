@@ -8,6 +8,7 @@ import org.antlr.tool.Grammar;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.DefaultTreeModel;
 
 /*
 
@@ -40,10 +41,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class InterpreterTreeModel implements TreeModel {
+public class InterpreterTreeModel extends DefaultTreeModel {
 
     public Tree tree = null;
     protected Grammar grammar;
+
+    public InterpreterTreeModel() {
+        super(null);
+    }
 
     public void setTree(Tree tree) {
         this.tree = tree;

@@ -107,11 +107,7 @@ public class DialogPrefs extends XJPanel {
     }
 
     private void changeLookAndFeel() {
-        String lafName = EditorPreferences.getLookAndFeel();
-        if(lafName == null || lafName.equalsIgnoreCase(UIManager.getLookAndFeel().getName()))
-            return;
-
-        XJLookAndFeel.applyLookAndFeel(lafName);
+        XJLookAndFeel.applyLookAndFeel(EditorPreferences.getLookAndFeel());
     }
 
     private static XJPreferences getPreferences() {
