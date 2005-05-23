@@ -57,6 +57,7 @@ public class DialogBuildAndDebug extends XJDialog {
         this.debugger = debugger;
 
         initComponents();
+        setSize(615, 127+20);
 
         rulesCombo.removeAllItems();
         for (Iterator iterator = debugger.getRules().iterator(); iterator.hasNext();) {

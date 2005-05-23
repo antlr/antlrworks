@@ -52,7 +52,8 @@ public class DialogGenerate extends XJDialog {
     public DialogGenerate() {
 
         initComponents();
-
+        setSize(612, 121);
+        
         setDefaultButton(okButton);
         setOKButton(okButton);
         setCancelButton(cancelButton);

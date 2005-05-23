@@ -45,7 +45,7 @@ public class DialogPersonalInfo extends XJDialog {
     public DialogPersonalInfo() {
         initComponents();
 
-        setSize(new Dimension(750, 400));
+        setSize(750, 370);
 
         setDefaultButton(okButton);
         setOKButton(okButton);

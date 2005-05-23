@@ -50,7 +50,8 @@ public class DialogStatistics extends XJDialog {
 
     public DialogStatistics() {
         initComponents();
-
+        setSize(500, 400);
+        
         setDefaultButton(okButton);
         setOKButton(okButton);
 

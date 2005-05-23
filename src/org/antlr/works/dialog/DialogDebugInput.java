@@ -44,7 +44,8 @@ public class DialogDebugInput extends XJDialog {
 
     public DialogDebugInput() {
         initComponents();
-
+        setSize(600, 400);
+        
         setDefaultButton(okButton);
         setOKButton(okButton);
         setCancelButton(cancelButton);

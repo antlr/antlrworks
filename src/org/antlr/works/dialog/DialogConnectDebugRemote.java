@@ -16,6 +16,7 @@ public class DialogConnectDebugRemote extends XJDialog {
 
 	public DialogConnectDebugRemote() {
 		initComponents();
+        setSize(337, 141);
 
         setDefaultButton(connectButton);
         setOKButton(connectButton);
