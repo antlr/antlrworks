@@ -34,18 +34,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
-import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJLocalizable;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.util.HelpManager;
 import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.io.File;
 
 public class IDE extends XJApplicationDelegate {
 
@@ -53,20 +51,11 @@ public class IDE extends XJApplicationDelegate {
 
     public static void main(String[] args) {
 
-       /* System.out.println("A: "+System.getProperty("user.dir"));
-        System.out.println("B: "+System.getProperty("user.home"));
-                try
-        {
-            File currDir = new File(".");
+        // Needs to specify the Mac OS X property here (starting from Tiger)
+        // before any other line of code (the usual XJApplication won't work
+        // because we are instanciating a SplashScreen before it)
 
-            System.out.println ( "Dir : " + currDir );
-            System.out.println ( "Dir : " + currDir.getCanonicalPath() );
-        }
-        catch (IOException ioEx )
-        {
-            System.out.println ("Error : " + ioEx );
-        }
-        System.exit(0);   */
+        System.setProperty("apple.laf.useScreenMenuBar","true");
 
         sc = new SplashScreen();
 
@@ -89,6 +78,8 @@ public class IDE extends XJApplicationDelegate {
 
         XJApplication.setPropertiesPath("org/antlr/works/properties/");
         XJApplication.addDocumentType(Document.class, EditorWindow.class, XJDataPlainText.class, "g", XJLocalizable.getString("strings", "GrammarDocumentType"));
+
+        XJApplication.addScheduledTimer(new HelpManager(), 5*60, true);
 
         registerUser();
 

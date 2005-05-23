@@ -1,4 +1,7 @@
-package org.antlr.works.dialog;
+package org.antlr.works.editor.actions;
+
+import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.util.HelpManager;
 
 /*
 
@@ -31,6 +34,21 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface DialogDelegate {
-    public void dialogDidCancel();
+public class MenuHelp extends AbstractActions {
+
+    public MenuHelp(EditorWindow editor) {
+        super(editor);
+    }
+
+    public void submitStats() {
+        HelpManager.submitStats();
+    }
+
+    public void sendFeedback() {
+        HelpManager.sendFeedback(editor);
+    }
+
+    public void checkUpdates() {
+        HelpManager.checkUpdates(editor, false);
+    }
 }

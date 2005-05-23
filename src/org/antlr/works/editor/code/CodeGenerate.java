@@ -2,11 +2,11 @@ package org.antlr.works.editor.code;
 
 import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.codegen.CodeGenerator;
 import org.antlr.tool.Grammar;
-import org.antlr.works.dialog.DialogProgress;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorProvider;
 
@@ -166,7 +166,7 @@ public class CodeGenerate implements Runnable {
     public void generateInThread(XJFrame parent, boolean debug) {
         this.debug = debug;
 
-        progress = new DialogProgress(parent);
+        progress = new XJDialogProgress(parent);
         progress.setInfo("Generating...");
         progress.setCancellable(false);
         progress.setIndeterminate(true);
@@ -184,7 +184,7 @@ public class CodeGenerate implements Runnable {
     }
 
     protected Exception generateException = null;
-    protected DialogProgress progress;
+    protected XJDialogProgress progress;
 
     public void run() {
         generateException = null;

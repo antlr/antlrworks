@@ -18,7 +18,8 @@ Terence:
 Check-list:
 - version in SplashScreen.java
 - version in about.properties
-- remote private menu
+- version in info.properties
+- remove private menu
 
 Test
 

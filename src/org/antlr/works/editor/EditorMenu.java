@@ -5,7 +5,6 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
-import org.antlr.works.util.Statistics;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -82,6 +81,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_BUILD_AND_DEBUG = 52;
     public static final int MI_DEBUG_REMOTE = 53;
 
+    public static final int MI_SUBMIT_STATS = 60;
+    public static final int MI_SEND_FEEDBACK = 61;
+    public static final int MI_CHECK_UPDATES = 62;
+
     public static final int MI_PRIVATE_STATS = 100;
     public static final int MI_PRIVATE_UNREGISTER = 101;
 
@@ -138,6 +141,13 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.insertItemAfter(exportMenu, XJMainMenuBar.MI_SAVEAS);
 
         menu.insertSeparatorAfter(XJMainMenuBar.MI_SAVEAS);
+    }
+
+    public void customizeHelpMenu(XJMenu menu) {
+        menu.insertItemAfter(new XJMenuItem("Check for Updates", MI_CHECK_UPDATES, this), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Send Feedback", MI_SEND_FEEDBACK, this), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", MI_SUBMIT_STATS, this), XJMainMenuBar.MI_HELP);
+        menu.insertSeparatorAfter(XJMainMenuBar.MI_HELP);
     }
 
     public void customizeMenuBar(XJMainMenuBar menubar) {
@@ -238,6 +248,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         handleMenuGenerate(item.getTag());
         handleMenuRun(item.getTag());
         handleMenuPrivate(item.getTag());
+        handleMenuHelp(item.getTag());
         handleMenuExport(item.getTag());
     }
 
@@ -368,6 +379,20 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_DEBUG_REMOTE:
                 editor.menuRunActions.debugRemote();
+                break;
+        }
+    }
+
+    public void handleMenuHelp(int itemTag) {
+        switch(itemTag) {
+            case MI_SUBMIT_STATS:
+                editor.menuHelpActions.submitStats();
+                break;
+            case MI_SEND_FEEDBACK:
+                editor.menuHelpActions.sendFeedback();
+                break;
+            case MI_CHECK_UPDATES:
+                editor.menuHelpActions.checkUpdates();
                 break;
         }
     }

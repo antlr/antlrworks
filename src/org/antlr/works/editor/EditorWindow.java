@@ -86,6 +86,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     protected MenuGenerate menuGenerateActions = null;
     protected MenuRun menuRunActions = null;
     protected MenuExport menuExportActions = null;
+    protected MenuHelp menuHelpActions = null;
 
     public EditorWindow() {
 
@@ -99,6 +100,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         menuGenerateActions = new MenuGenerate(this);
         menuRunActions = new MenuRun(this);
         menuExportActions = new MenuExport(this);
+        menuHelpActions = new MenuHelp(this);
 
         editorGUI.createInterface();
 
@@ -340,6 +342,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public void customizeFileMenu(XJMenu menu) {
         editorMenu.customizeFileMenu(menu);
+    }
+
+    public void customizeHelpMenu(XJMenu menu) {
+        editorMenu.customizeHelpMenu(menu);
     }
 
     public void customizeMenuBar(XJMainMenuBar menubar) {

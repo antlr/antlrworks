@@ -151,7 +151,7 @@ public class Debugger {
         JScrollPane textScrollPane = new JScrollPane(textPane);
         textScrollPane.setWheelScrollingEnabled(true);
 
-        JButton tokenButton = new JButton(IconManager.getIconTokens());
+        JButton tokenButton = new JButton(IconManager.shared().getIconTokens());
         tokenButton.setToolTipText("Show/hide tokens boxes");
         tokenButton.setFocusable(false);
         tokenButton.addActionListener(new ActionListener() {
@@ -285,7 +285,7 @@ public class Debugger {
     }
 
     public JButton createDebuggerStopButton() {
-        JButton button = new JButton(IconManager.getIconStop());
+        JButton button = new JButton(IconManager.shared().getIconStop());
         button.setToolTipText("Stop");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
@@ -298,7 +298,7 @@ public class Debugger {
     }
 
     public JButton createStepBackwardButton() {
-        JButton button = new JButton(IconManager.getIconStepBackward());
+        JButton button = new JButton(IconManager.shared().getIconStepBackward());
         button.setToolTipText("Step Backward");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -310,7 +310,7 @@ public class Debugger {
     }
 
     public JButton createStepForwardButton() {
-        JButton button = new JButton(IconManager.getIconStepForward());
+        JButton button = new JButton(IconManager.shared().getIconStepForward());
         button.setToolTipText("Step Forward");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -322,7 +322,7 @@ public class Debugger {
     }
 
     public JButton createGoToStartButton() {
-        JButton button = new JButton(IconManager.getIconGoToStart());
+        JButton button = new JButton(IconManager.shared().getIconGoToStart());
         button.setToolTipText("Go to start");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
@@ -336,7 +336,7 @@ public class Debugger {
     }
 
     public JButton createGoToEndButton() {
-        JButton button = new JButton(IconManager.getIconGoToEnd());
+        JButton button = new JButton(IconManager.shared().getIconGoToEnd());
         button.setToolTipText("Go to end");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
@@ -372,7 +372,7 @@ public class Debugger {
     }
 
     public JButton createExpandAllButton() {
-        JButton button = new JButton(IconManager.getIconExpandAll());
+        JButton button = new JButton(IconManager.shared().getIconExpandAll());
         button.setToolTipText("Expand All");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
@@ -384,7 +384,7 @@ public class Debugger {
     }
 
     public JButton createCollapseAllButton() {
-        JButton button = new JButton(IconManager.getIconCollapseAll());
+        JButton button = new JButton(IconManager.shared().getIconCollapseAll());
         button.setToolTipText("Collapse All");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {

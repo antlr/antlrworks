@@ -359,7 +359,7 @@ public class Rules implements ThreadedParserObserver {
             if(table.convertColumnIndexToView(col) == COLUMN_RULE_STATUS) {
                 Parser.Rule rule = parser.getRuleAtIndex(row);
                 if(rule.hasErrors()) {
-                    setIcon(IconManager.getIconWarning());
+                    setIcon(IconManager.shared().getIconWarning());
                     setToolTipText(rule.getErrorMessageHTML());
                 }
             }

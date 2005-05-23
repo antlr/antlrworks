@@ -6,9 +6,8 @@ import org.antlr.runtime.tree.Tree;
 import org.antlr.tool.Grammar;
 
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 /*
 

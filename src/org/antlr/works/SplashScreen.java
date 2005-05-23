@@ -87,7 +87,7 @@ public class SplashScreen extends JWindow {
         //---- button1 ----
         button1.setBorder(null);
         button1.setBorderPainted(false);
-        button1.setIcon(IconManager.getIconApplication());
+        button1.setIcon(IconManager.shared().getIconApplication());
         contentPane.add(button1, cc.xywh(3, 3, 1, 7));
 
         //---- label1 ----

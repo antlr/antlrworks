@@ -55,7 +55,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-public class VisualizationTest {
+public class TestVisualization {
 
     static GrammarEngine engine = new GrammarEngine();
     static NFAState startState;

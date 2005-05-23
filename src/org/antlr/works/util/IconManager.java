@@ -38,68 +38,76 @@ public class IconManager {
     // @todo replace this with run-time location ?
     public static final String path = "org/antlr/works/icons/";
 
-    public static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = ClassLoader.getSystemResource(path);
+    protected static IconManager shared = null;
+
+    public static IconManager shared() {
+        if(shared == null)
+            shared = new IconManager();
+        return shared;
+    }
+
+    public ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = this.getClass().getClassLoader().getResource(path);
         return imgURL != null ? new ImageIcon(imgURL) : null;
     }
 
-    public static ImageIcon getIconApplication() {
+    public ImageIcon getIconApplication() {
         return createImageIcon(path+"app.png");
     }
 
-    public static ImageIcon getIconHiddenAction() {
+    public ImageIcon getIconHiddenAction() {
         return createImageIcon(path+"hidden_action.png");
     }
 
-    public static ImageIcon getIconWarning() {
+    public ImageIcon getIconWarning() {
         return createImageIcon(path+"warning.png");
     }
 
-    public static ImageIcon getIconBackward() {
+    public ImageIcon getIconBackward() {
         return createImageIcon(path+"back.png");
     }
 
-    public static ImageIcon getIconForward() {
+    public ImageIcon getIconForward() {
         return createImageIcon(path+"forward.png");
     }
 
-    public static ImageIcon getIconShowLinks() {
+    public ImageIcon getIconShowLinks() {
         return createImageIcon(path+"show_links.png");
     }
 
-    public static ImageIcon getIconRun() {
+    public ImageIcon getIconRun() {
         return createImageIcon(path+"run.png");
     }
 
-    public static ImageIcon getIconExpandAll() {
+    public ImageIcon getIconExpandAll() {
         return createImageIcon(path+"expandall.png");
     }
 
-    public static ImageIcon getIconCollapseAll() {
+    public ImageIcon getIconCollapseAll() {
         return createImageIcon(path+"collapseall.png");
     }
 
-    public static ImageIcon getIconStop() {
+    public ImageIcon getIconStop() {
         return createImageIcon(path+"stop.png");
     }
 
-    public static ImageIcon getIconStepForward() {
+    public ImageIcon getIconStepForward() {
         return createImageIcon(path+"stepforward.png");
     }
 
-    public static ImageIcon getIconStepBackward() {
+    public ImageIcon getIconStepBackward() {
         return createImageIcon(path+"stepbackward.png");
     }
 
-    public static ImageIcon getIconGoToStart() {
+    public ImageIcon getIconGoToStart() {
         return createImageIcon(path+"gotostart.png");
     }
 
-    public static ImageIcon getIconGoToEnd() {
+    public ImageIcon getIconGoToEnd() {
         return createImageIcon(path+"gotoend.png");
     }
 
-    public static ImageIcon getIconTokens() {
+    public ImageIcon getIconTokens() {
         return createImageIcon(path+"tokens.png");
     }
 

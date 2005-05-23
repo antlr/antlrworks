@@ -3,6 +3,8 @@ package org.antlr.works.editor;
 import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJPreferences;
 
+import java.util.Calendar;
+
 /*
 
 [The "BSD licence"]
@@ -61,6 +63,23 @@ public class EditorPreferences {
     public static final String COMPILER_JIKES = "jikes";
     public static final String COMPILER_INTEGRATED = "integrated";
 
+    // Statistics
+    public static final String PREF_STAT_REPORT_METHOD = "PREF_STAT_REPORT_METHOD";
+    public static final String DEFAULT_STAT_REPORT_METHOD = "weekly";
+
+    // Updates
+    public static final String PREF_UPDATE_TYPE = "PREF_UPDATE_TYPE";
+    public static final String PREF_DOWNLOAD_PATH = "PREF_DOWNLOAD_PATH";
+    public static final String PREF_UPDATE_NEXT_DATE = "PREF_UPDATE_NEXT_DATE";
+
+    public static final int UPDATE_MANUALLY = 0;
+    public static final int UPDATE_AT_STARTUP = 1;
+    public static final int UPDATE_DAILY = 2;
+    public static final int UPDATE_WEEKLY = 3;
+
+    public static final int DEFAULT_UPDATE_TYPE = UPDATE_WEEKLY;
+    public static final String DEFAULT_DOWNLOAD_PATH = System.getProperty("user.home");
+
     // Other
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
 
@@ -113,6 +132,26 @@ public class EditorPreferences {
 
     public static String getCompiler() {
         return getPreferences().getString(PREF_COMPILER, DEFAULT_COMPILER);
+    }
+
+    public static int getUpdateType() {
+        return getPreferences().getInt(PREF_UPDATE_TYPE, DEFAULT_UPDATE_TYPE);
+    }
+
+    public static void setUpdateNextDate(Calendar date) {
+        getPreferences().setObject(PREF_UPDATE_NEXT_DATE, date);
+    }
+
+    public static Calendar getUpdateNextDate() {
+        return (Calendar)getPreferences().getObject(PREF_UPDATE_NEXT_DATE, null);
+    }
+
+    public static void setDownloadPath(String path) {
+        getPreferences().setString(PREF_DOWNLOAD_PATH, path);
+    }
+
+    public static String getDownloadPath() {
+        return getPreferences().getString(PREF_DOWNLOAD_PATH, DEFAULT_DOWNLOAD_PATH);
     }
 
     public static void setUserRegistered(boolean flag) {

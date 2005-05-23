@@ -2,12 +2,12 @@ package org.antlr.works.debugger;
 
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.appkit.utils.XJDialogProgress;
+import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.works.dialog.DialogDebugInput;
-import org.antlr.works.dialog.DialogDelegate;
-import org.antlr.works.dialog.DialogProgress;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.code.CodeGenerate;
 
@@ -46,7 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DebuggerLocal implements Runnable, DialogDelegate {
+public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
     public static final String remoteParserClassName = "Test";
     // @todo put this in the check-list
@@ -83,12 +83,12 @@ public class DebuggerLocal implements Runnable, DialogDelegate {
                 "    System.out.println(\"Hello, world!\");\n" +
                 "}";
 
-    protected DialogProgress progress;
+    protected XJDialogProgress progress;
 
     public DebuggerLocal(Debugger debugger) {
         this.debugger = debugger;
         this.codeGenerator = new CodeGenerate(debugger.editor);
-        this.progress = new DialogProgress(debugger.editor);
+        this.progress = new XJDialogProgress(debugger.editor);
 
         setOutputPath(EditorPreferences.getOutputPath());
     }

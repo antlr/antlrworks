@@ -227,7 +227,7 @@ public class TActions implements ActionListener {
         };
 
         button.setCursor(Cursor.getDefaultCursor());
-        button.setIcon(IconManager.getIconHiddenAction());
+        button.setIcon(IconManager.shared().getIconHiddenAction());
         button.setToolTipText(tooltip);
         button.setBorderPainted(false);
         button.setOpaque(true);

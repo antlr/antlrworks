@@ -2,10 +2,10 @@ package org.antlr.works.util;
 
 import org.antlr.works.editor.EditorPreferences;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Date;
 
 /*
 

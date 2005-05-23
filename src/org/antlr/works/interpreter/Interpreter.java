@@ -1,12 +1,12 @@
 package org.antlr.works.interpreter;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.Grammar;
-import org.antlr.works.dialog.DialogProgress;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.undo.Undo;
@@ -67,7 +67,7 @@ public class Interpreter implements Runnable {
     private InterpreterTreeModel treeModel;
     private JComboBox rulesCombo;
 
-    private DialogProgress progress;
+    private XJDialogProgress progress;
 
     private boolean grammarDirty = true;
 
@@ -81,7 +81,7 @@ public class Interpreter implements Runnable {
     public Interpreter(EditorWindow editor) {
         this.editor = editor;
 
-        progress = new DialogProgress(editor);
+        progress = new XJDialogProgress(editor);
 
         panel = new JPanel(new BorderLayout());
 
@@ -149,7 +149,7 @@ public class Interpreter implements Runnable {
     }
 
     public JButton createRunButton() {
-        JButton button = new JButton(IconManager.getIconRun());
+        JButton button = new JButton(IconManager.shared().getIconRun());
         button.setToolTipText("Run");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -173,7 +173,7 @@ public class Interpreter implements Runnable {
     }
 
     public JButton createExpandAllButton() {
-        JButton button = new JButton(IconManager.getIconExpandAll());
+        JButton button = new JButton(IconManager.shared().getIconExpandAll());
         button.setToolTipText("Expand All");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -184,7 +184,7 @@ public class Interpreter implements Runnable {
     }
 
     public JButton createCollapseAllButton() {
-        JButton button = new JButton(IconManager.getIconCollapseAll());
+        JButton button = new JButton(IconManager.shared().getIconCollapseAll());
         button.setToolTipText("Collapse All");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {

@@ -4,11 +4,10 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
+import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
 import java.awt.*;
-
-import org.antlr.works.util.IconManager;
 
 /*
 
@@ -126,7 +125,7 @@ public class DialogPersonalInfo extends XJDialog {
                 button1.setEnabled(true);
                 button1.setFocusPainted(false);
                 button1.setFocusable(false);
-                button1.setIcon(IconManager.getIconApplication());
+                button1.setIcon(IconManager.shared().getIconApplication());
                 button1.setOpaque(false);
                 button1.setRequestFocusEnabled(false);
                 button1.setVerifyInputWhenFocusTarget(false);

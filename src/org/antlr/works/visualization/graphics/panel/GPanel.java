@@ -152,7 +152,7 @@ public class GPanel implements XJNotificationObserver {
             controlPanel.add(createNextErrorButton());
         }
         controlPanel.add(Box.createHorizontalStrut(5));
-        controlPanel.add(new JLabel(IconManager.getIconWarning()));
+        controlPanel.add(new JLabel(IconManager.shared().getIconWarning()));
         controlPanel.add(Box.createHorizontalStrut(3));
         controlPanel.add(errorLabel = new JLabel());
 
@@ -169,7 +169,7 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private JButton createPrevErrorButton() {
-        JButton button = new JButton(IconManager.getIconBackward());
+        JButton button = new JButton(IconManager.shared().getIconBackward());
         button.setFocusable(false);
         button.setToolTipText("Show Previous Error");
         button.addActionListener(new ActionListener() {
@@ -185,7 +185,7 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private JButton createNextErrorButton() {
-        JButton button = new JButton(IconManager.getIconForward());
+        JButton button = new JButton(IconManager.shared().getIconForward());
         button.setFocusable(false);
         button.setToolTipText("Show Next Error");
         button.addActionListener(new ActionListener() {
@@ -261,7 +261,7 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private JButton createShowCrossLinksButton() {
-        JButton button = new JButton(IconManager.getIconShowLinks());
+        JButton button = new JButton(IconManager.shared().getIconShowLinks());
         button.setFocusable(false);
         button.setToolTipText("Show links between rules");
         button.addActionListener(new ActionListener() {
