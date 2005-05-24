@@ -49,7 +49,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DialogGenerate extends XJDialog {
 
-    public DialogGenerate() {
+    public DialogGenerate(Container parent) {
+        super(parent, true);
 
         initComponents();
         setSize(612, 121);
@@ -62,7 +63,7 @@ public class DialogGenerate extends XJDialog {
 
         browseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if(XJFileChooser.shared().displayChooseDirectory(DialogGenerate.this)) {
+                if(XJFileChooser.shared().displayChooseDirectory(DialogGenerate.this.getJavaComponent())) {
                     outputPathField.setText(XJFileChooser.shared().getSelectedFilePath());
                 }
             }

@@ -37,5 +37,5 @@ public interface EditorProvider {
     public void changeDone();
     public String getText();
     public String getPlainText();
-    public Component getWindowComponent();
+    public Container getWindowContainer();
 }

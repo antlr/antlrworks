@@ -178,9 +178,9 @@ public class CodeGenerate implements Runnable {
     public void generateInThreadDidTerminate() {
         progress.close();
         if(generateException != null)
-            XJAlert.display(provider.getWindowComponent(), "Error", "Cannot generate the grammar because:\n"+generateException);
+            XJAlert.display(provider.getWindowContainer(), "Error", "Cannot generate the grammar because:\n"+generateException);
         else
-            XJAlert.display(provider.getWindowComponent(), "Success", "The grammar has been successfully generated in path:\n"+outputPath);
+            XJAlert.display(provider.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+outputPath);
     }
 
     protected Exception generateException = null;

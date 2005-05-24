@@ -135,6 +135,10 @@ public class Debugger {
         updateStatusInfo();
     }
 
+    public Container getWindowComponent() {
+        return editor.getWindowContainer();
+    }
+
     public void close() {
         debuggerStop(true);
     }
@@ -431,7 +435,7 @@ public class Debugger {
 
     public void displayNodeInfo(Object node) {
         DebuggerTreeNode treeNode = (DebuggerTreeNode)node;
-        XJAlert.display(editor.getWindowComponent(), "Node info", treeNode.getInfoString());
+        XJAlert.display(editor.getWindowContainer(), "Node info", treeNode.getInfoString());
     }
 
     public List getRules() {
@@ -447,7 +451,7 @@ public class Debugger {
         debuggerLocal.setStartRule(EditorPreferences.getStartSymbol());
 
         if(build || !debuggerLocal.isRequiredFilesExisting()) {
-            DialogBuildAndDebug dialog = new DialogBuildAndDebug(this);
+            DialogBuildAndDebug dialog = new DialogBuildAndDebug(this, getWindowComponent());
             if(dialog.runModal() == XJDialog.BUTTON_OK) {
                 debuggerLocal.setOutputPath(dialog.getOutputPath());
                 debuggerLocal.setStartRule(dialog.getRule());
@@ -469,7 +473,7 @@ public class Debugger {
     }
 
     public void launchRemoteDebugger() {
-        DialogConnectDebugRemote dialog = new DialogConnectDebugRemote();
+        DialogConnectDebugRemote dialog = new DialogConnectDebugRemote(getWindowComponent());
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
             Statistics.shared().recordEvent(Statistics.EVENT_REMOTE_DEBUGGER);
             debuggerLaunch(dialog.getAddress(), dialog.getPort());
@@ -478,12 +482,12 @@ public class Debugger {
 
     public void debuggerLaunch(String address, int port) {
         if(!debuggerLaunchGrammar()) {
-            XJAlert.display(editor.getWindowComponent(), "Error", "Cannot launch the debugger.\nException while parsing grammar.");
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot launch the debugger.\nException while parsing grammar.");
             return;
         }
 
         if(!recorder.start(address, port)) {
-            XJAlert.display(editor.getWindowComponent(), "Connection Error", "Cannot launch the debugger.\nTime-out waiting to connect to the remote parser.");
+            XJAlert.display(editor.getWindowContainer(), "Connection Error", "Cannot launch the debugger.\nTime-out waiting to connect to the remote parser.");
             return;
         }
 
@@ -509,7 +513,7 @@ public class Debugger {
 
     public void debuggerStop(boolean force) {
         if(recorder.getStatus() == DebuggerRecorder.STATUS_STOPPING) {
-            if(force || XJAlert.displayAlertYESNO(editor.getWindowComponent(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES)
+            if(force || XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES)
                 recorder.forceStop();
         } else
             recorder.stop();

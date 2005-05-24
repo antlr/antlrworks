@@ -8,13 +8,12 @@ import edu.usfca.xj.appkit.frame.XJDialog;
 
 import javax.swing.*;
 import java.awt.*;
-/*
- * Created by JFormDesigner on Sat Apr 02 12:18:59 PST 2005
- */
 
 public class DialogConnectDebugRemote extends XJDialog {
 
-	public DialogConnectDebugRemote() {
+	public DialogConnectDebugRemote(Container parent) {
+        super(parent, true);
+
 		initComponents();
         setSize(337, 141);
 

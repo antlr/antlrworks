@@ -42,7 +42,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DialogPersonalInfo extends XJDialog {
 
-    public DialogPersonalInfo() {
+    public DialogPersonalInfo(Container parent) {
+        super(parent, true);
+        
         initComponents();
 
         setSize(750, 370);

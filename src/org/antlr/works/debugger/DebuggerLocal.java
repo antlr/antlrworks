@@ -127,7 +127,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     public boolean askUserForInputText() {
-        DialogDebugInput dialog = new DialogDebugInput();
+        DialogDebugInput dialog = new DialogDebugInput(debugger.getWindowComponent());
         dialog.setInputText(inputText);
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
             inputText = dialog.getInputText();
@@ -241,7 +241,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
         } catch(Exception e) {
             e.printStackTrace();
-            XJAlert.display(debugger.editor.getWindowComponent(), "Generate Error", "Cannot launch the local debugger.\nException while generating the glue-code: "+e);
+            XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating the glue-code: "+e);
             return false;
         }
         return true;
@@ -249,7 +249,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
     public boolean generateCode() {
         if(false && new File(fileParser).exists() && new File(fileParser).exists() && new File(fileRemoteParser).exists()) {
-            switch(XJAlert.displayAlert(debugger.editor.getWindowComponent(), "Debugger", "Generated code files already exists. Do you want to continue, re-generate the grammar or cancel ?",
+            switch(XJAlert.displayAlert(debugger.editor.getWindowContainer(), "Debugger", "Generated code files already exists. Do you want to continue, re-generate the grammar or cancel ?",
                     "Cancel", "Re-generate", "Continue", 2))
             {
                 case 0: // cancel
@@ -271,7 +271,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             codeGenerator.generate(true);  // debug
         } catch (Exception e) {
             e.printStackTrace();            
-            XJAlert.display(debugger.editor.getWindowComponent(), "Generate Error", "Cannot launch the local debugger.\nException while generating code: "+e);
+            XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating code: "+e);
             return false;
         }
         return true;
@@ -281,7 +281,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
         File f = new File(outputFileDir);
         if(false && f.exists()) {
-            switch(XJAlert.displayAlert(debugger.editor.getWindowComponent(), "Debugger", "Compiled code files already exists. Do you want to continue, re-compile or cancel ?",
+            switch(XJAlert.displayAlert(debugger.editor.getWindowContainer(), "Debugger", "Compiled code files already exists. Do you want to continue, re-compile or cancel ?",
                     "Cancel", "Re-compile", "Continue", 2))
             {
                 case 0: // cancel
@@ -326,14 +326,14 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             }
 
         } catch(Error e) {
-            XJAlert.display(debugger.editor.getWindowComponent(), "Compiler Error", "An error occurred:\n"+e);
+            XJAlert.display(debugger.editor.getWindowContainer(), "Compiler Error", "An error occurred:\n"+e);
             return false;
         } catch(Exception e) {
-            XJAlert.display(debugger.editor.getWindowComponent(), "Compiler Error", "An exception occurred:\n"+e);
+            XJAlert.display(debugger.editor.getWindowContainer(), "Compiler Error", "An exception occurred:\n"+e);
             return false;
         }
         if(result != 0) {
-            XJAlert.display(debugger.editor.getWindowComponent(), "Compiler Error", "Cannot launch the local debugger.\nCompiler error: "+result);
+            XJAlert.display(debugger.editor.getWindowContainer(), "Compiler Error", "Cannot launch the local debugger.\nCompiler error: "+result);
             return false;
         }
         return true;
@@ -349,7 +349,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher").start();
             new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher").start();
         } catch (IOException e) {
-            XJAlert.display(debugger.editor.getWindowComponent(), "Runtime Error", "Cannot launch the local debugger.\nCannot launch the remote parser: "+e);
+            XJAlert.display(debugger.editor.getWindowContainer(), "Runtime Error", "Cannot launch the local debugger.\nCannot launch the remote parser: "+e);
             return false;
         }
 

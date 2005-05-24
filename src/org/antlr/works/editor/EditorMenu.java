@@ -400,7 +400,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuPrivate(int itemTag) {
         switch(itemTag) {
             case MI_PRIVATE_STATS:
-                new DialogStatistics().runModal();
+                new DialogStatistics(editor.getWindowContainer()).runModal();
                 break;
             case MI_PRIVATE_UNREGISTER:
                 EditorPreferences.removeUserRegistration();

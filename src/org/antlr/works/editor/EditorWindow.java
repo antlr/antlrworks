@@ -307,7 +307,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return editorCache.getString(EditorCache.CACHE_PLAIN_TEXT);
     }
 
-    public Component getWindowComponent() {
+    public Container getWindowContainer() {
         return jFrame;
     }
 

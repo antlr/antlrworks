@@ -47,7 +47,7 @@ public class MenuExport extends AbstractActions {
     }
 
     public void exportEventsAsTextFile() {
-        if(XJFileChooser.shared().displaySaveDialog(editor, "TXT", "Text file", false) == false)
+        if(XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "TXT", "Text file", false) == false)
             return;
 
         String file = XJFileChooser.shared().getSelectedFilePath();
@@ -65,7 +65,7 @@ public class MenuExport extends AbstractActions {
             writer.write(text.toString());
             writer.close();
         } catch (IOException e) {
-            XJAlert.display(editor.getWindowComponent(), "Error", "Cannot save text file: "+file+"\nError: "+e);
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot save text file: "+file+"\nError: "+e);
         }
 
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_EVENTS_TEXT);

@@ -36,7 +36,6 @@ import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJLocalizable;
-import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.EditorPreferences;
@@ -102,7 +101,7 @@ public class IDE extends XJApplicationDelegate {
     public void registerUser() {
         if(!EditorPreferences.isUserRegistered()) {
             sc.setVisible(false);
-            new DialogPersonalInfo().runModal();
+            new DialogPersonalInfo(XJApplication.getActiveContainer()).runModal();
             EditorPreferences.setUserRegistered(true);
         }
     }

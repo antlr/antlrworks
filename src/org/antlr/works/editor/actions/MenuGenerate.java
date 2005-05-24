@@ -52,7 +52,7 @@ public class MenuGenerate extends AbstractActions {
         if(!checkLanguage())
             return;
 
-        DialogGenerate dialog = new DialogGenerate();
+        DialogGenerate dialog = new DialogGenerate(editor.getWindowContainer());
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
             generateCode.setOutputPath(dialog.getOutputPath());
             generateCode.generateInThread(editor, true);
@@ -62,7 +62,7 @@ public class MenuGenerate extends AbstractActions {
 
     public boolean checkLanguage() {
         if(!isKnownLanguage()) {
-            XJAlert.display(editor.getWindowComponent(), "Error", "Can only generate grammar for Java language");
+            XJAlert.display(editor.getWindowContainer(), "Error", "Can only generate grammar for Java language");
             return false;
         } else
             return true;
@@ -80,7 +80,7 @@ public class MenuGenerate extends AbstractActions {
 
     public void showRuleGeneratedCode() {
         if(editor.getCurrentRule() == null)
-            XJAlert.display(editor.getWindowComponent(), "Error", "A rule must be selected first.");
+            XJAlert.display(editor.getWindowContainer(), "Error", "A rule must be selected first.");
         else {
             showGeneratedCode(editor.getCurrentRule().name, false);
             Statistics.shared().recordEvent(Statistics.EVENT_SHOW_RULE_GENERATED_CODE);
@@ -92,7 +92,7 @@ public class MenuGenerate extends AbstractActions {
             return;
 
         if(!generateCode.isGeneratedTextFileExisting(lexer)) {
-            XJAlert.display(editor.getWindowComponent(), "Error", "No generated files found. Please generate the file before perform this action.");
+            XJAlert.display(editor.getWindowContainer(), "Error", "No generated files found. Please generate the file before perform this action.");
             return;
         }
 
@@ -114,7 +114,7 @@ public class MenuGenerate extends AbstractActions {
                 text = text.substring(startIndex, stopIndex);
                 title = rule;
             } else {
-                XJAlert.display(editor.getWindowComponent(), "Error", "Cannot find markers for rule \""+rule+"\"");
+                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot find markers for rule \""+rule+"\"");
                 return;
             }
         }

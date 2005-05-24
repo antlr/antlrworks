@@ -53,7 +53,9 @@ public class DialogBuildAndDebug extends XJDialog {
 
     protected Debugger debugger;
 
-    public DialogBuildAndDebug(Debugger debugger) {
+    public DialogBuildAndDebug(Debugger debugger, Container parent) {
+        super(parent, true);
+
         this.debugger = debugger;
 
         initComponents();
@@ -73,7 +75,7 @@ public class DialogBuildAndDebug extends XJDialog {
 
         browseOutputPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if(XJFileChooser.shared().displayChooseDirectory(DialogBuildAndDebug.this)) {
+                if(XJFileChooser.shared().displayChooseDirectory(DialogBuildAndDebug.this.getJavaComponent())) {
                     outputPathField.setText(XJFileChooser.shared().getSelectedFilePath());
                 }
             }

@@ -1,5 +1,6 @@
 package org.antlr.works.util;
 
+import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.update.XJUpdateManager;
 import edu.usfca.xj.appkit.utils.BrowserLauncher;
@@ -8,6 +9,7 @@ import edu.usfca.xj.appkit.utils.XJLocalizable;
 import edu.usfca.xj.foundation.timer.XJScheduledTimerDelegate;
 import org.antlr.works.editor.EditorPreferences;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Calendar;
 
@@ -62,11 +64,11 @@ public class HelpManager implements XJScheduledTimerDelegate {
         try {
             BrowserLauncher.openURL(XJLocalizable.getString(PROPERTIES_FILE, FEEDBACK_URL));
         } catch (IOException e) {
-            XJAlert.display(parent.getJavaComponent(), "Error", "Cannot display the feedback page because:\n"+e);
+            XJAlert.display(parent.getJavaContainer(), "Error", "Cannot display the feedback page because:\n"+e);
         }
     }
 
-    public static void checkUpdates(XJFrame parent, boolean automatic) {
+    public static void checkUpdates(Container parent, boolean automatic) {
         XJUpdateManager um = new XJUpdateManager(parent, null);
         um.checkForUpdates(XJLocalizable.getString(PROPERTIES_FILE, APP_VERSION),
                            XJLocalizable.getString(PROPERTIES_FILE, UPDATE_XML_URL),
@@ -104,7 +106,7 @@ public class HelpManager implements XJScheduledTimerDelegate {
         }
 
         if(check) {
-            checkUpdates(null, true);
+            checkUpdates(XJApplication.getActiveContainer(), true);
         }
     }
 }

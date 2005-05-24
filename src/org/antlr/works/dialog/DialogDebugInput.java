@@ -42,7 +42,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DialogDebugInput extends XJDialog {
 
-    public DialogDebugInput() {
+    public DialogDebugInput(Container parent) {
+        super(parent, true);
+
         initComponents();
         setSize(600, 400);
         

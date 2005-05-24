@@ -73,7 +73,7 @@ public class DialogPrefs extends XJPanel {
 
         browseJikesPath.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if(XJFileChooser.shared().displayChooseDirectory(DialogPrefs.this)) {
+                if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
                     jikesPathField.setText(XJFileChooser.shared().getSelectedFilePath());
                     EditorPreferences.setJikesPath(jikesPathField.getText());
                 }
@@ -82,7 +82,7 @@ public class DialogPrefs extends XJPanel {
 
         browseUpdateDownloadPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if(XJFileChooser.shared().displayChooseDirectory(DialogPrefs.this)) {
+                if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
                     downloadPathField.setText(XJFileChooser.shared().getSelectedFilePath());
                     EditorPreferences.setDownloadPath(downloadPathField.getText());
                 }
@@ -91,7 +91,7 @@ public class DialogPrefs extends XJPanel {
 
         checkForUpdatesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                HelpManager.checkUpdates(DialogPrefs.this, false);
+                HelpManager.checkUpdates(getJavaContainer(), false);
             }
         });
 

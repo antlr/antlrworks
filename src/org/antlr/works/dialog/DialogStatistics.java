@@ -48,7 +48,9 @@ public class DialogStatistics extends XJDialog {
 
     protected AbstractTableModel model;
 
-    public DialogStatistics() {
+    public DialogStatistics(Container parent) {
+        super(parent, true);
+        
         initComponents();
         setSize(500, 400);
         

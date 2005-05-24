@@ -153,7 +153,7 @@ public class Visual {
     }
 
     public String chooseDOTFile() {
-        if(XJFileChooser.shared().displaySaveDialog(parent, "DOT", "DOT file", false) == false)
+        if(XJFileChooser.shared().displaySaveDialog(parent.getJavaContainer(), "DOT", "DOT file", false) == false)
             return null;
 
         return XJFileChooser.shared().getSelectedFilePath();
@@ -171,7 +171,7 @@ public class Visual {
             writer.write(dot);
             writer.close();
         } catch (IOException e) {
-            XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
+            XJAlert.display(parent.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
 
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_ANTLRNFA_DOT);
@@ -190,7 +190,7 @@ public class Visual {
         try {
             jdot.writeToFile(dotFile);
         } catch (Exception e) {
-            XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
+            XJAlert.display(parent.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
 
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_OPTIMIZEDNFA_DOT);
@@ -209,7 +209,7 @@ public class Visual {
         try {
             jdot.writeToFile(dotFile);
         } catch (Exception e) {
-            XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
+            XJAlert.display(parent.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
 
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_RAWNFA_DOT);
@@ -221,7 +221,7 @@ public class Visual {
 
     public void saveAsImage() {
         if(!canSaveImage()) {
-            XJAlert.display(parent.getJavaComponent(), "Error", "Cannot save rule as image because there is no rule selected.");
+            XJAlert.display(parent.getJavaContainer(), "Error", "Cannot save rule as image because there is no rule selected.");
             return;
         }
 
@@ -232,12 +232,12 @@ public class Visual {
                 extensions.add(ext);
         }
 
-        if(XJFileChooser.shared().displaySaveDialog(parent, extensions, extensions, false)) {
+        if(XJFileChooser.shared().displaySaveDialog(parent.getJavaContainer(), extensions, extensions, false)) {
             String file = XJFileChooser.shared().getSelectedFilePath();
             try {
                 ImageIO.write(panel.getImageOfView(), file.substring(file.lastIndexOf(".")+1), new File(file));
             } catch (IOException e) {
-                XJAlert.display(parent.getJavaComponent(), "Error", "Image \""+file+"\" cannot be saved because:\n"+e);
+                XJAlert.display(parent.getJavaContainer(), "Error", "Image \""+file+"\" cannot be saved because:\n"+e);
             }
             Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_RULE_IMAGE);
         }

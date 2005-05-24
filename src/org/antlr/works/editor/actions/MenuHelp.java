@@ -49,6 +49,6 @@ public class MenuHelp extends AbstractActions {
     }
 
     public void checkUpdates() {
-        HelpManager.checkUpdates(editor, false);
+        HelpManager.checkUpdates(editor.getJavaContainer(), false);
     }
 }
