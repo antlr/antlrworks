@@ -1,7 +1,7 @@
 package org.antlr.works.editor.actions;
 
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.util.Statistics;
+import org.antlr.works.stats.Statistics;
 
 /*
 
@@ -52,7 +52,7 @@ public class MenuActions extends AbstractActions {
 
     public void hideAllActions() {
         editor.actions.hideAllActions();
-        Statistics.shared().recordEvent(Statistics.EVENT_HIDE_ALL_ACTIONS);        
+        Statistics.shared().recordEvent(Statistics.EVENT_HIDE_ALL_ACTIONS);
     }
 
 }

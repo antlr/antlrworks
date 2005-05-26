@@ -1,6 +1,6 @@
 package org.antlr.works.editor.swing;
 
-import org.antlr.works.util.Statistics;
+import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;

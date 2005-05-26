@@ -6,8 +6,8 @@ import org.antlr.works.editor.tool.TActions;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
+import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
-import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

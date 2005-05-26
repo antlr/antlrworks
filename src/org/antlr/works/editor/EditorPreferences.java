@@ -82,6 +82,7 @@ public class EditorPreferences {
 
     // Other
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
+    public static final String PREF_SERVER_ID = "PREF_SERVER_ID";
 
     public static final String PREF_OUTPUT_PATH = "KEY_OUTPUT_PATH";
     public static final String PREF_START_SYMBOL = "KEY_START_SYMBOL";
@@ -165,7 +166,15 @@ public class EditorPreferences {
     public static void removeUserRegistration() {
         getPreferences().remove(PREF_USER_REGISTERED);
     }
-    
+
+    public static void setServerID(String id) {
+        getPreferences().setString(PREF_SERVER_ID, id);
+    }
+
+    public static String getServerID() {
+        return getPreferences().getString(PREF_SERVER_ID, null);
+    }
+
     public static XJPreferences getPreferences() {
         return XJApplication.shared().getPreferences();
     }

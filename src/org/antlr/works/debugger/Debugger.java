@@ -11,8 +11,8 @@ import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextEditorPane;
 import org.antlr.works.editor.swing.TreeUtilities;
+import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
-import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;

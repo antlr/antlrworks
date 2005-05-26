@@ -4,7 +4,7 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
-import org.antlr.works.util.Statistics;
+import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -99,7 +99,7 @@ public class DialogStatistics extends XJDialog {
                     case 0:
                         return Statistics.shared().getEventName(row);
                     case 1:
-                        return Statistics.shared().getEventCount(row);
+                        return new Integer(Statistics.shared().getEventCount(row));
                 }
                 return null;
             }

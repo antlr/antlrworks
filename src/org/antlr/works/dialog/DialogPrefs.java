@@ -10,8 +10,8 @@ import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.HelpManager;
-import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,33 +1,35 @@
 
-Now:
+- remainder for stats
+- geographical info
+- extract all strings into properties
+- correct browserlauncher for Linux
+- send geographical info
+- feedback page on ANTLR
+
+* Terence *
+- problems with SD: a : ((A)*)*;
+
+* Check-list *
+- version in SplashScreen.java
+- version in about.properties
+- version in info.properties
+- remove private menu
+- optimize imports
+
+* Issues *
 
 - interpreter tree doesn't display correctly (but debugger tree does)
 - use "load" on Linux/Windows when opening a document on an untouched one
 - remember last interpreter start symbol
 
-- geographical info
-- GUI stats
-- ANTLR stats fetcher
-- stats reporter
-- think about the Mac OS X packaging
-- XJ: pouvoir indiquer la version de l'application
-
-Terence:
-- problems with SD: a : ((A)*)*;
-
-Check-list:
-- version in SplashScreen.java
-- version in about.properties
-- version in info.properties
-- remove private menu
-
-Test
-
-Issues:
 - TextEditorPane: wrapping doesn't always works on Mac OS X
 - undo: rename + addition -> redo doesn't show "rename" but "addition"
 
-Later:
+* ToDo *
+
+- update manager for stringtemplate/antlr
+- download stringtemplate/antlr if not found
+- make update manager aware of specific OS (i.e. Mac OS X packaging different from Linux/Windows)
 - optimize state arround external ref (negative state should be removed - see if it is always possible)
 - auto-scrolling when following ambiguous paths
 - sort content of auto-completion menu

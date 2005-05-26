@@ -1,12 +1,12 @@
 package org.antlr.works.util;
 
 import edu.usfca.xj.appkit.app.XJApplication;
-import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.update.XJUpdateManager;
 import edu.usfca.xj.appkit.utils.BrowserLauncher;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJLocalizable;
 import edu.usfca.xj.foundation.timer.XJScheduledTimerDelegate;
+import org.antlr.works.dialog.DialogReports;
 import org.antlr.works.editor.EditorPreferences;
 
 import java.awt.*;
@@ -56,15 +56,15 @@ public class HelpManager implements XJScheduledTimerDelegate {
         checkUpdatesAuto(startup);
     }
 
-    public static void submitStats() {
-
+    public static void submitStats(Container parent) {
+        new DialogReports(parent).runModal();
     }
 
-    public static void sendFeedback(XJFrame parent) {
+    public static void sendFeedback(Container parent) {
         try {
             BrowserLauncher.openURL(XJLocalizable.getString(PROPERTIES_FILE, FEEDBACK_URL));
         } catch (IOException e) {
-            XJAlert.display(parent.getJavaContainer(), "Error", "Cannot display the feedback page because:\n"+e);
+            XJAlert.display(parent, "Error", "Cannot display the feedback page because:\n"+e);
         }
     }
 

@@ -11,8 +11,8 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.parser.Parser;
+import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
-import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;

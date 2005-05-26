@@ -7,6 +7,7 @@ import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.codegen.CodeGenerator;
 import org.antlr.tool.Grammar;
+import org.antlr.tool.GrammarReport;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorProvider;
 
@@ -127,6 +128,8 @@ public class CodeGenerate implements Runnable {
             }
 
             generator.genRecognizer();
+
+            new GrammarReport(grammar).writeReport();
         }
     }
 

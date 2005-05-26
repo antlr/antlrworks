@@ -6,7 +6,7 @@ import org.antlr.works.dialog.DialogGenerate;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.code.CodeDisplay;
 import org.antlr.works.editor.code.CodeGenerate;
-import org.antlr.works.util.Statistics;
+import org.antlr.works.stats.Statistics;
 
 /*
 
@@ -75,7 +75,7 @@ public class MenuGenerate extends AbstractActions {
 
     public void showGeneratedCode(boolean lexer) {
         showGeneratedCode(null, lexer);
-        Statistics.shared().recordEvent(lexer?Statistics.EVENT_SHOW_LEXER_GENERATED_CODE:Statistics.EVENT_SHOW_PARSER_GENERATED_CODE);                                
+        Statistics.shared().recordEvent(lexer?Statistics.EVENT_SHOW_LEXER_GENERATED_CODE:Statistics.EVENT_SHOW_PARSER_GENERATED_CODE);
     }
 
     public void showRuleGeneratedCode() {

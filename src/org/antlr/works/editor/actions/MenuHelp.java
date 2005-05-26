@@ -41,11 +41,11 @@ public class MenuHelp extends AbstractActions {
     }
 
     public void submitStats() {
-        HelpManager.submitStats();
+        HelpManager.submitStats(editor.getJavaContainer());
     }
 
     public void sendFeedback() {
-        HelpManager.sendFeedback(editor);
+        HelpManager.sendFeedback(editor.getJavaContainer());
     }
 
     public void checkUpdates() {

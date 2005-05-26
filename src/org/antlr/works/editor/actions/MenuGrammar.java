@@ -4,7 +4,7 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.tool.TUsage;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
-import org.antlr.works.util.Statistics;
+import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
 import java.awt.*;

@@ -35,19 +35,39 @@ import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
+import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJLocalizable;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.HelpManager;
-import org.antlr.works.util.Statistics;
 
 import javax.swing.*;
 
 public class IDE extends XJApplicationDelegate {
 
     public static SplashScreen sc;
+
+   /* private static Object  getBasicServiceObject ( )
+    {
+        try
+        {
+            Class  serviceManagerClass
+                    = Class.forName ( "javax.jnlp.ServiceManager" );
+
+            Method  lookupMethod = serviceManagerClass.getMethod (
+                    "lookup", new Class [ ] { String.class } );
+
+            return lookupMethod.invoke (
+                    null, new Object [ ] { "javax.jnlp.BasicService" } );
+        }
+        catch ( Exception  ex )
+        {
+            return null;
+        }
+    }      */
 
     public static void main(String[] args) {
 
@@ -82,6 +102,7 @@ public class IDE extends XJApplicationDelegate {
         XJApplication.addScheduledTimer(new HelpManager(), 5*60, true);
 
         registerUser();
+        checkLibraries();
 
         switch (EditorPreferences.getStartupAction()) {
             case EditorPreferences.STARTUP_NEW_DOC:
@@ -99,10 +120,33 @@ public class IDE extends XJApplicationDelegate {
     }
 
     public void registerUser() {
+
         if(!EditorPreferences.isUserRegistered()) {
             sc.setVisible(false);
             new DialogPersonalInfo(XJApplication.getActiveContainer()).runModal();
             EditorPreferences.setUserRegistered(true);
+        }
+    }
+
+    public void checkLibraries() {
+        StringBuffer missing = new StringBuffer();
+
+        try {
+            Class.forName("org.antlr.Tool");
+        } catch (ClassNotFoundException e) {
+            missing.append("\n- ANTLR 3.x");
+        }
+
+        try {
+            Class.forName("org.antlr.stringtemplate.StringTemplate");
+        } catch (ClassNotFoundException e) {
+            missing.append("\n- StringTemplate");
+        }
+
+        if(missing.length()>0) {
+            missing.insert(0, "ANTLRWorks cannot find the following libraries:");
+            missing.append("\nThey are required in order to use all the features of ANTLRWorks.\nDownload them from www.antlr.org and put them in the same directory as ANTLRWorks.");
+            XJAlert.display(XJApplication.getActiveContainer(), "Missing Libraries", missing.toString());
         }
     }
 

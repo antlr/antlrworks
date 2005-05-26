@@ -3,7 +3,7 @@ package org.antlr.works.editor.actions;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.util.Statistics;
+import org.antlr.works.stats.Statistics;
 
 import java.io.FileWriter;
 import java.io.IOException;

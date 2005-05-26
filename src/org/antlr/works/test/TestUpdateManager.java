@@ -64,7 +64,7 @@ public class TestUpdateManager {
         System.out.println(XJUtils.isVersionGreaterThan("0.2", "0.1") == true);*/
 
         XJUpdateManager um = new XJUpdateManager(null, null);
-        um.fetchRemoteUpdateInformation("http://www.cs.usfca.edu/~jbovet/antlrworks/update.xml");
+        um.fetchRemoteUpdateInformation("http://www.cs.usfca.edu/~jbovet/antlrworks/update.xml", true);
         boolean r = um.isUpdateAvailable("0");
         System.out.println("Update available: "+r);
         if(r) {

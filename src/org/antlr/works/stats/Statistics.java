@@ -1,11 +1,8 @@
-package org.antlr.works.util;
+package org.antlr.works.stats;
 
 import org.antlr.works.editor.EditorPreferences;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /*
 
@@ -93,6 +90,8 @@ public class Statistics {
     public static final int EVENT_DEBUGGER_SHOW_EVENTS_LIST = 37;
     public static final int EVENT_DEBUGGER_SHOW_RULES_STACK = 38;
 
+    public static final int EVENT_COUNT = 39;
+
     protected static final String[] eventNames = { "Intepreter (menu)" ,
                                                    "Interpreter (button)",
                                                    "Debugger (remote)",
@@ -134,7 +133,7 @@ public class Statistics {
                                                    "Debugger show rules stack"
     };
 
-    protected Map map = null;
+    protected int[] events = null;
     protected String date = null;
 
     public static Statistics shared() {
@@ -144,7 +143,9 @@ public class Statistics {
     }
 
     public void reset() {
-        getMap().clear();
+        for (int i = 0; i < events.length; i++) {
+            events[i] = 0;
+        }
         initDate();
     }
 
@@ -161,17 +162,15 @@ public class Statistics {
     }
 
     public int getCount() {
-        return getMap().size();
+        return getEvents().length;
     }
 
     public Object getEventName(int index) {
-        Integer key = (Integer)getMap().keySet().toArray()[index];
-        return eventNames[key.intValue()];
+        return eventNames[index];
     }
 
-    public Object getEventCount(int index) {
-        Object key = getMap().keySet().toArray()[index];
-        return getMap().get(key);
+    public int getEventCount(int index) {
+        return getEvents()[index];
     }
 
     public void recordEvent(int event) {
@@ -179,26 +178,27 @@ public class Statistics {
     }
 
     public void close() {
-        EditorPreferences.getPreferences().setObject(PREF_KEY, getMap());
+        EditorPreferences.getPreferences().setObject(PREF_KEY, events);
     }
 
-    protected Map getMap() {
-        if(map == null) {
-            map = (Map)EditorPreferences.getPreferences().getObject(PREF_KEY, null);
-            if(map == null) {
-                map = new HashMap();
+    protected int[] getEvents() {
+        if(events == null) {
+            try {
+                events = (int[])EditorPreferences.getPreferences().getObject(PREF_KEY, null);
+            } catch(Exception e) {
+                events = null;
+                System.err.println("Statistics: "+e);
+            }
+            if(events == null || events.length != EVENT_COUNT) {
+                events = new int[EVENT_COUNT];
                 initDate();
             }
         }
-        return map;
+        return events;
     }
 
     protected void setCount(int event, int count) {
-        setObject(event, new Integer(count));
-    }
-
-    protected void setObject(int event, Object object) {
-        getMap().put(new Integer(event), object);
+        getEvents()[event] = count;
     }
 
     protected int getCount(int event) {
@@ -210,19 +210,28 @@ public class Statistics {
     }
 
     protected Object getObject(int event) {
-        return getMap().get(new Integer(event));
+        return new Integer(getEvents()[event]);
     }
 
-    public String getStringRepresentation() {
-        StringBuffer s = new StringBuffer("Statistics:\n");
-
-        Map map = getMap();
-        for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-            Object key = iterator.next();
-            Object value = map.get(key);
-            s.append("Event = "+key+", count = "+value+"\n");
+    public String getRawString() {
+        StringBuffer s = new StringBuffer();
+        for (int i = 0; i < getEvents().length; i++) {
+            s.append(events[i]);
+            if(i<events.length-1)
+                s.append('\t');
         }
+        return s.toString();
+    }
 
+    public String getReadableString() {
+        StringBuffer s = new StringBuffer();
+        for (int i = 0; i < getEvents().length; i++) {
+            s.append(eventNames[i]);
+            s.append(": ");
+            s.append(events[i]);
+            if(i<events.length-1)
+                s.append('\n');
+        }
         return s.toString();
     }
 }

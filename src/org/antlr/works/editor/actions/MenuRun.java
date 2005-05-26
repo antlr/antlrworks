@@ -1,7 +1,7 @@
 package org.antlr.works.editor.actions;
 
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.util.Statistics;
+import org.antlr.works.stats.Statistics;
 
 /*
 
