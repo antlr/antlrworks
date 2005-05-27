@@ -3,8 +3,9 @@ package org.antlr.works.dialog;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.frame.XJDialog;
+import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.works.util.Localizable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +53,7 @@ public class DialogDebugInput extends XJDialog {
         setOKButton(okButton);
         setCancelButton(cancelButton);
 
-        inputTextArea.setFont(new Font("Courier", Font.PLAIN, 12));
+        inputTextArea.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
         inputTextArea.requestFocus();
     }
 
@@ -138,7 +139,7 @@ public class DialogDebugInput extends XJDialog {
                 //---- cancelButton ----
                 cancelButton.setText("Cancel");
 
-                if(XJApplication.isMacOS()) {
+                if(XJSystem.isMacOS()) {
                     buttonBar.add(cancelButton, cc.xy(2, 1));
                     buttonBar.add(okButton, cc.xy(4, 1));
                 } else {

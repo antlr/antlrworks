@@ -54,7 +54,6 @@ public class DialogPrefs extends XJPanel {
     public static final String NOTIF_PREFS_APPLIED = "NOTIF_PREFS_APPLIED";
 
     protected ButtonGroup compilerRadioButtonGroup;
-    protected ButtonGroup statisticsRadioButtonGroup;
 
     public DialogPrefs() {
 
@@ -104,13 +103,6 @@ public class DialogPrefs extends XJPanel {
         javacRadio.setActionCommand("javac");
         jikesRadio.setActionCommand("jikes");
 
-        statisticsRadioButtonGroup = new ButtonGroup();
-        statisticsRadioButtonGroup.add(statsManuallyRadio);
-        statisticsRadioButtonGroup.add(statsWeeklyRadio);
-
-        statsManuallyRadio.setActionCommand("manually");
-        statsWeeklyRadio.setActionCommand("weekly");
-
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         String fontNames[] = ge.getAvailableFontFamilyNames();
 
@@ -137,7 +129,7 @@ public class DialogPrefs extends XJPanel {
         getPreferences().bindToPreferences(compilerRadioButtonGroup, EditorPreferences.PREF_COMPILER, EditorPreferences.DEFAULT_COMPILER);
 
         // Statistics
-        getPreferences().bindToPreferences(statisticsRadioButtonGroup, EditorPreferences.PREF_STAT_REPORT_METHOD, EditorPreferences.DEFAULT_STAT_REPORT_METHOD);
+        getPreferences().bindToPreferences(reportTypeCombo, EditorPreferences.PREF_STATS_REMINDER_METHOD, EditorPreferences.DEFAULT_STATS_REMINDER_METHOD);
 
         // Updates
         getPreferences().bindToPreferences(updateTypeCombo, EditorPreferences.PREF_UPDATE_TYPE, EditorPreferences.DEFAULT_UPDATE_TYPE);
@@ -155,9 +147,6 @@ public class DialogPrefs extends XJPanel {
     private static XJPreferences getPreferences() {
         return XJApplication.shared().getPreferences();
     }
-
-    // Note: make sure the actionCommand of each compiler radio button matches
-    // the string in EditorPreferences (i.e. COMPILER_JAVAC, etc.)
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -182,10 +171,9 @@ public class DialogPrefs extends XJPanel {
         jikesPathField = new JTextField();
         browseJikesPath = new JButton();
         panel3 = new JPanel();
+        reportTypeCombo = new JComboBox();
         label6 = new JLabel();
-        statsManuallyRadio = new JRadioButton();
         label8 = new JLabel();
-        statsWeeklyRadio = new JRadioButton();
         label9 = new JLabel();
         panel4 = new JPanel();
         label7 = new JLabel();
@@ -262,7 +250,7 @@ public class DialogPrefs extends XJPanel {
                         panel1.add(tabWidthField, cc.xy(5, 5));
 
                         //---- label3 ----
-                        label3.setText("Editor Font:");
+                        label3.setText("Editor font:");
                         panel1.add(label3, cc.xy(3, 7));
 
                         //---- editorFontCombo ----
@@ -361,24 +349,24 @@ public class DialogPrefs extends XJPanel {
                                 FormFactory.DEFAULT_ROWSPEC
                             }));
 
+                        //---- reportTypeCombo ----
+                        reportTypeCombo.setModel(new DefaultComboBoxModel(new String[] {
+                            "Manually",
+                            "Remind me automatically each week"
+                        }));
+                        panel3.add(reportTypeCombo, cc.xywh(3, 5, 3, 1));
+
                         //---- label6 ----
                         label6.setText("Submit reports:");
                         panel3.add(label6, cc.xy(3, 3));
 
-                        //---- statsManuallyRadio ----
-                        statsManuallyRadio.setText("Manually");
-                        panel3.add(statsManuallyRadio, cc.xy(5, 5));
-
                         //---- label8 ----
-                        label8.setText("No personal or confidential information are sent.");
+                        label8.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+                        label8.setText("No personal or confidential information is sent.");
                         panel3.add(label8, cc.xywh(3, 9, 3, 1));
 
-                        //---- statsWeeklyRadio ----
-                        statsWeeklyRadio.setSelected(true);
-                        statsWeeklyRadio.setText("Automatically each week");
-                        panel3.add(statsWeeklyRadio, cc.xy(5, 7));
-
                         //---- label9 ----
+                        label9.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
                         label9.setText("Each report is displayed in human readable form before being sent.");
                         panel3.add(label9, cc.xywh(3, 11, 3, 1));
                     }
@@ -463,7 +451,6 @@ public class DialogPrefs extends XJPanel {
             dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
-
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
@@ -489,10 +476,9 @@ public class DialogPrefs extends XJPanel {
     private JTextField jikesPathField;
     private JButton browseJikesPath;
     private JPanel panel3;
+    private JComboBox reportTypeCombo;
     private JLabel label6;
-    private JRadioButton statsManuallyRadio;
     private JLabel label8;
-    private JRadioButton statsWeeklyRadio;
     private JLabel label9;
     private JPanel panel4;
     private JLabel label7;
@@ -504,7 +490,5 @@ public class DialogPrefs extends XJPanel {
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
-
-
 
 }

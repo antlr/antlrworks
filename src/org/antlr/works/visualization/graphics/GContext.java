@@ -1,5 +1,6 @@
 package org.antlr.works.visualization.graphics;
 
+import org.antlr.works.util.Localizable;
 import org.antlr.works.visualization.graphics.primitive.GLiteral;
 import org.antlr.works.visualization.graphics.shape.GLink;
 import org.antlr.works.visualization.graphics.shape.GNode;
@@ -182,13 +183,13 @@ public class GContext {
 
     public Font getBoxFont() {
         if(boxFont == null)
-            boxFont = new Font("Courier", Font.PLAIN, (int)(4*value_factor));
+            boxFont = new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, (int)(4*value_factor));
         return boxFont;
     }
 
     public Font getRuleFont() {
         if(titleFont == null)
-            titleFont = new Font("Courier", Font.ITALIC, (int)(4*value_factor));
+            titleFont = new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.ITALIC, (int)(4*value_factor));
         return titleFont;
     }
 

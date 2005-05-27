@@ -91,7 +91,7 @@ public class MenuGrammar extends AbstractActions {
         if(token == null)
             return;
 
-        String s = (String)JOptionPane.showInputDialog(null, "Rename '"+token.getAttribute()+"' and its usages to:", "Rename",
+        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Rename '"+token.getAttribute()+"' and its usages to:", "Rename",
                 JOptionPane.QUESTION_MESSAGE, null, null, token.getAttribute());
         if(s != null && !s.equals(token.getAttribute())) {
             editor.disableTextPane(false);
@@ -165,7 +165,7 @@ public class MenuGrammar extends AbstractActions {
     }
 
     public void goToLine() {
-        String s = (String)JOptionPane.showInputDialog(null, "Line number:", "Go To Line",
+        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Line number:", "Go To Line",
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if(s != null) {
             moveCursorToLine(Integer.parseInt(s)-1);
@@ -174,7 +174,7 @@ public class MenuGrammar extends AbstractActions {
     }
 
     public void goToCharacter() {
-        String s = (String)JOptionPane.showInputDialog(null, "Character number:", "Go To Character",
+        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Character number:", "Go To Character",
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if(s != null) {
             int character = Integer.parseInt(s)-1;

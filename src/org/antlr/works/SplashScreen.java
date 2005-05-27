@@ -3,6 +3,7 @@ package org.antlr.works;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import org.antlr.works.util.IconManager;
+import org.antlr.works.util.Localizable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,20 +43,25 @@ public class SplashScreen extends JWindow {
 
 	public SplashScreen() {
 		initComponents();
+
+        iconButton.setIcon(IconManager.shared().getIconApplication());
+
+        appNameLabel.setText(Localizable.getLocalizedString(Localizable.APP_NAME));
+        infoLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_INFO));
+        versionLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_VERSION));
+        copyrightLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_COPYRIGHT));
+
         pack();
         setLocationRelativeTo(null);
 	}
 
-    // !!! Don't forget to update the icon path with a call to the IconManager
-    // as well as the parametrized texts
-
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        button1 = new JButton();
-        label1 = new JLabel();
-        label3 = new JLabel();
-        label4 = new JLabel();
-        label2 = new JLabel();
+        iconButton = new JButton();
+        appNameLabel = new JLabel();
+        infoLabel = new JLabel();
+        versionLabel = new JLabel();
+        copyrightLabel = new JLabel();
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
@@ -85,36 +91,36 @@ public class SplashScreen extends JWindow {
             }));
 
         //---- button1 ----
-        button1.setBorder(null);
-        button1.setBorderPainted(false);
-        button1.setIcon(IconManager.shared().getIconApplication());
-        contentPane.add(button1, cc.xywh(3, 3, 1, 7));
+        iconButton.setBorder(null);
+        iconButton.setBorderPainted(false);
+        iconButton.setIcon(IconManager.shared().getIconApplication());
+        contentPane.add(iconButton, cc.xywh(3, 3, 1, 7));
 
         //---- label1 ----
-        label1.setFont(new Font("Lucida Grande", Font.PLAIN, 48));
-        label1.setText("ANTLRWorks");
-        contentPane.add(label1, cc.xy(5, 3));
+        appNameLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 48));
+        appNameLabel.setText("ANTLRWorks");
+        contentPane.add(appNameLabel, cc.xy(5, 3));
 
         //---- label3 ----
-        label3.setText("Edit, visualize and debug ANTLR grammar");
-        label3.setVerticalAlignment(SwingConstants.TOP);
-        contentPane.add(label3, cc.xy(5, 5));
+        infoLabel.setText("Edit, visualize and debug ANTLR grammars");
+        infoLabel.setVerticalAlignment(SwingConstants.TOP);
+        contentPane.add(infoLabel, cc.xy(5, 5));
 
         //---- label4 ----
-        label4.setText("Version 1.0er1");
-        contentPane.add(label4, cc.xy(5, 7));
+        versionLabel.setText("Version 1.0er1");
+        contentPane.add(versionLabel, cc.xy(5, 7));
 
         //---- label2 ----
-        label2.setText("(c) 2005 Jean Bovet & Terence Parr");
-        contentPane.add(label2, cc.xy(5, 9));
+        copyrightLabel.setText("(c) 2005 Jean Bovet & Terence Parr");
+        contentPane.add(copyrightLabel, cc.xy(5, 9));
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    private JButton button1;
-    private JLabel label1;
-    private JLabel label3;
-    private JLabel label4;
-    private JLabel label2;
+    private JButton iconButton;
+    private JLabel appNameLabel;
+    private JLabel infoLabel;
+    private JLabel versionLabel;
+    private JLabel copyrightLabel;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

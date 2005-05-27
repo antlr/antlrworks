@@ -91,11 +91,11 @@ public class StatisticsManager {
     }
 
     protected boolean loadGrammar() {
-        return loadFromFile(new GrammarReport(null).getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME));
+        return loadFromFile(GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME));
     }
 
     protected boolean loadRuntime() {
-        return loadFromFile(new GrammarReport(null).getAbsoluteFileName(GrammarReport.RUNTIME_STATS_FILENAME));
+        return loadFromFile(GrammarReport.getAbsoluteFileName(GrammarReport.RUNTIME_STATS_FILENAME));
     }
 
     protected boolean loadFromFile(String file) {
@@ -130,4 +130,7 @@ public class StatisticsManager {
         rawLines.add(line);
     }
 
+    public void reset() {
+        // @todo implement
+    }
 }

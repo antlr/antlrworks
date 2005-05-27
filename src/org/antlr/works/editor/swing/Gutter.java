@@ -62,7 +62,7 @@ public class Gutter extends JComponent {
                 Point m = e.getPoint();
                 for(int i=0; i<markerInfos.size(); i++) {
                     MarkerInfo info = (MarkerInfo)markerInfos.get(i);
-                    if(m.y >= info.coord_y && m.y <= info.coord_y+MARKER_HEIGHT) {
+                    if(m.y >= info.coord_y-MARKER_HEIGHT*0.5 && m.y <= info.coord_y+MARKER_HEIGHT*0.5) {                        
                         toggleBreakpoint(info.line);
                         break;
                     }

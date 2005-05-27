@@ -34,15 +34,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
+import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJLocalizable;
+import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.HelpManager;
+import org.antlr.works.util.Localizable;
 
 import javax.swing.*;
 
@@ -50,32 +53,14 @@ public class IDE extends XJApplicationDelegate {
 
     public static SplashScreen sc;
 
-   /* private static Object  getBasicServiceObject ( )
-    {
-        try
-        {
-            Class  serviceManagerClass
-                    = Class.forName ( "javax.jnlp.ServiceManager" );
-
-            Method  lookupMethod = serviceManagerClass.getMethod (
-                    "lookup", new Class [ ] { String.class } );
-
-            return lookupMethod.invoke (
-                    null, new Object [ ] { "javax.jnlp.BasicService" } );
-        }
-        catch ( Exception  ex )
-        {
-            return null;
-        }
-    }      */
-
     public static void main(String[] args) {
 
         // Needs to specify the Mac OS X property here (starting from Tiger)
         // before any other line of code (the usual XJApplication won't work
         // because we are instanciating a SplashScreen before it)
 
-        System.setProperty("apple.laf.useScreenMenuBar","true");
+        XJSystem.setSystemProperties();
+        XJApplication.setPropertiesPath("org/antlr/works/properties/");
 
         sc = new SplashScreen();
 
@@ -95,9 +80,7 @@ public class IDE extends XJApplicationDelegate {
     public void appDidLaunch() {
 
         XJLookAndFeel.applyLookAndFeel(EditorPreferences.getLookAndFeel());
-
-        XJApplication.setPropertiesPath("org/antlr/works/properties/");
-        XJApplication.addDocumentType(Document.class, EditorWindow.class, XJDataPlainText.class, "g", XJLocalizable.getString("strings", "GrammarDocumentType"));
+        XJApplication.addDocumentType(Document.class, EditorWindow.class, XJDataPlainText.class, "g", Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
 
         XJApplication.addScheduledTimer(new HelpManager(), 5*60, true);
 
@@ -120,10 +103,9 @@ public class IDE extends XJApplicationDelegate {
     }
 
     public void registerUser() {
-
         if(!EditorPreferences.isUserRegistered()) {
             sc.setVisible(false);
-            new DialogPersonalInfo(XJApplication.getActiveContainer()).runModal();
+            new DialogPersonalInfo(null).runModal();
             EditorPreferences.setUserRegistered(true);
         }
     }
@@ -144,9 +126,11 @@ public class IDE extends XJApplicationDelegate {
         }
 
         if(missing.length()>0) {
+            sc.setVisible(false);
             missing.insert(0, "ANTLRWorks cannot find the following libraries:");
             missing.append("\nThey are required in order to use all the features of ANTLRWorks.\nDownload them from www.antlr.org and put them in the same directory as ANTLRWorks.");
-            XJAlert.display(XJApplication.getActiveContainer(), "Missing Libraries", missing.toString());
+            XJAlert.display(null, "Missing Libraries", missing.toString());
+            System.exit(0);
         }
     }
 
@@ -162,6 +146,10 @@ public class IDE extends XJApplicationDelegate {
         return DialogPrefs.class;
     }
 
+    public XJPanel appInstanciateAboutPanel() {
+        return new DialogAbout();
+    };
+
     public boolean appHasPreferencesMenuItem() {
         return true;
     }
@@ -174,4 +162,11 @@ public class IDE extends XJApplicationDelegate {
         return IDE.class;
     }
 
+    public String appVersionShort() {
+        return Localizable.getLocalizedString(Localizable.APP_VERSION_SHORT);
+    }
+
+    public String appVersionLong() {
+        return Localizable.getLocalizedString(Localizable.APP_VERSION_LONG);
+    }
 }

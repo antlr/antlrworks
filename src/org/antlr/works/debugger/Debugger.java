@@ -13,6 +13,7 @@ import org.antlr.works.editor.swing.TextEditorPane;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
+import org.antlr.works.util.Localizable;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -60,8 +61,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class Debugger {
 
-    public static final String localAddress = "localhost";
-    public static final int localPort = 2005;
+    public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
+    public static final int DEFAULT_LOCAL_PORT = 2005;
 
     public static final String NOTIF_DEBUG_STARTED = "NOTIF_DEBUG_STARTED";
     public static final String NOTIF_DEBUG_STOPPED = "NOTIF_DEBUG_STOPPED";
@@ -148,7 +149,7 @@ public class Debugger {
         textPane.setPreferredSize(new Dimension(200, 0));
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
-        textPane.setFont(new Font("Courier", Font.PLAIN, 12));
+        textPane.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
         textPane.setText("");
         textPane.setEditable(false);
 
@@ -468,7 +469,7 @@ public class Debugger {
                 Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER_BUILD);
             else
                 Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER);
-            debuggerLaunch(localAddress, localPort);
+            debuggerLaunch(DEFAULT_LOCAL_ADDRESS, DEFAULT_LOCAL_PORT);
         }
     }
 

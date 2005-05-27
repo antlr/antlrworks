@@ -1,10 +1,6 @@
-package org.antlr.works.editor.code;
+package org.antlr.works.util;
 
-import org.antlr.works.editor.swing.TextEditorPane;
-import org.antlr.works.util.Localizable;
-
-import javax.swing.*;
-import java.awt.*;
+import edu.usfca.xj.appkit.utils.XJLocalizable;
 
 /*
 
@@ -37,32 +33,26 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class CodeDisplay {
+public class Localizable {
 
-    protected JPanel panel;
-    protected TextEditorPane textPane;
+    public static final String PROPERTIES_FILE = "strings";
 
-    public CodeDisplay() {
+    public static final String DOCUMENT_TYPE = "GrammarDocumentType";
 
-        panel = new JPanel(new BorderLayout());
+    public static final String APP_NAME = "AppName";
+    public static final String APP_VERSION_SHORT = "AppVersionShort";
+    public static final String APP_VERSION_LONG = "AppVersionLong";
 
-        textPane = new TextEditorPane();
-        textPane.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
-        textPane.setWordWrap(false);
+    public static final String SPLASH_INFO = "SplashInfo";
+    public static final String SPLASH_VERSION = "SplashVersion";
+    public static final String SPLASH_COPYRIGHT = "SplashCopyright";
 
-        JScrollPane scrollPane = new JScrollPane(textPane);
-        scrollPane.setWheelScrollingEnabled(true);
+    public static final String DEFAULT_FONT = "DefaultFont";
+    public static final String UPDATE_XML_URL = "UpdateXMLURL";
+    public static final String FEEDBACK_URL = "FeedbackURL";
 
-        panel.add(scrollPane, BorderLayout.CENTER);
-    }
-
-    public void setText(String text) {
-        textPane.setText(text);
-        textPane.setCaretPosition(0);
-    }
-
-    public Container getContainer() {
-        return panel;
+    public static String getLocalizedString(String key) {
+        return XJLocalizable.getString(PROPERTIES_FILE, key);
     }
 
 }

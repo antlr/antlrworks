@@ -1,20 +1,21 @@
 
-- remainder for stats
-- geographical info
-- extract all strings into properties
-- correct browserlauncher for Linux
 - send geographical info
-- feedback page on ANTLR
+- reset stats after successful submission
+- controler que les messages d'erreur ne s'affiche plus lors de l'edition de la grammaire (rajouter un ErrorListener peut-etre)
+
+- traduire en francais en_US.stg dans /tool/templates/messages
+
+- extract all strings into properties
 
 * Terence *
 - problems with SD: a : ((A)*)*;
 
 * Check-list *
-- version in SplashScreen.java
 - version in about.properties
-- version in info.properties
+- version in strings.properties
 - remove private menu
 - optimize imports
+- check update.xml file (remove debug version!)
 
 * Issues *
 
@@ -27,6 +28,7 @@
 
 * ToDo *
 
+- minimum font size 12 in sd (then ... and mouse over -> show full name)
 - update manager for stringtemplate/antlr
 - download stringtemplate/antlr if not found
 - make update manager aware of specific OS (i.e. Mac OS X packaging different from Linux/Windows)

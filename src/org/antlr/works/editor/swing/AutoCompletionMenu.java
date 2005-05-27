@@ -1,5 +1,6 @@
 package org.antlr.works.editor.swing;
 
+import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -99,7 +100,7 @@ public class AutoCompletionMenu extends JWindow {
                 return Math.min(listModel.getSize(), 10);
             }
         };
-        list.setFont(new Font("Courier", Font.PLAIN, 12));
+        list.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, 12));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setBackground(new Color(235, 244, 254));
         list.addKeyListener(new MyKeyAdapter());

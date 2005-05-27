@@ -1,5 +1,6 @@
 package org.antlr.works.stats;
 
+import edu.usfca.xj.appkit.app.XJApplication;
 import org.antlr.works.editor.EditorPreferences;
 
 import java.util.Date;
@@ -215,6 +216,8 @@ public class Statistics {
 
     public String getRawString() {
         StringBuffer s = new StringBuffer();
+        s.append(XJApplication.getAppVersionShort());
+        s.append('\t');
         for (int i = 0; i < getEvents().length; i++) {
             s.append(events[i]);
             if(i<events.length-1)
@@ -225,6 +228,9 @@ public class Statistics {
 
     public String getReadableString() {
         StringBuffer s = new StringBuffer();
+        s.append("Version: ");
+        s.append(XJApplication.getAppVersionShort());
+        s.append('\n');
         for (int i = 0; i < getEvents().length; i++) {
             s.append(eventNames[i]);
             s.append(": ");

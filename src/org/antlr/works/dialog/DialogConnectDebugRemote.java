@@ -3,8 +3,8 @@ package org.antlr.works.dialog;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.frame.XJDialog;
+import edu.usfca.xj.foundation.XJSystem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -139,7 +139,7 @@ public class DialogConnectDebugRemote extends XJDialog {
 				//---- cancelButton ----
 				cancelButton.setText("Cancel");
 
-                if(XJApplication.isMacOS()) {
+                if(XJSystem.isMacOS()) {
                     buttonBar.add(cancelButton, cc.xy(2, 1));
                     buttonBar.add(connectButton, cc.xy(4, 1));
                 } else {

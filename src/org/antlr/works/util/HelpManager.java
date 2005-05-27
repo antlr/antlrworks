@@ -4,8 +4,10 @@ import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.update.XJUpdateManager;
 import edu.usfca.xj.appkit.utils.BrowserLauncher;
 import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJLocalizable;
+import edu.usfca.xj.foundation.XJSystem;
+import edu.usfca.xj.foundation.XJUtils;
 import edu.usfca.xj.foundation.timer.XJScheduledTimerDelegate;
+import org.antlr.Tool;
 import org.antlr.works.dialog.DialogReports;
 import org.antlr.works.editor.EditorPreferences;
 
@@ -46,14 +48,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class HelpManager implements XJScheduledTimerDelegate {
 
-    public static final String PROPERTIES_FILE = "info";
-
-    public static final String UPDATE_XML_URL = "UpdateXMLURL";
-    public static final String FEEDBACK_URL = "FeedbackURL";
-    public static final String APP_VERSION = "AppVersion";
-
     public void scheduledTimerFired(boolean startup) {
         checkUpdatesAuto(startup);
+        checkStatsReminder();
     }
 
     public static void submitStats(Container parent) {
@@ -61,17 +58,27 @@ public class HelpManager implements XJScheduledTimerDelegate {
     }
 
     public static void sendFeedback(Container parent) {
+        StringBuffer url = new StringBuffer(Localizable.getLocalizedString(Localizable.FEEDBACK_URL));
+        url.append("?ANTLRVersion=");
+        url.append(XJUtils.encodeToURL(Tool.Version));
+        url.append("&ANTLRWorksVersion=");
+        url.append(XJUtils.encodeToURL(XJApplication.getAppVersionShort()));
+        url.append("&OS=");
+        url.append(XJUtils.encodeToURL(XJSystem.getOSName()));
+        url.append("&JavaVersion=");
+        url.append(XJUtils.encodeToURL(XJSystem.getJavaRuntimeVersion()));
+
         try {
-            BrowserLauncher.openURL(XJLocalizable.getString(PROPERTIES_FILE, FEEDBACK_URL));
+            BrowserLauncher.openURL(url.toString());
         } catch (IOException e) {
-            XJAlert.display(parent, "Error", "Cannot display the feedback page because:\n"+e);
+            XJAlert.display(parent, "Error", "Cannot display the feedback page because:\n"+e+"\n\nTo report a feedback, go to "+url+".");
         }
     }
 
     public static void checkUpdates(Container parent, boolean automatic) {
         XJUpdateManager um = new XJUpdateManager(parent, null);
-        um.checkForUpdates(XJLocalizable.getString(PROPERTIES_FILE, APP_VERSION),
-                           XJLocalizable.getString(PROPERTIES_FILE, UPDATE_XML_URL),
+        um.checkForUpdates(Localizable.getLocalizedString(Localizable.APP_VERSION_SHORT),
+                           Localizable.getLocalizedString(Localizable.UPDATE_XML_URL),
                            EditorPreferences.getDownloadPath(),
                            automatic);
     }
@@ -92,12 +99,12 @@ public class HelpManager implements XJScheduledTimerDelegate {
 
                 switch(method) {
                     case EditorPreferences.UPDATE_DAILY:
-                        check = true;
+                        check = nextUpdateCalendar != null;
                         currentCalendar.add(Calendar.DATE, 1);
                         EditorPreferences.setUpdateNextDate(currentCalendar);
                         break;
                     case EditorPreferences.UPDATE_WEEKLY:
-                        check = true;
+                        check = nextUpdateCalendar != null;
                         currentCalendar.add(Calendar.DATE, 7);
                         EditorPreferences.setUpdateNextDate(currentCalendar);
                         break;
@@ -106,7 +113,34 @@ public class HelpManager implements XJScheduledTimerDelegate {
         }
 
         if(check) {
-            checkUpdates(XJApplication.getActiveContainer(), true);
+            checkUpdates(null, true);
+        }
+    }
+
+    public void checkStatsReminder() {
+        int method = EditorPreferences.getStatsReminderType();
+        boolean remind = false;
+
+        if(method == EditorPreferences.STATS_REMINDER_MANUALLY)
+            remind = false;
+        else {
+            Calendar currentCalendar = Calendar.getInstance();
+            Calendar nextUpdateCalendar = EditorPreferences.getStatsReminderNextDate();
+
+            if(nextUpdateCalendar == null || currentCalendar.equals(nextUpdateCalendar) || currentCalendar.after(nextUpdateCalendar)) {
+
+                switch(method) {
+                    case EditorPreferences.STATS_REMINDER_WEEKLY:
+                        remind = nextUpdateCalendar != null;
+                        currentCalendar.add(Calendar.DATE, 7);
+                        EditorPreferences.setStatsReminderNextDate(currentCalendar);
+                        break;
+                }
+            }
+        }
+
+        if(remind) {
+            new DialogReports(null).runModal();
         }
     }
 }
