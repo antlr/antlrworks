@@ -1,7 +1,6 @@
 package org.antlr.works.debugger;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.DebuggerInputText.TokenInfo;
 import org.antlr.works.editor.swing.TextEditorPane;
 import org.antlr.works.editor.swing.TextEditorPaneDelegate;
 

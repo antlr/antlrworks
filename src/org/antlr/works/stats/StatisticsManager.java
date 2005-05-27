@@ -1,6 +1,7 @@
 package org.antlr.works.stats;
 
 import org.antlr.tool.GrammarReport;
+import org.antlr.runtime.debug.Profiler;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -95,7 +96,7 @@ public class StatisticsManager {
     }
 
     protected boolean loadRuntime() {
-        return loadFromFile(GrammarReport.getAbsoluteFileName(GrammarReport.RUNTIME_STATS_FILENAME));
+        return loadFromFile(GrammarReport.getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME));
     }
 
     protected boolean loadFromFile(String file) {

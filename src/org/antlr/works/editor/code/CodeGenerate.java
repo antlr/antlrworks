@@ -129,7 +129,9 @@ public class CodeGenerate implements Runnable {
 
             generator.genRecognizer();
 
-            new GrammarReport(grammar).writeReport();
+            GrammarReport report = new GrammarReport(grammar);
+            GrammarReport.writeReport(GrammarReport.GRAMMAR_STATS_FILENAME,
+                                      report.toNotifyString());            
         }
     }
 
