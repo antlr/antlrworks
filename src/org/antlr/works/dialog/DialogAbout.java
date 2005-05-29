@@ -50,12 +50,13 @@ public class DialogAbout extends XJPanel {
 
         appIconButton.setIcon(IconManager.shared().getIconApplication());
         versionLabel.setText("Version "+XJApplication.getAppVersionLong());
+        guiVersionLabel.setText(XJApplication.getAppVersionShort());
         antlrVersionLabel.setText(Tool.Version);
         stringTemplateVersionLabel.setText(StringTemplate.VERSION);
         xjVersionLabel.setText(XJLib.stringVersion());
 
         setResizable(false);
-        setSize(800, 400);
+        setSize(800, 430);
         center();
     }
 
@@ -71,18 +72,22 @@ public class DialogAbout extends XJPanel {
         label13 = new JLabel();
         label14 = new JLabel();
         label1 = new JLabel();
+        label4 = new JLabel();
         label3 = new JLabel();
         label2 = new JLabel();
         panel1 = new JPanel();
-        label10 = new JLabel();
+        label5 = new JLabel();
+        guiVersionLabel = new JLabel();
         antlrVersionLabel = new JLabel();
         label11 = new JLabel();
         stringTemplateVersionLabel = new JLabel();
         label12 = new JLabel();
         xjVersionLabel = new JLabel();
+        label10 = new JLabel();
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
+        setResizable(false);
         setTitle("About");
         Container contentPane = getContentPane();
         contentPane.setLayout(new FormLayout(
@@ -171,6 +176,8 @@ public class DialogAbout extends XJPanel {
                         FormFactory.LINE_GAP_ROWSPEC,
                         FormFactory.DEFAULT_ROWSPEC,
                         FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
                         new RowSpec(Sizes.dluY(10))
                     }));
 
@@ -183,16 +190,20 @@ public class DialogAbout extends XJPanel {
                 panel2.add(label14, cc.xy(3, 5));
 
                 //---- label1 ----
-                label1.setText("Portion of the GUI uses JGoodies, (c) 2002-2004 by Karsten Lentzsch");
+                label1.setText("Portion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch");
                 panel2.add(label1, cc.xy(3, 7));
 
+                //---- label4 ----
+                label4.setText("Portion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber");
+                panel2.add(label4, cc.xy(3, 9));
+
                 //---- label3 ----
-                label3.setText("Browser Launcher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>");
-                panel2.add(label3, cc.xy(3, 9));
+                label3.setText("BrowserLauncher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>");
+                panel2.add(label3, cc.xy(3, 11));
 
                 //---- label2 ----
                 label2.setText("Application icon is (c) Matthew McClintock <matthew@mc.clintock.com>");
-                panel2.add(label2, cc.xy(3, 11));
+                panel2.add(label2, cc.xy(3, 13));
             }
             tabbedPane1.addTab("Acknowledgment", panel2);
 
@@ -209,43 +220,54 @@ public class DialogAbout extends XJPanel {
                         FormFactory.GLUE_COLSPEC
                     },
                     new RowSpec[] {
+                        FormFactory.GLUE_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
                         new RowSpec(Sizes.dluY(10)),
                         FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        new RowSpec(Sizes.dluY(10))
+                        FormFactory.GLUE_ROWSPEC
                     }));
 
-                //---- label10 ----
-                label10.setHorizontalAlignment(SwingConstants.RIGHT);
-                label10.setText("ANTLR:");
-                panel1.add(label10, cc.xy(3, 3));
+                //---- label5 ----
+                label5.setHorizontalAlignment(SwingConstants.RIGHT);
+                label5.setText("ANTLRWorks:");
+                panel1.add(label5, cc.xy(3, 3));
+
+                //---- guiVersionLabel ----
+                guiVersionLabel.setText("-");
+                panel1.add(guiVersionLabel, cc.xy(5, 3));
 
                 //---- antlrVersionLabel ----
                 antlrVersionLabel.setText("3.0 early access 1");
-                panel1.add(antlrVersionLabel, cc.xy(5, 3));
+                panel1.add(antlrVersionLabel, cc.xy(5, 5));
 
                 //---- label11 ----
                 label11.setHorizontalAlignment(SwingConstants.RIGHT);
                 label11.setText("StringTemplate:");
-                panel1.add(label11, cc.xy(3, 5));
+                panel1.add(label11, cc.xy(3, 7));
 
                 //---- stringTemplateVersionLabel ----
                 stringTemplateVersionLabel.setText("2.1");
-                panel1.add(stringTemplateVersionLabel, cc.xy(5, 5));
+                panel1.add(stringTemplateVersionLabel, cc.xy(5, 7));
 
                 //---- label12 ----
                 label12.setHorizontalAlignment(SwingConstants.RIGHT);
-                label12.setText("XJLibary:");
-                panel1.add(label12, cc.xy(3, 7));
+                label12.setText("XJLibrary:");
+                panel1.add(label12, cc.xy(3, 9));
 
                 //---- xjVersionLabel ----
                 xjVersionLabel.setText("1.2");
-                panel1.add(xjVersionLabel, cc.xy(5, 7));
+                panel1.add(xjVersionLabel, cc.xy(5, 9));
+
+                //---- label10 ----
+                label10.setHorizontalAlignment(SwingConstants.RIGHT);
+                label10.setText("ANTLR:");
+                panel1.add(label10, cc.xy(3, 5));
             }
             tabbedPane1.addTab("Version", panel1);
         }
@@ -264,16 +286,18 @@ public class DialogAbout extends XJPanel {
     private JLabel label13;
     private JLabel label14;
     private JLabel label1;
+    private JLabel label4;
     private JLabel label3;
     private JLabel label2;
     private JPanel panel1;
-    private JLabel label10;
+    private JLabel label5;
+    private JLabel guiVersionLabel;
     private JLabel antlrVersionLabel;
     private JLabel label11;
     private JLabel stringTemplateVersionLabel;
     private JLabel label12;
     private JLabel xjVersionLabel;
+    private JLabel label10;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
-
 
 }

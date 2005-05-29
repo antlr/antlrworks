@@ -244,7 +244,7 @@ public class DialogPersonalInfo extends XJDialog {
                 sectorCombo.setModel(new DefaultComboBoxModel(new String[] {
                     "Industry",
                     "Government",
-                    "Academe",
+                    "Academia",
                     "Military",
                     "Other"
                 }));
