@@ -4,6 +4,7 @@ import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJPreferences;
 
 import java.util.Calendar;
+import java.util.Map;
 
 /*
 
@@ -91,6 +92,8 @@ public class EditorPreferences {
 
     public static final String PREF_OUTPUT_PATH = "KEY_OUTPUT_PATH";
     public static final String PREF_START_SYMBOL = "KEY_START_SYMBOL";
+
+    public static final String PREF_PERSONAL_INFO = "KEY_OUTPUT_DEV_DATE";
 
     public static void setOutputPath(String path) {
         getPreferences().setString(PREF_OUTPUT_PATH, path);
@@ -192,8 +195,15 @@ public class EditorPreferences {
         return getPreferences().getString(PREF_SERVER_ID, null);
     }
 
+    public static void setPersonalInfo(Map info) {
+        getPreferences().setObject(PREF_PERSONAL_INFO, info);
+    }
+
+    public static Map getPersonalInfo() {
+        return (Map)getPreferences().getObject(PREF_PERSONAL_INFO, null);
+    }
+
     public static XJPreferences getPreferences() {
         return XJApplication.shared().getPreferences();
     }
-
 }

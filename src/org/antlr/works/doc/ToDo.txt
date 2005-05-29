@@ -1,10 +1,5 @@
 
-- send geographical info
-- reset stats after successful submission
-- controler que les messages d'erreur ne s'affiche plus lors de l'edition de la grammaire (rajouter un ErrorListener peut-etre)
-
 - traduire en francais en_US.stg dans /tool/templates/messages
-
 - extract all strings into properties
 
 * Terence *

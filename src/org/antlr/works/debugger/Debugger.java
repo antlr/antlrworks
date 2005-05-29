@@ -70,6 +70,7 @@ public class Debugger {
     protected JPanel panel;
     protected TextEditorPane textPane;
 
+    protected JScrollPane treeScrollPane;
     protected JTree tree;
     protected DefaultTreeModel treeModel;
 
@@ -205,7 +206,7 @@ public class Debugger {
             }
         });
 
-        JScrollPane treeScrollPane = new JScrollPane(tree);
+        treeScrollPane = new JScrollPane(tree);
         treeScrollPane.setWheelScrollingEnabled(true);
 
         Box box = Box.createHorizontalBox();
@@ -216,7 +217,8 @@ public class Debugger {
         JPanel treePanel = new JPanel(new BorderLayout());
         treePanel.add(treeScrollPane, BorderLayout.CENTER);
         treePanel.add(box, BorderLayout.SOUTH);
-        tree.setPreferredSize(new Dimension(400, 0));
+
+        treeScrollPane.setPreferredSize(new Dimension(400, 100));
 
         return treePanel;
     }
@@ -360,7 +362,7 @@ public class Debugger {
 
         breakCombo = new JComboBox();
 
-        for (int i = 0; i < DebuggerEvent.getEvents().length; i++) {
+        for (int i = 0; i < DebuggerEvent.ALL+1; i++) {
             breakCombo.addItem(DebuggerEvent.getEvents()[i]);
         }
 

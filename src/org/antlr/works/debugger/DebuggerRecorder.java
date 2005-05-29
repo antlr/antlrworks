@@ -110,7 +110,7 @@ public class DebuggerRecorder {
     }
 
     public void setBreaksOnEventType(int breakType) {
-        this.breakType = Math.max(breakType, DebuggerEvent.NONE);
+        this.breakType = breakType;
     }
 
     public int getBreaksEventType() {
@@ -376,6 +376,10 @@ public class DebuggerRecorder {
 
         public void endResync() {
             event(new DebuggerEvent(DebuggerEvent.END_RESYNC));
+        }
+
+        public void semanticPredicate(boolean result, String predicate) {
+            // @todo implement in the future
         }
 
         public void commence() {

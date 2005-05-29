@@ -1,3 +1,13 @@
+
+Posted on 05/28/05
+- statistics are cleared after successful transmission
+- removed default Interpreter/Debugger input text
+- personal info are sent and ID retrieved
+- removed most break events in debugger (retained only the most useful)
+- handle now version comparison with string like 1.0ea1 or 1.0b2
+- fixed a bug which prevented the debugger tree to scroll automatically while stepping
+- fixed a bug which prevented the runtime stats to be displayed in human readable format
+
 Posted on 05/22/05
 - refactored some classes into XJLibrary
 - new update manager

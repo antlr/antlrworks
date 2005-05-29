@@ -1,7 +1,7 @@
 package org.antlr.works.stats;
 
-import org.antlr.tool.GrammarReport;
 import org.antlr.runtime.debug.Profiler;
+import org.antlr.tool.GrammarReport;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -92,14 +92,14 @@ public class StatisticsManager {
     }
 
     protected boolean loadGrammar() {
-        return loadFromFile(GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME));
+        return loadFromFile(GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME), true);
     }
 
     protected boolean loadRuntime() {
-        return loadFromFile(GrammarReport.getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME));
+        return loadFromFile(GrammarReport.getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME), false);
     }
 
-    protected boolean loadFromFile(String file) {
+    protected boolean loadFromFile(String file, boolean grammar) {
         if(file == null)
             return false;
 
@@ -112,7 +112,10 @@ public class StatisticsManager {
             String line;
             while((line = dis.readLine()) != null) {
                 addRawLine(line);
-                addReadableLine(GrammarReport.toString(line));
+                if(grammar)
+                    addReadableLine(GrammarReport.toString(line));
+                else
+                    addReadableLine(Profiler.toString(line));
             }
             dis.close();
         } catch (Exception e) {
@@ -132,6 +135,19 @@ public class StatisticsManager {
     }
 
     public void reset() {
-        // @todo implement
+        switch(type) {
+            case TYPE_GUI:
+                Statistics.shared().reset();
+                break;
+            case TYPE_GRAMMAR: {
+                String file = GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME);
+                new File(file).delete();
+                break;
+            }
+            case TYPE_RUNTIME: {
+                String file = GrammarReport.getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME);
+                new File(file).delete();
+            }
+        }
     }
 }

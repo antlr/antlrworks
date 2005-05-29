@@ -88,9 +88,7 @@ public class Interpreter implements Runnable {
         textPane = new JTextPane();
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
-        textPane.setText("public static void main() {\n" +
-                "    System.out.println(\"Hello, world!\");\n" +
-                "}");
+        textPane.setPreferredSize(new Dimension(300, 100));
 
         textScrollPane = new JScrollPane(textPane);
         textScrollPane.setWheelScrollingEnabled(true);
@@ -129,7 +127,6 @@ public class Interpreter implements Runnable {
         splitPane.setLeftComponent(textScrollPane);
         splitPane.setRightComponent(treeScrollPane);
         splitPane.setContinuousLayout(true);
-        splitPane.setPreferredSize(new Dimension(400, 400));
         splitPane.setOneTouchExpandable(true);
 
         panel.add(createControlPanel(), BorderLayout.NORTH);

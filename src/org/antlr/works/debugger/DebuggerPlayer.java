@@ -1,7 +1,6 @@
 package org.antlr.works.debugger;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.DebuggerPlayer.LookAheadText;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;

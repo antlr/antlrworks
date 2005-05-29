@@ -1,15 +1,16 @@
 package org.antlr.works.stats;
 
+import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.editor.EditorPreferences;
 
 import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
+import java.util.Map;
 
 /*
 
@@ -44,7 +45,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class StatisticsReporter {
 
-    public static final String URL_GET_ID = "http://www.antlr.org/stats/ID";
+    //http://www.antlr.org/stats/register?who=1&sector=2&devtool=3&yearslang=1&yearsprog=5&residing=bali&caffeine=coffee
+
+    public static final String URL_REGISTER = "http://www.antlr.org/stats/register?";
     public static final String URL_SEND_STATS = "http://www.antlr.org/stats/notify?";
 
     public static final String TYPE_GUI = "antlrworks";
@@ -64,11 +67,28 @@ public class StatisticsReporter {
     }
 
     public String fetchIDFromServer() {
+        Map info = EditorPreferences.getPersonalInfo();
+
+        StringBuffer s = new StringBuffer(URL_REGISTER);
+        s.append("who=");
+        s.append(info.get(DialogPersonalInfo.INFO_WHO));
+        s.append("&sector=");
+        s.append(info.get(DialogPersonalInfo.INFO_SECTOR));
+        s.append("&devtool=");
+        s.append(info.get(DialogPersonalInfo.INFO_DEVTOOL));
+        s.append("&yearslang=");
+        s.append(info.get(DialogPersonalInfo.INFO_YEARSLANG));
+        s.append("&yearsprog=");
+        s.append(info.get(DialogPersonalInfo.INFO_YEARSPROG));
+        s.append("&residing=");
+        s.append(XJUtils.encodeToURL((String)info.get(DialogPersonalInfo.INFO_RESIDING), "-"));
+        s.append("&caffeine=");
+        s.append(XJUtils.encodeToURL((String)info.get(DialogPersonalInfo.INFO_CAFFEINE), "-"));
 
         URLConnection urc = null;
         URL url = null;
         try {
-            url = new URL(URL_GET_ID);
+            url = new URL(s.toString());
             urc = url.openConnection();
         } catch (Exception e) {
             error = e.toString();
@@ -98,9 +118,9 @@ public class StatisticsReporter {
 
     public String getID() {
         String id = EditorPreferences.getServerID();
-        if(id == null) {
+        if(id == null || id.length() == 0) {
             id = fetchIDFromServer();
-            if(id == null)
+            if(id == null || id.length() == 0)
                 return null;
             EditorPreferences.setServerID(id);
         }
@@ -141,12 +161,7 @@ public class StatisticsReporter {
         param.append("&type=");
         param.append(type);
         param.append("&data=");
-        try {
-            param.append(URLEncoder.encode(data, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            error = e.toString();
-            return false;
-        }
+        param.append(XJUtils.encodeToURL(data));
 
         URLConnection urc = null;
         URL url = null;

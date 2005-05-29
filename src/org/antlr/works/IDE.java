@@ -105,6 +105,7 @@ public class IDE extends XJApplicationDelegate {
     public void registerUser() {
         if(!EditorPreferences.isUserRegistered()) {
             sc.setVisible(false);
+            EditorPreferences.setServerID("");
             new DialogPersonalInfo(null).runModal();
             EditorPreferences.setUserRegistered(true);
         }

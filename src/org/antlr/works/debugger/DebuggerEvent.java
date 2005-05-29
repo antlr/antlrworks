@@ -36,19 +36,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DebuggerEvent {
 
-    public static final int NONE = 0;
-    public static final int ALL = 1;
-    public static final int CONSUME_TOKEN = 2;
-    public static final int CONSUME_HIDDEN_TOKEN = 3;
-    public static final int ENTER_RULE = 4;
-    public static final int EXIT_RULE = 5;
-    public static final int ENTER_SUBRULE = 6;
-    public static final int EXIT_SUBRULE = 7;
-    public static final int ENTER_DECISION = 8;
-    public static final int EXIT_DECISION = 9;
-    public static final int ENTER_ALT = 10;
-    public static final int LOCATION = 11;
-    public static final int LT = 12;
+    public static final int LOCATION = 0;
+    public static final int CONSUME_TOKEN = 1;
+    public static final int LT = 2;
+    public static final int ALL = 3;
+    public static final int NONE = 4;
+    public static final int CONSUME_HIDDEN_TOKEN = 5;
+    public static final int ENTER_RULE = 6;
+    public static final int EXIT_RULE = 7;
+    public static final int ENTER_SUBRULE = 8;
+    public static final int EXIT_SUBRULE = 9;
+    public static final int ENTER_DECISION = 10;
+    public static final int EXIT_DECISION = 11;
+    public static final int ENTER_ALT = 12;
     public static final int MARK = 13;
     public static final int REWIND = 14;
     public static final int RECOGNITION_EXCEPTION = 15;
@@ -101,13 +101,12 @@ public class DebuggerEvent {
     }
 
     public static String[] getEvents() {
-        return new String[] { "None", "All",
-                              "Consume token", "Consume hidden token",
+        return new String[] { "Location", "Consume token", "LT", "All",
+                              "None", "Consume hidden token",
                               "Enter rule", "Exit rule",
                               "Enter subrule", "Exit subrule",
                               "Enter decision", "Exit decision",
                               "Enter alternative",
-                              "Location", "LT",
                               "Mark", "Rewind",
                               "Recognition exception",
                               "Begin resync", "End resync",

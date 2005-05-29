@@ -4,11 +4,17 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
+import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.stats.StatisticsReporter;
 import org.antlr.works.util.IconManager;
 import org.antlr.works.util.Localizable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
 
@@ -43,6 +49,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DialogPersonalInfo extends XJDialog {
 
+    public static final String INFO_WHO = "who";
+    public static final String INFO_SECTOR = "sector";
+    public static final String INFO_DEVTOOL = "devtool";
+    public static final String INFO_YEARSLANG = "yearslang";
+    public static final String INFO_YEARSPROG = "yearsprog";
+    public static final String INFO_RESIDING = "residing";
+    public static final String INFO_CAFFEINE = "caffeine";
+
     public DialogPersonalInfo(Container parent) {
         super(parent, true);
         
@@ -54,9 +68,42 @@ public class DialogPersonalInfo extends XJDialog {
 
         setDefaultButton(okButton);
         setOKButton(okButton);
+
+        whoCombo.setSelectedIndex(-1);
+        whoCombo.addActionListener(new MyActionListener());
+        sectorCombo.setSelectedIndex(-1);
+        sectorCombo.addActionListener(new MyActionListener());
+        devtoolCombo.setSelectedIndex(-1);
+        devtoolCombo.addActionListener(new MyActionListener());
+
+        okButton.setEnabled(false);
+
+        setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     }
 
     public void dialogWillCloseOK() {
+        Map info = new HashMap();
+        info.put(INFO_WHO, new Integer(whoCombo.getSelectedIndex()));
+        info.put(INFO_SECTOR, new Integer(sectorCombo.getSelectedIndex()));
+        info.put(INFO_DEVTOOL, new Integer(devtoolCombo.getSelectedIndex()));
+        info.put(INFO_YEARSLANG, programmingExperienceSpinner.getValue());
+        info.put(INFO_YEARSPROG, languageExperienceSpinner.getValue());
+        info.put(INFO_RESIDING, countryField.getText());
+        info.put(INFO_CAFFEINE, funField.getText());
+        EditorPreferences.setPersonalInfo(info);
+
+        StatisticsReporter sr = new StatisticsReporter(jDialog);
+        String id = sr.getID();
+        if(id == null) {
+            System.err.println("Cannot send info ="+sr.getError());
+        }
+    }
+
+    protected class MyActionListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            okButton.setEnabled(whoCombo.getSelectedIndex() > -1 && sectorCombo.getSelectedIndex() > -1
+                                && devtoolCombo.getSelectedIndex() > -1);
+        }
     }
 
     private void initComponents() {
@@ -66,12 +113,12 @@ public class DialogPersonalInfo extends XJDialog {
         iconButton = new JButton();
         label6 = new JLabel();
         textArea1 = new JTextArea();
-        typeCombo = new JComboBox();
+        whoCombo = new JComboBox();
         label1 = new JLabel();
-        activityCombo = new JComboBox();
+        sectorCombo = new JComboBox();
         label7 = new JLabel();
         label8 = new JLabel();
-        comboBox1 = new JComboBox();
+        devtoolCombo = new JComboBox();
         languageExperienceSpinner = new JSpinner();
         label2 = new JLabel();
         programmingExperienceSpinner = new JSpinner();
@@ -179,14 +226,14 @@ public class DialogPersonalInfo extends XJDialog {
                 contentPane.add(textArea1, cc.xywh(3, 5, 5, 1));
 
                 //---- typeCombo ----
-                typeCombo.setModel(new DefaultComboBoxModel(new String[] {
+                whoCombo.setModel(new DefaultComboBoxModel(new String[] {
                     "Professional programmer",
                     "Researcher",
                     "Graduate student",
                     "Undergraduate student",
                     "Professor"
                 }));
-                contentPane.add(typeCombo, cc.xywh(3, 11, 3, 1));
+                contentPane.add(whoCombo, cc.xywh(3, 11, 3, 1));
 
                 //---- label1 ----
                 label1.setHorizontalAlignment(SwingConstants.LEFT);
@@ -194,14 +241,14 @@ public class DialogPersonalInfo extends XJDialog {
                 contentPane.add(label1, cc.xywh(3, 9, 3, 1));
 
                 //---- activityCombo ----
-                activityCombo.setModel(new DefaultComboBoxModel(new String[] {
+                sectorCombo.setModel(new DefaultComboBoxModel(new String[] {
                     "Industry",
                     "Government",
                     "Academe",
                     "Military",
                     "Other"
                 }));
-                contentPane.add(activityCombo, cc.xywh(3, 15, 3, 1));
+                contentPane.add(sectorCombo, cc.xywh(3, 15, 3, 1));
 
                 //---- label7 ----
                 label7.setHorizontalAlignment(SwingConstants.LEFT);
@@ -213,7 +260,7 @@ public class DialogPersonalInfo extends XJDialog {
                 contentPane.add(label8, cc.xywh(3, 17, 3, 1));
 
                 //---- comboBox1 ----
-                comboBox1.setModel(new DefaultComboBoxModel(new String[] {
+                devtoolCombo.setModel(new DefaultComboBoxModel(new String[] {
                     "Eclipse",
                     "IntelliJ",
                     "Microsoft Visual Studio",
@@ -222,7 +269,7 @@ public class DialogPersonalInfo extends XJDialog {
                     "Text Editor (vi, emacs) - hardcore old-school \"I don't need no stinkin' IDE coder\"",
                     "Other"
                 }));
-                contentPane.add(comboBox1, cc.xywh(3, 19, 3, 1));
+                contentPane.add(devtoolCombo, cc.xywh(3, 19, 3, 1));
 
                 //---- languageExperienceSpinner ----
                 languageExperienceSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
@@ -282,12 +329,12 @@ public class DialogPersonalInfo extends XJDialog {
     private JButton iconButton;
     private JLabel label6;
     private JTextArea textArea1;
-    private JComboBox typeCombo;
+    private JComboBox whoCombo;
     private JLabel label1;
-    private JComboBox activityCombo;
+    private JComboBox sectorCombo;
     private JLabel label7;
     private JLabel label8;
-    private JComboBox comboBox1;
+    private JComboBox devtoolCombo;
     private JSpinner languageExperienceSpinner;
     private JLabel label2;
     private JSpinner programmingExperienceSpinner;

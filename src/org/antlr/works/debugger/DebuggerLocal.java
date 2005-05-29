@@ -79,9 +79,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     protected CodeGenerate codeGenerator;
     protected Debugger debugger;
 
-    protected String inputText = "public static void main() { // this is a comment\n" +
-                "    System.out.println(\"Hello, world!\");\n" +
-                "}";
+    protected String inputText = "";
 
     protected XJDialogProgress progress;
 
