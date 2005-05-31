@@ -1,19 +1,7 @@
-package org.antlr.works.editor.tool;
-
-import org.antlr.works.editor.swing.AutoCompletionMenu;
-
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,6 +28,18 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.editor.tool;
+
+import org.antlr.works.editor.swing.AutoCompletionMenu;
+
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TTemplateRules {
 

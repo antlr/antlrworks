@@ -1,18 +1,7 @@
-package org.antlr.works.editor.actions;
-
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJFileChooser;
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.stats.Statistics;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,6 +28,17 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.editor.actions;
+
+import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.appkit.utils.XJFileChooser;
+import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.stats.Statistics;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
 
 public class MenuExport extends AbstractActions {
 

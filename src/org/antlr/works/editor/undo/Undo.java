@@ -1,17 +1,7 @@
-package org.antlr.works.editor.undo;
-
-import javax.swing.*;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
-import java.util.Stack;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,6 +28,16 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.editor.undo;
+
+import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
+import java.util.Stack;
 
 public class Undo {
 

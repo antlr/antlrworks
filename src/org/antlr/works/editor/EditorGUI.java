@@ -1,31 +1,7 @@
-package org.antlr.works.editor;
-
-import edu.usfca.xj.appkit.gview.timer.GTimer;
-import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
-import edu.usfca.xj.appkit.swing.XJTable;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import edu.usfca.xj.foundation.notification.XJNotificationObserver;
-import org.antlr.works.dialog.DialogPrefs;
-import org.antlr.works.editor.swing.EditorStyledDocument;
-import org.antlr.works.editor.swing.Gutter;
-import org.antlr.works.editor.swing.TextEditorPane;
-import org.antlr.works.editor.undo.Undo;
-import org.antlr.works.editor.undo.UndoDelegate;
-import org.antlr.works.parser.Parser;
-
-import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.*;
-import java.awt.*;
-import java.awt.event.*;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -52,6 +28,30 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.editor;
+
+import edu.usfca.xj.appkit.gview.timer.GTimer;
+import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
+import edu.usfca.xj.appkit.swing.XJTable;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.works.dialog.DialogPrefs;
+import org.antlr.works.editor.swing.EditorStyledDocument;
+import org.antlr.works.editor.swing.Gutter;
+import org.antlr.works.editor.swing.TextEditorPane;
+import org.antlr.works.editor.undo.Undo;
+import org.antlr.works.editor.undo.UndoDelegate;
+import org.antlr.works.parser.Parser;
+
+import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.*;
+import java.awt.*;
+import java.awt.event.*;
 
 public class EditorGUI implements UndoDelegate, XJNotificationObserver {
 

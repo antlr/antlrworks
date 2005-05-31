@@ -1,18 +1,7 @@
-package org.antlr.works.editor.actions;
-
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.undo.Undo;
-
-import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
-import java.awt.*;
-import java.awt.datatransfer.StringSelection;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,6 +28,17 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.editor.actions;
+
+import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.undo.Undo;
+
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 
 public class MenuEdit extends AbstractActions {
 

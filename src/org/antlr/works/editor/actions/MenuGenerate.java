@@ -1,17 +1,7 @@
-package org.antlr.works.editor.actions;
-
-import edu.usfca.xj.appkit.frame.XJDialog;
-import edu.usfca.xj.appkit.utils.XJAlert;
-import org.antlr.works.dialog.DialogGenerate;
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.code.CodeDisplay;
-import org.antlr.works.editor.code.CodeGenerate;
-import org.antlr.works.stats.Statistics;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,6 +28,16 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.editor.actions;
+
+import edu.usfca.xj.appkit.frame.XJDialog;
+import edu.usfca.xj.appkit.utils.XJAlert;
+import org.antlr.works.dialog.DialogGenerate;
+import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.code.CodeDisplay;
+import org.antlr.works.editor.code.CodeGenerate;
+import org.antlr.works.stats.Statistics;
 
 public class MenuGenerate extends AbstractActions {
 

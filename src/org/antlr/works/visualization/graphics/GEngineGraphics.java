@@ -1,16 +1,7 @@
-package org.antlr.works.visualization.graphics;
-
-import edu.usfca.xj.appkit.gview.base.Vector2D;
-import edu.usfca.xj.appkit.gview.shape.SLinkArc;
-
-import java.awt.*;
-import java.awt.font.TextLayout;
-import java.awt.geom.QuadCurve2D;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,6 +28,15 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.visualization.graphics;
+
+import edu.usfca.xj.appkit.gview.base.Vector2D;
+import edu.usfca.xj.appkit.gview.shape.SLinkArc;
+
+import java.awt.*;
+import java.awt.font.TextLayout;
+import java.awt.geom.QuadCurve2D;
 
 public class GEngineGraphics extends GEngine {
 

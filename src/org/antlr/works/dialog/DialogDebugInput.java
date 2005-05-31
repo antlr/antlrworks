@@ -1,19 +1,7 @@
-package org.antlr.works.dialog;
-
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.*;
-import edu.usfca.xj.appkit.frame.XJDialog;
-import edu.usfca.xj.foundation.XJSystem;
-import org.antlr.works.util.Localizable;
-
-import javax.swing.*;
-import java.awt.*;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,6 +28,18 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.dialog;
+
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.*;
+import edu.usfca.xj.appkit.frame.XJDialog;
+import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.works.util.Localizable;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class DialogDebugInput extends XJDialog {
 

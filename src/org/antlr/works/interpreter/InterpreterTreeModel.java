@@ -1,18 +1,7 @@
-package org.antlr.works.interpreter;
-
-import org.antlr.runtime.CommonToken;
-import org.antlr.runtime.NoViableAltException;
-import org.antlr.runtime.tree.Tree;
-import org.antlr.tool.Grammar;
-
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,6 +28,17 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.interpreter;
+
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.NoViableAltException;
+import org.antlr.runtime.tree.Tree;
+import org.antlr.tool.Grammar;
+
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 public class InterpreterTreeModel extends DefaultTreeModel {
 

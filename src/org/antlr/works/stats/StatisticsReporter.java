@@ -1,21 +1,7 @@
-package org.antlr.works.stats;
-
-import edu.usfca.xj.foundation.XJUtils;
-import org.antlr.works.dialog.DialogPersonalInfo;
-import org.antlr.works.editor.EditorPreferences;
-
-import java.awt.*;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Map;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,6 +28,20 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.stats;
+
+import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.works.dialog.DialogPersonalInfo;
+import org.antlr.works.editor.EditorPreferences;
+
+import java.awt.*;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Map;
 
 public class StatisticsReporter {
 

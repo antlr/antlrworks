@@ -1,27 +1,7 @@
-package org.antlr.works.visualization.graphics.panel;
-
-import edu.usfca.xj.appkit.frame.XJFrame;
-import edu.usfca.xj.appkit.menu.XJMenu;
-import edu.usfca.xj.appkit.menu.XJMenuItem;
-import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
-import org.antlr.works.visualization.graphics.GContext;
-import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
-import org.antlr.works.visualization.graphics.graph.GGraphGroup;
-import org.antlr.works.visualization.graphics.path.GPath;
-import org.antlr.works.visualization.graphics.path.GPathGroup;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,6 +28,26 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.visualization.graphics.panel;
+
+import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.menu.XJMenu;
+import edu.usfca.xj.appkit.menu.XJMenuItem;
+import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
+import org.antlr.works.visualization.graphics.GContext;
+import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
+import org.antlr.works.visualization.graphics.graph.GGraphGroup;
+import org.antlr.works.visualization.graphics.path.GPath;
+import org.antlr.works.visualization.graphics.path.GPathGroup;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class GView extends JPanel implements XJMenuItemDelegate {
 

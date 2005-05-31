@@ -1,22 +1,7 @@
-package org.antlr.works.editor.swing;
-
-import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.stats.Statistics;
-
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Iterator;
-import java.util.List;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,6 +28,21 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.editor.swing;
+
+import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.stats.Statistics;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Iterator;
+import java.util.List;
 
 public class AutoCompletionMenu extends JWindow {
 

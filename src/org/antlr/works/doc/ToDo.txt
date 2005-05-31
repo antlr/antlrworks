@@ -1,4 +1,8 @@
 
+- XJURLLabel: check license
+- MultilineToolTip : grab license and see if correct
+- BrowserLauncher: ok (mail from author)
+
 - traduire en francais en_US.stg dans /tool/templates/messages
 - extract all strings into properties
 

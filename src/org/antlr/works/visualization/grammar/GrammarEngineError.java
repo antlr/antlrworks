@@ -1,12 +1,7 @@
-package org.antlr.works.visualization.grammar;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -33,6 +28,11 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.visualization.grammar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GrammarEngineError {
 

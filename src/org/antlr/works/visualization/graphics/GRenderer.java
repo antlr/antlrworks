@@ -1,23 +1,7 @@
-package org.antlr.works.visualization.graphics;
-
-import org.antlr.works.visualization.fa.FAAnalysis;
-import org.antlr.works.visualization.fa.FAState;
-import org.antlr.works.visualization.fa.FATransition;
-import org.antlr.works.visualization.graphics.graph.GGraph;
-import org.antlr.works.visualization.graphics.primitive.GDimension;
-import org.antlr.works.visualization.graphics.primitive.GPoint;
-import org.antlr.works.visualization.graphics.shape.GLink;
-import org.antlr.works.visualization.graphics.shape.GNode;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,6 +28,22 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.visualization.graphics;
+
+import org.antlr.works.visualization.fa.FAAnalysis;
+import org.antlr.works.visualization.fa.FAState;
+import org.antlr.works.visualization.fa.FATransition;
+import org.antlr.works.visualization.graphics.graph.GGraph;
+import org.antlr.works.visualization.graphics.primitive.GDimension;
+import org.antlr.works.visualization.graphics.primitive.GPoint;
+import org.antlr.works.visualization.graphics.shape.GLink;
+import org.antlr.works.visualization.graphics.shape.GNode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GRenderer {
 

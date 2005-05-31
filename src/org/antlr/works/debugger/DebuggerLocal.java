@@ -1,24 +1,7 @@
-package org.antlr.works.debugger;
-
-import edu.usfca.xj.appkit.frame.XJDialog;
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
-import edu.usfca.xj.foundation.XJUtils;
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.StringTemplateGroup;
-import org.antlr.works.dialog.DialogDebugInput;
-import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.editor.code.CodeGenerate;
-
-import javax.swing.*;
-import java.io.*;
-import java.net.URL;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,6 +28,23 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.debugger;
+
+import edu.usfca.xj.appkit.frame.XJDialog;
+import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.appkit.utils.XJDialogProgress;
+import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
+import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.StringTemplateGroup;
+import org.antlr.works.dialog.DialogDebugInput;
+import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.code.CodeGenerate;
+
+import javax.swing.*;
+import java.io.*;
+import java.net.URL;
 
 public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 

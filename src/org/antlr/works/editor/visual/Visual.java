@@ -1,34 +1,7 @@
-package org.antlr.works.editor.visual;
-
-import edu.usfca.xj.appkit.frame.XJFrame;
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJFileChooser;
-import org.antlr.tool.DOTGenerator;
-import org.antlr.works.parser.Parser;
-import org.antlr.works.parser.ThreadedParser;
-import org.antlr.works.stats.Statistics;
-import org.antlr.works.util.DotGenerator;
-import org.antlr.works.visualization.fa.FAFactory;
-import org.antlr.works.visualization.fa.FAState;
-import org.antlr.works.visualization.grammar.GrammarEngine;
-import org.antlr.works.visualization.graphics.GContext;
-import org.antlr.works.visualization.graphics.GEngineGraphics;
-import org.antlr.works.visualization.graphics.GRenderer;
-import org.antlr.works.visualization.graphics.panel.GPanel;
-import org.antlr.works.visualization.skin.Skin;
-import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -55,6 +28,33 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.editor.visual;
+
+import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.appkit.utils.XJFileChooser;
+import org.antlr.tool.DOTGenerator;
+import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ThreadedParser;
+import org.antlr.works.stats.Statistics;
+import org.antlr.works.util.DotGenerator;
+import org.antlr.works.visualization.fa.FAFactory;
+import org.antlr.works.visualization.fa.FAState;
+import org.antlr.works.visualization.grammar.GrammarEngine;
+import org.antlr.works.visualization.graphics.GContext;
+import org.antlr.works.visualization.graphics.GEngineGraphics;
+import org.antlr.works.visualization.graphics.GRenderer;
+import org.antlr.works.visualization.graphics.panel.GPanel;
+import org.antlr.works.visualization.skin.Skin;
+import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class Visual {
 

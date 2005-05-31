@@ -1,31 +1,7 @@
-package org.antlr.works.visualization.graphics.panel;
-
-import edu.usfca.xj.appkit.frame.XJFrame;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import edu.usfca.xj.foundation.notification.XJNotificationObserver;
-import org.antlr.works.parser.Parser;
-import org.antlr.works.stats.Statistics;
-import org.antlr.works.util.IconManager;
-import org.antlr.works.visualization.graphics.GContext;
-import org.antlr.works.visualization.graphics.graph.GGraphGroup;
-import org.antlr.works.visualization.graphics.path.GPathGroup;
-import org.antlr.works.visualization.skin.nfa.NFASkin;
-import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.util.Iterator;
-import java.util.List;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -52,6 +28,30 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.visualization.graphics.panel;
+
+import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.works.parser.Parser;
+import org.antlr.works.stats.Statistics;
+import org.antlr.works.util.IconManager;
+import org.antlr.works.visualization.graphics.GContext;
+import org.antlr.works.visualization.graphics.graph.GGraphGroup;
+import org.antlr.works.visualization.graphics.path.GPathGroup;
+import org.antlr.works.visualization.skin.nfa.NFASkin;
+import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.util.Iterator;
+import java.util.List;
 
 public class GPanel implements XJNotificationObserver {
 

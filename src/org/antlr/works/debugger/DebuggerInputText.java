@@ -1,22 +1,7 @@
-package org.antlr.works.debugger;
-
-import org.antlr.runtime.Token;
-import org.antlr.works.editor.swing.TextEditorPane;
-import org.antlr.works.editor.swing.TextEditorPaneDelegate;
-
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,6 +28,21 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.debugger;
+
+import org.antlr.runtime.Token;
+import org.antlr.works.editor.swing.TextEditorPane;
+import org.antlr.works.editor.swing.TextEditorPaneDelegate;
+
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class DebuggerInputText implements TextEditorPaneDelegate {
 

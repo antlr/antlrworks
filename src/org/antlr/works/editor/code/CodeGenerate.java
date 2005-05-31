@@ -1,26 +1,7 @@
-package org.antlr.works.editor.code;
-
-import edu.usfca.xj.appkit.frame.XJFrame;
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import edu.usfca.xj.foundation.XJUtils;
-import org.antlr.Tool;
-import org.antlr.codegen.CodeGenerator;
-import org.antlr.tool.Grammar;
-import org.antlr.tool.GrammarReport;
-import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.editor.EditorProvider;
-
-import javax.swing.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringReader;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,6 +28,25 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.editor.code;
+
+import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.appkit.utils.XJDialogProgress;
+import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.Tool;
+import org.antlr.codegen.CodeGenerator;
+import org.antlr.tool.Grammar;
+import org.antlr.tool.GrammarReport;
+import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.EditorProvider;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
 
 public class CodeGenerate implements Runnable {
 

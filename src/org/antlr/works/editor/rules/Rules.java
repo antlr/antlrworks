@@ -1,32 +1,7 @@
-package org.antlr.works.editor.rules;
-
-import edu.usfca.xj.appkit.swing.XJTable;
-import org.antlr.works.editor.swing.KeyBindings;
-import org.antlr.works.editor.tool.TActions;
-import org.antlr.works.parser.Parser;
-import org.antlr.works.parser.ThreadedParser;
-import org.antlr.works.parser.ThreadedParserObserver;
-import org.antlr.works.stats.Statistics;
-import org.antlr.works.util.IconManager;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import java.awt.*;
-import java.awt.datatransfer.StringSelection;
-import java.awt.dnd.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.Iterator;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -53,6 +28,31 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.editor.rules;
+
+import edu.usfca.xj.appkit.swing.XJTable;
+import org.antlr.works.editor.swing.KeyBindings;
+import org.antlr.works.editor.tool.TActions;
+import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ThreadedParser;
+import org.antlr.works.parser.ThreadedParserObserver;
+import org.antlr.works.stats.Statistics;
+import org.antlr.works.util.IconManager;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.dnd.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.Iterator;
 
 public class Rules implements ThreadedParserObserver {
 

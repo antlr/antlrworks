@@ -1,27 +1,7 @@
-package org.antlr.works.dialog;
-
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
-import edu.usfca.xj.appkit.frame.XJDialog;
-import edu.usfca.xj.appkit.utils.XJFileChooser;
-import edu.usfca.xj.foundation.XJSystem;
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.editor.EditorPreferences;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,6 +28,26 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.dialog;
+
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
+import edu.usfca.xj.appkit.frame.XJDialog;
+import edu.usfca.xj.appkit.utils.XJFileChooser;
+import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.editor.EditorPreferences;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
 
 public class DialogBuildAndDebug extends XJDialog {
 

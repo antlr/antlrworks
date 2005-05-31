@@ -1,27 +1,7 @@
-package org.antlr.works.dialog;
-
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.*;
-import edu.usfca.xj.appkit.app.XJApplication;
-import edu.usfca.xj.appkit.app.XJPreferences;
-import edu.usfca.xj.appkit.frame.XJPanel;
-import edu.usfca.xj.appkit.swing.XJLookAndFeel;
-import edu.usfca.xj.appkit.utils.XJFileChooser;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.stats.Statistics;
-import org.antlr.works.util.HelpManager;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,6 +28,26 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.dialog;
+
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.*;
+import edu.usfca.xj.appkit.app.XJApplication;
+import edu.usfca.xj.appkit.app.XJPreferences;
+import edu.usfca.xj.appkit.frame.XJPanel;
+import edu.usfca.xj.appkit.swing.XJLookAndFeel;
+import edu.usfca.xj.appkit.utils.XJFileChooser;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.stats.Statistics;
+import org.antlr.works.util.HelpManager;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class DialogPrefs extends XJPanel {
 

@@ -1,19 +1,7 @@
-package org.antlr.works.visualization.graphics.path;
-
-import edu.usfca.xj.appkit.gview.timer.GTimer;
-import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import org.antlr.works.visualization.graphics.GContext;
-import org.antlr.works.visualization.graphics.GObject;
-
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-
 /*
 
 [The "BSD licence"]
-Copyright (c) 2004-05 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,6 +28,18 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+package org.antlr.works.visualization.graphics.path;
+
+import edu.usfca.xj.appkit.gview.timer.GTimer;
+import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import org.antlr.works.visualization.graphics.GContext;
+import org.antlr.works.visualization.graphics.GObject;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 public class GPathGroup extends GObject implements GTimerDelegate {
 
