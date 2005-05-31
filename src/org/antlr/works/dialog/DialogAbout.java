@@ -51,7 +51,7 @@ public class DialogAbout extends XJPanel {
         appIconButton.setIcon(IconManager.shared().getIconApplication());
         versionLabel.setText("Version "+XJApplication.getAppVersionLong());
         guiVersionLabel.setText(XJApplication.getAppVersionShort());
-        antlrVersionLabel.setText(Tool.Version);
+        antlrVersionLabel.setText(Tool.VERSION);
         stringTemplateVersionLabel.setText(StringTemplate.VERSION);
         xjVersionLabel.setText(XJLib.stringVersion());
 

@@ -1,7 +1,10 @@
 package org.antlr.works.editor.swing;
 
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -81,22 +84,19 @@ public class KeyBindings {
         // Has to create a custom action to handle this one.
         addKeyBinding("CONTROL_K", KeyStroke.getKeyStroke(KeyEvent.VK_K, Event.CTRL_MASK), new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                // Find the paragraph where the caret is currently located and remove the remaining
-                // characters. Each paragraph delimits a run of characters separated by a newline.
-                int position = textComponent.getCaretPosition();
+
+                String t = textComponent.getText();
+                int index = textComponent.getCaretPosition();
+
                 Document doc = textComponent.getDocument();
-                Element section = doc.getDefaultRootElement();
-                int paragraphCount = section.getElementCount();
-                for(int i=0; i<paragraphCount; i++) {
-                    Element elem = section.getElement(i);
-                    if(position>=elem.getStartOffset() && position<=elem.getEndOffset()) {
-                        try {
-                            doc.remove(position, elem.getEndOffset()-position-1);
-                        } catch (BadLocationException e1) {
-                            e1.printStackTrace();
-                        }
-                        break;
-                    }
+                int start = index;
+                while(index<t.length() && t.charAt(index) != '\n') {
+                    index++;
+                }
+                try {
+                    doc.remove(start, Math.max(1, index-start));
+                } catch (BadLocationException e1) {
+                    e1.printStackTrace();
                 }
             }
         });

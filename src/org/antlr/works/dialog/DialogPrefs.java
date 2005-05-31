@@ -54,6 +54,7 @@ public class DialogPrefs extends XJPanel {
     public static final String NOTIF_PREFS_APPLIED = "NOTIF_PREFS_APPLIED";
 
     protected ButtonGroup compilerRadioButtonGroup;
+    protected int lafIndex = 0;
 
     public DialogPrefs() {
 
@@ -65,7 +66,9 @@ public class DialogPrefs extends XJPanel {
             public void actionPerformed(ActionEvent event) {
                 dialogPane.requestFocus();
                 getPreferences().applyPreferences();
-                changeLookAndFeel();
+                if(lafIndex != lafCombo.getSelectedIndex()) {
+                    changeLookAndFeel();                    
+                }
                 XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_PREFS_APPLIED);
             }
         });
@@ -137,6 +140,7 @@ public class DialogPrefs extends XJPanel {
     }
 
     public void dialogWillDisplay() {
+        lafIndex = lafCombo.getSelectedIndex();
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_PREFERENCES);
     }
 

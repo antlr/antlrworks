@@ -8,6 +8,7 @@ import edu.usfca.xj.foundation.XJSystem;
 import edu.usfca.xj.foundation.XJUtils;
 import edu.usfca.xj.foundation.timer.XJScheduledTimerDelegate;
 import org.antlr.Tool;
+import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.works.dialog.DialogReports;
 import org.antlr.works.editor.EditorPreferences;
 
@@ -60,7 +61,9 @@ public class HelpManager implements XJScheduledTimerDelegate {
     public static void sendFeedback(Container parent) {
         StringBuffer url = new StringBuffer(Localizable.getLocalizedString(Localizable.FEEDBACK_URL));
         url.append("?ANTLRVersion=");
-        url.append(XJUtils.encodeToURL(Tool.Version));
+        url.append(XJUtils.encodeToURL(Tool.VERSION));
+        url.append("&StringTemplateVersion=");
+        url.append(XJUtils.encodeToURL(StringTemplate.VERSION));
         url.append("&ANTLRWorksVersion=");
         url.append(XJUtils.encodeToURL(XJApplication.getAppVersionShort()));
         url.append("&OS=");

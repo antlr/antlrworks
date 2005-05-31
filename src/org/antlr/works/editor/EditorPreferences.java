@@ -90,10 +90,12 @@ public class EditorPreferences {
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
     public static final String PREF_SERVER_ID = "PREF_SERVER_ID";
 
-    public static final String PREF_OUTPUT_PATH = "KEY_OUTPUT_PATH";
-    public static final String PREF_START_SYMBOL = "KEY_START_SYMBOL";
+    public static final String PREF_OUTPUT_PATH = "PREF_OUTPUT_PATH";
+    public static final String PREF_START_SYMBOL = "PREF_START_SYMBOL";
+    public static final String PREF_DEBUG_BREAK_EVENT = "PREF_DEBUG_BREAK_EVENT";
 
-    public static final String PREF_PERSONAL_INFO = "KEY_OUTPUT_DEV_DATE";
+    public static final String PREF_PERSONAL_INFO = "PREF_OUTPUT_DEV_DATE";
+    public static final String PREF_PRIVATE_MENU = "PREF_PRIVATE_MENU";
 
     public static void setOutputPath(String path) {
         getPreferences().setString(PREF_OUTPUT_PATH, path);
@@ -115,7 +117,7 @@ public class EditorPreferences {
         return getPreferences().getInt(PREF_STARTUP_ACTION, STARTUP_OPEN_LAST_DOC);
     }
 
-    public static int getTabWidth() {
+    public static int getEditorTabSize() {
         return getPreferences().getInt(PREF_TAB_WIDTH, DEFAULT_TAB_WIDTH);
     }
 
@@ -203,7 +205,12 @@ public class EditorPreferences {
         return (Map)getPreferences().getObject(PREF_PERSONAL_INFO, null);
     }
 
+    public static boolean getPrivateMenu() {
+        return getPreferences().getBoolean(PREF_PRIVATE_MENU, false);
+    }
+
     public static XJPreferences getPreferences() {
         return XJApplication.shared().getPreferences();
     }
+
 }

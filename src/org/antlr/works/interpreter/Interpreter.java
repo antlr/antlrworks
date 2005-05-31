@@ -6,7 +6,8 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.ParseTree;
-import org.antlr.tool.Grammar;
+import org.antlr.tool.*;
+import org.antlr.works.editor.EditorConsole;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.undo.Undo;
@@ -77,6 +78,9 @@ public class Interpreter implements Runnable {
     private Grammar lexer;
 
     private EditorWindow editor;
+
+    protected EngineErrorListener engineErrorListener = new EngineErrorListener();
+    protected ANTLRErrorListener oldListener;
 
     public Interpreter(EditorWindow editor) {
         this.editor = editor;
@@ -212,6 +216,9 @@ public class Interpreter implements Runnable {
     }
 
     public void interpret() {
+        oldListener = ErrorManager.getErrorListener();
+        ErrorManager.setErrorListener(engineErrorListener);
+
         if(grammarDirty) {
             progress.setCancellable(false);
             progress.setIndeterminate(true);
@@ -239,6 +246,8 @@ public class Interpreter implements Runnable {
             e.printStackTrace();
         }
 
+        ErrorManager.setErrorListener(oldListener);
+
         treeModel.setGrammar(parser);
         treeModel.setTree(t);
         tree.updateUI();
@@ -248,6 +257,10 @@ public class Interpreter implements Runnable {
     public void run() {
         if(grammarDirty) {
             grammarDirty = false;
+
+            // Note: there is one listener per thread
+            ANTLRErrorListener threadOldListener = ErrorManager.getErrorListener();
+            ErrorManager.setErrorListener(engineErrorListener);
 
             try {
                 parser = new Grammar();
@@ -260,6 +273,8 @@ public class Interpreter implements Runnable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            ErrorManager.setErrorListener(threadOldListener);
         }
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -272,4 +287,23 @@ public class Interpreter implements Runnable {
             }
         });
     }
+
+    private class EngineErrorListener implements ANTLRErrorListener {
+        public void info(String msg) {
+            EditorConsole.shared().println(msg);
+        }
+
+        public void error(Message msg) {
+            EditorConsole.shared().println(msg.toString());
+        }
+
+        public void warning(Message msg) {
+            EditorConsole.shared().println(msg.toString());
+        }
+
+        public void error(ToolMessage msg) {
+            EditorConsole.shared().println(msg.toString());
+        }
+    };
+
 }

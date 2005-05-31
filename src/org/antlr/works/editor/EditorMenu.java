@@ -85,6 +85,8 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_SEND_FEEDBACK = 61;
     public static final int MI_CHECK_UPDATES = 62;
 
+    public static final int MI_SHOW_CONSOLE = 70;
+
     public static final int MI_PRIVATE_STATS = 100;
     public static final int MI_PRIVATE_UNREGISTER = 101;
 
@@ -141,6 +143,11 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.insertItemAfter(exportMenu, XJMainMenuBar.MI_SAVEAS);
 
         menu.insertSeparatorAfter(XJMainMenuBar.MI_SAVEAS);
+    }
+
+    public void customizeWindowMenu(XJMenu menu) {
+        menu.insertItemBefore(new XJMenuItem("Show Console", MI_SHOW_CONSOLE, this), XJMainMenuBar.MI_WINDOW);
+        menu.insertSeparatorBefore(XJMainMenuBar.MI_WINDOW);
     }
 
     public void customizeHelpMenu(XJMenu menu) {
@@ -209,10 +216,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.setTitle("Generate");
         menu.addItem(new XJMenuItem("Generate Code...", MI_GENERATE_CODE, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show Generated Lexer Code", MI_SHOW_GENERATED_LEXER_CODE, this));
-        menu.addItem(new XJMenuItem("Show Generated Parser Code", MI_SHOW_GENERATED_PARSER_CODE, this));
+        menu.addItem(new XJMenuItem("Show Lexer Code", MI_SHOW_GENERATED_LEXER_CODE, this));
+        menu.addItem(new XJMenuItem("Show Parser Code", MI_SHOW_GENERATED_PARSER_CODE, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show Generated Rule Code", MI_SHOW_RULE_GENCODE, this));
+        menu.addItem(new XJMenuItem("Show Rule Code", MI_SHOW_RULE_GENCODE, this));
 
         menubar.addCustomMenu(menu);
 
@@ -231,13 +238,14 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
         // *** Private menu (only for debug)
 
-        menu = new XJMenu();
-        menu.setTitle("*");
-        menu.addItem(new XJMenuItem("Statistics...", MI_PRIVATE_STATS, this));
-        menu.addItem(new XJMenuItem("Unregister user", MI_PRIVATE_UNREGISTER, this));
+        if(EditorPreferences.getPrivateMenu()) {
+            menu = new XJMenu();
+            menu.setTitle("*");
+            menu.addItem(new XJMenuItem("Statistics...", MI_PRIVATE_STATS, this));
+            menu.addItem(new XJMenuItem("Unregister user", MI_PRIVATE_UNREGISTER, this));
 
-        menubar.addCustomMenu(menu);
-
+            menubar.addCustomMenu(menu);
+        }
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
@@ -248,6 +256,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         handleMenuGenerate(item.getTag());
         handleMenuRun(item.getTag());
         handleMenuPrivate(item.getTag());
+        handleMenuWindow(item.getTag());
         handleMenuHelp(item.getTag());
         handleMenuExport(item.getTag());
     }
@@ -379,6 +388,14 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_DEBUG_REMOTE:
                 editor.menuRunActions.debugRemote();
+                break;
+        }
+    }
+
+    public void handleMenuWindow(int itemTag) {
+        switch(itemTag) {
+            case MI_SHOW_CONSOLE:
+                EditorConsole.shared().show();
                 break;
         }
     }

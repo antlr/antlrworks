@@ -144,12 +144,14 @@ public class DebuggerRecorder {
         return status;
     }
 
-    public void stepBackward() {
+    public void stepBackward(int breakEvent) {
+        setBreaksOnEventType(breakEvent);
         if(stepMove(-1))
             playEvents(true);
     }
 
-    public void stepForward() {
+    public void stepForward(int breakEvent) {
+        setBreaksOnEventType(breakEvent);
         if(stepMove(1))
             playEvents(false);
         else
@@ -185,8 +187,9 @@ public class DebuggerRecorder {
     }
 
     public void goToEnd() {
-        setPositionToEnd();
-        playEvents(false);
+        stepForward(DebuggerEvent.TERMINATE);
+//        setPositionToEnd();
+//        playEvents(false);
     }
 
     public boolean start(String address, int port) {

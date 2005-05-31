@@ -1,6 +1,9 @@
-package org.antlr.works.util;
+package org.antlr.works.editor;
 
-import edu.usfca.xj.appkit.utils.XJLocalizable;
+import edu.usfca.xj.appkit.frame.XJPanel;
+
+import javax.swing.*;
+import java.awt.*;
 
 /*
 
@@ -33,27 +36,34 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class Localizable {
+public class EditorConsole extends XJPanel {
 
-    public static final String PROPERTIES_FILE = "strings";
+    protected static EditorConsole shared;
+    protected JTextArea textArea;
 
-    public static final String DOCUMENT_TYPE = "GrammarDocumentType";
-
-    public static final String APP_NAME = "AppName";
-    public static final String APP_VERSION_SHORT = "AppVersionShort";
-    public static final String APP_VERSION_LONG = "AppVersionLong";
-
-    public static final String SPLASH_INFO = "SplashInfo";
-    public static final String SPLASH_VERSION = "SplashVersion";
-    public static final String SPLASH_COPYRIGHT = "SplashCopyright";
-
-    public static final String DEFAULT_FONT = "DefaultFont";
-    public static final String UPDATE_XML_URL = "UpdateXMLURL";
-    public static final String FEEDBACK_URL = "FeedbackURL";
-    public static final String DOCUMENTATION_URL = "DocumentationURL";
-
-    public static String getLocalizedString(String key) {
-        return XJLocalizable.getString(PROPERTIES_FILE, key);
+    public synchronized static EditorConsole shared() {
+        if(shared == null)
+            shared = new EditorConsole();
+        return shared;
     }
 
+    public EditorConsole() {
+        super();
+
+        textArea = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setWheelScrollingEnabled(true);
+
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
+
+        setTitle("Console");
+        setSize(400, 300);
+
+        awake();
+    }
+
+    public synchronized void println(String s) {
+        textArea.setText(textArea.getText()+s+"\n");
+    }
 }

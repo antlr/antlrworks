@@ -161,10 +161,12 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public void selectInterpreterTab() {
         getTabbedPane().setSelectedIndex(1);
+        editorGUI.makeBottomComponentVisible();
     }
 
     public void selectDebuggerTab() {
-        getTabbedPane().setSelectedIndex(2);        
+        getTabbedPane().setSelectedIndex(2);
+        editorGUI.makeBottomComponentVisible();
     }
 
     public void registerUndo(Undo undo, JTextPane component) {
@@ -344,6 +346,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         editorMenu.customizeFileMenu(menu);
     }
 
+    public void customizeWindowMenu(XJMenu menu) {
+        editorMenu.customizeWindowMenu(menu);
+    }
+
     public void customizeHelpMenu(XJMenu menu) {
         editorMenu.customizeHelpMenu(menu);
     }
@@ -409,6 +415,13 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         }
     }
 
+    public void windowDocumentPathDidChange() {
+        // Called when the document associated file has changed on the disk
+        int oldCursorPosition = getCaretPosition();
+        getDocument().reload();
+        setCaretPosition(oldCursorPosition);
+    }
+
     /** AutoCompletionMenuDelegate method: return the list of corresponding words
      *  given a partial word
      */
@@ -424,6 +437,5 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         }
         return matchingRules;
     }
-
 
 }

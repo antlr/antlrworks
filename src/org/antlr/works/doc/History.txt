@@ -1,4 +1,16 @@
 
+Posted on 05/31/05
+- help opens an URL
+- feedback URL contains now the StringTemplate version
+- don't change LAF if pop-up index didn't change when applying preferences
+- remember the last break event selected (debugger)
+- go to end button in debugger now run the debugger until the terminate event
+- debugger/interpreter panels are made visible when running the debugger or interpreter even if the split pane is collapsed
+- control-k emacs keybinding now behave as expected
+- new Console (can be displayed using the Window menu)
+- editor correctly update the text when tab size is changed in the preferences
+- editor content is reloaded automatically if file is modified by an external editor (only when editor window is reactivated)
+
 Posted on 05/28/05
 - statistics are cleared after successful transmission
 - removed default Interpreter/Debugger input text

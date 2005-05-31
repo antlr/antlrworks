@@ -36,6 +36,7 @@ import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
 import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
+import edu.usfca.xj.appkit.utils.BrowserLauncher;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJSystem;
 import org.antlr.works.dialog.DialogAbout;
@@ -48,6 +49,7 @@ import org.antlr.works.util.HelpManager;
 import org.antlr.works.util.Localizable;
 
 import javax.swing.*;
+import java.io.IOException;
 
 public class IDE extends XJApplicationDelegate {
 
@@ -136,6 +138,12 @@ public class IDE extends XJApplicationDelegate {
     }
 
     public void appShowHelp() {
+        String url = Localizable.getLocalizedString(Localizable.DOCUMENTATION_URL);
+        try {
+            BrowserLauncher.openURL(url);
+        } catch (IOException e) {
+            XJAlert.display(null, "Cannot access the online help file", "Browse "+url+" to download the PDF manual.");
+        }
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_HELP);
     }
 

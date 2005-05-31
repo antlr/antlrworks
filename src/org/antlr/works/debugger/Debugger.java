@@ -132,8 +132,6 @@ public class Debugger {
         recorder = new DebuggerRecorder(this);
         player = new DebuggerPlayer(this);
 
-        breakCombo.setSelectedIndex(DebuggerEvent.CONSUME_TOKEN);
-
         updateStatusInfo();
     }
 
@@ -309,7 +307,7 @@ public class Debugger {
         button.setToolTipText("Step Backward");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                recorder.stepBackward();
+                recorder.stepBackward(getBreakEvent());
                 Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_BACKWARD);
             }
         });
@@ -321,7 +319,7 @@ public class Debugger {
         button.setToolTipText("Step Forward");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                recorder.stepForward();
+                recorder.stepForward(getBreakEvent());
                 Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_FORWARD);
             }
         });
@@ -366,12 +364,7 @@ public class Debugger {
             breakCombo.addItem(DebuggerEvent.getEvents()[i]);
         }
 
-        breakCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                JComboBox combo = (JComboBox)event.getSource();
-                recorder.setBreaksOnEventType(combo.getSelectedIndex());
-            }
-        });
+        EditorPreferences.getPreferences().bindToPreferences(breakCombo, EditorPreferences.PREF_DEBUG_BREAK_EVENT, DebuggerEvent.CONSUME_TOKEN);
 
         box.add(breakCombo);
 
@@ -434,6 +427,10 @@ public class Debugger {
 
     public boolean isBreakpointAtLine(int line) {
         return breakpoints.contains(new Integer(line));
+    }
+
+    public int getBreakEvent() {
+        return breakCombo.getSelectedIndex();
     }
 
     public void displayNodeInfo(Object node) {
@@ -571,15 +568,17 @@ public class Debugger {
 
         String t = editor.getText();
 
-        // Compute also the tab position using a tab length of 8
-        int tab = EditorPreferences.getTabWidth();
-        int offset = 0;
+        // ANTLR gives a position using a tab size of 8. I have to
+        // convert this to the current editor tab size
+        // @todo if ANTLR changes the tab size, adjust here
+        int antlr_tab = 8;
+        int antlr_pos = 0;
         int c = 0;
-        while(offset<pos) {
+        while(antlr_pos<pos) {
             if(t.charAt(index+c) == '\t') {
-                offset = ((offset/tab)+1)*tab;
+                antlr_pos = ((antlr_pos/antlr_tab)+1)*antlr_tab;
             } else {
-                offset++;
+                antlr_pos++;
             }
 
             c++;

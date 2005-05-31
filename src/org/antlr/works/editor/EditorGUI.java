@@ -18,7 +18,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -196,6 +196,28 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
 
     public void applyFont() {
         textPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
+        applyTab();
+    }
+
+    public void applyTab() {
+        int tabSize = EditorPreferences.getEditorTabSize();
+        int charWidth = EditorPreferences.getEditorFontSize();
+        try {
+            charWidth = Toolkit.getDefaultToolkit().getFontMetrics(textPane.getFont()).stringWidth("m");
+        } catch(Exception e) {
+            // ignore exception
+        }
+
+        // @todo I have to create a fixed size array - any other way to do that ?
+        TabStop[] tstops = new TabStop[100];
+        for(int i = 0; i<100; i++) {
+            tstops[i] = new TabStop(i*tabSize*charWidth);
+        }
+        TabSet tabs = new TabSet(tstops);
+
+        Style style = textPane.getLogicalStyle();
+        StyleConstants.setTabSet(style, tabs);
+        textPane.setLogicalStyle(style);
     }
 
     public int getCaretPosition() {
@@ -282,6 +304,12 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
         if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
             applyFont();
             textScrollPane.repaint();
+        }
+    }
+
+    public void makeBottomComponentVisible() {
+        if(upDownSplitPane.getBottomComponent().getHeight() == 0) {
+            upDownSplitPane.setDividerLocation(upDownSplitPane.getLastDividerLocation());
         }
     }
 
