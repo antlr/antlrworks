@@ -37,10 +37,12 @@ import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.codegen.CodeGenerator;
+import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarReport;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorProvider;
+import org.antlr.works.util.ErrorListener;
 
 import javax.swing.*;
 import java.io.File;
@@ -73,7 +75,8 @@ public class CodeGenerate implements Runnable {
     public Grammar getParserGrammar() {
         if(parserGrammar == null) {
             try {
-                parserGrammar = new Grammar(provider.getPlainText());
+                ErrorManager.setErrorListener(ErrorListener.shared());
+                parserGrammar = new Grammar(provider.getFileName(), provider.getPlainText());
             } catch (Exception e) {
                 e.printStackTrace();
             }

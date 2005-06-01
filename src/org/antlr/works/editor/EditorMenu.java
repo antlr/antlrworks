@@ -36,6 +36,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
+import org.antlr.works.util.Console;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -146,7 +147,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     }
 
     public void customizeWindowMenu(XJMenu menu) {
-        menu.insertItemBefore(new XJMenuItem("Show Console", MI_SHOW_CONSOLE, this), XJMainMenuBar.MI_WINDOW);
+        menu.insertItemBefore(new XJMenuItem("Show Console", '=', KeyEvent.VK_EQUALS, MI_SHOW_CONSOLE, this), XJMainMenuBar.MI_WINDOW);
         menu.insertSeparatorBefore(XJMainMenuBar.MI_WINDOW);
     }
 
@@ -395,7 +396,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuWindow(int itemTag) {
         switch(itemTag) {
             case MI_SHOW_CONSOLE:
-                EditorConsole.shared().show();
+                Console.shared().show();
                 break;
         }
     }

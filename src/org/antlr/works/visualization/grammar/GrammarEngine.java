@@ -35,15 +35,18 @@ package org.antlr.works.visualization.grammar;
 import org.antlr.analysis.DFA;
 import org.antlr.analysis.DecisionProbe;
 import org.antlr.analysis.NFAState;
-import org.antlr.tool.*;
+import org.antlr.tool.ErrorManager;
+import org.antlr.tool.Grammar;
+import org.antlr.tool.GrammarNonDeterminismMessage;
 import org.antlr.works.util.CancelObject;
+import org.antlr.works.util.ErrorListener;
 
-import java.io.FileReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class GrammarEngine {
-
-    protected EngineErrorListener engineErrorListener = new EngineErrorListener();
 
     public Grammar g;
     public List errors = new ArrayList();
@@ -51,25 +54,20 @@ public class GrammarEngine {
     public GrammarEngine() {
     }
 
-    public void setGrammarText(String text) throws Exception {
-        g = new Grammar(text);
-        g.createNFAs();
-    }
-
-    public void setGrammarFile(String filename, String file) throws Exception {
-        g = new Grammar(null, filename, new FileReader(file));
+    public void setGrammarText(String text, String filename) throws Exception {
+        ErrorManager.setErrorListener(ErrorListener.shared());
+        g = new Grammar(filename, text);
         g.createNFAs();
     }
 
     public void analyze(CancelObject cancelObject) throws Exception {
-        ANTLRErrorListener oldListener = ErrorManager.getErrorListener();
         boolean oldVerbose = DecisionProbe.verbose;
 
         DecisionProbe.verbose = true;
-        ErrorManager.setErrorListener(engineErrorListener);
+        ErrorManager.setErrorListener(ErrorListener.shared());
 
         try {
-            engineErrorListener.clear();
+            ErrorListener.shared().clear();
 
             createLookaheadDFAs(cancelObject);
             if(cancelObject != null && cancelObject.cancel())
@@ -80,7 +78,6 @@ public class GrammarEngine {
             throw e;
         } finally {
             DecisionProbe.verbose = oldVerbose;
-            ErrorManager.setErrorListener(oldListener);
         }
     }
 
@@ -98,7 +95,7 @@ public class GrammarEngine {
 
     private void buildNonDeterministicErrors() {
         errors.clear();
-        for (Iterator iterator = engineErrorListener.warnings.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = ErrorListener.shared().warnings.iterator(); iterator.hasNext();) {
             Object o = iterator.next();
             if ( o instanceof GrammarNonDeterminismMessage )
                 errors.add(buildNonDeterministicError((GrammarNonDeterminismMessage)o));
@@ -141,37 +138,5 @@ public class GrammarEngine {
 
         return error;
     }
-
-    private class EngineErrorListener implements ANTLRErrorListener {
-        List infos = new LinkedList();
-        List errors = new LinkedList();
-        List warnings = new LinkedList();
-
-        public void clear() {
-            infos.clear();
-            errors.clear();
-            warnings.clear();
-        }
-
-        public void info(String msg) {
-            infos.add(msg);
-        }
-
-        public void error(Message msg) {
-            errors.add(msg);
-        }
-
-        public void warning(Message msg) {
-            warnings.add(msg);
-        }
-
-        public void error(ToolMessage msg) {
-            errors.add(msg);
-        }
-
-        public int size() {
-            return infos.size() + errors.size() + warnings.size();
-        }
-    };
 
 }

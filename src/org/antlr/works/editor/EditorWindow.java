@@ -220,7 +220,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public void toggleSyntaxDiagram() {
         visual.setEnable(!visual.isEnable());
         if(visual.isEnable()) {
-            visual.setText(getPlainText());
+            visual.setText(getPlainText(), getFileName());
             updateVisualization(false);
         }
         Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_DIAGRAM);
@@ -307,6 +307,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         if(editorCache.getString(EditorCache.CACHE_PLAIN_TEXT) == null)
             editorCache.setObject(EditorCache.CACHE_PLAIN_TEXT, actions.getPlainText());
         return editorCache.getString(EditorCache.CACHE_PLAIN_TEXT);
+    }
+
+    public synchronized String getFileName() {
+        return getDocument().getDocumentName();
     }
 
     public Container getWindowContainer() {
@@ -402,7 +406,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public void parserDidComplete() {
         editorGUI.updateInformation();
-        visual.setText(getPlainText());
+        visual.setText(getPlainText(), getFileName());
         updateVisualization(false);
 
         colorize.colorize();

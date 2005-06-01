@@ -47,6 +47,7 @@ public class VisualDrawing extends EditorThread {
     protected GFactory factory = new GFactory();
 
     protected String text;
+    protected String filename;
     protected Parser.Rule rule;
 
     protected boolean latchSilent = false;
@@ -69,8 +70,9 @@ public class VisualDrawing extends EditorThread {
         clearCacheGraphs();
     }
 
-    public synchronized void setText(String text) {
+    public synchronized void setText(String text, String filename) {
         this.text = text;
+        this.filename = filename;
         awakeThread(500);
     }
 
@@ -110,7 +112,7 @@ public class VisualDrawing extends EditorThread {
             return;
 
         try {
-            visual.engine.setGrammarText(threadText);
+            visual.engine.setGrammarText(threadText, filename);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

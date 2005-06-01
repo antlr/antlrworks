@@ -35,6 +35,7 @@ import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
+import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.works.dialog.DialogBuildAndDebug;
 import org.antlr.works.dialog.DialogConnectDebugRemote;
@@ -43,6 +44,7 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextEditorPane;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.util.ErrorListener;
 import org.antlr.works.util.IconManager;
 import org.antlr.works.util.Localizable;
 
@@ -502,7 +504,8 @@ public class Debugger {
 
     public boolean debuggerLaunchGrammar() {
         try {
-            grammar = new Grammar(editor.getPlainText());
+            ErrorManager.setErrorListener(ErrorListener.shared());
+            grammar = new Grammar(editor.getFileName(), editor.getPlainText());
         } catch (Exception e) {
             e.printStackTrace();
             return false;

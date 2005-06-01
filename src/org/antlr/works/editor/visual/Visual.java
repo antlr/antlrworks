@@ -130,9 +130,9 @@ public class Visual {
         this.parser = parser;
     }
 
-    public void setText(String text) {
+    public void setText(String text, String filename) {
         if(isEnable())
-            drawing.setText(text);
+            drawing.setText(text, filename);
     }
 
     public void setRule(Parser.Rule rule, boolean immediate) {

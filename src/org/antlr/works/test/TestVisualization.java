@@ -101,7 +101,7 @@ public class TestVisualization {
 
     public static void main(String[] args) throws Exception {
 
-        engine.setGrammarText("parser grammar P;\n"+RULE_DEBUG7);
+        engine.setGrammarText("parser grammar P;\n"+RULE_DEBUG7, null);
         //g = new Grammar("test", new FileReader("/Users/bovet/ java.g"));
         engine.analyze(null);
 

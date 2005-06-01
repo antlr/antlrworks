@@ -37,13 +37,14 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.ParseTree;
-import org.antlr.tool.*;
-import org.antlr.works.editor.EditorConsole;
+import org.antlr.tool.ErrorManager;
+import org.antlr.tool.Grammar;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.util.ErrorListener;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
@@ -78,9 +79,6 @@ public class Interpreter implements Runnable {
     private Grammar lexer;
 
     private EditorWindow editor;
-
-    protected EngineErrorListener engineErrorListener = new EngineErrorListener();
-    protected ANTLRErrorListener oldListener;
 
     public Interpreter(EditorWindow editor) {
         this.editor = editor;
@@ -216,8 +214,7 @@ public class Interpreter implements Runnable {
     }
 
     public void interpret() {
-        oldListener = ErrorManager.getErrorListener();
-        ErrorManager.setErrorListener(engineErrorListener);
+        ErrorManager.setErrorListener(ErrorListener.shared());
 
         if(grammarDirty) {
             progress.setCancellable(false);
@@ -246,8 +243,6 @@ public class Interpreter implements Runnable {
             e.printStackTrace();
         }
 
-        ErrorManager.setErrorListener(oldListener);
-
         treeModel.setGrammar(parser);
         treeModel.setTree(t);
         tree.updateUI();
@@ -258,23 +253,19 @@ public class Interpreter implements Runnable {
         if(grammarDirty) {
             grammarDirty = false;
 
-            // Note: there is one listener per thread
-            ANTLRErrorListener threadOldListener = ErrorManager.getErrorListener();
-            ErrorManager.setErrorListener(engineErrorListener);
+            ErrorManager.setErrorListener(ErrorListener.shared());
 
             try {
-                parser = new Grammar();
-                parser.setGrammarContent(editor.getPlainText());
+                parser = new Grammar(editor.getFileName(), editor.getPlainText());
 
                 String lexerGrammarText = parser.getLexerGrammar();
                 lexer = new Grammar();
+                lexer.setFileName(editor.getFileName());
                 lexer.importTokenVocabulary(parser); // make sure token types line up
                 lexer.setGrammarContent(lexerGrammarText);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            ErrorManager.setErrorListener(threadOldListener);
         }
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -287,23 +278,5 @@ public class Interpreter implements Runnable {
             }
         });
     }
-
-    private class EngineErrorListener implements ANTLRErrorListener {
-        public void info(String msg) {
-            EditorConsole.shared().println(msg);
-        }
-
-        public void error(Message msg) {
-            EditorConsole.shared().println(msg.toString());
-        }
-
-        public void warning(Message msg) {
-            EditorConsole.shared().println(msg.toString());
-        }
-
-        public void error(ToolMessage msg) {
-            EditorConsole.shared().println(msg.toString());
-        }
-    };
 
 }
