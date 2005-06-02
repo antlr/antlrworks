@@ -64,6 +64,10 @@ public class CodeGenerate implements Runnable {
         this.outputPath = EditorPreferences.getOutputPath();
     }
 
+    public void grammarChanged() {
+        parserGrammar = null;
+    }
+
     public void setOutputPath(String path) {
         this.outputPath = path;
     }
@@ -73,9 +77,10 @@ public class CodeGenerate implements Runnable {
     }
 
     public Grammar getParserGrammar() {
+        // Note: always the default listener to ANTLRWorks ;-)
+        ErrorManager.setErrorListener(ErrorListener.shared());
         if(parserGrammar == null) {
             try {
-                ErrorManager.setErrorListener(ErrorListener.shared());
                 parserGrammar = new Grammar(provider.getFileName(), provider.getPlainText());
             } catch (Exception e) {
                 e.printStackTrace();

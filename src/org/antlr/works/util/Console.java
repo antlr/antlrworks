@@ -35,11 +35,16 @@ import edu.usfca.xj.appkit.frame.XJPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Console extends XJPanel {
 
     protected static Console shared;
     protected JTextArea textArea;
+    protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSSS");
 
     public synchronized static Console shared() {
         if(shared == null)
@@ -54,8 +59,20 @@ public class Console extends XJPanel {
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setWheelScrollingEnabled(true);
 
+        Box box = Box.createHorizontalBox();
+
+        JButton clear = new JButton("Clear All");
+        clear.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                clear();
+            }
+        });
+        box.add(clear);
+        box.add(Box.createHorizontalGlue());
+
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(scrollPane, BorderLayout.CENTER);
+        getContentPane().add(box, BorderLayout.SOUTH);
 
         setTitle("Console");
         setSize(400, 300);
@@ -63,8 +80,13 @@ public class Console extends XJPanel {
         awake();
     }
 
+    public synchronized void clear() {
+        textArea.setText("");
+    }
+
     public synchronized void println(String s) {
-        System.out.println("Console: "+s);
-        textArea.setText(textArea.getText()+s+"\n");
+        String t = "["+dateFormat.format(new Date())+"] "+s;
+        System.out.println("Console: "+t);
+        textArea.setText(textArea.getText()+t+"\n");
     }
 }

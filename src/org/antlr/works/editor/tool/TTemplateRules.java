@@ -74,8 +74,8 @@ public class TTemplateRules {
     }
 
     public void addTemplateRuleBindings() {
-        textComponent.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK), "CONTROL-R");
-        textComponent.getActionMap().put("CONTROL-R", new AbstractAction() {
+        textComponent.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK), "CONTROL-T");
+        textComponent.getActionMap().put("CONTROL-T", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 onDisplayTemplateRulesPopUp();
             }

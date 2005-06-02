@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.swing;
 
+import edu.usfca.xj.foundation.XJSystem;
+
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
@@ -46,7 +48,9 @@ public class KeyBindings {
 
     public KeyBindings(JTextComponent textComponent) {
         this.textComponent = textComponent;
-        addEmacsKeyBindings();
+        // @todo currently only on Mac OS
+        if(XJSystem.isMacOS())
+            addEmacsKeyBindings();
     }
 
     public void addEmacsKeyBindings() {

@@ -62,8 +62,8 @@ public class GrammarEngine {
 
     public void analyze(CancelObject cancelObject) throws Exception {
         boolean oldVerbose = DecisionProbe.verbose;
-
         DecisionProbe.verbose = true;
+
         ErrorManager.setErrorListener(ErrorListener.shared());
 
         try {

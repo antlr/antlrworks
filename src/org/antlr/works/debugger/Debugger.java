@@ -422,6 +422,10 @@ public class Debugger {
         goToEndButton.setEnabled(enabled);
     }
 
+    public void grammarChanged() {
+        debuggerLocal.grammarChanged();
+    }
+
     public void setBreakpoints(Set breakpoints) {
         this.breakpoints = breakpoints;
     }

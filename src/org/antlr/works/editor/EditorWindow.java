@@ -242,7 +242,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         visual.cancelDrawingProcess();
 
         colorize.setColorizeLocation(offset, length);
-        interpreter.setGrammarDirty(true);
     }
 
     public void enableTextPane(boolean undo) {
@@ -288,7 +287,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             getTextPane().setCaretPosition(0);
             getTextPane().moveCaretPosition(0);
             getTextPane().getCaret().setSelectionVisible(true);
-            interpreter.setGrammarDirty(true);
+            grammarChanged();
             parser.parse();
         } catch(Exception e) {
             e.printStackTrace();
@@ -326,8 +325,16 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void changeDone() {
+        grammarChanged();
         editorCache.invalidate();
         getDocument().changeDone();
+    }
+
+    public void grammarChanged() {
+        // @todo add listeners (see if it is fast enough)
+        interpreter.grammarChanged();
+        debugger.grammarChanged();
+        menuGenerateActions.generateCode.grammarChanged();
     }
 
     public void selectTextRange(int start, int end) {

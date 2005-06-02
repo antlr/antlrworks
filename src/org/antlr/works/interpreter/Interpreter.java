@@ -204,8 +204,8 @@ public class Interpreter implements Runnable {
         }
     }
 
-    public void setGrammarDirty(boolean flag) {
-        grammarDirty = flag;
+    public void grammarChanged() {
+        grammarDirty = true;
     }
 
     public void displayNodeInfo(Object node) {

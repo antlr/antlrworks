@@ -41,6 +41,7 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.works.dialog.DialogDebugInput;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.code.CodeGenerate;
+import org.antlr.works.util.Console;
 
 import javax.swing.*;
 import java.io.*;
@@ -89,6 +90,10 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         this.progress = new XJDialogProgress(debugger.editor);
 
         setOutputPath(EditorPreferences.getOutputPath());
+    }
+
+    public void grammarChanged() {
+        codeGenerator.grammarChanged();
     }
 
     public void setOutputPath(String path) {
@@ -378,7 +383,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line=null;
                 while ( (line = br.readLine()) != null)
-                    System.out.println(type + ">" + line);
+                    Console.shared().println(type + ">" + line);
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }

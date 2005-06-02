@@ -6,27 +6,30 @@
 - traduire en francais en_US.stg dans /tool/templates/messages
 - extract all strings into properties
 
-* Terence *
-
 * Check-list *
+
 - version in about.properties
 - version in strings.properties
 - remove private menu
 - optimize imports
-- check update.xml file (remove debug version!)
+- check update.xml file
+
+- upload antlrworks.pdf
 
 * Issues *
 
 - interpreter tree doesn't display correctly (but debugger tree does)
 - use "load" on Linux/Windows when opening a document on an untouched one
-- remember last interpreter start symbol
 
 - TextEditorPane: wrapping doesn't always works on Mac OS X
 - undo: rename + addition -> redo doesn't show "rename" but "addition"
 
 * ToDo *
 
-- if ANTLR changes tab size, change in Debugger
+- do something with verbose in ErrorListener later
+- if emacs is set (in preferences), disable all conflicting menu in Linux/Windows
+- contextual menu in the editor (go to declaration, rename, etc)
+- fix bug when selecting an alternate path (if this one is not the current one)
 - minimum font size 12 in sd (then ... and mouse over -> show full name)
 - update manager for stringtemplate/antlr
 - download stringtemplate/antlr if not found
@@ -48,3 +51,7 @@
 - localization of all strings in properties file ?
 
 - problem when more than one same LT between mark/rewind
+
+* Short-cuts *
+
+- control-t : invoke template completion

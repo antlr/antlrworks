@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.util;
 
+import org.antlr.analysis.DecisionProbe;
 import org.antlr.tool.ANTLRErrorListener;
 import org.antlr.tool.Message;
 import org.antlr.tool.ToolMessage;
@@ -64,22 +65,37 @@ public class ErrorListener implements ANTLRErrorListener {
 
     public void info(String msg) {
         infos.add(msg);
-        Console.shared().println(msg);
+        print(msg);
     }
 
     public void error(Message msg) {
         errors.add(msg);
-        Console.shared().println(msg.toString());
+        print(msg);
     }
 
     public void warning(Message msg) {
         warnings.add(msg);
-        Console.shared().println(msg.toString());
+        print(msg);
     }
 
     public void error(ToolMessage msg) {
         errors.add(msg);
-        Console.shared().println(msg.toString());
+        print(msg);
     }
 
+    public void print(String msg) {
+        Console.shared().println(msg);
+    }
+
+    public void print(Message msg) {
+        // @todo do something for that later
+        boolean previousVerbose = DecisionProbe.verbose;
+        DecisionProbe.verbose = false;
+        try {
+            Console.shared().println(msg.toString());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        DecisionProbe.verbose = previousVerbose;
+    }
 }
