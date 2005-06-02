@@ -7,7 +7,11 @@ University of San Francisco
 
 * INTRODUCTION *
 
-Welcome to ANTLRWorks! ANTLRWorks is a simple but efficient IDE for ANTLR 3 grammar. ANTLRWorks allows users to edit, visualize, interpret and debug any ANTLR 3 grammar through an easy-to-use graphical user interface.
+Welcome to ANTLRWorks!  ANTLRWorks is a simple but efficient IDE for
+ANTLR 3 grammars.  ANTLRWorks allows users to edit, visualize,
+interpret and debug any ANTLR 3 grammar through an easy-to-use
+graphical user interface.  This is an early-access (no source) release
+and so you should not expect ANTLRWorks to work at this point.
 
 The User's Guide is available at
 
@@ -17,50 +21,64 @@ More information is available at
 
 	http://www.antlr.org/works/index.html
 
-If you have problems or think you have found a bug in ANTLRWorks, report it at
+If you have problems or think you have found a bug in ANTLRWorks,
+report it at
 
 	http://www.antlr.org/misc/feedback
 
 
 * INSTALLATION *
 
-Download the complete archive antlrworks.jar at
+Download the complete antlrworks.jar at
+
 	http://www.antlr.org/works/index.html
 
-This archive contains everything needed to work with ANTLRWorks (it includes ANTLR 3, StringTemplate, XJLibrary, etc.).
+This archive contains everything needed to work with ANTLRWorks (it
+includes ANTLR 3, StringTemplate, XJLibrary, ANTLR 2.7.5, etc.).
 
-To run ANTLRWorks, simply double-click on the antlrworks.jar file. From the command line, type "java -jar antlrworks.jar".
+To run ANTLRWorks, simply double-click on the antlrworks.jar
+file.  From the command line, type "java -jar antlrworks.jar".
 
 
 * ADVANCED INSTALLATION *
 
-If you want to use another version of ANTLR 3 (like an upgrade), you will have to expand the antlrworks.jar archive to remove ANTLR 3.
+If you want to use another version of ANTLR 3 (like an upgrade), you
+will have to expand the antlrworks.jar archive to overwrite ANTLR 3.
 
-To expand the archive, type "jar -xj antlrworks.jar". The following directories will be expanded:
+To expand the archive, type "jar -xj antlrworks.jar".  The following
+directories will be expanded:
 
-	antlr
-	com/jgoodies/forms
-	edu/usfca/xj
-	org/antlr/
-	org/antlr/stringtemplate
-	org/antlr/works
+	antlr/...			ANTLR 2.7.5
+	com/jgoodies/forms/...		JGoodies
+	edu/usfca/xj/...		XJLibrary
+	org/antlr/...			ANTLR v3
+	org/antlr/stringtemplate/...	StringTemplate
+	org/antlr/works/...		ANTLRWorks
 
-You may then remove ANTLR 3 (that is everything in "org/antlr/" except "org/antlr/stringtemplate" and "org/antlr/works"). Note that ANTLRWorks requires the "com/jgoodies/forms" and "edu/usfca/xj" directories.
+To update ANTLR v3, remove ANTLR 3 (that is everything in "org/antlr/"
+*EXCEPT* "org/antlr/stringtemplate" and "org/antlr/works"). Note that
+ANTLRWorks requires the "com/jgoodies/forms" and "edu/usfca/xj"
+directories.
 
-Make sure ANTLR 3 is in your class-path and then launch ANTLRWorks using "java org.antlr.works.IDE".
+Make sure ANTLR 3 is in your CLASSPATH and then launch ANTLRWorks
+using "java org.antlr.works.IDE".
 
-* KNOWN ISSUE *
+* KNOWN ISSUES *
 
-This version disable emacs key-bindings in all OS except Mac OS X. It will be available in future version.
+This version disables emacs key-bindings on all OS except Mac OS X.  It
+will be available in future version.
 
 
 * HISTORY *
 
 06/01/05 - version 1.0ea1
-	- first public release
+         - first release to the public (no source)
 
 
-* LICENCE *
+* WARNING *
+
+Per the license in LICENSE.txt, this software is not guaranteed to
+work and might even destroy all life on this planet:
 
 THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
 IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
