@@ -26,6 +26,10 @@
 
 * ToDo *
 
+- preferences: to pop-up the console when println occurs
+- reduce the height of each parse tree view
+- versioning in the prefs
+- better message when cannot connect because null id (submit statistics)
 - do something with verbose in ErrorListener later
 - if emacs is set (in preferences), disable all conflicting menu in Linux/Windows
 - contextual menu in the editor (go to declaration, rename, etc)

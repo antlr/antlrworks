@@ -44,7 +44,7 @@ public class Console extends XJPanel {
 
     protected static Console shared;
     protected JTextArea textArea;
-    protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSSS");
+    protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     public synchronized static Console shared() {
         if(shared == null)
@@ -85,6 +85,9 @@ public class Console extends XJPanel {
     }
 
     public synchronized void println(String s) {
+        if(!isVisible())
+            show();
+
         String t = "["+dateFormat.format(new Date())+"] "+s;
         System.out.println("Console: "+t);
         textArea.setText(textArea.getText()+t+"\n");
