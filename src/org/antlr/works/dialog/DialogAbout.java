@@ -60,6 +60,10 @@ public class DialogAbout extends XJPanel {
         center();
     }
 
+    public boolean isAuxiliaryWindow() {
+        return true;
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         appIconButton = new JButton();

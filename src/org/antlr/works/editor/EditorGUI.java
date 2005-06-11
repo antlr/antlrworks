@@ -417,7 +417,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
 
     protected class TextPaneListener implements DocumentListener {
 
-        private int enable = 0;
+        protected int enable = 0;
+        protected ImmediateColorization colorization = new ImmediateColorization();
 
         public synchronized void enable() {
             enable--;
@@ -439,6 +440,9 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
             if(!isEnable())
                 return;
 
+            colorization.colorize(e.getOffset(), e.getLength());
+            SwingUtilities.invokeLater(colorization);
+
             changeUpdate(e.getOffset(), e.getLength());
         }
 
@@ -450,6 +454,50 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
         }
 
         public void changedUpdate(DocumentEvent e) {
+        }
+    }
+
+    protected class ImmediateColorization implements Runnable {
+
+        protected int offset;
+        protected int length;
+        protected int comment = 0;
+
+        public void colorize(int offset, int length) {
+            this.offset = offset;
+            this.length = length;
+        }
+
+        public void run() {
+            try {
+                String s = textPane.getDocument().getText(offset, length);
+                char c = s.charAt(0);
+                if(c == '\n') {
+                    MutableAttributeSet attr = textPane.getInputAttributes();
+                    StyleConstants.setForeground(attr, Color.black);
+                    StyleConstants.setBold(attr, false);
+                    StyleConstants.setItalic(attr, false);
+                    comment = 0;
+                } else if(c == '/') {
+                    comment++;
+                } else if(c == '*' && comment == 1) {
+                    comment++;
+                } else {
+                    comment = 0;
+                }
+
+                if(comment == 2) {
+                    MutableAttributeSet attr = textPane.getInputAttributes();
+                    StyleConstants.setForeground(attr, Color.lightGray);
+                    StyleConstants.setBold(attr, false);
+                    StyleConstants.setItalic(attr, true);
+                    textPane.getStyledDocument().setCharacterAttributes(offset-1, 2, attr, true);
+                    comment = 0;
+                }
+
+            } catch (BadLocationException e1) {
+                // ignore exception
+            }
         }
     }
 

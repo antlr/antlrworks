@@ -41,6 +41,7 @@ public class EditorPreferences {
 
     // General
     public static final String PREF_STARTUP_ACTION = "PREF_STARTUP_ACTION";
+    public static final String PREF_CONSOLE_SHOW = "PREF_CONSOLE_SHOW";
     public static final String PREF_TAB_WIDTH = "PREF_TAB_WIDTH";
     public static final String PREF_EDITOR_FONT = "PREF_EDITOR_FONT";
     public static final String PREF_EDITOR_FONT_SIZE = "PREF_EDITOR_FONT_SIZE";
@@ -49,6 +50,7 @@ public class EditorPreferences {
     public static final int DEFAULT_TAB_WIDTH = 8;
     public static final String DEFAULT_EDITOR_FONT = "Courier New";
     public static final int DEFAULT_EDITOR_FONT_SIZE = 12;
+    public static final boolean DEFAULT_CONSOLE_SHOW = false;
 
     public static final int STARTUP_NEW_DOC = 0;
     public static final int STARTUP_OPEN_LAST_DOC = 1;
@@ -115,6 +117,10 @@ public class EditorPreferences {
 
     public static int getStartupAction() {
         return getPreferences().getInt(PREF_STARTUP_ACTION, STARTUP_OPEN_LAST_DOC);
+    }
+
+    public static boolean getConsoleShow() {
+        return getPreferences().getBoolean(PREF_CONSOLE_SHOW, DEFAULT_CONSOLE_SHOW);
     }
 
     public static int getEditorTabSize() {

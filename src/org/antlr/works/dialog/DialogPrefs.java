@@ -122,6 +122,7 @@ public class DialogPrefs extends XJPanel {
 
         // General
         getPreferences().bindToPreferences(startupActionCombo, EditorPreferences.PREF_STARTUP_ACTION, EditorPreferences.STARTUP_OPEN_LAST_DOC);
+        getPreferences().bindToPreferences(consoleShowCheckBox, EditorPreferences.PREF_CONSOLE_SHOW, EditorPreferences.DEFAULT_CONSOLE_SHOW);
         getPreferences().bindToPreferences(tabWidthField, EditorPreferences.PREF_TAB_WIDTH, EditorPreferences.DEFAULT_TAB_WIDTH);
         getPreferences().bindToPreferences(editorFontCombo, EditorPreferences.PREF_EDITOR_FONT, EditorPreferences.DEFAULT_EDITOR_FONT);
         getPreferences().bindToPreferences(editorFontSizeSpinner, EditorPreferences.PREF_EDITOR_FONT_SIZE, EditorPreferences.DEFAULT_EDITOR_FONT_SIZE);
@@ -144,6 +145,10 @@ public class DialogPrefs extends XJPanel {
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_PREFERENCES);
     }
 
+    public boolean isAuxiliaryWindow() {
+        return true;
+    }
+
     private void changeLookAndFeel() {
         XJLookAndFeel.applyLookAndFeel(EditorPreferences.getLookAndFeel());
     }
@@ -160,6 +165,8 @@ public class DialogPrefs extends XJPanel {
         panel1 = new JPanel();
         label2 = new JLabel();
         startupActionCombo = new JComboBox();
+        label11 = new JLabel();
+        consoleShowCheckBox = new JCheckBox();
         tabWidthField = new JTextField();
         label3 = new JLabel();
         editorFontCombo = new JComboBox();
@@ -198,7 +205,7 @@ public class DialogPrefs extends XJPanel {
         //======== dialogPane ========
         {
             dialogPane.setBorder(Borders.DIALOG_BORDER);
-            dialogPane.setPreferredSize(new Dimension(550, 300));
+            dialogPane.setPreferredSize(new Dimension(600, 300));
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPane ========
@@ -235,6 +242,8 @@ public class DialogPrefs extends XJPanel {
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC
                             }));
 
@@ -249,31 +258,39 @@ public class DialogPrefs extends XJPanel {
                         }));
                         panel1.add(startupActionCombo, cc.xywh(5, 3, 5, 1));
 
+                        //---- label11 ----
+                        label11.setText("Console:");
+                        panel1.add(label11, cc.xy(3, 5));
+
+                        //---- consoleShowCheckBox ----
+                        consoleShowCheckBox.setText("Display automatically when message is written");
+                        panel1.add(consoleShowCheckBox, cc.xywh(5, 5, 5, 1));
+
                         //---- tabWidthField ----
                         tabWidthField.setText("8");
-                        panel1.add(tabWidthField, cc.xy(5, 5));
+                        panel1.add(tabWidthField, cc.xy(5, 7));
 
                         //---- label3 ----
                         label3.setText("Editor font:");
-                        panel1.add(label3, cc.xy(3, 7));
+                        panel1.add(label3, cc.xy(3, 9));
 
                         //---- editorFontCombo ----
                         editorFontCombo.setActionCommand("editorFontCombo");
-                        panel1.add(editorFontCombo, cc.xywh(5, 7, 3, 1));
+                        panel1.add(editorFontCombo, cc.xywh(5, 9, 3, 1));
 
                         //---- editorFontSizeSpinner ----
                         editorFontSizeSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(8), null, new Integer(1)));
-                        panel1.add(editorFontSizeSpinner, cc.xy(9, 7));
+                        panel1.add(editorFontSizeSpinner, cc.xy(9, 9));
 
                         //---- label1 ----
                         label1.setHorizontalAlignment(SwingConstants.RIGHT);
-                        label1.setText("Tab width:");
-                        panel1.add(label1, cc.xy(3, 5));
+                        label1.setText("Editor tab width:");
+                        panel1.add(label1, cc.xy(3, 7));
 
                         //---- label5 ----
                         label5.setText("Look and feel:");
-                        panel1.add(label5, cc.xy(3, 9));
-                        panel1.add(lafCombo, cc.xywh(5, 9, 5, 1));
+                        panel1.add(label5, cc.xy(3, 11));
+                        panel1.add(lafCombo, cc.xywh(5, 11, 5, 1));
                     }
                     tabbedPane1.addTab("General", panel1);
 
@@ -465,6 +482,8 @@ public class DialogPrefs extends XJPanel {
     private JPanel panel1;
     private JLabel label2;
     private JComboBox startupActionCombo;
+    private JLabel label11;
+    private JCheckBox consoleShowCheckBox;
     private JTextField tabWidthField;
     private JLabel label3;
     private JComboBox editorFontCombo;
@@ -494,5 +513,6 @@ public class DialogPrefs extends XJPanel {
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
 
 }

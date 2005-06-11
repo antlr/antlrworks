@@ -136,14 +136,16 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         selectVisualizationTab();
 
+        registerUndo(new Undo(editorGUI), getTextPane());
+    }
+
+    public void becomingVisibleForTheFirstTime() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 // @todo why ?
                 editorGUI.rulesTextSplitPane.setDividerLocation(0.3);
             }
         });
-
-        registerUndo(new Undo(editorGUI), getTextPane());
         textPaneRequestFocusLater();
     }
 

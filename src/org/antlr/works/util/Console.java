@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.util;
 
 import edu.usfca.xj.appkit.frame.XJPanel;
+import org.antlr.works.editor.EditorPreferences;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,8 +49,12 @@ public class Console extends XJPanel {
 
     public synchronized static Console shared() {
         if(shared == null)
-            shared = new Console();
+            setShared(new Console());
         return shared;
+    }
+
+    public synchronized static void setShared(Console console) {
+        shared = console;
     }
 
     public Console() {
@@ -84,12 +89,22 @@ public class Console extends XJPanel {
         textArea.setText("");
     }
 
+    public void close() {
+        setShared(null);
+        super.close();
+    }
+
     public synchronized void println(String s) {
-        if(!isVisible())
+        if(!isVisible() && EditorPreferences.getConsoleShow())
             show();
 
         String t = "["+dateFormat.format(new Date())+"] "+s;
         System.out.println("Console: "+t);
         textArea.setText(textArea.getText()+t+"\n");
     }
+
+    public boolean isAuxiliaryWindow() {
+        return true;
+    }
+
 }

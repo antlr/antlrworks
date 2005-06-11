@@ -76,10 +76,10 @@ public class IDE extends XJApplicationDelegate {
             e.printStackTrace();
         }
 
-        XJApplication.run(new IDE());
+        XJApplication.run(new IDE(), args);
     }
 
-    public void appDidLaunch() {
+    public void appDidLaunch(String[] args) {
 
         XJLookAndFeel.applyLookAndFeel(EditorPreferences.getLookAndFeel());
         XJApplication.addDocumentType(Document.class, EditorWindow.class, XJDataPlainText.class, "g", Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
@@ -89,16 +89,21 @@ public class IDE extends XJApplicationDelegate {
         registerUser();
         checkLibraries();
 
-        switch (EditorPreferences.getStartupAction()) {
-            case EditorPreferences.STARTUP_NEW_DOC:
-                XJApplication.shared().newDocument();
-                break;
-            case EditorPreferences.STARTUP_OPEN_LAST_DOC:
-                if (XJApplication.shared().getDocuments().size() == 0) {
-                    if (XJApplication.shared().openLastUsedDocument() == false)
-                        XJApplication.shared().newDocument();
-                }
-                break;
+        if(args.length == 2 && args[0].equals("-f")) {
+            XJApplication.shared().openDocument(args[1]);
+        } else {
+            switch (EditorPreferences.getStartupAction()) {
+                case EditorPreferences.STARTUP_NEW_DOC:
+                    XJApplication.shared().newDocument();
+                    break;
+                case EditorPreferences.STARTUP_OPEN_LAST_DOC:
+                    if (XJApplication.shared().getDocuments().size() == 0) {
+                        if (XJApplication.shared().openLastUsedDocument() == false) {
+                            XJApplication.shared().newDocument();
+                        }
+                    }
+                    break;
+            }
         }
 
         sc.setVisible(false);

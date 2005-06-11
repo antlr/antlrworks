@@ -69,9 +69,11 @@ public class ThreadedParser extends EditorThread {
 
     public synchronized List getRuleNames() {
         List names = new ArrayList();
-        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-            Parser.Rule rule = (Parser.Rule) iterator.next();
-            names.add(rule.name);
+        if(rules != null) {
+            for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
+                Parser.Rule rule = (Parser.Rule) iterator.next();
+                names.add(rule.name);
+            }
         }
         return names;
     }

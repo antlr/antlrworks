@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0 early access 1
-June 1, 2005
+Version 1.0 early access 2
+June 12, 2005
 
 (c) 2005 Jean Bovet & Terence Parr
 University of San Francisco
@@ -70,6 +70,17 @@ will be available in future version.
 
 
 * HISTORY *
+
+06/12/05 - version 1.0ea2
+        - added a launch parameter to specify a file to open at startup
+          ("-f /document/example.g")
+        - improved immediate colorization for comments and new lines
+        - console is hidden by default (can be changed in preferences)
+        - application is closed on Linux/Windows when the last project
+          window is closed and an auxiliary window is still open
+          (Console, Preferences or About dialog)
+        - fixed a bug where ANTLRWorks would quit on Windows/Linux if
+          the last opened project was not found
 
 06/01/05 - version 1.0ea1
          - first release to the public (no source)
