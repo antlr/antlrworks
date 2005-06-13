@@ -85,7 +85,7 @@ public class GrammarEngine {
         for (int decision=1; decision<=g.getNumberOfDecisions(); decision++) {
             NFAState decisionStartState = g.getDecisionNFAStartState(decision);
             if ( decisionStartState.getNumberOfTransitions()>1 ) {
-                DFA lookaheadDFA = new DFA(decisionStartState);
+                DFA lookaheadDFA = new DFA(decision, decisionStartState);
                 g.setLookaheadDFA(decision, lookaheadDFA);
             }
             if(cancelObject != null && cancelObject.cancel())
