@@ -94,7 +94,7 @@ public class KeyBindings {
 
                 Document doc = textComponent.getDocument();
                 int start = index;
-                while(index<t.length() && t.charAt(index) != '\n') {
+                while(index<t.length() && t.charAt(index) != '\n' && t.charAt(index) != '\r') {
                     index++;
                 }
                 try {

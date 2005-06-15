@@ -36,6 +36,7 @@ public class Token {
     public int type;
     public int start;
     public int end;
+    public int internalOffset;
     public int line;
     public int linePos;
     public String text;
@@ -43,15 +44,16 @@ public class Token {
     protected String attribute;
     protected boolean isAllUpperCase;
 
-    public Token(int type, int start, int end, int line, int linePos, String text) {
+    public Token(int type, int start, int end, int internalOffset, int line, int linePos, String text) {
         this.type = type;
         this.start = start;
         this.end = end;
+        this.internalOffset = internalOffset;
         this.line = line;
         this.linePos = linePos;
         this.text = text;
 
-        this.attribute = text.substring(start, end);
+        this.attribute = text.substring(start+internalOffset, end+internalOffset);
         this.isAllUpperCase =  attribute.equals(getAttribute().toUpperCase());
     }
 

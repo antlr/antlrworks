@@ -472,7 +472,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
             try {
                 String s = textPane.getDocument().getText(offset, length);
                 char c = s.charAt(0);
-                if(c == '\n') {
+                if(c == '\n' || c == '\r') {
                     MutableAttributeSet attr = textPane.getInputAttributes();
                     StyleConstants.setForeground(attr, Color.black);
                     StyleConstants.setBold(attr, false);

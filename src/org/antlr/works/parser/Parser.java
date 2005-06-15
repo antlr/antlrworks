@@ -39,12 +39,12 @@ import java.util.List;
 
 public class Parser {
 
-    public List tokens;
-    public int position;
+    protected List tokens;
+    protected int position;
 
-    public Token currentToken;
+    protected Token currentToken;
 
-    public static final String ATTRIBUTE_FRAGMENT = "fragment";
+    protected static final String ATTRIBUTE_FRAGMENT = "fragment";
 
     protected Lexer lexer;
 

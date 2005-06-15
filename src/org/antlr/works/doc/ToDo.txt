@@ -1,4 +1,8 @@
 
+- new line algo:
+    - review control-k
+- tree view of TUsage: why use white spaces to be able to display the entire string ?
+    
 - XJURLLabel: check license
 - MultilineToolTip : grab license and see if correct
 - BrowserLauncher: ok (mail from author)

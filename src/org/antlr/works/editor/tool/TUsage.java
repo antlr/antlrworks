@@ -137,20 +137,21 @@ public class TUsage {
         }
 
         public void createContextString() {
-            int s = token.start;
-            while(s > 0 && token.text.charAt(s) != '\n') {
+            int s = token.start+token.internalOffset;
+            while(s > 0 && token.text.charAt(s) != '\n' && token.text.charAt(s) != '\r') {
                 s--;
             }
 
-            int e = token.end;
-            while(s < token.text.length() && token.text.charAt(e) != '\n') {
+            int e = token.end+token.internalOffset;
+            while(s < token.text.length() && token.text.charAt(e) != '\n' && token.text.charAt(e) != '\r') {
                 e++;
             }
             contextualText = token.text.substring(s, e);
         }
 
         public String toString() {
-            return token.getAttribute()+" @ ("+token.line+", "+(token.start-token.linePos)+") "+contextualText;
+            // @todo it seems that I have to add white space in order for the string not to be truncated in the tree view
+            return token.getAttribute()+" @ ("+token.line+", "+(token.start-token.linePos)+") "+contextualText+"        ";
         }
     }
 }
