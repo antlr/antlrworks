@@ -84,7 +84,8 @@ public class MenuEdit extends AbstractActions {
 
     public void performCopyToClipboard() {
         JTextPane tp = getTextPane();
-        String text = editor.actions.getPlainText(tp.getSelectionStart(), tp.getSelectionEnd());
+        String text = editor.actions.getPlainText(tp.getSelectionStart(),
+                                                   tp.getSelectionEnd());
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
     }
 

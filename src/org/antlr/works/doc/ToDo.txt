@@ -1,8 +1,9 @@
+- LT are not always displayed - see if we are too restricted
+- displays infos when running ANTLR in the console
+- use the new tool process for code generation
 
-- new line algo:
-    - review control-k
-- tree view of TUsage: why use white spaces to be able to display the entire string ?
-    
+- console in tab
+
 - XJURLLabel: check license
 - MultilineToolTip : grab license and see if correct
 - BrowserLauncher: ok (mail from author)
@@ -24,6 +25,7 @@
 
 - interpreter tree doesn't display correctly (but debugger tree does)
 - use "load" on Linux/Windows when opening a document on an untouched one
+- tree view of TUsage: why use white spaces to be able to display the entire string ?
 
 - TextEditorPane: wrapping doesn't always works on Mac OS X
 - undo: rename + addition -> redo doesn't show "rename" but "addition"

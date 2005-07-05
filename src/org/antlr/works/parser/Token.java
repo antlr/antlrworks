@@ -34,31 +34,51 @@ package org.antlr.works.parser;
 public class Token {
 
     public int type;
-    public int start;
-    public int end;
-    public int internalOffset;
+
     public int line;
-    public int linePos;
+    protected int linePosition;
     public String text;
+
+    protected int start;
+    protected int end;
 
     protected String attribute;
     protected boolean isAllUpperCase;
 
-    public Token(int type, int start, int end, int internalOffset, int line, int linePos, String text) {
+    public Token(int type, int start, int end, int line, int linePosition, String text) {
         this.type = type;
+
         this.start = start;
         this.end = end;
-        this.internalOffset = internalOffset;
+
         this.line = line;
-        this.linePos = linePos;
+        this.linePosition = linePosition;
+
         this.text = text;
 
-        this.attribute = text.substring(start+internalOffset, end+internalOffset);
+        this.attribute = text.substring(start, end);
         this.isAllUpperCase =  attribute.equals(getAttribute().toUpperCase());
     }
 
     public String getAttribute() {
         return attribute;
+    }
+
+    public int getLinePosition() {
+        return linePosition;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public int getEnd() {
+        return end;
+    }
+
+    public void offsetPositionBy(int value) {
+        start += value;
+        end += value;
     }
 
     public boolean isAllUpperCase() {
@@ -73,4 +93,5 @@ public class Token {
     public String toString() {
         return "{ "+getAttribute()+" = "+type+" ("+start+", "+end+") }";
     }
+
 }

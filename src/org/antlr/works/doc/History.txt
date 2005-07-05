@@ -1,4 +1,14 @@
 
+Version 1.0ea3 - 07/04/05
+
+- compatible with ANTLR 3.0ea5
+
+- fixed a bug where generating lexer/parser without saving the grammar to a file would fail
+- fixed a bug where the first Look and Feel pop-up item could not be applied
+- fixed a bug where error during code generation would not be reported
+- fixed the bug where grammar file containing Windows new line (\r\n) would not be parsed correctly
+   - including associated features like copy, cut, colorization, rule selection, debugger location, etc.
+
 Version 1.0ea2 - 06/12/05
 
 - added a launch parameter to specify a file to open at startup ("-f /document/example.g")

@@ -47,6 +47,7 @@ import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.ErrorListener;
 import org.antlr.works.util.IconManager;
 import org.antlr.works.util.Localizable;
+import org.antlr.works.parser.Line;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -564,14 +565,12 @@ public class Debugger {
             infoList.ensureIndexIsVisible(stackListModel.getSize()-1);
     }
 
-    public int computeAbsoluteGrammarIndex(int line, int pos) {
+    public int computeAbsoluteGrammarIndex(int lineIndex, int pos) {
         List lines = editor.getLines();
-        if(line-1<0 || line-1 >= lines.size())
+        if(lineIndex-1<0 || lineIndex-1 >= lines.size())
             return -1;
 
-        Integer i = (Integer)lines.get(line-1);
-        int index = i.intValue();
-
+        Line line = (Line)lines.get(lineIndex-1);
         String t = editor.getText();
 
         // ANTLR gives a position using a tab size of 8. I have to
@@ -581,7 +580,7 @@ public class Debugger {
         int antlr_pos = 0;
         int c = 0;
         while(antlr_pos<pos) {
-            if(t.charAt(index+c) == '\t') {
+            if(t.charAt(line.position+c) == '\t') {
                 antlr_pos = ((antlr_pos/antlr_tab)+1)*antlr_tab;
             } else {
                 antlr_pos++;
@@ -589,7 +588,7 @@ public class Debugger {
 
             c++;
         }
-        return index+(c-1);
+        return line.position+(c-1);
     }
 
     public void playEvents(List events, boolean reset) {
@@ -675,7 +674,7 @@ public class Debugger {
             if(s != null)
                 return s;
             else if(token != null)
-                return token.getText()+" <"+grammar.getTokenName(token.getType())+">";
+                return token.getText()+" <"+grammar.getTokenDisplayName(token.getType())+">";
             else if(e != null)
                 return e.toString();
 
@@ -686,7 +685,7 @@ public class Debugger {
             if(s != null)
                 return s;
             else if(token != null)
-                return token.getText()+" <"+grammar.getTokenName(token.getType())+">";
+                return token.getText()+" <"+grammar.getTokenDisplayName(token.getType())+">";
             else if(e != null)
                 return e.toString();
 

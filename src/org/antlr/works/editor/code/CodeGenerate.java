@@ -58,10 +58,14 @@ public class CodeGenerate implements Runnable {
     protected Grammar lexerGrammar;
 
     protected EditorProvider provider;
+    protected ErrorListener errorListener;
 
     public CodeGenerate(EditorProvider provider) {
         this.provider = provider;
         this.outputPath = EditorPreferences.getOutputPath();
+        errorListener = new ErrorListener();
+        errorListener.setPrintToConsole(false);
+        errorListener.setForwardListener(ErrorListener.shared());
     }
 
     public void grammarChanged() {
@@ -77,11 +81,12 @@ public class CodeGenerate implements Runnable {
     }
 
     public Grammar getParserGrammar() {
-        // Note: always the default listener to ANTLRWorks ;-)
-        ErrorManager.setErrorListener(ErrorListener.shared());
+        ErrorManager.setErrorListener(errorListener);
+
         if(parserGrammar == null) {
             try {
-                parserGrammar = new Grammar(provider.getFileName(), provider.getPlainText());
+                String fileName = provider.getFileName();
+                parserGrammar = new Grammar(fileName==null?"<notsaved>":fileName, provider.getPlainText());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -97,10 +102,19 @@ public class CodeGenerate implements Runnable {
         return getParserGrammar().name;
     }
 
-    public void generate(boolean debug) throws Exception {
+    public String getLastError() {
+        if(errorListener.errors.isEmpty())
+            return null;
+        else
+            return errorListener.errors.get(0).toString();
+    }
+
+    public boolean generate(boolean debug) throws Exception {
         this.debug = debug;
+        errorListener.clear();
         generateParser();
         generateLexer();
+        return !errorListener.hasErrors();
     }
 
     protected void generateParser() throws Exception {
@@ -123,8 +137,7 @@ public class CodeGenerate implements Runnable {
         }
     }
 
-    protected void generateGrammar(Grammar grammar) throws IOException
-    {
+    protected void generateGrammar(Grammar grammar) throws IOException {
         String language = (String)grammar.getOption("language");
         if ( language!=null ) {
             CodeGenerator generator = new CodeGenerator(new MyTool(getOutputPath()), grammar, language);
@@ -190,21 +203,24 @@ public class CodeGenerate implements Runnable {
 
     public void generateInThreadDidTerminate() {
         progress.close();
-        if(generateException != null)
-            XJAlert.display(provider.getWindowContainer(), "Error", "Cannot generate the grammar because:\n"+generateException);
+        if(generateError != null)
+            XJAlert.display(provider.getWindowContainer(), "Error", "Cannot generate the grammar because:\n"+generateError);
         else
             XJAlert.display(provider.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+outputPath);
     }
 
-    protected Exception generateException = null;
+    protected String generateError = null;
     protected XJDialogProgress progress;
 
     public void run() {
-        generateException = null;
+        generateError = null;
 
         try {
-            generate(debug);
+            if(generate(debug) == false) {
+                generateError = getLastError();
+            }
         } catch (Exception e) {
+            generateError = e.toString();
             e.printStackTrace();
         }
 

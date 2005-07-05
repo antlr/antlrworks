@@ -29,25 +29,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works;
 
-import edu.usfca.xj.appkit.document.XJDataPlainText;
-import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.foundation.XJUtils;
-import org.antlr.works.editor.EditorWindow;
+package org.antlr.works.parser;
 
-public class Document extends XJDocument {
+public class Line {
 
-    public void documentWillWriteData() {
-        EditorWindow w = (EditorWindow)getWindow();
-        XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        data.setText(XJUtils.getLocalizedText(w.getPlainText()));
+    public int position;
+
+    public Line(int position) {
+        this.position = position;
     }
-
-    public void documentDidReadData() {
-        EditorWindow w = (EditorWindow)getWindow();
-        XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        w.setLoadedText(XJUtils.getNormalizedText(data.getText()));
-    }
-
 }

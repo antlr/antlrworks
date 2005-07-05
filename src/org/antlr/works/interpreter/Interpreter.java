@@ -241,6 +241,7 @@ public class Interpreter implements Runnable {
             t = parseEngine.parse(startSymbol);
         } catch (Exception e) {
             e.printStackTrace();
+            XJAlert.display(editor.getWindowContainer(), "Error while interpreting", "The interpreter has generated the following exception:\n"+e);
         }
 
         treeModel.setGrammar(parser);

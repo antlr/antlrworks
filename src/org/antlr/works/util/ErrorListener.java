@@ -47,10 +47,23 @@ public class ErrorListener implements ANTLRErrorListener {
     public List errors = new LinkedList();
     public List warnings = new LinkedList();
 
+    public boolean printToConsole = false;
+    public ErrorListener forwardListener = null;
+
     public static synchronized ErrorListener shared() {
-        if(shared == null)
+        if(shared == null) {
             shared = new ErrorListener();
+            shared.setPrintToConsole(true);
+        }
         return shared;
+    }
+
+    public void setPrintToConsole(boolean flag) {
+        this.printToConsole = flag;
+    }
+
+    public void setForwardListener(ErrorListener listener) {
+        this.forwardListener = listener;
     }
 
     public void clear() {
@@ -59,32 +72,45 @@ public class ErrorListener implements ANTLRErrorListener {
         warnings.clear();
     }
 
+    public boolean hasErrors() {
+        return size() > 0;
+    }
+
     public int size() {
         return infos.size() + errors.size() + warnings.size();
     }
 
     public void info(String msg) {
         infos.add(msg);
+        if(forwardListener != null)
+            forwardListener.info(msg);
         print(msg);
     }
 
     public void error(Message msg) {
         errors.add(msg);
+        if(forwardListener != null)
+            forwardListener.error(msg);
         print(msg);
     }
 
     public void warning(Message msg) {
         warnings.add(msg);
+        if(forwardListener != null)
+            forwardListener.warning(msg);
         print(msg);
     }
 
     public void error(ToolMessage msg) {
         errors.add(msg);
+        if(forwardListener != null)
+            forwardListener.error(msg);
         print(msg);
     }
 
     public void print(String msg) {
-        Console.shared().println(msg);
+        if(printToConsole)
+            Console.shared().println(msg);
     }
 
     public void print(Message msg) {

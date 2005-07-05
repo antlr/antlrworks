@@ -35,7 +35,9 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.tool.TUsage;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.Line;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.util.Console;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,7 +66,7 @@ public class MenuGrammar extends AbstractActions {
         while(iterator.hasNext()) {
             Token candidate = (Token)iterator.next();
             if(candidate.getAttribute().equals(tokenAttribute)) {
-                Parser.Rule matchedRule = editor.rules.getRuleAtPosition(candidate.start);
+                Parser.Rule matchedRule = editor.rules.getRuleAtPosition(candidate.getStart());
                 if(matchedRule != null)
                     usage.addMatch(matchedRule, candidate);
             }
@@ -112,7 +114,7 @@ public class MenuGrammar extends AbstractActions {
         for(int index = tokens.size()-1; index>0; index--) {
             Token token = (Token) tokens.get(index);
             if(token.type == t.type && token.getAttribute().equals(attr)) {
-                editor.editorGUI.replaceText(token.start, token.end, name);
+                editor.editorGUI.replaceText(token.getStart(), token.getEnd(), name);
             }
         }
     }
@@ -123,26 +125,28 @@ public class MenuGrammar extends AbstractActions {
             return -1;
 
         for(int i=0; i<lines.size(); i++) {
-            Integer line = (Integer)lines.get(i);
-            if(line.intValue() > pos) {
+            Line line = (Line)lines.get(i);
+            if(line.position > pos) {
                 return i-1;
             }
         }
         return lines.size()-1;
     }
 
-    public Point getLinePositions(int line) {
+    public Point getLinePositions(int lineIndex) {
         List lines = editor.getLines();
-        if(line == -1 || lines == null)
+        if(lineIndex == -1 || lines == null)
             return null;
 
-        Integer start = (Integer)lines.get(line);
-        Integer end = null;
-        if(line+1 >= lines.size()) {
-            return new Point(start.intValue(), getTextPane().getDocument().getLength()-1);
+        Line startLine = (Line)lines.get(lineIndex);
+        int start = startLine.position;
+        int end = 0;
+        if(lineIndex+1 >= lines.size()) {
+            return new Point(start, getTextPane().getDocument().getLength()-1);
         } else {
-            end = (Integer)lines.get(line+1);
-            return new Point(start.intValue(), end.intValue()-1);
+            Line endLine = (Line)lines.get(lineIndex+1);
+            end = endLine.position;
+            return new Point(start, end-1);
         }
     }
 
@@ -187,23 +191,24 @@ public class MenuGrammar extends AbstractActions {
     }
 
     public void checkGrammar() {
+        Console.shared().println("Checking grammar");
         editor.visual.checkGrammar();
         Statistics.shared().recordEvent(Statistics.EVENT_CHECK_GRAMMAR);                    
     }
 
-    public void moveCursorToLine(int line) {
-        if(line < 0 || line > editor.getLines().size()-1)
+    public void moveCursorToLine(int lineIndex) {
+        if(lineIndex < 0 || lineIndex > editor.getLines().size()-1)
             return;
 
-        Integer index = (Integer)editor.getLines().get(line);
-        setCaretPosition(index.intValue());
+        Line line = (Line)editor.getLines().get(lineIndex);
+        setCaretPosition(line.position);
     }
 
     public Token getTokenAtPosition(int pos) {
         Iterator iterator = editor.getTokens().iterator();
         while(iterator.hasNext()) {
             Token token = (Token)iterator.next();
-            if(pos >= token.start && pos <= token.end)
+            if(pos >= token.getStart() && pos <= token.getEnd())
                 return token;
         }
         return null;

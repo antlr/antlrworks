@@ -154,11 +154,11 @@ public class Parser {
         }
 
         public int getStartIndex() {
-            return start.start;
+            return start.getStart();
         }
 
         public int getEndIndex() {
-            return end.end;
+            return end.getEnd();
         }
 
         public int getLength() {

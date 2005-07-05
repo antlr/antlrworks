@@ -270,13 +270,20 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     public boolean generate() {
+        String error = null;
         try {
-            codeGenerator.generate(true);  // debug
+            if(!codeGenerator.generate(true))
+                error = codeGenerator.getLastError();
         } catch (Exception e) {
-            e.printStackTrace();            
-            XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating code: "+e);
+            e.printStackTrace();
+            error = e.toString();
+        }
+
+        if(error != null) {
+            XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating code: "+error);
             return false;
         }
+
         return true;
     }
 

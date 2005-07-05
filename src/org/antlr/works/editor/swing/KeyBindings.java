@@ -56,49 +56,56 @@ public class KeyBindings {
     public void addEmacsKeyBindings() {
         InputMap inputMap = textComponent.getInputMap();
 
-        //Ctrl-b to go backward one character
+        // Ctrl-b to go backward one character
         KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_B, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.backwardAction);
 
-        //Ctrl-f to go forward one character
+        // Ctrl-f to go forward one character
         key = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.forwardAction);
 
-        //Ctrl-p to go up one line
+        // Ctrl-p to go up one line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.upAction);
 
-        //Ctrl-n to go down one line
+        // Ctrl-n to go down one line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.downAction);
 
-        //Ctrl-d to delete the character under the cursor
+        // Ctrl-d to delete the character under the cursor
         key = KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.deleteNextCharAction);
 
-        //Ctrl-a to move cursor to begin of line
+        // Ctrl-a to move cursor to begin of line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.beginLineAction);
 
-        //Ctrl-e to move cursor to begin of line
+        // Ctrl-e to move cursor to begin of line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.endLineAction);
 
-        //Ctrl-k to delete the characters from the current position to the end of the line
+        // Ctrl-k to delete the characters from the current position to the end of the line
         // Has to create a custom action to handle this one.
         addKeyBinding("CONTROL_K", KeyStroke.getKeyStroke(KeyEvent.VK_K, Event.CTRL_MASK), new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
 
-                String t = textComponent.getText();
-                int index = textComponent.getCaretPosition();
+                int start = textComponent.getCaretPosition();
+                String t = null;
+                try {
+                    t = textComponent.getText(start, textComponent.getDocument().getLength()-start);
+                } catch (BadLocationException e1) {
+                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    return;
+                }
+
+                int end = 0;
+                while(end<t.length() && t.charAt(end) != '\n' && t.charAt(end) != '\r') {
+                    end++;
+                }
 
                 Document doc = textComponent.getDocument();
-                int start = index;
-                while(index<t.length() && t.charAt(index) != '\n' && t.charAt(index) != '\r') {
-                    index++;
-                }
                 try {
-                    doc.remove(start, Math.max(1, index-start));
+                    doc.remove(start, Math.max(1, end));
                 } catch (BadLocationException e1) {
                     e1.printStackTrace();
                 }

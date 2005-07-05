@@ -36,21 +36,20 @@ import java.util.List;
 
 public class Lexer {
 
-    protected static final int TOKEN_SINGLE_QUOTE_STRING = 1;
-    protected static final int TOKEN_DOUBLE_QUOTE_STRING = 2;
-    protected static final int TOKEN_SINGLE_COMMENT = 3;
-    protected static final int TOKEN_COMPLEX_COMMENT = 4;
-    protected static final int TOKEN_BLOCK = 5;
-    protected static final int TOKEN_ID = 6;
-    protected static final int TOKEN_COLON = 7;
-    protected static final int TOKEN_SEMI = 8;
-    protected static final int TOKEN_LPAREN = 9;
-    protected static final int TOKEN_RPAREN = 10;
-    protected static final int TOKEN_CHAR = 11;
+    public static final int TOKEN_SINGLE_QUOTE_STRING = 1;
+    public static final int TOKEN_DOUBLE_QUOTE_STRING = 2;
+    public static final int TOKEN_SINGLE_COMMENT = 3;
+    public static final int TOKEN_COMPLEX_COMMENT = 4;
+    public static final int TOKEN_BLOCK = 5;
+    public static final int TOKEN_ID = 6;
+    public static final int TOKEN_COLON = 7;
+    public static final int TOKEN_SEMI = 8;
+    public static final int TOKEN_LPAREN = 9;
+    public static final int TOKEN_RPAREN = 10;
+    public static final int TOKEN_CHAR = 11;
 
     protected String text;
-    protected int position; // Windows new line count as 1 character
-    protected int internalPositionOffset;   // Track the exact number of character per new line
+    protected int position;
 
     protected int line;
     protected int linePosition;    // position of the line in characters
@@ -63,10 +62,9 @@ public class Lexer {
 
     public List parseTokens() {
         List tokens = new ArrayList();
-        internalPositionOffset = 0;
         position = -1;
         line = 0;
-        lines.add(new Integer(0));
+        lines.add(new Line(0));
 
         while(nextCharacter()) {
             Token token = null;
@@ -82,17 +80,17 @@ public class Lexer {
             else if(C(0) == '{')
                 token = matchBlock();
             else if(C(0) == ':')
-                token = new Token(TOKEN_COLON, position, position+1, internalPositionOffset, line, linePosition, text);
+                token = createNewToken(TOKEN_COLON);
             else if(C(0) == ';')
-                token = new Token(TOKEN_SEMI, position, position+1, internalPositionOffset, line, linePosition, text);
+                token = createNewToken(TOKEN_SEMI);
             else if(isLetter())
                 token = matchID();
             else if(C(0) == '(')
-                token = new Token(TOKEN_LPAREN, position, position+1, internalPositionOffset, line, linePosition, text);
+                token = createNewToken(TOKEN_LPAREN);
             else if(C(0) == ')')
-                token = new Token(TOKEN_RPAREN, position, position+1, internalPositionOffset, line, linePosition, text);
+                token = createNewToken(TOKEN_RPAREN);
             else if(!isWhitespace())
-                token = new Token(TOKEN_CHAR, position, position+1, internalPositionOffset, line, linePosition, text);
+                token = createNewToken(TOKEN_CHAR);
 
             if(token != null)
                 tokens.add(token);
@@ -104,14 +102,14 @@ public class Lexer {
         int sp = position;
         while(isID(C(1)) && nextCharacter()) {
         }
-        return new Token(TOKEN_ID, sp, position+1, internalPositionOffset, line, linePosition, text);
+        return createNewToken(TOKEN_ID, sp);
     }
 
     public Token matchSingleQuoteString() {
         int sp = position;
         while(nextCharacter()) {
             if(C(0) == '\'' || matchNewLine())
-                return new Token(TOKEN_SINGLE_QUOTE_STRING, sp, position+1, internalPositionOffset, line, linePosition, text);
+                return createNewToken(TOKEN_SINGLE_QUOTE_STRING, sp);
         }
         return null;
     }
@@ -120,7 +118,7 @@ public class Lexer {
         int sp = position;
         while(nextCharacter()) {
             if(C(0) == '\"' || matchNewLine())
-                return new Token(TOKEN_DOUBLE_QUOTE_STRING, sp, position+1, internalPositionOffset, line, linePosition, text);
+                return createNewToken(TOKEN_DOUBLE_QUOTE_STRING, sp);
         }
         return null;
     }
@@ -129,19 +127,19 @@ public class Lexer {
         int sp = position;
         while(nextCharacter()) {
             if(matchNewLine())
-                return new Token(TOKEN_SINGLE_COMMENT, sp, position+1, internalPositionOffset, line, linePosition, text);
+                return createNewToken(TOKEN_SINGLE_COMMENT, sp);
         }
-        return new Token(TOKEN_SINGLE_COMMENT, sp, position, internalPositionOffset, line, linePosition, text);
+        return createNewToken(TOKEN_SINGLE_COMMENT, sp, position);
     }
 
     public Token matchComplexComment() {
         int sp = position;
         while(nextCharacter()) {
             if(C(0) == '*' && C(1) == '/')
-                return new Token(TOKEN_COMPLEX_COMMENT, sp, position+2, internalPositionOffset, line, linePosition, text);
+                return createNewToken(TOKEN_COMPLEX_COMMENT, sp, position+2);
         }
         // Complex comment terminates also at the end of the text
-        return new Token(TOKEN_COMPLEX_COMMENT, sp, position, internalPositionOffset, line, linePosition, text);
+        return createNewToken(TOKEN_COMPLEX_COMMENT, sp, position);
     }
 
     public Token matchBlock() {
@@ -161,7 +159,7 @@ public class Lexer {
                 embedded++;
             } else if(C(0) == '}') {
                 if(embedded == 0)
-                    return new Token(TOKEN_BLOCK, sp, position+1, internalPositionOffset, line, linePosition, text);
+                    return createNewToken(TOKEN_BLOCK, sp);
                 else
                     embedded--;
             }
@@ -171,7 +169,7 @@ public class Lexer {
 
     public boolean nextCharacter() {
         position++;
-        if(internalPosition()<text.length()) {
+        if(position<text.length()) {
             // Skip control character
             if(C(0) == '\\')
                 position += 2;
@@ -179,22 +177,18 @@ public class Lexer {
             if(matchNewLine()) {
                 line++;
                 linePosition = position+1;
-                lines.add(new Integer(linePosition));
+                lines.add(new Line(linePosition));
             }
-            return internalPosition()<text.length();
+            return position<text.length();
         } else
             return false;
     }
 
     public char C(int index) {
-        if(internalPosition()+index<text.length())
-            return text.charAt(internalPosition()+index);
+        if(position+index<text.length())
+            return text.charAt(position+index);
         else
             return 0;
-    }
-
-    public int internalPosition() {
-        return position+internalPositionOffset;
     }
 
     public boolean matchNewLine() {
@@ -203,7 +197,6 @@ public class Lexer {
         else if(C(0) == '\r' && C(1) == '\n') {
             // The internal position keeps track of the exact number of new line
             // while the visible position consider all new line as 1 character
-            internalPositionOffset++;
             return true;    // Windows style
         } else if(C(0) == '\r' && C(1) != '\n')
             return true;    // Mac style
@@ -235,6 +228,18 @@ public class Lexer {
             return true;
 
         return false;
+    }
+
+    public Token createNewToken(int type) {
+        return createNewToken(type, position);
+    }
+
+    public Token createNewToken(int type, int start) {
+        return createNewToken(type, start, position+1);
+    }
+
+    public Token createNewToken(int type, int start, int end) {
+        return new Token(type, start, end, line, linePosition, text);
     }
 
 }

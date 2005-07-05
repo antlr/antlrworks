@@ -222,7 +222,7 @@ public class Rules implements ThreadedParserObserver {
         Iterator iterator = parser.getRules().iterator();
         while(iterator.hasNext()) {
             Parser.Rule r = (Parser.Rule)iterator.next();
-            if(pos>=r.start.start && pos<=r.end.end)
+            if(pos>= r.start.getStart() && pos<=r.end.getEnd())
                 return r;
         }
         return null;
@@ -294,13 +294,13 @@ public class Rules implements ThreadedParserObserver {
     }
 
     public void selectTextRule(Parser.Rule rule) {
-        textPane.setCaretPosition(rule.start.start);
-        textPane.moveCaretPosition(rule.end.end);
+        textPane.setCaretPosition(rule.start.getStart());
+        textPane.moveCaretPosition(rule.end.getEnd());
         textPane.getCaret().setSelectionVisible(true);
 
         Rectangle r = null;
         try {
-            r = textPane.modelToView(rule.start.start);
+            r = textPane.modelToView(rule.start.getStart());
             textPane.scrollRectToVisible(r);
         } catch (BadLocationException e1) {
             e1.printStackTrace();

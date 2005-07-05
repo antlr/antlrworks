@@ -34,6 +34,7 @@ package org.antlr.works.interpreter;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.NoViableAltException;
 import org.antlr.runtime.tree.Tree;
+import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.Grammar;
 
 import javax.swing.event.TreeModelListener;
@@ -121,7 +122,10 @@ public class InterpreterTreeModel extends DefaultTreeModel {
         }
 
         public Object getPayload() {
-            return tree.getPayload();
+            if(tree instanceof ParseTree)
+                return ((ParseTree)tree).payload;
+            else
+                return null;
         }
 
         public String getInfoString() {
@@ -129,7 +133,7 @@ public class InterpreterTreeModel extends DefaultTreeModel {
             Object payload = getPayload();
             if(payload instanceof CommonToken) {
                 CommonToken t = (CommonToken)payload;
-                info.append("Type: "+grammar.getTokenName(t.getType())+"\n");
+                info.append("Type: "+grammar.getTokenDisplayName(t.getType())+"\n");
                 info.append("Text: "+t.getText()+"\n");
                 info.append("Line: "+t.getLine()+"\n");
                 info.append("Char: "+t.getCharPositionInLine()+"\n");

@@ -67,7 +67,8 @@ public class DialogPrefs extends XJPanel {
                 dialogPane.requestFocus();
                 getPreferences().applyPreferences();
                 if(lafIndex != lafCombo.getSelectedIndex()) {
-                    changeLookAndFeel();                    
+                    lafIndex = lafCombo.getSelectedIndex();                    
+                    changeLookAndFeel();
                 }
                 XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_PREFS_APPLIED);
             }

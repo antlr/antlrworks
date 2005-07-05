@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.swing;
 
 import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.Line;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -98,12 +99,12 @@ public class Gutter extends JComponent {
         repaint();
     }
 
-    public double getLineY(int line) {
-        Integer lineCharacterPosition;
+    public double getLineY(int lineIndex) {
+        Line line;
         Rectangle lineRectangle = null;
         try {
-            lineCharacterPosition = (Integer)lines.get(line);
-            lineRectangle = textPane.modelToView(lineCharacterPosition.intValue());
+            line = (Line)lines.get(lineIndex);
+            lineRectangle = textPane.modelToView(line.position);
         } catch (BadLocationException e) {
             return 0;
         }
