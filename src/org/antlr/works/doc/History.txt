@@ -1,4 +1,8 @@
 
+Version 1.0ea4 - 09/07/05
+
+- preferences: can now specify the colors of each type of token in the debugger input text panel
+
 Version 1.0ea3 - 07/04/05
 
 - compatible with ANTLR 3.0ea5

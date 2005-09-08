@@ -43,11 +43,11 @@ import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextEditorPane;
 import org.antlr.works.editor.swing.TreeUtilities;
+import org.antlr.works.parser.Line;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.ErrorListener;
 import org.antlr.works.util.IconManager;
 import org.antlr.works.util.Localizable;
-import org.antlr.works.parser.Line;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;

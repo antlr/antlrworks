@@ -31,7 +31,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger;
 
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
+import org.antlr.works.dialog.DialogPrefs;
+import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.swing.TextEditorPane;
 import org.antlr.works.editor.swing.TextEditorPaneDelegate;
 
@@ -44,7 +48,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class DebuggerInputText implements TextEditorPaneDelegate {
+public class DebuggerInputText implements TextEditorPaneDelegate, XJNotificationObserver {
 
     public static final boolean USE_PERSISTENCE = true;
 
@@ -76,6 +80,14 @@ public class DebuggerInputText implements TextEditorPaneDelegate {
         this.textPane.setDelegate(this);
         reset();
         createTextAttributes();
+
+        XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
+    }
+
+    public void notificationFire(Object source, String name) {
+        if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
+            createTextAttributes();
+        }
     }
 
     public void setDrawTokensBox(boolean flag) {
@@ -198,19 +210,19 @@ public class DebuggerInputText implements TextEditorPaneDelegate {
 
     private void createTextAttributes() {
         attributeNonConsumed = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeNonConsumed, Color.lightGray);
+        StyleConstants.setForeground(attributeNonConsumed, EditorPreferences.getNonConsumedTokenColor());
 
         attributeConsume = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeConsume, Color.black);
+        StyleConstants.setForeground(attributeConsume, EditorPreferences.getConsumedTokenColor());
 
         attributeConsumeHidden = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeConsumeHidden, Color.lightGray);
+        StyleConstants.setForeground(attributeConsumeHidden, EditorPreferences.getHiddenTokenColor());
 
         attributeConsumeDead = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeConsumeDead, Color.red);
+        StyleConstants.setForeground(attributeConsumeDead, EditorPreferences.getDeadTokenColor());
 
         attributeLookahead = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeLookahead, Color.blue);
+        StyleConstants.setForeground(attributeLookahead, EditorPreferences.getLookaheadTokenColor());
         StyleConstants.setItalic(attributeLookahead, true);
     }
 

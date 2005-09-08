@@ -1,3 +1,4 @@
+- lexical ambiguities (ask Terence)
 - LT are not always displayed - see if we are too restricted
 - displays infos when running ANTLR in the console
 - use the new tool process for code generation

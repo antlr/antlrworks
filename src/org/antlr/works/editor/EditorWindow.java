@@ -52,7 +52,6 @@ import org.antlr.works.interpreter.Interpreter;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
-import org.antlr.works.parser.Line;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;

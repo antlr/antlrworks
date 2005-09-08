@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.swing;
 
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Line;
+import org.antlr.works.parser.Parser;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;

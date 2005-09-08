@@ -60,7 +60,7 @@ public class DialogPrefs extends XJPanel {
 
         initComponents();
 
-        setSize(550, 300);
+        setSize(550, 330);
 
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -121,6 +121,12 @@ public class DialogPrefs extends XJPanel {
             lafCombo.addItem(info[i].getName());
         }
 
+        fillColorComboBox(nonConsumedTokenColor);
+        fillColorComboBox(consumedTokenColor);
+        fillColorComboBox(hiddenTokenColor);
+        fillColorComboBox(deadTokenColor);
+        fillColorComboBox(lookaheadTokenColor);
+
         // General
         getPreferences().bindToPreferences(startupActionCombo, EditorPreferences.PREF_STARTUP_ACTION, EditorPreferences.STARTUP_OPEN_LAST_DOC);
         getPreferences().bindToPreferences(consoleShowCheckBox, EditorPreferences.PREF_CONSOLE_SHOW, EditorPreferences.DEFAULT_CONSOLE_SHOW);
@@ -139,6 +145,13 @@ public class DialogPrefs extends XJPanel {
         // Updates
         getPreferences().bindToPreferences(updateTypeCombo, EditorPreferences.PREF_UPDATE_TYPE, EditorPreferences.DEFAULT_UPDATE_TYPE);
         getPreferences().bindToPreferences(downloadPathField, EditorPreferences.PREF_DOWNLOAD_PATH, EditorPreferences.DEFAULT_DOWNLOAD_PATH);
+
+        // Colors
+        getPreferences().bindToPreferences(nonConsumedTokenColor, EditorPreferences.PREF_NONCONSUMED_TOKEN_COLOR, EditorPreferences.DEFAULT_NONCONSUMED_TOKEN_COLOR);
+        getPreferences().bindToPreferences(consumedTokenColor, EditorPreferences.PREF_CONSUMED_TOKEN_COLOR, EditorPreferences.DEFAULT_CONSUMED_TOKEN_COLOR);
+        getPreferences().bindToPreferences(hiddenTokenColor, EditorPreferences.PREF_HIDDEN_TOKEN_COLOR, EditorPreferences.DEFAULT_HIDDEN_TOKEN_COLOR);
+        getPreferences().bindToPreferences(deadTokenColor, EditorPreferences.PREF_DEAD_TOKEN_COLOR, EditorPreferences.DEFAULT_DEAD_TOKEN_COLOR);
+        getPreferences().bindToPreferences(lookaheadTokenColor, EditorPreferences.PREF_LOOKAHEAD_TOKEN_COLOR, EditorPreferences.DEFAULT_LOOKAHEAD_TOKEN_COLOR);
     }
 
     public void dialogWillDisplay() {
@@ -156,6 +169,57 @@ public class DialogPrefs extends XJPanel {
 
     private static XJPreferences getPreferences() {
         return XJApplication.shared().getPreferences();
+    }
+
+    private void fillColorComboBox(JComboBox cb) {
+        cb.setRenderer(new ColoredRenderer());
+        cb.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JComboBox cb = (JComboBox)e.getSource();
+                ColoredObject item = ((ColoredObject)cb.getSelectedItem());
+                if(item != null)
+                    cb.setForeground(item.getColor());
+            }
+        });
+
+        cb.removeAllItems();
+
+        cb.addItem(new ColoredObject(Color.BLACK, "Black"));
+        cb.addItem(new ColoredObject(Color.BLUE, "Blue"));
+        cb.addItem(new ColoredObject(Color.CYAN, "Cyan"));
+        cb.addItem(new ColoredObject(Color.DARK_GRAY, "Dark gray"));
+        cb.addItem(new ColoredObject(Color.GRAY, "Gray"));
+        cb.addItem(new ColoredObject(Color.GREEN, "Green"));
+        cb.addItem(new ColoredObject(Color.LIGHT_GRAY, "Light gray"));
+        cb.addItem(new ColoredObject(Color.MAGENTA, "Magenta"));
+        cb.addItem(new ColoredObject(Color.ORANGE, "Orange"));
+        cb.addItem(new ColoredObject(Color.PINK, "Pink"));
+        cb.addItem(new ColoredObject(Color.RED, "Red"));
+        cb.addItem(new ColoredObject(Color.WHITE, "White"));
+        cb.addItem(new ColoredObject(Color.YELLOW, "Yellow"));
+    }
+
+    class ColoredObject {
+        Color color;
+        Object object;
+        public ColoredObject(Color color, Object object) {
+            this.color=color;
+            this.object=object;
+        }
+        public Object getObject() { return object; }
+        public Color getColor() { return color; }
+        public String toString() { return object.toString(); }
+    }
+
+    class ColoredRenderer extends DefaultListCellRenderer {
+        public Component getListCellRendererComponent(JList list, Object value,
+                                                      int index, boolean isSelected,
+                                                      boolean hasFocus) {
+            Component c = super.getListCellRendererComponent(list, value, index,
+                    isSelected,hasFocus);
+            c.setForeground(((ColoredObject)value).getColor());
+            return c;
+        }
     }
 
     private void initComponents() {
@@ -194,6 +258,17 @@ public class DialogPrefs extends XJPanel {
         label10 = new JLabel();
         downloadPathField = new JTextField();
         browseUpdateDownloadPathButton = new JButton();
+        panel5 = new JPanel();
+        label12 = new JLabel();
+        nonConsumedTokenColor = new JComboBox();
+        label13 = new JLabel();
+        consumedTokenColor = new JComboBox();
+        label14 = new JLabel();
+        hiddenTokenColor = new JComboBox();
+        label15 = new JLabel();
+        deadTokenColor = new JComboBox();
+        label16 = new JLabel();
+        lookaheadTokenColor = new JComboBox();
         buttonBar = new JPanel();
         applyButton = new JButton();
         CellConstraints cc = new CellConstraints();
@@ -206,7 +281,7 @@ public class DialogPrefs extends XJPanel {
         //======== dialogPane ========
         {
             dialogPane.setBorder(Borders.DIALOG_BORDER);
-            dialogPane.setPreferredSize(new Dimension(600, 300));
+            dialogPane.setPreferredSize(new Dimension(600, 360));
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPane ========
@@ -451,6 +526,73 @@ public class DialogPrefs extends XJPanel {
                         panel4.add(browseUpdateDownloadPathButton, cc.xy(7, 11));
                     }
                     tabbedPane1.addTab("Updates", panel4);
+
+                    //======== panel5 ========
+                    {
+                        panel5.setLayout(new FormLayout(
+                            new ColumnSpec[] {
+                                new ColumnSpec(Sizes.dluX(10)),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                FormFactory.DEFAULT_COLSPEC,
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(Sizes.dluX(10))
+                            },
+                            new RowSpec[] {
+                                new RowSpec(Sizes.dluY(10)),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC
+                            }));
+
+                        //---- label12 ----
+                        label12.setHorizontalAlignment(SwingConstants.RIGHT);
+                        label12.setText("Non-consumed token:");
+                        panel5.add(label12, cc.xy(3, 3));
+
+                        //---- nonConsumedTokenColor ----
+                        nonConsumedTokenColor.setModel(new DefaultComboBoxModel(new String[] {
+                            "Black",
+                            "Blue",
+                            "Cyan"
+                        }));
+                        panel5.add(nonConsumedTokenColor, cc.xy(5, 3));
+
+                        //---- label13 ----
+                        label13.setHorizontalAlignment(SwingConstants.RIGHT);
+                        label13.setText("Consumed token:");
+                        panel5.add(label13, cc.xy(3, 5));
+                        panel5.add(consumedTokenColor, cc.xy(5, 5));
+
+                        //---- label14 ----
+                        label14.setHorizontalAlignment(SwingConstants.RIGHT);
+                        label14.setText("Hidden token");
+                        panel5.add(label14, cc.xy(3, 7));
+                        panel5.add(hiddenTokenColor, cc.xy(5, 7));
+
+                        //---- label15 ----
+                        label15.setHorizontalAlignment(SwingConstants.RIGHT);
+                        label15.setText("Dead token:");
+                        panel5.add(label15, cc.xy(3, 9));
+                        panel5.add(deadTokenColor, cc.xy(5, 9));
+
+                        //---- label16 ----
+                        label16.setHorizontalAlignment(SwingConstants.RIGHT);
+                        label16.setText("Lookahead token:");
+                        panel5.add(label16, cc.xy(3, 11));
+                        panel5.add(lookaheadTokenColor, cc.xy(5, 11));
+                    }
+                    tabbedPane1.addTab("Colors", panel5);
                 }
                 contentPane.add(tabbedPane1, cc.xywh(1, 1, 2, 1));
             }
@@ -511,9 +653,21 @@ public class DialogPrefs extends XJPanel {
     private JLabel label10;
     private JTextField downloadPathField;
     private JButton browseUpdateDownloadPathButton;
+    private JPanel panel5;
+    private JLabel label12;
+    private JComboBox nonConsumedTokenColor;
+    private JLabel label13;
+    private JComboBox consumedTokenColor;
+    private JLabel label14;
+    private JComboBox hiddenTokenColor;
+    private JLabel label15;
+    private JComboBox deadTokenColor;
+    private JLabel label16;
+    private JComboBox lookaheadTokenColor;
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
 
 
 }

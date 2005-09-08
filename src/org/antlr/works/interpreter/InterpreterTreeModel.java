@@ -33,8 +33,8 @@ package org.antlr.works.interpreter;
 
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.NoViableAltException;
-import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.ParseTree;
+import org.antlr.runtime.tree.Tree;
 import org.antlr.tool.Grammar;
 
 import javax.swing.event.TreeModelListener;

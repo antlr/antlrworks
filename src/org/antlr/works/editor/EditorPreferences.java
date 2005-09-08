@@ -34,6 +34,7 @@ package org.antlr.works.editor;
 import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJPreferences;
 
+import java.awt.*;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -87,6 +88,26 @@ public class EditorPreferences {
 
     public static final int DEFAULT_UPDATE_TYPE = UPDATE_WEEKLY;
     public static final String DEFAULT_DOWNLOAD_PATH = System.getProperty("user.home");
+
+    // Colors
+
+    private static Color[] colors = { Color.BLACK, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, Color.GREEN,
+                                        Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.WHITE, Color.YELLOW};
+
+    public static final String PREF_NONCONSUMED_TOKEN_COLOR = "PREF_NONCONSUMED_TOKEN_COLOR";
+    public static final int DEFAULT_NONCONSUMED_TOKEN_COLOR = 6;    // light dray
+
+    public static final String PREF_CONSUMED_TOKEN_COLOR = "PREF_CONSUMED_TOKEN_COLOR";
+    public static final int DEFAULT_CONSUMED_TOKEN_COLOR = 0;    // black
+
+    public static final String PREF_HIDDEN_TOKEN_COLOR = "PREF_HIDDEN_TOKEN_COLOR";
+    public static final int DEFAULT_HIDDEN_TOKEN_COLOR = 6;    // light dray
+
+    public static final String PREF_DEAD_TOKEN_COLOR = "PREF_DEAD_TOKEN_COLOR";
+    public static final int DEFAULT_DEAD_TOKEN_COLOR = 10;    // red
+
+    public static final String PREF_LOOKAHEAD_TOKEN_COLOR = "PREF_LOOKAHEAD_TOKEN_COLOR";
+    public static final int DEFAULT_LOOKAHEAD_TOKEN_COLOR = 1;    // blue
 
     // Other
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
@@ -213,6 +234,26 @@ public class EditorPreferences {
 
     public static boolean getPrivateMenu() {
         return getPreferences().getBoolean(PREF_PRIVATE_MENU, false);
+    }
+
+    public static Color getNonConsumedTokenColor() {
+        return colors[getPreferences().getInt(PREF_NONCONSUMED_TOKEN_COLOR, DEFAULT_NONCONSUMED_TOKEN_COLOR)];
+    }
+
+    public static Color getConsumedTokenColor() {
+        return colors[getPreferences().getInt(PREF_CONSUMED_TOKEN_COLOR, DEFAULT_CONSUMED_TOKEN_COLOR)];
+    }
+
+    public static Color getHiddenTokenColor() {
+        return colors[getPreferences().getInt(PREF_HIDDEN_TOKEN_COLOR, DEFAULT_HIDDEN_TOKEN_COLOR)];
+    }
+
+    public static Color getDeadTokenColor() {
+        return colors[getPreferences().getInt(PREF_DEAD_TOKEN_COLOR, DEFAULT_DEAD_TOKEN_COLOR)];
+    }
+
+    public static Color getLookaheadTokenColor() {
+        return colors[getPreferences().getInt(PREF_LOOKAHEAD_TOKEN_COLOR, DEFAULT_LOOKAHEAD_TOKEN_COLOR)];
     }
 
     public static XJPreferences getPreferences() {
