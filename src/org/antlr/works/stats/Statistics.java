@@ -90,7 +90,7 @@ public class Statistics {
     public static final int EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS = 36;
     public static final int EVENT_DEBUGGER_SHOW_EVENTS_LIST = 37;
     public static final int EVENT_DEBUGGER_SHOW_RULES_STACK = 38;
-
+    
     public static final int EVENT_COUNT = 39;
 
     protected static final String[] eventNames = { "Intepreter (menu)" ,

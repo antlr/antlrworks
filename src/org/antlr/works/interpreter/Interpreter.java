@@ -214,6 +214,9 @@ public class Interpreter implements Runnable {
     }
 
     public void interpret() {
+        editor.console.openGroup("Interpret");
+        editor.console.makeCurrent();
+
         ErrorManager.setErrorListener(ErrorListener.shared());
 
         if(grammarDirty) {
@@ -274,7 +277,7 @@ public class Interpreter implements Runnable {
                 try {
                     run_();
                 } finally {
-                    progress.close();                    
+                    progress.close();
                 }
             }
         });

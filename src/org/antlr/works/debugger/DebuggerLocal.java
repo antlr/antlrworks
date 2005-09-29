@@ -40,12 +40,14 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.works.dialog.DialogDebugInput;
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.EditorConsole;
 import org.antlr.works.editor.code.CodeGenerate;
-import org.antlr.works.util.Console;
+import org.antlr.works.editor.EditorConsole;
 
 import javax.swing.*;
 import java.io.*;
 import java.net.URL;
+import java.net.ServerSocket;
 
 public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
@@ -349,7 +351,22 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         return true;
     }
 
+    public boolean checkForLaunch() {
+        boolean success = true;
+        try {
+            ServerSocket serverSocket = new ServerSocket(Debugger.DEFAULT_LOCAL_PORT);
+            serverSocket.close();
+        } catch (IOException e) {
+            XJAlert.display(debugger.editor.getWindowContainer(), "Launch Error", "Cannot launch the remote parser because port "+Debugger.DEFAULT_LOCAL_PORT+" is already in use.");
+            success = false;
+        }
+        return success;
+    }
+
     public boolean launchRemoteParser() {
+        if(!checkForLaunch())
+            return false;
+
         String classPath = outputFileDir+File.pathSeparatorChar+System.getProperty("java.class.path")+File.pathSeparatorChar+".";
 
         try {
@@ -390,7 +407,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line=null;
                 while ( (line = br.readLine()) != null)
-                    Console.shared().println(type + ">" + line);
+                    debugger.editor.console.println(type + ">" + line);
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }

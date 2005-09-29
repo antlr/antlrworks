@@ -37,7 +37,7 @@ import org.antlr.works.parser.Line;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.util.Console;
+import org.antlr.works.editor.EditorConsole;
 
 import javax.swing.*;
 import java.awt.*;
@@ -191,9 +191,8 @@ public class MenuGrammar extends AbstractActions {
     }
 
     public void checkGrammar() {
-        Console.shared().println("Checking grammar");
-        editor.visual.checkGrammar();
-        Statistics.shared().recordEvent(Statistics.EVENT_CHECK_GRAMMAR);                    
+        editor.grammar.checkGrammar();
+        Statistics.shared().recordEvent(Statistics.EVENT_CHECK_GRAMMAR);
     }
 
     public void moveCursorToLine(int lineIndex) {

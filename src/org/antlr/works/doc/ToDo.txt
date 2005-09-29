@@ -1,3 +1,7 @@
+- message pour indiquer lorsque le syntax diagram n'est pas affiche (comme par exemple sur les regles du lexer)
+- syntax coloring delay in preferences
+- check environment (see e-mail from Jim Idle)
+
 - lexical ambiguities (ask Terence)
 - LT are not always displayed - see if we are too restricted
 - displays infos when running ANTLR in the console

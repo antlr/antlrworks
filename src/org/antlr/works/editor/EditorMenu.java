@@ -36,7 +36,6 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
-import org.antlr.works.util.Console;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -52,41 +51,40 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_TOGGLE_SYNTAX_COLORING = 6;
     public static final int MI_TOGGLE_SYNTAX_DIAGRAM = 7;
     public static final int MI_TOGGLE_NFA_OPTIMIZATION = 9;
+    public static final int MI_TOGGLE_AUTOINDENT = 10;
 
-    public static final int MI_FIND_USAGE = 10;
-    public static final int MI_GOTO_DECLARATION = 11;
-    public static final int MI_RENAME = 12;
-    public static final int MI_PREV_BREAKPOINT = 13;
-    public static final int MI_NEXT_BREAKPOINT = 14;
-    public static final int MI_GOTO_LINE = 15;
-    public static final int MI_GOTO_CHARACTER = 16;
-    public static final int MI_CHECK_GRAMMAR = 17;
+    public static final int MI_FIND_USAGE = 20;
+    public static final int MI_GOTO_DECLARATION = 21;
+    public static final int MI_RENAME = 22;
+    public static final int MI_PREV_BREAKPOINT = 23;
+    public static final int MI_NEXT_BREAKPOINT = 24;
+    public static final int MI_GOTO_LINE = 25;
+    public static final int MI_GOTO_CHARACTER = 26;
+    public static final int MI_CHECK_GRAMMAR = 27;
 
-    public static final int MI_SHOW_ALL_ACTION = 20;
-    public static final int MI_HIDE_ALL_ACTION = 21;
-    public static final int MI_HIDE_ACTION = 22;
+    public static final int MI_SHOW_ALL_ACTION = 30;
+    public static final int MI_HIDE_ALL_ACTION = 31;
+    public static final int MI_HIDE_ACTION = 32;
 
-    public static final int MI_GENERATE_CODE = 30;
-    public static final int MI_SHOW_GENERATED_PARSER_CODE = 31;
-    public static final int MI_SHOW_GENERATED_LEXER_CODE = 32;
-    public static final int MI_SHOW_RULE_GENCODE = 33;
+    public static final int MI_GENERATE_CODE = 40;
+    public static final int MI_SHOW_GENERATED_PARSER_CODE = 41;
+    public static final int MI_SHOW_GENERATED_LEXER_CODE = 42;
+    public static final int MI_SHOW_RULE_GENCODE = 43;
 
-    public static final int MI_SAVE_AS_IMAGE = 40;
-    public static final int MI_SAVE_ANTLR_NFA_DOT = 41;
-    public static final int MI_SAVE_RAW_NFA_DOT = 42;
-    public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 43;
-    public static final int MI_EXPORT_EVENT = 44;
+    public static final int MI_SAVE_AS_IMAGE = 50;
+    public static final int MI_SAVE_ANTLR_NFA_DOT = 51;
+    public static final int MI_SAVE_RAW_NFA_DOT = 52;
+    public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 53;
+    public static final int MI_EXPORT_EVENT = 54;
 
-    public static final int MI_RUN_INTERPRETER = 50;
-    public static final int MI_DEBUG = 51;
-    public static final int MI_BUILD_AND_DEBUG = 52;
-    public static final int MI_DEBUG_REMOTE = 53;
+    public static final int MI_RUN_INTERPRETER = 60;
+    public static final int MI_DEBUG = 61;
+    public static final int MI_BUILD_AND_DEBUG = 62;
+    public static final int MI_DEBUG_REMOTE = 63;
 
-    public static final int MI_SUBMIT_STATS = 60;
-    public static final int MI_SEND_FEEDBACK = 61;
-    public static final int MI_CHECK_UPDATES = 62;
-
-    public static final int MI_SHOW_CONSOLE = 70;
+    public static final int MI_SUBMIT_STATS = 70;
+    public static final int MI_SEND_FEEDBACK = 71;
+    public static final int MI_CHECK_UPDATES = 72;
 
     public static final int MI_PRIVATE_STATS = 100;
     public static final int MI_PRIVATE_UNREGISTER = 101;
@@ -146,10 +144,12 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.insertSeparatorAfter(XJMainMenuBar.MI_SAVEAS);
     }
 
+/*
     public void customizeWindowMenu(XJMenu menu) {
         menu.insertItemBefore(new XJMenuItem("Show Console", '=', KeyEvent.VK_EQUALS, MI_SHOW_CONSOLE, this), XJMainMenuBar.MI_WINDOW);
         menu.insertSeparatorBefore(XJMainMenuBar.MI_WINDOW);
     }
+*/
 
     public void customizeHelpMenu(XJMenu menu) {
         menu.insertItemAfter(new XJMenuItem("Check for Updates", MI_CHECK_UPDATES, this), XJMainMenuBar.MI_HELP);
@@ -173,6 +173,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Select All", 'a', KeyEvent.VK_A, MI_EDIT_SELECT_ALL, this));
         menu.addSeparator();
+        menu.addItem(new XJMenuItemCheck("Auto-indentation", MI_TOGGLE_AUTOINDENT, this, true));
         menu.addItem(new XJMenuItemCheck("Syntax Coloring", MI_TOGGLE_SYNTAX_COLORING, this, true));
         menu.addItem(new XJMenuItemCheck("Syntax Diagram", MI_TOGGLE_SYNTAX_DIAGRAM, this, true));
         menu.addItem(new XJMenuItemCheck("Optimize Syntax Diagram", MI_TOGGLE_NFA_OPTIMIZATION, this, true));
@@ -257,7 +258,6 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         handleMenuGenerate(item.getTag());
         handleMenuRun(item.getTag());
         handleMenuPrivate(item.getTag());
-        handleMenuWindow(item.getTag());
         handleMenuHelp(item.getTag());
         handleMenuExport(item.getTag());
     }
@@ -286,6 +286,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_EDIT_SELECT_ALL:
                 editor.menuEditActions.performSelectAll();
+                break;
+
+            case MI_TOGGLE_AUTOINDENT:
+                editor.toggleAutoIndent();
                 break;
 
             case MI_TOGGLE_SYNTAX_COLORING:
@@ -389,14 +393,6 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_DEBUG_REMOTE:
                 editor.menuRunActions.debugRemote();
-                break;
-        }
-    }
-
-    public void handleMenuWindow(int itemTag) {
-        switch(itemTag) {
-            case MI_SHOW_CONSOLE:
-                Console.shared().show();
                 break;
         }
     }

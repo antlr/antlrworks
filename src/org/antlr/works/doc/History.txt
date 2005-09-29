@@ -1,7 +1,12 @@
 
-Version 1.0ea4 - 09/07/05
+Version 1.0ea4 - 09/12/05
 
+- undefined rules are now underlines in red
+- auto-indentation (enabled on ':', '|' and ';' characters)
 - preferences: can now specify the colors of each type of token in the debugger input text panel
+- console moved from Window menu to project's window
+- improved console with events list
+- fixed a bug where a new document created on Windows would not be correctly colorized
 
 Version 1.0ea3 - 07/04/05
 

@@ -522,7 +522,7 @@ public class DialogPrefs extends XJPanel {
                         panel4.add(downloadPathField, cc.xywh(3, 11, 3, 1));
 
                         //---- browseUpdateDownloadPathButton ----
-                        browseUpdateDownloadPathButton.setText("Browse");
+                        browseUpdateDownloadPathButton.setText("Browse...");
                         panel4.add(browseUpdateDownloadPathButton, cc.xy(7, 11));
                     }
                     tabbedPane1.addTab("Updates", panel4);
@@ -576,7 +576,7 @@ public class DialogPrefs extends XJPanel {
 
                         //---- label14 ----
                         label14.setHorizontalAlignment(SwingConstants.RIGHT);
-                        label14.setText("Hidden token");
+                        label14.setText("Hidden token:");
                         panel5.add(label14, cc.xy(3, 7));
                         panel5.add(hiddenTokenColor, cc.xy(5, 7));
 

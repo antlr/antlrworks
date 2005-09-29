@@ -45,6 +45,7 @@ import org.antlr.works.editor.swing.KeyBindings;
 import org.antlr.works.editor.tool.TActions;
 import org.antlr.works.editor.tool.TColorize;
 import org.antlr.works.editor.tool.TTemplateRules;
+import org.antlr.works.editor.tool.TGrammar;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.visual.Visual;
 import org.antlr.works.editor.visual.VisualDelegate;
@@ -60,17 +61,21 @@ import java.util.*;
 import java.util.List;
 
 public class EditorWindow extends XJWindow implements ThreadedParserObserver,
-     AutoCompletionMenuDelegate, RulesDelegate, VisualDelegate, EditorProvider
+     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider
 {
     public ThreadedParser parser = null;
     public KeyBindings keyBindings = null;
     public AutoCompletionMenu autoCompletionMenu = null;
+
     public TActions actions = null;
-    public Rules rules = null;
     public TColorize colorize = null;
+    public TGrammar grammar = null;
+
+    public Rules rules = null;
     public Visual visual = null;
     public Interpreter interpreter = null;
     public Debugger debugger = null;
+    public EditorConsole console = null;
 
     private Map undos = new HashMap();
 
@@ -105,10 +110,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         editorGUI.createInterface();
 
         visual = new Visual(this);
-        visual.setDelegate(this);
-        
         interpreter = new Interpreter(this);
         debugger = new Debugger(this);
+        console = new EditorConsole(this);
+        console.makeCurrent();
 
         parser = new ThreadedParser(this);
         parser.addObserver(this);
@@ -118,6 +123,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), jFrame);
         rules = new Rules(parser, getTextPane(), editorGUI.rulesTable);
         actions = new TActions(parser, getTextPane());
+        grammar = new TGrammar(this);
 
         rules.setDelegate(this);
         rules.setActions(actions);
@@ -133,6 +139,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         getTabbedPane().addTab("Syntax Diagram", visual.getContainer());
         getTabbedPane().addTab("Interpreter", interpreter.getContainer());
         getTabbedPane().addTab("Debugger", debugger.getContainer());
+        getTabbedPane().addTab("Console", console.getContainer());
 
         selectVisualizationTab();
 
@@ -206,6 +213,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
                 getTextPane().requestFocus();
             }
         });
+    }
+
+    public void toggleAutoIndent() {
+        editorGUI.setAutoIndent(!editorGUI.autoIndent());
     }
 
     public void toggleSyntaxColoring() {
@@ -360,7 +371,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void customizeWindowMenu(XJMenu menu) {
-        editorMenu.customizeWindowMenu(menu);
+        //editorMenu.customizeWindowMenu(menu);
     }
 
     public void customizeHelpMenu(XJMenu menu) {
@@ -379,23 +390,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         if(r != null) {
             visual.setRule(r, immediate);
         }
-    }
-
-    /** TVisualization delegate methods
-     *
-     */
-
-    public void visualizationProcessDidBegin(Visual visual) {
-        editorGUI.activityPanel.start();
-    }
-
-    public void visualizationProcessDidEnd(Visual visual) {
-        editorGUI.activityPanel.stop();
-        editorGUI.updateInformation();
-    }
-
-    public void visualizationDidMarkRules(Visual visual) {
-        rules.refreshRules();
     }
 
     /** Rules delegate methods

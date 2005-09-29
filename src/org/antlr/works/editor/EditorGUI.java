@@ -40,9 +40,14 @@ import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.TextEditorPane;
+import org.antlr.works.editor.swing.TextEditorPaneDelegate;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.undo.UndoDelegate;
+import org.antlr.works.editor.tool.TImmediateColorization;
+import org.antlr.works.editor.tool.TAutoIndent;
 import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.Token;
+import org.antlr.works.parser.Lexer;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -52,8 +57,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Iterator;
 
-public class EditorGUI implements UndoDelegate, XJNotificationObserver {
+public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEditorPaneDelegate {
 
     public EditorWindow editor;
 
@@ -78,6 +84,11 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
 
     public String lastSelectedRule;
 
+    public static final String unixEndOfLine = "\n";
+
+    protected TImmediateColorization immediateColorization;
+    protected TAutoIndent autoIndent;
+
     public EditorGUI(EditorWindow editor) {
         this.editor = editor;
     }
@@ -89,6 +100,13 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
         editor.getRootPane().setPreferredSize(r.getSize());
 
         createTextPane();
+
+        immediateColorization = new TImmediateColorization(textPane);
+        autoIndent = new TAutoIndent(textPane);
+
+        // Set by default the end of line property in order to always use the Unix style
+        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, unixEndOfLine);
+        textPane.setDelegate(this);
 
         gutter = new Gutter(textPane);
 
@@ -192,6 +210,14 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
                 gutter.setPreferredSize(d);
             }
         });
+    }
+
+    public void setAutoIndent(boolean flag) {
+        autoIndent.setEnabled(flag);
+    }
+
+    public boolean autoIndent() {
+        return autoIndent.enabled();
     }
 
     public void applyFont() {
@@ -317,10 +343,46 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
         }
     }
 
+    public void paintTextEditorPane(Graphics g) {
+        g.setColor(Color.red);
+
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+
+        for (Iterator iterator = editor.getTokens().iterator(); iterator.hasNext();) {
+            Token token = (Token) iterator.next();
+
+            if(token.type != Lexer.TOKEN_ID || token.isAllUpperCase())
+                continue;
+
+            if(!editor.rules.isRuleAtIndex(token.getStart()) || editor.rules.isRuleName(token.getAttribute()))
+                continue;
+
+            try {
+                Rectangle r1 = textPane.modelToView(token.getStart());
+                Rectangle r2 = textPane.modelToView(token.getEnd());
+
+//                if(!textPane.getVisibleRect().intersects(r1))
+//                    continue;
+
+                int width = r2.x-r1.x;
+                int triangle_size = 5;
+                for(int triangle=0; triangle<width/triangle_size; triangle++) {
+                    int x = r1.x+triangle*triangle_size;
+                    int y = r1.y+r1.height-1;
+                    g.drawLine(x, y, x+triangle_size/2, y-triangle_size/2);
+                    g.drawLine(x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
+                }
+            } catch (BadLocationException e) {
+            }
+        }
+    }
+
     protected class TabMouseListener extends MouseAdapter {
 
         public void mousePressed(MouseEvent event) {
-            if(viewTabbedPane.getSelectedIndex()<3)
+            if(viewTabbedPane.getSelectedIndex()<4)
                 return;
 
             if(event.isPopupTrigger()) {
@@ -412,13 +474,11 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
                 editor.updateVisualization(false);
             }
         }
-
     }
 
     protected class TextPaneListener implements DocumentListener {
 
         protected int enable = 0;
-        protected ImmediateColorization colorization = new ImmediateColorization();
 
         public synchronized void enable() {
             enable--;
@@ -440,8 +500,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
             if(!isEnable())
                 return;
 
-            colorization.colorize(e.getOffset(), e.getLength());
-            SwingUtilities.invokeLater(colorization);
+            immediateColorization.colorize(e.getOffset(), e.getLength());
+            autoIndent.indent(e.getOffset(), e.getLength());
 
             changeUpdate(e.getOffset(), e.getLength());
         }
@@ -454,50 +514,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
         }
 
         public void changedUpdate(DocumentEvent e) {
-        }
-    }
-
-    protected class ImmediateColorization implements Runnable {
-
-        protected int offset;
-        protected int length;
-        protected int comment = 0;
-
-        public void colorize(int offset, int length) {
-            this.offset = offset;
-            this.length = length;
-        }
-
-        public void run() {
-            try {
-                String s = textPane.getDocument().getText(offset, length);
-                char c = s.charAt(0);
-                if(c == '\n' || c == '\r') {
-                    MutableAttributeSet attr = textPane.getInputAttributes();
-                    StyleConstants.setForeground(attr, Color.black);
-                    StyleConstants.setBold(attr, false);
-                    StyleConstants.setItalic(attr, false);
-                    comment = 0;
-                } else if(c == '/') {
-                    comment++;
-                } else if(c == '*' && comment == 1) {
-                    comment++;
-                } else {
-                    comment = 0;
-                }
-
-                if(comment == 2) {
-                    MutableAttributeSet attr = textPane.getInputAttributes();
-                    StyleConstants.setForeground(attr, Color.lightGray);
-                    StyleConstants.setBold(attr, false);
-                    StyleConstants.setItalic(attr, true);
-                    textPane.getStyledDocument().setCharacterAttributes(offset-1, 2, attr, true);
-                    comment = 0;
-                }
-
-            } catch (BadLocationException e1) {
-                // ignore exception
-            }
         }
     }
 

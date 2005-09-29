@@ -509,6 +509,9 @@ public class Debugger {
 
     public boolean debuggerLaunchGrammar() {
         try {
+            editor.console.openGroup("Debug");
+            editor.console.makeCurrent();
+            
             ErrorManager.setErrorListener(ErrorListener.shared());
             grammar = new Grammar(editor.getFileName(), editor.getPlainText());
         } catch (Exception e) {

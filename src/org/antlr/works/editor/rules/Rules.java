@@ -269,6 +269,20 @@ public class Rules implements ThreadedParserObserver {
         return false;
     }
 
+    public Parser.Rule getRuleAtIndex(int index) {
+        Iterator iterator = parser.getRules().iterator();
+        while(iterator.hasNext()) {
+            Parser.Rule r = (Parser.Rule)iterator.next();
+            if(index >= r.getStartIndex() && index <= r.getEndIndex())
+                return r;
+        }
+        return null;
+    }
+
+    public boolean isRuleAtIndex(int index) {
+        return getRuleAtIndex(index) != null;
+    }
+    
     public void selectFirstRule() {
         if(parser.getRules().size() == 0)
             return;
