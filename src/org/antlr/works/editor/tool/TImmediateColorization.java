@@ -32,12 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.tool;
 
-import org.antlr.works.editor.EditorGUI;
-
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.BadLocationException;
-import javax.swing.*;
 import java.awt.*;
 
 public class TImmediateColorization implements Runnable {

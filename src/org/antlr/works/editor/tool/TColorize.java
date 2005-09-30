@@ -36,7 +36,6 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Token;
-import org.antlr.works.parser.Parser;
 
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;

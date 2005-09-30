@@ -34,8 +34,8 @@ package org.antlr.works.editor;
 import edu.usfca.xj.appkit.swing.XJTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -44,9 +44,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.antlr.works.parser.Parser;
-import org.antlr.works.editor.rules.Rules;
 
 public class EditorConsole {
 
@@ -190,7 +187,7 @@ public class EditorConsole {
     public void clear() {
         actions.clear();
         textArea.setText("");
-        groupTableModel.fireTableDataChanged();        
+        groupTableModel.fireTableDataChanged();
     }
 
     public void openGroup(String name) {

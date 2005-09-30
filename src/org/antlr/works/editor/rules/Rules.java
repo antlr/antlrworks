@@ -31,28 +31,26 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.rules;
 
-import edu.usfca.xj.appkit.swing.XJTable;
 import org.antlr.works.editor.swing.KeyBindings;
 import org.antlr.works.editor.tool.TActions;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.Iterator;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.*;
+import java.util.List;
 
 public class Rules implements ThreadedParserObserver {
 
@@ -65,90 +63,38 @@ public class Rules implements ThreadedParserObserver {
     private boolean selectNextRule = false;
 
     private JTextPane textPane;
-    private XJTable rulesTable;
+
+    private JTree rulesTree;
+    private DefaultMutableTreeNode rulesTreeRootNode;
+    private DefaultTreeModel rulesTreeModel;
+    private List rulesTreeExpandedNodes;
 
     private DragSource ds;
     private StringSelection transferable;
 
-    private AbstractTableModel rulesTableModel;
-
-    private static final int COLUMN_RULE_NAME = 0;
-    private static final int COLUMN_RULE_STATUS = 1;
-
-    public Rules(ThreadedParser parser, JTextPane textPane, XJTable rulesTable) {
+    public Rules(ThreadedParser parser, JTextPane textPane, JTree rulesTree) {
         this.parser = parser;
         this.textPane = textPane;
-        this.rulesTable = rulesTable;
+        this.rulesTree = rulesTree;
+
+        rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeNode(-1));
+        rulesTreeModel = new DefaultTreeModel(rulesTreeRootNode);
+        rulesTreeExpandedNodes = new ArrayList();
+
+        rulesTree.setModel(rulesTreeModel);
+        rulesTree.addMouseListener(new RuleTreeMouseListener());
+
+        rulesTree.setRootVisible(false);
+        rulesTree.setShowsRootHandles(true);
+        rulesTree.setCellRenderer(new CustomTableRenderer());
+        rulesTree.setRowHeight(17);
+        rulesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 
         parser.addObserver(this);
 
-        rulesTable.setDefaultRenderer(Object.class, new CustomTableRenderer());
-
-        rulesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        rulesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if(e.getValueIsAdjusting())
-                    return;
-
-                if(selectingRule)
-                    return;
-
-                ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-                if(!lsm.isSelectionEmpty()) {
-                    int row = lsm.getMinSelectionIndex();
-                    Parser.Rule rc = Rules.this.parser.getRuleAtIndex(row);
-                    selectTextRule(rc);
-                }
-            }
-        });
-
-        rulesTable.setModel(rulesTableModel = new AbstractTableModel() {
-            public int getColumnCount() {
-                return 2;
-            }
-
-            public int getRowCount() {
-                if(Rules.this.parser.getRules() != null)
-                    return Rules.this.parser.getRules().size();
-                else
-                    return 0;
-            }
-
-            public boolean isCellEditable(int row, int col) {
-                return false;
-            }
-
-            public String getColumnName(int column) {
-                switch(column) {
-                    case COLUMN_RULE_NAME:
-                        return "Rules";
-                    case COLUMN_RULE_STATUS:
-                        return "!";
-                }
-                return "";
-            }
-
-            public Object getValueAt(int row, int col) {
-                Parser.Rule rc = Rules.this.parser.getRuleAtIndex(row);
-                switch(col) {
-                    case COLUMN_RULE_NAME:
-                        return rc.name;
-                    case COLUMN_RULE_STATUS:
-                        return null;
-                }
-                return null;
-            }
-
-            public void setValueAt(Object value, int row, int col) {
-            }
-        });
-
-        rulesTable.getColumnModel().getColumn(COLUMN_RULE_STATUS).setMaxWidth(20);
-
         ds = new DragSource();
-        DragGestureRecognizer dgr = ds.createDefaultDragGestureRecognizer(rulesTable, DnDConstants.ACTION_MOVE, new TableDragGestureListener());
-        DropTarget dt = new DropTarget(rulesTable, new TableDropListener());
+        DragGestureRecognizer dgr = ds.createDefaultDragGestureRecognizer(rulesTree, DnDConstants.ACTION_MOVE, new TreeDragGestureListener());
+        DropTarget dt = new DropTarget(rulesTree, new TreeDropListener());
     }
 
     public void setDelegate(RulesDelegate delegate) {
@@ -191,8 +137,8 @@ public class Rules implements ThreadedParserObserver {
         public void actionPerformed(ActionEvent event) {
             Parser.Rule targetRule = getRuleAtPosition(textPane.getCaretPosition());
             int nextRuleIndex = parser.getRules().indexOf(targetRule)+1;
-            if(nextRuleIndex<parser.getRules().size()) {
-                Parser.Rule sourceRule = parser.getRuleAtIndex(nextRuleIndex);
+            Parser.Rule sourceRule = parser.getRuleAtIndex(nextRuleIndex);
+            if(sourceRule != null) {
                 moveRule(sourceRule, targetRule);
                 selectNextRule = true;
             }
@@ -210,7 +156,10 @@ public class Rules implements ThreadedParserObserver {
     }
 
     public void refreshRules() {
-        rulesTableModel.fireTableDataChanged();
+        saveExpandedNodes();
+        rulesTreeModel.reload();
+        restoreExpandedNodes();
+
         // Select again the row (otherwise, the selection is lost)
         selectRuleAtPosition(textPane.getCaretPosition());
     }
@@ -294,20 +243,60 @@ public class Rules implements ThreadedParserObserver {
         Parser.Rule rule = getRuleAtPosition(textPane.getCaretPosition());
         int index = parser.getRules().indexOf(rule)+1;
         rule = parser.getRuleAtIndex(index);
-        textPane.setCaretPosition(rule.getStartIndex());
-        delegate.rulesCaretPositionDidChange();
+        if(rule != null) {
+            textPane.setCaretPosition(rule.getStartIndex());
+            delegate.rulesCaretPositionDidChange();
+        }
     }
 
     public void selectRule(Parser.Rule rule) {
         if(rule == null)
             return;
 
-        int index = parser.getRules().indexOf(rule);
-        rulesTable.getSelectionModel().setSelectionInterval(index, index);
-        rulesTable.scrollRectToVisible(rulesTable.getCellRect(index, 0, true));
+        Enumeration enumeration = rulesTreeRootNode.depthFirstEnumeration();
+        while(enumeration.hasMoreElements()) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)enumeration.nextElement();
+            RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+            if(n != null && n.rule == rule) {
+                TreePath path = new TreePath(node.getPath());
+                rulesTree.setSelectionPath(path);
+                rulesTree.scrollPathToVisible(path);
+                break;
+            }
+        }
+    }
+
+    public void selectTextRules(List rules) {
+        if(rules == null || rules.isEmpty())
+            return;
+
+        selectingRule = true;
+
+        Parser.Rule startRule = (Parser.Rule) rules.get(0);
+        Parser.Rule endRule = (Parser.Rule) rules.get(rules.size()-1);
+
+        textPane.setCaretPosition(startRule.start.getStart());
+        textPane.moveCaretPosition(endRule.end.getEnd());
+        textPane.getCaret().setSelectionVisible(true);
+
+        Rectangle r = null;
+        try {
+            r = textPane.modelToView(startRule.start.getStart());
+            textPane.scrollRectToVisible(r);
+        } catch (BadLocationException e1) {
+            e1.printStackTrace();
+        }
+        selectingRule = false;
+
+        delegate.rulesDidSelectRule();
     }
 
     public void selectTextRule(Parser.Rule rule) {
+        if(rule == null)
+            return;
+
+        selectingRule = true;
+
         textPane.setCaretPosition(rule.start.getStart());
         textPane.moveCaretPosition(rule.end.getEnd());
         textPane.getCaret().setSelectionVisible(true);
@@ -319,11 +308,94 @@ public class Rules implements ThreadedParserObserver {
         } catch (BadLocationException e1) {
             e1.printStackTrace();
         }
+        selectingRule = false;
+
         delegate.rulesDidSelectRule();
     }
 
+    public void rebuildTree() {
+        saveExpandedNodes();
+
+        rulesTreeRootNode.removeAllChildren();
+
+        List rules = parser.getRules();
+        List groups = parser.getGroups();
+        if(groups.isEmpty()) {
+            buildTree(rulesTreeRootNode, rules, 0, rules.size()-1);
+        } else {
+            Stack parentStack = new Stack();
+            parentStack.add(rulesTreeRootNode);
+
+            int ruleIndex = 0;
+            for(int index=0; index<groups.size(); index++) {
+                Parser.Group group = (Parser.Group)groups.get(index);
+
+                DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode)parentStack.peek();
+                if(group.ruleIndex >= 0) {
+                    buildTree(parentNode, rules, ruleIndex, group.ruleIndex);
+                    ruleIndex = group.ruleIndex+1;
+                }
+
+                if(group.beginGroup) {
+                    DefaultMutableTreeNode node = new DefaultMutableTreeNode(new RuleTreeNode(group));
+                    parentNode.add(node);
+                    parentStack.push(node);
+                } else {
+                    if(parentStack.size()>1)
+                        parentStack.pop();
+                }
+            }
+
+            if(ruleIndex < rules.size()) {
+                DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode)parentStack.peek();
+                buildTree(parentNode, rules, ruleIndex, rules.size()-1);
+            }
+        }
+        rulesTreeModel.reload();
+        restoreExpandedNodes();
+    }
+
+    public void saveExpandedNodes() {
+        rulesTreeExpandedNodes.clear();
+        Enumeration e = rulesTreeRootNode.depthFirstEnumeration();
+        while(e.hasMoreElements()) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.nextElement();
+            if(!node.isLeaf() && !node.isRoot() && rulesTree.isExpanded(new TreePath(node.getPath()))) {
+                RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+                rulesTreeExpandedNodes.add(n.group.name);
+            }
+        }
+    }
+
+    public void restoreExpandedNodes() {
+        Iterator iterator = rulesTreeExpandedNodes.iterator();
+        while(iterator.hasNext()) {
+            String groupName = (String)iterator.next();
+            DefaultMutableTreeNode node = findNodeWithGroupName(groupName);
+            if(node != null)
+                rulesTree.expandPath(new TreePath(node.getPath()));
+        }
+    }
+
+    public DefaultMutableTreeNode findNodeWithGroupName(String groupName) {
+        Enumeration e = rulesTreeRootNode.depthFirstEnumeration();
+        while(e.hasMoreElements()) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.nextElement();
+            RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+            if(n.group != null && n.group.name.equalsIgnoreCase(groupName))
+                return node;
+        }
+        return null;
+    }
+
+    protected void buildTree(DefaultMutableTreeNode parentNode, List rules, int from, int to) {
+        for(int index=from; index<=to; index++) {
+            parentNode.add(new DefaultMutableTreeNode(new RuleTreeNode(index)));
+        }
+    }
+
     public void parserDidComplete() {
-        rulesTableModel.fireTableDataChanged();
+        rebuildTree();
         if(selectNextRule) {
             // Can be set by RuleMoveDown() class when a rule is moved down. Selection has to occurs here
             // after rules have been parsed. We use this flag to select the next rule instead of the current one.
@@ -362,35 +434,51 @@ public class Rules implements ThreadedParserObserver {
         }
     }
 
-    public class CustomTableRenderer extends DefaultTableCellRenderer {
-        
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                       boolean hasFocus, int row, int col)
-        {
-            setIcon(null);
-            setToolTipText(null);
+    public class CustomTableRenderer extends DefaultTreeCellRenderer {
 
-            if(table.convertColumnIndexToView(col) == COLUMN_RULE_STATUS) {
-                Parser.Rule rule = parser.getRuleAtIndex(row);
-                if(rule.hasErrors()) {
-                    setIcon(IconManager.shared().getIconWarning());
-                    setToolTipText(rule.getErrorMessageHTML());
-                }
+        public Component getTreeCellRendererComponent(
+                            JTree tree,
+                            Object value,
+                            boolean sel,
+                            boolean expanded,
+                            boolean leaf,
+                            int row,
+                            boolean hasFocus)
+        {
+            Component r = super.getTreeCellRendererComponent(
+                            tree, value, sel,
+                            expanded, leaf, row,
+                            hasFocus);
+
+            setIcon(null);
+            setToolTipText("blabla");
+
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+            RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+            if(n.rule != null && n.rule.hasErrors()) {
+                //setIcon(IconManager.shared().getIconWarning());
+                setForeground(Color.red);
+                setFont(getFont().deriveFont(Font.BOLD));
+                setToolTipText(n.rule.getErrorMessageHTML());
+            } else {
+                setForeground(Color.black);
+                setFont(getFont().deriveFont(Font.PLAIN));
             }
 
-            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+            return r;
         }
     }
 
-    public class TableDragGestureListener implements DragGestureListener {
+    public class TreeDragGestureListener implements DragGestureListener {
 
         public void dragGestureRecognized(DragGestureEvent event) {
-            transferable = new StringSelection(String.valueOf(rulesTable.getSelectedRow()));
-            ds.startDrag(event, DragSource.DefaultMoveDrop, transferable, new TableDragSourceListener());
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)rulesTree.getSelectionPath().getLastPathComponent();
+            transferable = new StringSelection(String.valueOf(rulesTree.getSelectionRows()[0]));
+            ds.startDrag(event, DragSource.DefaultMoveDrop, transferable, new TreeDragSourceListener());
         }
     }
 
-    public class TableDragSourceListener implements DragSourceListener {
+    public class TreeDragSourceListener implements DragSourceListener {
 
         public void dragEnter(DragSourceDragEvent event) {
         }
@@ -408,12 +496,12 @@ public class Rules implements ThreadedParserObserver {
         }
     }
 
-    public class TableDropListener implements DropTargetListener {
+    public class TreeDropListener implements DropTargetListener {
 
         int oldSelectedRow = -1;
 
         public void dragEnter(DropTargetDragEvent event) {
-            oldSelectedRow = rulesTable.getSelectedRow();
+            oldSelectedRow = rulesTree.getSelectionRows()[0];
             if(event.getDropAction() != DnDConstants.ACTION_MOVE)
                 event.rejectDrag();
             else
@@ -421,32 +509,32 @@ public class Rules implements ThreadedParserObserver {
         }
 
         public void dragOver(DropTargetDragEvent event) {
-            int row = rulesTable.rowAtPoint(event.getLocation());
+            int row = rulesTree.getRowForLocation((int)event.getLocation().getX(), (int)event.getLocation().getY());
             if(row == -1 || event.getDropAction() != DnDConstants.ACTION_MOVE) {
-                rulesTable.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
+                //rulesTree.getSelectionModel().add addSelectionInterval(oldSelectedRow, oldSelectedRow);
                 event.rejectDrag();
             } else {
-                rulesTable.getSelectionModel().addSelectionInterval(row, row);
+                //rulesTable.getSelectionModel().addSelectionInterval(row, row);
                 event.acceptDrag(DnDConstants.ACTION_MOVE);
             }
         }
 
         public void dropActionChanged(DropTargetDragEvent event) {
             if(event.getDropAction() != DnDConstants.ACTION_MOVE) {
-                rulesTable.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
+                //rulesTable.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
                 event.rejectDrag();
             } else
                 event.acceptDrag(DnDConstants.ACTION_MOVE);
         }
 
         public void dragExit(DropTargetEvent event) {
-            rulesTable.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
+            //rulesTree.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
         }
 
         public void drop(DropTargetDropEvent event) {
-            int row = rulesTable.rowAtPoint(event.getLocation());
+            int row = rulesTree.getRowForLocation((int)event.getLocation().getX(), (int)event.getLocation().getY());
             if(row == -1) {
-                rulesTable.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
+                //rulesTree.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
                 return;
             }
 
@@ -461,6 +549,49 @@ public class Rules implements ThreadedParserObserver {
                 event.dropComplete(true);
             else
                 event.rejectDrop();
+        }
+    }
+
+
+    public class RuleTreeMouseListener extends MouseAdapter {
+        public void mousePressed(MouseEvent e) {
+            TreePath selPath[] = rulesTree.getSelectionPaths();
+            if(selPath == null)
+                return;
+
+            List selRules = new ArrayList();
+            for(int path=0; path<selPath.length; path++) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)selPath[path].getLastPathComponent();
+                RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+                if(n.rule != null)
+                    selRules.add(n.rule);
+            }
+            selectTextRules(selRules);
+        }
+    }
+
+    public class RuleTreeNode {
+
+        public int ruleIndex;
+        public Parser.Rule rule;
+        public Parser.Group group;
+
+        public RuleTreeNode(int index) {
+            this.ruleIndex = index;
+            this.rule = parser.getRuleAtIndex(ruleIndex);
+        }
+
+        public RuleTreeNode(Parser.Group group) {
+            this.group = group;
+        }
+
+        public String toString() {
+            if(group != null)
+                return group.name;
+            else if(rule != null)
+                return rule.name;
+            else
+                return "";
         }
     }
 

@@ -45,16 +45,21 @@ public class Parser {
     protected Token currentToken;
 
     protected static final String ATTRIBUTE_FRAGMENT = "fragment";
+    protected static final String BEGIN_GROUP = "// $<";
+    protected static final String END_GROUP = "// $>";
 
     protected Lexer lexer;
+
+    public List rules = null;
+    public List groups = null;
 
     public Parser() {
     }
 
-    public List parse(String text) {
-       // long t = System.currentTimeMillis();
+    public void parse(String text) {
+        rules = new ArrayList();
+        groups = new ArrayList();
 
-        List rules = new ArrayList();
         lexer = new Lexer(text);
         tokens = lexer.parseTokens();
         position = -1;
@@ -64,13 +69,13 @@ public class Parser {
                     Rule rule = matchRule();
                     if(rule != null)
                         rules.add(rule);
+                } else if(T(0).type == Lexer.TOKEN_SINGLE_COMMENT) {
+                    Group group = matchRuleGroup(rules);
+                    if(group != null)
+                        groups.add(group);
                 }
             }
         }
-
-        //System.out.println((float)(System.currentTimeMillis()-t)/1000);
-
-        return rules;
     }
 
     public List getLines() {
@@ -128,6 +133,18 @@ public class Parser {
                 return new Rule(name, start, T(0));
         }
         return null;
+    }
+
+    public Group matchRuleGroup(List rules) {
+        Token start = T(0);
+        String comment = start.getAttribute();
+
+        if(comment.startsWith(BEGIN_GROUP)) {
+            return new Group(comment.substring(BEGIN_GROUP.length()), rules.size()-1);
+        } else if(comment.startsWith(END_GROUP)) {
+                return new Group(rules.size()-1);
+        } else
+            return null;
     }
 
     public boolean nextToken() {
@@ -215,4 +232,22 @@ public class Parser {
         }
     }
 
+    public class Group {
+
+        public String name = null;
+        public int ruleIndex = -1;
+        public boolean beginGroup = false;
+
+        public Group(String name, int ruleIndex) {
+            this.name = name;
+            this.ruleIndex = ruleIndex;
+            this.beginGroup = true;
+        }
+
+        public Group(int ruleIndex) {
+            this.ruleIndex = ruleIndex;
+            this.beginGroup = false;
+        }
+
+    }
 }

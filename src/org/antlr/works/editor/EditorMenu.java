@@ -61,6 +61,8 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_GOTO_LINE = 25;
     public static final int MI_GOTO_CHARACTER = 26;
     public static final int MI_CHECK_GRAMMAR = 27;
+    public static final int MI_GROUP = 28;
+    public static final int MI_UNGROUP = 29;
 
     public static final int MI_SHOW_ALL_ACTION = 30;
     public static final int MI_HIDE_ALL_ACTION = 31;
@@ -188,6 +190,9 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItem("Go To Declaration", 'b', KeyEvent.VK_B, MI_GOTO_DECLARATION, this));
         menu.addSeparator();
         menu.addItem(menuItemRename = new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
+        menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Previous Breakpoint", MI_PREV_BREAKPOINT, this));
         menu.addItem(new XJMenuItem("Next Breakpoint", MI_NEXT_BREAKPOINT, this));
@@ -318,6 +323,14 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_RENAME:
                 editor.menuGrammarActions.rename();
+                break;
+
+            case MI_GROUP:
+                editor.menuGrammarActions.group();
+                break;
+
+            case MI_UNGROUP:
+                editor.menuGrammarActions.ungroup();
                 break;
 
             case MI_PREV_BREAKPOINT:

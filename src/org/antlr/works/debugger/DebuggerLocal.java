@@ -40,14 +40,12 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.works.dialog.DialogDebugInput;
 import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.editor.EditorConsole;
 import org.antlr.works.editor.code.CodeGenerate;
-import org.antlr.works.editor.EditorConsole;
 
 import javax.swing.*;
 import java.io.*;
-import java.net.URL;
 import java.net.ServerSocket;
+import java.net.URL;
 
 public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 

@@ -33,21 +33,21 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.gview.timer.GTimer;
 import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
-import edu.usfca.xj.appkit.swing.XJTable;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.dialog.DialogPrefs;
+import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.TextEditorPane;
 import org.antlr.works.editor.swing.TextEditorPaneDelegate;
+import org.antlr.works.editor.tool.TAutoIndent;
+import org.antlr.works.editor.tool.TImmediateColorization;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.undo.UndoDelegate;
-import org.antlr.works.editor.tool.TImmediateColorization;
-import org.antlr.works.editor.tool.TAutoIndent;
+import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
-import org.antlr.works.parser.Lexer;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -55,6 +55,8 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Iterator;
@@ -67,7 +69,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     public JScrollPane textScrollPane;
 
     public JScrollPane rulesScrollPane;
-    public XJTable rulesTable;
+    public JTree rulesTree;
 
     public JTabbedPane viewTabbedPane;
     public JPanel mainPanel;
@@ -114,12 +116,30 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         textScrollPane.setWheelScrollingEnabled(true);
         textScrollPane.setRowHeaderView(gutter);
 
-        rulesTable = new XJTable();
-        rulesTable.setBorder(null);
-        rulesTable.setPreferredScrollableViewportSize(new Dimension(200, 0));
-        rulesTable.setShowGrid(false);
+        rulesTree = new JTree() {
+            public String getToolTipText(MouseEvent e) {
+                TreePath path = getPathForLocation(e.getX(), e.getY());
+                if(path == null)
+                    return "";
 
-        rulesScrollPane = new JScrollPane(rulesTable);
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                Rules.RuleTreeNode n = (Rules.RuleTreeNode) node.getUserObject();
+                if(n == null)
+                    return "";
+
+                Parser.Rule r = n.rule;
+                if(r == null || !r.hasErrors())
+                    return "";
+                else
+                    return r.getErrorMessageHTML();
+            }
+        };
+        rulesTree.setBorder(null);
+        // Apparently, if I don't set the tooltip here, nothing is displayed (weird)
+        rulesTree.setToolTipText("");
+        rulesTree.setDragEnabled(true);
+
+        rulesScrollPane = new JScrollPane(rulesTree);
         rulesScrollPane.setBorder(null);
         rulesScrollPane.setPreferredSize(new Dimension(200, 0));
         rulesScrollPane.setWheelScrollingEnabled(true);
@@ -350,6 +370,9 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
+        if(editor.getTokens() == null)
+            return;
+
         for (Iterator iterator = editor.getTokens().iterator(); iterator.hasNext();) {
             Token token = (Token) iterator.next();
 
@@ -453,16 +476,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
     protected class TextPaneCaretListener implements CaretListener {
 
-        public boolean isUpdating = false;
-
         public void caretUpdate(CaretEvent e) {
-            if(isUpdating)
-                return;
-
-            isUpdating = true;
-            //updateCurrentLineHilite();
-            isUpdating = false;
-
             editor.autoCompletionMenu.updateAutoCompleteList();
 
             Parser.Rule rule = editor.rules.selectRuleAtPosition(e.getDot());

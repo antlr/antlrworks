@@ -44,11 +44,10 @@ import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.KeyBindings;
 import org.antlr.works.editor.tool.TActions;
 import org.antlr.works.editor.tool.TColorize;
-import org.antlr.works.editor.tool.TTemplateRules;
 import org.antlr.works.editor.tool.TGrammar;
+import org.antlr.works.editor.tool.TTemplateRules;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.visual.Visual;
-import org.antlr.works.editor.visual.VisualDelegate;
 import org.antlr.works.interpreter.Interpreter;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
@@ -121,7 +120,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         keyBindings = new KeyBindings(getTextPane());
 
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), jFrame);
-        rules = new Rules(parser, getTextPane(), editorGUI.rulesTable);
+        rules = new Rules(parser, getTextPane(), editorGUI.rulesTree);
         actions = new TActions(parser, getTextPane());
         grammar = new TGrammar(this);
 
@@ -255,6 +254,19 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         visual.cancelDrawingProcess();
 
         colorize.setColorizeLocation(offset, length);
+    }
+
+    public void beginGroupChange(String name) {
+        disableTextPane(false);
+        beginTextPaneUndoGroup(name);
+    }
+
+    public void endGroupChange() {
+        endTextPaneUndoGroup();
+        enableTextPane(false);
+        colorize.reset();
+        rules.parseRules();
+        changeDone();
     }
 
     public void enableTextPane(boolean undo) {

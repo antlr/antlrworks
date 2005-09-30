@@ -1,3 +1,7 @@
+- terminer group/ungroup
+- cannot undo group
+
+- prefs: sauvegarde automatique
 - message pour indiquer lorsque le syntax diagram n'est pas affiche (comme par exemple sur les regles du lexer)
 - syntax coloring delay in preferences
 - check environment (see e-mail from Jim Idle)

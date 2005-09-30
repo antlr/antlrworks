@@ -37,7 +37,6 @@ import org.antlr.works.parser.Line;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.editor.EditorConsole;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,14 +95,9 @@ public class MenuGrammar extends AbstractActions {
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Rename '"+token.getAttribute()+"' and its usages to:", "Rename",
                 JOptionPane.QUESTION_MESSAGE, null, null, token.getAttribute());
         if(s != null && !s.equals(token.getAttribute())) {
-            editor.disableTextPane(false);
-            editor.beginTextPaneUndoGroup("Rename");
+            editor.beginGroupChange("Rename");
             renameToken(token, s);
-            editor.endTextPaneUndoGroup();
-            editor.enableTextPane(false);
-            editor.colorize.reset();
-            editor.rules.parseRules();
-            editor.changeDone();
+            editor.endGroupChange();
             Statistics.shared().recordEvent(Statistics.EVENT_RENAME);
         }
     }
@@ -117,6 +111,26 @@ public class MenuGrammar extends AbstractActions {
                 editor.editorGUI.replaceText(token.getStart(), token.getEnd(), name);
             }
         }
+    }
+
+    public void group() {
+        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Group Name:", "Group",
+                JOptionPane.QUESTION_MESSAGE, null, null, "Group");
+        if(s != null && s.length() > 0) {
+            editor.beginGroupChange("Group");
+
+            int end = editor.getTextPane().getSelectionEnd();
+            editor.editorGUI.replaceText(end+1, end+1, "\n// $>\n");
+
+            int start = editor.getTextPane().getSelectionStart();
+            editor.editorGUI.replaceText(start-1, start-1, "\n// $<"+s+"\n");
+
+            editor.endGroupChange();
+        }
+    }
+
+    public void ungroup() {
+
     }
 
     public int getLineNumberForPosition(int pos) {

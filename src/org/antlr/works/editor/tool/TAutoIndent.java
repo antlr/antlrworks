@@ -34,8 +34,8 @@ package org.antlr.works.editor.tool;
 
 import org.antlr.works.editor.EditorPreferences;
 
-import javax.swing.text.BadLocationException;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 
 public class TAutoIndent implements Runnable {
 

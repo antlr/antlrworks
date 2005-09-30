@@ -140,6 +140,7 @@ public abstract class EditorThread implements Runnable, CancelObject {
                 threadRun();
             } catch(Exception e) {
                 System.err.println("Exception in EditorThread: "+e);
+                e.printStackTrace();
             }
         }
         setRunning(false);

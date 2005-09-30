@@ -47,6 +47,7 @@ public class ThreadedParser extends EditorThread {
     private List observers = null;
 
     private List rules = null;
+    private List groups = null;
 
     public ThreadedParser(EditorProvider provider) {
         this.provider = provider;
@@ -59,12 +60,17 @@ public class ThreadedParser extends EditorThread {
         observers.add(observer);
     }
 
-    private synchronized void setRules(List rules) {
+    private synchronized void setRules(List rules, List groups) {
         this.rules = rules;
+        this.groups = groups;
     }
 
     public synchronized List getRules() {
         return rules;
+    }
+
+    public synchronized List getGroups() {
+        return groups;
     }
 
     public synchronized List getRuleNames() {
@@ -79,7 +85,10 @@ public class ThreadedParser extends EditorThread {
     }
 
     public synchronized Parser.Rule getRuleAtIndex(int index) {
-        return (Parser.Rule)rules.get(index);
+        if(index < 0 || index >= rules.size())
+            return null;
+        else
+            return (Parser.Rule)rules.get(index);
     }
 
     public synchronized List getTokens() {
@@ -100,7 +109,9 @@ public class ThreadedParser extends EditorThread {
 
     public void threadRun() throws Exception {
         //long t = System.currentTimeMillis();
-        setRules(parser.parse(provider.getText()));
+        parser.parse(provider.getText());
+        setRules(parser.rules, parser.groups);
+
         //System.out.println("Parsing in "+(System.currentTimeMillis()-t));
         SwingUtilities.invokeAndWait(new Runnable() {
             public void run() {

@@ -32,12 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.tool;
 
+import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.visual.Visual;
 import org.antlr.works.editor.visual.VisualDelegate;
-import edu.usfca.xj.appkit.utils.XJDialogProgress;
-
-import javax.swing.*;
 
 public class TGrammar implements VisualDelegate {
 
