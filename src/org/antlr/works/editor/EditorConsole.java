@@ -195,7 +195,7 @@ public class EditorConsole {
             closeGroup();
 
         currentAction = new Action(name);
-        actions.add(currentAction);
+        actions.add(0, currentAction);
 
         groupTableModel.fireTableDataChanged();
 

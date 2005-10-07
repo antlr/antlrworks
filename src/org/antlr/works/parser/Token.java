@@ -57,7 +57,7 @@ public class Token {
         this.text = text;
 
         this.attribute = text.substring(start, end);
-        this.isAllUpperCase =  attribute.equals(getAttribute().toUpperCase());
+        this.isAllUpperCase =  attribute.equals(attribute.toUpperCase());
     }
 
     public String getAttribute() {

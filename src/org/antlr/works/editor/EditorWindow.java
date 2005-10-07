@@ -52,6 +52,7 @@ import org.antlr.works.interpreter.Interpreter;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
+import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -86,7 +87,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     protected MenuEdit menuEditActions = null;
     protected MenuGrammar menuGrammarActions = null;
-    protected MenuActions menuActionActions = null;
+    protected MenuGoTo menuGoToActions = null;
     protected MenuGenerate menuGenerateActions = null;
     protected MenuRun menuRunActions = null;
     protected MenuExport menuExportActions = null;
@@ -100,7 +101,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         menuEditActions = new MenuEdit(this);
         menuGrammarActions = new MenuGrammar(this);
-        menuActionActions = new MenuActions(this);
+        menuGoToActions = new MenuGoTo(this);
         menuGenerateActions = new MenuGenerate(this);
         menuRunActions = new MenuRun(this);
         menuExportActions = new MenuExport(this);
@@ -347,6 +348,16 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public List getLines() {
         return parser.getLines();
+    }
+
+    public Token getTokenAtPosition(int pos) {
+        Iterator iterator = getTokens().iterator();
+        while(iterator.hasNext()) {
+            Token token = (Token)iterator.next();
+            if(pos >= token.getStart() && pos <= token.getEnd())
+                return token;
+        }
+        return null;
     }
 
     public void changeDone() {

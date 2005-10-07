@@ -1,7 +1,11 @@
 
 Version 1.0ea4 - 09/12/05
 
-- undefined rules are now underlines in red
+- duplicates rules are now underlined in blue
+- undefined rules are now underlined in red
+- HOME/END key move to beginning/end of line
+- refactor strings to lexer rule
+
 - auto-indentation (enabled on ':', '|' and ';' characters)
 - preferences: can now specify the colors of each type of token in the debugger input text panel
 - console moved from Window menu to project's window

@@ -364,8 +364,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     }
 
     public void paintTextEditorPane(Graphics g) {
-        g.setColor(Color.red);
-
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
@@ -379,26 +377,32 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             if(token.type != Lexer.TOKEN_ID || token.isAllUpperCase())
                 continue;
 
-            if(!editor.rules.isRuleAtIndex(token.getStart()) || editor.rules.isRuleName(token.getAttribute()))
-                continue;
-
-            try {
-                Rectangle r1 = textPane.modelToView(token.getStart());
-                Rectangle r2 = textPane.modelToView(token.getEnd());
-
-//                if(!textPane.getVisibleRect().intersects(r1))
-//                    continue;
-
-                int width = r2.x-r1.x;
-                int triangle_size = 5;
-                for(int triangle=0; triangle<width/triangle_size; triangle++) {
-                    int x = r1.x+triangle*triangle_size;
-                    int y = r1.y+r1.height-1;
-                    g.drawLine(x, y, x+triangle_size/2, y-triangle_size/2);
-                    g.drawLine(x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
-                }
-            } catch (BadLocationException e) {
+            if(editor.rules.isRuleAtIndex(token.getStart()) && !editor.rules.isRuleName(token.getAttribute())) {
+                g.setColor(Color.red);
+                drawUnderlineAtIndexes(g, token.getStart(), token.getEnd());
             }
+
+            if(editor.rules.isDuplicateRule(token.getAttribute())) {
+                g.setColor(Color.blue);
+                drawUnderlineAtIndexes(g, token.getStart(), token.getEnd());
+            }
+        }
+    }
+
+    public void drawUnderlineAtIndexes(Graphics g, int start, int end) {
+        try {
+            Rectangle r1 = textPane.modelToView(start);
+            Rectangle r2 = textPane.modelToView(end);
+
+            int width = r2.x-r1.x;
+            int triangle_size = 5;
+            for(int triangle=0; triangle<width/triangle_size; triangle++) {
+                int x = r1.x+triangle*triangle_size;
+                int y = r1.y+r1.height-1;
+                g.drawLine(x, y, x+triangle_size/2, y-triangle_size/2);
+                g.drawLine(x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
+            }
+        } catch (BadLocationException e) {
         }
     }
 

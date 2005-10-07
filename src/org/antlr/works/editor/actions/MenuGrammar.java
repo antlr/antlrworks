@@ -31,18 +31,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.actions;
 
+import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.tool.TUsage;
-import org.antlr.works.parser.Line;
+import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class MenuGrammar extends AbstractActions {
 
@@ -51,7 +50,7 @@ public class MenuGrammar extends AbstractActions {
     }
 
     public void findUsage() {
-        Token token = getTokenAtPosition(getCaretPosition());
+        Token token = editor.getTokenAtPosition(getCaretPosition());
         if(token == null)
             return;
 
@@ -74,21 +73,8 @@ public class MenuGrammar extends AbstractActions {
         Statistics.shared().recordEvent(Statistics.EVENT_FIND_USAGES);
     }
 
-    public void goToDeclaration() {
-        Token token = getTokenAtPosition(getCaretPosition());
-        if(token == null)
-            return;
-
-        Parser.Rule rule = editor.rules.selectRuleName(token.getAttribute());
-        if(rule == null)
-            return;
-
-        editor.rules.selectTextRule(rule);
-        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_DECLARATION);
-    }
-
     public void rename() {
-        Token token = getTokenAtPosition(getCaretPosition());
+        Token token = editor.getTokenAtPosition(getCaretPosition());
         if(token == null)
             return;
 
@@ -113,6 +99,45 @@ public class MenuGrammar extends AbstractActions {
         }
     }
 
+    public void extractLexerRule() {
+        Token token = editor.getTokenAtPosition(getCaretPosition());
+        if(token == null)
+            return;
+
+        if(token.type != Lexer.TOKEN_SINGLE_QUOTE_STRING && token.type != Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
+            XJAlert.display(editor.getJavaContainer(), "Cannot Extract Lexer Rule", "The current token is not a string.");
+            return;
+        }
+
+        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Extract token '"+token.getAttribute()+"' to lexer rule named:", "Extract Lexer Rule",
+                JOptionPane.QUESTION_MESSAGE, null, null, "");
+        if(s != null && !s.equals(token.getAttribute())) {
+            editor.beginGroupChange("Extract Lexer Rule");
+            extractTokenToLexerRule(token, s);
+            editor.endGroupChange();
+        }
+    }
+
+    public void extractTokenToLexerRule(Token t, String name) {
+        // First insert the rule at the end of the grammar
+        int insertionIndex = editor.getText().length();
+        editor.editorGUI.replaceText(insertionIndex, insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
+
+        // Then rename all strings token
+        List tokens = editor.getTokens();
+        String attr = t.getAttribute();
+        for(int index = tokens.size()-1; index>0; index--) {
+            Token token = (Token) tokens.get(index);
+            if(token.type != Lexer.TOKEN_SINGLE_QUOTE_STRING && token.type != Lexer.TOKEN_DOUBLE_QUOTE_STRING)
+                continue;
+
+            if(!token.getAttribute().equals(attr))
+                continue;
+
+            editor.editorGUI.replaceText(token.getStart(), token.getEnd(), name);
+        }
+    }
+
     public void group() {
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Group Name:", "Group",
                 JOptionPane.QUESTION_MESSAGE, null, null, "Group");
@@ -120,111 +145,63 @@ public class MenuGrammar extends AbstractActions {
             editor.beginGroupChange("Group");
 
             int end = editor.getTextPane().getSelectionEnd();
-            editor.editorGUI.replaceText(end+1, end+1, "\n// $>\n");
+            editor.editorGUI.replaceText(end+1, end+1, "\n"+Parser.END_GROUP+"\n");
 
             int start = editor.getTextPane().getSelectionStart();
-            editor.editorGUI.replaceText(start-1, start-1, "\n// $<"+s+"\n");
+            editor.editorGUI.replaceText(start-1, start-1, "\n"+Parser.BEGIN_GROUP+s+"\n");
 
             editor.endGroupChange();
         }
     }
 
     public void ungroup() {
-
-    }
-
-    public int getLineNumberForPosition(int pos) {
-        List lines = editor.getLines();
-        if(lines == null)
-            return -1;
-
-        for(int i=0; i<lines.size(); i++) {
-            Line line = (Line)lines.get(i);
-            if(line.position > pos) {
-                return i-1;
-            }
-        }
-        return lines.size()-1;
-    }
-
-    public Point getLinePositions(int lineIndex) {
-        List lines = editor.getLines();
-        if(lineIndex == -1 || lines == null)
-            return null;
-
-        Line startLine = (Line)lines.get(lineIndex);
-        int start = startLine.position;
-        int end = 0;
-        if(lineIndex+1 >= lines.size()) {
-            return new Point(start, getTextPane().getDocument().getLength()-1);
-        } else {
-            Line endLine = (Line)lines.get(lineIndex+1);
-            end = endLine.position;
-            return new Point(start, end-1);
-        }
-    }
-
-    public void goToBreakpoint(int direction) {
-        Set breakpoints = editor.getGutter().getBreakpoints();
-        int line = getLineNumberForPosition(getCaretPosition());
-        if(line == -1)
-            return;
-
-        while(true) {
-            line += direction;
-            if(line < 0 || line > editor.parser.getMaxLines()-1)
-                break;
-
-            if(breakpoints.contains(new Integer(line))) {
-                moveCursorToLine(line);
-                break;
-            }
-        }
-    }
-
-    public void goToLine() {
-        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Line number:", "Go To Line",
-                JOptionPane.QUESTION_MESSAGE, null, null, null);
-        if(s != null) {
-            moveCursorToLine(Integer.parseInt(s)-1);
-            Statistics.shared().recordEvent(Statistics.EVENT_GOTO_LINE);
-        }
-    }
-
-    public void goToCharacter() {
-        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Character number:", "Go To Character",
-                JOptionPane.QUESTION_MESSAGE, null, null, null);
-        if(s != null) {
-            int character = Integer.parseInt(s)-1;
-            if(character < 0 || character > getTextPane().getDocument().getLength()-1)
+        Parser.Group openGroup = editor.rules.getSelectedGroup();
+        if(openGroup == null) {
+            // No open group selected in the tree. Try to find the closest open group
+            // by moving backward
+            openGroup = editor.rules.findOpenGroupClosestToLocation(editor.getTextPane().getSelectionStart());
+            if(openGroup == null) {
+                // Still no open group ? Give up
+                XJAlert.display(editor.getWindowContainer(), "Ungroup", "Cannot ungroup because no enclosing group has been found.");
                 return;
-
-            setCaretPosition(character);
-            Statistics.shared().recordEvent(Statistics.EVENT_GOTO_CHAR);
+            }
         }
+
+        Parser.Group closingGroup = editor.rules.findClosingGroupForGroup(openGroup);
+
+        editor.beginGroupChange("Ungroup");
+
+        if(closingGroup != null) {
+            // End of file is considered as a closing group but no group really exists
+            // for that purpose
+            Token t = closingGroup.token;
+            editor.editorGUI.replaceText(t.getStart()-1, t.getEnd(), "");
+        }
+
+        Token t = openGroup.token;
+        editor.editorGUI.replaceText(t.getStart()-1, t.getEnd(), "");
+
+        editor.endGroupChange();
+    }
+
+    public void hideAction() {
+        editor.actions.hideAction();
+        Statistics.shared().recordEvent(Statistics.EVENT_HIDE_SINGLE_ACTION);
+    }
+
+    public void showAllActions() {
+        editor.actions.showAllActions();
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_ALL_ACTIONS);
+    }
+
+    public void hideAllActions() {
+        editor.actions.hideAllActions();
+        Statistics.shared().recordEvent(Statistics.EVENT_HIDE_ALL_ACTIONS);
     }
 
     public void checkGrammar() {
         editor.grammar.checkGrammar();
         Statistics.shared().recordEvent(Statistics.EVENT_CHECK_GRAMMAR);
-    }
-
-    public void moveCursorToLine(int lineIndex) {
-        if(lineIndex < 0 || lineIndex > editor.getLines().size()-1)
-            return;
-
-        Line line = (Line)editor.getLines().get(lineIndex);
-        setCaretPosition(line.position);
-    }
-
-    public Token getTokenAtPosition(int pos) {
-        Iterator iterator = editor.getTokens().iterator();
-        while(iterator.hasNext()) {
-            Token token = (Token)iterator.next();
-            if(pos >= token.getStart() && pos <= token.getEnd())
-                return token;
-        }
-        return null;
     }
 
 }

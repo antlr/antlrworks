@@ -54,30 +54,31 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_TOGGLE_AUTOINDENT = 10;
 
     public static final int MI_FIND_USAGE = 20;
-    public static final int MI_GOTO_DECLARATION = 21;
-    public static final int MI_RENAME = 22;
-    public static final int MI_PREV_BREAKPOINT = 23;
-    public static final int MI_NEXT_BREAKPOINT = 24;
-    public static final int MI_GOTO_LINE = 25;
-    public static final int MI_GOTO_CHARACTER = 26;
-    public static final int MI_CHECK_GRAMMAR = 27;
-    public static final int MI_GROUP = 28;
-    public static final int MI_UNGROUP = 29;
+    public static final int MI_RENAME = 21;
+    public static final int MI_EXTRACT_LEXER_RULE = 22;
+    public static final int MI_GROUP = 23;
+    public static final int MI_UNGROUP = 24;
+    public static final int MI_HIDE_ACTION = 25;
+    public static final int MI_SHOW_ALL_ACTION = 26;
+    public static final int MI_HIDE_ALL_ACTION = 27;
+    public static final int MI_CHECK_GRAMMAR = 28;
 
-    public static final int MI_SHOW_ALL_ACTION = 30;
-    public static final int MI_HIDE_ALL_ACTION = 31;
-    public static final int MI_HIDE_ACTION = 32;
+    public static final int MI_GOTO_DECLARATION = 40;
+    public static final int MI_GOTO_LINE = 41;
+    public static final int MI_GOTO_CHARACTER = 42;
+    public static final int MI_PREV_BREAKPOINT = 43;
+    public static final int MI_NEXT_BREAKPOINT = 44;
 
-    public static final int MI_GENERATE_CODE = 40;
-    public static final int MI_SHOW_GENERATED_PARSER_CODE = 41;
-    public static final int MI_SHOW_GENERATED_LEXER_CODE = 42;
-    public static final int MI_SHOW_RULE_GENCODE = 43;
+    public static final int MI_GENERATE_CODE = 50;
+    public static final int MI_SHOW_GENERATED_PARSER_CODE = 51;
+    public static final int MI_SHOW_GENERATED_LEXER_CODE = 52;
+    public static final int MI_SHOW_RULE_GENCODE = 53;
 
-    public static final int MI_SAVE_AS_IMAGE = 50;
-    public static final int MI_SAVE_ANTLR_NFA_DOT = 51;
-    public static final int MI_SAVE_RAW_NFA_DOT = 52;
-    public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 53;
-    public static final int MI_EXPORT_EVENT = 54;
+    public static final int MI_SAVE_AS_IMAGE = 54;
+    public static final int MI_SAVE_ANTLR_NFA_DOT = 55;
+    public static final int MI_SAVE_RAW_NFA_DOT = 56;
+    public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 57;
+    public static final int MI_EXPORT_EVENT = 58;
 
     public static final int MI_RUN_INTERPRETER = 60;
     public static final int MI_DEBUG = 61;
@@ -97,6 +98,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     protected XJMenuItem menuItemRedo = null;
 
     protected XJMenuItem menuItemRename = null;
+    protected XJMenuItem menuItemExtractLexerRule = null;
     protected XJMenuItem menuItemDebug = null;
     protected XJMenuItem menuItemBuildAndDebug = null;
     protected XJMenuItem menuItemDebugRemote = null;
@@ -112,18 +114,19 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     }
 
     public void notificationFire(Object source, String name) {
-        boolean enable = true;
+        boolean enabled = true;
         if(name.equals(Debugger.NOTIF_DEBUG_STARTED))
-            enable = false;
+            enabled = false;
         else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED))
-            enable = true;
+            enabled = true;
         else
             return;
 
-        menuItemRename.setEnabled(enable);
-        menuItemDebug.setEnabled(enable);
-        menuItemBuildAndDebug.setEnabled(enable);
-        menuItemDebugRemote.setEnabled(enable);
+        menuItemRename.setEnabled(enabled);
+        menuItemExtractLexerRule.setEnabled(enabled);
+        menuItemDebug.setEnabled(enabled);
+        menuItemBuildAndDebug.setEnabled(enabled);
+        menuItemDebugRemote.setEnabled(enabled);
     }
 
     public void customizeFileMenu(XJMenu menu) {
@@ -187,33 +190,33 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu = new XJMenu();
         menu.setTitle("Grammar");
         menu.addItem(new XJMenuItem("Find Usages", 'f', KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
-        menu.addItem(new XJMenuItem("Go To Declaration", 'b', KeyEvent.VK_B, MI_GOTO_DECLARATION, this));
         menu.addSeparator();
         menu.addItem(menuItemRename = new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
+        menu.addItem(menuItemExtractLexerRule = new XJMenuItem("Extract Lexer Rule...", MI_EXTRACT_LEXER_RULE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
         menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Previous Breakpoint", MI_PREV_BREAKPOINT, this));
-        menu.addItem(new XJMenuItem("Next Breakpoint", MI_NEXT_BREAKPOINT, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Go To Line...", 'g', KeyEvent.VK_G, MI_GOTO_LINE, this));
-        menu.addItem(new XJMenuItem("Go To Character...", MI_GOTO_CHARACTER, this));
+        menu.addItem(new XJMenuItem("Hide Action", '-', KeyEvent.VK_MINUS, MI_HIDE_ACTION, this));
+        menu.addItem(new XJMenuItem("Show All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_SHOW_ALL_ACTION, this));
+        menu.addItem(new XJMenuItem("Hide All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_HIDE_ALL_ACTION, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Check Grammar", 'r', KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
 
         menubar.addCustomMenu(menu);
 
-        // *** Action menu
+        // *** Go To menu
 
         menu = new XJMenu();
-        menu.setTitle("Action");
+        menu.setTitle("Go To");
 
-        menu.addItem(new XJMenuItem("Hide Action", '-', KeyEvent.VK_MINUS, MI_HIDE_ACTION, this));
+        menu.addItem(new XJMenuItem("Declaration", 'b', KeyEvent.VK_B, MI_GOTO_DECLARATION, this));
         menu.addSeparator();
-
-        menu.addItem(new XJMenuItem("Show All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_SHOW_ALL_ACTION, this));
-        menu.addItem(new XJMenuItem("Hide All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_HIDE_ALL_ACTION, this));
+        menu.addItem(new XJMenuItem("Line...", 'g', KeyEvent.VK_G, MI_GOTO_LINE, this));
+        menu.addItem(new XJMenuItem("Character...", MI_GOTO_CHARACTER, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Previous Breakpoint", MI_PREV_BREAKPOINT, this));
+        menu.addItem(new XJMenuItem("Next Breakpoint", MI_NEXT_BREAKPOINT, this));
 
         menubar.addCustomMenu(menu);
 
@@ -259,7 +262,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         editor.handleMenuEvent(menu, item);
         handleMenuEdit(item.getTag());
         handleMenuGrammar(item.getTag());
-        handleMenuActions(item.getTag());
+        handleMenuGoTo(item.getTag());
         handleMenuGenerate(item.getTag());
         handleMenuRun(item.getTag());
         handleMenuPrivate(item.getTag());
@@ -317,12 +320,12 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
                 editor.menuGrammarActions.findUsage();
                 break;
 
-            case MI_GOTO_DECLARATION:
-                editor.menuGrammarActions.goToDeclaration();
-                break;
-
             case MI_RENAME:
                 editor.menuGrammarActions.rename();
+                break;
+
+            case MI_EXTRACT_LEXER_RULE:
+                editor.menuGrammarActions.extractLexerRule();
                 break;
 
             case MI_GROUP:
@@ -333,20 +336,16 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
                 editor.menuGrammarActions.ungroup();
                 break;
 
-            case MI_PREV_BREAKPOINT:
-                editor.menuGrammarActions.goToBreakpoint(-1);
+            case MI_HIDE_ACTION:
+                editor.menuGrammarActions.hideAction();
                 break;
 
-            case MI_NEXT_BREAKPOINT:
-                editor.menuGrammarActions.goToBreakpoint(1);
+            case MI_SHOW_ALL_ACTION:
+                editor.menuGrammarActions.showAllActions();
                 break;
 
-            case MI_GOTO_LINE:
-                editor.menuGrammarActions.goToLine();
-                break;
-
-            case MI_GOTO_CHARACTER:
-                editor.menuGrammarActions.goToCharacter();
+            case MI_HIDE_ALL_ACTION:
+                editor.menuGrammarActions.hideAllActions();
                 break;
 
             case MI_CHECK_GRAMMAR:
@@ -355,18 +354,26 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         }
     }
 
-    public void handleMenuActions(int itemTag) {
+    public void handleMenuGoTo(int itemTag) {
         switch(itemTag) {
-            case MI_HIDE_ACTION:
-                editor.menuActionActions.hideAction();
+            case MI_GOTO_DECLARATION:
+                editor.menuGoToActions.goToDeclaration();
                 break;
 
-            case MI_SHOW_ALL_ACTION:
-                editor.menuActionActions.showAllActions();
+            case MI_GOTO_LINE:
+                editor.menuGoToActions.goToLine();
                 break;
 
-            case MI_HIDE_ALL_ACTION:
-                editor.menuActionActions.hideAllActions();
+            case MI_GOTO_CHARACTER:
+                editor.menuGoToActions.goToCharacter();
+                break;
+
+            case MI_PREV_BREAKPOINT:
+                editor.menuGoToActions.goToBreakpoint(-1);
+                break;
+
+            case MI_NEXT_BREAKPOINT:
+                editor.menuGoToActions.goToBreakpoint(1);
                 break;
         }
     }

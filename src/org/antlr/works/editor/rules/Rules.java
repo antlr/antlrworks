@@ -36,6 +36,7 @@ import org.antlr.works.editor.tool.TActions;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
+import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -58,6 +59,8 @@ public class Rules implements ThreadedParserObserver {
     private ThreadedParser parser = null;
     private TActions actions = null;
 
+    private List duplicateRules = null;
+
     private boolean selectingRule = false;
     private boolean skipParseRules = false;
     private boolean selectNextRule = false;
@@ -76,6 +79,8 @@ public class Rules implements ThreadedParserObserver {
         this.parser = parser;
         this.textPane = textPane;
         this.rulesTree = rulesTree;
+
+        duplicateRules = new ArrayList();
 
         rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeNode(-1));
         rulesTreeModel = new DefaultTreeModel(rulesTreeRootNode);
@@ -164,6 +169,69 @@ public class Rules implements ThreadedParserObserver {
         selectRuleAtPosition(textPane.getCaretPosition());
     }
 
+    public Parser.Group getSelectedGroup() {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)rulesTree.getSelectionPath().getLastPathComponent();
+        RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+        if(n.group != null)
+            return n.group;
+       else
+            return null;
+    }
+
+    public Parser.Group findOpenGroupClosestToLocation(int location) {
+        // Look backward into the list of groups
+        List groups = parser.getGroups();
+        if(groups == null || groups.isEmpty())
+            return null;
+
+        Parser.Group previous = null;
+        for(int index = 0; index < groups.size(); index++) {
+            Parser.Group group = (Parser.Group)groups.get(index);
+            if(!group.openGroup)
+                continue;
+
+            Token t = group.token;
+            if(t.getStart() > location)
+                break;
+
+            previous = group;
+        }
+        return previous;
+    }
+
+    public Parser.Group findClosingGroupForGroup(Parser.Group group) {
+        List groups = parser.getGroups();
+        if(groups == null || groups.isEmpty())
+            return null;
+
+        int index = groups.indexOf(group)+1;
+        if(index == -1)
+            return null;
+
+        int open = 0;
+        while(index < groups.size()) {
+            Parser.Group g = (Parser.Group) groups.get(index);
+            if(g.openGroup)
+                open++;
+            else if(open == 0)
+                return g;
+            else
+                open--;
+            index++;
+        }
+        return null;
+    }
+
+    public Parser.Rule getLastLexerRule() {
+        List rules = parser.getRules();
+        for(int index = rules.size()-1; index>0; index--) {
+            Parser.Rule rule = (Parser.Rule)rules.get(index);
+            if(rule.isLexerRule())
+                return rule;
+        }
+        return null;
+    }
+
     public Parser.Rule getRuleAtPosition(int pos) {
         if(parser.getRules() == null)
             return null;
@@ -231,7 +299,11 @@ public class Rules implements ThreadedParserObserver {
     public boolean isRuleAtIndex(int index) {
         return getRuleAtIndex(index) != null;
     }
-    
+
+    public boolean isDuplicateRule(String rule) {
+        return duplicateRules.contains(rule);
+    }
+
     public void selectFirstRule() {
         if(parser.getRules().size() == 0)
             return;
@@ -313,6 +385,22 @@ public class Rules implements ThreadedParserObserver {
         delegate.rulesDidSelectRule();
     }
 
+    public void rebuildDuplicateRulesList() {
+        List rules = parser.getRules();
+        List sortedRules = Collections.list(Collections.enumeration(rules));
+        Collections.sort(sortedRules);
+        Iterator iter = sortedRules.iterator();
+        Parser.Rule currentRule = null;
+        duplicateRules.clear();
+        while(iter.hasNext()) {
+            Parser.Rule nextRule = (Parser.Rule) iter.next();
+            if(currentRule != null && currentRule.name.equals(nextRule.name) && !duplicateRules.contains(currentRule)) {
+                duplicateRules.add(currentRule.name);
+            }
+            currentRule = nextRule;
+        }
+    }
+
     public void rebuildTree() {
         saveExpandedNodes();
 
@@ -336,7 +424,7 @@ public class Rules implements ThreadedParserObserver {
                     ruleIndex = group.ruleIndex+1;
                 }
 
-                if(group.beginGroup) {
+                if(group.openGroup) {
                     DefaultMutableTreeNode node = new DefaultMutableTreeNode(new RuleTreeNode(group));
                     parentNode.add(node);
                     parentStack.push(node);
@@ -395,6 +483,7 @@ public class Rules implements ThreadedParserObserver {
     }
 
     public void parserDidComplete() {
+        rebuildDuplicateRulesList();
         rebuildTree();
         if(selectNextRule) {
             // Can be set by RuleMoveDown() class when a rule is moved down. Selection has to occurs here

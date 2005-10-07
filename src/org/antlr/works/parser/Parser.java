@@ -44,9 +44,9 @@ public class Parser {
 
     protected Token currentToken;
 
-    protected static final String ATTRIBUTE_FRAGMENT = "fragment";
-    protected static final String BEGIN_GROUP = "// $<";
-    protected static final String END_GROUP = "// $>";
+    public static final String ATTRIBUTE_FRAGMENT = "fragment";
+    public static final String BEGIN_GROUP = "// $<";
+    public static final String END_GROUP = "// $>";
 
     protected Lexer lexer;
 
@@ -136,13 +136,13 @@ public class Parser {
     }
 
     public Group matchRuleGroup(List rules) {
-        Token start = T(0);
-        String comment = start.getAttribute();
+        Token token = T(0);
+        String comment = token.getAttribute();
 
         if(comment.startsWith(BEGIN_GROUP)) {
-            return new Group(comment.substring(BEGIN_GROUP.length()), rules.size()-1);
+            return new Group(comment.substring(BEGIN_GROUP.length(), comment.length()-1), rules.size()-1, token);
         } else if(comment.startsWith(END_GROUP)) {
-                return new Group(rules.size()-1);
+                return new Group(rules.size()-1, token);
         } else
             return null;
     }
@@ -156,11 +156,13 @@ public class Parser {
         return (Token)tokens.get(position+index);
     }
 
-    public class Rule {
+    public class Rule implements Comparable {
 
         public String name;
         public Token start;
         public Token end;
+
+        public boolean isAllUpperCase = false;
 
         public List errors;
 
@@ -168,6 +170,7 @@ public class Parser {
             this.name = name;
             this.start = start;
             this.end = end;
+            this.isAllUpperCase =  name.equals(name.toUpperCase());
         }
 
         public int getStartIndex() {
@@ -202,6 +205,10 @@ public class Parser {
             this.errors = errors;
         }
 
+        public boolean isLexerRule() {
+            return isAllUpperCase;
+        }
+
         public boolean hasErrors() {
             if(errors == null)
                 return false;
@@ -230,23 +237,35 @@ public class Parser {
         public String toString() {
             return name;
         }
+
+        public int compareTo(Object o) {
+            Rule otherRule = (Rule) o;
+            return this.name.compareTo(otherRule.name);
+        }
     }
 
     public class Group {
 
         public String name = null;
         public int ruleIndex = -1;
-        public boolean beginGroup = false;
+        public boolean openGroup = false;
+        public Token token = null;
 
-        public Group(String name, int ruleIndex) {
+        public Group(String name, int ruleIndex, Token token) {
             this.name = name;
             this.ruleIndex = ruleIndex;
-            this.beginGroup = true;
+            this.token = token;
+            this.openGroup = true;
         }
 
-        public Group(int ruleIndex) {
+        public Group(int ruleIndex, Token token) {
             this.ruleIndex = ruleIndex;
-            this.beginGroup = false;
+            this.token = token;
+            this.openGroup = false;
+        }
+
+        public String toString() {
+            return "Group "+name+", open ="+openGroup+", ruleIndex = "+ruleIndex;
         }
 
     }

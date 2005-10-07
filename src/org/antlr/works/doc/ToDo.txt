@@ -1,5 +1,11 @@
 - terminer group/ungroup
 - cannot undo group
+- use Grammar randomText to generate random valid input text
+- display template rules somewhere
+- @todo in grammar and panel to recapitulate (also for undefined and duplicated rules)
+
+- find
+- display duplicates rules
 
 - prefs: sauvegarde automatique
 - message pour indiquer lorsque le syntax diagram n'est pas affiche (comme par exemple sur les regles du lexer)

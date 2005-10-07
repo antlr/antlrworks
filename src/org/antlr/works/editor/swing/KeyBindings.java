@@ -51,6 +51,20 @@ public class KeyBindings {
         // @todo currently only on Mac OS
         if(XJSystem.isMacOS())
             addEmacsKeyBindings();
+
+        addStandardKeyBindings();
+    }
+
+    public void addStandardKeyBindings() {
+        InputMap inputMap = textComponent.getInputMap();
+
+        // HOME to move cursor to begin of line
+        KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0);
+        inputMap.put(key, DefaultEditorKit.beginLineAction);
+
+        // END to move cursor to end of line
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_END, 0);
+        inputMap.put(key, DefaultEditorKit.endLineAction);
     }
 
     public void addEmacsKeyBindings() {
@@ -80,7 +94,7 @@ public class KeyBindings {
         key = KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.beginLineAction);
 
-        // Ctrl-e to move cursor to begin of line
+        // Ctrl-e to move cursor to end of line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.endLineAction);
 
