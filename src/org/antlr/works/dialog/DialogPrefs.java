@@ -60,7 +60,7 @@ public class DialogPrefs extends XJPanel {
 
         initComponents();
 
-        setSize(550, 330);
+        setSize(550, 360);
 
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -134,6 +134,14 @@ public class DialogPrefs extends XJPanel {
         getPreferences().bindToPreferences(editorFontCombo, EditorPreferences.PREF_EDITOR_FONT, EditorPreferences.DEFAULT_EDITOR_FONT);
         getPreferences().bindToPreferences(editorFontSizeSpinner, EditorPreferences.PREF_EDITOR_FONT_SIZE, EditorPreferences.DEFAULT_EDITOR_FONT_SIZE);
         getPreferences().bindToPreferences(lafCombo, EditorPreferences.PREF_LOOK_AND_FEEL, XJLookAndFeel.getDefaultLookAndFeelName());
+
+        // SCM - Perforce
+        getPreferences().bindToPreferences(enablePerforceCheckBox, EditorPreferences.PREF_SCM_P4_ENABLED, false);
+        getPreferences().bindToPreferences(p4PortField, EditorPreferences.PREF_SCM_P4_PORT, "");
+        getPreferences().bindToPreferences(p4UserField, EditorPreferences.PREF_SCM_P4_USER, "");
+        getPreferences().bindToPreferences(p4PasswordField, EditorPreferences.PREF_SCM_P4_PASSWORD, "");
+        getPreferences().bindToPreferences(p4ClientField, EditorPreferences.PREF_SCM_P4_CLIENT, "");
+        getPreferences().bindToPreferences(p4ExecPathField, EditorPreferences.PREF_SCM_P4_EXEC, "");
 
         // Compiler
         getPreferences().bindToPreferences(jikesPathField, EditorPreferences.PREF_JIKES_PATH, EditorPreferences.DEFAULT_JIKES_PATH);
@@ -239,6 +247,18 @@ public class DialogPrefs extends XJPanel {
         label1 = new JLabel();
         label5 = new JLabel();
         lafCombo = new JComboBox();
+        panel6 = new JPanel();
+        enablePerforceCheckBox = new JCheckBox();
+        label18 = new JLabel();
+        p4PortField = new JTextField();
+        label19 = new JLabel();
+        p4UserField = new JTextField();
+        label21 = new JLabel();
+        p4PasswordField = new JPasswordField();
+        label20 = new JLabel();
+        p4ClientField = new JTextField();
+        label17 = new JLabel();
+        p4ExecPathField = new JTextField();
         panel2 = new JPanel();
         jikesRadio = new JRadioButton();
         integratedRadio = new JRadioButton();
@@ -281,7 +301,8 @@ public class DialogPrefs extends XJPanel {
         //======== dialogPane ========
         {
             dialogPane.setBorder(Borders.DIALOG_BORDER);
-            dialogPane.setPreferredSize(new Dimension(600, 360));
+            dialogPane.setMinimumSize(new Dimension(540, 350));
+            dialogPane.setPreferredSize(new Dimension(600, 380));
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPane ========
@@ -369,6 +390,71 @@ public class DialogPrefs extends XJPanel {
                         panel1.add(lafCombo, cc.xywh(5, 11, 5, 1));
                     }
                     tabbedPane1.addTab("General", panel1);
+
+                    //======== panel6 ========
+                    {
+                        panel6.setLayout(new FormLayout(
+                            new ColumnSpec[] {
+                                new ColumnSpec(Sizes.dluX(10)),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(Sizes.dluX(10))
+                            },
+                            new RowSpec[] {
+                                new RowSpec(Sizes.dluY(10)),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                new RowSpec(Sizes.DLUY5),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                new RowSpec(Sizes.DLUY5),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                new RowSpec(Sizes.dluY(10))
+                            }));
+
+                        //---- enablePerforceCheckBox ----
+                        enablePerforceCheckBox.setText("Enable Perforce");
+                        panel6.add(enablePerforceCheckBox, cc.xy(5, 3));
+
+                        //---- label18 ----
+                        label18.setText("Port:");
+                        panel6.add(label18, cc.xy(3, 7));
+                        panel6.add(p4PortField, cc.xy(5, 7));
+
+                        //---- label19 ----
+                        label19.setText("User:");
+                        panel6.add(label19, cc.xy(3, 9));
+                        panel6.add(p4UserField, cc.xy(5, 9));
+
+                        //---- label21 ----
+                        label21.setText("Password:");
+                        panel6.add(label21, cc.xy(3, 11));
+                        panel6.add(p4PasswordField, cc.xy(5, 11));
+
+                        //---- label20 ----
+                        label20.setText("Client:");
+                        panel6.add(label20, cc.xy(3, 13));
+                        panel6.add(p4ClientField, cc.xy(5, 13));
+
+                        //---- label17 ----
+                        label17.setText("P4 executable path:");
+                        panel6.add(label17, cc.xy(3, 17));
+                        panel6.add(p4ExecPathField, cc.xy(5, 17));
+                    }
+                    tabbedPane1.addTab("SCM", panel6);
 
                     //======== panel2 ========
                     {
@@ -522,6 +608,7 @@ public class DialogPrefs extends XJPanel {
                         panel4.add(downloadPathField, cc.xywh(3, 11, 3, 1));
 
                         //---- browseUpdateDownloadPathButton ----
+                        browseUpdateDownloadPathButton.setActionCommand("Browse");
                         browseUpdateDownloadPathButton.setText("Browse...");
                         panel4.add(browseUpdateDownloadPathButton, cc.xy(7, 11));
                     }
@@ -634,6 +721,18 @@ public class DialogPrefs extends XJPanel {
     private JLabel label1;
     private JLabel label5;
     private JComboBox lafCombo;
+    private JPanel panel6;
+    private JCheckBox enablePerforceCheckBox;
+    private JLabel label18;
+    private JTextField p4PortField;
+    private JLabel label19;
+    private JTextField p4UserField;
+    private JLabel label21;
+    private JPasswordField p4PasswordField;
+    private JLabel label20;
+    private JTextField p4ClientField;
+    private JLabel label17;
+    private JTextField p4ExecPathField;
     private JPanel panel2;
     private JRadioButton jikesRadio;
     private JRadioButton integratedRadio;
@@ -667,7 +766,6 @@ public class DialogPrefs extends XJPanel {
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
-
 
 
 }

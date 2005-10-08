@@ -77,6 +77,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     public Box infoPanel;
     public ActivityPanel activityPanel;
     public JLabel infoLabel;
+    public JLabel scmLabel;
 
     public JSplitPane rulesTextSplitPane;
     public JSplitPane upDownSplitPane;
@@ -169,6 +170,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         upDownSplitPane.setOneTouchExpandable(true);
 
         infoLabel = new JLabel();
+        scmLabel = new JLabel();
 
         infoPanel = new Box(BoxLayout.X_AXIS);
         infoPanel.setPreferredSize(new Dimension(0, 30));
@@ -179,6 +181,9 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         infoPanel.add(activityPanel);
         infoPanel.add(Box.createHorizontalStrut(5));
         infoPanel.add(infoLabel);
+        infoPanel.add(Box.createHorizontalGlue());
+        infoPanel.add(scmLabel);
+        infoPanel.add(Box.createHorizontalStrut(20));
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
@@ -315,6 +320,14 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         infoLabel.setText(t);
     }
 
+    public void updateSCMStatus() {
+        if(EditorPreferences.getP4Enabled()) {
+            scmLabel.setText("SCM Status: "+editor.scm.getFileStatus());
+        } else {
+            scmLabel.setText("");
+        }
+    }
+
     public void registerUndo(Undo undo, JComponent component) {
         component.addFocusListener(new EditorFocusListener());
     }
@@ -354,6 +367,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
             applyFont();
             textScrollPane.repaint();
+            editor.getMainMenuBar().refreshState();
+            updateSCMStatus();
         }
     }
 

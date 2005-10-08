@@ -395,7 +395,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         InputStream is;
         String type;
 
-        StreamWatcher(InputStream is, String type) {
+        public StreamWatcher(InputStream is, String type) {
             this.is = is;
             this.type = type;
         }

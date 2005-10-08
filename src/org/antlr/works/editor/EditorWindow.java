@@ -34,6 +34,7 @@ package org.antlr.works.editor;
 import edu.usfca.xj.appkit.frame.XJWindow;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
+import edu.usfca.xj.appkit.menu.XJMenuItem;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.actions.*;
 import org.antlr.works.editor.rules.Rules;
@@ -53,6 +54,9 @@ import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
 import org.antlr.works.parser.Token;
+import org.antlr.works.scm.SCM;
+import org.antlr.works.scm.SCMDelegate;
+import org.antlr.works.scm.p4.P4;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -61,7 +65,7 @@ import java.util.*;
 import java.util.List;
 
 public class EditorWindow extends XJWindow implements ThreadedParserObserver,
-     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider
+     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, SCMDelegate
 {
     public ThreadedParser parser = null;
     public KeyBindings keyBindings = null;
@@ -76,6 +80,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public Interpreter interpreter = null;
     public Debugger debugger = null;
     public EditorConsole console = null;
+    public SCM scm = null;
 
     private Map undos = new HashMap();
 
@@ -90,6 +95,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     protected MenuGoTo menuGoToActions = null;
     protected MenuGenerate menuGenerateActions = null;
     protected MenuRun menuRunActions = null;
+    protected MenuSCM menuSCMActions = null;
     protected MenuExport menuExportActions = null;
     protected MenuHelp menuHelpActions = null;
 
@@ -104,6 +110,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         menuGoToActions = new MenuGoTo(this);
         menuGenerateActions = new MenuGenerate(this);
         menuRunActions = new MenuRun(this);
+        menuSCMActions = new MenuSCM(this);
         menuExportActions = new MenuExport(this);
         menuHelpActions = new MenuHelp(this);
 
@@ -114,6 +121,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         debugger = new Debugger(this);
         console = new EditorConsole(this);
         console.makeCurrent();
+
+        scm = new P4(console, this);
 
         parser = new ThreadedParser(this);
         parser.addObserver(this);
@@ -154,6 +163,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             }
         });
         textPaneRequestFocusLater();
+        scm.queryFileStatus(getFilePath());
     }
 
     public void close() {
@@ -334,6 +344,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return editorCache.getString(EditorCache.CACHE_PLAIN_TEXT);
     }
 
+    public synchronized String getFilePath() {
+        return getDocument().getDocumentPath();
+    }
+
     public synchronized String getFileName() {
         return getDocument().getDocumentName();
     }
@@ -405,6 +419,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         editorMenu.customizeMenuBar(menubar);
     }
 
+    public void menuItemState(XJMenuItem item) {
+        super.menuItemState(item);
+        editorMenu.menuItemState(item);
+    }
+
     /** Update methods
     */
 
@@ -443,6 +462,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             windowFirstDisplay = false;
             rules.selectFirstRule();
         }
+    }
+
+    public void scm_file_status_did_change(String status) {
+        editorGUI.updateSCMStatus();
     }
 
     public void windowDocumentPathDidChange() {

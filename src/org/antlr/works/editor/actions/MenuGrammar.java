@@ -99,26 +99,26 @@ public class MenuGrammar extends AbstractActions {
         }
     }
 
-    public void extractLexerRule() {
+    public void replaceLiteralWithTokenLabel() {
         Token token = editor.getTokenAtPosition(getCaretPosition());
         if(token == null)
             return;
 
         if(token.type != Lexer.TOKEN_SINGLE_QUOTE_STRING && token.type != Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
-            XJAlert.display(editor.getJavaContainer(), "Cannot Extract Lexer Rule", "The current token is not a string.");
+            XJAlert.display(editor.getJavaContainer(), "Cannot Replace Literal With Token Label", "The current token is not a string.");
             return;
         }
 
-        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Extract token '"+token.getAttribute()+"' to lexer rule named:", "Extract Lexer Rule",
+        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Replace Literal '"+token.getAttribute()+"' with token label:", "Replace Literal With Token Label",
                 JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(s != null && !s.equals(token.getAttribute())) {
-            editor.beginGroupChange("Extract Lexer Rule");
-            extractTokenToLexerRule(token, s);
+            editor.beginGroupChange("Replace Literal With Token Label");
+            replaceLiteralTokenWithTokenLabel(token, s);
             editor.endGroupChange();
         }
     }
 
-    public void extractTokenToLexerRule(Token t, String name) {
+    public void replaceLiteralTokenWithTokenLabel(Token t, String name) {
         // First insert the rule at the end of the grammar
         int insertionIndex = editor.getText().length();
         editor.editorGUI.replaceText(insertionIndex, insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");

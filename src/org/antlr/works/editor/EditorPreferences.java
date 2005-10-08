@@ -56,6 +56,14 @@ public class EditorPreferences {
     public static final int STARTUP_NEW_DOC = 0;
     public static final int STARTUP_OPEN_LAST_DOC = 1;
 
+    // SCM - Perforce
+    public static final String PREF_SCM_P4_ENABLED = "PREF_SCM_ENABLE_P4";
+    public static final String PREF_SCM_P4_PORT = "PREF_SCM_P4_PORT";
+    public static final String PREF_SCM_P4_USER = "PREF_SCM_P4_USER";
+    public static final String PREF_SCM_P4_PASSWORD = "PREF_SCM_P4_PASSWORD";
+    public static final String PREF_SCM_P4_CLIENT = "PREF_SCM_P4_CLIENT";
+    public static final String PREF_SCM_P4_EXEC = "PREF_SCM_P4_EXEC";
+
     // Compiler
     public static final String PREF_JIKES_PATH = "PREF_JIKES_PATH";
     public static final String PREF_COMPILER = "PREF_COMPILER";
@@ -158,6 +166,30 @@ public class EditorPreferences {
 
     public static String getLookAndFeel() {
         return getPreferences().getString(PREF_LOOK_AND_FEEL, null);
+    }
+
+    public static boolean getP4Enabled() {
+        return getPreferences().getBoolean(PREF_SCM_P4_ENABLED, false);
+    }
+
+    public static String getP4Port() {
+        return getPreferences().getString(PREF_SCM_P4_PORT, "");
+    }
+
+    public static String getP4User() {
+        return getPreferences().getString(PREF_SCM_P4_USER, "");
+    }
+
+    public static String getP4Password() {
+        return getPreferences().getString(PREF_SCM_P4_PASSWORD, "");
+    }
+
+    public static String getP4Client() {
+        return getPreferences().getString(PREF_SCM_P4_CLIENT, "");
+    }
+
+    public static String getP4ExecPath() {
+        return getPreferences().getString(PREF_SCM_P4_EXEC, "");
     }
 
     public static void setJikesPath(String path) {

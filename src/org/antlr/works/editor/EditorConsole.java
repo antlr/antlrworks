@@ -211,8 +211,6 @@ public class EditorConsole {
 
     public synchronized void println(String s) {
         String t = "["+dateFormat.format(new Date())+"] "+s;
-        System.out.println("Console: "+t);
-        //textArea.setText(textArea.getText()+t+"\n");
         if(currentAction != null)
             currentAction.appendString(t+"\n");
     }

@@ -6,6 +6,8 @@ Version 1.0ea4 - 09/12/05
 - HOME/END key move to beginning/end of line
 - refactor strings to lexer rule
 
+- support Perforce SCM commands
+
 - auto-indentation (enabled on ':', '|' and ';' characters)
 - preferences: can now specify the colors of each type of token in the debugger input text panel
 - console moved from Window menu to project's window

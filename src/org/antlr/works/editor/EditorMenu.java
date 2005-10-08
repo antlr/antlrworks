@@ -85,9 +85,16 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_BUILD_AND_DEBUG = 62;
     public static final int MI_DEBUG_REMOTE = 63;
 
-    public static final int MI_SUBMIT_STATS = 70;
-    public static final int MI_SEND_FEEDBACK = 71;
-    public static final int MI_CHECK_UPDATES = 72;
+    public static final int MI_P4_EDIT = 70;
+    public static final int MI_P4_ADD = 71;
+    public static final int MI_P4_DELETE = 72;
+    public static final int MI_P4_REVERT = 73;
+    public static final int MI_P4_SUBMIT = 74;
+    public static final int MI_P4_SYNC = 75;
+
+    public static final int MI_SUBMIT_STATS = 80;
+    public static final int MI_SEND_FEEDBACK = 81;
+    public static final int MI_CHECK_UPDATES = 82;
 
     public static final int MI_PRIVATE_STATS = 100;
     public static final int MI_PRIVATE_UNREGISTER = 101;
@@ -98,7 +105,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     protected XJMenuItem menuItemRedo = null;
 
     protected XJMenuItem menuItemRename = null;
-    protected XJMenuItem menuItemExtractLexerRule = null;
+    protected XJMenuItem menuItemReplaceLiteralWithTokenLabel = null;
     protected XJMenuItem menuItemDebug = null;
     protected XJMenuItem menuItemBuildAndDebug = null;
     protected XJMenuItem menuItemDebugRemote = null;
@@ -123,7 +130,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
             return;
 
         menuItemRename.setEnabled(enabled);
-        menuItemExtractLexerRule.setEnabled(enabled);
+        menuItemReplaceLiteralWithTokenLabel.setEnabled(enabled);
         menuItemDebug.setEnabled(enabled);
         menuItemBuildAndDebug.setEnabled(enabled);
         menuItemDebugRemote.setEnabled(enabled);
@@ -192,7 +199,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItem("Find Usages", 'f', KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
         menu.addSeparator();
         menu.addItem(menuItemRename = new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
-        menu.addItem(menuItemExtractLexerRule = new XJMenuItem("Extract Lexer Rule...", MI_EXTRACT_LEXER_RULE, this));
+        menu.addItem(menuItemReplaceLiteralWithTokenLabel = new XJMenuItem("Replace Literal With Token Label...", MI_EXTRACT_LEXER_RULE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
         menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
@@ -246,6 +253,21 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
         menubar.addCustomMenu(menu);
 
+        // *** SCM menu
+
+        menu = new XJMenu();
+        menu.setTitle("SCM");
+        menu.addItem(new XJMenuItem("Open for Edit", MI_P4_EDIT, this));
+        menu.addItem(new XJMenuItem("Add to Depot", MI_P4_ADD, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Delete", MI_P4_DELETE, this));
+        menu.addItem(new XJMenuItem("Revert", MI_P4_REVERT, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Submit...", MI_P4_SUBMIT, this));
+        menu.addItem(new XJMenuItem("Sync", MI_P4_SYNC, this));
+
+        menubar.addCustomMenu(menu);
+
         // *** Private menu (only for debug)
 
         if(EditorPreferences.getPrivateMenu()) {
@@ -258,6 +280,18 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         }
     }
 
+    public void menuItemState(XJMenuItem item) {
+        switch(item.getTag()) {
+            case MI_P4_EDIT:
+            case MI_P4_ADD:
+            case MI_P4_DELETE:
+            case MI_P4_REVERT:
+            case MI_P4_SUBMIT:
+            case MI_P4_SYNC:
+                item.setEnabled(EditorPreferences.getP4Enabled());
+        }
+    }
+
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
         editor.handleMenuEvent(menu, item);
         handleMenuEdit(item.getTag());
@@ -265,6 +299,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         handleMenuGoTo(item.getTag());
         handleMenuGenerate(item.getTag());
         handleMenuRun(item.getTag());
+        handleMenuSCM(item.getTag());
         handleMenuPrivate(item.getTag());
         handleMenuHelp(item.getTag());
         handleMenuExport(item.getTag());
@@ -325,7 +360,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
                 break;
 
             case MI_EXTRACT_LEXER_RULE:
-                editor.menuGrammarActions.extractLexerRule();
+                editor.menuGrammarActions.replaceLiteralWithTokenLabel();
                 break;
 
             case MI_GROUP:
@@ -413,6 +448,29 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_DEBUG_REMOTE:
                 editor.menuRunActions.debugRemote();
+                break;
+        }
+    }
+
+    public void handleMenuSCM(int itemTag) {
+        switch(itemTag) {
+            case MI_P4_EDIT:
+                editor.menuSCMActions.editFile();
+                break;
+            case MI_P4_ADD:
+                editor.menuSCMActions.addFile();
+                break;
+            case MI_P4_DELETE:
+                editor.menuSCMActions.deleteFile();
+                break;
+            case MI_P4_REVERT:
+                editor.menuSCMActions.revertFile();
+                break;
+            case MI_P4_SUBMIT:
+                editor.menuSCMActions.submitFile();
+                break;
+            case MI_P4_SYNC:
+                editor.menuSCMActions.sync();
                 break;
         }
     }

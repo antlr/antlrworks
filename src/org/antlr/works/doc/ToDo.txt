@@ -1,11 +1,13 @@
 - terminer group/ungroup
 - cannot undo group
+
+- make sure all file are in P4 (scm and some others)
+- find
+- Perforce: disable menus depending on the file status
+
 - use Grammar randomText to generate random valid input text
 - display template rules somewhere
 - @todo in grammar and panel to recapitulate (also for undefined and duplicated rules)
-
-- find
-- display duplicates rules
 
 - prefs: sauvegarde automatique
 - message pour indiquer lorsque le syntax diagram n'est pas affiche (comme par exemple sur les regles du lexer)
@@ -14,10 +16,7 @@
 
 - lexical ambiguities (ask Terence)
 - LT are not always displayed - see if we are too restricted
-- displays infos when running ANTLR in the console
 - use the new tool process for code generation
-
-- console in tab
 
 - XJURLLabel: check license
 - MultilineToolTip : grab license and see if correct
