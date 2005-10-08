@@ -33,5 +33,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.scm;
 
 public interface SCMDelegate {
-    public void scm_file_status_did_change(String status);
+    public void scmCommandsDidComplete();
+    public void scmFileStatusDidChange(String status);
 }

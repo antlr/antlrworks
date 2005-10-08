@@ -83,9 +83,8 @@ public class TextEditorPane extends JTextPane
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         if(delegate != null)
-            delegate.paintTextEditorPane(g);
+            delegate.textEditorPaneDidPaint(g);
     }
 
 }

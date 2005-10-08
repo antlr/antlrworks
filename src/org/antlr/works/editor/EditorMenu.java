@@ -258,9 +258,9 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu = new XJMenu();
         menu.setTitle("SCM");
         menu.addItem(new XJMenuItem("Open for Edit", MI_P4_EDIT, this));
-        menu.addItem(new XJMenuItem("Add to Depot", MI_P4_ADD, this));
+        menu.addItem(new XJMenuItem("Mark for Add", MI_P4_ADD, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Delete", MI_P4_DELETE, this));
+        menu.addItem(new XJMenuItem("Mark for Delete", MI_P4_DELETE, this));
         menu.addItem(new XJMenuItem("Revert", MI_P4_REVERT, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Submit...", MI_P4_SUBMIT, this));

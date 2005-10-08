@@ -1,9 +1,16 @@
+- crash when opening a new file and performing an SCM operation
+- prefs: highlite line or not
+
 - terminer group/ungroup
 - cannot undo group
-
-- make sure all file are in P4 (scm and some others)
+- make sure Edit menu options are saved in the preferences
+- finish the drag and drop in rule tree
 - find
 - Perforce: disable menus depending on the file status
+- P4: if file read-only and under P4, propose to open for edit
+- antlr operators like +*? in bold
+- display all literals in list
+- scm: add diff
 
 - use Grammar randomText to generate random valid input text
 - display template rules somewhere

@@ -226,7 +226,7 @@ public class DebuggerInputText implements TextEditorPaneDelegate, XJNotification
         StyleConstants.setItalic(attributeLookahead, true);
     }
 
-    public void paintTextEditorPane(Graphics g) {
+    public void textEditorPaneDidPaint(Graphics g) {
         if(!drawTokensBox)
             return;
 

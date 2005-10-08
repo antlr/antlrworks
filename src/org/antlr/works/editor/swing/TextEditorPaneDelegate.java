@@ -34,5 +34,5 @@ package org.antlr.works.editor.swing;
 import java.awt.*;
 
 public interface TextEditorPaneDelegate {
-    public void paintTextEditorPane(Graphics g);
+    public void textEditorPaneDidPaint(Graphics g);
 }

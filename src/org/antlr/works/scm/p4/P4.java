@@ -56,8 +56,7 @@ public class P4 implements SCM {
     protected SCMDelegate delegate = null;
     protected String fileStatus = null;
 
-    protected List scheduledCommands = new ArrayList();
-    protected P4Command runningCommand = null;
+    protected P4Scheduler scheduler = new P4Scheduler();
 
     public P4(EditorConsole console, SCMDelegate delegate) {
         this.console = console;
@@ -97,7 +96,7 @@ public class P4 implements SCM {
         scheduleCommand(new P4Command(CMD_FSTAT, new String[] { "fstat", file }, null));
         scheduleCommand(new P4CommandSubmit(file, description, remainOpen));
         queryFileStatus(file);
-        scheduleRun();
+        scheduleLaunch();
     }
 
     public synchronized void sync() {
@@ -117,41 +116,87 @@ public class P4 implements SCM {
 
     protected void runCommand(P4Command command) {
         scheduleCommand(command);
-        // @todo make sure not to run a command if a previous one is still running
-        scheduleRun();
+        scheduleLaunch();
     }
+
     protected void scheduleCommand(P4Command command) {
-        synchronized(scheduledCommands) {
-            scheduledCommands.add(command);
+        scheduler.scheduleCommand(command);
+    }
+
+    protected synchronized void scheduleLaunch() {
+        if(!scheduler.isRunning())
+            scheduler.start();
+    }
+
+    protected class P4Scheduler implements Runnable, P4CommandCompletionDelegate {
+
+        protected List scheduledCommands = new ArrayList();
+        protected P4Command runningCommand = null;
+
+        public void start() {
+            new Thread(this).start();
         }
-    }
 
-    protected void scheduleRun() {
-        scheduleRun(null);
-    }
+        public void run() {
+            scheduleRun(null);
+        }
 
-    protected void scheduleRun(P4Command previousCommand) {
-        if(runningCommand != null) {
-            if(runningCommand != previousCommand) {
-                // A command is already running. The next command
-                // will be launched later.
-                return;
+        protected void scheduleCommand(P4Command command) {
+            synchronized(scheduledCommands) {
+                scheduledCommands.add(command);
             }
         }
 
-        synchronized(scheduledCommands) {
-            if(scheduledCommands.size() > 0) {
-                runningCommand = (P4Command)scheduledCommands.get(0);
-                scheduledCommands.remove(0);
-            } else {
-                runningCommand = null;
-            }
+        protected synchronized boolean isRunning() {
+            return runningCommand != null;
         }
-        if(runningCommand != null)
-            runningCommand.run(previousCommand);
+
+        protected synchronized void scheduleRun(P4Command previousCommand) {
+            if(runningCommand != null) {
+                if(runningCommand != previousCommand) {
+                    // A command is already running. The next command
+                    // will be launched later.
+                    return;
+                }
+            }
+
+            synchronized(scheduledCommands) {
+                if(scheduledCommands.size() > 0) {
+                    runningCommand = (P4Command)scheduledCommands.get(0);
+                    scheduledCommands.remove(0);
+                } else {
+                    runningCommand = null;
+                }
+            }
+            if(runningCommand == null) {
+                if(delegate != null)
+                    delegate.scmCommandsDidComplete();
+
+            } else
+                runningCommand.run(previousCommand, this);
+        }
+
+        public void commandDidComplete(P4CommandCompletion completion) {
+            if(completion.commandID == CMD_FSTAT) {
+                // Update the file status only after "fstat" command only
+                fileStatus = completion.getObjectForKey(P4Results.OTHER, "action");
+                if(fileStatus == null) {
+                    if(completion.hasErrors())
+                        fileStatus = "?";
+                    else
+                        fileStatus = "closed";
+                }
+
+                if(delegate != null)
+                    delegate.scmFileStatusDidChange(fileStatus);
+            }
+
+            scheduleRun(runningCommand);
+        }
+
     }
 
-    protected class P4Command implements P4CommandCompletionDelegate {
+    protected class P4Command {
 
         public int commandID;
         public String[] commands;
@@ -164,18 +209,18 @@ public class P4 implements SCM {
             this.inputArguments = inputArguments;
         }
 
-        public void run(P4Command previousCommand) {
-            runCommand(commandID, commands, inputArguments);
+        public void run(P4Command previousCommand, P4CommandCompletionDelegate delegate) {
+            runCommand(commandID, commands, inputArguments, delegate);
         }
 
-        public boolean runCommand(int commandID, String[] params, String[] inputArguments) {
+        protected boolean runCommand(int commandID, String[] params, String[] inputArguments, P4CommandCompletionDelegate delegate) {
             String[] command = buildCommand(params);
             boolean success = false;
 
             try {
                 Process p = Runtime.getRuntime().exec(command);
 
-                completion = new P4CommandCompletion(p, commandID, this);
+                completion = new P4CommandCompletion(p, commandID, delegate);
 
                 if(inputArguments != null) {
                     OutputStream os = p.getOutputStream();
@@ -218,24 +263,6 @@ public class P4 implements SCM {
 
             return command;
         }
-
-        public void commandDidComplete(P4CommandCompletion completion) {
-            if(completion.commandID == CMD_FSTAT) {
-                // Update the file status only after "fstat" command only
-                fileStatus = completion.getObjectForKey(P4Results.OTHER, "action");
-                if(fileStatus == null) {
-                    if(completion.hasErrors())
-                        fileStatus = "?";
-                    else
-                        fileStatus = "closed";
-                }
-
-                if(delegate != null)
-                    delegate.scm_file_status_did_change(fileStatus);
-            }
-
-            scheduleRun(this);
-        }
     }
 
     protected class P4CommandSubmit extends P4Command {
@@ -252,7 +279,7 @@ public class P4 implements SCM {
             this.remainOpen = remainOpen;
         }
 
-        public void run(P4Command previousCommand) {
+        public void run(P4Command previousCommand, P4CommandCompletionDelegate delegate) {
             // To submit, we have to get the depot file corresponding to the local file
             String depotFile = previousCommand.completion.getObjectForKey(P4Results.OTHER, "depotFile");
             if(depotFile != null) {
@@ -269,7 +296,8 @@ public class P4 implements SCM {
                                        "Client: "+EditorPreferences.getP4Client(),
                                        "User: "+EditorPreferences.getP4User(),
                                        "Description:\n\t"+description,
-                                       "Files:\n\t"+depotFile});
+                                       "Files:\n\t"+depotFile},
+                            delegate);
             }
         }
     }

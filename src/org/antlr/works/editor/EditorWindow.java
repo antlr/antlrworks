@@ -54,9 +54,6 @@ import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
 import org.antlr.works.parser.Token;
-import org.antlr.works.scm.SCM;
-import org.antlr.works.scm.SCMDelegate;
-import org.antlr.works.scm.p4.P4;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -65,7 +62,7 @@ import java.util.*;
 import java.util.List;
 
 public class EditorWindow extends XJWindow implements ThreadedParserObserver,
-     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, SCMDelegate
+     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider
 {
     public ThreadedParser parser = null;
     public KeyBindings keyBindings = null;
@@ -80,7 +77,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public Interpreter interpreter = null;
     public Debugger debugger = null;
     public EditorConsole console = null;
-    public SCM scm = null;
 
     private Map undos = new HashMap();
 
@@ -101,6 +97,9 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public EditorWindow() {
 
+        console = new EditorConsole(this);
+        console.makeCurrent();
+        
         editorGUI = new EditorGUI(this);
         editorCache = new EditorCache();
         editorMenu = new EditorMenu(this);
@@ -119,10 +118,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         visual = new Visual(this);
         interpreter = new Interpreter(this);
         debugger = new Debugger(this);
-        console = new EditorConsole(this);
-        console.makeCurrent();
-
-        scm = new P4(console, this);
 
         parser = new ThreadedParser(this);
         parser.addObserver(this);
@@ -163,7 +158,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             }
         });
         textPaneRequestFocusLater();
-        scm.queryFileStatus(getFilePath());
+        menuSCMActions.queryFileStatus();
     }
 
     public void close() {
@@ -462,10 +457,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             windowFirstDisplay = false;
             rules.selectFirstRule();
         }
-    }
-
-    public void scm_file_status_did_change(String status) {
-        editorGUI.updateSCMStatus();
     }
 
     public void windowDocumentPathDidChange() {

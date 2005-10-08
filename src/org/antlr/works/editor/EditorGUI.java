@@ -320,12 +320,12 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         infoLabel.setText(t);
     }
 
-    public void updateSCMStatus() {
-        if(EditorPreferences.getP4Enabled()) {
-            scmLabel.setText("SCM Status: "+editor.scm.getFileStatus());
-        } else {
+    public void updateSCMStatus(String status) {
+        scmLabel.setVisible(EditorPreferences.getP4Enabled());
+        if(status != null)
+            scmLabel.setText("SCM Status: "+status);
+        else
             scmLabel.setText("");
-        }
     }
 
     public void registerUndo(Undo undo, JComponent component) {
@@ -368,7 +368,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             applyFont();
             textScrollPane.repaint();
             editor.getMainMenuBar().refreshState();
-            updateSCMStatus();
+            updateSCMStatus(null);
         }
     }
 
@@ -378,10 +378,21 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         }
     }
 
-    public void paintTextEditorPane(Graphics g) {
+    public void textEditorPaneDidPaint(Graphics g) {
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+
+        Composite c = g2d.getComposite();
+        try {
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT, 0.1f));
+            Rectangle r1 = textPane.modelToView(editor.getCaretPosition());
+            g.setColor(Color.black);
+            g.fillRect(0, r1.y, editor.getTextPane().getSize().width, EditorPreferences.getEditorFontSize()+2);
+        } catch (BadLocationException e) {
+            // Ignore
+        }
+        g2d.setComposite(c);
 
         if(editor.getTokens() == null)
             return;
@@ -389,7 +400,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         for (Iterator iterator = editor.getTokens().iterator(); iterator.hasNext();) {
             Token token = (Token) iterator.next();
 
-            if(token.type != Lexer.TOKEN_ID || token.isAllUpperCase())
+            if(token.type != Lexer.TOKEN_ID)
                 continue;
 
             if(editor.rules.isRuleAtIndex(token.getStart()) && !editor.rules.isRuleName(token.getAttribute())) {
@@ -418,6 +429,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
                 g.drawLine(x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
             }
         } catch (BadLocationException e) {
+            // Ignore
         }
     }
 
@@ -496,6 +508,11 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     protected class TextPaneCaretListener implements CaretListener {
 
         public void caretUpdate(CaretEvent e) {
+            // Each time the cursor moves, update the visible part of the text pane
+            // to redraw the highlighting
+            editor.getTextPane().repaint();
+
+            // Update the auto-completion list
             editor.autoCompletionMenu.updateAutoCompleteList();
 
             Parser.Rule rule = editor.rules.selectRuleAtPosition(e.getDot());

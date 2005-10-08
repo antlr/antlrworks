@@ -3,15 +3,16 @@ Version 1.0ea4 - 09/12/05
 
 - duplicates rules are now underlined in blue
 - undefined rules are now underlined in red
-- HOME/END key move to beginning/end of line
-- refactor strings to lexer rule
-
+- replace literal with token label
 - support Perforce SCM commands
 
 - auto-indentation (enabled on ':', '|' and ';' characters)
-- preferences: can now specify the colors of each type of token in the debugger input text panel
+- HOME/END key move to beginning/end of line
 - console moved from Window menu to project's window
 - improved console with events list
+- current line is now highlighted
+- preferences: can now specify the colors of each type of token in the debugger input text panel
+
 - fixed a bug where a new document created on Windows would not be correctly colorized
 
 Version 1.0ea3 - 07/04/05
