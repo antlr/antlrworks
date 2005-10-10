@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.tool;
 
-import org.antlr.works.editor.EditorThread;
+import org.antlr.works.editor.helper.EditorThread;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.parser.Lexer;

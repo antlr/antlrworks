@@ -77,6 +77,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     public Box infoPanel;
     public ActivityPanel activityPanel;
     public JLabel infoLabel;
+    public JLabel cursorLabel;
     public JLabel scmLabel;
 
     public JSplitPane rulesTextSplitPane;
@@ -170,9 +171,10 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         upDownSplitPane.setOneTouchExpandable(true);
 
         infoLabel = new JLabel();
+        cursorLabel = new JLabel();
         scmLabel = new JLabel();
 
-        infoPanel = new Box(BoxLayout.X_AXIS);
+        infoPanel = new InfoPanel();
         infoPanel.setPreferredSize(new Dimension(0, 30));
 
         activityPanel = new ActivityPanel();
@@ -181,20 +183,33 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         infoPanel.add(activityPanel);
         infoPanel.add(Box.createHorizontalStrut(5));
         infoPanel.add(infoLabel);
-        infoPanel.add(Box.createHorizontalGlue());
+        infoPanel.add(Box.createHorizontalStrut(5));
+        infoPanel.add(createSeparator());
+        infoPanel.add(Box.createHorizontalStrut(5));
+        infoPanel.add(cursorLabel);
+        infoPanel.add(Box.createHorizontalStrut(5));
+        infoPanel.add(createSeparator());
+        infoPanel.add(Box.createHorizontalStrut(5));
         infoPanel.add(scmLabel);
-        infoPanel.add(Box.createHorizontalStrut(20));
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
         mainPanel.add(infoPanel, BorderLayout.SOUTH);
-
+                           
         editor.getContentPane().add(mainPanel);
         editor.pack();
 
         upDownSplitPane.setDividerLocation(0.5);
 
         XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
+    }
+
+    public static JComponent createSeparator() {
+        JSeparator s = new JSeparator(SwingConstants.VERTICAL);
+        Dimension d = s.getMaximumSize();
+        d.width = 2;
+        s.setMaximumSize(d);
+        return s;
     }
 
     public void close() {
@@ -318,6 +333,16 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             t += " ("+warnings+" warnings)";
 
         infoLabel.setText(t);
+    }
+
+    public void updateCursorInfo() {
+        int lineNumber = editor.getLineNumberForPosition(editor.getCaretPosition());
+        Point linePosition = editor.getLinePositions(lineNumber);
+        if(linePosition == null)
+            return;
+
+        int columnNumber = editor.getCaretPosition() - linePosition.x;
+        cursorLabel.setText((lineNumber+1)+":"+(columnNumber+1));
     }
 
     public void updateSCMStatus(String status) {
@@ -456,6 +481,25 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         }
     }
 
+    protected class InfoPanel extends Box {
+
+        public InfoPanel() {
+            super(BoxLayout.X_AXIS);
+        }
+
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            Rectangle r = getBounds();
+
+            g.setColor(Color.darkGray);
+            g.drawLine(0, 0, r.width, 0);
+
+            g.setColor(Color.lightGray);
+            g.drawLine(0, 1, r.width, 1);
+        }
+    }
+
     protected class ActivityPanel extends JPanel implements GTimerDelegate {
 
         private GTimer timer = new GTimer(this, 500);
@@ -508,6 +552,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     protected class TextPaneCaretListener implements CaretListener {
 
         public void caretUpdate(CaretEvent e) {
+            updateCursorInfo();
+
             // Each time the cursor moves, update the visible part of the text pane
             // to redraw the highlighting
             editor.getTextPane().repaint();

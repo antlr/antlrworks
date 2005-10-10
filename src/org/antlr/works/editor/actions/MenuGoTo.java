@@ -38,8 +38,6 @@ import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.List;
 import java.util.Set;
 
 public class MenuGoTo extends AbstractActions {
@@ -57,44 +55,15 @@ public class MenuGoTo extends AbstractActions {
         if(rule == null)
             return;
 
+        goToHistoryRememberCurrentPosition();
+
         editor.rules.selectTextRule(rule);
         Statistics.shared().recordEvent(Statistics.EVENT_GOTO_DECLARATION);
     }
 
-    public int getLineNumberForPosition(int pos) {
-        List lines = editor.getLines();
-        if(lines == null)
-            return -1;
-
-        for(int i=0; i<lines.size(); i++) {
-            Line line = (Line)lines.get(i);
-            if(line.position > pos) {
-                return i-1;
-            }
-        }
-        return lines.size()-1;
-    }
-
-    public Point getLinePositions(int lineIndex) {
-        List lines = editor.getLines();
-        if(lineIndex == -1 || lines == null)
-            return null;
-
-        Line startLine = (Line)lines.get(lineIndex);
-        int start = startLine.position;
-        int end = 0;
-        if(lineIndex+1 >= lines.size()) {
-            return new Point(start, getTextPane().getDocument().getLength()-1);
-        } else {
-            Line endLine = (Line)lines.get(lineIndex+1);
-            end = endLine.position;
-            return new Point(start, end-1);
-        }
-    }
-
     public void goToBreakpoint(int direction) {
         Set breakpoints = editor.getGutter().getBreakpoints();
-        int line = getLineNumberForPosition(getCaretPosition());
+        int line = editor.getLineNumberForPosition(getCaretPosition());
         if(line == -1)
             return;
 
@@ -127,8 +96,24 @@ public class MenuGoTo extends AbstractActions {
             if(character < 0 || character > getTextPane().getDocument().getLength()-1)
                 return;
 
+            goToHistoryRememberCurrentPosition();
+
             setCaretPosition(character);
             Statistics.shared().recordEvent(Statistics.EVENT_GOTO_CHAR);
+        }
+    }
+
+    public void goToBackward() {
+        if(editor.goToHistory.canGoBackward()) {
+            setCaretPosition(editor.goToHistory.getBackwardPosition(getCaretPosition()));
+            editor.getMainMenuBar().refreshState();
+        }
+    }
+
+    public void goToForward() {
+        if(editor.goToHistory.canGoForward()) {
+            setCaretPosition(editor.goToHistory.getForwardPosition());
+            editor.getMainMenuBar().refreshState();
         }
     }
 
@@ -137,7 +122,13 @@ public class MenuGoTo extends AbstractActions {
             return;
 
         Line line = (Line)editor.getLines().get(lineIndex);
+        goToHistoryRememberCurrentPosition();
         setCaretPosition(line.position);
+    }
+
+    protected void goToHistoryRememberCurrentPosition() {
+        editor.goToHistory.addPosition(getCaretPosition());
+        editor.getMainMenuBar().refreshState();
     }
 
 }

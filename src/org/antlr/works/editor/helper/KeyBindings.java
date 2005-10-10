@@ -29,7 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.swing;
+package org.antlr.works.editor.helper;
 
 import edu.usfca.xj.foundation.XJSystem;
 

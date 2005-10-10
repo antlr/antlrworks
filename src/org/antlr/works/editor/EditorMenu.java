@@ -37,6 +37,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -66,8 +67,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_GOTO_DECLARATION = 40;
     public static final int MI_GOTO_LINE = 41;
     public static final int MI_GOTO_CHARACTER = 42;
-    public static final int MI_PREV_BREAKPOINT = 43;
-    public static final int MI_NEXT_BREAKPOINT = 44;
+    public static final int MI_GOTO_BACKWARD = 43;
+    public static final int MI_GOTO_FORWARD = 44;
+    public static final int MI_PREV_BREAKPOINT = 45;
+    public static final int MI_NEXT_BREAKPOINT = 46;
 
     public static final int MI_GENERATE_CODE = 50;
     public static final int MI_SHOW_GENERATED_PARSER_CODE = 51;
@@ -222,6 +225,9 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItem("Line...", 'g', KeyEvent.VK_G, MI_GOTO_LINE, this));
         menu.addItem(new XJMenuItem("Character...", MI_GOTO_CHARACTER, this));
         menu.addSeparator();
+        menu.addItem(new XJMenuItem("Backward", 'b', KeyEvent.VK_LEFT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_BACKWARD, this));
+        menu.addItem(new XJMenuItem("Forward", 'f', KeyEvent.VK_RIGHT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_FORWARD, this));
+        menu.addSeparator();
         menu.addItem(new XJMenuItem("Previous Breakpoint", MI_PREV_BREAKPOINT, this));
         menu.addItem(new XJMenuItem("Next Breakpoint", MI_NEXT_BREAKPOINT, this));
 
@@ -282,6 +288,13 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public void menuItemState(XJMenuItem item) {
         switch(item.getTag()) {
+            case MI_GOTO_BACKWARD:
+                item.setEnabled(editor.goToHistory.canGoBackward());
+                break;
+            case MI_GOTO_FORWARD:
+                item.setEnabled(editor.goToHistory.canGoForward());
+                break;
+
             case MI_P4_EDIT:
             case MI_P4_ADD:
             case MI_P4_DELETE:
@@ -289,6 +302,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
             case MI_P4_SUBMIT:
             case MI_P4_SYNC:
                 item.setEnabled(EditorPreferences.getP4Enabled());
+                break;
         }
     }
 
@@ -401,6 +415,14 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_GOTO_CHARACTER:
                 editor.menuGoToActions.goToCharacter();
+                break;
+
+            case MI_GOTO_BACKWARD:
+                editor.menuGoToActions.goToBackward();
+                break;
+
+            case MI_GOTO_FORWARD:
+                editor.menuGoToActions.goToForward();
                 break;
 
             case MI_PREV_BREAKPOINT:

@@ -44,54 +44,30 @@ import java.awt.event.*;
 import java.util.Iterator;
 import java.util.List;
 
-public class AutoCompletionMenu extends JWindow {
+public class AutoCompletionMenu extends OverlayObject {
 
-    private AutoCompletionMenuDelegate delegate = null;
-    private JFrame parentFrame = null;
-    private Point relativePosition = null;
+    private AutoCompletionMenuDelegate delegate;
 
-    private DefaultListModel listModel = null;
-    private JList list = null;
+    private DefaultListModel listModel;
+    private JList list;
 
-    private JTextComponent textComponent = null;
+    private List words;
+    private int maxWordLength;
 
-    private List words = null;
-    private int maxWordLength = 0;
-
-    private int insertionStartIndex = 0;
-    private int insertionEndIndex = 0;
+    private int insertionStartIndex;
+    private int insertionEndIndex;
 
     public AutoCompletionMenu(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, JFrame frame) {
-        super(frame);
-
+        super(frame, textComponent);
         this.delegate = delegate;
-        this.textComponent = textComponent;
-        this.parentFrame = frame;
+    }
 
-        frame.addComponentListener(new ComponentAdapter() {
-            public void componentHidden(ComponentEvent e) {
-                setVisible(false);
-            }
+    public JTextComponent getTextComponent() {
+        return (JTextComponent)parentComponent;
+    }
 
-            public void componentMoved(ComponentEvent e) {
-                if (isVisible()) {
-                    if (relativePosition != null) {
-                        Point p = AutoCompletionMenu.this.textComponent.getLocationOnScreen();
-                        setLocation(new Point(p.x + relativePosition.x, p.y + relativePosition.y));
-                    }
-                }
-            }
-        });
-
-        textComponent.addKeyListener(new MyKeyAdapter());
-        textComponent.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                if (isVisible()) {
-                    setVisible(false);
-                }
-            }
-        });
+    public JComponent createInterface() {
+        getTextComponent().addKeyListener(new MyKeyAdapter());
 
         listModel = new DefaultListModel();
 
@@ -107,9 +83,39 @@ public class AutoCompletionMenu extends JWindow {
 
         JScrollPane scrollPane = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-        setContentPane(scrollPane);
+        return scrollPane;
+    }
 
-        addAutoCompleteBindings();
+    public void displayOverlay() {
+        int position = getTextComponent().getCaretPosition();
+
+        int index = getPartialWordBeginsAtPosition(position);
+        String partialWord = "";
+        if(index<position)
+            partialWord = getTextComponent().getText().substring(index+1, position);
+
+        setInsertionStartIndex(index+1);
+        setInsertionEndIndex(position);
+
+        List matchingRules = delegate.getMatchingWordsForPartialWord(partialWord);
+        if(matchingRules.size() == 0) {
+            content.setVisible(false);
+            return;
+        } else if(matchingRules.size() == 1) {
+            content.setVisible(false);
+            completePartialWord((String)matchingRules.get(0));
+            return;
+        }
+
+        showAutoCompleteMenu(index+1, matchingRules, matchingRules);
+    }
+
+    public KeyStroke displayOverlayKeyStroke() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_MASK);
+    }
+
+    public String displayOverlayKeyStrokeMappingName() {
+        return "controlEspace";
     }
 
     public void setWordLists(List names, List words) {
@@ -134,13 +140,6 @@ public class AutoCompletionMenu extends JWindow {
         insertionEndIndex = endIndex;
     }
 
-    public void display(Point abs, Point rel) {
-        relativePosition = rel;
-        setSize(maxWordLength*8+50, 100);
-        setLocation(new Point(abs.x+rel.x, abs.y+rel.y));
-        setVisible(true);
-    }
-
     public boolean isCharIdentifier(char c) {
         if(Character.isLetterOrDigit(c))
             return true;
@@ -152,7 +151,7 @@ public class AutoCompletionMenu extends JWindow {
     }
 
     public int getPartialWordBeginsAtPosition(int pos) {
-        String t = textComponent.getText();
+        String t = getTextComponent().getText();
         int index = pos-1;
         while((index>=0) && isCharIdentifier(t.charAt(index))) {
             index--;
@@ -162,7 +161,7 @@ public class AutoCompletionMenu extends JWindow {
 
     public void completePartialWord(String word) {
         try {
-            Document doc = textComponent.getDocument();
+            Document doc = getTextComponent().getDocument();
             doc.remove(insertionStartIndex, insertionEndIndex-insertionStartIndex);
             doc.insertString(insertionStartIndex, word, null);
         } catch (BadLocationException e) {
@@ -174,37 +173,13 @@ public class AutoCompletionMenu extends JWindow {
         completePartialWord((String)words.get(list.getSelectedIndex()));
     }
 
-    public void onDisplayAutoCompleteRulePopUp() {
-        int position = textComponent.getCaretPosition();
-
-        int index = getPartialWordBeginsAtPosition(position);
-        String partialWord = "";
-        if(index<position)
-            partialWord = textComponent.getText().substring(index+1, position);
-
-        setInsertionStartIndex(index+1);
-        setInsertionEndIndex(position);
-
-        List matchingRules = delegate.getMatchingWordsForPartialWord(partialWord);
-        if(matchingRules.size() == 0) {
-            setVisible(false);
-            return;
-        } else if(matchingRules.size() == 1) {
-            setVisible(false);
-            completePartialWord((String)matchingRules.get(0));
-            return;
-        }
-
-        showAutoCompleteMenu(index+1, matchingRules, matchingRules);
-    }
-
     public void showAutoCompleteMenu(int index, List names, List words) {
         Rectangle rect = null;
 
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_AUTO_COMPLETION_MENU);
 
         try {
-            rect = textComponent.getUI().modelToView(textComponent, index);
+            rect = getTextComponent().getUI().modelToView(getTextComponent(), index);
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
@@ -212,48 +187,30 @@ public class AutoCompletionMenu extends JWindow {
         if (rect == null)
             return;
 
-        Point p = textComponent.getLocationOnScreen();
         setWordLists(names, words);
-        display(p, new Point(rect.x-3, rect.y + rect.height));
 
-        textPaneRequestFocusLater();
+        Point p = SwingUtilities.convertPoint(getTextComponent(), getTextComponent().getLocation(), parentFrame.getRootPane());
+        content.setBounds(p.x + rect.x-3, p.y + rect.y + rect.height, maxWordLength*8+50, 100);
+        content.setVisible(true);
     }
 
     public void updateAutoCompleteList() {
-        if(!isVisible())
+        if(!content.isVisible())
             return;
 
-        int position = textComponent.getCaretPosition();
+        int position = getTextComponent().getCaretPosition();
         int index = getPartialWordBeginsAtPosition(position);
         String partialWord = "";
         if(index<position)
-            partialWord = textComponent.getText().substring(index+1, position);
+            partialWord = getTextComponent().getText().substring(index+1, position);
 
         List matchingRules = delegate.getMatchingWordsForPartialWord(partialWord);
-        if(matchingRules.size() == 0)
-            setVisible(false);
+        if(matchingRules == null || matchingRules.size() == 0)
+            content.setVisible(false);
         else {
             setInsertionEndIndex(position);
             setWordLists(matchingRules, matchingRules);
         }
-    }
-
-    public void textPaneRequestFocusLater() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                parentFrame.setVisible(true);
-                textComponent.requestFocus();
-            }
-        });
-    }
-
-    public void addAutoCompleteBindings() {
-        textComponent.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_MASK), "controlEspace");
-        textComponent.getActionMap().put("controlEspace", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                onDisplayAutoCompleteRulePopUp();
-            }
-        });
     }
 
     public class MyKeyAdapter extends KeyAdapter {
@@ -272,22 +229,18 @@ public class AutoCompletionMenu extends JWindow {
             if (e.isConsumed())
                 return;
 
-            if (!isVisible())
+            if (!content.isVisible())
                 return;
 
             switch(e.getKeyCode()) {
-                case KeyEvent.VK_ESCAPE:
-                    setVisible(false);
-                    e.consume();
-                    break;
                 case KeyEvent.VK_LEFT:
                 case KeyEvent.VK_RIGHT:
-                    setVisible(false);
+                    content.setVisible(false);
                     break;
 
                 case KeyEvent.VK_ENTER:
                     autoComplete();
-                    setVisible(false);
+                    content.setVisible(false);
                     e.consume();
                     break;
 

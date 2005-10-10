@@ -35,7 +35,8 @@ import org.antlr.analysis.DecisionProbe;
 import org.antlr.tool.ANTLRErrorListener;
 import org.antlr.tool.Message;
 import org.antlr.tool.ToolMessage;
-import org.antlr.works.editor.EditorConsole;
+import org.antlr.works.editor.helper.Console;
+import org.antlr.works.editor.helper.Console;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -111,7 +112,7 @@ public class ErrorListener implements ANTLRErrorListener {
 
     public void print(String msg) {
         if(printToConsole)
-            EditorConsole.getCurrent().println(msg);
+            Console.getCurrent().println(msg);
     }
 
     public void print(Message msg) {
@@ -119,7 +120,7 @@ public class ErrorListener implements ANTLRErrorListener {
         boolean previousVerbose = DecisionProbe.verbose;
         DecisionProbe.verbose = false;
         try {
-            EditorConsole.getCurrent().println(msg.toString());
+            Console.getCurrent().println(msg.toString());
         } catch(Exception e) {
             e.printStackTrace();
         }

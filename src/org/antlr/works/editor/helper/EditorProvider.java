@@ -29,28 +29,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor;
+package org.antlr.works.editor.helper;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.*;
 
-public class EditorCache {
-
-    public static final String CACHE_TEXT = "CacheText";
-    public static final String CACHE_PLAIN_TEXT = "CachePlainText";
-
-    private Map cacheMap = new HashMap();
-
-    public synchronized void invalidate() {
-        cacheMap.clear();
-    }
-
-    public synchronized void setObject(String key, Object object) {
-        cacheMap.put(key, object);
-    }
-
-    public synchronized String getString(String key) {
-        return (String)cacheMap.get(key);
-    }
-
+public interface EditorProvider {
+    public void changeDone();
+    public String getText();
+    public String getPlainText();
+    public String getFileName();
+    public Container getWindowContainer();
 }

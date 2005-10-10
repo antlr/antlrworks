@@ -42,18 +42,13 @@ import org.antlr.works.editor.rules.RulesDelegate;
 import org.antlr.works.editor.swing.AutoCompletionMenu;
 import org.antlr.works.editor.swing.AutoCompletionMenuDelegate;
 import org.antlr.works.editor.swing.Gutter;
-import org.antlr.works.editor.swing.KeyBindings;
-import org.antlr.works.editor.tool.TActions;
-import org.antlr.works.editor.tool.TColorize;
-import org.antlr.works.editor.tool.TGrammar;
-import org.antlr.works.editor.tool.TTemplateRules;
+import org.antlr.works.editor.helper.KeyBindings;
+import org.antlr.works.editor.tool.*;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.visual.Visual;
+import org.antlr.works.editor.helper.*;
 import org.antlr.works.interpreter.Interpreter;
-import org.antlr.works.parser.Parser;
-import org.antlr.works.parser.ThreadedParser;
-import org.antlr.works.parser.ThreadedParserObserver;
-import org.antlr.works.parser.Token;
+import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -67,6 +62,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public ThreadedParser parser = null;
     public KeyBindings keyBindings = null;
     public AutoCompletionMenu autoCompletionMenu = null;
+    public TGoToRule goToRule = null;
 
     public TActions actions = null;
     public TColorize colorize = null;
@@ -76,7 +72,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public Visual visual = null;
     public Interpreter interpreter = null;
     public Debugger debugger = null;
-    public EditorConsole console = null;
+    public Console console = null;
+    public GoToHistory goToHistory = null;
 
     private Map undos = new HashMap();
 
@@ -97,9 +94,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public EditorWindow() {
 
-        console = new EditorConsole(this);
+        console = new Console(this);
         console.makeCurrent();
-        
+
+        goToHistory = new GoToHistory();
+
         editorGUI = new EditorGUI(this);
         editorCache = new EditorCache();
         editorMenu = new EditorMenu(this);
@@ -125,6 +124,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         keyBindings = new KeyBindings(getTextPane());
 
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), jFrame);
+        goToRule = new TGoToRule(jFrame, getTextPane());
+
         rules = new Rules(parser, getTextPane(), editorGUI.rulesTree);
         actions = new TActions(parser, getTextPane());
         grammar = new TGrammar(this);
@@ -359,6 +360,38 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return parser.getLines();
     }
 
+    public int getLineNumberForPosition(int pos) {
+        List lines = getLines();
+        if(lines == null)
+            return -1;
+
+        for(int i=0; i<lines.size(); i++) {
+            Line line = (Line)lines.get(i);
+            if(line.position > pos) {
+                return i-1;
+            }
+        }
+        return lines.size()-1;
+    }
+
+    public Point getLinePositions(int lineIndex) {
+        List lines = getLines();
+        if(lineIndex == -1 || lines == null)
+            return null;
+
+        Line startLine = (Line)lines.get(lineIndex);
+        int start = startLine.position;
+        int end = 0;
+        if(lineIndex+1 >= lines.size()) {
+            return new Point(start, getTextPane().getDocument().getLength()-1);
+        } else {
+            Line endLine = (Line)lines.get(lineIndex+1);
+            end = endLine.position;
+            return new Point(start, end-1);
+        }
+    }
+
+
     public Token getTokenAtPosition(int pos) {
         Iterator iterator = getTokens().iterator();
         while(iterator.hasNext()) {
@@ -446,6 +479,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public void parserDidComplete() {
         editorGUI.updateInformation();
+        editorGUI.updateCursorInfo();
+
         visual.setText(getPlainText(), getFileName());
         updateVisualization(false);
 
@@ -471,6 +506,9 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
      */
 
     public List getMatchingWordsForPartialWord(String partialWord) {
+        if(parser == null || parser.getRules() == null)
+            return null;
+        
         partialWord = partialWord.toLowerCase();
         List matchingRules = new ArrayList();
         Iterator iterator = parser.getRules().iterator();

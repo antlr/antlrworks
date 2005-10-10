@@ -29,7 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor;
+package org.antlr.works.editor.helper;
 
 import edu.usfca.xj.appkit.swing.XJTable;
 
@@ -45,7 +45,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class EditorConsole {
+import org.antlr.works.editor.EditorWindow;
+
+public class Console {
 
     protected EditorWindow editor;
 
@@ -60,17 +62,17 @@ public class EditorConsole {
     protected Action currentAction = null;
     protected List actions = new ArrayList();
 
-    protected static EditorConsole current = null;
+    protected static Console current = null;
 
-    public static synchronized void setCurrent(EditorConsole console) {
+    public static synchronized void setCurrent(Console console) {
         current = console;
     }
 
-    public static synchronized EditorConsole getCurrent() {
+    public static synchronized Console getCurrent() {
         return current;
     }
 
-    public EditorConsole(EditorWindow editor) {
+    public Console(EditorWindow editor) {
         this.editor = editor;
 
         panel = new JPanel(new BorderLayout());
@@ -101,7 +103,7 @@ public class EditorConsole {
     }
 
     public void makeCurrent() {
-        EditorConsole.setCurrent(this);
+        Console.setCurrent(this);
     }
     
     public Container getContainer() {

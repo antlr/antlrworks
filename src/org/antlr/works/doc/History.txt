@@ -1,6 +1,12 @@
 
 Version 1.0ea4 - 09/12/05
 
+- can now navigate backward/forward
+- display line and column number in bottom status bar
+- fixed a bug where selecting a rule in the tree would not highlight the rule in the grammar text
+
+**
+
 - duplicates rules are now underlined in blue
 - undefined rules are now underlined in red
 - replace literal with token label

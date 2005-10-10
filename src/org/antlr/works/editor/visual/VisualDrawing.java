@@ -32,7 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.visual;
 
 import org.antlr.analysis.NFAState;
-import org.antlr.works.editor.EditorThread;
+import org.antlr.works.editor.helper.EditorThread;
+import org.antlr.works.editor.helper.EditorThread;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.visualization.graphics.GFactory;
 

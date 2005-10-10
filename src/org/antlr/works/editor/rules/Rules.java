@@ -31,8 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.rules;
 
-import org.antlr.works.editor.swing.KeyBindings;
+import org.antlr.works.editor.helper.KeyBindings;
 import org.antlr.works.editor.tool.TActions;
+import org.antlr.works.editor.helper.KeyBindings;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
@@ -347,6 +348,7 @@ public class Rules implements ThreadedParserObserver {
         Parser.Rule startRule = (Parser.Rule) rules.get(0);
         Parser.Rule endRule = (Parser.Rule) rules.get(rules.size()-1);
 
+        textPane.requestFocus(true);
         textPane.setCaretPosition(startRule.start.getStart());
         textPane.moveCaretPosition(endRule.end.getEnd());
         textPane.getCaret().setSelectionVisible(true);
