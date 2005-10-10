@@ -40,7 +40,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,6 +59,8 @@ public class AutoCompletionMenu extends OverlayObject {
     private int insertionStartIndex;
     private int insertionEndIndex;
 
+    private int displayIndex;
+
     public AutoCompletionMenu(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, JFrame frame) {
         super(frame, textComponent);
         this.delegate = delegate;
@@ -66,7 +70,7 @@ public class AutoCompletionMenu extends OverlayObject {
         return (JTextComponent)parentComponent;
     }
 
-    public JComponent createInterface() {
+    public JComponent overlayCreateInterface() {
         getTextComponent().addKeyListener(new MyKeyAdapter());
 
         listModel = new DefaultListModel();
@@ -86,7 +90,7 @@ public class AutoCompletionMenu extends OverlayObject {
         return scrollPane;
     }
 
-    public void displayOverlay() {
+    public void overlayWillDisplay() {
         int position = getTextComponent().getCaretPosition();
 
         int index = getPartialWordBeginsAtPosition(position);
@@ -107,14 +111,15 @@ public class AutoCompletionMenu extends OverlayObject {
             return;
         }
 
-        showAutoCompleteMenu(index+1, matchingRules, matchingRules);
+        setDisplayIndex(index+1);
+        setWordLists(matchingRules, matchingRules);
     }
 
-    public KeyStroke displayOverlayKeyStroke() {
+    public KeyStroke overlayDisplayKeyStroke() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_MASK);
     }
 
-    public String displayOverlayKeyStrokeMappingName() {
+    public String overlayDisplayKeyStrokeMappingName() {
         return "controlEspace";
     }
 
@@ -138,6 +143,10 @@ public class AutoCompletionMenu extends OverlayObject {
 
     public void setInsertionEndIndex(int endIndex) {
         insertionEndIndex = endIndex;
+    }
+
+    public void setDisplayIndex(int index) {
+        this.displayIndex = index;
     }
 
     public boolean isCharIdentifier(char c) {
@@ -173,13 +182,13 @@ public class AutoCompletionMenu extends OverlayObject {
         completePartialWord((String)words.get(list.getSelectedIndex()));
     }
 
-    public void showAutoCompleteMenu(int index, List names, List words) {
+    public void resize() {
         Rectangle rect = null;
 
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_AUTO_COMPLETION_MENU);
 
         try {
-            rect = getTextComponent().getUI().modelToView(getTextComponent(), index);
+            rect = getTextComponent().getUI().modelToView(getTextComponent(), displayIndex);
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
@@ -187,11 +196,8 @@ public class AutoCompletionMenu extends OverlayObject {
         if (rect == null)
             return;
 
-        setWordLists(names, words);
-
-        Point p = SwingUtilities.convertPoint(getTextComponent(), getTextComponent().getLocation(), parentFrame.getRootPane());
-        content.setBounds(p.x + rect.x-3, p.y + rect.y + rect.height, maxWordLength*8+50, 100);
-        content.setVisible(true);
+        Point p = SwingUtilities.convertPoint(getTextComponent(), new Point(rect.x, rect.y), parentFrame.getRootPane());
+        content.setBounds(p.x - 3, p.y + rect.height, maxWordLength*8+50, 100);
     }
 
     public void updateAutoCompleteList() {

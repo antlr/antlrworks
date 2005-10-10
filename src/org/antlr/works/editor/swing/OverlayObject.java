@@ -53,74 +53,68 @@ public abstract class OverlayObject {
             }
         });
 
+        parentComponent.addComponentListener(new ComponentAdapter() {
+            public void componentMoved(ComponentEvent e) {
+                resize();
+            }
+
+            public void componentResized(ComponentEvent e) {
+                resize();
+            }
+        });
+
         parentComponent.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (content.isVisible()) {
-                    content.setVisible(false);
+                    hide();
                 }
             }
 
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 if (content.isVisible()) {
-                    content.setVisible(false);
+                    hide();
                 }
             }
         });
 
-        parentComponent.addKeyListener(new MyKeyAdapter());
-
         createKeyBindings();
-        content = createInterface();
+        content = overlayCreateInterface();
+        content.setVisible(false);
 
         parentFrame.getLayeredPane().add(content, JLayeredPane.MODAL_LAYER);
     }
 
     public void createKeyBindings() {
-        parentComponent.getInputMap().put(displayOverlayKeyStroke(), displayOverlayKeyStrokeMappingName());
-        parentComponent.getActionMap().put(displayOverlayKeyStrokeMappingName(), new AbstractAction() {
+        parentComponent.getInputMap().put(overlayDisplayKeyStroke(), overlayDisplayKeyStrokeMappingName());
+        parentComponent.getActionMap().put(overlayDisplayKeyStrokeMappingName(), new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                displayOverlay();
+                display();
             }
         });
     }
 
-    public void displayOverlay() {
-        Point p = SwingUtilities.convertPoint(parentComponent, parentComponent.getLocation(), parentFrame.getRootPane());
+    public void hide() {
+        content.setVisible(false);
+        parentComponent.requestFocus();
+    }
 
+    public void resize() {
         Rectangle r = parentComponent.getVisibleRect();
-        content.setBounds(p.x+r.x+r.width/2-150, p.y+r.y+r.height/2-50, 300, 40);
+        Point p = SwingUtilities.convertPoint(parentComponent, new Point(r.x, r.y), parentFrame.getRootPane());
+        content.setBounds(p.x+r.width/2-150, p.y+r.height/2-50, 300, 40);
+    }
+
+    public void display() {
+        overlayWillDisplay();
+        resize();
         content.setVisible(true);
     }
 
-    public abstract JComponent createInterface();
-    public abstract KeyStroke displayOverlayKeyStroke();
-    public abstract String displayOverlayKeyStrokeMappingName();
-
-    public class MyKeyAdapter extends KeyAdapter {
-
-        public void keyPressed(KeyEvent e) {
-            if (e.isConsumed())
-                return;
-
-            if (!content.isVisible())
-                return;
-
-            switch(e.getKeyCode()) {
-                case KeyEvent.VK_ESCAPE:
-                    content.setVisible(false);
-                    // @todo refactor that
-                    parentComponent.requestFocus();
-                    e.consume();
-                    break;
-
-                case KeyEvent.VK_ENTER:
-                    content.setVisible(false);
-                    e.consume();
-                    break;
-            }
-        }
-    }
+    public abstract JComponent overlayCreateInterface();
+    public abstract void overlayWillDisplay();
+    public abstract KeyStroke overlayDisplayKeyStroke();
+    public abstract String overlayDisplayKeyStrokeMappingName();
 
 }

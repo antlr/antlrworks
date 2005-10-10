@@ -42,7 +42,6 @@ import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarReport;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.helper.EditorProvider;
-import org.antlr.works.editor.helper.EditorProvider;
 import org.antlr.works.util.ErrorListener;
 
 import javax.swing.*;

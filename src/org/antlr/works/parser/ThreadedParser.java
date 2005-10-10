@@ -33,8 +33,6 @@ package org.antlr.works.parser;
 
 import org.antlr.works.editor.helper.EditorProvider;
 import org.antlr.works.editor.helper.EditorThread;
-import org.antlr.works.editor.helper.EditorThread;
-import org.antlr.works.editor.helper.EditorProvider;
 
 import javax.swing.*;
 import java.util.ArrayList;

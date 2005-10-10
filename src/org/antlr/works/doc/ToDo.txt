@@ -1,8 +1,4 @@
-- make sure the auto-completion menu works (pressing enter to auto-complete doesn't work
-- refactor MyKeyAdapter
-- refactor the selection of the parentComponent when the OverlayObject is hidden
 
-- go to definition by dialog and auto-completion
 - find
 
 - prefs: highlite line or not

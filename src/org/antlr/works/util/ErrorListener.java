@@ -36,7 +36,6 @@ import org.antlr.tool.ANTLRErrorListener;
 import org.antlr.tool.Message;
 import org.antlr.tool.ToolMessage;
 import org.antlr.works.editor.helper.Console;
-import org.antlr.works.editor.helper.Console;
 
 import java.util.LinkedList;
 import java.util.List;

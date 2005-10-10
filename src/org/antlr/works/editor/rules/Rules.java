@@ -33,7 +33,6 @@ package org.antlr.works.editor.rules;
 
 import org.antlr.works.editor.helper.KeyBindings;
 import org.antlr.works.editor.tool.TActions;
-import org.antlr.works.editor.helper.KeyBindings;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
@@ -231,6 +230,19 @@ public class Rules implements ThreadedParserObserver {
                 return rule;
         }
         return null;
+    }
+
+    public List getRulesStartingWith(String match) {
+        List matches = new ArrayList();
+        if(parser.getRules() == null)
+            return matches;
+        
+        for(Iterator iterator = parser.getRules().iterator(); iterator.hasNext(); ) {
+            Parser.Rule r = (Parser.Rule)iterator.next();
+            if(r.name.startsWith(match))
+                matches.add(r.name);
+        }
+        return matches;
     }
 
     public Parser.Rule getRuleAtPosition(int pos) {

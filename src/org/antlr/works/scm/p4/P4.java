@@ -32,7 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.scm.p4;
 
-import org.antlr.works.editor.helper.Console;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.helper.Console;
 import org.antlr.works.scm.SCM;

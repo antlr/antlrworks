@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.helper;
 
 import edu.usfca.xj.appkit.swing.XJTable;
+import org.antlr.works.editor.EditorWindow;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -44,8 +45,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.antlr.works.editor.EditorWindow;
 
 public class Console {
 

@@ -29,7 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.tool;
+package org.antlr.works.editor.swing;
 
 import org.antlr.works.editor.swing.AutoCompletionMenu;
 
@@ -41,20 +41,18 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TTemplateRules {
+public class TemplateRules extends AutoCompletionMenu {
 
     private JTextComponent textComponent;
-    private AutoCompletionMenu autoCompletionMenu;
 
     private List templateRuleNames = new ArrayList();
     private List templateRuleTexts = new ArrayList();
 
-    public TTemplateRules(JTextComponent textComponent, AutoCompletionMenu autoCompletionMenu) {
+    public TemplateRules(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, JFrame frame) {
+        super(delegate, textComponent, frame);
         this.textComponent = textComponent;
-        this.autoCompletionMenu = autoCompletionMenu;
 
         initTemplateRules();
-        addTemplateRuleBindings();
     }
 
     public void initTemplateRules() {
@@ -73,19 +71,19 @@ public class TTemplateRules {
         templateRuleTexts.add("WS\t:\t(' ' | '\\t' | '\\n' | '\\r');");
     }
 
-    public void addTemplateRuleBindings() {
-        textComponent.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK), "CONTROL-T");
-        textComponent.getActionMap().put("CONTROL-T", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                onDisplayTemplateRulesPopUp();
-            }
-        });
+    public KeyStroke overlayDisplayKeyStroke() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK);
     }
 
-    public void onDisplayTemplateRulesPopUp() {
+    public String overlayDisplayKeyStrokeMappingName() {
+        return "CONTROL-T";
+    }
+
+    public void overlayWillDisplay() {
         int position = textComponent.getCaretPosition();
-        autoCompletionMenu.showAutoCompleteMenu(position, templateRuleNames, templateRuleTexts);
-        autoCompletionMenu.setInsertionStartIndex(position);
-        autoCompletionMenu.setInsertionEndIndex(position);
+        setDisplayIndex(position);
+        setWordLists(templateRuleNames, templateRuleTexts);
+        setInsertionStartIndex(position);
+        setInsertionEndIndex(position);
     }
 }

@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.helper;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GoToHistory {
 

@@ -37,16 +37,16 @@ import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.actions.*;
+import org.antlr.works.editor.helper.*;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.rules.RulesDelegate;
 import org.antlr.works.editor.swing.AutoCompletionMenu;
 import org.antlr.works.editor.swing.AutoCompletionMenuDelegate;
 import org.antlr.works.editor.swing.Gutter;
-import org.antlr.works.editor.helper.KeyBindings;
+import org.antlr.works.editor.swing.TemplateRules;
 import org.antlr.works.editor.tool.*;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.visual.Visual;
-import org.antlr.works.editor.helper.*;
 import org.antlr.works.interpreter.Interpreter;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
@@ -124,7 +124,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         keyBindings = new KeyBindings(getTextPane());
 
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), jFrame);
-        goToRule = new TGoToRule(jFrame, getTextPane());
+        goToRule = new TGoToRule(this, jFrame, getTextPane());
 
         rules = new Rules(parser, getTextPane(), editorGUI.rulesTree);
         actions = new TActions(parser, getTextPane());
@@ -139,7 +139,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         colorize = new TColorize(this);
 
-        new TTemplateRules(getTextPane(), autoCompletionMenu);
+        new TemplateRules(this, getTextPane(), jFrame);
 
         getTabbedPane().addTab("Syntax Diagram", visual.getContainer());
         getTabbedPane().addTab("Interpreter", interpreter.getContainer());
@@ -508,7 +508,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public List getMatchingWordsForPartialWord(String partialWord) {
         if(parser == null || parser.getRules() == null)
             return null;
-        
+
         partialWord = partialWord.toLowerCase();
         List matchingRules = new ArrayList();
         Iterator iterator = parser.getRules().iterator();
