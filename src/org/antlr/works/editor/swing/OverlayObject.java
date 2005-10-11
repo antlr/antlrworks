@@ -87,6 +87,9 @@ public abstract class OverlayObject {
     }
 
     public void createKeyBindings() {
+        if(overlayDisplayKeyStroke() == null)
+            return;
+
         parentComponent.getInputMap().put(overlayDisplayKeyStroke(), overlayDisplayKeyStrokeMappingName());
         parentComponent.getActionMap().put(overlayDisplayKeyStrokeMappingName(), new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -114,7 +117,11 @@ public abstract class OverlayObject {
 
     public abstract JComponent overlayCreateInterface();
     public abstract void overlayWillDisplay();
-    public abstract KeyStroke overlayDisplayKeyStroke();
-    public abstract String overlayDisplayKeyStrokeMappingName();
+    public KeyStroke overlayDisplayKeyStroke() {
+        return null;
+    }
+    public String overlayDisplayKeyStrokeMappingName() {
+        return null;
+    }
 
 }

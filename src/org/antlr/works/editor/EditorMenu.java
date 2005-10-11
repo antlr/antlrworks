@@ -67,13 +67,14 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_FIND_NEXT = 30;
     public static final int MI_FIND_PREV = 31;
 
-    public static final int MI_GOTO_DECLARATION = 40;
-    public static final int MI_GOTO_LINE = 41;
-    public static final int MI_GOTO_CHARACTER = 42;
-    public static final int MI_GOTO_BACKWARD = 43;
-    public static final int MI_GOTO_FORWARD = 44;
-    public static final int MI_PREV_BREAKPOINT = 45;
-    public static final int MI_NEXT_BREAKPOINT = 46;
+    public static final int MI_GOTO_RULE = 40;
+    public static final int MI_GOTO_DECLARATION = 41;
+    public static final int MI_GOTO_LINE = 42;
+    public static final int MI_GOTO_CHARACTER = 43;
+    public static final int MI_GOTO_BACKWARD = 44;
+    public static final int MI_GOTO_FORWARD = 45;
+    public static final int MI_PREV_BREAKPOINT = 46;
+    public static final int MI_NEXT_BREAKPOINT = 47;
 
     public static final int MI_GENERATE_CODE = 50;
     public static final int MI_SHOW_GENERATED_PARSER_CODE = 51;
@@ -227,6 +228,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu = new XJMenu();
         menu.setTitle("Go To");
 
+        menu.addItem(new XJMenuItem("Rule", 'n', KeyEvent.VK_N, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_GOTO_RULE, this));
         menu.addItem(new XJMenuItem("Declaration", 'b', KeyEvent.VK_B, MI_GOTO_DECLARATION, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Line...", 'g', KeyEvent.VK_G, MI_GOTO_LINE, this));
@@ -424,6 +426,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public void handleMenuGoTo(int itemTag) {
         switch(itemTag) {
+            case MI_GOTO_RULE:
+                editor.menuGoToActions.goToRule();
+                break;
+
             case MI_GOTO_DECLARATION:
                 editor.menuGoToActions.goToDeclaration();
                 break;

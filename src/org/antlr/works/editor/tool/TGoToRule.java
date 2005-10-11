@@ -90,14 +90,6 @@ public class TGoToRule extends OverlayObject {
         updateAutoCompletionList();
     }
 
-    public KeyStroke overlayDisplayKeyStroke() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK);
-    }
-
-    public String overlayDisplayKeyStrokeMappingName() {
-        return "controlN";
-    }
-
     public void hide() {
         super.hide();
         matchingRuleScrollPane.setVisible(false);

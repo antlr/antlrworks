@@ -46,6 +46,10 @@ public class MenuGoTo extends AbstractActions {
         super(editor);
     }
 
+    public void goToRule() {
+        editor.goToRule.display();
+    }
+
     public void goToDeclaration() {
         Token token = editor.getTokenAtPosition(getCaretPosition());
         if(token == null)
