@@ -1,10 +1,7 @@
 
-- find
+- test with empty preferences file
 
-- prefs: highlite line or not
 - cannot undo group
-
-- make sure Edit menu options are saved in the preferences
 - finish the drag and drop in rule tree
 
 - Perforce: disable menus depending on the file status
@@ -18,7 +15,6 @@
 - display template rules somewhere
 - @todo in grammar and panel to recapitulate (also for undefined and duplicated rules)
 
-- prefs: sauvegarde automatique
 - message pour indiquer lorsque le syntax diagram n'est pas affiche (comme par exemple sur les regles du lexer)
 - syntax coloring delay in preferences
 - check environment (see e-mail from Jim Idle)

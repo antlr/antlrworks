@@ -63,6 +63,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_HIDE_ALL_ACTION = 27;
     public static final int MI_CHECK_GRAMMAR = 28;
 
+    public static final int MI_FIND = 29;
+    public static final int MI_FIND_NEXT = 30;
+    public static final int MI_FIND_PREV = 31;
+
     public static final int MI_GOTO_DECLARATION = 40;
     public static final int MI_GOTO_LINE = 41;
     public static final int MI_GOTO_CHARACTER = 42;
@@ -198,6 +202,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
         menu = new XJMenu();
         menu.setTitle("Grammar");
+        menu.addItem(new XJMenuItem("Find...", 'f', KeyEvent.VK_F, MI_FIND, this));
+        menu.addItem(new XJMenuItem("Find Next", 'n', KeyEvent.VK_F3, 0, MI_FIND_NEXT, this));
+        menu.addItem(new XJMenuItem("Find Previous", 'p', KeyEvent.VK_F3, Event.ALT_MASK, MI_FIND_PREV, this));
+        menu.addSeparator();
         menu.addItem(new XJMenuItem("Find Usages", 'f', KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
         menu.addSeparator();
         menu.addItem(menuItemRename = new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
@@ -364,6 +372,18 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public void handleMenuGrammar(int itemTag) {
         switch(itemTag) {
+            case MI_FIND:
+                editor.menuGrammarActions.find();
+                break;
+
+            case MI_FIND_NEXT:
+                editor.menuGrammarActions.findNext();
+                break;
+
+            case MI_FIND_PREV:
+                editor.menuGrammarActions.findPrev();
+                break;
+
             case MI_FIND_USAGE:
                 editor.menuGrammarActions.findUsage();
                 break;

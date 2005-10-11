@@ -31,11 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.swing;
 
-import org.antlr.works.editor.swing.AutoCompletionMenu;
-
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;

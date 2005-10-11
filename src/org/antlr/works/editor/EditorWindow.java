@@ -37,6 +37,7 @@ import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.actions.*;
+import org.antlr.works.editor.find.FindAndReplace;
 import org.antlr.works.editor.helper.*;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.rules.RulesDelegate;
@@ -44,7 +45,10 @@ import org.antlr.works.editor.swing.AutoCompletionMenu;
 import org.antlr.works.editor.swing.AutoCompletionMenuDelegate;
 import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.TemplateRules;
-import org.antlr.works.editor.tool.*;
+import org.antlr.works.editor.tool.TActions;
+import org.antlr.works.editor.tool.TColorize;
+import org.antlr.works.editor.tool.TGoToRule;
+import org.antlr.works.editor.tool.TGrammar;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.visual.Visual;
 import org.antlr.works.interpreter.Interpreter;
@@ -63,7 +67,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public KeyBindings keyBindings = null;
     public AutoCompletionMenu autoCompletionMenu = null;
     public TGoToRule goToRule = null;
-
+    public FindAndReplace findAndReplace = null;
     public TActions actions = null;
     public TColorize colorize = null;
     public TGrammar grammar = null;
@@ -125,6 +129,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), jFrame);
         goToRule = new TGoToRule(this, jFrame, getTextPane());
+        findAndReplace = new FindAndReplace(this);
 
         rules = new Rules(parser, getTextPane(), editorGUI.rulesTree);
         actions = new TActions(parser, getTextPane());
@@ -159,6 +164,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             }
         });
         textPaneRequestFocusLater();
+        editorGUI.updateInformation();
+        editorGUI.updateCursorInfo();
         menuSCMActions.queryFileStatus();
     }
 

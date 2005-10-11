@@ -119,10 +119,12 @@ public class Rules implements ThreadedParserObserver {
 
     public int getNumberOfRulesWithErrors() {
         int count = 0;
-        for (Iterator iterator = parser.getRules().iterator(); iterator.hasNext();) {
-            Parser.Rule rule = (Parser.Rule) iterator.next();
-            if(rule.hasErrors())
-                count++;
+        if(parser.getRules() != null) {
+            for (Iterator iterator = parser.getRules().iterator(); iterator.hasNext();) {
+                Parser.Rule rule = (Parser.Rule) iterator.next();
+                if(rule.hasErrors())
+                    count++;
+            }            
         }
         return count;
     }
@@ -236,7 +238,7 @@ public class Rules implements ThreadedParserObserver {
         List matches = new ArrayList();
         if(parser.getRules() == null)
             return matches;
-        
+
         for(Iterator iterator = parser.getRules().iterator(); iterator.hasNext(); ) {
             Parser.Rule r = (Parser.Rule)iterator.next();
             if(r.name.startsWith(match))

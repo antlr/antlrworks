@@ -49,6 +49,18 @@ public class MenuGrammar extends AbstractActions {
         super(editor);
     }
 
+    public void find() {
+        editor.findAndReplace.find();
+    }
+
+    public void findNext() {
+        editor.findAndReplace.next();
+    }
+
+    public void findPrev() {
+        editor.findAndReplace.prev();
+    }
+
     public void findUsage() {
         Token token = editor.getTokenAtPosition(getCaretPosition());
         if(token == null)

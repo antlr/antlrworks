@@ -290,6 +290,18 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         return textPane.getCaretPosition();
     }
 
+    public int getSelectionStart() {
+        return textPane.getSelectionStart();
+    }
+
+    public int getSelectionEnd() {
+        return textPane.getSelectionEnd();
+    }
+
+    public void replaceSelectedText(String replace) {
+        replaceText(getSelectionStart(), getSelectionEnd(), replace);
+    }
+
     public void replaceText(int start, int end, String text) {
         try {
             textPane.getDocument().remove(start, end-start);
@@ -315,7 +327,9 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
     public void updateInformation() {
         String t;
-        int size = editor.parser.getRules().size();
+        int size = 0;
+        if(editor.parser.getRules() != null)
+            size = editor.parser.getRules().size();
         switch(size) {
             case 0:
                 t = "No rules";
@@ -338,11 +352,12 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     public void updateCursorInfo() {
         int lineNumber = editor.getLineNumberForPosition(editor.getCaretPosition());
         Point linePosition = editor.getLinePositions(lineNumber);
-        if(linePosition == null)
-            return;
-
-        int columnNumber = editor.getCaretPosition() - linePosition.x;
-        cursorLabel.setText((lineNumber+1)+":"+(columnNumber+1));
+        if(linePosition == null) {
+            cursorLabel.setText("1:1");
+        } else {
+            int columnNumber = editor.getCaretPosition() - linePosition.x;
+            cursorLabel.setText((lineNumber+1)+":"+(columnNumber+1));
+        }
     }
 
     public void updateSCMStatus(String status) {
@@ -393,6 +408,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             applyFont();
             textScrollPane.repaint();
             editor.getMainMenuBar().refreshState();
+            textPane.repaint();
             updateSCMStatus(null);
         }
     }
@@ -408,16 +424,18 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-        Composite c = g2d.getComposite();
-        try {
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT, 0.1f));
-            Rectangle r1 = textPane.modelToView(editor.getCaretPosition());
-            g.setColor(Color.black);
-            g.fillRect(0, r1.y, editor.getTextPane().getSize().width, EditorPreferences.getEditorFontSize()+2);
-        } catch (BadLocationException e) {
-            // Ignore
+        if(EditorPreferences.getHighlightCursorEnabled()) {
+            Composite c = g2d.getComposite();
+            try {
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT, 0.1f));
+                Rectangle r1 = textPane.modelToView(editor.getCaretPosition());
+                g.setColor(Color.black);
+                g.fillRect(0, r1.y, editor.getTextPane().getSize().width, EditorPreferences.getEditorFontSize()+2);
+            } catch (BadLocationException e) {
+                // Ignore
+            }
+            g2d.setComposite(c);
         }
-        g2d.setComposite(c);
 
         if(editor.getTokens() == null)
             return;
@@ -439,6 +457,68 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             }
         }
     }
+
+    /*public class MyComposite implements Composite {
+        public CompositeContext createContext(ColorModel srcColorModel,
+                                              ColorModel dstColorModel,
+                                              RenderingHints hints)
+        {
+            return new MyCompositeContext(srcColorModel, dstColorModel, hints);
+        }
+    }
+
+    public class MyCompositeContext implements CompositeContext {
+
+        ColorModel srcColorModel;
+        ColorModel dstColorModel;
+        Color xorColor;
+
+        public MyCompositeContext(ColorModel srcColorModel,
+                                              ColorModel dstColorModel,
+                                              RenderingHints hints) {
+            this.srcColorModel = srcColorModel;
+            this.dstColorModel = dstColorModel;
+            this.xorColor = Color.red;
+        }
+
+        public void compose(Raster src, Raster dstIn, WritableRaster dstOut)
+        {
+            Rectangle srcRect = src.getBounds();
+            Rectangle dstInRect = dstIn.getBounds();
+            Rectangle dstOutRect = dstOut.getBounds();
+
+            int xp = xorColor.getRGB();
+            int w = Math.min(Math.min (srcRect.width, dstOutRect.width),
+                    dstInRect.width);
+            int h = Math.min(Math.min (srcRect.height, dstOutRect.height),
+                    dstInRect.height);
+
+            Object srcPix = null, dstPix = null, rpPix = null;
+
+            // Re-using the rpPix object saved 1-2% of execution time in
+            // the 1024x1024 pixel benchmark.
+
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    srcPix = src.getDataElements(x + srcRect.x, y + srcRect.y, srcPix);
+                    dstPix = dstIn.getDataElements(x + dstInRect.x, y + dstInRect.y,
+                            dstPix);
+                    int sp = srcColorModel.getRGB(srcPix);
+                    int dp = dstColorModel.getRGB(dstPix);
+                    //int rp = sp ^ xp ^ dp;
+                    int rp = sp;
+                    dstOut.setDataElements(x + dstOutRect.x, y + dstOutRect.y,
+                            dstColorModel.getDataElements(rp, rpPix));
+                }
+            }
+        }
+
+        public void dispose() {
+
+        }
+    } */
 
     public void drawUnderlineAtIndexes(Graphics g, int start, int end) {
         try {

@@ -84,7 +84,9 @@ public class IDE extends XJApplicationDelegate {
         XJLookAndFeel.applyLookAndFeel(EditorPreferences.getLookAndFeel());
         XJApplication.addDocumentType(Document.class, EditorWindow.class, XJDataPlainText.class, "g", Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
 
-        XJApplication.addScheduledTimer(new HelpManager(), 5*60, true);
+        XJApplication.addScheduledTimer(new HelpManager(), 1, true);
+
+        XJApplication.setAutoSave(EditorPreferences.getAutoSaveEnabled(), EditorPreferences.getAutoSaveDelay());
 
         registerUser();
         checkLibraries();
