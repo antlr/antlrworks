@@ -100,7 +100,7 @@ public class IDE extends XJApplicationDelegate {
                     break;
                 case EditorPreferences.STARTUP_OPEN_LAST_DOC:
                     if (XJApplication.shared().getDocuments().size() == 0) {
-                        if (XJApplication.shared().openLastUsedDocument() == false) {
+                        if (!XJApplication.shared().openLastUsedDocument()) {
                             XJApplication.shared().newDocument();
                         }
                     }
@@ -164,7 +164,7 @@ public class IDE extends XJApplicationDelegate {
 
     public XJPanel appInstanciateAboutPanel() {
         return new DialogAbout();
-    };
+    }
 
     public boolean appHasPreferencesMenuItem() {
         return true;

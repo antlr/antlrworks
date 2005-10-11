@@ -1,7 +1,10 @@
 
 Version 1.0ea4 - 10/10/05
 
+- compatible with ANTLR 3.0ea6
+
 - find and replace
+- rules can now be grouped and displayed in a tree view
 - duplicates rules are now underlined in blue
 - undefined rules are now underlined in red
 - replace literal with token label

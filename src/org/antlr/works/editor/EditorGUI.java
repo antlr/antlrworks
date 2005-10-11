@@ -33,6 +33,7 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.gview.timer.GTimer;
 import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
+import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.dialog.DialogPrefs;
@@ -69,7 +70,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     public JScrollPane textScrollPane;
 
     public JScrollPane rulesScrollPane;
-    public JTree rulesTree;
+    public XJTree rulesTree;
 
     public JTabbedPane viewTabbedPane;
     public JPanel mainPanel;
@@ -93,6 +94,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     protected TImmediateColorization immediateColorization;
     protected TAutoIndent autoIndent;
 
+    protected boolean highlightCursorLine = false;
+
     public EditorGUI(EditorWindow editor) {
         this.editor = editor;
     }
@@ -108,6 +111,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         immediateColorization = new TImmediateColorization(textPane);
         autoIndent = new TAutoIndent(textPane);
 
+        highlightCursorLine = EditorPreferences.getHighlightCursorEnabled();
+
         // Set by default the end of line property in order to always use the Unix style
         textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, unixEndOfLine);
         textPane.setDelegate(this);
@@ -118,14 +123,14 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         textScrollPane.setWheelScrollingEnabled(true);
         textScrollPane.setRowHeaderView(gutter);
 
-        rulesTree = new JTree() {
+        rulesTree = new XJTree() {
             public String getToolTipText(MouseEvent e) {
                 TreePath path = getPathForLocation(e.getX(), e.getY());
                 if(path == null)
                     return "";
 
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-                Rules.RuleTreeNode n = (Rules.RuleTreeNode) node.getUserObject();
+                Rules.RuleTreeUserObject n = (Rules.RuleTreeUserObject) node.getUserObject();
                 if(n == null)
                     return "";
 
@@ -243,6 +248,14 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             }
         });
 
+        textPane.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                // Update the cursor highligthing
+                if(highlightCursorLine)
+                    textPane.repaint();
+            }
+        });
+
         textPane.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 Dimension d = textPane.getSize();
@@ -316,7 +329,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         textPane.moveCaretPosition(end);
         textPane.getCaret().setSelectionVisible(true);
 
-        Rectangle r = null;
+        Rectangle r;
         try {
             r = textPane.modelToView(start);
             textPane.scrollRectToVisible(r);
@@ -405,6 +418,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
     public void notificationFire(Object source, String name) {
         if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
+            highlightCursorLine = EditorPreferences.getHighlightCursorEnabled();
             applyFont();
             textScrollPane.repaint();
             editor.getMainMenuBar().refreshState();
@@ -424,7 +438,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-        if(EditorPreferences.getHighlightCursorEnabled()) {
+        if(highlightCursorLine) {
             Composite c = g2d.getComposite();
             try {
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT, 0.1f));
@@ -636,7 +650,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
             // Each time the cursor moves, update the visible part of the text pane
             // to redraw the highlighting
-            editor.getTextPane().repaint();
+            if(highlightCursorLine)
+                editor.getTextPane().repaint();
 
             // Update the auto-completion list
             editor.autoCompletionMenu.updateAutoCompleteList();

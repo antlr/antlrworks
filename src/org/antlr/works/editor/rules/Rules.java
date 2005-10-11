@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.rules;
 
+import edu.usfca.xj.appkit.swing.XJTree;
+import edu.usfca.xj.appkit.swing.XJTreeDelegate;
 import org.antlr.works.editor.helper.KeyBindings;
 import org.antlr.works.editor.tool.TActions;
 import org.antlr.works.parser.Parser;
@@ -44,16 +46,21 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.tree.*;
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
-import java.awt.dnd.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public class Rules implements ThreadedParserObserver {
+public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     private RulesDelegate delegate = null;
     private ThreadedParser parser = null;
@@ -72,17 +79,17 @@ public class Rules implements ThreadedParserObserver {
     private DefaultTreeModel rulesTreeModel;
     private List rulesTreeExpandedNodes;
 
-    private DragSource ds;
-    private StringSelection transferable;
-
-    public Rules(ThreadedParser parser, JTextPane textPane, JTree rulesTree) {
+    public Rules(ThreadedParser parser, JTextPane textPane, XJTree rulesTree) {
         this.parser = parser;
         this.textPane = textPane;
         this.rulesTree = rulesTree;
 
         duplicateRules = new ArrayList();
 
-        rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeNode(-1));
+        rulesTree.setDelegate(this);
+        rulesTree.setEnableDragAndDrop();
+
+        rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeUserObject(-1));
         rulesTreeModel = new DefaultTreeModel(rulesTreeRootNode);
         rulesTreeExpandedNodes = new ArrayList();
 
@@ -96,10 +103,6 @@ public class Rules implements ThreadedParserObserver {
         rulesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 
         parser.addObserver(this);
-
-        ds = new DragSource();
-        DragGestureRecognizer dgr = ds.createDefaultDragGestureRecognizer(rulesTree, DnDConstants.ACTION_MOVE, new TreeDragGestureListener());
-        DropTarget dt = new DropTarget(rulesTree, new TreeDropListener());
     }
 
     public void setDelegate(RulesDelegate delegate) {
@@ -124,9 +127,26 @@ public class Rules implements ThreadedParserObserver {
                 Parser.Rule rule = (Parser.Rule) iterator.next();
                 if(rule.hasErrors())
                     count++;
-            }            
+            }
         }
         return count;
+    }
+
+    public Cursor xjTreeDragSourceDefaultCursor(XJTree tree) {
+        return DragSource.DefaultMoveDrop;
+    }
+
+    public int xjTreeDragAndDropConstants(XJTree tree) {
+        return DnDConstants.ACTION_MOVE;
+    }
+
+    public boolean xjTreeDrop(XJTree tree, DropTargetDropEvent event, Object sourceObject, Object targetObject) {
+        Statistics.shared().recordEvent(Statistics.EVENT_DROP_RULE);
+
+        Parser.Rule sourceRule = ((Rules.RuleTreeUserObject) sourceObject).rule;
+        Parser.Rule targetRule = ((Rules.RuleTreeUserObject) targetObject).rule;
+
+        return moveRule(sourceRule, targetRule);
     }
 
     public class RuleMoveUpAction extends AbstractAction {
@@ -173,7 +193,7 @@ public class Rules implements ThreadedParserObserver {
 
     public Parser.Group getSelectedGroup() {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)rulesTree.getSelectionPath().getLastPathComponent();
-        RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+        RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
         if(n.group != null)
             return n.group;
        else
@@ -250,7 +270,7 @@ public class Rules implements ThreadedParserObserver {
     public Parser.Rule getRuleAtPosition(int pos) {
         if(parser.getRules() == null)
             return null;
-        
+
         Iterator iterator = parser.getRules().iterator();
         while(iterator.hasNext()) {
             Parser.Rule r = (Parser.Rule)iterator.next();
@@ -343,7 +363,7 @@ public class Rules implements ThreadedParserObserver {
         Enumeration enumeration = rulesTreeRootNode.depthFirstEnumeration();
         while(enumeration.hasMoreElements()) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode)enumeration.nextElement();
-            RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+            RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
             if(n != null && n.rule == rule) {
                 TreePath path = new TreePath(node.getPath());
                 rulesTree.setSelectionPath(path);
@@ -367,7 +387,7 @@ public class Rules implements ThreadedParserObserver {
         textPane.moveCaretPosition(endRule.end.getEnd());
         textPane.getCaret().setSelectionVisible(true);
 
-        Rectangle r = null;
+        Rectangle r;
         try {
             r = textPane.modelToView(startRule.start.getStart());
             textPane.scrollRectToVisible(r);
@@ -389,7 +409,7 @@ public class Rules implements ThreadedParserObserver {
         textPane.moveCaretPosition(rule.end.getEnd());
         textPane.getCaret().setSelectionVisible(true);
 
-        Rectangle r = null;
+        Rectangle r;
         try {
             r = textPane.modelToView(rule.start.getStart());
             textPane.scrollRectToVisible(r);
@@ -441,7 +461,7 @@ public class Rules implements ThreadedParserObserver {
                 }
 
                 if(group.openGroup) {
-                    DefaultMutableTreeNode node = new DefaultMutableTreeNode(new RuleTreeNode(group));
+                    DefaultMutableTreeNode node = new DefaultMutableTreeNode(new RuleTreeUserObject(group));
                     parentNode.add(node);
                     parentStack.push(node);
                 } else {
@@ -465,7 +485,7 @@ public class Rules implements ThreadedParserObserver {
         while(e.hasMoreElements()) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.nextElement();
             if(!node.isLeaf() && !node.isRoot() && rulesTree.isExpanded(new TreePath(node.getPath()))) {
-                RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+                RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
                 rulesTreeExpandedNodes.add(n.group.name);
             }
         }
@@ -485,7 +505,7 @@ public class Rules implements ThreadedParserObserver {
         Enumeration e = rulesTreeRootNode.depthFirstEnumeration();
         while(e.hasMoreElements()) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.nextElement();
-            RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+            RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
             if(n.group != null && n.group.name.equalsIgnoreCase(groupName))
                 return node;
         }
@@ -494,7 +514,7 @@ public class Rules implements ThreadedParserObserver {
 
     protected void buildTree(DefaultMutableTreeNode parentNode, List rules, int from, int to) {
         for(int index=from; index<=to; index++) {
-            parentNode.add(new DefaultMutableTreeNode(new RuleTreeNode(index)));
+            parentNode.add(new DefaultMutableTreeNode(new RuleTreeUserObject(index)));
         }
     }
 
@@ -511,6 +531,9 @@ public class Rules implements ThreadedParserObserver {
     }
 
     public boolean moveRule(Parser.Rule sourceRule, Parser.Rule targetRule) {
+        if(sourceRule == null || targetRule == null)
+            return false;
+        
         String sourceRuleText = actions.getPlainText(sourceRule.getStartIndex(), sourceRule.getEndIndex())+"\n";
 
         try {
@@ -556,10 +579,10 @@ public class Rules implements ThreadedParserObserver {
                             hasFocus);
 
             setIcon(null);
-            setToolTipText("blabla");
+            setToolTipText("");
 
             DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
-            RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+            RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
             if(n.rule != null && n.rule.hasErrors()) {
                 //setIcon(IconManager.shared().getIconWarning());
                 setForeground(Color.red);
@@ -574,90 +597,6 @@ public class Rules implements ThreadedParserObserver {
         }
     }
 
-    public class TreeDragGestureListener implements DragGestureListener {
-
-        public void dragGestureRecognized(DragGestureEvent event) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode)rulesTree.getSelectionPath().getLastPathComponent();
-            transferable = new StringSelection(String.valueOf(rulesTree.getSelectionRows()[0]));
-            ds.startDrag(event, DragSource.DefaultMoveDrop, transferable, new TreeDragSourceListener());
-        }
-    }
-
-    public class TreeDragSourceListener implements DragSourceListener {
-
-        public void dragEnter(DragSourceDragEvent event) {
-        }
-
-        public void dragOver(DragSourceDragEvent event) {
-        }
-
-        public void dropActionChanged(DragSourceDragEvent event) {
-        }
-
-        public void dragExit(DragSourceEvent event) {
-        }
-
-        public void dragDropEnd(DragSourceDropEvent event) {
-        }
-    }
-
-    public class TreeDropListener implements DropTargetListener {
-
-        int oldSelectedRow = -1;
-
-        public void dragEnter(DropTargetDragEvent event) {
-            oldSelectedRow = rulesTree.getSelectionRows()[0];
-            if(event.getDropAction() != DnDConstants.ACTION_MOVE)
-                event.rejectDrag();
-            else
-                event.acceptDrag(DnDConstants.ACTION_MOVE);
-        }
-
-        public void dragOver(DropTargetDragEvent event) {
-            int row = rulesTree.getRowForLocation((int)event.getLocation().getX(), (int)event.getLocation().getY());
-            if(row == -1 || event.getDropAction() != DnDConstants.ACTION_MOVE) {
-                //rulesTree.getSelectionModel().add addSelectionInterval(oldSelectedRow, oldSelectedRow);
-                event.rejectDrag();
-            } else {
-                //rulesTable.getSelectionModel().addSelectionInterval(row, row);
-                event.acceptDrag(DnDConstants.ACTION_MOVE);
-            }
-        }
-
-        public void dropActionChanged(DropTargetDragEvent event) {
-            if(event.getDropAction() != DnDConstants.ACTION_MOVE) {
-                //rulesTable.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
-                event.rejectDrag();
-            } else
-                event.acceptDrag(DnDConstants.ACTION_MOVE);
-        }
-
-        public void dragExit(DropTargetEvent event) {
-            //rulesTree.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
-        }
-
-        public void drop(DropTargetDropEvent event) {
-            int row = rulesTree.getRowForLocation((int)event.getLocation().getX(), (int)event.getLocation().getY());
-            if(row == -1) {
-                //rulesTree.getSelectionModel().addSelectionInterval(oldSelectedRow, oldSelectedRow);
-                return;
-            }
-
-            Statistics.shared().recordEvent(Statistics.EVENT_DROP_RULE);
-
-            event.acceptDrop(DnDConstants.ACTION_MOVE);
-
-            Parser.Rule sourceRule = parser.getRuleAtIndex(oldSelectedRow);
-            Parser.Rule targetRule = parser.getRuleAtIndex(row);
-
-            if(moveRule(sourceRule, targetRule))
-                event.dropComplete(true);
-            else
-                event.rejectDrop();
-        }
-    }
-
-
     public class RuleTreeMouseListener extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
             TreePath selPath[] = rulesTree.getSelectionPaths();
@@ -667,7 +606,7 @@ public class Rules implements ThreadedParserObserver {
             List selRules = new ArrayList();
             for(int path=0; path<selPath.length; path++) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)selPath[path].getLastPathComponent();
-                RuleTreeNode n = (RuleTreeNode)node.getUserObject();
+                RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
                 if(n.rule != null)
                     selRules.add(n.rule);
             }
@@ -675,18 +614,18 @@ public class Rules implements ThreadedParserObserver {
         }
     }
 
-    public class RuleTreeNode {
+    public class RuleTreeUserObject implements Transferable {
 
         public int ruleIndex;
         public Parser.Rule rule;
         public Parser.Group group;
 
-        public RuleTreeNode(int index) {
+        public RuleTreeUserObject(int index) {
             this.ruleIndex = index;
             this.rule = parser.getRuleAtIndex(ruleIndex);
         }
 
-        public RuleTreeNode(Parser.Group group) {
+        public RuleTreeUserObject(Parser.Group group) {
             this.group = group;
         }
 
@@ -697,6 +636,44 @@ public class Rules implements ThreadedParserObserver {
                 return rule.name;
             else
                 return "";
+        }
+
+        /**
+         * Returns an array of DataFlavor objects indicating the flavors the data
+         * can be provided in.  The array should be ordered according to preference
+         * for providing the data (from most richly descriptive to least descriptive).
+         *
+         * @return an array of data flavors in which this data can be transferred
+         */
+        public DataFlavor[] getTransferDataFlavors() {
+            return new DataFlavor[0];  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        /**
+         * Returns whether or not the specified data flavor is supported for
+         * this object.
+         *
+         * @param flavor the requested flavor for the data
+         * @return boolean indicating whether or not the data flavor is supported
+         */
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        /**
+         * Returns an object which represents the data to be transferred.  The class
+         * of the object returned is defined by the representation class of the flavor.
+         *
+         * @param flavor the requested flavor for the data
+         * @throws java.io.IOException if the data is no longer available
+         *                             in the requested flavor.
+         * @throws java.awt.datatransfer.UnsupportedFlavorException
+         *                             if the requested data flavor is
+         *                             not supported.
+         * @see java.awt.datatransfer.DataFlavor#getRepresentationClass
+         */
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 
