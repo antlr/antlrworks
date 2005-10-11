@@ -41,4 +41,8 @@ public interface SCM {
     public void deleteFile(String file);
     public void submitFile(String file, String description, boolean remainOpen);
     public void sync();
+
+    public boolean hasErrors();
+    public String getErrorsDescription();
+    public void resetErrors();
 }

@@ -59,7 +59,7 @@ public class MenuGoTo extends AbstractActions {
         if(rule == null)
             return;
 
-        goToHistoryRememberCurrentPosition();
+        editor.goToHistoryRememberCurrentPosition();
 
         editor.rules.selectTextRule(rule);
         Statistics.shared().recordEvent(Statistics.EVENT_GOTO_DECLARATION);
@@ -100,7 +100,7 @@ public class MenuGoTo extends AbstractActions {
             if(character < 0 || character > getTextPane().getDocument().getLength()-1)
                 return;
 
-            goToHistoryRememberCurrentPosition();
+            editor.goToHistoryRememberCurrentPosition();
 
             setCaretPosition(character);
             Statistics.shared().recordEvent(Statistics.EVENT_GOTO_CHAR);
@@ -126,13 +126,8 @@ public class MenuGoTo extends AbstractActions {
             return;
 
         Line line = (Line)editor.getLines().get(lineIndex);
-        goToHistoryRememberCurrentPosition();
+        editor.goToHistoryRememberCurrentPosition();
         setCaretPosition(line.position);
-    }
-
-    protected void goToHistoryRememberCurrentPosition() {
-        editor.goToHistory.addPosition(getCaretPosition());
-        editor.getMainMenuBar().refreshState();
     }
 
 }

@@ -61,6 +61,8 @@ public class AutoCompletionMenu extends OverlayObject {
 
     private int displayIndex;
 
+    public static final int VISIBLE_MATCHING_RULES = 15;
+
     public AutoCompletionMenu(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, JFrame frame) {
         super(frame, textComponent);
         this.delegate = delegate;
@@ -77,13 +79,14 @@ public class AutoCompletionMenu extends OverlayObject {
 
         list = new JList(listModel) {
             public int getVisibleRowCount() {
-                return Math.min(listModel.getSize(), 10);
+                return Math.min(listModel.getSize(), VISIBLE_MATCHING_RULES);
             }
         };
         list.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, 12));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setBackground(new Color(235, 244, 254));
         list.addKeyListener(new MyKeyAdapter());
+        list.setPrototypeCellValue("This is a rule name g");
 
         JScrollPane scrollPane = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
@@ -197,7 +200,12 @@ public class AutoCompletionMenu extends OverlayObject {
             return;
 
         Point p = SwingUtilities.convertPoint(getTextComponent(), new Point(rect.x, rect.y), parentFrame.getRootPane());
-        content.setBounds(p.x - 3, p.y + rect.height, maxWordLength*8+50, 100);
+        int height = list.getFixedCellHeight();
+        int size = listModel.size();
+        if(size > 0) {
+            height = height*Math.min(VISIBLE_MATCHING_RULES, size)+5;
+            content.setBounds(p.x - 3, p.y + rect.height, maxWordLength*8+50, height);
+        }
     }
 
     public void updateAutoCompleteList() {
@@ -216,6 +224,7 @@ public class AutoCompletionMenu extends OverlayObject {
         else {
             setInsertionEndIndex(position);
             setWordLists(matchingRules, matchingRules);
+            resize();
         }
     }
 
@@ -242,6 +251,11 @@ public class AutoCompletionMenu extends OverlayObject {
                 case KeyEvent.VK_LEFT:
                 case KeyEvent.VK_RIGHT:
                     content.setVisible(false);
+                    break;
+
+                case KeyEvent.VK_ESCAPE:
+                    content.setVisible(false);
+                    e.consume();
                     break;
 
                 case KeyEvent.VK_ENTER:

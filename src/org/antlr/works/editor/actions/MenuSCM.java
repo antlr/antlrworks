@@ -111,6 +111,13 @@ public class MenuSCM extends AbstractActions implements SCMDelegate {
         return true;
     }
 
+    protected void displayErrors() {
+        if(scm.hasErrors()) {
+            XJAlert.display(editor.getWindowContainer(), "SCM Error", scm.getErrorsDescription());
+            scm.resetErrors();
+        }
+    }
+
     protected void showProgress(String title) {
         progress.setInfo(title);
         progress.setCancellable(false);
@@ -128,6 +135,7 @@ public class MenuSCM extends AbstractActions implements SCMDelegate {
 
     public void scmCommandsDidComplete() {
         hideProgress();
+        displayErrors();        
     }
 
     public void scmFileStatusDidChange(String status) {

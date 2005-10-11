@@ -37,6 +37,7 @@ import org.antlr.works.editor.helper.Console;
 import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -57,6 +58,7 @@ public class P4 implements SCM {
     protected String fileStatus = null;
 
     protected P4Scheduler scheduler = new P4Scheduler();
+    protected P4CommandCompletion lastCompletion = null;
 
     public P4(Console console, SCMDelegate delegate) {
         this.console = console;
@@ -69,25 +71,25 @@ public class P4 implements SCM {
 
     public synchronized void editFile(String file) {
         openConsoleGroup("P4: edit file");
-        runCommand(new P4Command(CMD_EDIT, new String[] { "edit", file }, null));
+        scheduleCommand(new P4Command(CMD_EDIT, new String[] { "edit", file }, null));
         queryFileStatus(file);
     }
 
     public synchronized void addFile(String file) {
         openConsoleGroup("P4: add file");
-        runCommand(new P4Command(CMD_ADD, new String[] { "add", file }, null));
+        scheduleCommand(new P4Command(CMD_ADD, new String[] { "add", file }, null));
         queryFileStatus(file);
     }
 
     public synchronized void deleteFile(String file) {
         openConsoleGroup("P4: delete file");
-        runCommand(new P4Command(CMD_DELETE, new String[] { "delete", file }, null));
+        scheduleCommand(new P4Command(CMD_DELETE, new String[] { "delete", file }, null));
         queryFileStatus(file);
     }
 
     public synchronized void revertFile(String file) {
         openConsoleGroup("P4: revert file");
-        runCommand(new P4Command(CMD_REVERT, new String[] { "revert", file }, null));
+        scheduleCommand(new P4Command(CMD_REVERT, new String[] { "revert", file }, null));
         queryFileStatus(file);
     }
 
@@ -96,7 +98,6 @@ public class P4 implements SCM {
         scheduleCommand(new P4Command(CMD_FSTAT, new String[] { "fstat", file }, null));
         scheduleCommand(new P4CommandSubmit(file, description, remainOpen));
         queryFileStatus(file);
-        scheduleLaunch();
     }
 
     public synchronized void sync() {
@@ -106,6 +107,24 @@ public class P4 implements SCM {
 
     public synchronized String getFileStatus() {
         return fileStatus;
+    }
+
+    public synchronized boolean hasErrors() {
+        if(lastCompletion == null)
+            return false;
+        else
+            return lastCompletion.hasErrors();
+    }
+
+    public synchronized String getErrorsDescription() {
+        if(lastCompletion == null)
+            return "";
+        else
+            return lastCompletion.errorsDescription();
+    }
+
+    public void resetErrors() {
+        lastCompletion = null;
     }
 
     protected synchronized void openConsoleGroup(String name) {
@@ -168,10 +187,9 @@ public class P4 implements SCM {
                     runningCommand = null;
                 }
             }
-            if(runningCommand == null) {
-                if(delegate != null)
-                    delegate.scmCommandsDidComplete();
 
+            if(runningCommand == null) {
+                schedulerDidComplete();
             } else
                 runningCommand.run(previousCommand, this);
         }
@@ -191,9 +209,28 @@ public class P4 implements SCM {
                     delegate.scmFileStatusDidChange(fileStatus);
             }
 
-            scheduleRun(runningCommand);
+            lastCompletion = completion;
+
+            if(completion.hasErrors()) {
+                // Doesn't run the other commands if there is an error in one command
+                synchronized(scheduledCommands) {
+                    scheduledCommands.clear();
+                    runningCommand = null;
+                    delegate.scmCommandsDidComplete();
+                }
+            } else
+                scheduleRun(runningCommand);
         }
 
+        public void schedulerDidComplete() {
+            if(delegate != null) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        delegate.scmCommandsDidComplete();
+                    }
+                });
+            }
+        }
     }
 
     protected class P4Command {
@@ -363,6 +400,14 @@ public class P4 implements SCM {
 
         public boolean hasErrors() {
             return results.get(P4Results.ERROR).size() > 0;
+        }
+
+        public String errorsDescription() {
+            StringBuffer sb = new StringBuffer();
+            for(Iterator iter = results.get(P4Results.ERROR).iterator(); iter.hasNext(); ) {
+                sb.append((String)iter.next());
+            }
+            return sb.toString();
         }
 
         public String getObjectForKey(int index, String key) {

@@ -4,7 +4,6 @@
 - cannot undo group
 - finish the drag and drop in rule tree
 
-- Perforce: disable menus depending on the file status
 - P4: if file read-only and under P4, propose to open for edit
 - SCM: add diff
 

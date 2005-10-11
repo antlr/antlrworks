@@ -409,6 +409,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return null;
     }
 
+    public void goToHistoryRememberCurrentPosition() {
+        goToHistory.addPosition(getCaretPosition());
+        getMainMenuBar().refreshState();
+    }
+
     public void changeDone() {
         grammarChanged();
         editorCache.invalidate();

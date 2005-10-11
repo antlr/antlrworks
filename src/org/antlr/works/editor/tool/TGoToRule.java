@@ -41,7 +41,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
@@ -54,6 +53,8 @@ public class TGoToRule extends OverlayObject {
     public DefaultListModel matchingRuleListModel;
     public JScrollPane matchingRuleScrollPane;
     public EditorWindow editor;
+
+    public static final int VISIBLE_MATCHING_RULES = 15;
 
     public TGoToRule(EditorWindow editor, JFrame parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
@@ -73,6 +74,8 @@ public class TGoToRule extends OverlayObject {
         matchingRuleList = new JList(matchingRuleListModel);
         matchingRuleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         matchingRuleList.setBackground(new Color(235, 244, 254));
+        matchingRuleList.setPrototypeCellValue("This is a rule name g");
+        matchingRuleList.addKeyListener(new ListKeyAdapter());
 
         matchingRuleScrollPane = new JScrollPane(matchingRuleList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         matchingRuleScrollPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
@@ -102,7 +105,12 @@ public class TGoToRule extends OverlayObject {
 
     public void resizeMatchingRules() {
         Rectangle r = content.getBounds();
-        matchingRuleScrollPane.setBounds(r.x,  r.y+r.height, r.width, 100);
+        int height = matchingRuleList.getFixedCellHeight();
+        int size = matchingRuleListModel.size();
+        if(size > 0) {
+            height = height*Math.min(VISIBLE_MATCHING_RULES, size)+5;
+            matchingRuleScrollPane.setBounds(r.x,  r.y+r.height, r.width, height);
+        }
     }
 
     public void updateAutoCompletionList() {
@@ -140,10 +148,42 @@ public class TGoToRule extends OverlayObject {
         if(index >= 0) {
             Parser.Rule rule = editor.rules.selectRuleName((String)matchingRuleListModel.get(index));
             if(rule != null) {
-                // @todo refactor with MenuGoTo goToHistoryRememberCurrentPosition() method
-                editor.goToHistory.addPosition(editor.getCaretPosition());
-                editor.getMainMenuBar().refreshState();
+                editor.goToHistoryRememberCurrentPosition();
                 editor.rules.selectTextRule(rule);
+            }
+        }
+    }
+
+    public class ListKeyAdapter extends KeyAdapter {
+
+        public void keyPressed(KeyEvent e) {
+            if (e.isConsumed())
+                return;
+
+            if (!content.isVisible())
+                return;
+
+            switch(e.getKeyCode()) {
+                case KeyEvent.VK_ESCAPE:
+                    hide();
+                    e.consume();
+                    break;
+
+                case KeyEvent.VK_ENTER:
+                    goToRule();
+                    hide();
+                    e.consume();
+                    break;
+
+                case KeyEvent.VK_UP:
+                    selectNextListElement(-1);
+                    e.consume();
+                    break;
+
+                case KeyEvent.VK_DOWN:
+                    selectNextListElement(1);
+                    e.consume();
+                    break;
             }
         }
     }
