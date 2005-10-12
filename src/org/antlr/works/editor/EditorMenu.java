@@ -56,16 +56,17 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_FIND_USAGE = 20;
     public static final int MI_RENAME = 21;
     public static final int MI_EXTRACT_LEXER_RULE = 22;
-    public static final int MI_GROUP = 23;
-    public static final int MI_UNGROUP = 24;
-    public static final int MI_HIDE_ACTION = 25;
-    public static final int MI_SHOW_ALL_ACTION = 26;
-    public static final int MI_HIDE_ALL_ACTION = 27;
-    public static final int MI_CHECK_GRAMMAR = 28;
+    public static final int MI_INSERT_TEMPLATE = 23;
+    public static final int MI_GROUP = 24;
+    public static final int MI_UNGROUP = 25;
+    public static final int MI_HIDE_ACTION = 26;
+    public static final int MI_SHOW_ALL_ACTION = 27;
+    public static final int MI_HIDE_ALL_ACTION = 28;
+    public static final int MI_CHECK_GRAMMAR = 29;
 
-    public static final int MI_FIND = 29;
-    public static final int MI_FIND_NEXT = 30;
-    public static final int MI_FIND_PREV = 31;
+    public static final int MI_FIND = 30;
+    public static final int MI_FIND_NEXT = 31;
+    public static final int MI_FIND_PREV = 32;
 
     public static final int MI_GOTO_RULE = 40;
     public static final int MI_GOTO_DECLARATION = 41;
@@ -211,6 +212,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addSeparator();
         menu.addItem(menuItemRename = new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
         menu.addItem(menuItemReplaceLiteralWithTokenLabel = new XJMenuItem("Replace Literal With Token Label...", MI_EXTRACT_LEXER_RULE, this));
+        menu.addItem(new XJMenuItem("Insert Rule From Template", 't', KeyEvent.VK_T, Event.CTRL_MASK, MI_INSERT_TEMPLATE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
         menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
@@ -396,6 +398,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_EXTRACT_LEXER_RULE:
                 editor.menuGrammarActions.replaceLiteralWithTokenLabel();
+                break;
+
+            case MI_INSERT_TEMPLATE:
+                editor.menuGrammarActions.insertRuleFromTemplate();
                 break;
 
             case MI_GROUP:

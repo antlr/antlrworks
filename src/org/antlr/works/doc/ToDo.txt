@@ -1,16 +1,13 @@
+- display icon a the left of each rule (parser/lexer different)
+- format rule template as required (\n)
 
 - test with empty preferences file
-
 - P4: if file read-only and under P4, propose to open for edit
 - SCM: add diff
-
-- antlr operators like +*? in bold
 - display all literals in list
-
 - use Grammar randomText to generate random valid input text
 - display template rules somewhere
 - @todo in grammar and panel to recapitulate (also for undefined and duplicated rules)
-
 - message pour indiquer lorsque le syntax diagram n'est pas affiche (comme par exemple sur les regles du lexer)
 - syntax coloring delay in preferences
 - check environment (see e-mail from Jim Idle)
@@ -42,14 +39,12 @@
 
 * ToDo *
 
-- preferences: to pop-up the console when println occurs
 - reduce the height of each parse tree view
 - versioning in the prefs
 - better message when cannot connect because null id (submit statistics)
 - do something with verbose in ErrorListener later
 - if emacs is set (in preferences), disable all conflicting menu in Linux/Windows
 - contextual menu in the editor (go to declaration, rename, etc)
-- fix bug when selecting an alternate path (if this one is not the current one)
 - minimum font size 12 in sd (then ... and mouse over -> show full name)
 - update manager for stringtemplate/antlr
 - download stringtemplate/antlr if not found
@@ -57,16 +52,10 @@
 - optimize state arround external ref (negative state should be removed - see if it is always possible)
 - auto-scrolling when following ambiguous paths
 - sort content of auto-completion menu
-- sort content of rules/tokens table
-- can change L&F
 - display LT in blue when exiting an alt (see Terence's email)
-- find
-- goto dialog
 - show line number in gutter (via preferences and notification)
-- background for stepped line like in IntelliJ (jaune clair) - handle also debugger cursor when in use
 - debugger: implements input stream breakpoint
 - jump to a definition by double-click in the syntax diagram
-- split list between tokens (MAJ) and rules (min)
 - log file (check in preferences)
 - localization of all strings in properties file ?
 

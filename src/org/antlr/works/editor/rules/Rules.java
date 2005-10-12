@@ -40,6 +40,7 @@ import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.ThreadedParserObserver;
 import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -51,7 +52,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
-import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -140,13 +140,13 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         return DnDConstants.ACTION_MOVE;
     }
 
-    public boolean xjTreeDrop(XJTree tree, DropTargetDropEvent event, Object sourceObject, Object targetObject) {
+    public boolean xjTreeDrop(XJTree tree, Object sourceObject, Object targetObject, int dropLocation) {
         Statistics.shared().recordEvent(Statistics.EVENT_DROP_RULE);
 
         Parser.Rule sourceRule = ((Rules.RuleTreeUserObject) sourceObject).rule;
         Parser.Rule targetRule = ((Rules.RuleTreeUserObject) targetObject).rule;
 
-        return moveRule(sourceRule, targetRule);
+        return moveRule(sourceRule, targetRule, dropLocation == XJTree.DROP_ABOVE);
     }
 
     public class RuleMoveUpAction extends AbstractAction {
@@ -155,7 +155,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             int previousRuleIndex = parser.getRules().indexOf(sourceRule)-1;
             if(previousRuleIndex>=0) {
                 Parser.Rule targetRule = parser.getRuleAtIndex(previousRuleIndex);
-                moveRule(sourceRule, targetRule);
+                moveRule(sourceRule, targetRule, true);
             }
         }
     }
@@ -166,7 +166,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             int nextRuleIndex = parser.getRules().indexOf(targetRule)+1;
             Parser.Rule sourceRule = parser.getRuleAtIndex(nextRuleIndex);
             if(sourceRule != null) {
-                moveRule(sourceRule, targetRule);
+                moveRule(sourceRule, targetRule, true);
                 selectNextRule = true;
             }
         }
@@ -530,7 +530,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             selectRuleAtPosition(textPane.getCaret().getDot());
     }
 
-    public boolean moveRule(Parser.Rule sourceRule, Parser.Rule targetRule) {
+    public boolean moveRule(Parser.Rule sourceRule, Parser.Rule targetRule, boolean dropAbove) {
         if(sourceRule == null || targetRule == null)
             return false;
         
@@ -540,6 +540,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             Document doc = textPane.getDocument();
 
             int removeStartIndex = sourceRule.getStartIndex();
+            int targetInsertionIndex = dropAbove ? targetRule.getStartIndex() : targetRule.getEndIndex()+2;
 
             // Remove one more character to remove the end of line of the rule
             int removeLength = sourceRule.getLength()+1;
@@ -548,12 +549,12 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
             if(sourceRule.getStartIndex()>targetRule.getStartIndex()) {
                 doc.remove(removeStartIndex, removeLength);
-                doc.insertString(targetRule.getStartIndex(), sourceRuleText, null);
-                textPane.setCaretPosition(targetRule.getStartIndex());
+                doc.insertString(targetInsertionIndex, sourceRuleText, null);
+                textPane.setCaretPosition(targetInsertionIndex);
             } else {
-                doc.insertString(targetRule.getStartIndex(), sourceRuleText, null);
+                doc.insertString(targetInsertionIndex, sourceRuleText, null);
                 doc.remove(removeStartIndex, removeLength);
-                textPane.setCaretPosition(targetRule.getStartIndex()-removeLength);
+                textPane.setCaretPosition(targetInsertionIndex-removeLength);
             }
             return true;
         } catch (BadLocationException e) {
@@ -583,8 +584,16 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
             DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
             RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
+            if(n.rule != null) {
+                if(n.rule.isLexerRule())
+                    setIcon(IconManager.shared().getIconLexer());
+                else
+                    setIcon(IconManager.shared().getIconParser());                
+            }
+
             if(n.rule != null && n.rule.hasErrors()) {
                 //setIcon(IconManager.shared().getIconWarning());
+
                 setForeground(Color.red);
                 setFont(getFont().deriveFont(Font.BOLD));
                 setToolTipText(n.rule.getErrorMessageHTML());

@@ -150,6 +150,10 @@ public class MenuGrammar extends AbstractActions {
         }
     }
 
+    public void insertRuleFromTemplate() {
+        editor.templateRules.display();
+    }
+
     public void group() {
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Group Name:", "Group",
                 JOptionPane.QUESTION_MESSAGE, null, null, "Group");

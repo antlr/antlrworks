@@ -71,6 +71,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public TActions actions = null;
     public TColorize colorize = null;
     public TGrammar grammar = null;
+    public TemplateRules templateRules = null;
 
     public Rules rules = null;
     public Visual visual = null;
@@ -128,6 +129,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         keyBindings = new KeyBindings(getTextPane());
 
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), jFrame);
+        templateRules = new TemplateRules(this, getTextPane(), jFrame);
         goToRule = new TGoToRule(this, jFrame, getTextPane());
         findAndReplace = new FindAndReplace(this);
 
@@ -143,8 +145,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         visual.setParser(parser);
 
         colorize = new TColorize(this);
-
-        new TemplateRules(this, getTextPane(), jFrame);
 
         getTabbedPane().addTab("Syntax Diagram", visual.getContainer());
         getTabbedPane().addTab("Interpreter", interpreter.getContainer());

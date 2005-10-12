@@ -111,4 +111,12 @@ public class IconManager {
         return createImageIcon(path+"tokens.png");
     }
 
+    public ImageIcon getIconParser() {
+        return createImageIcon(path+"parser.png");
+    }
+
+    public ImageIcon getIconLexer() {
+        return createImageIcon(path+"lexer.png");
+    }
+
 }

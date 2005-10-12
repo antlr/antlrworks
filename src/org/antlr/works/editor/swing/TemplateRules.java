@@ -62,8 +62,8 @@ public class TemplateRules extends AutoCompletionMenu {
 
         templateRuleTexts.add("INTEGER\t:\tDIGIT (DIGIT)*;");
         templateRuleTexts.add("ID\t:\tLETTER (LETTER | DIGIT)*;");
-        templateRuleTexts.add("protected\nDIGIT\t:\t'0'..'9';");
-        templateRuleTexts.add("protected\nLETTER\t:\t'a'..'z' | 'A'..'Z' ;");
+        templateRuleTexts.add("DIGIT\t:\t'0'..'9';");
+        templateRuleTexts.add("LETTER\t:\t'a'..'z' | 'A'..'Z' ;");
         templateRuleTexts.add("WS\t:\t(' ' | '\\t' | '\\n' | '\\r') { $setType(Token.SKIP); };");
         templateRuleTexts.add("WS\t:\t(' ' | '\\t' | '\\n' | '\\r');");
     }
