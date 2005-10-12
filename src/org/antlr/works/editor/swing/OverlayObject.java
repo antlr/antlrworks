@@ -38,6 +38,13 @@ import java.awt.event.*;
 
 public abstract class OverlayObject {
 
+    public static final int DEFAULT_WIDTH = 300;
+    public static final int DEFAULT_HEIGHT = 40;
+
+    public static final int ALIGN_LEFT = 0;
+    public static final int ALIGN_CENTER = 1;
+    public static final int ALIGN_CUSTOM = 2;
+
     protected JFrame parentFrame;
     protected JComponent parentComponent;
     protected JComponent content;
@@ -106,7 +113,26 @@ public abstract class OverlayObject {
     public void resize() {
         Rectangle r = parentComponent.getVisibleRect();
         Point p = SwingUtilities.convertPoint(parentComponent, new Point(r.x, r.y), parentFrame.getRootPane());
-        content.setBounds(p.x+r.width/2-150, p.y+r.height/2-50, 300, 40);
+        int x = 0;
+        int y = 0;
+        switch(overlayDefaultAlignment()) {
+            case ALIGN_CENTER:
+                x = p.x+r.width/2-overlayDefaultWidth()/2;
+                y = p.y+r.height/2-overlayDefaultHeight()/2;
+                break;
+            case ALIGN_LEFT:
+                x = p.x+5;
+                y = p.y+r.height/2-overlayDefaultHeight()/2;
+                break;
+            case ALIGN_CUSTOM:
+                Point cp = overlayCustomPosition();
+                if(cp != null) {
+                    x = cp.x;
+                    y = cp.y;
+                }
+                break;
+        }
+        content.setBounds(x, y, overlayDefaultWidth(), overlayDefaultHeight());
     }
 
     public void display() {
@@ -117,9 +143,27 @@ public abstract class OverlayObject {
 
     public abstract JComponent overlayCreateInterface();
     public abstract void overlayWillDisplay();
+
+    public int overlayDefaultWidth() {
+        return DEFAULT_WIDTH;
+    }
+
+    public int overlayDefaultHeight() {
+        return DEFAULT_HEIGHT;
+    }
+
+    public int overlayDefaultAlignment() {
+        return ALIGN_CENTER;
+    }
+
+    public Point overlayCustomPosition() {
+        return null;
+    }
+
     public KeyStroke overlayDisplayKeyStroke() {
         return null;
     }
+
     public String overlayDisplayKeyStrokeMappingName() {
         return null;
     }

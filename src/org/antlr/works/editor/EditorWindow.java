@@ -51,6 +51,9 @@ import org.antlr.works.editor.tool.TGoToRule;
 import org.antlr.works.editor.tool.TGrammar;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.visual.Visual;
+import org.antlr.works.editor.idea.IdeaOverlay;
+import org.antlr.works.editor.idea.IdeaActionDelegate;
+import org.antlr.works.editor.idea.IdeaAction;
 import org.antlr.works.interpreter.Interpreter;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
@@ -61,7 +64,7 @@ import java.util.*;
 import java.util.List;
 
 public class EditorWindow extends XJWindow implements ThreadedParserObserver,
-     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider
+     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate
 {
     public ThreadedParser parser = null;
     public KeyBindings keyBindings = null;
@@ -72,6 +75,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public TColorize colorize = null;
     public TGrammar grammar = null;
     public TemplateRules templateRules = null;
+    public IdeaOverlay ideaOverlay = null;
 
     public Rules rules = null;
     public Visual visual = null;
@@ -131,6 +135,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), jFrame);
         templateRules = new TemplateRules(this, getTextPane(), jFrame);
         goToRule = new TGoToRule(this, jFrame, getTextPane());
+        ideaOverlay = new IdeaOverlay(this, jFrame, getTextPane());
         findAndReplace = new FindAndReplace(this);
 
         rules = new Rules(parser, getTextPane(), editorGUI.rulesTree);
@@ -367,7 +372,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return parser.getLines();
     }
 
-    public int getLineNumberForPosition(int pos) {
+    public int getLineIndexAtTextPosition(int pos) {
         List lines = getLines();
         if(lines == null)
             return -1;
@@ -381,7 +386,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return lines.size()-1;
     }
 
-    public Point getLinePositions(int lineIndex) {
+    public Point getLineTextPositionsAtTextPosition(int pos) {
+        return getLineTextPositionsAtLineIndex(getLineIndexAtTextPosition(pos));
+    }
+
+    public Point getLineTextPositionsAtLineIndex(int lineIndex) {
         List lines = getLines();
         if(lineIndex == -1 || lines == null)
             return null;
@@ -504,6 +513,15 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             windowFirstDisplay = false;
             rules.selectFirstRule();
         }
+
+        // Invoke the idea dectection later because rules didn't updated
+        // yet its rule list (parserDidComplete first run here and then
+        // on Rules - the order can change in the future).
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                editorGUI.detectIdeaIfAvailable(getCaretPosition());
+            }
+        });
     }
 
     public void windowDocumentPathDidChange() {
@@ -532,4 +550,20 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return matchingRules;
     }
 
+    /* Idea action delegate */
+
+    public static final int IDEA_DELETE_RULE = 0;
+    public static final int IDEA_CREATE_RULE = 1;
+
+    public void ideaActionFire(IdeaAction action, int actionID) {
+        switch(actionID) {
+            case IDEA_DELETE_RULE:
+                Parser.Rule r = rules.getRuleAtPosition(getCaretPosition());
+                if(r != null)
+                    editorGUI.replaceText(r.getStartIndex(), r.getEndIndex(), "");
+                break;
+            case IDEA_CREATE_RULE:
+                break;
+        }
+    }
 }

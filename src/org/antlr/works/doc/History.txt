@@ -4,9 +4,10 @@ Version 1.0ea4 - 10/11/05
 - compatible with ANTLR 3.0ea6
 
 - find and replace
-- rules can now be grouped and displayed in a tree view
+- first implementation of ideas actions
 - duplicates rules are now underlined in blue
 - undefined rules are now underlined in red
+- rules can now be grouped and displayed in a tree view
 - replace literal with token label
 - insert rule from template
 - support Perforce SCM commands
@@ -21,6 +22,7 @@ Version 1.0ea4 - 10/11/05
 - display line and column number in bottom status bar
 - HOME/END key move to beginning/end of line
 - can now navigate backward/forward
+- rules have now icon in the tree view
 
 - preferences: auto-save every n minutes
 - preferences: can now specify the colors of each type of token in the debugger input text panel

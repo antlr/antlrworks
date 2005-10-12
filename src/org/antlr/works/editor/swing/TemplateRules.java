@@ -33,21 +33,20 @@ package org.antlr.works.editor.swing;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TemplateRules extends AutoCompletionMenu {
-
-    private JTextComponent textComponent;
 
     private List templateRuleNames = new ArrayList();
     private List templateRuleTexts = new ArrayList();
 
     public TemplateRules(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, JFrame frame) {
         super(delegate, textComponent, frame);
-        this.textComponent = textComponent;
+
+        this.list.addMouseMotionListener(new ListMouseMotionAdapter());
+        this.list.addMouseListener(new ListMouseAdapter());
 
         initTemplateRules();
     }
@@ -60,12 +59,12 @@ public class TemplateRules extends AutoCompletionMenu {
         templateRuleNames.add("WS (ignore)");
         templateRuleNames.add("WS");
 
-        templateRuleTexts.add("INTEGER\t:\tDIGIT (DIGIT)*;");
-        templateRuleTexts.add("ID\t:\tLETTER (LETTER | DIGIT)*;");
-        templateRuleTexts.add("DIGIT\t:\t'0'..'9';");
-        templateRuleTexts.add("LETTER\t:\t'a'..'z' | 'A'..'Z' ;");
-        templateRuleTexts.add("WS\t:\t(' ' | '\\t' | '\\n' | '\\r') { $setType(Token.SKIP); };");
-        templateRuleTexts.add("WS\t:\t(' ' | '\\t' | '\\n' | '\\r');");
+        templateRuleTexts.add("INTEGER\n\t:\tDIGIT (DIGIT)*\n\t;\n");
+        templateRuleTexts.add("ID\t:\tLETTER (LETTER | DIGIT)*\n\t;\n");
+        templateRuleTexts.add("DIGIT\t:\t'0'..'9'\n\t;\n");
+        templateRuleTexts.add("LETTER\n\t:\t'a'..'z' | 'A'..'Z'\n\t;\n");
+        templateRuleTexts.add("WS\t:\t(' ' | '\\t' | '\\n' | '\\r') { $setType(Token.SKIP); }\n\t;\n");
+        templateRuleTexts.add("WS\t:\t(' ' | '\\t' | '\\n' | '\\r')\n\t;\n");
     }
 
     public KeyStroke overlayDisplayKeyStroke() {
@@ -77,10 +76,24 @@ public class TemplateRules extends AutoCompletionMenu {
     }
 
     public void overlayWillDisplay() {
-        int position = textComponent.getCaretPosition();
+        int position = getTextComponent().getCaretPosition();
         setDisplayIndex(position);
         setWordLists(templateRuleNames, templateRuleTexts);
         setInsertionStartIndex(position);
         setInsertionEndIndex(position);
     }
+
+    public class ListMouseMotionAdapter extends MouseMotionAdapter {
+        public void mouseMoved(MouseEvent e) {
+            list.setSelectedIndex(list.locationToIndex(e.getPoint()));
+        }
+    }
+
+    public class ListMouseAdapter extends MouseAdapter {
+        public void mousePressed(MouseEvent e) {
+            autoComplete();
+            hide();
+        }
+    }
+
 }

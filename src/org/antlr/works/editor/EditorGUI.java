@@ -46,10 +46,12 @@ import org.antlr.works.editor.tool.TAutoIndent;
 import org.antlr.works.editor.tool.TImmediateColorization;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.undo.UndoDelegate;
+import org.antlr.works.editor.idea.IdeaAction;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
 
+import java.util.List;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -61,6 +63,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEditorPaneDelegate {
 
@@ -93,6 +96,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
     protected TImmediateColorization immediateColorization;
     protected TAutoIndent autoIndent;
+    protected Timer ideaTimer;
 
     protected boolean highlightCursorLine = false;
 
@@ -200,11 +204,18 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
         mainPanel.add(infoPanel, BorderLayout.SOUTH);
-                           
+
         editor.getContentPane().add(mainPanel);
         editor.pack();
 
         upDownSplitPane.setDividerLocation(0.5);
+
+        ideaTimer = new Timer(1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.ideaOverlay.display();
+            }
+        });
+        ideaTimer.setRepeats(false);
 
         XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
     }
@@ -248,13 +259,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             }
         });
 
-        textPane.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                // Update the cursor highligthing
-                if(highlightCursorLine)
-                    textPane.repaint();
-            }
-        });
+        textPane.addMouseListener(new TextPaneMouseAdapter());
 
         textPane.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -363,13 +368,13 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     }
 
     public void updateCursorInfo() {
-        int lineNumber = editor.getLineNumberForPosition(editor.getCaretPosition());
-        Point linePosition = editor.getLinePositions(lineNumber);
+        int lineIndex = editor.getLineIndexAtTextPosition(editor.getCaretPosition());
+        Point linePosition = editor.getLineTextPositionsAtLineIndex(lineIndex);
         if(linePosition == null) {
             cursorLabel.setText("1:1");
         } else {
             int columnNumber = editor.getCaretPosition() - linePosition.x;
-            cursorLabel.setText((lineNumber+1)+":"+(columnNumber+1));
+            cursorLabel.setText((lineIndex +1)+":"+(columnNumber+1));
         }
     }
 
@@ -552,6 +557,41 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         }
     }
 
+    public void detectIdeaIfAvailable(Point p) {
+        detectIdeaIfAvailable(textPane.viewToModel(p));
+    }
+
+    public void detectIdeaIfAvailable(int position) {
+        if(editor.getTokens() == null)
+            return;
+
+        List ideas = new ArrayList();
+        for (Iterator iterator = editor.getTokens().iterator(); iterator.hasNext();) {
+            Token token = (Token) iterator.next();
+
+            if(token.type != Lexer.TOKEN_ID)
+                continue;
+
+            if(position >= token.getStart() && position <= token.getEnd()) {
+
+                if(editor.rules.isRuleAtIndex(token.getStart()) && !editor.rules.isRuleName(token.getAttribute())) {
+                    ideas.add(new IdeaAction("Create Rule", editor, EditorWindow.IDEA_CREATE_RULE));
+                }
+
+                if(editor.rules.isDuplicateRule(token.getAttribute())) {
+                    ideas.add(new IdeaAction("Delete Rule", editor, EditorWindow.IDEA_DELETE_RULE));
+                }
+            }
+        }
+
+        if(ideas.isEmpty())
+            editor.ideaOverlay.hide();
+        else {
+            editor.ideaOverlay.setIdeas(ideas);
+            ideaTimer.restart();
+        }
+    }
+
     protected class TabMouseListener extends MouseAdapter {
 
         public void mousePressed(MouseEvent event) {
@@ -656,6 +696,11 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             // Update the auto-completion list
             editor.autoCompletionMenu.updateAutoCompleteList();
 
+            // Only display ideas using the mouse because otherwise when a rule
+            // is deleted (for example), the idea might be displayed before
+            // the parser was able to complete
+            //detectIdeaIfAvailable(e.getDot());
+
             Parser.Rule rule = editor.rules.selectRuleAtPosition(e.getDot());
             if(rule == null || rule.name == null)
                 return;
@@ -680,7 +725,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         }
 
         public synchronized boolean isEnable() {
-            return enable == 0;                                                                
+            return enable == 0;
         }
 
         public void changeUpdate(int offset, int length) {
@@ -719,6 +764,16 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             // focus lost can be, for example, when opening a menu on Windows/Linux.
             if(!event.isTemporary())
                 updateUndoRedo(null);
+        }
+    }
+
+    protected class TextPaneMouseAdapter extends MouseAdapter {
+        public void mousePressed(MouseEvent e) {
+            // Update the cursor highligthing
+            if(highlightCursorLine)
+                textPane.repaint();
+
+            detectIdeaIfAvailable(e.getPoint());
         }
     }
 }

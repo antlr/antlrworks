@@ -48,18 +48,18 @@ import java.util.List;
 
 public class AutoCompletionMenu extends OverlayObject {
 
-    private AutoCompletionMenuDelegate delegate;
+    protected AutoCompletionMenuDelegate delegate;
 
-    private DefaultListModel listModel;
-    private JList list;
+    protected DefaultListModel listModel;
+    protected JList list;
 
-    private List words;
-    private int maxWordLength;
+    protected List words;
+    protected int maxWordLength;
 
-    private int insertionStartIndex;
-    private int insertionEndIndex;
+    protected int insertionStartIndex;
+    protected int insertionEndIndex;
 
-    private int displayIndex;
+    protected int displayIndex;
 
     public static final int VISIBLE_MATCHING_RULES = 15;
 

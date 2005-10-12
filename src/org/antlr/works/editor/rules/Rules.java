@@ -592,8 +592,6 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             }
 
             if(n.rule != null && n.rule.hasErrors()) {
-                //setIcon(IconManager.shared().getIconWarning());
-
                 setForeground(Color.red);
                 setFont(getFont().deriveFont(Font.BOLD));
                 setToolTipText(n.rule.getErrorMessageHTML());
