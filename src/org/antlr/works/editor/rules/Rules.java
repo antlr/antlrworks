@@ -244,6 +244,16 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         return null;
     }
 
+    public Parser.Rule getLastParserRule() {
+        List rules = parser.getRules();
+        for(int index = rules.size()-1; index>0; index--) {
+            Parser.Rule rule = (Parser.Rule)rules.get(index);
+            if(!rule.isLexerRule())
+                return rule;
+        }
+        return null;
+    }
+
     public Parser.Rule getLastLexerRule() {
         List rules = parser.getRules();
         for(int index = rules.size()-1; index>0; index--) {

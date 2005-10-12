@@ -51,9 +51,7 @@ import org.antlr.works.editor.tool.TGoToRule;
 import org.antlr.works.editor.tool.TGrammar;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.visual.Visual;
-import org.antlr.works.editor.idea.IdeaOverlay;
-import org.antlr.works.editor.idea.IdeaActionDelegate;
-import org.antlr.works.editor.idea.IdeaAction;
+import org.antlr.works.editor.idea.*;
 import org.antlr.works.interpreter.Interpreter;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
@@ -64,7 +62,7 @@ import java.util.*;
 import java.util.List;
 
 public class EditorWindow extends XJWindow implements ThreadedParserObserver,
-     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate
+     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate, IdeaProvider
 {
     public ThreadedParser parser = null;
     public KeyBindings keyBindings = null;
@@ -75,7 +73,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public TColorize colorize = null;
     public TGrammar grammar = null;
     public TemplateRules templateRules = null;
-    public IdeaOverlay ideaOverlay = null;
+    public IdeaManager ideaManager = null;
 
     public Rules rules = null;
     public Visual visual = null;
@@ -135,8 +133,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), jFrame);
         templateRules = new TemplateRules(this, getTextPane(), jFrame);
         goToRule = new TGoToRule(this, jFrame, getTextPane());
-        ideaOverlay = new IdeaOverlay(this, jFrame, getTextPane());
         findAndReplace = new FindAndReplace(this);
+
+        ideaManager = new IdeaManager();
+        ideaManager.setOverlay(new IdeaOverlay(this, jFrame, getTextPane()));
+        ideaManager.addProvider(this);
 
         rules = new Rules(parser, getTextPane(), editorGUI.rulesTree);
         actions = new TActions(parser, getTextPane());
@@ -407,7 +408,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         }
     }
 
-
     public Token getTokenAtPosition(int pos) {
         Iterator iterator = getTokens().iterator();
         while(iterator.hasNext()) {
@@ -519,7 +519,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         // on Rules - the order can change in the future).
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                editorGUI.detectIdeaIfAvailable(getCaretPosition());
+                detectIdeaIfAvailable(getCaretPosition());
             }
         });
     }
@@ -563,7 +563,79 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
                     editorGUI.replaceText(r.getStartIndex(), r.getEndIndex(), "");
                 break;
             case IDEA_CREATE_RULE:
+                ideaCreateRule(action);
                 break;
         }
+    }
+
+    public List ideaProviderGetActions(Token token, Parser.Rule rule) {
+        List actions = new ArrayList();
+
+        if(rules.isRuleAtIndex(token.getStart()) && !rules.isRuleName(token.getAttribute())) {
+            actions.add(new IdeaAction("Create rule '"+token.getAttribute()+"'", this, IDEA_CREATE_RULE, token));
+        }
+
+        if(rules.isDuplicateRule(token.getAttribute())) {
+            actions.add(new IdeaAction("Delete rule '"+token.getAttribute()+"'", this, IDEA_DELETE_RULE, token));
+        }
+
+        return actions;
+    }
+
+    public void detectIdeaIfAvailable(Point p) {
+        detectIdeaIfAvailable(getTextPane().viewToModel(p));
+    }
+
+    public void detectIdeaIfAvailable(int position) {
+        if(getTokens() == null)
+            return;
+
+        Parser.Rule rule = rules.getRuleAtPosition(position);
+        Token token = getTokenAtPosition(position);
+        ideaManager.displayAnyIdeasAvailable(token, rule);
+    }
+
+    public void ideaCreateRule(IdeaAction action) {
+        boolean lexerToken = action.token.isAllUpperCase();
+
+        // Add the rule in the next line by default
+        Point p = getLineTextPositionsAtTextPosition(getCaretPosition());
+        int insertionIndex = p.y + 2;
+
+        Parser.Rule rule = rules.getRuleAtPosition(getCaretPosition());
+        if(rule != null) {
+            if(rule.isLexerRule()) {
+                if(lexerToken) {
+                    // Add new rule just after this one
+                    insertionIndex = rule.getEndIndex()+2;
+                } else {
+                    // Add new rule after the last parser rule
+                    Parser.Rule last = rules.getLastParserRule();
+                    if(last != null) {
+                        insertionIndex = last.getEndIndex()+2;
+                    }
+                }
+            } else {
+                if(lexerToken) {
+                    // Add new rule after the last lexer rule
+                    Parser.Rule last = rules.getLastLexerRule();
+                    if(last != null) {
+                        insertionIndex = last.getEndIndex()+2;
+                    }
+                } else {
+                    // Add new rule just after this one
+                    insertionIndex = rule.getEndIndex()+2;
+                }
+            }
+        }
+
+        int tabSize = EditorPreferences.getEditorTabSize();
+        String ruleName = action.token.getAttribute();
+        if(ruleName.length() > tabSize + 1)
+            editorGUI.replaceText(insertionIndex, insertionIndex, action.token.getAttribute()+"\n\t:\n\t;\n\n");
+        else
+            editorGUI.replaceText(insertionIndex, insertionIndex, action.token.getAttribute()+"\t:\n\t;\n\n");
+
+        setCaretPosition(insertionIndex);
     }
 }

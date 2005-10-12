@@ -1,6 +1,9 @@
 package org.antlr.works.editor.idea;
 
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.Parser;
+
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -32,26 +35,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class IdeaAction {
-
-    public String name;
-    public IdeaActionDelegate delegate;
-    public int actionID;
-    public Token token;
-
-    public IdeaAction(String name, IdeaActionDelegate delegate, int actionID, Token token) {
-        this.name = name;
-        this.delegate = delegate;
-        this.actionID = actionID;
-        this.token = token;
-    }
-
-    public void run() {
-        delegate.ideaActionFire(this, actionID);
-    }
-
-    public String toString() {
-        return name;
-    }
-
+public interface IdeaProvider {
+    public List ideaProviderGetActions(Token token, Parser.Rule rule);
 }

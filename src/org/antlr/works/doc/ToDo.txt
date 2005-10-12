@@ -1,4 +1,5 @@
 - terminate "New rule" idea and add others ?
+- tooltip over undefined/duplicate rule
 
 - test with empty preferences file
 - P4: if file read-only and under P4, propose to open for edit

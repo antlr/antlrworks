@@ -46,12 +46,10 @@ import org.antlr.works.editor.tool.TAutoIndent;
 import org.antlr.works.editor.tool.TImmediateColorization;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.undo.UndoDelegate;
-import org.antlr.works.editor.idea.IdeaAction;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
 
-import java.util.List;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -63,7 +61,6 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Iterator;
-import java.util.ArrayList;
 
 public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEditorPaneDelegate {
 
@@ -96,7 +93,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
     protected TImmediateColorization immediateColorization;
     protected TAutoIndent autoIndent;
-    protected Timer ideaTimer;
 
     protected boolean highlightCursorLine = false;
 
@@ -209,13 +205,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         editor.pack();
 
         upDownSplitPane.setDividerLocation(0.5);
-
-        ideaTimer = new Timer(1000, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                editor.ideaOverlay.display();
-            }
-        });
-        ideaTimer.setRepeats(false);
 
         XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
     }
@@ -557,41 +546,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         }
     }
 
-    public void detectIdeaIfAvailable(Point p) {
-        detectIdeaIfAvailable(textPane.viewToModel(p));
-    }
-
-    public void detectIdeaIfAvailable(int position) {
-        if(editor.getTokens() == null)
-            return;
-
-        List ideas = new ArrayList();
-        for (Iterator iterator = editor.getTokens().iterator(); iterator.hasNext();) {
-            Token token = (Token) iterator.next();
-
-            if(token.type != Lexer.TOKEN_ID)
-                continue;
-
-            if(position >= token.getStart() && position <= token.getEnd()) {
-
-                if(editor.rules.isRuleAtIndex(token.getStart()) && !editor.rules.isRuleName(token.getAttribute())) {
-                    ideas.add(new IdeaAction("Create Rule", editor, EditorWindow.IDEA_CREATE_RULE));
-                }
-
-                if(editor.rules.isDuplicateRule(token.getAttribute())) {
-                    ideas.add(new IdeaAction("Delete Rule", editor, EditorWindow.IDEA_DELETE_RULE));
-                }
-            }
-        }
-
-        if(ideas.isEmpty())
-            editor.ideaOverlay.hide();
-        else {
-            editor.ideaOverlay.setIdeas(ideas);
-            ideaTimer.restart();
-        }
-    }
-
     protected class TabMouseListener extends MouseAdapter {
 
         public void mousePressed(MouseEvent event) {
@@ -773,7 +727,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             if(highlightCursorLine)
                 textPane.repaint();
 
-            detectIdeaIfAvailable(e.getPoint());
+            editor.detectIdeaIfAvailable(e.getPoint());
         }
     }
 }
