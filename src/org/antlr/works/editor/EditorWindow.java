@@ -52,17 +52,20 @@ import org.antlr.works.editor.tool.TGrammar;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.visual.Visual;
 import org.antlr.works.editor.idea.*;
+import org.antlr.works.editor.tips.TipsManager;
+import org.antlr.works.editor.tips.TipsOverlay;
 import org.antlr.works.interpreter.Interpreter;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
 public class EditorWindow extends XJWindow implements ThreadedParserObserver,
-     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate, IdeaProvider
+     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate, IdeaProvider, org.antlr.works.editor.tips.TipsProvider
 {
     public ThreadedParser parser = null;
     public KeyBindings keyBindings = null;
@@ -74,6 +77,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public TGrammar grammar = null;
     public TemplateRules templateRules = null;
     public IdeaManager ideaManager = null;
+    public TipsManager tipsManager = null;
 
     public Rules rules = null;
     public Visual visual = null;
@@ -138,6 +142,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         ideaManager = new IdeaManager();
         ideaManager.setOverlay(new IdeaOverlay(this, jFrame, getTextPane()));
         ideaManager.addProvider(this);
+
+        tipsManager = new TipsManager();
+        tipsManager.setOverlay(new TipsOverlay(this, jFrame, getTextPane()));
+        tipsManager.addProvider(this);
 
         rules = new Rules(parser, getTextPane(), editorGUI.rulesTree);
         actions = new TActions(parser, getTextPane());
@@ -519,7 +527,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         // on Rules - the order can change in the future).
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                detectIdeaIfAvailable(getCaretPosition());
+                displayIdeas(getCaretPosition());
             }
         });
     }
@@ -548,6 +556,55 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
                 matchingRules.add(rule.name);
         }
         return matchingRules;
+    }
+
+    /* Tips provider */
+
+    public void displayTips(Point relativePoint, Point absolutePoint) {
+        displayTips(getTextPane().viewToModel(relativePoint), absolutePoint);
+    }
+
+    public void displayTips(int position, Point mousePosition) {
+        if(getTokens() == null)
+            return;
+
+        Parser.Rule rule = rules.getRuleAtPosition(position);
+        Token token = getTokenAtPosition(position);
+
+        Point p = null;
+        try {
+            if(token != null) {
+                // Make sure the mouse is over the token because
+                // Swing will return a valid position even if the mouse
+                // is on the remaining blank part of the line
+                Rectangle r1 = getTextPane().modelToView(token.getStart());
+                Rectangle r2 = getTextPane().modelToView(token.getEnd());
+                Point relativeMousePosition = SwingUtilities.convertPoint(jFrame, mousePosition, getTextPane());
+                if(r1.union(r2).contains(relativeMousePosition))
+                    p = new Point(mousePosition.x+2, r2.y+r2.height+2);
+                else {
+                    tipsManager.hide();
+                    return;
+                }
+            }
+        } catch (BadLocationException e) {
+            // Ignore
+        }
+        tipsManager.displayAnyTipsAvailable(token, rule, p);
+    }
+
+    public List tipsProviderGetTips(Token token, Parser.Rule rule) {
+        List tips = new ArrayList();
+
+        if(rules.isRuleAtIndex(token.getStart()) && !rules.isRuleName(token.getAttribute())) {
+            tips.add("Undefined rule '"+token.getAttribute()+"'");
+        }
+
+        if(rules.isDuplicateRule(token.getAttribute())) {
+            tips.add("Undefined rule '"+token.getAttribute()+"'");
+        }
+
+        return tips;
     }
 
     /* Idea action delegate */
@@ -582,11 +639,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return actions;
     }
 
-    public void detectIdeaIfAvailable(Point p) {
-        detectIdeaIfAvailable(getTextPane().viewToModel(p));
+    public void displayIdeas(Point p) {
+        displayIdeas(getTextPane().viewToModel(p));
     }
 
-    public void detectIdeaIfAvailable(int position) {
+    public void displayIdeas(int position) {
         if(getTokens() == null)
             return;
 

@@ -249,6 +249,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         });
 
         textPane.addMouseListener(new TextPaneMouseAdapter());
+        textPane.addMouseMotionListener(new TextPaneMouseMotionAdapter());
 
         textPane.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -653,7 +654,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             // Only display ideas using the mouse because otherwise when a rule
             // is deleted (for example), the idea might be displayed before
             // the parser was able to complete
-            //detectIdeaIfAvailable(e.getDot());
+            //displayIdeas(e.getDot());
 
             Parser.Rule rule = editor.rules.selectRuleAtPosition(e.getDot());
             if(rule == null || rule.name == null)
@@ -727,7 +728,16 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             if(highlightCursorLine)
                 textPane.repaint();
 
-            editor.detectIdeaIfAvailable(e.getPoint());
+            editor.displayIdeas(e.getPoint());
         }
     }
+
+    protected class TextPaneMouseMotionAdapter extends MouseMotionAdapter {
+        public void mouseMoved(MouseEvent e) {
+            Point relativePoint = e.getPoint();
+            Point absolutePoint = SwingUtilities.convertPoint(textPane, relativePoint, editor.getJavaContainer());
+            editor.displayTips(relativePoint, absolutePoint);
+        }
+    }
+
 }
