@@ -152,14 +152,20 @@ public class MenuGrammar extends AbstractActions {
 
     public void removeLeftRecursion() {
         Parser.Rule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
-        if(rule.hasLeftRecursion()) {
-            editor.beginGroupChange("Remove Left Recursion");
-            String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
-            editor.editorGUI.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
-            editor.endGroupChange();
-        } else {
-            XJAlert.display(editor.getWindowContainer(), "Remove left recursion", "The rule doesn't have a left recursion.");            
+        if(rule == null) {
+            XJAlert.display(editor.getWindowContainer(), "Remove left recursion", "There is no rule at cursor position.");
+            return;
         }
+
+        if(!rule.hasLeftRecursion()) {
+            XJAlert.display(editor.getWindowContainer(), "Remove left recursion", "The rule doesn't have a left recursion.");
+            return;
+        }
+
+        editor.beginGroupChange("Remove Left Recursion");
+        String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
+        editor.editorGUI.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
+        editor.endGroupChange();
     }
 
     public void insertRuleFromTemplate() {

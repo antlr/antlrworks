@@ -55,7 +55,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public static final int MI_FIND_USAGE = 20;
     public static final int MI_RENAME = 21;
-    public static final int MI_EXTRACT_LEXER_RULE = 22;
+    public static final int MI_REPLACE_LITERAL_WITH_TOKEN_LABEL = 22;
     public static final int MI_REMOVE_LEFT_RECURSION = 23;
     public static final int MI_INSERT_TEMPLATE = 24;
     public static final int MI_GROUP = 25;
@@ -113,11 +113,6 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     protected XJMenuItem menuItemUndo = null;
     protected XJMenuItem menuItemRedo = null;
 
-    protected XJMenuItem menuItemRename = null;
-    protected XJMenuItem menuItemReplaceLiteralWithTokenLabel = null;
-    protected XJMenuItem menuItemDebug = null;
-    protected XJMenuItem menuItemBuildAndDebug = null;
-    protected XJMenuItem menuItemDebugRemote = null;
 
     public EditorMenu(EditorWindow editor) {
         this.editor = editor;
@@ -130,19 +125,11 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     }
 
     public void notificationFire(Object source, String name) {
-        boolean enabled = true;
-        if(name.equals(Debugger.NOTIF_DEBUG_STARTED))
-            enabled = false;
-        else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED))
-            enabled = true;
-        else
-            return;
+        editor.getMainMenuBar().refresh();
+    }
 
-        menuItemRename.setEnabled(enabled);
-        menuItemReplaceLiteralWithTokenLabel.setEnabled(enabled);
-        menuItemDebug.setEnabled(enabled);
-        menuItemBuildAndDebug.setEnabled(enabled);
-        menuItemDebugRemote.setEnabled(enabled);
+    public boolean isDebuggerRunning() {
+        return editor.debugger.isRunning();
     }
 
     public void customizeFileMenu(XJMenu menu) {
@@ -201,19 +188,22 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
         menubar.addCustomMenu(menu);
 
-        // *** Grammar menu
+        // *** Find menu
 
         menu = new XJMenu();
-        menu.setTitle("Grammar");
+        menu.setTitle("Find");
         menu.addItem(new XJMenuItem("Find...", 'f', KeyEvent.VK_F, MI_FIND, this));
         menu.addItem(new XJMenuItem("Find Next", 'n', KeyEvent.VK_F3, 0, MI_FIND_NEXT, this));
         menu.addItem(new XJMenuItem("Find Previous", 'p', KeyEvent.VK_F3, Event.ALT_MASK, MI_FIND_PREV, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Find Usages", 'f', KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
-        menu.addSeparator();
-        menu.addItem(menuItemRename = new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
-        menu.addItem(menuItemReplaceLiteralWithTokenLabel = new XJMenuItem("Replace Literal With Token Label...", MI_EXTRACT_LEXER_RULE, this));
-        menu.addItem(new XJMenuItem("Remove Left Recursion", MI_REMOVE_LEFT_RECURSION, this));
+
+        menubar.addCustomMenu(menu);
+
+        // *** Grammar menu
+
+        menu = new XJMenu();
+        menu.setTitle("Grammar");
         menu.addItem(new XJMenuItem("Insert Rule From Template", 't', KeyEvent.VK_T, Event.CTRL_MASK, MI_INSERT_TEMPLATE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
@@ -227,6 +217,17 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
         menubar.addCustomMenu(menu);
 
+        // *** Refactor menu
+
+        menu = new XJMenu();
+        menu.setTitle("Refactor");
+        menu.addItem(new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
+        menu.addItem(new XJMenuItem("Replace Literal With Token Label...", MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Remove Left Recursion", MI_REMOVE_LEFT_RECURSION, this));
+
+        menubar.addCustomMenu(menu);
+        
         // *** Go To menu
 
         menu = new XJMenu();
@@ -265,10 +266,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.setTitle("Run");
         menu.addItem(new XJMenuItem("Run Interpreter", 'i', KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
         menu.addSeparator();
-        menu.addItem(menuItemDebug = new XJMenuItem("Debug...", 'd', KeyEvent.VK_F9, MI_DEBUG, this));
-        menu.addItem(menuItemBuildAndDebug = new XJMenuItem("Build and Debug...", 'b', KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
+        menu.addItem(new XJMenuItem("Debug...", 'd', KeyEvent.VK_F9, MI_DEBUG, this));
+        menu.addItem(new XJMenuItem("Build and Debug...", 'b', KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
         menu.addSeparator();
-        menu.addItem(menuItemDebugRemote = new XJMenuItem("Debug Remote...", 'g', KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
+        menu.addItem(new XJMenuItem("Debug Remote...", 'g', KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
 
         menubar.addCustomMenu(menu);
 
@@ -301,6 +302,25 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public void menuItemState(XJMenuItem item) {
         switch(item.getTag()) {
+            case MI_EDIT_PASTE:
+            case MI_RENAME:
+            case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
+            case MI_REMOVE_LEFT_RECURSION:
+            case MI_INSERT_TEMPLATE:
+            case MI_GROUP:
+            case MI_UNGROUP:
+            case MI_HIDE_ACTION:
+            case MI_SHOW_ALL_ACTION:
+            case MI_HIDE_ALL_ACTION:
+            case MI_CHECK_GRAMMAR:
+            case MI_FIND:
+            case MI_RUN_INTERPRETER:
+            case MI_DEBUG:
+            case MI_BUILD_AND_DEBUG:
+            case MI_DEBUG_REMOTE:
+                item.setEnabled(!isDebuggerRunning());
+                break;
+
             case MI_GOTO_BACKWARD:
                 item.setEnabled(editor.goToHistory.canGoBackward());
                 break;
@@ -314,7 +334,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
             case MI_P4_REVERT:
             case MI_P4_SUBMIT:
             case MI_P4_SYNC:
-                item.setEnabled(EditorPreferences.getP4Enabled());
+                if(isDebuggerRunning())
+                    item.setEnabled(false);
+                else
+                    item.setEnabled(EditorPreferences.getP4Enabled());
                 break;
         }
     }
@@ -398,7 +421,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
                 editor.menuGrammarActions.rename();
                 break;
 
-            case MI_EXTRACT_LEXER_RULE:
+            case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
                 editor.menuGrammarActions.replaceLiteralWithTokenLabel();
                 break;
 

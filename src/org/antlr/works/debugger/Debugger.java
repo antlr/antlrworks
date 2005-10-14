@@ -106,6 +106,8 @@ public class Debugger {
 
     protected Grammar grammar;
 
+    protected boolean running;
+
     public Debugger(EditorWindow editor) {
         this.editor = editor;
 
@@ -499,6 +501,7 @@ public class Debugger {
 
         XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STARTED);
 
+        running = true;
         editor.selectDebuggerTab();
 
         editor.getTextPane().setEditable(false);
@@ -527,6 +530,10 @@ public class Debugger {
                 recorder.forceStop();
         } else
             recorder.stop();
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 
     public void resetGUI() {
@@ -642,17 +649,18 @@ public class Debugger {
             public void run() {
                 restorePreviousGrammarAttributeSet();
                 editor.getTextPane().setEditable(true);
+                running = false;
                 XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STOPPED);
             }
         });
     }
 
     protected class StackListModel extends DefaultListModel {
-        public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); };
+        public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); }
     }
 
     protected class EventListModel extends DefaultListModel {
-        public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); };
+        public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); }
     }
 
     protected class DebuggerTreeNode extends DefaultMutableTreeNode {

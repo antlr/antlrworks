@@ -2,6 +2,8 @@
   should appear in the auto-completion menu). Also, do not propose a rule when typing the name of
   a rule otherwise it will be duplicated.
 - maintain auto-indentation
+- terminate menu refactoring: put Find/Refactor in new menu classes
+- remove left recursion: be careful with blabla+ (do not put a space between a and +)
 
 - test with empty preferences file
 - P4: if file read-only and under P4, propose to open for edit
