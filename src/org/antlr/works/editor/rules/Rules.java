@@ -151,7 +151,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     public class RuleMoveUpAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
-            Parser.Rule sourceRule = getRuleAtPosition(textPane.getCaretPosition());
+            Parser.Rule sourceRule = getEnclosingRuleAtPosition(textPane.getCaretPosition());
             int previousRuleIndex = parser.getRules().indexOf(sourceRule)-1;
             if(previousRuleIndex>=0) {
                 Parser.Rule targetRule = parser.getRuleAtIndex(previousRuleIndex);
@@ -162,7 +162,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     public class RuleMoveDownAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
-            Parser.Rule targetRule = getRuleAtPosition(textPane.getCaretPosition());
+            Parser.Rule targetRule = getEnclosingRuleAtPosition(textPane.getCaretPosition());
             int nextRuleIndex = parser.getRules().indexOf(targetRule)+1;
             Parser.Rule sourceRule = parser.getRuleAtIndex(nextRuleIndex);
             if(sourceRule != null) {
@@ -277,7 +277,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         return matches;
     }
 
-    public Parser.Rule getRuleAtPosition(int pos) {
+    public Parser.Rule getEnclosingRuleAtPosition(int pos) {
         if(parser.getRules() == null)
             return null;
 
@@ -296,7 +296,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             return null;
 
         selectingRule = true;
-        Parser.Rule rule = getRuleAtPosition(pos);
+        Parser.Rule rule = getEnclosingRuleAtPosition(pos);
         selectRule(rule);
         selectingRule = false;
         return rule;
@@ -341,6 +341,16 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         return null;
     }
 
+    public Parser.Rule getRuleStartingWithToken(Token startToken) {
+        Iterator iterator = parser.getRules().iterator();
+        while(iterator.hasNext()) {
+            Parser.Rule r = (Parser.Rule)iterator.next();
+            if(r.start == startToken)
+                return r;
+        }
+        return null;
+    }
+
     public boolean isRuleAtIndex(int index) {
         return getRuleAtIndex(index) != null;
     }
@@ -357,7 +367,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     public void selectNextRule() {
-        Parser.Rule rule = getRuleAtPosition(textPane.getCaretPosition());
+        Parser.Rule rule = getEnclosingRuleAtPosition(textPane.getCaretPosition());
         int index = parser.getRules().indexOf(rule)+1;
         rule = parser.getRuleAtIndex(index);
         if(rule != null) {

@@ -36,5 +36,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface IdeaProvider {
-    public List ideaProviderGetActions(Token token, Parser.Rule rule);
+    public List ideaProviderGetActions(Token token, Parser.Rule rule, Parser.Rule enclosingRule);
 }

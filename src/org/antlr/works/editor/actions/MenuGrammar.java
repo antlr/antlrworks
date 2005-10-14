@@ -76,7 +76,7 @@ public class MenuGrammar extends AbstractActions {
         while(iterator.hasNext()) {
             Token candidate = (Token)iterator.next();
             if(candidate.getAttribute().equals(tokenAttribute)) {
-                Parser.Rule matchedRule = editor.rules.getRuleAtPosition(candidate.getStart());
+                Parser.Rule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStart());
                 if(matchedRule != null)
                     usage.addMatch(matchedRule, candidate);
             }
@@ -147,6 +147,18 @@ public class MenuGrammar extends AbstractActions {
                 continue;
 
             editor.editorGUI.replaceText(token.getStart(), token.getEnd(), name);
+        }
+    }
+
+    public void removeLeftRecursion() {
+        Parser.Rule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
+        if(rule.hasLeftRecursion()) {
+            editor.beginGroupChange("Remove Left Recursion");
+            String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
+            editor.editorGUI.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
+            editor.endGroupChange();
+        } else {
+            XJAlert.display(editor.getWindowContainer(), "Remove left recursion", "The rule doesn't have a left recursion.");            
         }
     }
 

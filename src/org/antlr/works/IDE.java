@@ -133,6 +133,8 @@ public class IDE extends XJApplicationDelegate {
             Class.forName("org.antlr.stringtemplate.StringTemplate");
         } catch (ClassNotFoundException e) {
             missing.append("\n- StringTemplate");
+        } catch (NoClassDefFoundError e) {
+            missing.append("\n- StringTemplate");
         }
 
         if(missing.length()>0) {

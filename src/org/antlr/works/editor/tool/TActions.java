@@ -104,7 +104,7 @@ public class TActions implements ActionListener {
     }
 
     public Token getBlockAtPosition(int pos) {
-        Parser.Rule rule = rules.getRuleAtPosition(pos);
+        Parser.Rule rule = rules.getEnclosingRuleAtPosition(pos);
         if(rule == null)
             return null;
 

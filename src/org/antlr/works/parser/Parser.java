@@ -184,7 +184,23 @@ public class Parser {
         public int getLength() {
             return getEndIndex()-getStartIndex();
         }
-        
+
+        public int getInternalTokensStartIndex() {
+            for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
+                Token token = (Token)iter.next();
+                if(token.getAttribute().equals(":")) {
+                    token = (Token)iter.next();
+                    return token.getStart();
+                }
+            }
+            return -1;
+        }
+
+        public int getInternalTokensEndIndex() {
+            Token token = (Token)tokens.get(tokens.indexOf(end)-1);
+            return token.getEnd();
+        }
+
         public List getBlocks() {
             List blocks = new ArrayList();
             Token lastToken = null;
@@ -201,12 +217,104 @@ public class Parser {
             return blocks;
         }
 
+        public List getTokens() {
+            List t = new ArrayList();
+            for(int index=tokens.indexOf(start); index<tokens.indexOf(end); index++) {
+                t.add(tokens.get(index));
+            }
+            return t;
+        }
+
+        public List getAlternatives() {
+            List alts = new ArrayList();
+            List alt = null;
+            boolean findColon = true;
+            int level = 0;
+            for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
+                Token token = (Token)iter.next();
+                if(findColon) {
+                    if(token.getAttribute().equals(":")) {
+                        findColon = false;
+                        alt = new ArrayList();
+                    }
+                } else {
+                    if(token.getAttribute().equals("("))
+                        level++;
+                    else if(token.getAttribute().equals(")"))
+                        level--;
+                    else if(token.type != Lexer.TOKEN_BLOCK && level == 0) {
+                        if(token.getAttribute().equals("|")) {
+                            alts.add(alt);
+                            alt = new ArrayList();
+                            continue;
+                        }
+                    }
+                    alt.add(token);
+                }
+            }
+            if(alt != null && !alt.isEmpty())
+                alts.add(alt);
+            return alts;
+        }
+
         public void setErrors(List errors) {
             this.errors = errors;
         }
 
         public boolean isLexerRule() {
             return isAllUpperCase;
+        }
+
+        public boolean hasLeftRecursion() {
+            for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
+                List alts = (List)iter.next();
+                Token firstTokenInAlt = (Token)alts.get(0);
+                if(firstTokenInAlt.getAttribute().equals(name))
+                    return true;
+            }
+            return false;
+        }
+
+        public String getTextRuleAfterRemovingLeftRecursion() {
+            List head = new ArrayList();
+            List star = new ArrayList();
+            for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
+                List alts = (List)iter.next();
+                Token firstTokenInAlt = (Token)alts.get(0);
+                if(firstTokenInAlt.getAttribute().equals(name)) {
+                    if(!star.isEmpty())
+                        star.add("|");
+                    for(int index = 1; index<alts.size(); index++) {
+                        Token token = (Token)alts.get(index);
+                        star.add(token.getAttribute());
+                    }
+                } else {
+                    if(!head.isEmpty())
+                        head.add("|");
+                    for(int index = 0; index<alts.size(); index++) {
+                        Token token = (Token)alts.get(index);
+                        head.add(token.getAttribute());
+                    }
+                }
+            }
+
+            StringBuffer sb = new StringBuffer();
+            sb.append("(");
+            for(int index = 0; index<head.size(); index++) {
+                sb.append(head.get(index));
+                if(index < head.size()-1)
+                    sb.append(" ");
+            }
+            sb.append(") ");
+            sb.append("(");
+            for(int index = 0; index<star.size(); index++) {
+                sb.append(star.get(index));
+                if(index < star.size()-1)
+                    sb.append(" ");
+            }
+            sb.append(")*");
+
+            return sb.toString();
         }
 
         public boolean hasErrors() {

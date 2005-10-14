@@ -464,6 +464,12 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
                 g.setColor(Color.blue);
                 drawUnderlineAtIndexes(g, token.getStart(), token.getEnd());
             }
+
+            Parser.Rule rule = editor.rules.getRuleStartingWithToken(token);
+            if(rule != null && rule.hasLeftRecursion()) {
+                g.setColor(Color.yellow);
+                drawUnderlineAtIndexes(g, token.getStart(), token.getEnd());
+            }
         }
     }
 

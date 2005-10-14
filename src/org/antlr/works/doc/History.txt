@@ -1,5 +1,5 @@
 
-Version 1.0ea4 - 10/11/05
+Version 1.0ea4 - 10/13/05
 
 - compatible with ANTLR 3.0ea6
 
@@ -9,6 +9,7 @@ Version 1.0ea4 - 10/11/05
 - undefined rules are now underlined in red
 - rules can now be grouped and displayed in a tree view
 - replace literal with token label
+- remove left recursion
 - insert rule from template
 - support Perforce SCM commands
 

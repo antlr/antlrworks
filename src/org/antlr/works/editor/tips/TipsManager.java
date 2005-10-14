@@ -57,7 +57,12 @@ public class TipsManager {
         providers.add(provider);
     }
 
-    public void displayAnyTipsAvailable(Token token, Parser.Rule rule, Point location) {
+    public void displayAnyTipsAvailable(Token token, Parser.Rule rule, Parser.Rule enclosingRule, Point location) {
+        if(location == null) {
+            hide();
+            return;
+        }
+        
         if(token == lastToken)
             return;
 
@@ -65,7 +70,7 @@ public class TipsManager {
 
         List tips = null;
         if(token != null && token.type == Lexer.TOKEN_ID) {
-            tips = generateTips(token, rule);
+            tips = generateTips(token, rule, enclosingRule);
         }
 
         if(tips == null || tips.isEmpty()) {
@@ -82,11 +87,11 @@ public class TipsManager {
         lastToken = null;
     }
 
-    public List generateTips(Token token, Parser.Rule rule) {
+    public List generateTips(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
         List tips = new ArrayList();
         for(Iterator iter = providers.iterator(); iter.hasNext(); ) {
             TipsProvider provider = (TipsProvider)iter.next();
-            List ptips = provider.tipsProviderGetTips(token, rule);
+            List ptips = provider.tipsProviderGetTips(token, rule, enclosingRule);
             if(ptips != null && !ptips.isEmpty()) {
                 tips.addAll(ptips);
             }

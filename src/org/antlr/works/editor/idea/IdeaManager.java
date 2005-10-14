@@ -64,10 +64,10 @@ public class IdeaManager {
         providers.add(provider);
     }
 
-    public void displayAnyIdeasAvailable(Token token, Parser.Rule rule) {
+    public void displayAnyIdeasAvailable(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
         List ideas = null;
         if(token != null && token.type == Lexer.TOKEN_ID) {
-            ideas = generateIdeaActions(token, rule);
+            ideas = generateIdeaActions(token, rule, enclosingRule);
         }
 
         if(ideas == null || ideas.isEmpty())
@@ -78,11 +78,11 @@ public class IdeaManager {
         }
     }
 
-    public List generateIdeaActions(Token token, Parser.Rule rule) {
+    public List generateIdeaActions(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
         List actions = new ArrayList();
         for(Iterator iter = providers.iterator(); iter.hasNext(); ) {
             IdeaProvider provider = (IdeaProvider)iter.next();
-            List pactions = provider.ideaProviderGetActions(token, rule);
+            List pactions = provider.ideaProviderGetActions(token, rule, enclosingRule);
             if(pactions != null && !pactions.isEmpty()) {
                 actions.addAll(pactions);
             }

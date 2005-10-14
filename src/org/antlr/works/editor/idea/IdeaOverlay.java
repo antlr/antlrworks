@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
+import java.awt.font.TextLayout;
 import java.awt.event.*;
 import java.util.Iterator;
 /*
@@ -111,7 +112,7 @@ public class IdeaOverlay extends OverlayObject {
         int y = 0;
         try {
             y = editor.getTextPane().modelToView(lp.y).y;
-        } catch (BadLocationException e) {
+        } catch (Exception e) {
             // Ignore
         }
 
@@ -134,8 +135,14 @@ public class IdeaOverlay extends OverlayObject {
         int height = ideasList.getFixedCellHeight();
         int size = ideasModel.size();
         if(size > 0) {
+            int width = 0;
+            for(int i=0; i<ideasModel.size(); i++) {
+                IdeaAction action = (IdeaAction)ideasModel.getElementAt(i);
+                TextLayout layout = new TextLayout(action.name, ideasList.getFont(), ((Graphics2D)ideasList.getGraphics()).getFontRenderContext());
+                width = Math.max(width, (int)layout.getBounds().getWidth());
+            }
             height = height*Math.min(VISIBLE_IDEAS, size)+5;
-            ideasScrollPane.setBounds(r.x,  r.y+r.height, 200, height);
+            ideasScrollPane.setBounds(r.x,  r.y+r.height, width+10, height);
         }
     }
 
