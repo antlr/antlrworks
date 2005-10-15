@@ -89,8 +89,7 @@ public class TGoToRule extends OverlayObject {
 
     public void overlayWillDisplay() {
         ruleNameField.setText("");
-        // Invoke focus later because otherwise it
-        // fails on Windows
+        // Invoke focus later because otherwise it fails on Windows
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 ruleNameField.requestFocus();

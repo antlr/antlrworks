@@ -167,9 +167,137 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     }
 
     public void customizeMenuBar(XJMainMenuBar menubar) {
+        createMenuEdit(menubar);
+        createFindMenu(menubar);
+        createGoToMenu(menubar);
+        createGrammarMenu(menubar);
+        createRefactorMenu(menubar);
+        createGenerateMenu(menubar);
+        createRunMenu(menubar);
+        createSCMMenu(menubar);
+        createPrivateMenu(menubar);
+    }
 
-        // *** Edit menu
+    private void createPrivateMenu(XJMainMenuBar menubar) {
+        XJMenu menu;
+        if(EditorPreferences.getPrivateMenu()) {
+            menu = new XJMenu();
+            menu.setTitle("*");
+            menu.addItem(new XJMenuItem("Statistics...", MI_PRIVATE_STATS, this));
+            menu.addItem(new XJMenuItem("Unregister user", MI_PRIVATE_UNREGISTER, this));
 
+            menubar.addCustomMenu(menu);
+        }
+    }
+
+    private void createSCMMenu(XJMainMenuBar menubar) {
+        XJMenu menu;
+        menu = new XJMenu();
+        menu.setTitle("SCM");
+        menu.addItem(new XJMenuItem("Open for Edit", MI_P4_EDIT, this));
+        menu.addItem(new XJMenuItem("Mark for Add", MI_P4_ADD, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Mark for Delete", MI_P4_DELETE, this));
+        menu.addItem(new XJMenuItem("Revert", MI_P4_REVERT, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Submit...", MI_P4_SUBMIT, this));
+        menu.addItem(new XJMenuItem("Sync", MI_P4_SYNC, this));
+
+        menubar.addCustomMenu(menu);
+    }
+
+    private void createRunMenu(XJMainMenuBar menubar) {
+        XJMenu menu;
+        menu = new XJMenu();
+        menu.setTitle("Run");
+        menu.addItem(new XJMenuItem("Run Interpreter", 'i', KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Debug...", 'd', KeyEvent.VK_F9, MI_DEBUG, this));
+        menu.addItem(new XJMenuItem("Build and Debug...", 'b', KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Debug Remote...", 'g', KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
+
+        menubar.addCustomMenu(menu);
+    }
+
+    private void createGenerateMenu(XJMainMenuBar menubar) {
+        XJMenu menu;
+        menu = new XJMenu();
+        menu.setTitle("Generate");
+        menu.addItem(new XJMenuItem("Generate Code...", MI_GENERATE_CODE, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Show Lexer Code", MI_SHOW_GENERATED_LEXER_CODE, this));
+        menu.addItem(new XJMenuItem("Show Parser Code", MI_SHOW_GENERATED_PARSER_CODE, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Show Rule Code", MI_SHOW_RULE_GENCODE, this));
+
+        menubar.addCustomMenu(menu);
+    }
+
+    private void createGoToMenu(XJMainMenuBar menubar) {
+        XJMenu menu;
+        menu = new XJMenu();
+        menu.setTitle("Go To");
+
+        menu.addItem(new XJMenuItem("Rule...", 'n', KeyEvent.VK_N, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_GOTO_RULE, this));
+        menu.addItem(new XJMenuItem("Declaration", 'b', KeyEvent.VK_B, MI_GOTO_DECLARATION, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Line...", 'g', KeyEvent.VK_G, MI_GOTO_LINE, this));
+        menu.addItem(new XJMenuItem("Character...", MI_GOTO_CHARACTER, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Backward", 'b', KeyEvent.VK_LEFT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_BACKWARD, this));
+        menu.addItem(new XJMenuItem("Forward", 'f', KeyEvent.VK_RIGHT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_FORWARD, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Previous Breakpoint", MI_PREV_BREAKPOINT, this));
+        menu.addItem(new XJMenuItem("Next Breakpoint", MI_NEXT_BREAKPOINT, this));
+
+        menubar.addCustomMenu(menu);
+    }
+
+    private void createRefactorMenu(XJMainMenuBar menubar) {
+        XJMenu menu;
+        menu = new XJMenu();
+        menu.setTitle("Refactor");
+        menu.addItem(new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
+        menu.addItem(new XJMenuItem("Replace Literal With Token Label...", MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Remove Left Recursion", MI_REMOVE_LEFT_RECURSION, this));
+
+        menubar.addCustomMenu(menu);
+    }
+
+    private void createGrammarMenu(XJMainMenuBar menubar) {
+        XJMenu menu;
+        menu = new XJMenu();
+        menu.setTitle("Grammar");
+        menu.addItem(new XJMenuItem("Insert Rule From Template", 't', KeyEvent.VK_T, Event.CTRL_MASK, MI_INSERT_TEMPLATE, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
+        menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Hide Action", '-', KeyEvent.VK_MINUS, MI_HIDE_ACTION, this));
+        menu.addItem(new XJMenuItem("Show All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_SHOW_ALL_ACTION, this));
+        menu.addItem(new XJMenuItem("Hide All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_HIDE_ALL_ACTION, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Check Grammar", 'r', KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
+
+        menubar.addCustomMenu(menu);
+    }
+
+    private void createFindMenu(XJMainMenuBar menubar) {
+        XJMenu menu;
+        menu = new XJMenu();
+        menu.setTitle("Find");
+        menu.addItem(new XJMenuItem("Find...", 'f', KeyEvent.VK_F, MI_FIND, this));
+        menu.addItem(new XJMenuItem("Find Next", 'n', KeyEvent.VK_F3, 0, MI_FIND_NEXT, this));
+        menu.addItem(new XJMenuItem("Find Previous", 'p', KeyEvent.VK_F3, Event.ALT_MASK, MI_FIND_PREV, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Find Usages", 'f', KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
+
+        menubar.addCustomMenu(menu);
+    }
+
+    private void createMenuEdit(XJMainMenuBar menubar) {
         XJMenu menu = new XJMenu();
         menu.setTitle("Edit");
         menu.addItem(menuItemUndo = new XJMenuItem("Undo", 'z', KeyEvent.VK_Z, MI_EDIT_UNDO, this));
@@ -187,117 +315,6 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItemCheck("Optimize Syntax Diagram", MI_TOGGLE_NFA_OPTIMIZATION, this, true));
 
         menubar.addCustomMenu(menu);
-
-        // *** Find menu
-
-        menu = new XJMenu();
-        menu.setTitle("Find");
-        menu.addItem(new XJMenuItem("Find...", 'f', KeyEvent.VK_F, MI_FIND, this));
-        menu.addItem(new XJMenuItem("Find Next", 'n', KeyEvent.VK_F3, 0, MI_FIND_NEXT, this));
-        menu.addItem(new XJMenuItem("Find Previous", 'p', KeyEvent.VK_F3, Event.ALT_MASK, MI_FIND_PREV, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Find Usages", 'f', KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
-
-        menubar.addCustomMenu(menu);
-
-        // *** Grammar menu
-
-        menu = new XJMenu();
-        menu.setTitle("Grammar");
-        menu.addItem(new XJMenuItem("Insert Rule From Template", 't', KeyEvent.VK_T, Event.CTRL_MASK, MI_INSERT_TEMPLATE, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
-        menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Hide Action", '-', KeyEvent.VK_MINUS, MI_HIDE_ACTION, this));
-        menu.addItem(new XJMenuItem("Show All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_SHOW_ALL_ACTION, this));
-        menu.addItem(new XJMenuItem("Hide All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_HIDE_ALL_ACTION, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Check Grammar", 'r', KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
-
-        menubar.addCustomMenu(menu);
-
-        // *** Refactor menu
-
-        menu = new XJMenu();
-        menu.setTitle("Refactor");
-        menu.addItem(new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
-        menu.addItem(new XJMenuItem("Replace Literal With Token Label...", MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Remove Left Recursion", MI_REMOVE_LEFT_RECURSION, this));
-
-        menubar.addCustomMenu(menu);
-        
-        // *** Go To menu
-
-        menu = new XJMenu();
-        menu.setTitle("Go To");
-
-        menu.addItem(new XJMenuItem("Rule...", 'n', KeyEvent.VK_N, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_GOTO_RULE, this));
-        menu.addItem(new XJMenuItem("Declaration", 'b', KeyEvent.VK_B, MI_GOTO_DECLARATION, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Line...", 'g', KeyEvent.VK_G, MI_GOTO_LINE, this));
-        menu.addItem(new XJMenuItem("Character...", MI_GOTO_CHARACTER, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Backward", 'b', KeyEvent.VK_LEFT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_BACKWARD, this));
-        menu.addItem(new XJMenuItem("Forward", 'f', KeyEvent.VK_RIGHT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_FORWARD, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Previous Breakpoint", MI_PREV_BREAKPOINT, this));
-        menu.addItem(new XJMenuItem("Next Breakpoint", MI_NEXT_BREAKPOINT, this));
-
-        menubar.addCustomMenu(menu);
-
-        // *** Generate menu
-
-        menu = new XJMenu();
-        menu.setTitle("Generate");
-        menu.addItem(new XJMenuItem("Generate Code...", MI_GENERATE_CODE, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show Lexer Code", MI_SHOW_GENERATED_LEXER_CODE, this));
-        menu.addItem(new XJMenuItem("Show Parser Code", MI_SHOW_GENERATED_PARSER_CODE, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show Rule Code", MI_SHOW_RULE_GENCODE, this));
-
-        menubar.addCustomMenu(menu);
-
-        // *** Run menu
-
-        menu = new XJMenu();
-        menu.setTitle("Run");
-        menu.addItem(new XJMenuItem("Run Interpreter", 'i', KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Debug...", 'd', KeyEvent.VK_F9, MI_DEBUG, this));
-        menu.addItem(new XJMenuItem("Build and Debug...", 'b', KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Debug Remote...", 'g', KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
-
-        menubar.addCustomMenu(menu);
-
-        // *** SCM menu
-
-        menu = new XJMenu();
-        menu.setTitle("SCM");
-        menu.addItem(new XJMenuItem("Open for Edit", MI_P4_EDIT, this));
-        menu.addItem(new XJMenuItem("Mark for Add", MI_P4_ADD, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Mark for Delete", MI_P4_DELETE, this));
-        menu.addItem(new XJMenuItem("Revert", MI_P4_REVERT, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Submit...", MI_P4_SUBMIT, this));
-        menu.addItem(new XJMenuItem("Sync", MI_P4_SYNC, this));
-
-        menubar.addCustomMenu(menu);
-
-        // *** Private menu (only for debug)
-
-        if(EditorPreferences.getPrivateMenu()) {
-            menu = new XJMenu();
-            menu.setTitle("*");
-            menu.addItem(new XJMenuItem("Statistics...", MI_PRIVATE_STATS, this));
-            menu.addItem(new XJMenuItem("Unregister user", MI_PRIVATE_UNREGISTER, this));
-
-            menubar.addCustomMenu(menu);
-        }
     }
 
     public void menuItemState(XJMenuItem item) {
@@ -345,7 +362,9 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
         editor.handleMenuEvent(menu, item);
         handleMenuEdit(item.getTag());
+        handleMenuFind(item.getTag());
         handleMenuGrammar(item.getTag());
+        handleMenuRefactor(item.getTag());
         handleMenuGoTo(item.getTag());
         handleMenuGenerate(item.getTag());
         handleMenuRun(item.getTag());
@@ -399,36 +418,28 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         }
     }
 
-    public void handleMenuGrammar(int itemTag) {
+    public void handleMenuFind(int itemTag) {
         switch(itemTag) {
             case MI_FIND:
-                editor.menuGrammarActions.find();
+                editor.menuFindActions.find();
                 break;
 
             case MI_FIND_NEXT:
-                editor.menuGrammarActions.findNext();
+                editor.menuFindActions.findNext();
                 break;
 
             case MI_FIND_PREV:
-                editor.menuGrammarActions.findPrev();
+                editor.menuFindActions.findPrev();
                 break;
 
             case MI_FIND_USAGE:
-                editor.menuGrammarActions.findUsage();
+                editor.menuFindActions.findUsage();
                 break;
+        }
+    }
 
-            case MI_RENAME:
-                editor.menuGrammarActions.rename();
-                break;
-
-            case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
-                editor.menuGrammarActions.replaceLiteralWithTokenLabel();
-                break;
-
-            case MI_REMOVE_LEFT_RECURSION:
-                editor.menuGrammarActions.removeLeftRecursion();
-                break;
-
+    public void handleMenuGrammar(int itemTag) {
+        switch(itemTag) {
             case MI_INSERT_TEMPLATE:
                 editor.menuGrammarActions.insertRuleFromTemplate();
                 break;
@@ -455,6 +466,22 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_CHECK_GRAMMAR:
                 editor.menuGrammarActions.checkGrammar();
+                break;
+        }
+    }
+
+    public void handleMenuRefactor(int itemTag) {
+        switch(itemTag) {
+            case MI_RENAME:
+                editor.menuRefactorActions.rename();
+                break;
+
+            case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
+                editor.menuRefactorActions.replaceLiteralWithTokenLabel();
+                break;
+
+            case MI_REMOVE_LEFT_RECURSION:
+                editor.menuRefactorActions.removeLeftRecursion();
                 break;
         }
     }

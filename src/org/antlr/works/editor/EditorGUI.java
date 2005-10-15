@@ -555,8 +555,10 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
     protected class TabMouseListener extends MouseAdapter {
 
+        protected static final int CLOSING_INDEX_LIMIT = 4;
+
         public void mousePressed(MouseEvent event) {
-            if(viewTabbedPane.getSelectedIndex()<4)
+            if(viewTabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
                 return;
 
             if(event.isPopupTrigger()) {
@@ -564,7 +566,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
                 JMenuItem item = new JMenuItem("Close");
                 item.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent event) {
-                        if(viewTabbedPane.getSelectedIndex()<3)
+                        if(viewTabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
                             return;
 
                         viewTabbedPane.removeTabAt(viewTabbedPane.getSelectedIndex());
@@ -740,9 +742,11 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
     protected class TextPaneMouseMotionAdapter extends MouseMotionAdapter {
         public void mouseMoved(MouseEvent e) {
-            Point relativePoint = e.getPoint();
-            Point absolutePoint = SwingUtilities.convertPoint(textPane, relativePoint, editor.getJavaContainer());
-            editor.displayTips(relativePoint, absolutePoint);
+            if(textPane.hasFocus()) {
+                Point relativePoint = e.getPoint();
+                Point absolutePoint = SwingUtilities.convertPoint(textPane, relativePoint, editor.getJavaContainer());
+                editor.displayTips(relativePoint, absolutePoint);                
+            }
         }
     }
 

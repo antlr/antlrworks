@@ -33,139 +33,16 @@ package org.antlr.works.editor.actions;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.tool.TUsage;
-import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
-import java.util.Iterator;
-import java.util.List;
 
 public class MenuGrammar extends AbstractActions {
 
     public MenuGrammar(EditorWindow editor) {
         super(editor);
-    }
-
-    public void find() {
-        editor.findAndReplace.find();
-    }
-
-    public void findNext() {
-        editor.findAndReplace.next();
-    }
-
-    public void findPrev() {
-        editor.findAndReplace.prev();
-    }
-
-    public void findUsage() {
-        Token token = editor.getTokenAtPosition(getCaretPosition());
-        if(token == null)
-            return;
-
-        String tokenAttribute = token.getAttribute();
-
-        TUsage usage = new TUsage(editor);
-        editor.getTabbedPane().add("Usages of \""+tokenAttribute+"\"", usage.getContainer());
-        editor.getTabbedPane().setSelectedIndex(editor.getTabbedPane().getTabCount()-1);
-
-        Iterator iterator = editor.getTokens().iterator();
-        while(iterator.hasNext()) {
-            Token candidate = (Token)iterator.next();
-            if(candidate.getAttribute().equals(tokenAttribute)) {
-                Parser.Rule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStart());
-                if(matchedRule != null)
-                    usage.addMatch(matchedRule, candidate);
-            }
-        }
-
-        Statistics.shared().recordEvent(Statistics.EVENT_FIND_USAGES);
-    }
-
-    public void rename() {
-        Token token = editor.getTokenAtPosition(getCaretPosition());
-        if(token == null)
-            return;
-
-        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Rename '"+token.getAttribute()+"' and its usages to:", "Rename",
-                JOptionPane.QUESTION_MESSAGE, null, null, token.getAttribute());
-        if(s != null && !s.equals(token.getAttribute())) {
-            editor.beginGroupChange("Rename");
-            renameToken(token, s);
-            editor.endGroupChange();
-            Statistics.shared().recordEvent(Statistics.EVENT_RENAME);
-        }
-    }
-
-    public void renameToken(Token t, String name) {
-        List tokens = editor.getTokens();
-        String attr = t.getAttribute();
-        for(int index = tokens.size()-1; index>0; index--) {
-            Token token = (Token) tokens.get(index);
-            if(token.type == t.type && token.getAttribute().equals(attr)) {
-                editor.editorGUI.replaceText(token.getStart(), token.getEnd(), name);
-            }
-        }
-    }
-
-    public void replaceLiteralWithTokenLabel() {
-        Token token = editor.getTokenAtPosition(getCaretPosition());
-        if(token == null)
-            return;
-
-        if(token.type != Lexer.TOKEN_SINGLE_QUOTE_STRING && token.type != Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
-            XJAlert.display(editor.getJavaContainer(), "Cannot Replace Literal With Token Label", "The current token is not a string.");
-            return;
-        }
-
-        String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Replace Literal '"+token.getAttribute()+"' with token label:", "Replace Literal With Token Label",
-                JOptionPane.QUESTION_MESSAGE, null, null, "");
-        if(s != null && !s.equals(token.getAttribute())) {
-            editor.beginGroupChange("Replace Literal With Token Label");
-            replaceLiteralTokenWithTokenLabel(token, s);
-            editor.endGroupChange();
-        }
-    }
-
-    public void replaceLiteralTokenWithTokenLabel(Token t, String name) {
-        // First insert the rule at the end of the grammar
-        int insertionIndex = editor.getText().length();
-        editor.editorGUI.replaceText(insertionIndex, insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
-
-        // Then rename all strings token
-        List tokens = editor.getTokens();
-        String attr = t.getAttribute();
-        for(int index = tokens.size()-1; index>0; index--) {
-            Token token = (Token) tokens.get(index);
-            if(token.type != Lexer.TOKEN_SINGLE_QUOTE_STRING && token.type != Lexer.TOKEN_DOUBLE_QUOTE_STRING)
-                continue;
-
-            if(!token.getAttribute().equals(attr))
-                continue;
-
-            editor.editorGUI.replaceText(token.getStart(), token.getEnd(), name);
-        }
-    }
-
-    public void removeLeftRecursion() {
-        Parser.Rule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
-        if(rule == null) {
-            XJAlert.display(editor.getWindowContainer(), "Remove left recursion", "There is no rule at cursor position.");
-            return;
-        }
-
-        if(!rule.hasLeftRecursion()) {
-            XJAlert.display(editor.getWindowContainer(), "Remove left recursion", "The rule doesn't have a left recursion.");
-            return;
-        }
-
-        editor.beginGroupChange("Remove Left Recursion");
-        String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
-        editor.editorGUI.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
-        editor.endGroupChange();
     }
 
     public void insertRuleFromTemplate() {

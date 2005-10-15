@@ -268,6 +268,9 @@ public class Parser {
         public boolean hasLeftRecursion() {
             for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
                 List alts = (List)iter.next();
+                if(alts.isEmpty())
+                    continue;
+                
                 Token firstTokenInAlt = (Token)alts.get(0);
                 if(firstTokenInAlt.getAttribute().equals(name))
                     return true;
@@ -276,42 +279,35 @@ public class Parser {
         }
 
         public String getTextRuleAfterRemovingLeftRecursion() {
-            List head = new ArrayList();
-            List star = new ArrayList();
+            StringBuffer head = new StringBuffer();
+            StringBuffer star = new StringBuffer();
+
             for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
                 List alts = (List)iter.next();
                 Token firstTokenInAlt = (Token)alts.get(0);
                 if(firstTokenInAlt.getAttribute().equals(name)) {
-                    if(!star.isEmpty())
-                        star.add("|");
-                    for(int index = 1; index<alts.size(); index++) {
-                        Token token = (Token)alts.get(index);
-                        star.add(token.getAttribute());
+                    if(alts.size() > 1) {
+                        if(star.length() > 0)
+                            star.append(" | ");
+                        int start = ((Token)alts.get(1)).getStart();
+                        int end = ((Token)alts.get(alts.size()-1)).getEnd();
+                        star.append(firstTokenInAlt.text.substring(start, end));
                     }
                 } else {
-                    if(!head.isEmpty())
-                        head.add("|");
-                    for(int index = 0; index<alts.size(); index++) {
-                        Token token = (Token)alts.get(index);
-                        head.add(token.getAttribute());
-                    }
+                    if(head.length() > 0)
+                        head.append(" | ");
+                    int start = firstTokenInAlt.getStart();
+                    int end = ((Token)alts.get(alts.size()-1)).getEnd();
+                    head.append(firstTokenInAlt.text.substring(start, end));
                 }
             }
 
             StringBuffer sb = new StringBuffer();
             sb.append("(");
-            for(int index = 0; index<head.size(); index++) {
-                sb.append(head.get(index));
-                if(index < head.size()-1)
-                    sb.append(" ");
-            }
+            sb.append(head);
             sb.append(") ");
             sb.append("(");
-            for(int index = 0; index<star.size(); index++) {
-                sb.append(star.get(index));
-                if(index < star.size()-1)
-                    sb.append(" ");
-            }
+            sb.append(star);
             sb.append(")*");
 
             return sb.toString();

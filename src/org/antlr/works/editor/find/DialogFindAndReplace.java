@@ -43,21 +43,13 @@ import java.awt.event.ActionListener;
 
 public class DialogFindAndReplace extends XJPanel {
 
-    protected static DialogFindAndReplace shared = null;
-
     protected FindAndReplace delegate;
 
-    public static synchronized DialogFindAndReplace shared() {
-        if(shared == null)
-            shared = new DialogFindAndReplace();
-        return shared;
-    }
-
     public DialogFindAndReplace() {
-
         initComponents();
 
         setSize(550, 180);
+        setTitle("Find");
         awake();
         center();
 

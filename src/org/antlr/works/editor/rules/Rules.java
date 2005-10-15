@@ -665,42 +665,16 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
                 return "";
         }
 
-        /**
-         * Returns an array of DataFlavor objects indicating the flavors the data
-         * can be provided in.  The array should be ordered according to preference
-         * for providing the data (from most richly descriptive to least descriptive).
-         *
-         * @return an array of data flavors in which this data can be transferred
-         */
         public DataFlavor[] getTransferDataFlavors() {
-            return new DataFlavor[0];  //To change body of implemented methods use File | Settings | File Templates.
+            return new DataFlavor[0];
         }
 
-        /**
-         * Returns whether or not the specified data flavor is supported for
-         * this object.
-         *
-         * @param flavor the requested flavor for the data
-         * @return boolean indicating whether or not the data flavor is supported
-         */
         public boolean isDataFlavorSupported(DataFlavor flavor) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+            return false;
         }
 
-        /**
-         * Returns an object which represents the data to be transferred.  The class
-         * of the object returned is defined by the representation class of the flavor.
-         *
-         * @param flavor the requested flavor for the data
-         * @throws java.io.IOException if the data is no longer available
-         *                             in the requested flavor.
-         * @throws java.awt.datatransfer.UnsupportedFlavorException
-         *                             if the requested data flavor is
-         *                             not supported.
-         * @see java.awt.datatransfer.DataFlavor#getRepresentationClass
-         */
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null;
         }
     }
 

@@ -114,7 +114,8 @@ public class VisualDrawing extends EditorThread {
         try {
             visual.engine.setGrammarText(threadText, filename);
         } catch (Exception e) {
-            e.printStackTrace();
+            // Ignore
+            //e.printStackTrace();
         } finally {
             // Flush all caches in cache because the grammar has changed
             clearCacheGraphs();

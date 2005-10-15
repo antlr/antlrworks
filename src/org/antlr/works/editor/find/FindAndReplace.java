@@ -37,7 +37,10 @@ import org.antlr.works.editor.EditorWindow;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FindAndReplace {
+import edu.usfca.xj.appkit.frame.XJFrameDelegate;
+import edu.usfca.xj.appkit.frame.XJFrame;
+
+public class FindAndReplace implements XJFrameDelegate {
 
     public EditorWindow editor;
     public String findString;
@@ -45,6 +48,8 @@ public class FindAndReplace {
     public int flags;
     public String prefix = "";
     public String suffix = "";
+
+    public DialogFindAndReplace dialog;
 
     public FindAndReplace(EditorWindow editor) {
         this.editor = editor;
@@ -98,8 +103,12 @@ public class FindAndReplace {
     }
 
     public void display() {
-        DialogFindAndReplace.shared().setDelegate(this);
-        DialogFindAndReplace.shared().show();
+        if(dialog == null) {
+            dialog = new DialogFindAndReplace();
+            dialog.setDelegate((XJFrameDelegate)this);
+        }
+        dialog.setDelegate(this);
+        dialog.show();
     }
 
     public void setFindString(String string) {
@@ -134,5 +143,9 @@ public class FindAndReplace {
                 suffix = "\\b";
                 break;
         }
+    }
+
+    public void frameDidClose(XJFrame frame) {
+        dialog = null;
     }
 }

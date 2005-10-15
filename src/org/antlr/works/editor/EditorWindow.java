@@ -95,7 +95,9 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     protected EditorMenu editorMenu = null;
 
     protected MenuEdit menuEditActions = null;
+    protected MenuFind menuFindActions = null;
     protected MenuGrammar menuGrammarActions = null;
+    protected MenuRefactor menuRefactorActions = null;
     protected MenuGoTo menuGoToActions = null;
     protected MenuGenerate menuGenerateActions = null;
     protected MenuRun menuRunActions = null;
@@ -115,7 +117,9 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         editorMenu = new EditorMenu(this);
 
         menuEditActions = new MenuEdit(this);
+        menuFindActions = new MenuFind(this);
         menuGrammarActions = new MenuGrammar(this);
+        menuRefactorActions = new MenuRefactor(this);
         menuGoToActions = new MenuGoTo(this);
         menuGenerateActions = new MenuGenerate(this);
         menuRunActions = new MenuRun(this);
@@ -406,12 +410,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         Line startLine = (Line)lines.get(lineIndex);
         int start = startLine.position;
-        int end = 0;
         if(lineIndex+1 >= lines.size()) {
             return new Point(start, getTextPane().getDocument().getLength()-1);
         } else {
             Line endLine = (Line)lines.get(lineIndex+1);
-            end = endLine.position;
+            int end = endLine.position;
             return new Point(start, end-1);
         }
     }
@@ -641,7 +644,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
                 ideaCreateRule(action);
                 break;
             case IDEA_REMOVE_LEFT_RECURSION:
-                menuGrammarActions.removeLeftRecursion();
+                menuRefactorActions.removeLeftRecursion();
                 break;
         }
     }
