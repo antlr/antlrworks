@@ -332,6 +332,9 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     public Parser.Rule getRuleAtIndex(int index) {
+        if(parser.getRules() == null)
+            return null;
+
         Iterator iterator = parser.getRules().iterator();
         while(iterator.hasNext()) {
             Parser.Rule r = (Parser.Rule)iterator.next();
@@ -342,6 +345,9 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     public Parser.Rule getRuleStartingWithToken(Token startToken) {
+        if(parser.getRules() == null)
+            return null;
+
         Iterator iterator = parser.getRules().iterator();
         while(iterator.hasNext()) {
             Parser.Rule r = (Parser.Rule)iterator.next();

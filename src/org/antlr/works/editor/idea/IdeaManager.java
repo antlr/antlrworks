@@ -1,15 +1,15 @@
 package org.antlr.works.editor.idea;
 
-import org.antlr.works.parser.Token;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Lexer;
+import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.Token;
 
 import javax.swing.*;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.util.List;
 /*
 
 [The "BSD licence"]

@@ -1,7 +1,7 @@
 package org.antlr.works.editor.tips;
 
-import org.antlr.works.parser.Token;
 import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.Token;
 
 import java.util.List;
 /*

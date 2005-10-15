@@ -32,13 +32,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.find;
 
+import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.frame.XJFrameDelegate;
 import org.antlr.works.editor.EditorWindow;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import edu.usfca.xj.appkit.frame.XJFrameDelegate;
-import edu.usfca.xj.appkit.frame.XJFrame;
 
 public class FindAndReplace implements XJFrameDelegate {
 

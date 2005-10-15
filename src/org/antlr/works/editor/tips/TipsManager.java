@@ -1,14 +1,14 @@
 package org.antlr.works.editor.tips;
 
 import org.antlr.works.editor.idea.IdeaProvider;
-import org.antlr.works.parser.Token;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Lexer;
+import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.Token;
 
-import java.util.List;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.*;
+import java.util.List;
 /*
 
 [The "BSD licence"]

@@ -44,9 +44,9 @@ import org.antlr.works.editor.code.CodeGenerate;
 
 import javax.swing.*;
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.URL;
-import java.lang.reflect.Method;
 
 public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 

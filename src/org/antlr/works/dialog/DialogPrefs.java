@@ -57,21 +57,14 @@ public class DialogPrefs extends XJPanel {
     protected int lafIndex = 0;
 
     public DialogPrefs() {
+        super();
 
         initComponents();
-
         setSize(600, 360);
 
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                dialogPane.requestFocus();
-                getPreferences().applyPreferences();
-                if(lafIndex != lafCombo.getSelectedIndex()) {
-                    lafIndex = lafCombo.getSelectedIndex();                    
-                    changeLookAndFeel();
-                }
-                XJApplication.setAutoSave(EditorPreferences.getAutoSaveEnabled(), EditorPreferences.getAutoSaveDelay());
-                XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_PREFS_APPLIED);
+                apply();
             }
         });
 
@@ -172,8 +165,24 @@ public class DialogPrefs extends XJPanel {
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_PREFERENCES);
     }
 
+    public void close() {
+        apply();
+        super.close();
+    }
+
     public boolean isAuxiliaryWindow() {
         return true;
+    }
+
+    private void apply() {
+        dialogPane.requestFocus();
+        getPreferences().applyPreferences();
+        if(lafIndex != lafCombo.getSelectedIndex()) {
+            lafIndex = lafCombo.getSelectedIndex();
+            changeLookAndFeel();
+        }
+        XJApplication.setAutoSave(EditorPreferences.getAutoSaveEnabled(), EditorPreferences.getAutoSaveDelay());
+        XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_PREFS_APPLIED);
     }
 
     private void changeLookAndFeel() {

@@ -82,7 +82,6 @@ public class AutoCompletionMenu extends OverlayObject {
                 return Math.min(listModel.getSize(), VISIBLE_MATCHING_RULES);
             }
         };
-        list.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, 12));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setBackground(new Color(235, 244, 254));
         list.addKeyListener(new MyKeyAdapter());
@@ -114,6 +113,7 @@ public class AutoCompletionMenu extends OverlayObject {
             return;
         }
 
+        list.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, 12));
         setDisplayIndex(index+1);
         setWordLists(matchingRules, matchingRules);
     }
@@ -182,7 +182,8 @@ public class AutoCompletionMenu extends OverlayObject {
     }
 
     public void autoComplete() {
-        completePartialWord((String)words.get(list.getSelectedIndex()));
+        if(list.getSelectedIndex() > 0)
+            completePartialWord((String)words.get(list.getSelectedIndex()));
     }
 
     public void resize() {

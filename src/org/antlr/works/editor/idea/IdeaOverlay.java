@@ -1,17 +1,16 @@
 package org.antlr.works.editor.idea;
 
-import org.antlr.works.editor.swing.OverlayObject;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.swing.OverlayObject;
 import org.antlr.works.util.IconManager;
 
-import java.util.List;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
-import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.awt.font.TextLayout;
 import java.awt.event.*;
+import java.awt.font.TextLayout;
 import java.util.Iterator;
+import java.util.List;
 /*
 
 [The "BSD licence"]

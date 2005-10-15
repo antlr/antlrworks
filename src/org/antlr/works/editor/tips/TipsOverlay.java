@@ -1,14 +1,17 @@
 package org.antlr.works.editor.tips;
 
-import org.antlr.works.editor.swing.OverlayObject;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.swing.OverlayObject;
 
 import javax.swing.*;
-import java.util.List;
-import java.util.Iterator;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
-import java.awt.event.*;
+import java.util.Iterator;
+import java.util.List;
 /*
 
 [The "BSD licence"]

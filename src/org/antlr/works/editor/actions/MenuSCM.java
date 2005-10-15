@@ -34,8 +34,8 @@ package org.antlr.works.editor.actions;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
 import org.antlr.works.scm.p4.P4;
