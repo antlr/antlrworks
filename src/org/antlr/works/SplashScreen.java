@@ -45,6 +45,7 @@ public class SplashScreen extends JWindow {
 		initComponents();
 
         iconButton.setIcon(IconManager.shared().getIconApplication());
+        iconButton.setContentAreaFilled(false);
 
         appNameLabel.setText(Localizable.getLocalizedString(Localizable.APP_NAME));
         infoLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_INFO));

@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class TipsOverlay extends OverlayObject {
 
     protected static final int VISIBLE_TIPS = 10;
-    protected static final Color BACKGROUND_COLOR = new Color(1.0f, 1.0f, 0.4f, 0.5f);
+    protected static final Color BACKGROUND_COLOR = new Color(1.0f, 1.0f, 0.6f, 0.8f);
 
     protected EditorWindow editor;
     protected DefaultListModel tipsModel;
@@ -74,6 +74,7 @@ public class TipsOverlay extends OverlayObject {
         tipsList = new JList(tipsModel);
         tipsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tipsList.setBackground(BACKGROUND_COLOR);
+        tipsList.setSelectionForeground(Color.black);
         tipsList.setSelectionBackground(BACKGROUND_COLOR);
         tipsList.setPrototypeCellValue("This is a rule name g");
         tipsList.addKeyListener(new MyListKeyAdapter());

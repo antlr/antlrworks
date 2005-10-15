@@ -56,6 +56,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
+import javax.swing.text.rtf.RTFEditorKit;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -223,6 +224,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
     public void createTextPane() {
         textPane = new TextEditorPane(new EditorStyledDocument());
+        textPane.setEditorKit(new CustomEditorKit());
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
 
@@ -387,7 +389,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
     public void updateUndoRedo(Undo undo) {
         if(editor.editorMenu == null || editor.editorMenu.menuItemUndo == null
-            || editor.editorMenu.menuItemRedo == null)
+                || editor.editorMenu.menuItemRedo == null)
             return;
 
         editor.editorMenu.menuItemUndo.setTitle("Undo");
@@ -433,19 +435,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-        if(highlightCursorLine) {
-            Composite c = g2d.getComposite();
-            try {
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT, 0.1f));
-                Rectangle r1 = textPane.modelToView(editor.getCaretPosition());
-                g.setColor(Color.black);
-                g.fillRect(0, r1.y, editor.getTextPane().getSize().width, EditorPreferences.getEditorFontSize()+2);
-            } catch (BadLocationException e) {
-                // Ignore
-            }
-            g2d.setComposite(c);
-        }
-
         if(editor.getTokens() == null)
             return;
 
@@ -467,73 +456,76 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
             Parser.Rule rule = editor.rules.getRuleStartingWithToken(token);
             if(rule != null && rule.hasLeftRecursion()) {
-                g.setColor(Color.yellow);
+                g.setColor(Color.green);
                 drawUnderlineAtIndexes(g, token.getStart(), token.getEnd());
             }
         }
     }
 
-    /*public class MyComposite implements Composite {
-        public CompositeContext createContext(ColorModel srcColorModel,
-                                              ColorModel dstColorModel,
-                                              RenderingHints hints)
-        {
-            return new MyCompositeContext(srcColorModel, dstColorModel, hints);
+    public class CustomEditorKit extends StyledEditorKit implements ViewFactory {
+
+        // This class has been inspired by fabrice_pi at this URL:
+        // http://www.javafr.com/code.aspx?ID=21900
+
+        public ViewFactory getViewFactory() {
+            return this;
+        }
+
+        public Document createDefaultDocument() {
+            return new EditorStyledDocument();
+        }
+
+        public View create(Element elem) {
+            String kind = elem.getName();
+
+            if(AbstractDocument.ParagraphElementName.equals(kind))
+                return new LineHighlightingParagraphView(elem);
+            else
+                return super.getViewFactory().create(elem);
         }
     }
 
-    public class MyCompositeContext implements CompositeContext {
+    public class LineHighlightingParagraphView extends ParagraphView {
+        public Rectangle tempRect = new Rectangle();
+        public Color highlightColor = new Color(1.0f, 1.0f, 0.5f, 0.3f);
 
-        ColorModel srcColorModel;
-        ColorModel dstColorModel;
-        Color xorColor;
-
-        public MyCompositeContext(ColorModel srcColorModel,
-                                              ColorModel dstColorModel,
-                                              RenderingHints hints) {
-            this.srcColorModel = srcColorModel;
-            this.dstColorModel = dstColorModel;
-            this.xorColor = Color.red;
+        public LineHighlightingParagraphView(Element elem) {
+            super(elem);
         }
 
-        public void compose(Raster src, Raster dstIn, WritableRaster dstOut)
-        {
-            Rectangle srcRect = src.getBounds();
-            Rectangle dstInRect = dstIn.getBounds();
-            Rectangle dstOutRect = dstOut.getBounds();
+        public void paint(Graphics g, Shape allocation) {
+            if(highlightCursorLine) {
+                Rectangle alloc = (allocation instanceof Rectangle) ?
+                        (Rectangle)allocation :
+                        allocation.getBounds();
+                int n = getViewCount();
+                int x = alloc.x + getLeftInset();
+                int y = alloc.y + getTopInset();
+                Rectangle clip = g.getClipBounds();
+                int cursorPosition = textPane.getCaretPosition()+1;
+                for (int i = 0; i < n; i++) {
+                    tempRect.x = x + getOffset(X_AXIS, i);
+                    tempRect.y = y + getOffset(Y_AXIS, i);
+                    tempRect.width = getSpan(X_AXIS, i);
+                    tempRect.height = getSpan(Y_AXIS, i);
+                    if (tempRect.intersects(clip)) {
+                        View v = getView(i);
 
-            int xp = xorColor.getRGB();
-            int w = Math.min(Math.min (srcRect.width, dstOutRect.width),
-                    dstInRect.width);
-            int h = Math.min(Math.min (srcRect.height, dstOutRect.height),
-                    dstInRect.height);
+                        if (v.getStartOffset() < cursorPosition &&
+                                cursorPosition <= v.getEndOffset()) {
+                            g.setColor(highlightColor);
+                            g.fillRect(tempRect.x, tempRect.y,
+                                    alloc.width, tempRect.height);
+                        }
 
-            Object srcPix = null, dstPix = null, rpPix = null;
-
-            // Re-using the rpPix object saved 1-2% of execution time in
-            // the 1024x1024 pixel benchmark.
-
-            for (int y = 0; y < h; y++)
-            {
-                for (int x = 0; x < w; x++)
-                {
-                    srcPix = src.getDataElements(x + srcRect.x, y + srcRect.y, srcPix);
-                    dstPix = dstIn.getDataElements(x + dstInRect.x, y + dstInRect.y,
-                            dstPix);
-                    int sp = srcColorModel.getRGB(srcPix);
-                    int dp = dstColorModel.getRGB(dstPix);
-                    //int rp = sp ^ xp ^ dp;
-                    int rp = sp;
-                    dstOut.setDataElements(x + dstOutRect.x, y + dstOutRect.y,
-                            dstColorModel.getDataElements(rp, rpPix));
+                        paintChild(g, tempRect, i);
+                    }
                 }
+            } else {
+                super.paint(g, allocation);
             }
         }
-
-        public void dispose() {
-
-        }
-    } */
+    }
 
     public void drawUnderlineAtIndexes(Graphics g, int start, int end) {
         try {
