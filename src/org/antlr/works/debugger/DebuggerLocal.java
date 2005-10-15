@@ -46,6 +46,7 @@ import javax.swing.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.URL;
+import java.lang.reflect.Method;
 
 public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
@@ -332,7 +333,13 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 result = p.waitFor();
             } else if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_INTEGRATED)) {
                 args = new String[] { "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
-                result = com.sun.tools.javac.Main.compile(args);
+                Class javac = Class.forName("com.sun.tools.javac.Main");
+                Class[] p = new Class[] { String[].class };
+                Method m = javac.getMethod("compile", p);
+                Object[] a = new Object[] { args };
+                Object r = m.invoke(javac.newInstance(), a);
+                System.err.println(r);
+                //result = com.sun.tools.javac.Main.compile(args);
             }
 
         } catch(Error e) {
