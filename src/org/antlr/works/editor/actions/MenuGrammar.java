@@ -32,17 +32,39 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.actions;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.tool.TDecisionDFA;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
 
-public class MenuGrammar extends AbstractActions {
+public class MenuGrammar extends AbstractActions implements TDecisionDFA.TDecisionDFADelegate {
+
+    protected XJDialogProgress progress;
 
     public MenuGrammar(EditorWindow editor) {
         super(editor);
+        progress = new XJDialogProgress(editor.getWindowContainer());
+    }
+
+    public void showDecisionDFA() {
+        showProgress("Generating...");
+        TDecisionDFA decision = new TDecisionDFA(editor, this);
+        decision.launch();
+    }
+
+    public void decisionDFADidCompleted(TDecisionDFA decision, String error) {
+        progress.close();
+        if(error == null) {
+            Parser.Rule rule = editor.getCurrentRule();
+            editor.getTabbedPane().add("Decision "+decision.decisionNumber+" of \""+rule.name+"\"", decision.getContainer());
+            editor.getTabbedPane().setSelectedIndex(editor.getTabbedPane().getTabCount()-1);
+        } else {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the DFA because: "+error);
+        }
     }
 
     public void insertRuleFromTemplate() {
@@ -115,4 +137,14 @@ public class MenuGrammar extends AbstractActions {
         Statistics.shared().recordEvent(Statistics.EVENT_CHECK_GRAMMAR);
     }
 
+    protected void showProgress(String title) {
+        progress.setInfo(title);
+        progress.setCancellable(false);
+        progress.setIndeterminate(true);
+        progress.display();
+    }
+
+    protected void hideProgress() {
+        progress.close();
+    }
 }

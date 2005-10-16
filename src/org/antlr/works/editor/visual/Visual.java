@@ -153,7 +153,7 @@ public class Visual {
     }
 
     public String chooseDOTFile() {
-        if(XJFileChooser.shared().displaySaveDialog(parent.getJavaContainer(), "DOT", "DOT file", false) == false)
+        if(!XJFileChooser.shared().displaySaveDialog(parent.getJavaContainer(), "DOT", "DOT file", false))
             return null;
 
         return XJFileChooser.shared().getSelectedFilePath();

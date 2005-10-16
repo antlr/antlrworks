@@ -299,6 +299,19 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         return textPane.getCaretPosition();
     }
 
+    public int getCurrentLinePosition() {
+        return editor.getLineIndexAtTextPosition(editor.getCaretPosition()) + 1;
+    }
+
+    public int getCurrentColumnPosition() {
+        int lineIndex = editor.getLineIndexAtTextPosition(editor.getCaretPosition());
+        Point linePosition = editor.getLineTextPositionsAtLineIndex(lineIndex);
+        if(linePosition == null)
+            return 1;
+        else
+            return editor.getCaretPosition() - linePosition.x + 1;
+    }
+
     public int getSelectionStart() {
         return textPane.getSelectionStart();
     }
@@ -359,14 +372,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     }
 
     public void updateCursorInfo() {
-        int lineIndex = editor.getLineIndexAtTextPosition(editor.getCaretPosition());
-        Point linePosition = editor.getLineTextPositionsAtLineIndex(lineIndex);
-        if(linePosition == null) {
-            cursorLabel.setText("1:1");
-        } else {
-            int columnNumber = editor.getCaretPosition() - linePosition.x;
-            cursorLabel.setText((lineIndex +1)+":"+(columnNumber+1));
-        }
+        cursorLabel.setText(getCurrentLinePosition()+":"+getCurrentColumnPosition());
     }
 
     public void updateSCMStatus(String status) {

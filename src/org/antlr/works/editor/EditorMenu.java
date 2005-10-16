@@ -68,6 +68,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_FIND = 31;
     public static final int MI_FIND_NEXT = 32;
     public static final int MI_FIND_PREV = 33;
+    public static final int MI_SHOW_DECISION_DFA = 34;
 
     public static final int MI_GOTO_RULE = 40;
     public static final int MI_GOTO_DECLARATION = 41;
@@ -270,6 +271,8 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle("Grammar");
+        menu.addItem(new XJMenuItem("Show Current Decision DFA", MI_SHOW_DECISION_DFA, this));
+        menu.addSeparator();
         menu.addItem(new XJMenuItem("Insert Rule From Template", 't', KeyEvent.VK_T, Event.CTRL_MASK, MI_INSERT_TEMPLATE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
@@ -309,7 +312,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Select All", 'a', KeyEvent.VK_A, MI_EDIT_SELECT_ALL, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItemCheck("Auto-indentation", MI_TOGGLE_AUTOINDENT, this, true));
+        menu.addItem(new XJMenuItemCheck("Auto-Indentation", MI_TOGGLE_AUTOINDENT, this, true));
         menu.addItem(new XJMenuItemCheck("Syntax Coloring", MI_TOGGLE_SYNTAX_COLORING, this, true));
         menu.addItem(new XJMenuItemCheck("Syntax Diagram", MI_TOGGLE_SYNTAX_DIAGRAM, this, true));
         menu.addItem(new XJMenuItemCheck("Optimize Syntax Diagram", MI_TOGGLE_NFA_OPTIMIZATION, this, true));
@@ -440,6 +443,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public void handleMenuGrammar(int itemTag) {
         switch(itemTag) {
+            case MI_SHOW_DECISION_DFA:
+                editor.menuGrammarActions.showDecisionDFA();
+                break;
+
             case MI_INSERT_TEMPLATE:
                 editor.menuGrammarActions.insertRuleFromTemplate();
                 break;

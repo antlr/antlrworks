@@ -41,12 +41,12 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.works.dialog.DialogDebugInput;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.code.CodeGenerate;
+import org.antlr.works.util.Utils;
 
 import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
-import java.net.URL;
 
 public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
@@ -223,14 +223,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     public boolean generateGlueCode() {
-        String templateFile = remoteParserTemplateName+".st";
-
         try {
-            URL file = getClass().getResource(templateFile);
-
-            String path = file.getPath();
-            path = path.substring(0, path.length()-templateFile.length());
-
             XJUtils.writeStringToFile(getInputText(), fileRemoteParserInputText);
 
             StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup");
@@ -289,7 +282,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     public boolean compileCode() {
-
         File f = new File(outputFileDir);
         if(false && f.exists()) {
             switch(XJAlert.displayAlert(debugger.editor.getWindowContainer(), "Debugger", "Compiled code files already exists. Do you want to continue, re-compile or cancel ?",
@@ -320,6 +312,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
             if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JAVAC)) {
                 args = new String[] { "javac", "-classpath",  System.getProperty("java.class.path"), "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
+                System.out.println("Compile:"+ Utils.toString(args));
                 Process p = Runtime.getRuntime().exec(args);
                 new StreamWatcher(p.getErrorStream(), "Compiler").start();
                 new StreamWatcher(p.getInputStream(), "Compiler").start();
@@ -338,7 +331,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 Method m = javac.getMethod("compile", p);
                 Object[] a = new Object[] { args };
                 Object r = m.invoke(javac.newInstance(), a);
-                System.err.println(r);
+                result = ((Integer)r).intValue();
                 //result = com.sun.tools.javac.Main.compile(args);
             }
 
@@ -410,7 +403,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         public void run() {
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line=null;
+                String line;
                 while ( (line = br.readLine()) != null)
                     debugger.editor.console.println(type + ">" + line);
             } catch (IOException ioe) {

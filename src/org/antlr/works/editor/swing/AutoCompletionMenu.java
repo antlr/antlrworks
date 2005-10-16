@@ -97,7 +97,7 @@ public class AutoCompletionMenu extends OverlayObject {
 
         int index = getPartialWordBeginsAtPosition(position);
         String partialWord = "";
-        if(index<position)
+        if(index < position)
             partialWord = getTextComponent().getText().substring(index+1, position);
 
         setInsertionStartIndex(index+1);
@@ -156,10 +156,7 @@ public class AutoCompletionMenu extends OverlayObject {
         if(Character.isLetterOrDigit(c))
             return true;
 
-        if(c == '_')
-            return true;
-
-        return false;
+        return c == '_';
     }
 
     public int getPartialWordBeginsAtPosition(int pos) {

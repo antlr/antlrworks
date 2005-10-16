@@ -1,3 +1,7 @@
+- options is a reserved keyword (don't allow a rule with that name and don't display
+  undefined rule for this token)
+- path to dot tool and image type
+  
 - automatic completion based on existing rule and existing token (i.e an undefined reference to rule
   should appear in the auto-completion menu). Also, do not propose a rule when typing the name of
   a rule otherwise it will be duplicated.

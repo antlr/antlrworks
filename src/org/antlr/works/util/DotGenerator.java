@@ -61,15 +61,23 @@ public class DotGenerator implements FAWalkerDelegate {
 
     public void walkerState(FAState state, int mode) {
         if(mode == MODE_HEADER) {
-            dot.append("node [fontsize=11, shape = circle]; \""+state.stateNumber+"\"\n");
+            dot.append("node [fontsize=11, shape = circle]; \"");
+            dot.append(state.stateNumber);
+            dot.append("\"\n");
         }
     }
 
     public void walkerTransition(FATransition transition, int mode) {
         if(mode == MODE_TRANSITION) {
-            dot.append("\""+transition.source+"\" -> \""+transition.target+"\"");
+            dot.append("\"");
+            dot.append(transition.source);
+            dot.append("\" -> \"");
+            dot.append(transition.target);
+            dot.append("\"");
             String label = transition.label==null?"e":transition.label;
-            dot.append(" [fontsize=11, fontname=\"Courier\", label = \""+label+"\"];\n");
+            dot.append(" [fontsize=11, fontname=\"Courier\", label = \"");
+            dot.append(label);
+            dot.append("\"];\n");
         }
     }
 }

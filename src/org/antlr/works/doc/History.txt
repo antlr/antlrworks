@@ -29,6 +29,7 @@ Version 1.0ea4 - 10/13/05
 - preferences: can now specify the colors of each type of token in the debugger input text panel
 
 - fixed a bug where a new document created on Windows would not be correctly colorized
+- fixed several visual bugs on Windows and Linux
 
 Version 1.0ea3 - 07/04/05
 
