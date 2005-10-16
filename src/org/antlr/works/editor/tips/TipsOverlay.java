@@ -121,8 +121,9 @@ public class TipsOverlay extends OverlayObject {
         tipsList.setSelectedIndex(0);
     }
 
-    public void overlayWillDisplay() {
+    public boolean overlayWillDisplay() {
         updateTipsList();
+        return true;
     }
 
     public class MyListMouseAdapter extends MouseAdapter {

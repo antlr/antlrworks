@@ -46,14 +46,23 @@ public class IdeaManager {
     protected List providers = new ArrayList();
     protected Timer timer;
     protected IdeaOverlay overlay;
+    protected IdeaManagerDelegate delegate;
 
     public IdeaManager() {
         timer = new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if(delegate != null) {
+                    if(!delegate.ideaManagerWillDisplayIdea())
+                        return;
+                }
                 overlay.display();
             }
         });
         timer.setRepeats(false);
+    }
+
+    public void setDelegate(IdeaManagerDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public void setOverlay(IdeaOverlay overlay) {
@@ -62,6 +71,10 @@ public class IdeaManager {
 
     public void addProvider(IdeaProvider provider) {
         providers.add(provider);
+    }
+
+    public void hide() {
+        overlay.hide();
     }
 
     public void displayAnyIdeasAvailable(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {

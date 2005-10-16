@@ -87,7 +87,7 @@ public class TGoToRule extends OverlayObject {
         return panel;
     }
 
-    public void overlayWillDisplay() {
+    public boolean overlayWillDisplay() {
         ruleNameField.setText("");
         // Invoke focus later because otherwise it fails on Windows
         SwingUtilities.invokeLater(new Runnable() {
@@ -96,6 +96,7 @@ public class TGoToRule extends OverlayObject {
             }
         });
         updateAutoCompletionList();
+        return true;
     }
 
     public void hide() {

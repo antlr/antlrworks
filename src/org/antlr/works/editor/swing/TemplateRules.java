@@ -75,12 +75,13 @@ public class TemplateRules extends AutoCompletionMenu {
         return "CONTROL-T";
     }
 
-    public void overlayWillDisplay() {
+    public boolean overlayWillDisplay() {
         int position = getTextComponent().getCaretPosition();
         setDisplayIndex(position);
         setWordLists(templateRuleNames, templateRuleTexts);
         setInsertionStartIndex(position);
         setInsertionEndIndex(position);
+        return true;
     }
 
     public class ListMouseMotionAdapter extends MouseMotionAdapter {

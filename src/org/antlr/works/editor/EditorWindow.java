@@ -65,7 +65,8 @@ import java.util.*;
 import java.util.List;
 
 public class EditorWindow extends XJWindow implements ThreadedParserObserver,
-     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate, IdeaProvider, org.antlr.works.editor.tips.TipsProvider
+     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate,
+     IdeaManagerDelegate, IdeaProvider, org.antlr.works.editor.tips.TipsProvider
 {
     public ThreadedParser parser = null;
     public KeyBindings keyBindings = null;
@@ -146,6 +147,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         ideaManager = new IdeaManager();
         ideaManager.setOverlay(new IdeaOverlay(this, jFrame, getTextPane()));
         ideaManager.addProvider(this);
+        ideaManager.setDelegate(this);
 
         tipsManager = new TipsManager();
         tipsManager.setOverlay(new TipsOverlay(this, jFrame, getTextPane()));
@@ -546,19 +548,43 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
      *  given a partial word
      */
 
-    public List getMatchingWordsForPartialWord(String partialWord) {
+    public List autoCompletionMenuGetMatchingWordsForPartialWord(String partialWord) {
         if(parser == null || parser.getRules() == null)
             return null;
 
         partialWord = partialWord.toLowerCase();
         List matchingRules = new ArrayList();
-        Iterator iterator = parser.getRules().iterator();
-        while(iterator.hasNext()) {
-            Parser.Rule rule = (Parser.Rule)iterator.next();
-            if(rule.name.toLowerCase().startsWith(partialWord))
-                matchingRules.add(rule.name);
+
+        if(rules.isRuleAtIndex(getCaretPosition())) {
+            // Inside a rule - show all rules in alphabetical order
+
+            List sortedRules = Collections.list(Collections.enumeration(parser.getRules()));
+            Collections.sort(sortedRules);
+
+            for(Iterator iterator = sortedRules.iterator(); iterator.hasNext(); ) {
+                Parser.Rule rule = (Parser.Rule)iterator.next();
+                if(rule.name.toLowerCase().startsWith(partialWord))
+                    matchingRules.add(rule.name);
+            }
+        } else {
+            // Not inside rule - show only undefined rules
+
+            List sortedUndefinedRules = Collections.list(Collections.enumeration(rules.getUndefinedRules()));
+            Collections.sort(sortedUndefinedRules);
+
+            for(Iterator iterator = sortedUndefinedRules.iterator(); iterator.hasNext(); ) {
+                String name = (String)iterator.next();
+                if(name.toLowerCase().startsWith(partialWord) && !name.equals(partialWord))
+                    matchingRules.add(name);
+            }
         }
+
         return matchingRules;
+    }
+
+    public void autoCompletionMenuWillDisplay() {
+        // Hide any ideas when displaying auto-completion menu
+        ideaManager.hide();
     }
 
     /* Tips provider */
@@ -594,7 +620,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public List tipsProviderGetTips(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
         List tips = new ArrayList();
 
-        if(rules.isRuleAtIndex(token.getStart()) && !rules.isRuleName(token.getAttribute())) {
+        if(rules.isUndefinedRule(token.getAttribute())) {
             tips.add("Undefined symbol '"+token.getAttribute()+"'");
         }
 
@@ -618,7 +644,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public List ideaProviderGetActions(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
         List actions = new ArrayList();
 
-        if(rules.isRuleAtIndex(token.getStart()) && !rules.isRuleName(token.getAttribute())) {
+        if(rules.isUndefinedRule(token.getAttribute())) {
             actions.add(new IdeaAction("Create rule '"+token.getAttribute()+"'", this, IDEA_CREATE_RULE, token));
         }
 
@@ -647,6 +673,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
                 menuRefactorActions.removeLeftRecursion();
                 break;
         }
+    }
+
+    public boolean ideaManagerWillDisplayIdea() {
+        return !autoCompletionMenu.isVisible();
     }
 
     public void displayIdeas(Point p) {
@@ -706,4 +736,5 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         setCaretPosition(insertionIndex);
     }
+
 }

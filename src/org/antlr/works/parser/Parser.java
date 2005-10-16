@@ -48,10 +48,29 @@ public class Parser {
     public static final String BEGIN_GROUP = "// $<";
     public static final String END_GROUP = "// $>";
 
+    public static final List blockIdentifiers;
+    public static final List keywords;
+
     protected Lexer lexer;
 
     public List rules = null;
     public List groups = null;
+    public List blocks = null;
+    public Name name = null;
+
+    static {
+        blockIdentifiers = new ArrayList();
+        blockIdentifiers.add("options");
+        blockIdentifiers.add("tokens");
+        blockIdentifiers.add("header");
+
+        keywords = new ArrayList();
+        keywords.add("options");
+        keywords.add("tokens");
+        keywords.add("header");
+        keywords.add("grammar");
+        keywords.add("fragment");
+    }
 
     public Parser() {
     }
@@ -59,21 +78,32 @@ public class Parser {
     public void parse(String text) {
         rules = new ArrayList();
         groups = new ArrayList();
+        blocks = new ArrayList();
 
         lexer = new Lexer(text);
         tokens = lexer.parseTokens();
         position = -1;
         while(nextToken()) {
-            if(!matchOptionsTokensBlock()) {
-                if(T(0).type == Lexer.TOKEN_ID) {
-                    Rule rule = matchRule();
-                    if(rule != null)
-                        rules.add(rule);
-                } else if(T(0).type == Lexer.TOKEN_SINGLE_COMMENT) {
-                    Group group = matchRuleGroup(rules);
-                    if(group != null)
-                        groups.add(group);
-                }
+            Name n = matchName();
+            if(n != null) {
+                name = n;
+                continue;
+            }
+
+            Block block = matchBlock();
+            if(block != null) {
+                blocks.add(block);
+                continue;
+            }
+
+            if(T(0).type == Lexer.TOKEN_ID) {
+                Rule rule = matchRule();
+                if(rule != null)
+                    rules.add(rule);
+            } else if(T(0).type == Lexer.TOKEN_SINGLE_COMMENT) {
+                Group group = matchRuleGroup(rules);
+                if(group != null)
+                    groups.add(group);
             }
         }
     }
@@ -89,21 +119,38 @@ public class Parser {
         return lexer.line;
     }
 
-    public boolean matchOptionsTokensBlock() {
-        if(T(0).type != Lexer.TOKEN_ID)
-            return false;
+    public Name matchName() {
+        Token start = T(0);
 
-        if(T(0).getAttribute().equals("options") || T(0).getAttribute().equals("tokens")) {
+        if(start.type != Lexer.TOKEN_ID)
+            return null;
+
+        if(start.getAttribute().equals("grammar")) {
+            while(nextToken()) {
+                if(T(0).type == Lexer.TOKEN_SEMI)
+                    return new Name(start.getAttribute(), start, T(0));
+            }
+            return null;
+        } else
+            return null;
+    }
+
+    public Block matchBlock() {
+        Token start = T(0);
+        if(start.type != Lexer.TOKEN_ID)
+            return null;
+
+        if(blockIdentifiers.contains(start.getAttribute().toLowerCase())) {
             if(T(1) == null)
-                return false;
+                return null;
 
             if(T(1).type != Lexer.TOKEN_BLOCK)
-                return false;
+                return null;
 
             nextToken();
-            return true;
+            return new Block(start.getAttribute(), start, T(0));
         } else
-            return false;
+            return null;
     }
 
     public Rule matchRule() {
@@ -113,6 +160,17 @@ public class Parser {
         if(start.getAttribute().equals(ATTRIBUTE_FRAGMENT)) {
             nextToken();
             name = T(0).getAttribute();
+        }
+
+        // Skip any comments
+        while(T(1).type == Lexer.TOKEN_SINGLE_COMMENT || T(1).type == Lexer.TOKEN_COMPLEX_COMMENT) {
+            nextToken();
+        }
+
+        // Make sure it is a rule
+        if(T(1).type != Lexer.TOKEN_COLON) {
+            // @todo check for that but a rule name should always be followed by a colon ?
+            return null;
         }
 
         boolean colonFound = false;
@@ -345,6 +403,32 @@ public class Parser {
         public int compareTo(Object o) {
             Rule otherRule = (Rule) o;
             return this.name.compareTo(otherRule.name);
+        }
+    }
+
+    public class Block {
+
+        public String name;
+        public Token start;
+        public Token end;
+
+        public Block(String name, Token start, Token end) {
+            this.name = name;
+            this.start = start;
+            this.end = end;
+        }
+    }
+
+    public class Name {
+
+        public String name;
+        public Token start;
+        public Token end;
+
+        public Name(String name, Token start, Token end) {
+            this.name = name;
+            this.start = start;
+            this.end = end;
         }
     }
 

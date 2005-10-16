@@ -108,14 +108,20 @@ public class IdeaOverlay extends OverlayObject {
     public Point overlayCustomPosition() {
         Point lp = editor.getLineTextPositionsAtTextPosition(editor.getCaretPosition());
 
+        int cx = 0;
         int y = 0;
         try {
             y = editor.getTextPane().modelToView(lp.y).y;
+            cx = editor.getTextPane().modelToView(editor.getCaretPosition()).x;
         } catch (Exception e) {
             // Ignore
         }
 
-        Point p = SwingUtilities.convertPoint(parentComponent, new Point(0, 0), parentFrame.getRootPane());
+        Point anchor = new Point(0, 0);
+        if(cx < 50)
+            anchor.x += 50;
+
+        Point p = SwingUtilities.convertPoint(parentComponent, anchor, parentFrame.getRootPane());
         return new Point(p.x + 5, p.y + y);
     }
 
@@ -153,9 +159,10 @@ public class IdeaOverlay extends OverlayObject {
         ideasList.setSelectedIndex(0);
     }
 
-    public void overlayWillDisplay() {
+    public boolean overlayWillDisplay() {
         updateIdeasList();
         ideaButton.setSelected(false);
+        return true;
     }
 
     public void applyIdea(int index) {

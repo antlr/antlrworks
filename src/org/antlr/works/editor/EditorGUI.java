@@ -449,7 +449,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             if(token.type != Lexer.TOKEN_ID)
                 continue;
 
-            if(editor.rules.isRuleAtIndex(token.getStart()) && !editor.rules.isRuleName(token.getAttribute())) {
+            if(editor.rules.isUndefinedRule(token.getAttribute())) {
                 g.setColor(Color.red);
                 drawUnderlineAtIndexes(g, token.getStart(), token.getEnd());
             }

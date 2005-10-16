@@ -225,10 +225,7 @@ public class Lexer {
         if(Character.isLetterOrDigit(c))
             return true;
 
-        if(c == '_' || c == '$')
-            return true;
-
-        return false;
+        return c == '_' || c == '$';
     }
 
     public Token createNewToken(int type) {

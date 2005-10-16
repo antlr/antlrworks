@@ -136,13 +136,20 @@ public abstract class OverlayObject {
     }
 
     public void display() {
-        overlayWillDisplay();
-        resize();
-        content.setVisible(true);
+        if(overlayWillDisplay()) {
+            resize();
+            content.setVisible(true);
+        } else {
+            content.setVisible(false);
+        }
+    }
+
+    public boolean isVisible() {
+        return content.isVisible();
     }
 
     public abstract JComponent overlayCreateInterface();
-    public abstract void overlayWillDisplay();
+    public abstract boolean overlayWillDisplay();
 
     public int overlayDefaultWidth() {
         return DEFAULT_WIDTH;

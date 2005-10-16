@@ -17,6 +17,7 @@ Version 1.0ea4 - 10/13/05
 - improved console with events list
 - refactored the main menu bar
 - improved drag and drop visual feedback (can now drop below or above a rule)
+- improved auto-completion (different is inside a rule or defining a rule)
 
 - auto-indentation (enabled on ':', '|' and ';' characters)
 - current line is now highlighted

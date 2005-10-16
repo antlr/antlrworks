@@ -35,10 +35,7 @@ import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
 import org.antlr.works.editor.helper.KeyBindings;
 import org.antlr.works.editor.tool.TActions;
-import org.antlr.works.parser.Parser;
-import org.antlr.works.parser.ThreadedParser;
-import org.antlr.works.parser.ThreadedParserObserver;
-import org.antlr.works.parser.Token;
+import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
 
@@ -67,6 +64,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     private TActions actions = null;
 
     private List duplicateRules = null;
+    private List undefinedRules = null;
 
     private boolean selectingRule = false;
     private boolean skipParseRules = false;
@@ -85,6 +83,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         this.rulesTree = rulesTree;
 
         duplicateRules = new ArrayList();
+        undefinedRules = new ArrayList();
 
         rulesTree.setDelegate(this);
         rulesTree.setEnableDragAndDrop();
@@ -365,6 +364,14 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         return duplicateRules.contains(rule);
     }
 
+    public boolean isUndefinedRule(String rule) {
+        return undefinedRules.contains(rule);
+    }
+
+    public List getUndefinedRules() {
+        return undefinedRules;
+    }
+
     public void selectFirstRule() {
         if(parser.getRules().size() == 0)
             return;
@@ -463,6 +470,45 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         }
     }
 
+    public boolean isNameToken(Token t) {
+        Parser.Name name = parser.getName();
+        return t.getStart() >= name.start.getStart() && t.getEnd() <= name.end.getEnd();
+    }
+
+    public boolean isBlockToken(Token t) {
+        for(Iterator iter = parser.getBlocks().iterator(); iter.hasNext(); ) {
+            Parser.Block b = (Parser.Block)iter.next();
+            if(t.getStart() >= b.start.getStart() && t.getEnd() <= b.end.getEnd())
+                return true;
+        }
+        return false;
+    }
+
+    public void rebuildUndefinedRulesList() {
+        List ruleNames = parser.getRuleNames();
+        undefinedRules.clear();
+        for(Iterator iter = parser.getTokens().iterator(); iter.hasNext(); ) {
+            Token t = (Token)iter.next();
+            if(t.isAllUpperCase())
+                continue;
+
+            if(t.type != Lexer.TOKEN_ID)
+                continue;
+            
+            if(isNameToken(t))
+                continue;
+
+            if(isBlockToken(t))
+                continue;
+
+            if(Parser.keywords.contains(t.getAttribute()))
+                continue;
+
+            if(!ruleNames.contains(t.getAttribute()))
+                undefinedRules.add(t.getAttribute());
+        }
+    }
+
     public void rebuildTree() {
         saveExpandedNodes();
 
@@ -545,7 +591,12 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     public void parserDidComplete() {
+        //long t = System.currentTimeMillis();
         rebuildDuplicateRulesList();
+        rebuildUndefinedRulesList();
+        //long delta = System.currentTimeMillis()-t;
+        //System.out.println("Rebuild in "+delta);
+
         rebuildTree();
         if(selectNextRule) {
             // Can be set by RuleMoveDown() class when a rule is moved down. Selection has to occurs here

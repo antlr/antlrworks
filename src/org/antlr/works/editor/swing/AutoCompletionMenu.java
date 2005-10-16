@@ -92,7 +92,7 @@ public class AutoCompletionMenu extends OverlayObject {
         return scrollPane;
     }
 
-    public void overlayWillDisplay() {
+    public boolean overlayWillDisplay() {
         int position = getTextComponent().getCaretPosition();
 
         int index = getPartialWordBeginsAtPosition(position);
@@ -103,19 +103,20 @@ public class AutoCompletionMenu extends OverlayObject {
         setInsertionStartIndex(index+1);
         setInsertionEndIndex(position);
 
-        List matchingRules = delegate.getMatchingWordsForPartialWord(partialWord);
+        List matchingRules = delegate.autoCompletionMenuGetMatchingWordsForPartialWord(partialWord);
         if(matchingRules.size() == 0) {
-            content.setVisible(false);
-            return;
+            return false;
         } else if(matchingRules.size() == 1) {
-            content.setVisible(false);
             completePartialWord((String)matchingRules.get(0));
-            return;
+            return false;
         }
 
         list.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, 12));
         setDisplayIndex(index+1);
         setWordLists(matchingRules, matchingRules);
+
+        delegate.autoCompletionMenuWillDisplay();
+        return true;
     }
 
     public KeyStroke overlayDisplayKeyStroke() {
@@ -216,10 +217,10 @@ public class AutoCompletionMenu extends OverlayObject {
         if(index<position)
             partialWord = getTextComponent().getText().substring(index+1, position);
 
-        List matchingRules = delegate.getMatchingWordsForPartialWord(partialWord);
-        if(matchingRules == null || matchingRules.size() == 0)
-            content.setVisible(false);
-        else {
+        List matchingRules = delegate.autoCompletionMenuGetMatchingWordsForPartialWord(partialWord);
+        if(matchingRules == null || matchingRules.size() == 0) {
+            hide();
+        } else {
             setInsertionEndIndex(position);
             setWordLists(matchingRules, matchingRules);
             resize();

@@ -1,13 +1,9 @@
-- options is a reserved keyword (don't allow a rule with that name and don't display
-  undefined rule for this token)
-- path to dot tool and image type
-  
-- automatic completion based on existing rule and existing token (i.e an undefined reference to rule
-  should appear in the auto-completion menu). Also, do not propose a rule when typing the name of
-  a rule otherwise it will be duplicated.
+- PREFS: path to dot tool and image type
+- PREFS: syntax coloring delay in preferences
+
+- right panel like IntelliJ to display problem
 - maintain auto-indentation
 - handle collapsed action when removing left recursion
-
 - test with empty preferences file
 - P4: if file read-only and under P4, propose to open for edit
 - SCM: add diff
@@ -15,7 +11,6 @@
 - use Grammar randomText to generate random valid input text
 - @todo in grammar and panel to recapitulate (also for undefined and duplicated rules)
 - message pour indiquer lorsque le syntax diagram n'est pas affiche (comme par exemple sur les regles du lexer)
-- syntax coloring delay in preferences
 - check environment (see e-mail from Jim Idle)
 
 - lexical ambiguities (ask Terence)

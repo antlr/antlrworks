@@ -1,3 +1,4 @@
+package org.antlr.works.editor.idea;
 /*
 
 [The "BSD licence"]
@@ -29,11 +30,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.swing;
-
-import java.util.List;
-
-public interface AutoCompletionMenuDelegate {
-    public List autoCompletionMenuGetMatchingWordsForPartialWord(String partialWord);
-    public void autoCompletionMenuWillDisplay();
+public interface IdeaManagerDelegate {
+    public boolean ideaManagerWillDisplayIdea();
 }
