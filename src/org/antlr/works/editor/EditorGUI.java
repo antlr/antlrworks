@@ -58,8 +58,11 @@ import javax.swing.text.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.geom.GeneralPath;
 import java.awt.event.*;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
 
 public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEditorPaneDelegate {
 
@@ -95,6 +98,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     protected TAutoIndent autoIndent;
 
     protected boolean highlightCursorLine = false;
+    protected boolean isTyping = false;
+    protected UnderlyingShape underlyingShape = new UnderlyingShape();
 
     public EditorGUI(EditorWindow editor) {
         this.editor = editor;
@@ -265,6 +270,14 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
                 gutter.setPreferredSize(d);
             }
         });
+    }
+
+    public synchronized void setIsTyping(boolean flag) {
+        isTyping = flag;
+    }
+
+    public synchronized boolean isTyping() {
+        return isTyping;
     }
 
     public void setAutoIndent(boolean flag) {
@@ -441,13 +454,32 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         }
     }
 
+    public void parserDidComplete() {
+        setIsTyping(false);
+        updateInformation();
+        updateCursorInfo();
+        analysisStrip.repaint();
+        underlyingShape.reset();
+        textPane.repaint();
+    }
+
     public void textEditorPaneDidPaint(Graphics g) {
+        if(editor.getTokens() == null)
+            return;
+
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-        if(editor.getTokens() == null)
+        if(underlyingShape.isReady()) {
+            underlyingShape.draw(g2d);
             return;
+        }
+
+        if(isTyping())
+            return;
+
+        underlyingShape.begin();
 
         for (Iterator iterator = editor.getTokens().iterator(); iterator.hasNext();) {
             Token token = (Token) iterator.next();
@@ -456,24 +488,89 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
                 continue;
 
             if(editor.rules.isUndefinedToken(token)) {
-                g.setColor(Color.red);
-                drawUnderlineAtIndexes(g, token.getStartIndex(), token.getEndIndex());
+                drawUnderlineAtIndexes(g, Color.red, token.getStartIndex(), token.getEndIndex());
             }
 
             if(editor.rules.isDuplicateRule(token.getAttribute())) {
-                g.setColor(Color.blue);
-                drawUnderlineAtIndexes(g, token.getStartIndex(), token.getEndIndex());
+                drawUnderlineAtIndexes(g, Color.blue, token.getStartIndex(), token.getEndIndex());
             }
 
             Parser.Rule rule = editor.rules.getRuleStartingWithToken(token);
             if(rule != null && rule.hasLeftRecursion()) {
-                g.setColor(Color.green);
-                drawUnderlineAtIndexes(g, token.getStartIndex(), token.getEndIndex());
+                drawUnderlineAtIndexes(g, Color.green, token.getStartIndex(), token.getEndIndex());
             }
+        }
+
+        underlyingShape.end();
+    }
+
+    public void drawUnderlineAtIndexes(Graphics g, Color c, int start, int end) {
+        try {
+            Rectangle r1 = textPane.modelToView(start);
+            Rectangle r2 = textPane.modelToView(end);
+
+            g.setColor(c);
+
+            int width = r2.x-r1.x;
+            int triangle_size = 5;
+            for(int triangle=0; triangle<width/triangle_size; triangle++) {
+                int x = r1.x+triangle*triangle_size;
+                int y = r1.y+r1.height-1;
+                g.drawLine(x, y, x+triangle_size/2, y-triangle_size/2);
+                g.drawLine(x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
+
+
+                underlyingShape.addLine(c, x, y, x+triangle_size/2, y-triangle_size/2);
+                underlyingShape.addLine(c, x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
+            }
+        } catch (BadLocationException e) {
+            // Ignore
         }
     }
 
-    public class CustomEditorKit extends StyledEditorKit implements ViewFactory {
+    protected class UnderlyingShape {
+
+        public Map shapes = new HashMap();
+        public boolean ready = false;
+
+        public void addLine(Color c, int x1, int y1, int x2, int y2) {
+            GeneralPath gp = (GeneralPath)shapes.get(c);
+            if(gp == null) {
+                gp = new GeneralPath();
+                shapes.put(c, gp);
+            }
+            gp.moveTo(x1, y1);
+            gp.lineTo(x2, y2);
+        }
+
+        public void draw(Graphics2D g) {
+            for(Iterator iter = shapes.keySet().iterator(); iter.hasNext(); ) {
+                Color c = (Color)iter.next();
+                g.setColor(c);
+                GeneralPath gp = (GeneralPath)shapes.get(c);
+                g.draw(gp);
+            }
+        }
+
+        public void begin() {
+            reset();
+        }
+
+        public void end() {
+            ready = true;
+        }
+
+        public boolean isReady() {
+            return ready;
+        }
+
+        public void reset() {
+            shapes.clear();
+            ready = false;
+        }
+    }
+
+    protected class CustomEditorKit extends StyledEditorKit implements ViewFactory {
 
         // This class has been inspired by fabrice_pi at this URL:
         // http://www.javafr.com/code.aspx?ID=21900
@@ -496,7 +593,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         }
     }
 
-    public class LineHighlightingParagraphView extends ParagraphView {
+    protected class LineHighlightingParagraphView extends ParagraphView {
         public Rectangle tempRect = new Rectangle();
         public Color highlightColor = new Color(1.0f, 1.0f, 0.5f, 0.3f);
 
@@ -535,24 +632,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             } else {
                 super.paint(g, allocation);
             }
-        }
-    }
-
-    public void drawUnderlineAtIndexes(Graphics g, int start, int end) {
-        try {
-            Rectangle r1 = textPane.modelToView(start);
-            Rectangle r2 = textPane.modelToView(end);
-
-            int width = r2.x-r1.x;
-            int triangle_size = 5;
-            for(int triangle=0; triangle<width/triangle_size; triangle++) {
-                int x = r1.x+triangle*triangle_size;
-                int y = r1.y+r1.height-1;
-                g.drawLine(x, y, x+triangle_size/2, y-triangle_size/2);
-                g.drawLine(x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
-            }
-        } catch (BadLocationException e) {
-            // Ignore
         }
     }
 
@@ -604,6 +683,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
         public void caretUpdate(CaretEvent e) {
             updateCursorInfo();
+            editor.ideasHide();
+            editor.displayIdeas(e.getDot());
 
             // Each time the cursor moves, update the visible part of the text pane
             // to redraw the highlighting
@@ -650,20 +731,22 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         }
 
         public void insertUpdate(DocumentEvent e) {
-            if(!isEnable())
-                return;
+            setIsTyping(true);
 
-            immediateColorization.colorize(e.getOffset(), e.getLength());
-            autoIndent.indent(e.getOffset(), e.getLength());
+            if(isEnable()) {
+                immediateColorization.colorize(e.getOffset(), e.getLength());
+                autoIndent.indent(e.getOffset(), e.getLength());
 
-            changeUpdate(e.getOffset(), e.getLength());
+                changeUpdate(e.getOffset(), e.getLength());
+            }
         }
 
         public void removeUpdate(DocumentEvent e) {
-            if(!isEnable())
-                return;
+            setIsTyping(true);
 
-            changeUpdate(e.getOffset(), -e.getLength());
+            if(isEnable()) {
+                changeUpdate(e.getOffset(), -e.getLength());
+            }
         }
 
         public void changedUpdate(DocumentEvent e) {
@@ -699,7 +782,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             if(textPane.hasFocus()) {
                 Point relativePoint = e.getPoint();
                 Point absolutePoint = SwingUtilities.convertPoint(textPane, relativePoint, editor.getJavaContainer());
-                editor.displayTips(relativePoint, absolutePoint);                
+                editor.displayTips(relativePoint, absolutePoint);
             }
         }
     }

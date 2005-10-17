@@ -12,7 +12,7 @@ Version 1.0ea4 - 10/16/05
 - remove left recursion
 - insert rule from template
 - support Perforce SCM commands
-- show decision DFA
+- show decision DFA (using DOT tool defined in the preferences)
 
 - console moved from Window menu to project's window
 - improved console with events list
@@ -28,8 +28,9 @@ Version 1.0ea4 - 10/16/05
 - can now navigate backward/forward
 - rules have now icon in the tree view
 
-- preferences: auto-save every n minutes
-- preferences: can now specify the colors of each type of token in the debugger input text panel
+- prefs: auto-save every n minutes
+- prefs: syntax coloring parser delay
+- prefs: can now specify the colors of each type of token in the debugger input text panel
 
 - fixed a bug where a new document created on Windows would not be correctly colorized
 - fixed several visual bugs on Windows and Linux

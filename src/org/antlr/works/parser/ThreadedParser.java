@@ -41,21 +41,27 @@ import java.util.List;
 
 public class ThreadedParser extends EditorThread {
 
-    private EditorProvider provider = null;
+    protected EditorProvider provider = null;
 
-    private Parser parser = null;
-    private List observers = null;
+    protected Parser parser = null;
+    protected List observers = null;
 
-    private List rules = null;
-    private List groups = null;
-    private List blocks = null;
-    private Parser.Name name = null;
+    protected List rules = null;
+    protected List groups = null;
+    protected List blocks = null;
+    protected Parser.Name name = null;
+
+    protected static int delay = 250;
 
     public ThreadedParser(EditorProvider provider) {
         this.provider = provider;
         parser = new Parser();
         observers = new ArrayList();
         start();
+    }
+
+    public static void setDelay(int delay) {
+        ThreadedParser.delay = delay;
     }
 
     public void addObserver(ThreadedParserObserver observer) {
@@ -116,7 +122,7 @@ public class ThreadedParser extends EditorThread {
     }
 
     public void parse() {
-        awakeThread(250);
+        awakeThread(delay);
     }
 
     public void threadRun() throws Exception {

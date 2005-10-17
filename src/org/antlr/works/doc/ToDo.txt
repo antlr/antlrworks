@@ -1,6 +1,6 @@
-- PREFS: path to dot tool and image type
-- PREFS: syntax coloring delay in preferences
-
+- DFA decision for lexer tokens (use getGrammar...)
+- handle "header with package" option
+- remove left recursion in analysis column
 - toolbar with button for: go backward, forward, enable/disable ideas/tips/analysis
 - test with empty preferences file
 - maintain auto-indentation

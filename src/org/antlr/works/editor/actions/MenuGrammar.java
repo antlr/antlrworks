@@ -53,7 +53,8 @@ public class MenuGrammar extends AbstractActions implements TDecisionDFA.TDecisi
     public void showDecisionDFA() {
         showProgress("Generating...");
         TDecisionDFA decision = new TDecisionDFA(editor, this);
-        decision.launch();
+        if(!decision.launch())
+            hideProgress();
     }
 
     public void decisionDFADidCompleted(TDecisionDFA decision, String error) {

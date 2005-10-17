@@ -33,6 +33,7 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJPreferences;
+import edu.usfca.xj.foundation.XJSystem;
 
 import java.awt.*;
 import java.util.Calendar;
@@ -49,20 +50,26 @@ public class EditorPreferences {
     public static final int STARTUP_OPEN_LAST_DOC = 1;
 
     // Editor
-
     public static final String PREF_TAB_WIDTH = "PREF_TAB_WIDTH";
     public static final String PREF_AUTOSAVE_ENABLED = "PREF_AUTOSAVE_ENABLED";
     public static final String PREF_AUTOSAVE_DELAY = "PREF_AUTOSAVE_DELAY";
     public static final String PREF_HIGHLIGHTCURSORLINE = "PREF_HIGHLIGHTCURSORLINE";
     public static final String PREF_EDITOR_FONT = "PREF_EDITOR_FONT";
     public static final String PREF_EDITOR_FONT_SIZE = "PREF_EDITOR_FONT_SIZE";
-
+    public static final String PREF_PARSER_DELAY = "PREF_PARSER_DELAY";
 
     public static final int DEFAULT_TAB_WIDTH = 8;
     public static final String DEFAULT_EDITOR_FONT = "Courier New";
     public static final int DEFAULT_EDITOR_FONT_SIZE = 12;
     public static final boolean DEFAULT_CONSOLE_SHOW = false;
+    public static final int DEFAULT_PARSER_DELAY = 250;
 
+    // Visualization
+    public static final String PREF_DOT_TOOL_PATH = "PREF_DOT_TOOL_PATH";
+    public static final String PREF_DOT_IMAGE_FORMAT = "PREF_DOT_IMAGE_FORMAT";
+
+    public static String DEFAULT_DOT_TOOL_PATH;
+    public static final String DEFAULT_DOT_IMAGE_FORMAT = "png";
 
     // SCM - Perforce
     public static final String PREF_SCM_P4_ENABLED = "PREF_SCM_ENABLE_P4";
@@ -136,6 +143,13 @@ public class EditorPreferences {
     public static final String PREF_PERSONAL_INFO = "PREF_OUTPUT_DEV_DATE";
     public static final String PREF_PRIVATE_MENU = "PREF_PRIVATE_MENU";
 
+    static {
+        if(XJSystem.isMacOS())
+            DEFAULT_DOT_TOOL_PATH = "/Applications/Graphviz.app/Contents/MacOS/dot";
+        else
+            DEFAULT_DOT_TOOL_PATH = "";
+    }
+
     public static void setOutputPath(String path) {
         getPreferences().setString(PREF_OUTPUT_PATH, path);
     }
@@ -184,8 +198,20 @@ public class EditorPreferences {
         return getPreferences().getInt(PREF_EDITOR_FONT_SIZE, DEFAULT_EDITOR_FONT_SIZE);
     }
 
+    public static int getParserDelay() {
+        return getPreferences().getInt(PREF_PARSER_DELAY, DEFAULT_PARSER_DELAY);
+    }
+
     public static String getLookAndFeel() {
         return getPreferences().getString(PREF_LOOK_AND_FEEL, null);
+    }
+
+    public static String getDOTToolPath() {
+        return getPreferences().getString(PREF_DOT_TOOL_PATH, DEFAULT_DOT_TOOL_PATH);
+    }
+
+    public static String getDOTImageFormat() {
+        return getPreferences().getString(PREF_DOT_IMAGE_FORMAT, DEFAULT_DOT_IMAGE_FORMAT);
     }
 
     public static boolean getP4Enabled() {

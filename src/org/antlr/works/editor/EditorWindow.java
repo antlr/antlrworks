@@ -512,9 +512,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
      */
 
     public void parserDidComplete() {
-        editorGUI.updateInformation();
-        editorGUI.updateCursorInfo();
-        editorGUI.analysisStrip.repaint();
+        editorGUI.parserDidComplete();
 
         visual.setText(getPlainText(), getFileName());
         updateVisualization(false);
@@ -678,6 +676,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public boolean ideaManagerWillDisplayIdea() {
         return !autoCompletionMenu.isVisible();
+    }
+
+    public void ideasHide() {
+        ideaManager.hide();
     }
 
     public void displayIdeas(Point p) {

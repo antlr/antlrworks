@@ -43,8 +43,11 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.HelpManager;
+import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ThreadedParser;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,7 +63,7 @@ public class DialogPrefs extends XJPanel {
         super();
 
         initComponents();
-        setSize(600, 360);
+        setSize(700, 360);
 
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -132,6 +135,11 @@ public class DialogPrefs extends XJPanel {
         getPreferences().bindToPreferences(tabWidthField, EditorPreferences.PREF_TAB_WIDTH, EditorPreferences.DEFAULT_TAB_WIDTH);
         getPreferences().bindToPreferences(editorFontCombo, EditorPreferences.PREF_EDITOR_FONT, EditorPreferences.DEFAULT_EDITOR_FONT);
         getPreferences().bindToPreferences(editorFontSizeSpinner, EditorPreferences.PREF_EDITOR_FONT_SIZE, EditorPreferences.DEFAULT_EDITOR_FONT_SIZE);
+        getPreferences().bindToPreferences(parserDelayField, EditorPreferences.PREF_PARSER_DELAY, EditorPreferences.DEFAULT_PARSER_DELAY);
+
+        // Visualization
+        getPreferences().bindToPreferences(dotToolPathField, EditorPreferences.PREF_DOT_TOOL_PATH, EditorPreferences.DEFAULT_DOT_TOOL_PATH);
+        getPreferences().bindToPreferences(dotImageFormatField, EditorPreferences.PREF_DOT_IMAGE_FORMAT, EditorPreferences.DEFAULT_DOT_IMAGE_FORMAT);
 
         // SCM - Perforce
         getPreferences().bindToPreferences(enablePerforceCheckBox, EditorPreferences.PREF_SCM_P4_ENABLED, false);
@@ -174,6 +182,13 @@ public class DialogPrefs extends XJPanel {
         return true;
     }
 
+    public static void applyCommonPrefs() {
+        // * WARNING *
+        // This function is called at startup and when applying preferences
+        ThreadedParser.setDelay(EditorPreferences.getParserDelay());
+        XJApplication.setAutoSave(EditorPreferences.getAutoSaveEnabled(), EditorPreferences.getAutoSaveDelay());
+    }
+
     private void apply() {
         dialogPane.requestFocus();
         getPreferences().applyPreferences();
@@ -181,7 +196,7 @@ public class DialogPrefs extends XJPanel {
             lafIndex = lafCombo.getSelectedIndex();
             changeLookAndFeel();
         }
-        XJApplication.setAutoSave(EditorPreferences.getAutoSaveEnabled(), EditorPreferences.getAutoSaveDelay());
+        applyCommonPrefs();
         XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_PREFS_APPLIED);
     }
 
@@ -249,29 +264,39 @@ public class DialogPrefs extends XJPanel {
         dialogPane = new JPanel();
         contentPane = new JPanel();
         tabbedPane1 = new JTabbedPane();
-        panel1 = new JPanel();
+        tabGeneral = new JPanel();
         label2 = new JLabel();
         label5 = new JLabel();
         lafCombo = new JComboBox();
         startupActionCombo = new JComboBox();
-        panel7 = new JPanel();
+        tabEditor = new JPanel();
+        label3 = new JLabel();
+        editorFontCombo = new JComboBox();
+        editorFontSizeSpinner = new JSpinner();
         autoSaveButton = new JCheckBox();
         autoSaveDelayField = new JTextField();
         label11 = new JLabel();
         highlightCursorLineButton = new JCheckBox();
         label1 = new JLabel();
+        label22 = new JLabel();
+        parserDelayField = new JTextField();
+        label23 = new JLabel();
         tabWidthField = new JTextField();
-        label3 = new JLabel();
-        editorFontCombo = new JComboBox();
-        editorFontSizeSpinner = new JSpinner();
-        panel2 = new JPanel();
+        tabVisual = new JPanel();
+        panel9 = new JPanel();
+        label24 = new JLabel();
+        dotToolPathField = new JTextField();
+        browseDotToolPathButton = new JButton();
+        label25 = new JLabel();
+        dotImageFormatField = new JTextField();
+        tabCompiler = new JPanel();
         jikesRadio = new JRadioButton();
         integratedRadio = new JRadioButton();
         javacRadio = new JRadioButton();
         label4 = new JLabel();
         jikesPathField = new JTextField();
         browseJikesPath = new JButton();
-        panel5 = new JPanel();
+        tabDebugger = new JPanel();
         label12 = new JLabel();
         nonConsumedTokenColor = new JComboBox();
         label13 = new JLabel();
@@ -282,7 +307,7 @@ public class DialogPrefs extends XJPanel {
         deadTokenColor = new JComboBox();
         label16 = new JLabel();
         lookaheadTokenColor = new JComboBox();
-        panel6 = new JPanel();
+        tabSCM = new JPanel();
         enablePerforceCheckBox = new JCheckBox();
         label18 = new JLabel();
         p4PortField = new JTextField();
@@ -294,12 +319,12 @@ public class DialogPrefs extends XJPanel {
         p4ClientField = new JTextField();
         label17 = new JLabel();
         p4ExecPathField = new JTextField();
-        panel3 = new JPanel();
+        tabStats = new JPanel();
         reportTypeCombo = new JComboBox();
         label6 = new JLabel();
         label8 = new JLabel();
         label9 = new JLabel();
-        panel4 = new JPanel();
+        tabUpdates = new JPanel();
         label7 = new JLabel();
         updateTypeCombo = new JComboBox();
         checkForUpdatesButton = new JButton();
@@ -331,24 +356,26 @@ public class DialogPrefs extends XJPanel {
                 //======== tabbedPane1 ========
                 {
 
-                    //======== panel1 ========
+                    //======== tabGeneral ========
                     {
-                        panel1.setLayout(new FormLayout(
+                        tabGeneral.setLayout(new FormLayout(
                             new ColumnSpec[] {
                                 new ColumnSpec(Sizes.dluX(10)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                                 new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(20)),
+                                new ColumnSpec("max(min;20dlu)"),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                                 new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(30)),
+                                new ColumnSpec("max(min;40dlu)"),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                                 new ColumnSpec(Sizes.dluX(10))
                             },
                             new RowSpec[] {
                                 new RowSpec(Sizes.dluY(10)),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
@@ -363,25 +390,25 @@ public class DialogPrefs extends XJPanel {
 
                         //---- label2 ----
                         label2.setText("At startup:");
-                        panel1.add(label2, cc.xy(3, 3));
+                        tabGeneral.add(label2, cc.xy(3, 3));
 
                         //---- label5 ----
                         label5.setText("Look and feel:");
-                        panel1.add(label5, cc.xy(3, 5));
-                        panel1.add(lafCombo, cc.xywh(5, 5, 3, 1));
+                        tabGeneral.add(label5, cc.xy(3, 5));
+                        tabGeneral.add(lafCombo, cc.xywh(5, 5, 3, 1));
 
                         //---- startupActionCombo ----
                         startupActionCombo.setModel(new DefaultComboBoxModel(new String[] {
                             "Create a new document",
                             "Open the last used document"
                         }));
-                        panel1.add(startupActionCombo, cc.xywh(5, 3, 3, 1));
+                        tabGeneral.add(startupActionCombo, cc.xywh(5, 3, 3, 1));
                     }
-                    tabbedPane1.addTab("General", panel1);
+                    tabbedPane1.addTab("General", tabGeneral);
 
-                    //======== panel7 ========
+                    //======== tabEditor ========
                     {
-                        panel7.setLayout(new FormLayout(
+                        tabEditor.setLayout(new FormLayout(
                             new ColumnSpec[] {
                                 new ColumnSpec(Sizes.dluX(10)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
@@ -389,7 +416,7 @@ public class DialogPrefs extends XJPanel {
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                                 new ColumnSpec(Sizes.dluX(20)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec("left:max(default;50dlu)"),
+                                new ColumnSpec("max(default;45dlu)"),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                                 new ColumnSpec(Sizes.dluX(20)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
@@ -408,48 +435,134 @@ public class DialogPrefs extends XJPanel {
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
                                 new RowSpec(Sizes.dluY(10))
                             }));
 
+                        //---- label3 ----
+                        label3.setText("Font:");
+                        tabEditor.add(label3, cc.xy(3, 3));
+
+                        //---- editorFontCombo ----
+                        editorFontCombo.setActionCommand("editorFontCombo");
+                        tabEditor.add(editorFontCombo, cc.xywh(5, 3, 5, 1));
+
+                        //---- editorFontSizeSpinner ----
+                        editorFontSizeSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(8), null, new Integer(1)));
+                        tabEditor.add(editorFontSizeSpinner, cc.xy(11, 3));
+
                         //---- autoSaveButton ----
                         autoSaveButton.setText("Auto-save every");
-                        panel7.add(autoSaveButton, cc.xywh(5, 3, 3, 1));
-                        panel7.add(autoSaveDelayField, cc.xy(9, 3));
+                        tabEditor.add(autoSaveButton, cc.xywh(5, 5, 3, 1));
+                        tabEditor.add(autoSaveDelayField, cc.xy(9, 5));
 
                         //---- label11 ----
                         label11.setText("minutes");
-                        panel7.add(label11, cc.xy(11, 3));
+                        tabEditor.add(label11, cc.xy(11, 5));
 
                         //---- highlightCursorLineButton ----
                         highlightCursorLineButton.setText("Highlight cursor line");
-                        panel7.add(highlightCursorLineButton, cc.xywh(5, 5, 5, 1));
+                        tabEditor.add(highlightCursorLineButton, cc.xywh(5, 7, 5, 1));
 
                         //---- label1 ----
                         label1.setHorizontalAlignment(SwingConstants.RIGHT);
                         label1.setText("Tab width:");
-                        panel7.add(label1, cc.xy(3, 7));
+                        tabEditor.add(label1, cc.xy(3, 9));
+
+                        //---- label22 ----
+                        label22.setText("Parser delay:");
+                        tabEditor.add(label22, cc.xy(3, 11));
+
+                        //---- parserDelayField ----
+                        parserDelayField.setText("250");
+                        tabEditor.add(parserDelayField, cc.xy(5, 11));
+
+                        //---- label23 ----
+                        label23.setText("ms");
+                        tabEditor.add(label23, cc.xy(7, 11));
 
                         //---- tabWidthField ----
                         tabWidthField.setText("8");
-                        panel7.add(tabWidthField, cc.xy(5, 7));
-
-                        //---- label3 ----
-                        label3.setText("Font:");
-                        panel7.add(label3, cc.xy(3, 9));
-
-                        //---- editorFontCombo ----
-                        editorFontCombo.setActionCommand("editorFontCombo");
-                        panel7.add(editorFontCombo, cc.xywh(5, 9, 5, 1));
-
-                        //---- editorFontSizeSpinner ----
-                        editorFontSizeSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(8), null, new Integer(1)));
-                        panel7.add(editorFontSizeSpinner, cc.xy(11, 9));
+                        tabEditor.add(tabWidthField, cc.xy(5, 9));
                     }
-                    tabbedPane1.addTab("Editor", panel7);
+                    tabbedPane1.addTab("Editor", tabEditor);
 
-                    //======== panel2 ========
+                    //======== tabVisual ========
                     {
-                        panel2.setLayout(new FormLayout(
+                        tabVisual.setLayout(new FormLayout(
+                            new ColumnSpec[] {
+                                new ColumnSpec(Sizes.dluX(10)),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                FormFactory.DEFAULT_COLSPEC,
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                FormFactory.DEFAULT_COLSPEC,
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(Sizes.dluX(10))
+                            },
+                            new RowSpec[] {
+                                new RowSpec(Sizes.dluY(10)),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC
+                            }));
+
+                        //======== panel9 ========
+                        {
+                            panel9.setBorder(new TitledBorder("DOT"));
+                            panel9.setLayout(new FormLayout(
+                                new ColumnSpec[] {
+                                    FormFactory.DEFAULT_COLSPEC,
+                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                    new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                    new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                    FormFactory.DEFAULT_COLSPEC,
+                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                    FormFactory.DEFAULT_COLSPEC
+                                },
+                                new RowSpec[] {
+                                    FormFactory.DEFAULT_ROWSPEC,
+                                    FormFactory.LINE_GAP_ROWSPEC,
+                                    FormFactory.DEFAULT_ROWSPEC,
+                                    FormFactory.LINE_GAP_ROWSPEC,
+                                    FormFactory.DEFAULT_ROWSPEC
+                                }));
+
+                            //---- label24 ----
+                            label24.setText("Tool path:");
+                            panel9.add(label24, cc.xy(3, 1));
+                            panel9.add(dotToolPathField, cc.xy(5, 1));
+
+                            //---- browseDotToolPathButton ----
+                            browseDotToolPathButton.setText("Browse...");
+                            panel9.add(browseDotToolPathButton, cc.xy(7, 1));
+
+                            //---- label25 ----
+                            label25.setText("Image format:");
+                            panel9.add(label25, cc.xy(3, 3));
+
+                            //---- dotImageFormatField ----
+                            dotImageFormatField.setText("png");
+                            panel9.add(dotImageFormatField, cc.xy(5, 3));
+                        }
+                        tabVisual.add(panel9, cc.xywh(3, 5, 5, 1));
+                    }
+                    tabbedPane1.addTab("Visualization", tabVisual);
+
+                    //======== tabCompiler ========
+                    {
+                        tabCompiler.setLayout(new FormLayout(
                             new ColumnSpec[] {
                                 new ColumnSpec(Sizes.dluX(10)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
@@ -472,32 +585,32 @@ public class DialogPrefs extends XJPanel {
 
                         //---- jikesRadio ----
                         jikesRadio.setText("jikes");
-                        panel2.add(jikesRadio, cc.xy(3, 5));
+                        tabCompiler.add(jikesRadio, cc.xy(3, 5));
 
                         //---- integratedRadio ----
                         integratedRadio.setActionCommand("integrated");
                         integratedRadio.setText("com.sun.tools.javac");
-                        panel2.add(integratedRadio, cc.xywh(3, 9, 2, 1));
+                        tabCompiler.add(integratedRadio, cc.xywh(3, 9, 2, 1));
 
                         //---- javacRadio ----
                         javacRadio.setSelected(true);
                         javacRadio.setText("javac");
-                        panel2.add(javacRadio, cc.xy(3, 3));
+                        tabCompiler.add(javacRadio, cc.xy(3, 3));
 
                         //---- label4 ----
                         label4.setText("Path:");
-                        panel2.add(label4, cc.xywh(3, 7, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-                        panel2.add(jikesPathField, cc.xy(4, 7));
+                        tabCompiler.add(label4, cc.xywh(3, 7, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+                        tabCompiler.add(jikesPathField, cc.xy(4, 7));
 
                         //---- browseJikesPath ----
                         browseJikesPath.setText("Browse...");
-                        panel2.add(browseJikesPath, cc.xy(5, 7));
+                        tabCompiler.add(browseJikesPath, cc.xy(5, 7));
                     }
-                    tabbedPane1.addTab("Compiler", panel2);
+                    tabbedPane1.addTab("Compiler", tabCompiler);
 
-                    //======== panel5 ========
+                    //======== tabDebugger ========
                     {
-                        panel5.setLayout(new FormLayout(
+                        tabDebugger.setLayout(new FormLayout(
                             new ColumnSpec[] {
                                 new ColumnSpec(Sizes.dluX(10)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
@@ -526,7 +639,7 @@ public class DialogPrefs extends XJPanel {
                         //---- label12 ----
                         label12.setHorizontalAlignment(SwingConstants.RIGHT);
                         label12.setText("Non-consumed token:");
-                        panel5.add(label12, cc.xy(3, 3));
+                        tabDebugger.add(label12, cc.xy(3, 3));
 
                         //---- nonConsumedTokenColor ----
                         nonConsumedTokenColor.setModel(new DefaultComboBoxModel(new String[] {
@@ -534,37 +647,37 @@ public class DialogPrefs extends XJPanel {
                             "Blue",
                             "Cyan"
                         }));
-                        panel5.add(nonConsumedTokenColor, cc.xy(5, 3));
+                        tabDebugger.add(nonConsumedTokenColor, cc.xy(5, 3));
 
                         //---- label13 ----
                         label13.setHorizontalAlignment(SwingConstants.RIGHT);
                         label13.setText("Consumed token:");
-                        panel5.add(label13, cc.xy(3, 5));
-                        panel5.add(consumedTokenColor, cc.xy(5, 5));
+                        tabDebugger.add(label13, cc.xy(3, 5));
+                        tabDebugger.add(consumedTokenColor, cc.xy(5, 5));
 
                         //---- label14 ----
                         label14.setHorizontalAlignment(SwingConstants.RIGHT);
                         label14.setText("Hidden token:");
-                        panel5.add(label14, cc.xy(3, 7));
-                        panel5.add(hiddenTokenColor, cc.xy(5, 7));
+                        tabDebugger.add(label14, cc.xy(3, 7));
+                        tabDebugger.add(hiddenTokenColor, cc.xy(5, 7));
 
                         //---- label15 ----
                         label15.setHorizontalAlignment(SwingConstants.RIGHT);
                         label15.setText("Dead token:");
-                        panel5.add(label15, cc.xy(3, 9));
-                        panel5.add(deadTokenColor, cc.xy(5, 9));
+                        tabDebugger.add(label15, cc.xy(3, 9));
+                        tabDebugger.add(deadTokenColor, cc.xy(5, 9));
 
                         //---- label16 ----
                         label16.setHorizontalAlignment(SwingConstants.RIGHT);
                         label16.setText("Lookahead token:");
-                        panel5.add(label16, cc.xy(3, 11));
-                        panel5.add(lookaheadTokenColor, cc.xy(5, 11));
+                        tabDebugger.add(label16, cc.xy(3, 11));
+                        tabDebugger.add(lookaheadTokenColor, cc.xy(5, 11));
                     }
-                    tabbedPane1.addTab("Debugger", panel5);
+                    tabbedPane1.addTab("Debugger", tabDebugger);
 
-                    //======== panel6 ========
+                    //======== tabSCM ========
                     {
-                        panel6.setLayout(new FormLayout(
+                        tabSCM.setLayout(new FormLayout(
                             new ColumnSpec[] {
                                 new ColumnSpec(Sizes.dluX(10)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
@@ -598,38 +711,38 @@ public class DialogPrefs extends XJPanel {
 
                         //---- enablePerforceCheckBox ----
                         enablePerforceCheckBox.setText("Enable Perforce");
-                        panel6.add(enablePerforceCheckBox, cc.xy(5, 3));
+                        tabSCM.add(enablePerforceCheckBox, cc.xy(5, 3));
 
                         //---- label18 ----
                         label18.setText("Port:");
-                        panel6.add(label18, cc.xy(3, 7));
-                        panel6.add(p4PortField, cc.xy(5, 7));
+                        tabSCM.add(label18, cc.xy(3, 7));
+                        tabSCM.add(p4PortField, cc.xy(5, 7));
 
                         //---- label19 ----
                         label19.setText("User:");
-                        panel6.add(label19, cc.xy(3, 9));
-                        panel6.add(p4UserField, cc.xy(5, 9));
+                        tabSCM.add(label19, cc.xy(3, 9));
+                        tabSCM.add(p4UserField, cc.xy(5, 9));
 
                         //---- label21 ----
                         label21.setText("Password:");
-                        panel6.add(label21, cc.xy(3, 11));
-                        panel6.add(p4PasswordField, cc.xy(5, 11));
+                        tabSCM.add(label21, cc.xy(3, 11));
+                        tabSCM.add(p4PasswordField, cc.xy(5, 11));
 
                         //---- label20 ----
                         label20.setText("Client:");
-                        panel6.add(label20, cc.xy(3, 13));
-                        panel6.add(p4ClientField, cc.xy(5, 13));
+                        tabSCM.add(label20, cc.xy(3, 13));
+                        tabSCM.add(p4ClientField, cc.xy(5, 13));
 
                         //---- label17 ----
                         label17.setText("P4 executable path:");
-                        panel6.add(label17, cc.xy(3, 17));
-                        panel6.add(p4ExecPathField, cc.xy(5, 17));
+                        tabSCM.add(label17, cc.xy(3, 17));
+                        tabSCM.add(p4ExecPathField, cc.xy(5, 17));
                     }
-                    tabbedPane1.addTab("SCM", panel6);
+                    tabbedPane1.addTab("SCM", tabSCM);
 
-                    //======== panel3 ========
+                    //======== tabStats ========
                     {
-                        panel3.setLayout(new FormLayout(
+                        tabStats.setLayout(new FormLayout(
                             new ColumnSpec[] {
                                 new ColumnSpec(Sizes.dluX(10)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
@@ -660,27 +773,27 @@ public class DialogPrefs extends XJPanel {
                             "Manually",
                             "Remind me automatically each week"
                         }));
-                        panel3.add(reportTypeCombo, cc.xywh(3, 5, 3, 1));
+                        tabStats.add(reportTypeCombo, cc.xywh(3, 5, 3, 1));
 
                         //---- label6 ----
                         label6.setText("Submit reports:");
-                        panel3.add(label6, cc.xy(3, 3));
+                        tabStats.add(label6, cc.xy(3, 3));
 
                         //---- label8 ----
                         label8.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
                         label8.setText("No personal or confidential information is sent.");
-                        panel3.add(label8, cc.xywh(3, 9, 3, 1));
+                        tabStats.add(label8, cc.xywh(3, 9, 3, 1));
 
                         //---- label9 ----
                         label9.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
                         label9.setText("Each report is displayed in human readable form before being sent.");
-                        panel3.add(label9, cc.xywh(3, 11, 3, 1));
+                        tabStats.add(label9, cc.xywh(3, 11, 3, 1));
                     }
-                    tabbedPane1.addTab("Statistics", panel3);
+                    tabbedPane1.addTab("Statistics", tabStats);
 
-                    //======== panel4 ========
+                    //======== tabUpdates ========
                     {
-                        panel4.setLayout(new FormLayout(
+                        tabUpdates.setLayout(new FormLayout(
                             new ColumnSpec[] {
                                 new ColumnSpec(Sizes.dluX(10)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
@@ -709,7 +822,7 @@ public class DialogPrefs extends XJPanel {
                         //---- label7 ----
                         label7.setHorizontalAlignment(SwingConstants.LEFT);
                         label7.setText("Check for ANTLRWorks updates:");
-                        panel4.add(label7, cc.xy(3, 3));
+                        tabUpdates.add(label7, cc.xy(3, 3));
 
                         //---- updateTypeCombo ----
                         updateTypeCombo.setModel(new DefaultComboBoxModel(new String[] {
@@ -718,24 +831,24 @@ public class DialogPrefs extends XJPanel {
                             "Daily",
                             "Weekly"
                         }));
-                        panel4.add(updateTypeCombo, cc.xywh(3, 5, 4, 1));
+                        tabUpdates.add(updateTypeCombo, cc.xywh(3, 5, 4, 1));
 
                         //---- checkForUpdatesButton ----
                         checkForUpdatesButton.setText("Check Now");
-                        panel4.add(checkForUpdatesButton, cc.xy(7, 5));
+                        tabUpdates.add(checkForUpdatesButton, cc.xy(7, 5));
 
                         //---- label10 ----
                         label10.setHorizontalAlignment(SwingConstants.LEFT);
                         label10.setText("Download path:");
-                        panel4.add(label10, cc.xy(3, 9));
-                        panel4.add(downloadPathField, cc.xywh(3, 11, 3, 1));
+                        tabUpdates.add(label10, cc.xy(3, 9));
+                        tabUpdates.add(downloadPathField, cc.xywh(3, 11, 3, 1));
 
                         //---- browseUpdateDownloadPathButton ----
                         browseUpdateDownloadPathButton.setActionCommand("Browse");
                         browseUpdateDownloadPathButton.setText("Browse...");
-                        panel4.add(browseUpdateDownloadPathButton, cc.xy(7, 11));
+                        tabUpdates.add(browseUpdateDownloadPathButton, cc.xy(7, 11));
                     }
-                    tabbedPane1.addTab("Updates", panel4);
+                    tabbedPane1.addTab("Updates", tabUpdates);
                 }
                 contentPane.add(tabbedPane1, cc.xywh(1, 1, 2, 1));
             }
@@ -765,29 +878,39 @@ public class DialogPrefs extends XJPanel {
     private JPanel dialogPane;
     private JPanel contentPane;
     private JTabbedPane tabbedPane1;
-    private JPanel panel1;
+    private JPanel tabGeneral;
     private JLabel label2;
     private JLabel label5;
     private JComboBox lafCombo;
     private JComboBox startupActionCombo;
-    private JPanel panel7;
+    private JPanel tabEditor;
+    private JLabel label3;
+    private JComboBox editorFontCombo;
+    private JSpinner editorFontSizeSpinner;
     private JCheckBox autoSaveButton;
     private JTextField autoSaveDelayField;
     private JLabel label11;
     private JCheckBox highlightCursorLineButton;
     private JLabel label1;
+    private JLabel label22;
+    private JTextField parserDelayField;
+    private JLabel label23;
     private JTextField tabWidthField;
-    private JLabel label3;
-    private JComboBox editorFontCombo;
-    private JSpinner editorFontSizeSpinner;
-    private JPanel panel2;
+    private JPanel tabVisual;
+    private JPanel panel9;
+    private JLabel label24;
+    private JTextField dotToolPathField;
+    private JButton browseDotToolPathButton;
+    private JLabel label25;
+    private JTextField dotImageFormatField;
+    private JPanel tabCompiler;
     private JRadioButton jikesRadio;
     private JRadioButton integratedRadio;
     private JRadioButton javacRadio;
     private JLabel label4;
     private JTextField jikesPathField;
     private JButton browseJikesPath;
-    private JPanel panel5;
+    private JPanel tabDebugger;
     private JLabel label12;
     private JComboBox nonConsumedTokenColor;
     private JLabel label13;
@@ -798,7 +921,7 @@ public class DialogPrefs extends XJPanel {
     private JComboBox deadTokenColor;
     private JLabel label16;
     private JComboBox lookaheadTokenColor;
-    private JPanel panel6;
+    private JPanel tabSCM;
     private JCheckBox enablePerforceCheckBox;
     private JLabel label18;
     private JTextField p4PortField;
@@ -810,12 +933,12 @@ public class DialogPrefs extends XJPanel {
     private JTextField p4ClientField;
     private JLabel label17;
     private JTextField p4ExecPathField;
-    private JPanel panel3;
+    private JPanel tabStats;
     private JComboBox reportTypeCombo;
     private JLabel label6;
     private JLabel label8;
     private JLabel label9;
-    private JPanel panel4;
+    private JPanel tabUpdates;
     private JLabel label7;
     private JComboBox updateTypeCombo;
     private JButton checkForUpdatesButton;
@@ -825,7 +948,5 @@ public class DialogPrefs extends XJPanel {
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
-
-
 
 }

@@ -4,6 +4,8 @@ import org.antlr.analysis.DFA;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.EditorPreferences;
+import org.antlr.Tool;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -13,6 +15,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.List;
+
+import edu.usfca.xj.appkit.utils.XJAlert;
 /*
 
 [The "BSD licence"]
@@ -72,12 +76,37 @@ public class TDecisionDFA implements Runnable {
         this.delegate = delegate;
     }
 
-    public void launch() {
-        new Thread(this).start();
-    }
-
     public Container getContainer() {
         return panel;
+    }
+
+    public String getDOTToolPath() {
+        return EditorPreferences.getDOTToolPath();
+    }
+
+    public String getDOTImageFormat() {
+        return EditorPreferences.getDOTImageFormat();
+    }
+
+    public boolean launch() {
+        if(getDOTToolPath() == null) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the decision DFA because the DOT tool path is not defined.\n"+
+                    "It can be defined in the Preferences.");
+            return false;
+        }
+        if(!new File(getDOTToolPath()).exists()) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the decision DFA because the DOT tool does not exist at the specified path.\n" +
+                    "Check the tool path in the Preferences.");
+            return false;
+        }
+        if(getDOTImageFormat() == null) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the decision DFA because the DOT image format not defined.\n" +
+                    "It can be defined in the Preferences.");
+            return false;
+        }
+
+        new Thread(this).start();
+        return true;
     }
 
     public void run() {
@@ -177,13 +206,9 @@ public class TDecisionDFA implements Runnable {
     }
 
     public void generateImageFile() throws Exception {
-        // @todo settings
-        String dotToolPath = "/Applications/Graphviz.app/Contents/MacOS/dot";
-        // @todo settings
-        String imageType = "png";
         String size = "size=\"30,20\"";
 
-        String[] args = new String[] { dotToolPath, "-T"+imageType, "-G"+size, "-o", tempImageFile, tempDOTFile };
+        String[] args = new String[] { getDOTToolPath(), "-T"+getDOTImageFormat(), "-G"+size, "-o", tempImageFile, tempDOTFile };
         Process p = Runtime.getRuntime().exec(args);
 
         new StreamWatcher(p.getErrorStream(), "DecisionDFA").start();

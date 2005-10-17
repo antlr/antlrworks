@@ -86,7 +86,7 @@ public class IDE extends XJApplicationDelegate {
 
         XJApplication.addScheduledTimer(new HelpManager(), 1, true);
 
-        XJApplication.setAutoSave(EditorPreferences.getAutoSaveEnabled(), EditorPreferences.getAutoSaveDelay());
+        DialogPrefs.applyCommonPrefs();
 
         registerUser();
         checkLibraries();
