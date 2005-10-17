@@ -42,8 +42,8 @@ import org.antlr.works.editor.helper.*;
 import org.antlr.works.editor.idea.*;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.rules.RulesDelegate;
-import org.antlr.works.editor.swing.AutoCompletionMenu;
-import org.antlr.works.editor.swing.AutoCompletionMenuDelegate;
+import org.antlr.works.editor.autocompletion.AutoCompletionMenu;
+import org.antlr.works.editor.autocompletion.AutoCompletionMenuDelegate;
 import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.TemplateRules;
 import org.antlr.works.editor.tips.TipsManager;
@@ -139,18 +139,18 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         keyBindings = new KeyBindings(getTextPane());
 
-        autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), jFrame);
-        templateRules = new TemplateRules(this, getTextPane(), jFrame);
-        goToRule = new TGoToRule(this, jFrame, getTextPane());
+        autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), getJFrame());
+        templateRules = new TemplateRules(this, getTextPane(), getJFrame());
+        goToRule = new TGoToRule(this, getJFrame(), getTextPane());
         findAndReplace = new FindAndReplace(this);
 
         ideaManager = new IdeaManager();
-        ideaManager.setOverlay(new IdeaOverlay(this, jFrame, getTextPane()));
+        ideaManager.setOverlay(new IdeaOverlay(this, getJFrame(), getTextPane()));
         ideaManager.addProvider(this);
         ideaManager.setDelegate(this);
 
         tipsManager = new TipsManager();
-        tipsManager.setOverlay(new TipsOverlay(this, jFrame, getTextPane()));
+        tipsManager.setOverlay(new TipsOverlay(this, getJFrame(), getTextPane()));
         tipsManager.addProvider(this);
 
         rules = new Rules(parser, getTextPane(), editorGUI.rulesTree);
@@ -425,7 +425,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         Iterator iterator = getTokens().iterator();
         while(iterator.hasNext()) {
             Token token = (Token)iterator.next();
-            if(pos >= token.getStart() && pos <= token.getEnd())
+            if(pos >= token.getStartIndex() && pos <= token.getEndIndex())
                 return token;
         }
         return null;
@@ -514,6 +514,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public void parserDidComplete() {
         editorGUI.updateInformation();
         editorGUI.updateCursorInfo();
+        editorGUI.analysisStrip.repaint();
 
         visual.setText(getPlainText(), getFileName());
         updateVisualization(false);
@@ -569,13 +570,13 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         } else {
             // Not inside rule - show only undefined rules
 
-            List sortedUndefinedRules = Collections.list(Collections.enumeration(rules.getUndefinedRules()));
+            List sortedUndefinedRules = Collections.list(Collections.enumeration(rules.getUndefinedTokens()));
             Collections.sort(sortedUndefinedRules);
 
             for(Iterator iterator = sortedUndefinedRules.iterator(); iterator.hasNext(); ) {
-                String name = (String)iterator.next();
-                if(name.toLowerCase().startsWith(partialWord) && !name.equals(partialWord))
-                    matchingRules.add(name);
+                Token t = (Token)iterator.next();
+                if(t.getAttribute().toLowerCase().startsWith(partialWord) && !t.getAttribute().equals(partialWord))
+                    matchingRules.add(t.getAttribute());
             }
         }
 
@@ -605,8 +606,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
                 // Make sure the mouse is over the token because
                 // Swing will return a valid position even if the mouse
                 // is on the remaining blank part of the line
-                Rectangle r1 = getTextPane().modelToView(token.getStart());
-                Rectangle r2 = getTextPane().modelToView(token.getEnd());
+                Rectangle r1 = getTextPane().modelToView(token.getStartIndex());
+                Rectangle r2 = getTextPane().modelToView(token.getEndIndex());
                 if(r1.union(r2).contains(relativePoint)) {
                     p = SwingUtilities.convertPoint(getTextPane(), new Point(relativePoint.x+2, r2.y-5), jFrame);
                 }
@@ -620,7 +621,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public List tipsProviderGetTips(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
         List tips = new ArrayList();
 
-        if(rules.isUndefinedRule(token.getAttribute())) {
+        if(rules.isUndefinedToken(token)) {
             tips.add("Undefined symbol '"+token.getAttribute()+"'");
         }
 
@@ -644,7 +645,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public List ideaProviderGetActions(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
         List actions = new ArrayList();
 
-        if(rules.isUndefinedRule(token.getAttribute())) {
+        if(rules.isUndefinedToken(token)) {
             actions.add(new IdeaAction("Create rule '"+token.getAttribute()+"'", this, IDEA_CREATE_RULE, token));
         }
 

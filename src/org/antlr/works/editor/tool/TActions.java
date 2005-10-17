@@ -112,7 +112,7 @@ public class TActions implements ActionListener {
         Iterator iterator = blocks.iterator();
         while(iterator.hasNext()) {
             Token block = (Token)iterator.next();
-            if(pos >= block.getStart() && pos <= block.getEnd())
+            if(pos >= block.getStartIndex() && pos <= block.getEndIndex())
                 return block;
         }
         return null;
@@ -128,8 +128,8 @@ public class TActions implements ActionListener {
 
     public void hideBlock(Token block) {
         try {
-            textPane.getDocument().remove(block.getStart(), block.getEnd()-block.getStart());
-            textPane.getDocument().insertString(block.getStart(), " ", createButtonStyle(block.getAttribute()));
+            textPane.getDocument().remove(block.getStartIndex(), block.getEndIndex()-block.getStartIndex());
+            textPane.getDocument().insertString(block.getStartIndex(), " ", createButtonStyle(block.getAttribute()));
         } catch (BadLocationException e) {
             e.printStackTrace();
         }

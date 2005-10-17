@@ -1,15 +1,14 @@
 - PREFS: path to dot tool and image type
 - PREFS: syntax coloring delay in preferences
 
-- right panel like IntelliJ to display problem
+- toolbar with button for: go backward, forward, enable/disable ideas/tips/analysis
+- test with empty preferences file
 - maintain auto-indentation
 - handle collapsed action when removing left recursion
-- test with empty preferences file
 - P4: if file read-only and under P4, propose to open for edit
 - SCM: add diff
 - display all literals in list
 - use Grammar randomText to generate random valid input text
-- @todo in grammar and panel to recapitulate (also for undefined and duplicated rules)
 - message pour indiquer lorsque le syntax diagram n'est pas affiche (comme par exemple sur les regles du lexer)
 - check environment (see e-mail from Jim Idle)
 

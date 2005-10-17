@@ -93,7 +93,7 @@ public class Gutter extends JComponent {
         Integer value = new Integer(line);
         Boolean state = (Boolean)bps.get(value);
         if(state != null)
-            bps.put(value, new Boolean(!state.booleanValue()));
+            bps.put(value, Boolean.valueOf(!state.booleanValue()));
         else
             bps.put(value, Boolean.TRUE);
         repaint();
@@ -101,7 +101,7 @@ public class Gutter extends JComponent {
 
     public double getLineY(int lineIndex) {
         Line line;
-        Rectangle lineRectangle = null;
+        Rectangle lineRectangle;
         try {
             line = (Line)lines.get(lineIndex);
             lineRectangle = textPane.modelToView(line.position);

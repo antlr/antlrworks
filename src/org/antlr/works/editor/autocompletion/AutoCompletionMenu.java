@@ -29,9 +29,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.swing;
+package org.antlr.works.editor.autocompletion;
 
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.swing.OverlayObject;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -180,7 +181,7 @@ public class AutoCompletionMenu extends OverlayObject {
     }
 
     public void autoComplete() {
-        if(list.getSelectedIndex() > 0)
+        if(list.getSelectedIndex() >= 0)
             completePartialWord((String)words.get(list.getSelectedIndex()));
     }
 

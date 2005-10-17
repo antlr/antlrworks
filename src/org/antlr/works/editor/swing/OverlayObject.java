@@ -54,6 +54,16 @@ public abstract class OverlayObject {
         this.parentFrame = parentFrame;
         this.parentComponent = parentComponent;
 
+        createKeyBindings();
+        content = overlayCreateInterface();
+        content.setVisible(false);
+
+        parentFrame.getLayeredPane().add(content, JLayeredPane.MODAL_LAYER);
+
+        createListeners();
+    }
+
+    private void createListeners() {
         parentFrame.addComponentListener(new ComponentAdapter() {
             public void componentHidden(ComponentEvent e) {
                 content.setVisible(false);
@@ -85,12 +95,6 @@ public abstract class OverlayObject {
                 }
             }
         });
-
-        createKeyBindings();
-        content = overlayCreateInterface();
-        content.setVisible(false);
-
-        parentFrame.getLayeredPane().add(content, JLayeredPane.MODAL_LAYER);
     }
 
     public void createKeyBindings() {

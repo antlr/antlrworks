@@ -31,12 +31,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import edu.usfca.xj.appkit.gview.timer.GTimer;
-import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.dialog.DialogPrefs;
+import org.antlr.works.editor.analysis.AnalysisStrip;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.swing.EditorStyledDocument;
 import org.antlr.works.editor.swing.Gutter;
@@ -67,6 +66,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     public EditorWindow editor;
 
     public Gutter gutter;
+    public AnalysisStrip analysisStrip;
+
     public JScrollPane textScrollPane;
 
     public JScrollPane rulesScrollPane;
@@ -76,7 +77,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     public JPanel mainPanel;
 
     public Box infoPanel;
-    public ActivityPanel activityPanel;
     public JLabel infoLabel;
     public JLabel cursorLabel;
     public JLabel scmLabel;
@@ -151,6 +151,16 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         rulesScrollPane.setPreferredSize(new Dimension(200, 0));
         rulesScrollPane.setWheelScrollingEnabled(true);
 
+        // Assemble right text pane
+        analysisStrip = new AnalysisStrip(editor);
+        analysisStrip.setMinimumSize(new Dimension(18, 0));
+        analysisStrip.setMaximumSize(new Dimension(18, Integer.MAX_VALUE));
+        analysisStrip.setPreferredSize(new Dimension(18, analysisStrip.getPreferredSize().height));
+
+        Box rightPaneBox = Box.createHorizontalBox();
+        rightPaneBox.add(textScrollPane);
+        rightPaneBox.add(analysisStrip);
+
         // Assemble
 
         viewTabbedPane = new JTabbedPane();
@@ -161,7 +171,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         rulesTextSplitPane.setBorder(null);
         rulesTextSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         rulesTextSplitPane.setLeftComponent(rulesScrollPane);
-        rulesTextSplitPane.setRightComponent(textScrollPane);
+        rulesTextSplitPane.setRightComponent(rightPaneBox);
         rulesTextSplitPane.setContinuousLayout(true);
         rulesTextSplitPane.setPreferredSize(new Dimension(0, 400));
         rulesTextSplitPane.setOneTouchExpandable(true);
@@ -182,10 +192,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         infoPanel = new InfoPanel();
         infoPanel.setPreferredSize(new Dimension(0, 30));
 
-        activityPanel = new ActivityPanel();
-
-        infoPanel.add(Box.createHorizontalStrut(5));
-        infoPanel.add(activityPanel);
         infoPanel.add(Box.createHorizontalStrut(5));
         infoPanel.add(infoLabel);
         infoPanel.add(Box.createHorizontalStrut(5));
@@ -449,20 +455,20 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             if(token.type != Lexer.TOKEN_ID)
                 continue;
 
-            if(editor.rules.isUndefinedRule(token.getAttribute())) {
+            if(editor.rules.isUndefinedToken(token)) {
                 g.setColor(Color.red);
-                drawUnderlineAtIndexes(g, token.getStart(), token.getEnd());
+                drawUnderlineAtIndexes(g, token.getStartIndex(), token.getEndIndex());
             }
 
             if(editor.rules.isDuplicateRule(token.getAttribute())) {
                 g.setColor(Color.blue);
-                drawUnderlineAtIndexes(g, token.getStart(), token.getEnd());
+                drawUnderlineAtIndexes(g, token.getStartIndex(), token.getEndIndex());
             }
 
             Parser.Rule rule = editor.rules.getRuleStartingWithToken(token);
             if(rule != null && rule.hasLeftRecursion()) {
                 g.setColor(Color.green);
-                drawUnderlineAtIndexes(g, token.getStart(), token.getEnd());
+                drawUnderlineAtIndexes(g, token.getStartIndex(), token.getEndIndex());
             }
         }
     }
@@ -591,55 +597,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
             g.setColor(Color.lightGray);
             g.drawLine(0, 1, r.width, 1);
-        }
-    }
-
-    protected class ActivityPanel extends JPanel implements GTimerDelegate {
-
-        private GTimer timer = new GTimer(this, 500);
-        private boolean color = false;
-        private boolean activity = false;
-
-        public ActivityPanel() {
-            setMaximumSize(new Dimension(12, 12));
-            setBorder(BorderFactory.createEtchedBorder());
-            updateInfo();
-        }
-
-        public void start() {
-            activity = true;
-            timer.start();
-            updateInfo();
-        }
-
-        public void stop() {
-            timer.stop();
-            activity = false;
-            updateInfo();
-            repaint();
-        }
-
-        public void updateInfo() {
-            if(activity)
-                setToolTipText("Analysis in progress");
-            else
-                setToolTipText("Analysis completed");
-        }
-
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            if(activity)
-                g.setColor(color?Color.white:Color.yellow);
-            else
-                g.setColor(Color.green);
-
-            Rectangle r = getBounds();
-            g.fillRect(0, 0, r.width, r.height);
-        }
-
-        public void timerFired(GTimer timer) {
-            color = !color;
-            repaint();
         }
     }
 

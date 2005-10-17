@@ -1,5 +1,5 @@
 
-Version 1.0ea4 - 10/13/05
+Version 1.0ea4 - 10/16/05
 
 - compatible with ANTLR 3.0ea6
 
@@ -12,12 +12,14 @@ Version 1.0ea4 - 10/13/05
 - remove left recursion
 - insert rule from template
 - support Perforce SCM commands
+- show decision DFA
 
 - console moved from Window menu to project's window
 - improved console with events list
 - refactored the main menu bar
 - improved drag and drop visual feedback (can now drop below or above a rule)
 - improved auto-completion (different is inside a rule or defining a rule)
+- new analysis strip displaying the location and kind of errors and warnings
 
 - auto-indentation (enabled on ':', '|' and ';' characters)
 - current line is now highlighted
@@ -40,7 +42,7 @@ Version 1.0ea3 - 07/04/05
 - fixed a bug where the first Look and Feel pop-up item could not be applied
 - fixed a bug where error during code generation would not be reported
 - fixed the bug where grammar file containing Windows new line (\r\n) would not be parsed correctly
-   - including associated features like copy, cut, colorization, rule selection, debugger location, etc.
+   -> including associated features like copy, cut, colorization, rule selection, debugger location, etc.
 
 Version 1.0ea2 - 06/12/05
 

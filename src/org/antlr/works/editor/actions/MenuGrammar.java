@@ -108,11 +108,11 @@ public class MenuGrammar extends AbstractActions implements TDecisionDFA.TDecisi
             // End of file is considered as a closing group but no group really exists
             // for that purpose
             Token t = closingGroup.token;
-            editor.editorGUI.replaceText(t.getStart()-1, t.getEnd(), "");
+            editor.editorGUI.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
         }
 
         Token t = openGroup.token;
-        editor.editorGUI.replaceText(t.getStart()-1, t.getEnd(), "");
+        editor.editorGUI.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
 
         editor.endGroupChange();
     }

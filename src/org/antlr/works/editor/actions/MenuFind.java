@@ -71,7 +71,7 @@ public class MenuFind extends AbstractActions {
         while(iterator.hasNext()) {
             Token candidate = (Token)iterator.next();
             if(candidate.getAttribute().equals(tokenAttribute)) {
-                Parser.Rule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStart());
+                Parser.Rule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStartIndex());
                 if(matchedRule != null)
                     usage.addMatch(matchedRule, candidate);
             }

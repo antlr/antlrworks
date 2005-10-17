@@ -160,7 +160,7 @@ public class TColorize extends EditorThread {
     private void threadAdjustTokens(int location, int length) {
         for(int t=0; t<tokens.size(); t++) {
             Token token = (Token) tokens.get(t);
-            if(token.getStart() > location) {
+            if(token.getStartIndex() > location) {
                 token.offsetPositionBy(length);
             }
         }
@@ -171,7 +171,7 @@ public class TColorize extends EditorThread {
             Token oldToken = (Token)tokens.get(t);
             if(oldToken.equals(newToken))
                 return oldToken;
-            else if(oldToken.getStart()>newToken.getStart())
+            else if(oldToken.getStartIndex()>newToken.getStartIndex())
                 break;
         }
         return null;
@@ -224,27 +224,27 @@ public class TColorize extends EditorThread {
             Token ta = (Token)modifiedTokens.get(0);
             Token tb = (Token)modifiedTokens.get(modifiedTokens.size()-1);
 
-            doc.setCharacterAttributes(ta.getStart(), tb.getEnd()-ta.getStart(), standardAttr, false);
+            doc.setCharacterAttributes(ta.getStartIndex(), tb.getEndIndex()-ta.getStartIndex(), standardAttr, false);
 
             for(int t = 0; t<modifiedTokens.size(); t++) {
                 Token token = (Token) modifiedTokens.get(t);
                 switch(token.type) {
                     case Lexer.TOKEN_COMPLEX_COMMENT:
                     case Lexer.TOKEN_SINGLE_COMMENT:
-                        doc.setCharacterAttributes(token.getStart(), token.getEnd()-token.getStart(), commentAttr, false);
+                        doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), commentAttr, false);
                         break;
                     case Lexer.TOKEN_DOUBLE_QUOTE_STRING:
                     case Lexer.TOKEN_SINGLE_QUOTE_STRING:
-                        doc.setCharacterAttributes(token.getStart(), token.getEnd()-token.getStart(), stringAttr, false);
+                        doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), stringAttr, false);
                         break;
                     case Lexer.TOKEN_ID:
                         if(token.isAllUpperCase())
                             // Lexer rule
-                            doc.setCharacterAttributes(token.getStart(), token.getEnd()-token.getStart(), tokenAttr, false);
+                            doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), tokenAttr, false);
                         else {
                             // Figure out if the rule is already defined. If not, display the undefined rule in red
-//                            if(editor.rules.isRuleAtIndex(token.getStart()) && !editor.rules.isRuleName(token.getAttribute()))
-//                                doc.setCharacterAttributes(token.getStart(), token.getEnd()-token.getStart(), undefinedRuleAttr, false);
+//                            if(editor.rules.isRuleAtIndex(token.getStartIndex()) && !editor.rules.isRuleName(token.getAttribute()))
+//                                doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), undefinedRuleAttr, false);
                         }
                         break;
                 }

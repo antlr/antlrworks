@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.parser;
 
-public class Token {
+public class Token implements Comparable {
 
     public int type;
 
@@ -68,11 +68,11 @@ public class Token {
         return linePosition;
     }
 
-    public int getStart() {
+    public int getStartIndex() {
         return start;
     }
 
-    public int getEnd() {
+    public int getEndIndex() {
         return end;
     }
 
@@ -88,6 +88,11 @@ public class Token {
     public boolean equals(Object otherObject) {
         Token otherToken = (Token)otherObject;
         return type == otherToken.type && start == otherToken.start && end == otherToken.end;
+    }
+
+    public int compareTo(Object o) {
+        Token otherToken = (Token)o;
+        return this.getAttribute().compareTo(otherToken.getAttribute());
     }
 
     public String toString() {

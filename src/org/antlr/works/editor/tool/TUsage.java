@@ -122,7 +122,7 @@ public class TUsage {
     }
 
     public void selectMatch(UsageMatch match) {
-        editor.selectTextRange(match.token.getStart(), match.token.getEnd());
+        editor.selectTextRange(match.token.getStartIndex(), match.token.getEndIndex());
     }
 
     public class UsageMatch {
@@ -137,12 +137,12 @@ public class TUsage {
         }
 
         public void createContextString() {
-            int s = token.getStart();
+            int s = token.getStartIndex();
             while(s > 0 && token.text.charAt(s) != '\n' && token.text.charAt(s) != '\r') {
                 s--;
             }
 
-            int e = token.getEnd();
+            int e = token.getEndIndex();
             while(s < token.text.length() && token.text.charAt(e) != '\n' && token.text.charAt(e) != '\r') {
                 e++;
             }
@@ -151,7 +151,7 @@ public class TUsage {
 
         public String toString() {
             // @todo it seems that I have to add white space in order for the string not to be truncated in the tree view
-            return token.getAttribute()+" @ ("+token.line+", "+(token.getStart()-token.getLinePosition())+") "+contextualText+"        ";
+            return token.getAttribute()+" @ ("+token.line+", "+(token.getStartIndex()-token.getLinePosition())+") "+contextualText+"        ";
         }
     }
 }

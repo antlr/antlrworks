@@ -64,7 +64,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     private TActions actions = null;
 
     private List duplicateRules = null;
-    private List undefinedRules = null;
+    private List undefinedTokens = null;
 
     private boolean selectingRule = false;
     private boolean skipParseRules = false;
@@ -83,7 +83,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         this.rulesTree = rulesTree;
 
         duplicateRules = new ArrayList();
-        undefinedRules = new ArrayList();
+        undefinedTokens = new ArrayList();
 
         rulesTree.setDelegate(this);
         rulesTree.setEnableDragAndDrop();
@@ -212,7 +212,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
                 continue;
 
             Token t = group.token;
-            if(t.getStart() > location)
+            if(t.getStartIndex() > location)
                 break;
 
             previous = group;
@@ -283,7 +283,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         Iterator iterator = parser.getRules().iterator();
         while(iterator.hasNext()) {
             Parser.Rule r = (Parser.Rule)iterator.next();
-            if(pos>= r.start.getStart() && pos<=r.end.getEnd())
+            if(pos>= r.start.getStartIndex() && pos<=r.end.getEndIndex())
                 return r;
         }
         return null;
@@ -347,8 +347,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         if(parser.getRules() == null)
             return null;
 
-        Iterator iterator = parser.getRules().iterator();
-        while(iterator.hasNext()) {
+        for(Iterator iterator = parser.getRules().iterator(); iterator.hasNext(); ) {
             Parser.Rule r = (Parser.Rule)iterator.next();
             if(r.start == startToken)
                 return r;
@@ -361,15 +360,28 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     public boolean isDuplicateRule(String rule) {
+        for(Iterator iterator = duplicateRules.iterator(); iterator.hasNext(); ) {
+            Parser.Rule r = (Parser.Rule)iterator.next();
+            if(r.name.equals(rule))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean isDuplicateRule(Parser.Rule rule) {
         return duplicateRules.contains(rule);
     }
 
-    public boolean isUndefinedRule(String rule) {
-        return undefinedRules.contains(rule);
+    public List getDuplicateRules() {
+        return duplicateRules;
     }
 
-    public List getUndefinedRules() {
-        return undefinedRules;
+    public boolean isUndefinedToken(Token t) {
+        return undefinedTokens.contains(t);
+    }
+
+    public List getUndefinedTokens() {
+        return undefinedTokens;
     }
 
     public void selectFirstRule() {
@@ -416,13 +428,13 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         Parser.Rule endRule = (Parser.Rule) rules.get(rules.size()-1);
 
         textPane.requestFocus(true);
-        textPane.setCaretPosition(startRule.start.getStart());
-        textPane.moveCaretPosition(endRule.end.getEnd());
+        textPane.setCaretPosition(startRule.start.getStartIndex());
+        textPane.moveCaretPosition(endRule.end.getEndIndex());
         textPane.getCaret().setSelectionVisible(true);
 
         Rectangle r;
         try {
-            r = textPane.modelToView(startRule.start.getStart());
+            r = textPane.modelToView(startRule.start.getStartIndex());
             textPane.scrollRectToVisible(r);
         } catch (BadLocationException e1) {
             e1.printStackTrace();
@@ -438,13 +450,13 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
         selectingRule = true;
 
-        textPane.setCaretPosition(rule.start.getStart());
-        textPane.moveCaretPosition(rule.end.getEnd());
+        textPane.setCaretPosition(rule.start.getStartIndex());
+        textPane.moveCaretPosition(rule.end.getEndIndex());
         textPane.getCaret().setSelectionVisible(true);
 
         Rectangle r;
         try {
-            r = textPane.modelToView(rule.start.getStart());
+            r = textPane.modelToView(rule.start.getStartIndex());
             textPane.scrollRectToVisible(r);
         } catch (BadLocationException e1) {
             e1.printStackTrace();
@@ -464,7 +476,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         while(iter.hasNext()) {
             Parser.Rule nextRule = (Parser.Rule) iter.next();
             if(currentRule != null && currentRule.name.equals(nextRule.name) && !duplicateRules.contains(currentRule)) {
-                duplicateRules.add(currentRule.name);
+                duplicateRules.add(currentRule);
             }
             currentRule = nextRule;
         }
@@ -472,26 +484,26 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     public boolean isNameToken(Token t) {
         Parser.Name name = parser.getName();
-        return t.getStart() >= name.start.getStart() && t.getEnd() <= name.end.getEnd();
+        if(name == null)
+            return false;
+        else
+            return t.getStartIndex() >= name.start.getStartIndex() && t.getEndIndex() <= name.end.getEndIndex();
     }
 
     public boolean isBlockToken(Token t) {
         for(Iterator iter = parser.getBlocks().iterator(); iter.hasNext(); ) {
             Parser.Block b = (Parser.Block)iter.next();
-            if(t.getStart() >= b.start.getStart() && t.getEnd() <= b.end.getEnd())
+            if(t.getStartIndex() >= b.start.getStartIndex() && t.getEndIndex() <= b.end.getEndIndex())
                 return true;
         }
         return false;
     }
 
-    public void rebuildUndefinedRulesList() {
+    public void rebuildUndefinedTokensList() {
         List ruleNames = parser.getRuleNames();
-        undefinedRules.clear();
+        undefinedTokens.clear();
         for(Iterator iter = parser.getTokens().iterator(); iter.hasNext(); ) {
             Token t = (Token)iter.next();
-            if(t.isAllUpperCase())
-                continue;
-
             if(t.type != Lexer.TOKEN_ID)
                 continue;
             
@@ -505,7 +517,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
                 continue;
 
             if(!ruleNames.contains(t.getAttribute()))
-                undefinedRules.add(t.getAttribute());
+                undefinedTokens.add(t);
         }
     }
 
@@ -593,7 +605,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     public void parserDidComplete() {
         //long t = System.currentTimeMillis();
         rebuildDuplicateRulesList();
-        rebuildUndefinedRulesList();
+        rebuildUndefinedTokensList();
         //long delta = System.currentTimeMillis()-t;
         //System.out.println("Rebuild in "+delta);
 

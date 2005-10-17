@@ -96,6 +96,9 @@ public class Parser {
                 continue;
             }
 
+            if(T(0) == null)
+                continue;
+            
             if(T(0).type == Lexer.TOKEN_ID) {
                 Rule rule = matchRule();
                 if(rule != null)
@@ -116,7 +119,10 @@ public class Parser {
     }
 
     public int getMaxLines() {
-        return lexer.line;
+        if(lexer == null)
+            return 0;
+        else
+            return lexer.line;
     }
 
     public Name matchName() {
@@ -137,6 +143,9 @@ public class Parser {
 
     public Block matchBlock() {
         Token start = T(0);
+        if(start == null)
+            return null;
+
         if(start.type != Lexer.TOKEN_ID)
             return null;
 
@@ -155,6 +164,9 @@ public class Parser {
 
     public Rule matchRule() {
         Token start = T(0);
+        if(start == null)
+            return null;
+
         String name = start.getAttribute();
 
         if(start.getAttribute().equals(ATTRIBUTE_FRAGMENT)) {
@@ -163,12 +175,12 @@ public class Parser {
         }
 
         // Skip any comments
-        while(T(1).type == Lexer.TOKEN_SINGLE_COMMENT || T(1).type == Lexer.TOKEN_COMPLEX_COMMENT) {
+        while(T(1) != null && (T(1).type == Lexer.TOKEN_SINGLE_COMMENT || T(1).type == Lexer.TOKEN_COMPLEX_COMMENT)) {
             nextToken();
         }
 
         // Make sure it is a rule
-        if(T(1).type != Lexer.TOKEN_COLON) {
+        if(T(1) == null || T(1).type != Lexer.TOKEN_COLON) {
             // @todo check for that but a rule name should always be followed by a colon ?
             return null;
         }
@@ -211,7 +223,10 @@ public class Parser {
     }
 
     public Token T(int index) {
-        return (Token)tokens.get(position+index);
+        if(position+index<tokens.size())
+            return (Token)tokens.get(position+index);
+        else
+            return null;
     }
 
     public class Rule implements Comparable {
@@ -232,11 +247,11 @@ public class Parser {
         }
 
         public int getStartIndex() {
-            return start.getStart();
+            return start.getStartIndex();
         }
 
         public int getEndIndex() {
-            return end.getEnd();
+            return end.getEndIndex();
         }
 
         public int getLength() {
@@ -248,7 +263,7 @@ public class Parser {
                 Token token = (Token)iter.next();
                 if(token.getAttribute().equals(":")) {
                     token = (Token)iter.next();
-                    return token.getStart();
+                    return token.getStartIndex();
                 }
             }
             return -1;
@@ -256,7 +271,7 @@ public class Parser {
 
         public int getInternalTokensEndIndex() {
             Token token = (Token)tokens.get(tokens.indexOf(end)-1);
-            return token.getEnd();
+            return token.getEndIndex();
         }
 
         public List getBlocks() {
@@ -347,15 +362,15 @@ public class Parser {
                     if(alts.size() > 1) {
                         if(star.length() > 0)
                             star.append(" | ");
-                        int start = ((Token)alts.get(1)).getStart();
-                        int end = ((Token)alts.get(alts.size()-1)).getEnd();
+                        int start = ((Token)alts.get(1)).getStartIndex();
+                        int end = ((Token)alts.get(alts.size()-1)).getEndIndex();
                         star.append(firstTokenInAlt.text.substring(start, end));
                     }
                 } else {
                     if(head.length() > 0)
                         head.append(" | ");
-                    int start = firstTokenInAlt.getStart();
-                    int end = ((Token)alts.get(alts.size()-1)).getEnd();
+                    int start = firstTokenInAlt.getStartIndex();
+                    int end = ((Token)alts.get(alts.size()-1)).getEndIndex();
                     head.append(firstTokenInAlt.text.substring(start, end));
                 }
             }

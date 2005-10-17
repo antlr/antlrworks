@@ -67,7 +67,7 @@ public class MenuRefactor extends AbstractActions {
         for(int index = tokens.size()-1; index>0; index--) {
             Token token = (Token) tokens.get(index);
             if(token.type == t.type && token.getAttribute().equals(attr)) {
-                editor.editorGUI.replaceText(token.getStart(), token.getEnd(), name);
+                editor.editorGUI.replaceText(token.getStartIndex(), token.getEndIndex(), name);
             }
         }
     }
@@ -107,7 +107,7 @@ public class MenuRefactor extends AbstractActions {
             if(!token.getAttribute().equals(attr))
                 continue;
 
-            editor.editorGUI.replaceText(token.getStart(), token.getEnd(), name);
+            editor.editorGUI.replaceText(token.getStartIndex(), token.getEndIndex(), name);
         }
     }
 

@@ -1,14 +1,11 @@
-package org.antlr.works.editor.tips;
+package org.antlr.works.editor.analysis;
 
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.tooltip.ToolTipList;
 import org.antlr.works.editor.swing.OverlayObject;
+import org.antlr.works.editor.tooltip.ToolTipList;
 import org.antlr.works.editor.tooltip.ToolTipListDelegate;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Iterator;
-import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -40,43 +37,33 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class TipsOverlay extends OverlayObject implements ToolTipListDelegate {
+public class AnalysisStripOverlay extends OverlayObject implements ToolTipListDelegate {
 
-    protected EditorWindow editor;
-    protected ToolTipList toolTip;
-    protected Point location;
+    public ToolTipList toolTip;
+    public Point location;
 
-    public TipsOverlay(EditorWindow editor, JFrame parentFrame, JComponent parentComponent) {
+    public AnalysisStripOverlay(JFrame parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
-        this.editor = editor;
-    }
-
-    public void setTips(List tips) {
-        toolTip.clear();
-        for(Iterator iter = tips.iterator(); iter.hasNext();) {
-            toolTip.addLine((String)iter.next());
-        }
-        toolTip.selectFirstLine();
     }
 
     public void setLocation(Point location) {
-        this.location = location;
+        this.location = SwingUtilities.convertPoint(parentComponent, location, parentFrame);
         resize();
     }
 
-    public JComponent overlayCreateInterface() {
-        JPanel panel = new JPanel(new BorderLayout());
-
-        toolTip = new ToolTipList(this);
-        panel.add(toolTip, BorderLayout.CENTER);
-
-        return panel;
+    public void setText(String text) {
+        toolTip.setText(text);
     }
 
     public void resize() {
         toolTip.resize();
         if(location != null)
-            content.setBounds(location.x,  location.y, toolTip.getWidth(), toolTip.getHeight());
+            content.setBounds(location.x-toolTip.getWidth(),  location.y, toolTip.getWidth(), toolTip.getHeight());
+    }
+
+    public JComponent overlayCreateInterface() {
+        toolTip = new ToolTipList(this);
+        return toolTip;
     }
 
     public boolean overlayWillDisplay() {
@@ -86,5 +73,5 @@ public class TipsOverlay extends OverlayObject implements ToolTipListDelegate {
     public void toolTipListHide() {
         hide();
     }
-}
 
+}
