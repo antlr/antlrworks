@@ -82,8 +82,11 @@ public class TAutoIndent implements Runnable {
                     while((i < offset - 1) && (t.charAt(i) == ' ' || t.charAt(i) == '\t')) {
                         i++;
                     }
-                    if(i == offset - 1) {
-                        // Reached end of line with no other character
+
+                    // If we reached the end of the line without any other character
+                    // we have to increment i in order to take into account the last
+                    // white space or tab
+                    if(i == offset - 1 && (t.charAt(i) == ' ' || t.charAt(i) == '\t')) {
                         i++;
                     }
                     textPane.getDocument().insertString(offset+1, t.substring(start, i), null);

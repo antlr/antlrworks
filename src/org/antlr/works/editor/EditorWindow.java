@@ -37,13 +37,13 @@ import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.actions.*;
+import org.antlr.works.editor.autocompletion.AutoCompletionMenu;
+import org.antlr.works.editor.autocompletion.AutoCompletionMenuDelegate;
 import org.antlr.works.editor.find.FindAndReplace;
 import org.antlr.works.editor.helper.*;
 import org.antlr.works.editor.idea.*;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.rules.RulesDelegate;
-import org.antlr.works.editor.autocompletion.AutoCompletionMenu;
-import org.antlr.works.editor.autocompletion.AutoCompletionMenuDelegate;
 import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.TemplateRules;
 import org.antlr.works.editor.tips.TipsManager;
@@ -186,6 +186,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         textPaneRequestFocusLater();
         editorGUI.updateInformation();
         editorGUI.updateCursorInfo();
+        menuSCMActions.setSilent(true);
         menuSCMActions.queryFileStatus();
     }
 

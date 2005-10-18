@@ -42,12 +42,12 @@ import org.antlr.works.dialog.DialogConnectDebugRemote;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextEditorPane;
+import org.antlr.works.editor.swing.TextUtils;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.parser.Line;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.ErrorListener;
 import org.antlr.works.util.IconManager;
-import org.antlr.works.util.Localizable;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -152,9 +152,11 @@ public class Debugger {
         textPane.setPreferredSize(new Dimension(200, 0));
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
-        textPane.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
+        textPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
         textPane.setText("");
         textPane.setEditable(false);
+
+        TextUtils.createTabs(textPane);
 
         JScrollPane textScrollPane = new JScrollPane(textPane);
         textScrollPane.setWheelScrollingEnabled(true);

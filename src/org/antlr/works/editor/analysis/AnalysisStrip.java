@@ -118,18 +118,24 @@ public class AnalysisStrip extends JPanel {
         });
 
         addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                int index = -1;
-                Token t = getUndefinedTokenAtPoint(e.getPoint());
-                if(t != null) {
-                    index = t.getStartIndex();
-                } else {
-                    Parser.Rule r = getDuplicateRuleAtPoint(e.getPoint());
-                    if(r != null) {
-                        index = r.getStartIndex();
-                    }
-                }
+            public int getIndexOfFirstErrors(Point p) {
+                Token t = getUndefinedTokenAtPoint(p);
+                if(t != null)
+                    return t.getStartIndex();
 
+                Parser.Rule r = getDuplicateRuleAtPoint(p);
+                if(r != null)
+                    return r.getStartIndex();
+
+                r = getHasLeftRecursionRuleAtPoint(p);
+                if(r != null)
+                    return r.getStartIndex();
+
+                return -1;
+            }
+
+            public void mousePressed(MouseEvent e) {
+                int index = getIndexOfFirstErrors(e.getPoint());                
                 if(index > -1) {
                     overlay.hide();
                     AnalysisStrip.this.editor.setCaretPosition(index);

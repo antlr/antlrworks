@@ -39,7 +39,9 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
+import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.swing.TextUtils;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.parser.Parser;
@@ -91,6 +93,9 @@ public class Interpreter implements Runnable {
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
         textPane.setPreferredSize(new Dimension(300, 100));
+
+        textPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
+        TextUtils.createTabs(textPane);        
 
         textScrollPane = new JScrollPane(textPane);
         textScrollPane.setWheelScrollingEnabled(true);

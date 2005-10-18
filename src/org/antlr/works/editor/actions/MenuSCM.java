@@ -45,11 +45,16 @@ public class MenuSCM extends AbstractActions implements SCMDelegate {
 
     protected XJDialogProgress progress;
     protected SCM scm;
+    protected boolean silent;
 
     public MenuSCM(EditorWindow editor) {
         super(editor);
         scm = new P4(editor.console, this);
         progress = new XJDialogProgress(editor.getWindowContainer());
+    }
+
+    public void setSilent(boolean silent) {
+        this.silent = silent;
     }
 
     public void queryFileStatus() {
@@ -124,6 +129,7 @@ public class MenuSCM extends AbstractActions implements SCMDelegate {
         progress.setCancellable(false);
         progress.setIndeterminate(true);
         progress.display();
+        setSilent(false);
     }
 
     protected void hideProgress() {
@@ -135,8 +141,10 @@ public class MenuSCM extends AbstractActions implements SCMDelegate {
     }
 
     public void scmCommandsDidComplete() {
-        hideProgress();
-        displayErrors();        
+        if(!silent) {
+            hideProgress();
+            displayErrors();
+        }
     }
 
     public void scmFileStatusDidChange(String status) {

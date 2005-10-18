@@ -37,10 +37,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.analysis.AnalysisStrip;
 import org.antlr.works.editor.rules.Rules;
-import org.antlr.works.editor.swing.EditorStyledDocument;
-import org.antlr.works.editor.swing.Gutter;
-import org.antlr.works.editor.swing.TextEditorPane;
-import org.antlr.works.editor.swing.TextEditorPaneDelegate;
+import org.antlr.works.editor.swing.*;
 import org.antlr.works.editor.tool.TAutoIndent;
 import org.antlr.works.editor.tool.TImmediateColorization;
 import org.antlr.works.editor.undo.Undo;
@@ -58,11 +55,11 @@ import javax.swing.text.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.geom.GeneralPath;
 import java.awt.event.*;
+import java.awt.geom.GeneralPath;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
 
 public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEditorPaneDelegate {
 
@@ -290,28 +287,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
     public void applyFont() {
         textPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
-        applyTab();
-    }
-
-    public void applyTab() {
-        int tabSize = EditorPreferences.getEditorTabSize();
-        int charWidth = EditorPreferences.getEditorFontSize();
-        try {
-            charWidth = Toolkit.getDefaultToolkit().getFontMetrics(textPane.getFont()).stringWidth("m");
-        } catch(Exception e) {
-            // ignore exception
-        }
-
-        // @todo I have to create a fixed size array - any other way to do that ?
-        TabStop[] tstops = new TabStop[100];
-        for(int i = 0; i<100; i++) {
-            tstops[i] = new TabStop(i*tabSize*charWidth);
-        }
-        TabSet tabs = new TabSet(tstops);
-
-        Style style = textPane.getLogicalStyle();
-        StyleConstants.setTabSet(style, tabs);
-        textPane.setLogicalStyle(style);
+        TextUtils.createTabs(textPane);
     }
 
     public int getCaretPosition() {
@@ -601,6 +577,40 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             super(elem);
         }
 
+       /* public int getNextVisualPositionFrom(int pos,
+                                     Position.Bias b,
+                                     Shape a,
+                                     int direction,
+                                     Position.Bias[] biasRet)
+                              throws BadLocationException
+        {
+            if(direction == SwingConstants.EAST) {
+                return Utilities.getPositionBelow(getDocument().get, 0, pos);
+            } else
+                return super.getNextEastWestVisualPositionFrom(pos, b, a, direction, biasRet);
+        }   */
+
+       /* public float getPreferredSpan(int axis) {
+            if(axis == X_AXIS)
+                return super.getPreferredSpan(axis);
+            else
+                return 100;
+        }
+
+        public float getMaximumSpan(int axis) {
+            if(axis == X_AXIS)
+                return super.getMaximumSpan(axis);
+            else
+                return 100;
+        }
+
+        public float getMinimumSpan(int axis) {
+            if(axis == X_AXIS)
+                return super.getMinimumSpan(axis);
+            else
+                return 100;
+        }  */
+
         public void paint(Graphics g, Shape allocation) {
             if(highlightCursorLine) {
                 Rectangle alloc = (allocation instanceof Rectangle) ?
@@ -620,12 +630,12 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
                         View v = getView(i);
 
                         if (v.getStartOffset() < cursorPosition &&
-                                cursorPosition <= v.getEndOffset()) {
+                                cursorPosition <= v.getEndOffset())
+                        {
                             g.setColor(highlightColor);
                             g.fillRect(tempRect.x, tempRect.y,
                                     alloc.width, tempRect.height);
                         }
-
                         paintChild(g, tempRect, i);
                     }
                 }
@@ -685,7 +695,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             updateCursorInfo();
             if(textPane.hasFocus()) {
                 editor.ideasHide();
-                editor.displayIdeas(e.getDot());
+                if(!isTyping())
+                    editor.displayIdeas(getCaretPosition());
             }
 
             // Each time the cursor moves, update the visible part of the text pane

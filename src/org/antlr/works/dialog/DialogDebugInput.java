@@ -36,7 +36,8 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.foundation.XJSystem;
-import org.antlr.works.util.Localizable;
+import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.swing.TextUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +54,8 @@ public class DialogDebugInput extends XJDialog {
         setOKButton(okButton);
         setCancelButton(cancelButton);
 
-        inputTextArea.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
+        TextUtils.createTabs(inputTextArea);
+        inputTextArea.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
         inputTextArea.requestFocus();
     }
 
@@ -73,7 +75,7 @@ public class DialogDebugInput extends XJDialog {
         contentPane = new JPanel();
         label1 = new JLabel();
         scrollPane1 = new JScrollPane();
-        inputTextArea = new JTextArea();
+        inputTextArea = new JTextPane();
         buttonBar = new JPanel();
         okButton = new JButton();
         cancelButton = new JButton();
@@ -114,7 +116,7 @@ public class DialogDebugInput extends XJDialog {
                     scrollPane1.setPreferredSize(new Dimension(500, 200));
 
                     //---- inputTextArea ----
-                    inputTextArea.setLineWrap(false);
+                    //inputTextArea.setLineWrap(false);
                     scrollPane1.setViewportView(inputTextArea);
                 }
                 contentPane.add(scrollPane1, cc.xywh(1, 3, 3, 1));
@@ -159,7 +161,7 @@ public class DialogDebugInput extends XJDialog {
     private JPanel contentPane;
     private JLabel label1;
     private JScrollPane scrollPane1;
-    private JTextArea inputTextArea;
+    private JTextPane inputTextArea;
     private JPanel buttonBar;
     private JButton okButton;
     private JButton cancelButton;

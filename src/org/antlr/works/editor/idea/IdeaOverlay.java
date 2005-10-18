@@ -86,8 +86,6 @@ public class IdeaOverlay extends OverlayObject {
                 if(ideaButton.isSelected())
                     return;
 
-                content.setOpaque(false);
-                ideaButton.setContentAreaFilled(false);
                 ideaButton.setBorder(null);
             }
 
