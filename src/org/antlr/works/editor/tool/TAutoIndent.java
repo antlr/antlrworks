@@ -67,6 +67,25 @@ public class TAutoIndent implements Runnable {
     public void run() {
         try {
             String s = textPane.getDocument().getText(offset-1, length+1);
+            if(s.length() == 1 || s.charAt(1) == '\n' && s.charAt(0) != '\n') {
+                // @todo refactor this mess ;-)
+                // Find the beginning of the previous line
+                String t = textPane.getDocument().getText(0, offset-2);
+                for(int i=offset-3; i>=0; i--) {
+                    if(t.charAt(i) == '\n') {
+                        i++;
+                        // Find the first non-white space/tab character;
+                        int start = i;
+                        while(i < offset-2 && (t.charAt(i) == ' ' || t.charAt(i) == '\t')) {
+                            i++;
+                        }
+                        String offsetText = t.substring(start, i);
+                        textPane.getDocument().insertString(offset+1, offsetText, null);
+                        return;
+                    }
+                }
+            }
+
             char c1 = s.charAt(0);
             char c2 = s.charAt(1);
             if(c1 == '\n' || c1 == '\r') {
@@ -76,9 +95,6 @@ public class TAutoIndent implements Runnable {
                 } else if(c2 == ';') {
                     textPane.getDocument().remove(offset, 1);
                     textPane.getDocument().insertString(offset, "\t"+c2, null);
-                /*} else if(c2 != '\t') {
-                    textPane.getDocument().remove(offset, 1);
-                    textPane.getDocument().insertString(offset, "\t\t"+c2, null);*/
                 }
             } else if(c2 == ':') {
                 // Try to reach the beginning of the line by parsing only an ID

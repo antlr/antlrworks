@@ -1,16 +1,15 @@
-- DFA decision for lexer tokens (use getGrammar...)
-- handle "header with package" option
-- remove left recursion in analysis column
-- toolbar with button for: go backward, forward, enable/disable ideas/tips/analysis
 - test with empty preferences file
-- maintain auto-indentation
 - handle collapsed action when removing left recursion
+- toolbar with button for: go backward, forward, enable/disable ideas/tips/analysis
 - P4: if file read-only and under P4, propose to open for edit
+- check environment (see e-mail from Jim Idle)
+
+- DFA decision for lexer tokens (see with Terence)
+- handle "header with package" option (see with Terence for line numbering between files)
 - SCM: add diff
 - display all literals in list
 - use Grammar randomText to generate random valid input text
 - message pour indiquer lorsque le syntax diagram n'est pas affiche (comme par exemple sur les regles du lexer)
-- check environment (see e-mail from Jim Idle)
 
 - lexical ambiguities (ask Terence)
 - LT are not always displayed - see if we are too restricting

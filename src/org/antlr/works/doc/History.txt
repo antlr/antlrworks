@@ -21,7 +21,7 @@ Version 1.0ea4 - 10/16/05
 - improved auto-completion (different is inside a rule or defining a rule)
 - new analysis strip displaying the location and kind of errors and warnings
 
-- auto-indentation (enabled on ':', '|' and ';' characters)
+- auto-indentation (enabled also on ':', '|' and ';' characters)
 - current line is now highlighted
 - display line and column number in bottom status bar
 - HOME/END key move to beginning/end of line
@@ -34,6 +34,8 @@ Version 1.0ea4 - 10/16/05
 
 - fixed a bug where a new document created on Windows would not be correctly colorized
 - fixed several visual bugs on Windows and Linux
+
+- issue: collapsed actions are not handled when removing left recursion in rule
 
 Version 1.0ea3 - 07/04/05
 

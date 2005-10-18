@@ -65,6 +65,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     private List duplicateRules = null;
     private List undefinedTokens = null;
+    private List hasLeftRecursionRules = null;
 
     private boolean selectingRule = false;
     private boolean skipParseRules = false;
@@ -84,6 +85,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
         duplicateRules = new ArrayList();
         undefinedTokens = new ArrayList();
+        hasLeftRecursionRules = new ArrayList();
 
         rulesTree.setDelegate(this);
         rulesTree.setEnableDragAndDrop();
@@ -372,6 +374,10 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         return duplicateRules.contains(rule);
     }
 
+    public List getHasLeftRecursionRules() {
+        return hasLeftRecursionRules;
+    }
+
     public List getDuplicateRules() {
         return duplicateRules;
     }
@@ -466,6 +472,18 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         delegate.rulesDidSelectRule();
     }
 
+    public void rebuildHasLeftRecursionRulesList() {
+        if(parser.getRules() == null)
+            return;
+
+        hasLeftRecursionRules.clear();
+        for(Iterator iter = parser.getRules().iterator(); iter.hasNext();) {
+            Parser.Rule r = (Parser.Rule)iter.next();
+            if(r.hasLeftRecursion())
+                hasLeftRecursionRules.add(r);
+        }
+    }
+
     public void rebuildDuplicateRulesList() {
         List rules = parser.getRules();
         List sortedRules = Collections.list(Collections.enumeration(rules));
@@ -491,6 +509,9 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     public boolean isBlockToken(Token t) {
+        if(parser.getBlocks() == null)
+            return false;
+
         for(Iterator iter = parser.getBlocks().iterator(); iter.hasNext(); ) {
             Parser.Block b = (Parser.Block)iter.next();
             if(t.getStartIndex() >= b.start.getStartIndex() && t.getEndIndex() <= b.end.getEndIndex())
@@ -606,6 +627,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         //long t = System.currentTimeMillis();
         rebuildDuplicateRulesList();
         rebuildUndefinedTokensList();
+        rebuildHasLeftRecursionRulesList();
         //long delta = System.currentTimeMillis()-t;
         //System.out.println("Rebuild in "+delta);
 

@@ -53,6 +53,7 @@ public class AnalysisStrip extends JPanel {
     protected int bottomOffset = 50;
     protected int lineCount;
     protected int numberOfErrors;
+    protected int numberOfWarnings;
 
     public AnalysisStrip(EditorWindow editor) {
         this.editor = editor;
@@ -72,23 +73,37 @@ public class AnalysisStrip extends JPanel {
                         sb.append(numberOfErrors);
                         sb.append(" errors found");
                     }
+                    if(numberOfWarnings > 0) {
+                        sb.append("\n");
+                        sb.append(numberOfWarnings);
+                        sb.append(" warnings found");
+                    }
                 } else {
-                    Token t = getUndefinedTokenAtPoint(e.getPoint());
-                    Parser.Rule r = getDuplicateRuleAtPoint(e.getPoint());
+                    Token undefToken = getUndefinedTokenAtPoint(e.getPoint());
+                    if(undefToken != null) {
+                        if(sb.length() > 0)
+                            sb.append("\n");
+                        sb.append("Undefined token \"");
+                        sb.append(undefToken.getAttribute());
+                        sb.append("\"");
+                    }
 
-                    if(t != null || r != null) {
-                        if(t != null) {
-                            sb.append("Undefined token \"");
-                            sb.append(t.getAttribute());
-                            sb.append("\"");
-                        }
-                        if(r != null) {
-                            if(t != null)
-                                sb.append("\n");
-                            sb.append("Duplicate rule \"");
-                            sb.append(r.name);
-                            sb.append("\"");
-                        }
+                    Parser.Rule dupRule = getDuplicateRuleAtPoint(e.getPoint());
+                    if(dupRule != null) {
+                        if(sb.length() > 0)
+                            sb.append("\n");
+                        sb.append("Duplicate rule \"");
+                        sb.append(dupRule.name);
+                        sb.append("\"");
+                    }
+
+                    Parser.Rule leftRecurRule = getHasLeftRecursionRuleAtPoint(e.getPoint());
+                    if(leftRecurRule != null) {
+                        if(sb.length() > 0)
+                            sb.append("\n");
+                        sb.append("Left recursion in rule \"");
+                        sb.append(leftRecurRule.name);
+                        sb.append("\"");
                     }
                 }
 
@@ -145,6 +160,15 @@ public class AnalysisStrip extends JPanel {
         return null;
     }
 
+    public Parser.Rule getHasLeftRecursionRuleAtPoint(Point p) {
+        for(Iterator iter = editor.rules.getHasLeftRecursionRules().iterator(); iter.hasNext(); ) {
+            Parser.Rule rule = (Parser.Rule) iter.next();
+            if(composeIndicatorRectangle(rule.start.line, 2).contains(p))
+                return rule;
+        }
+        return null;
+    }
+
     public Rectangle getDrawingBounds() {
         Rectangle r = getBounds();
         r.y = topOffset;
@@ -165,6 +189,7 @@ public class AnalysisStrip extends JPanel {
         lineCount = editor.parser.getMaxLines();
 
         numberOfErrors = 0;
+        numberOfWarnings = 0;
 
         Graphics2D g2d = (Graphics2D)g;
         g2d.setColor(Color.red);
@@ -181,6 +206,13 @@ public class AnalysisStrip extends JPanel {
             numberOfErrors++;
         }
 
+        g2d.setColor(Color.green);
+        for(Iterator iter = editor.rules.getHasLeftRecursionRules().iterator(); iter.hasNext(); ) {
+            Parser.Rule rule = (Parser.Rule) iter.next();
+            g2d.fill(composeIndicatorRectangle(rule.start.line, 0));
+            numberOfWarnings++;
+        }
+
         analysisBox.paint(g);
     }
 
@@ -194,28 +226,17 @@ public class AnalysisStrip extends JPanel {
         protected final Rectangle r = new Rectangle(2, 2, 14, 14);
 
         public AnalysisBox() {
-            updateInfo();
         }
 
         public void start() {
             activity = true;
             timer.start();
-            updateInfo();
         }
 
         public void stop() {
             timer.stop();
             activity = false;
-            updateInfo();
             repaint();
-        }
-
-        public void updateInfo() {
-            // @todo use the overlay
-            /*if(activity)
-           setToolTipText("Analysis in progress");
-       else
-           setToolTipText("Analysis completed");*/
         }
 
         public void paint(Graphics g) {
@@ -223,8 +244,14 @@ public class AnalysisStrip extends JPanel {
 
             if(activity)
                 g.setColor(color?Color.white:Color.yellow);
-            else
-                g.setColor(numberOfErrors == 0?greenColor:redColor);
+            else {
+                if(numberOfErrors == 0 && numberOfWarnings == 0)
+                    g.setColor(greenColor);
+                else if(numberOfErrors == 0)
+                    g.setColor(Color.yellow);
+                else
+                    g.setColor(redColor);
+            }
 
             g.fillRect(r.x+2, r.y+2, r.width-5, r.height-5);
         }
