@@ -200,7 +200,8 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         if(useCachedImage) {
             setCacheResizeImage(useCacheImageResize);
             if(!useCacheImageResize) {
-                getCurrentGraph().render(0, 0);
+                if(getCurrentGraph() != null)
+                    getCurrentGraph().render(0, 0);
                 cacheInvalidate();
             }
             adjustSize();

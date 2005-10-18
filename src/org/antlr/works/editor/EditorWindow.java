@@ -588,6 +588,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     /* Tips provider */
 
+    public void tipsHide() {
+        tipsManager.hide();
+    }
+        
     public void displayTips(Point relativePoint, Point absolutePoint) {
         if(getTokens() == null)
             return;

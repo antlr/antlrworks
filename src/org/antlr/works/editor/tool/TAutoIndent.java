@@ -64,72 +64,91 @@ public class TAutoIndent implements Runnable {
             SwingUtilities.invokeLater(this);
     }
 
+    public boolean autoIndentAfterReturn(String s) throws BadLocationException {
+        if(s.length() == 1 || (s.charAt(0) != '\n' && s.charAt(1) == '\n')) {
+            // Find the beginning of the previous line
+            String t = textPane.getDocument().getText(0, offset);
+            for(int i = offset - 2; i >= 0; i--) {
+                // Stop when a newline is found or the beginning of the text is reached
+                if(t.charAt(i) == '\n' || i == 0) {
+                    // Find the first non-white space/tab character;
+                    if(i > 0) {
+                        // Reached \n, increment i to begin past it
+                        i++;
+                    }
+                    // Go forward to see how many white-space or tab there are
+                    // before reaching a character
+                    int start = i;
+                    while((i < offset - 1) && (t.charAt(i) == ' ' || t.charAt(i) == '\t')) {
+                        i++;
+                    }
+                    if(i == offset - 1) {
+                        // Reached end of line with no other character
+                        i++;
+                    }
+                    textPane.getDocument().insertString(offset+1, t.substring(start, i), null);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void autoIndentOnSpecificKeys(String s) throws BadLocationException {
+        char c1 = s.charAt(0);
+        char c2 = s.charAt(1);
+        if(c1 == '\n' || c1 == '\r') {
+            if(c2 == '|') {
+                textPane.getDocument().remove(offset, 1);
+                textPane.getDocument().insertString(offset, "\t"+c2+"\t", null);
+            } else if(c2 == ';') {
+                textPane.getDocument().remove(offset, 1);
+                textPane.getDocument().insertString(offset, "\t"+c2, null);
+            }
+        } else if(c2 == ':') {
+            // Try to reach the beginning of the line by parsing only an ID
+            // (which is the rule name)
+            boolean beginningOfRule = true;
+            int originalOffset = offset;
+            while(--offset >= 0) {
+                String t = textPane.getDocument().getText(offset, 1);
+                char c = t.charAt(0);
+                if(c == '\n' || c == '\r') {
+                    // beginning of line reached
+                    break;
+                }
+                if(c != ' ' && c != '_' && !Character.isLetterOrDigit(c)) {
+                    beginningOfRule = false;
+                    break;
+                }
+            }
+            if(beginningOfRule) {
+                int lengthOfRule = originalOffset-offset;
+                int tabSize = EditorPreferences.getEditorTabSize();
+
+                if(lengthOfRule > tabSize+1) {
+                    textPane.getDocument().remove(originalOffset, 1);
+                    textPane.getDocument().insertString(originalOffset, "\n\t:\t", null);
+                } else if(lengthOfRule < tabSize+1) {
+                    textPane.getDocument().remove(originalOffset, 1);
+                    textPane.getDocument().insertString(originalOffset, "\t:\t", null);
+                } else {
+                    textPane.getDocument().insertString(originalOffset+1, "\t", null);
+                }
+            }
+        }
+    }
+
     public void run() {
         try {
             String s = textPane.getDocument().getText(offset-1, length+1);
-            if(s.length() == 1 || s.charAt(1) == '\n' && s.charAt(0) != '\n') {
-                // @todo refactor this mess ;-)
-                // Find the beginning of the previous line
-                String t = textPane.getDocument().getText(0, offset-2);
-                for(int i=offset-3; i>=0; i--) {
-                    if(t.charAt(i) == '\n') {
-                        i++;
-                        // Find the first non-white space/tab character;
-                        int start = i;
-                        while(i < offset-2 && (t.charAt(i) == ' ' || t.charAt(i) == '\t')) {
-                            i++;
-                        }
-                        String offsetText = t.substring(start, i);
-                        textPane.getDocument().insertString(offset+1, offsetText, null);
-                        return;
-                    }
-                }
-            }
+            if(autoIndentAfterReturn(s))
+                return;
 
-            char c1 = s.charAt(0);
-            char c2 = s.charAt(1);
-            if(c1 == '\n' || c1 == '\r') {
-                if(c2 == '|') {
-                    textPane.getDocument().remove(offset, 1);
-                    textPane.getDocument().insertString(offset, "\t"+c2+"\t", null);
-                } else if(c2 == ';') {
-                    textPane.getDocument().remove(offset, 1);
-                    textPane.getDocument().insertString(offset, "\t"+c2, null);
-                }
-            } else if(c2 == ':') {
-                // Try to reach the beginning of the line by parsing only an ID
-                // (which is the rule name)
-                boolean beginningOfRule = true;
-                int originalOffset = offset;
-                while(--offset >= 0) {
-                    String t = textPane.getDocument().getText(offset, 1);
-                    char c = t.charAt(0);
-                    if(c == '\n' || c == '\r') {
-                        // beginning of line reached
-                        break;
-                    }
-                    if(c != ' ' && c != '_' && !Character.isLetterOrDigit(c)) {
-                        beginningOfRule = false;
-                        break;
-                    }
-                }
-                if(beginningOfRule) {
-                    int lengthOfRule = originalOffset-offset;
-                    int tabSize = EditorPreferences.getEditorTabSize();
-
-                    if(lengthOfRule > tabSize+1) {
-                        textPane.getDocument().remove(originalOffset, 1);
-                        textPane.getDocument().insertString(originalOffset, "\n\t:\t", null);
-                    } else if(lengthOfRule < tabSize+1) {
-                        textPane.getDocument().remove(originalOffset, 1);
-                        textPane.getDocument().insertString(originalOffset, "\t:\t", null);
-                    } else {
-                        textPane.getDocument().insertString(originalOffset+1, "\t", null);
-                    }
-                }
-            }
+            autoIndentOnSpecificKeys(s);
         } catch (BadLocationException e) {
             // ignore exception
         }
     }
+
 }

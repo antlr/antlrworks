@@ -1,4 +1,6 @@
 - test with empty preferences file
+- implement browse DOT tool path in prefs
+- right-click on tab to close doesn't work on Windows
 - handle collapsed action when removing left recursion
 - toolbar with button for: go backward, forward, enable/disable ideas/tips/analysis
 - P4: if file read-only and under P4, propose to open for edit

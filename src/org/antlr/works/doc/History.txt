@@ -1,5 +1,5 @@
 
-Version 1.0ea4 - 10/16/05
+Version 1.0ea4 - 10/17/05
 
 - compatible with ANTLR 3.0ea6
 

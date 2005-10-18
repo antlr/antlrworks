@@ -65,13 +65,33 @@ public class IdeaOverlay extends OverlayObject {
 
     public JComponent overlayCreateInterface() {
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
 
         ideaButton = new JToggleButton();
         ideaButton.setIcon(IconManager.shared().getIconWarning());
-        ideaButton.setBackground(Color.white);
+
+        ideaButton.setContentAreaFilled(false);
+        ideaButton.setBorder(null);
+
         ideaButton.setFocusable(false);
         ideaButton.addActionListener(new IdeaActionListener());
         ideaButton.setToolTipText("Click to display ideas");
+
+        ideaButton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                ideaButton.setBorder(BorderFactory.createLineBorder(Color.darkGray));
+            }
+
+            public void mouseExited(MouseEvent e) {
+                if(ideaButton.isSelected())
+                    return;
+
+                content.setOpaque(false);
+                ideaButton.setContentAreaFilled(false);
+                ideaButton.setBorder(null);
+            }
+
+        });
 
         panel.add(ideaButton, BorderLayout.CENTER);
 
@@ -162,6 +182,7 @@ public class IdeaOverlay extends OverlayObject {
     public boolean overlayWillDisplay() {
         updateIdeasList();
         ideaButton.setSelected(false);
+        ideaButton.setBorder(null);
         return true;
     }
 

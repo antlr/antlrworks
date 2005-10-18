@@ -683,8 +683,10 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
         public void caretUpdate(CaretEvent e) {
             updateCursorInfo();
-            editor.ideasHide();
-            editor.displayIdeas(e.getDot());
+            if(textPane.hasFocus()) {
+                editor.ideasHide();
+                editor.displayIdeas(e.getDot());
+            }
 
             // Each time the cursor moves, update the visible part of the text pane
             // to redraw the highlighting
@@ -706,6 +708,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             if(lastSelectedRule == null || !lastSelectedRule.equals(rule.name)) {
                 lastSelectedRule = rule.name;
                 editor.updateVisualization(false);
+            } else {
+                // @todo display message "no rule selected"
             }
         }
     }
@@ -774,6 +778,14 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
                 textPane.repaint();
 
             editor.displayIdeas(e.getPoint());
+        }
+
+        public void mouseExited(MouseEvent e) {
+            if(textPane.hasFocus()) {
+                // Do not hide the ideas because
+                // otherwise we don't be able to access the idea
+                editor.tipsHide();
+            }
         }
     }
 
