@@ -315,6 +315,14 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         return textPane.getSelectionEnd();
     }
 
+    public void insertText(int index, String text) {
+        try {
+            textPane.getDocument().insertString(index, text, null);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void replaceSelectedText(String replace) {
         replaceText(getSelectionStart(), getSelectionEnd(), replace);
     }
@@ -420,6 +428,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
             textScrollPane.repaint();
             editor.getMainMenuBar().refreshState();
             textPane.repaint();
+            underlyingShape.reset();
             updateSCMStatus(null);
         }
     }
@@ -649,24 +658,33 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
         protected static final int CLOSING_INDEX_LIMIT = 4;
 
-        public void mousePressed(MouseEvent event) {
+        public void displayPopUp(MouseEvent event) {
             if(viewTabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
                 return;
 
-            if(event.isPopupTrigger()) {
-                JPopupMenu popup = new JPopupMenu();
-                JMenuItem item = new JMenuItem("Close");
-                item.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent event) {
-                        if(viewTabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
-                            return;
+            if(!event.isPopupTrigger())
+                return;
 
-                        viewTabbedPane.removeTabAt(viewTabbedPane.getSelectedIndex());
-                    }
-                });
-                popup.add(item);
-                popup.show(event.getComponent(), event.getX(), event.getY());
-            }
+            JPopupMenu popup = new JPopupMenu();
+            JMenuItem item = new JMenuItem("Close");
+            item.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent event) {
+                    if(viewTabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
+                        return;
+
+                    viewTabbedPane.removeTabAt(viewTabbedPane.getSelectedIndex());
+                }
+            });
+            popup.add(item);
+            popup.show(event.getComponent(), event.getX(), event.getY());
+        }
+
+        public void mousePressed(MouseEvent event) {
+            displayPopUp(event);
+        }
+
+        public void mouseReleased(MouseEvent event) {
+            displayPopUp(event);
         }
     }
 

@@ -79,10 +79,10 @@ public class MenuGrammar extends AbstractActions implements TDecisionDFA.TDecisi
             editor.beginGroupChange("Group");
 
             int end = editor.getTextPane().getSelectionEnd();
-            editor.editorGUI.replaceText(end+1, end+1, "\n"+Parser.END_GROUP+"\n");
+            editor.editorGUI.insertText(end+1, "\n"+Parser.END_GROUP+"\n");
 
             int start = editor.getTextPane().getSelectionStart();
-            editor.editorGUI.replaceText(start-1, start-1, "\n"+Parser.BEGIN_GROUP+s+"\n");
+            editor.editorGUI.insertText(start-1, "\n"+Parser.BEGIN_GROUP+s+"\n");
 
             editor.endGroupChange();
         }

@@ -563,7 +563,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
             for(Iterator iterator = sortedRules.iterator(); iterator.hasNext(); ) {
                 Parser.Rule rule = (Parser.Rule)iterator.next();
-                if(rule.name.toLowerCase().startsWith(partialWord))
+                if(rule.name.toLowerCase().startsWith(partialWord) && !matchingRules.contains(rule.name))
                     matchingRules.add(rule.name);
             }
         } else {
@@ -574,7 +574,9 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
             for(Iterator iterator = sortedUndefinedRules.iterator(); iterator.hasNext(); ) {
                 Token t = (Token)iterator.next();
-                if(t.getAttribute().toLowerCase().startsWith(partialWord) && !t.getAttribute().equals(partialWord))
+                if(t.getAttribute().toLowerCase().startsWith(partialWord)
+                        && !t.getAttribute().equals(partialWord)
+                        && !matchingRules.contains(t.getAttribute()))
                     matchingRules.add(t.getAttribute());
             }
         }
@@ -737,10 +739,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         int tabSize = EditorPreferences.getEditorTabSize();
         String ruleName = action.token.getAttribute();
+        insertionIndex = Math.min(getText().length(), insertionIndex);
         if(ruleName.length() > tabSize + 1)
-            editorGUI.replaceText(insertionIndex, insertionIndex, action.token.getAttribute()+"\n\t:\n\t;\n\n");
+            editorGUI.insertText(insertionIndex, action.token.getAttribute()+"\n\t:\n\t;\n\n");
         else
-            editorGUI.replaceText(insertionIndex, insertionIndex, action.token.getAttribute()+"\t:\n\t;\n\n");
+            editorGUI.insertText(insertionIndex, action.token.getAttribute()+"\t:\n\t;\n\n");
 
         setCaretPosition(insertionIndex);
     }

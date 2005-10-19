@@ -40,6 +40,8 @@ import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.tree.*;
@@ -67,7 +69,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     private List undefinedTokens = null;
     private List hasLeftRecursionRules = null;
 
-    private boolean selectingRule = false;
+    private boolean programmaticallySelectingRule = false;
     private boolean skipParseRules = false;
     private boolean selectNextRule = false;
 
@@ -96,6 +98,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
         rulesTree.setModel(rulesTreeModel);
         rulesTree.addMouseListener(new RuleTreeMouseListener());
+        rulesTree.addTreeSelectionListener(new RuleTreeSelectionListener());
 
         rulesTree.setRootVisible(false);
         rulesTree.setShowsRootHandles(true);
@@ -272,7 +275,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
         for(Iterator iterator = parser.getRules().iterator(); iterator.hasNext(); ) {
             Parser.Rule r = (Parser.Rule)iterator.next();
-            if(r.name.startsWith(match))
+            if(r.name.startsWith(match) && !matches.contains(r.name))
                 matches.add(r.name);
         }
         return matches;
@@ -291,24 +294,23 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         return null;
     }
 
-
     public Parser.Rule selectRuleAtPosition(int pos) {
-        if(selectingRule || parser.getRules() == null)
+        if(programmaticallySelectingRule || parser.getRules() == null)
             return null;
 
-        selectingRule = true;
+        programmaticallySelectingRule = true;
         Parser.Rule rule = getEnclosingRuleAtPosition(pos);
         selectRule(rule);
-        selectingRule = false;
+        programmaticallySelectingRule = false;
         return rule;
     }
 
     public Parser.Rule selectRuleName(String name) {
-        if(selectingRule || parser.getRules() == null)
+        if(programmaticallySelectingRule || parser.getRules() == null)
             return null;
 
         Parser.Rule rule = null;
-        selectingRule = true;
+        programmaticallySelectingRule = true;
         Iterator iterator = parser.getRules().iterator();
         while(iterator.hasNext()) {
             Parser.Rule r = (Parser.Rule)iterator.next();
@@ -318,7 +320,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
                 break;
             }
         }
-        selectingRule = false;
+        programmaticallySelectingRule = false;
         return rule;
     }
 
@@ -428,7 +430,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         if(rules == null || rules.isEmpty())
             return;
 
-        selectingRule = true;
+        programmaticallySelectingRule = true;
 
         Parser.Rule startRule = (Parser.Rule) rules.get(0);
         Parser.Rule endRule = (Parser.Rule) rules.get(rules.size()-1);
@@ -445,16 +447,20 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         } catch (BadLocationException e1) {
             e1.printStackTrace();
         }
-        selectingRule = false;
+        programmaticallySelectingRule = false;
 
         delegate.rulesDidSelectRule();
+    }
+
+    public void goToRule(Parser.Rule rule) {
+        textPane.setCaretPosition(rule.start.getStartIndex());
     }
 
     public void selectTextRule(Parser.Rule rule) {
         if(rule == null)
             return;
 
-        selectingRule = true;
+        programmaticallySelectingRule = true;
 
         textPane.setCaretPosition(rule.start.getStartIndex());
         textPane.moveCaretPosition(rule.end.getEndIndex());
@@ -467,7 +473,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         } catch (BadLocationException e1) {
             e1.printStackTrace();
         }
-        selectingRule = false;
+        programmaticallySelectingRule = false;
 
         delegate.rulesDidSelectRule();
     }
@@ -674,6 +680,31 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         }
     }
 
+    public void selectRuleFromUserAction() {
+        // Do not select the rule if the selection changes
+        // was triggered programmatically instead than by the user
+        if(programmaticallySelectingRule)
+            return;
+
+        TreePath selPath[] = rulesTree.getSelectionPaths();
+        if(selPath == null)
+            return;
+
+        List selRules = new ArrayList();
+        for(int path=0; path<selPath.length; path++) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)selPath[path].getLastPathComponent();
+            RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
+            if(n.rule != null)
+                selRules.add(n.rule);
+        }
+
+        if(!selRules.isEmpty()) {
+            goToRule((Parser.Rule)selRules.get(0));
+            // Request focus because it was lost when moving the caret in the document
+            rulesTree.requestFocus();
+        }
+    }
+
     public class CustomTableRenderer extends DefaultTreeCellRenderer {
 
         public Component getTreeCellRendererComponent(
@@ -715,20 +746,15 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         }
     }
 
+    public class RuleTreeSelectionListener implements TreeSelectionListener {
+        public void valueChanged(TreeSelectionEvent e) {
+            selectRuleFromUserAction();
+        }
+    }
+
     public class RuleTreeMouseListener extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
-            TreePath selPath[] = rulesTree.getSelectionPaths();
-            if(selPath == null)
-                return;
-
-            List selRules = new ArrayList();
-            for(int path=0; path<selPath.length; path++) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode)selPath[path].getLastPathComponent();
-                RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
-                if(n.rule != null)
-                    selRules.add(n.rule);
-            }
-            selectTextRules(selRules);
+            selectRuleFromUserAction();
         }
     }
 

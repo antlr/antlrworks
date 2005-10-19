@@ -155,7 +155,7 @@ public class TGoToRule extends OverlayObject {
             Parser.Rule rule = editor.rules.selectRuleName((String)matchingRuleListModel.get(index));
             if(rule != null) {
                 editor.goToHistoryRememberCurrentPosition();
-                editor.rules.selectTextRule(rule);
+                editor.rules.goToRule(rule);
             }
         }
     }

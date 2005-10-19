@@ -61,7 +61,7 @@ public class MenuGoTo extends AbstractActions {
 
         editor.goToHistoryRememberCurrentPosition();
 
-        editor.rules.selectTextRule(rule);
+        editor.rules.goToRule(rule);
         Statistics.shared().recordEvent(Statistics.EVENT_GOTO_DECLARATION);
     }
 

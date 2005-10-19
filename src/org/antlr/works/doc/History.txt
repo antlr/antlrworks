@@ -1,5 +1,5 @@
 
-Version 1.0ea4 - 10/17/05
+Version 1.0ea4 - 10/18/05
 
 - compatible with ANTLR 3.0ea6
 
@@ -20,6 +20,8 @@ Version 1.0ea4 - 10/17/05
 - improved drag and drop visual feedback (can now drop below or above a rule)
 - improved auto-completion (different is inside a rule or defining a rule)
 - new analysis strip displaying the location and kind of errors and warnings
+- remove collapse/expand actions - will reintroduce that later on
+- removed duplicate names in auto-completion
 
 - auto-indentation (enabled also on ':', '|' and ';' characters)
 - current line is now highlighted
@@ -27,6 +29,7 @@ Version 1.0ea4 - 10/17/05
 - HOME/END key move to beginning/end of line
 - can now navigate backward/forward
 - rules have now icon in the tree view
+- go to rule now move the cursor to the beginning of the rule instead of selecting it
 
 - prefs: auto-save every n minutes
 - prefs: syntax coloring parser delay

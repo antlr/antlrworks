@@ -108,10 +108,12 @@ public class AnalysisStrip extends JPanel {
                 }
 
                 if(sb.length() > 0) {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     overlay.setLocation(e.getPoint());
                     overlay.setText(sb.toString());
                     overlay.display();
                 } else {
+                    setCursor(Cursor.getDefaultCursor());
                     overlay.hide();
                 }
             }

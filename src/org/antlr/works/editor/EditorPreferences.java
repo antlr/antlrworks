@@ -59,7 +59,7 @@ public class EditorPreferences {
     public static final String PREF_PARSER_DELAY = "PREF_PARSER_DELAY";
 
     public static final int DEFAULT_TAB_WIDTH = 8;
-    public static final String DEFAULT_EDITOR_FONT = "Courier New";
+    public static String DEFAULT_EDITOR_FONT;
     public static final int DEFAULT_EDITOR_FONT_SIZE = 12;
     public static final boolean DEFAULT_CONSOLE_SHOW = false;
     public static final int DEFAULT_PARSER_DELAY = 250;
@@ -144,10 +144,13 @@ public class EditorPreferences {
     public static final String PREF_PRIVATE_MENU = "PREF_PRIVATE_MENU";
 
     static {
-        if(XJSystem.isMacOS())
+        if(XJSystem.isMacOS()) {
             DEFAULT_DOT_TOOL_PATH = "/Applications/Graphviz.app/Contents/MacOS/dot";
-        else
+            DEFAULT_EDITOR_FONT = "Monaco";
+        } else {
             DEFAULT_DOT_TOOL_PATH = "";
+            DEFAULT_EDITOR_FONT = "Courier New";
+        }
     }
 
     public static void setOutputPath(String path) {
@@ -204,6 +207,10 @@ public class EditorPreferences {
 
     public static String getLookAndFeel() {
         return getPreferences().getString(PREF_LOOK_AND_FEEL, null);
+    }
+
+    public static void setDOTToolPath(String path) {
+        getPreferences().setString(PREF_DOT_TOOL_PATH, path);
     }
 
     public static String getDOTToolPath() {

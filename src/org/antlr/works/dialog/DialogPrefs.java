@@ -41,10 +41,9 @@ import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.HelpManager;
-import org.antlr.works.parser.Parser;
-import org.antlr.works.parser.ThreadedParser;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -68,6 +67,15 @@ public class DialogPrefs extends XJPanel {
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 apply();
+            }
+        });
+
+        browseDotToolPathButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
+                    dotToolPathField.setText(XJFileChooser.shared().getSelectedFilePath());
+                    EditorPreferences.setDOTToolPath(dotToolPathField.getText());
+                }
             }
         });
 

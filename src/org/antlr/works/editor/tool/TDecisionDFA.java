@@ -1,11 +1,11 @@
 package org.antlr.works.editor.tool;
 
+import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.analysis.DFA;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.EditorPreferences;
-import org.antlr.Tool;
+import org.antlr.works.editor.EditorWindow;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -15,8 +15,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.List;
-
-import edu.usfca.xj.appkit.utils.XJAlert;
 /*
 
 [The "BSD licence"]
@@ -275,6 +273,7 @@ public class TDecisionDFA implements Runnable {
 
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
+            // @todo try to use an image observer in order not to block the GUI for big image ?
             g.drawImage(image, 0, 0, (int)getImageWidth(), (int)getImageHeight(), null);
         }
     }

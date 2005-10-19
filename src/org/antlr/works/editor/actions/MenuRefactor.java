@@ -94,7 +94,7 @@ public class MenuRefactor extends AbstractActions {
     public void replaceLiteralTokenWithTokenLabel(Token t, String name) {
         // First insert the rule at the end of the grammar
         int insertionIndex = editor.getText().length();
-        editor.editorGUI.replaceText(insertionIndex, insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
+        editor.editorGUI.insertText(insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
 
         // Then rename all strings token
         List tokens = editor.getTokens();
@@ -114,12 +114,12 @@ public class MenuRefactor extends AbstractActions {
     public void removeLeftRecursion() {
         Parser.Rule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {
-            XJAlert.display(editor.getWindowContainer(), "Remove left recursion", "There is no rule at cursor position.");
+            XJAlert.display(editor.getWindowContainer(), "Remove Left Recursion", "There is no rule at cursor position.");
             return;
         }
 
         if(!rule.hasLeftRecursion()) {
-            XJAlert.display(editor.getWindowContainer(), "Remove left recursion", "The rule doesn't have a left recursion.");
+            XJAlert.display(editor.getWindowContainer(), "Remove Left Recursion", "The rule doesn't have a left recursion.");
             return;
         }
 
