@@ -39,9 +39,15 @@ import org.antlr.works.util.Localizable;
 import javax.swing.*;
 import java.awt.*;
 
+import edu.usfca.xj.foundation.XJSystem;
+
 public class SplashScreen extends JWindow {
 
+    protected JPanel backgroundPanel;
+
 	public SplashScreen() {
+        backgroundPanel = new JPanel();
+
 		initComponents();
 
         iconButton.setIcon(IconManager.shared().getIconApplication());
@@ -52,9 +58,21 @@ public class SplashScreen extends JWindow {
         versionLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_VERSION));
         copyrightLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_COPYRIGHT));
 
+        if(XJSystem.isWindows()) {
+        } else if(XJSystem.isMacOS()) {
+
+        }
+
+        backgroundPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        backgroundPanel.setBackground(Color.white);
+        getContentPane().add(backgroundPanel);
+
         pack();
         setLocationRelativeTo(null);
 	}
+
+    // !!!!! Replace getContentPane() with backgroundPanel after re-generation
+    // with JFormDesigner !!!!
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -66,7 +84,7 @@ public class SplashScreen extends JWindow {
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
-        Container contentPane = getContentPane();
+        Container contentPane = backgroundPanel; //getContentPane();
         contentPane.setLayout(new FormLayout(
             new ColumnSpec[] {
                 new ColumnSpec(Sizes.dluX(15)),

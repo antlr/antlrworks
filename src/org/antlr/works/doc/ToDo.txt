@@ -1,6 +1,4 @@
-- Windows: Tahoma if available or Courier New
-- MacOS: Courier if available or Courier New
-- Linux:
+- contextual menus on rules to group using selected rules (do not rely on text selection)
 
 - createTabs in TextUtils: modify to apply to the whole text
 - test with empty preferences file
