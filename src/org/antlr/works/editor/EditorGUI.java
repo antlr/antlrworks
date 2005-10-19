@@ -644,7 +644,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
             // to redraw the highlighting
             if(highlightCursorLine)
                 editor.getTextPane().repaint();
-
+            
             // Update the auto-completion list
             editor.autoCompletionMenu.updateAutoCompleteList();
 

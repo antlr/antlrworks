@@ -46,7 +46,7 @@ import java.util.List;
 
 public class EditorGutter extends JComponent {
 
-    public static final int MARKER_HEIGHT = 6;
+    public static final int MARKER_HEIGHT = 7;
     public static final int ICON_WIDTH = 9;
     public static final int OFFSET_FROM_TEXT = 2;
 
@@ -108,7 +108,7 @@ public class EditorGutter extends JComponent {
             Parser.Rule rule = (Parser.Rule) iterator.next();
             if(rule.start.line == line && folding) {
                 int start = rule.colon.getEndIndex();
-                int end = rule.end.getStartIndex();
+                int end = rule.end.getEndIndex();
                 SimpleAttributeSet attr = new SimpleAttributeSet();
                 attr.addAttribute("custom", rule);
                 rule.setCollapsed(!rule.isCollapsed());
@@ -142,6 +142,9 @@ public class EditorGutter extends JComponent {
 
     public void paintComponent(Graphics g) {
         Rectangle r = g.getClipBounds();
+
+        g.setColor(textPane.getBackground());
+        g.fillRect(r.x+r.width-ICON_WIDTH/2-OFFSET_FROM_TEXT, r.y, ICON_WIDTH/2+OFFSET_FROM_TEXT, r.height);
 
         g.setColor(BACKGROUND_COLOR);
         g.fillRect(r.x, r.y, r.width-ICON_WIDTH/2-OFFSET_FROM_TEXT, r.height);
@@ -195,8 +198,12 @@ public class EditorGutter extends JComponent {
                     g.drawImage(collapseUp, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-collapseUp.getHeight(null)*0.5), null);
                     g.drawImage(collapseDown, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (bottom_rule_y-collapseDown.getHeight(null)*0.5), null);
                 }
-            } else
+            } else {
+                g.setColor(Color.white);
                 g.fillRect(r.x+r.width-(MARKER_HEIGHT+3), (int) (rule_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT);
+                g.setColor(Color.black);
+                g.drawRect(r.x+r.width-(MARKER_HEIGHT+3), (int) (rule_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT);
+            }
         }
 
         g.setColor(Color.red);

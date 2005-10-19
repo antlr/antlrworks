@@ -1,5 +1,6 @@
 - Windows: Tahoma if available or Courier New
-- MacOS: Monaco if available or Courier New
+- MacOS: Courier if available or Courier New
+- Linux:
 
 - createTabs in TextUtils: modify to apply to the whole text
 - test with empty preferences file
@@ -7,7 +8,6 @@
 - P4: if file read-only and under P4, propose to open for edit
 - check environment (see e-mail from Jim Idle)
 
-- should be able to specify each color for syntax coloring in text and debugger
 - mark as invalid string inside quote greater than 1 chars (i.e. 'blabla')
 - shift-right, shift-left, comment/uncomment selection
 

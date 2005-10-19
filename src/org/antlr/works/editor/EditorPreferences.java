@@ -146,12 +146,22 @@ public class EditorPreferences {
     public static final String PREF_PRIVATE_MENU = "PREF_PRIVATE_MENU";
 
     static {
+        DEFAULT_DOT_TOOL_PATH = "";
+        DEFAULT_EDITOR_FONT = "Courier New";
+
         if(XJSystem.isMacOS()) {
             DEFAULT_DOT_TOOL_PATH = "/Applications/Graphviz.app/Contents/MacOS/dot";
-            DEFAULT_EDITOR_FONT = "Monaco";
+            if(Font.getFont("Courier") != null)
+                DEFAULT_EDITOR_FONT = "Courier";
+        } else if(XJSystem.isWindows()) {
+            if(Font.getFont("Tahoma") != null)
+                DEFAULT_EDITOR_FONT = "Tahoma";
+        } else if(XJSystem.isLinux()) {
+            if(Font.getFont("Monospaced") != null)
+                DEFAULT_EDITOR_FONT = "Monospaced";
         } else {
-            DEFAULT_DOT_TOOL_PATH = "";
-            DEFAULT_EDITOR_FONT = "Courier New";
+            if(Font.getFont("Tahoma") != null)
+                DEFAULT_EDITOR_FONT = "Tahoma";
         }
     }
 
