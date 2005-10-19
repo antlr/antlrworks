@@ -124,7 +124,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         textPane.setDelegate(this);
 
         gutter = new EditorGutter(textPane);
-
+        gutter.setFolding(EditorPreferences.getFoldingEnabled());
+        
         textScrollPane = new JScrollPane(textPane);
         textScrollPane.setWheelScrollingEnabled(true);
         textScrollPane.setRowHeaderView(gutter);
@@ -429,6 +430,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
     public void notificationFire(Object source, String name) {
         if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
             highlightCursorLine = EditorPreferences.getHighlightCursorEnabled();
+            gutter.setFolding(EditorPreferences.getFoldingEnabled());
             textPane.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
             applyFont();
             textScrollPane.repaint();

@@ -144,6 +144,7 @@ public class DialogPrefs extends XJPanel {
         getPreferences().bindToPreferences(editorFontCombo, EditorPreferences.PREF_EDITOR_FONT, EditorPreferences.DEFAULT_EDITOR_FONT);
         getPreferences().bindToPreferences(editorFontSizeSpinner, EditorPreferences.PREF_EDITOR_FONT_SIZE, EditorPreferences.DEFAULT_EDITOR_FONT_SIZE);
         getPreferences().bindToPreferences(parserDelayField, EditorPreferences.PREF_PARSER_DELAY, EditorPreferences.DEFAULT_PARSER_DELAY);
+        getPreferences().bindToPreferences(foldingButton, EditorPreferences.PREF_EDITOR_FOLDING, EditorPreferences.DEFAULT_EDITOR_FOLDING);
 
         // Visualization
         getPreferences().bindToPreferences(dotToolPathField, EditorPreferences.PREF_DOT_TOOL_PATH, EditorPreferences.DEFAULT_DOT_TOOL_PATH);
@@ -285,11 +286,12 @@ public class DialogPrefs extends XJPanel {
         autoSaveDelayField = new JTextField();
         label11 = new JLabel();
         highlightCursorLineButton = new JCheckBox();
+        foldingButton = new JCheckBox();
         label1 = new JLabel();
+        tabWidthField = new JTextField();
         label22 = new JLabel();
         parserDelayField = new JTextField();
         label23 = new JLabel();
-        tabWidthField = new JTextField();
         tabVisual = new JPanel();
         panel9 = new JPanel();
         label24 = new JLabel();
@@ -475,26 +477,30 @@ public class DialogPrefs extends XJPanel {
                         highlightCursorLineButton.setText("Highlight cursor line");
                         tabEditor.add(highlightCursorLineButton, cc.xywh(5, 7, 5, 1));
 
+                        //---- foldingButton ----
+                        foldingButton.setText("Enable folding");
+                        tabEditor.add(foldingButton, cc.xywh(5, 9, 3, 1));
+
                         //---- label1 ----
                         label1.setHorizontalAlignment(SwingConstants.RIGHT);
                         label1.setText("Tab width:");
-                        tabEditor.add(label1, cc.xy(3, 9));
-
-                        //---- label22 ----
-                        label22.setText("Parser delay:");
-                        tabEditor.add(label22, cc.xy(3, 11));
-
-                        //---- parserDelayField ----
-                        parserDelayField.setText("250");
-                        tabEditor.add(parserDelayField, cc.xy(5, 11));
-
-                        //---- label23 ----
-                        label23.setText("ms");
-                        tabEditor.add(label23, cc.xy(7, 11));
+                        tabEditor.add(label1, cc.xy(3, 11));
 
                         //---- tabWidthField ----
                         tabWidthField.setText("8");
-                        tabEditor.add(tabWidthField, cc.xy(5, 9));
+                        tabEditor.add(tabWidthField, cc.xy(5, 11));
+
+                        //---- label22 ----
+                        label22.setText("Parser delay:");
+                        tabEditor.add(label22, cc.xy(3, 13));
+
+                        //---- parserDelayField ----
+                        parserDelayField.setText("250");
+                        tabEditor.add(parserDelayField, cc.xy(5, 13));
+
+                        //---- label23 ----
+                        label23.setText("ms");
+                        tabEditor.add(label23, cc.xy(7, 13));
                     }
                     tabbedPane1.addTab("Editor", tabEditor);
 
@@ -899,11 +905,12 @@ public class DialogPrefs extends XJPanel {
     private JTextField autoSaveDelayField;
     private JLabel label11;
     private JCheckBox highlightCursorLineButton;
+    private JCheckBox foldingButton;
     private JLabel label1;
+    private JTextField tabWidthField;
     private JLabel label22;
     private JTextField parserDelayField;
     private JLabel label23;
-    private JTextField tabWidthField;
     private JPanel tabVisual;
     private JPanel panel9;
     private JLabel label24;
@@ -956,5 +963,6 @@ public class DialogPrefs extends XJPanel {
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
 
 }

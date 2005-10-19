@@ -57,6 +57,7 @@ public class EditorGutter extends JComponent {
     protected Map bps = new HashMap();
     protected List rules = null;
     protected List lines = null;
+    protected boolean folding = false;
 
     protected JTextPane textPane = null;
     protected List markerInfos = new ArrayList();
@@ -86,6 +87,10 @@ public class EditorGutter extends JComponent {
         repaint();
     }
 
+    public void setFolding(boolean folding) {
+        this.folding = folding;
+    }
+
     public Set getBreakpoints() {
         Set set = new HashSet();
         for (Iterator iterator = bps.keySet().iterator(); iterator.hasNext();) {
@@ -101,7 +106,7 @@ public class EditorGutter extends JComponent {
 
         for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
             Parser.Rule rule = (Parser.Rule) iterator.next();
-            if(rule.start.line == line) {
+            if(rule.start.line == line && folding) {
                 int start = rule.colon.getEndIndex();
                 int end = rule.end.getStartIndex();
                 SimpleAttributeSet attr = new SimpleAttributeSet();
@@ -172,24 +177,26 @@ public class EditorGutter extends JComponent {
             if(bp != null && bp.booleanValue())
                 continue;
 
-            if(rule.isCollapsed()) {
-                g.drawImage(expand, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-expand.getHeight(null)*0.5), null);
-            } else {
-                int bottom_rule_y = (int)getLineY(rule.end.line);
+            if(folding) {
+                if(rule.isCollapsed()) {
+                    g.drawImage(expand, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-expand.getHeight(null)*0.5), null);
+                } else {
+                    int bottom_rule_y = (int)getLineY(rule.end.line);
 
-                g.setColor(Color.white);
-                g.drawLine(r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);
+                    g.setColor(Color.white);
+                    g.drawLine(r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);
 
-                Stroke s = g2d.getStroke();
-                g2d.setStroke(DASHED_STROKE);
-                g.setColor(Color.black);
-                g.drawLine(r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);
-                g2d.setStroke(s);
+                    Stroke s = g2d.getStroke();
+                    g2d.setStroke(DASHED_STROKE);
+                    g.setColor(Color.black);
+                    g.drawLine(r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);
+                    g2d.setStroke(s);
 
-                g.drawImage(collapseUp, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-collapseUp.getHeight(null)*0.5), null);
-                g.drawImage(collapseDown, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (bottom_rule_y-collapseDown.getHeight(null)*0.5), null);
-            }
-            //g.fillRect(r.x+r.width-(MARKER_HEIGHT+3), (int) (rule_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT);
+                    g.drawImage(collapseUp, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-collapseUp.getHeight(null)*0.5), null);
+                    g.drawImage(collapseDown, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (bottom_rule_y-collapseDown.getHeight(null)*0.5), null);
+                }
+            } else
+                g.fillRect(r.x+r.width-(MARKER_HEIGHT+3), (int) (rule_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT);
         }
 
         g.setColor(Color.red);
