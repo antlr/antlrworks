@@ -44,8 +44,8 @@ import org.antlr.works.editor.helper.*;
 import org.antlr.works.editor.idea.*;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.rules.RulesDelegate;
-import org.antlr.works.editor.swing.Gutter;
 import org.antlr.works.editor.swing.TemplateRules;
+import org.antlr.works.editor.textpane.EditorGutter;
 import org.antlr.works.editor.tips.TipsManager;
 import org.antlr.works.editor.tips.TipsOverlay;
 import org.antlr.works.editor.tool.TActions;
@@ -232,7 +232,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return editorGUI.textPane;
     }
 
-    public Gutter getGutter() {
+    public EditorGutter getGutter() {
         return editorGUI.gutter;
     }
 

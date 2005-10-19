@@ -1,6 +1,7 @@
 - Windows: Tahoma if available or Courier New
 - MacOS: Monaco if available or Courier New
 
+- createTabs in TextUtils: modify to apply to the whole text
 - test with empty preferences file
 - toolbar with button for: go backward, forward, enable/disable ideas/tips/analysis
 - P4: if file read-only and under P4, propose to open for edit

@@ -1,3 +1,6 @@
+package org.antlr.works.editor.textpane;
+
+import javax.swing.text.*;
 /*
 
 [The "BSD licence"]
@@ -29,17 +32,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.swing;
+public class EditorCustomEditorKit extends StyledEditorKit implements ViewFactory {
 
-import javax.swing.text.DefaultStyledDocument;
-
-public class EditorStyledDocument extends DefaultStyledDocument {
-
-    public void lock() {
-        super.writeLock();
+    public EditorCustomEditorKit() {
     }
 
-    public void unlock() {
-        super.writeUnlock();
+    public ViewFactory getViewFactory() {
+        return this;
+    }
+
+    public Document createDefaultDocument() {
+        return new EditorStyledDocument();
+    }
+
+    public View create(Element elem) {
+        String kind = elem.getName();
+
+        if(AbstractDocument.ParagraphElementName.equals(kind))
+            return new EditorParagraphView(elem);
+
+        if(AbstractDocument.ContentElementName.equals(kind))
+            return new EditorLabelView(elem);
+
+        return super.getViewFactory().create(elem);
     }
 }

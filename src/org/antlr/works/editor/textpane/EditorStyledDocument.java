@@ -29,10 +29,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.swing;
+package org.antlr.works.editor.textpane;
 
-import java.awt.*;
+import javax.swing.text.DefaultStyledDocument;
 
-public interface TextEditorPaneDelegate {
-    public void textEditorPaneDidPaint(Graphics g);
+public class EditorStyledDocument extends DefaultStyledDocument {
+
+    public void lock() {
+        super.writeLock();
+    }
+
+    public void unlock() {
+        super.writeUnlock();
+    }
 }

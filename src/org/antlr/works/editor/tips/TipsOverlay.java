@@ -1,8 +1,8 @@
 package org.antlr.works.editor.tips;
 
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.tooltip.ToolTipList;
 import org.antlr.works.editor.swing.OverlayObject;
+import org.antlr.works.editor.tooltip.ToolTipList;
 import org.antlr.works.editor.tooltip.ToolTipListDelegate;
 
 import javax.swing.*;

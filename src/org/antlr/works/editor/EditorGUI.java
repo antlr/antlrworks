@@ -37,7 +37,10 @@ import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.analysis.AnalysisStrip;
 import org.antlr.works.editor.rules.Rules;
-import org.antlr.works.editor.swing.*;
+import org.antlr.works.editor.swing.TextUtils;
+import org.antlr.works.editor.textpane.EditorGutter;
+import org.antlr.works.editor.textpane.EditorTextPane;
+import org.antlr.works.editor.textpane.EditorTextPaneDelegate;
 import org.antlr.works.editor.tool.TAutoIndent;
 import org.antlr.works.editor.tool.TImmediateColorization;
 import org.antlr.works.editor.undo.Undo;
@@ -51,7 +54,8 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -61,11 +65,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEditorPaneDelegate {
+public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTextPaneDelegate {
 
     public EditorWindow editor;
 
-    public Gutter gutter;
+    public EditorGutter gutter;
     public AnalysisStrip analysisStrip;
 
     public JScrollPane textScrollPane;
@@ -84,7 +88,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     public JSplitPane rulesTextSplitPane;
     public JSplitPane upDownSplitPane;
 
-    public TextEditorPane textPane;
+    public EditorTextPane textPane;
     public TextPaneListener textPaneListener;
 
     public String lastSelectedRule;
@@ -119,7 +123,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, unixEndOfLine);
         textPane.setDelegate(this);
 
-        gutter = new Gutter(textPane);
+        gutter = new EditorGutter(textPane);
 
         textScrollPane = new JScrollPane(textPane);
         textScrollPane.setWheelScrollingEnabled(true);
@@ -230,10 +234,11 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     }
 
     public void createTextPane() {
-        textPane = new TextEditorPane(new EditorStyledDocument());
-        textPane.setEditorKit(new CustomEditorKit());
+        textPane = new EditorTextPane();
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
+
+        textPane.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
 
         applyFont();
         textPane.setWordWrap(false);
@@ -263,7 +268,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         textPane.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 Dimension d = textPane.getSize();
-                d.width = 20;
+                d.width = 25;
                 gutter.setPreferredSize(d);
             }
         });
@@ -424,6 +429,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
     public void notificationFire(Object source, String name) {
         if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
             highlightCursorLine = EditorPreferences.getHighlightCursorEnabled();
+            textPane.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
             applyFont();
             textScrollPane.repaint();
             editor.getMainMenuBar().refreshState();
@@ -448,7 +454,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         textPane.repaint();
     }
 
-    public void textEditorPaneDidPaint(Graphics g) {
+    public void editorTextPaneDidPaint(Graphics g) {
         if(editor.getTokens() == null)
             return;
 
@@ -555,105 +561,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         }
     }
 
-    protected class CustomEditorKit extends StyledEditorKit implements ViewFactory {
-
-        // This class has been inspired by fabrice_pi at this URL:
-        // http://www.javafr.com/code.aspx?ID=21900
-
-        public ViewFactory getViewFactory() {
-            return this;
-        }
-
-        public Document createDefaultDocument() {
-            return new EditorStyledDocument();
-        }
-
-        public View create(Element elem) {
-            String kind = elem.getName();
-
-            if(AbstractDocument.ParagraphElementName.equals(kind))
-                return new LineHighlightingParagraphView(elem);
-            else
-                return super.getViewFactory().create(elem);
-        }
-    }
-
-    protected class LineHighlightingParagraphView extends ParagraphView {
-        public Rectangle tempRect = new Rectangle();
-        public Color highlightColor = new Color(1.0f, 1.0f, 0.5f, 0.3f);
-
-        public LineHighlightingParagraphView(Element elem) {
-            super(elem);
-        }
-
-       /* public int getNextVisualPositionFrom(int pos,
-                                     Position.Bias b,
-                                     Shape a,
-                                     int direction,
-                                     Position.Bias[] biasRet)
-                              throws BadLocationException
-        {
-            if(direction == SwingConstants.EAST) {
-                return Utilities.getPositionBelow(getDocument().get, 0, pos);
-            } else
-                return super.getNextEastWestVisualPositionFrom(pos, b, a, direction, biasRet);
-        }   */
-
-       /* public float getPreferredSpan(int axis) {
-            if(axis == X_AXIS)
-                return super.getPreferredSpan(axis);
-            else
-                return 100;
-        }
-
-        public float getMaximumSpan(int axis) {
-            if(axis == X_AXIS)
-                return super.getMaximumSpan(axis);
-            else
-                return 100;
-        }
-
-        public float getMinimumSpan(int axis) {
-            if(axis == X_AXIS)
-                return super.getMinimumSpan(axis);
-            else
-                return 100;
-        }  */
-
-        public void paint(Graphics g, Shape allocation) {
-            if(highlightCursorLine) {
-                Rectangle alloc = (allocation instanceof Rectangle) ?
-                        (Rectangle)allocation :
-                        allocation.getBounds();
-                int n = getViewCount();
-                int x = alloc.x + getLeftInset();
-                int y = alloc.y + getTopInset();
-                Rectangle clip = g.getClipBounds();
-                int cursorPosition = textPane.getCaretPosition()+1;
-                for (int i = 0; i < n; i++) {
-                    tempRect.x = x + getOffset(X_AXIS, i);
-                    tempRect.y = y + getOffset(Y_AXIS, i);
-                    tempRect.width = getSpan(X_AXIS, i);
-                    tempRect.height = getSpan(Y_AXIS, i);
-                    if (tempRect.intersects(clip)) {
-                        View v = getView(i);
-
-                        if (v.getStartOffset() < cursorPosition &&
-                                cursorPosition <= v.getEndOffset())
-                        {
-                            g.setColor(highlightColor);
-                            g.fillRect(tempRect.x, tempRect.y,
-                                    alloc.width, tempRect.height);
-                        }
-                        paintChild(g, tempRect, i);
-                    }
-                }
-            } else {
-                super.paint(g, allocation);
-            }
-        }
-    }
-
     protected class TabMouseListener extends MouseAdapter {
 
         protected static final int CLOSING_INDEX_LIMIT = 4;
@@ -704,6 +611,20 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
 
             g.setColor(Color.lightGray);
             g.drawLine(0, 1, r.width, 1);
+        }
+    }
+
+    protected class EditorFocusListener implements FocusListener {
+
+        public void focusGained(FocusEvent event) {
+            updateUndoRedo(event.getSource());
+        }
+
+        public void focusLost(FocusEvent event) {
+            // Update the menu only if the event is not temporary. Temporary
+            // focus lost can be, for example, when opening a menu on Windows/Linux.
+            if(!event.isTemporary())
+                updateUndoRedo(null);
         }
     }
 
@@ -783,20 +704,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, TextEdit
         }
 
         public void changedUpdate(DocumentEvent e) {
-        }
-    }
-
-    protected class EditorFocusListener implements FocusListener {
-
-        public void focusGained(FocusEvent event) {
-            updateUndoRedo(event.getSource());
-        }
-
-        public void focusLost(FocusEvent event) {
-            // Update the menu only if the event is not temporary. Temporary
-            // focus lost can be, for example, when opening a menu on Windows/Linux.
-            if(!event.isTemporary())
-                updateUndoRedo(null);
         }
     }
 

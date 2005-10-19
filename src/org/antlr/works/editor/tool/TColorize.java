@@ -33,7 +33,7 @@ package org.antlr.works.editor.tool;
 
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.helper.EditorThread;
-import org.antlr.works.editor.swing.EditorStyledDocument;
+import org.antlr.works.editor.textpane.EditorStyledDocument;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Token;
 
@@ -55,7 +55,6 @@ public class TColorize extends EditorThread {
     private SimpleAttributeSet stringAttr;
     private SimpleAttributeSet tokenAttr;
     private SimpleAttributeSet standardAttr;
-    private SimpleAttributeSet undefinedRuleAttr;
 
     private List tokens;
 
@@ -78,10 +77,6 @@ public class TColorize extends EditorThread {
         tokenAttr = new SimpleAttributeSet();
         StyleConstants.setForeground(tokenAttr, new Color(0, 0, 0.5f));
         StyleConstants.setBold(tokenAttr, true);
-
-        undefinedRuleAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(undefinedRuleAttr, new Color(1f, 0, 0));
-        StyleConstants.setItalic(undefinedRuleAttr, true);
 
         standardAttr = new SimpleAttributeSet();
         StyleConstants.setForeground(standardAttr, Color.black);
@@ -241,11 +236,6 @@ public class TColorize extends EditorThread {
                         if(token.isAllUpperCase())
                             // Lexer rule
                             doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), tokenAttr, false);
-                        else {
-                            // Figure out if the rule is already defined. If not, display the undefined rule in red
-//                            if(editor.rules.isRuleAtIndex(token.getStartIndex()) && !editor.rules.isRuleName(token.getAttribute()))
-//                                doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), undefinedRuleAttr, false);
-                        }
                         break;
                 }
             }

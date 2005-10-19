@@ -58,8 +58,11 @@ public class TextUtils {
         TabSet tabs = new TabSet(tstops);
 
         Style style = textPane.getLogicalStyle();
-        StyleConstants.setTabSet(style, tabs);
-        textPane.setLogicalStyle(style);
+        if(style != null) {
+            // @todo logical style is per paragraph. Need to modify more
+            StyleConstants.setTabSet(style, tabs);
+            textPane.setLogicalStyle(style);
+        }
     }
 
 }

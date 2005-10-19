@@ -198,9 +198,11 @@ public class Parser {
         if(!colonFound)
             return null;
 
+        Token colonToken = T(0);
+
         while(nextToken()) {
             if(T(0).type == Lexer.TOKEN_SEMI)
-                return new Rule(name, start, T(0));
+                return new Rule(name, start, colonToken, T(0));
         }
         return null;
     }
@@ -233,15 +235,18 @@ public class Parser {
 
         public String name;
         public Token start;
+        public Token colon;
         public Token end;
 
+        public boolean collapsed = false;
         public boolean isAllUpperCase = false;
 
         public List errors;
 
-        public Rule(String name, Token start, Token end) {
+        public Rule(String name, Token start, Token colon, Token end) {
             this.name = name;
             this.start = start;
+            this.colon = colon;
             this.end = end;
             this.isAllUpperCase =  name.equals(name.toUpperCase());
         }
@@ -334,6 +339,14 @@ public class Parser {
             this.errors = errors;
         }
 
+        public void setCollapsed(boolean collapsed) {
+            this.collapsed = collapsed;
+        }
+
+        public boolean isCollapsed() {
+            return collapsed;
+        }
+
         public boolean isLexerRule() {
             return isAllUpperCase;
         }
@@ -419,6 +432,7 @@ public class Parser {
             Rule otherRule = (Rule) o;
             return this.name.compareTo(otherRule.name);
         }
+
     }
 
     public class Block {

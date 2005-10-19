@@ -1,3 +1,7 @@
+package org.antlr.works.editor.textpane;
+
+import javax.swing.text.Element;
+import javax.swing.text.LabelView;
 /*
 
 [The "BSD licence"]
@@ -29,40 +33,39 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.code;
+public class EditorLabelView extends LabelView {
 
-import org.antlr.works.editor.textpane.EditorTextPane;
-import org.antlr.works.util.Localizable;
-
-import javax.swing.*;
-import java.awt.*;
-
-public class CodeDisplay {
-
-    protected JPanel panel;
-    protected EditorTextPane textPane;
-
-    public CodeDisplay() {
-
-        panel = new JPanel(new BorderLayout());
-
-        textPane = new EditorTextPane();
-        textPane.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
-        textPane.setWordWrap(false);
-
-        JScrollPane scrollPane = new JScrollPane(textPane);
-        scrollPane.setWheelScrollingEnabled(true);
-
-        panel.add(scrollPane, BorderLayout.CENTER);
+    public EditorLabelView(Element elem) {
+        super(elem);
     }
 
-    public void setText(String text) {
-        textPane.setText(text);
-        textPane.setCaretPosition(0);
+    public EditorTextPane getEditorPane() {
+        return (EditorTextPane)getContainer();
     }
 
-    public Container getContainer() {
-        return panel;
+    public boolean isVisible() {
+        return getEditorPane().isViewVisible(this);
+    }
+
+    public float getPreferredSpan(int axis) {
+        if(isVisible())
+            return super.getPreferredSpan(axis);
+        else
+            return 0;
+    }
+
+    public float getMaximumSpan(int axis) {
+        if(isVisible())
+            return super.getMaximumSpan(axis);
+        else
+            return 0;
+    }
+
+    public float getMinimumSpan(int axis) {
+        if(isVisible())
+            return super.getMinimumSpan(axis);
+        else
+            return 0;
     }
 
 }

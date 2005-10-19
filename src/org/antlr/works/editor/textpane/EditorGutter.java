@@ -29,22 +29,30 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.swing;
+package org.antlr.works.editor.textpane;
 
 import org.antlr.works.parser.Line;
 import org.antlr.works.parser.Parser;
+import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
-public class Gutter extends JComponent {
+public class EditorGutter extends JComponent {
 
     public static final int MARKER_HEIGHT = 6;
+    public static final int ICON_WIDTH = 9;
+    public static final int OFFSET_FROM_TEXT = 2;
+
+    protected static final Color BACKGROUND_COLOR = new Color(240,240,240);
+    protected static final Stroke DASHED_STROKE = new BasicStroke(0.0f, BasicStroke.CAP_BUTT,
+                                                    BasicStroke.JOIN_MITER, 1.0f, new float[] { 1.0f}, 0.0f);
 
     protected Map bps = new HashMap();
     protected List rules = null;
@@ -53,7 +61,7 @@ public class Gutter extends JComponent {
     protected JTextPane textPane = null;
     protected List markerInfos = new ArrayList();
 
-    public Gutter(JTextPane textPane) {
+    public EditorGutter(JTextPane textPane) {
         super();
 
         this.textPane = textPane;
@@ -90,13 +98,29 @@ public class Gutter extends JComponent {
     }
 
     public void toggleBreakpoint(int line) {
-        Integer value = new Integer(line);
+
+        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
+            Parser.Rule rule = (Parser.Rule) iterator.next();
+            if(rule.start.line == line) {
+                int start = rule.colon.getEndIndex();
+                int end = rule.end.getStartIndex();
+                SimpleAttributeSet attr = new SimpleAttributeSet();
+                attr.addAttribute("custom", rule);
+                rule.setCollapsed(!rule.isCollapsed());
+                ((EditorStyledDocument)textPane.getDocument()).setCharacterAttributes(start, end-start, attr, false);
+                //((EditorStyledDocument)textPane.getDocument()).setParagraphAttributes(start, end-start, attr, false);
+                repaint();
+                break;
+            }
+        }
+
+        /*Integer value = new Integer(line);
         Boolean state = (Boolean)bps.get(value);
         if(state != null)
             bps.put(value, Boolean.valueOf(!state.booleanValue()));
         else
             bps.put(value, Boolean.TRUE);
-        repaint();
+        repaint();*/
     }
 
     public double getLineY(int lineIndex) {
@@ -114,14 +138,14 @@ public class Gutter extends JComponent {
     public void paintComponent(Graphics g) {
         Rectangle r = g.getClipBounds();
 
-        g.setColor(new Color(240,240,240));
-        g.fillRect(r.x, r.y, r.width, r.height);
+        g.setColor(BACKGROUND_COLOR);
+        g.fillRect(r.x, r.y, r.width-ICON_WIDTH/2-OFFSET_FROM_TEXT, r.height);
 
         g.setColor(Color.lightGray);
-        g.drawLine(r.x+r.width-1, r.y, r.x+r.width-1, r.y+r.height);
+        g.drawLine(r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, r.y, r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, r.y+r.height);
 
         Graphics2D g2d = (Graphics2D)g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        //g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
 
         g.setColor(Color.black);
 
@@ -129,6 +153,10 @@ public class Gutter extends JComponent {
             return;
 
         markerInfos.clear();
+
+        Image collapseDown = IconManager.shared().getIconCollapseDown().getImage();
+        Image collapseUp = IconManager.shared().getIconCollapseUp().getImage();
+        Image expand = IconManager.shared().getIconExpand().getImage();
 
         for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
             Parser.Rule rule = (Parser.Rule) iterator.next();
@@ -144,7 +172,24 @@ public class Gutter extends JComponent {
             if(bp != null && bp.booleanValue())
                 continue;
 
-            g.fillRect(r.x+r.width-(MARKER_HEIGHT+3), (int) (rule_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT);
+            if(rule.isCollapsed()) {
+                g.drawImage(expand, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-expand.getHeight(null)*0.5), null);
+            } else {
+                int bottom_rule_y = (int)getLineY(rule.end.line);
+
+                g.setColor(Color.white);
+                g.drawLine(r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);
+
+                Stroke s = g2d.getStroke();
+                g2d.setStroke(DASHED_STROKE);
+                g.setColor(Color.black);
+                g.drawLine(r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);
+                g2d.setStroke(s);
+
+                g.drawImage(collapseUp, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-collapseUp.getHeight(null)*0.5), null);
+                g.drawImage(collapseDown, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (bottom_rule_y-collapseDown.getHeight(null)*0.5), null);
+            }
+            //g.fillRect(r.x+r.width-(MARKER_HEIGHT+3), (int) (rule_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT);
         }
 
         g.setColor(Color.red);

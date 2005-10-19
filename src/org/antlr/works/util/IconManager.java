@@ -87,6 +87,18 @@ public class IconManager {
         return createImageIcon(path+"collapseall.png");
     }
 
+    public ImageIcon getIconCollapseDown() {
+        return createImageIcon(path+"collapsedown.png");
+    }
+
+    public ImageIcon getIconCollapseUp() {
+        return createImageIcon(path+"collapseup.png");
+    }
+
+    public ImageIcon getIconExpand() {
+        return createImageIcon(path+"expand.png");
+    }
+
     public ImageIcon getIconStop() {
         return createImageIcon(path+"stop.png");
     }

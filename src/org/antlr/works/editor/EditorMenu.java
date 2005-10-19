@@ -278,7 +278,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
         menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
         menu.addSeparator();
-        /*menu.addItem(new XJMenuItem("Hide Action", '-', KeyEvent.VK_MINUS, MI_HIDE_ACTION, this));
+       /* menu.addItem(new XJMenuItem("Hide Action", '-', KeyEvent.VK_MINUS, MI_HIDE_ACTION, this));
         menu.addItem(new XJMenuItem("Show All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_SHOW_ALL_ACTION, this));
         menu.addItem(new XJMenuItem("Hide All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_HIDE_ALL_ACTION, this));
         menu.addSeparator();*/

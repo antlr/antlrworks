@@ -40,8 +40,8 @@ import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.tree.*;

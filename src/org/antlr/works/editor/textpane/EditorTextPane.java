@@ -29,23 +29,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.swing;
+package org.antlr.works.editor.textpane;
+
+import org.antlr.works.parser.Parser;
 
 import javax.swing.*;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.View;
 import java.awt.*;
 
-public class TextEditorPane extends JTextPane
+public class EditorTextPane extends JTextPane
 {
     protected boolean wrap = false;
-    protected TextEditorPaneDelegate delegate = null;
+    protected boolean highlightCursorLine = true;
+    protected EditorTextPaneDelegate delegate = null;
 
-    public TextEditorPane() {
-        super();
-    }
-    
-    public TextEditorPane(StyledDocument doc) {
-        super(doc);
+    public EditorTextPane() {
+        super(new EditorStyledDocument());
+        setEditorKit(new EditorCustomEditorKit());
     }
 
     public void setWordWrap(boolean flag) {
@@ -56,13 +56,28 @@ public class TextEditorPane extends JTextPane
         return wrap;
     }
 
+    public void setHighlightCursorLine(boolean highlightCursorLine) {
+        this.highlightCursorLine = highlightCursorLine;
+    }
+
+    public boolean highlightCursorLine() {
+        return highlightCursorLine;
+    }
+
+    public boolean isViewVisible(View v) {
+        Object value = v.getAttributes().getAttribute("custom");
+        if(value == null)
+            return true;
+
+        Parser.Rule rule = (Parser.Rule)value;
+        return !rule.isCollapsed();
+    }
+
     public boolean getScrollableTracksViewportWidth() {
         if (!wrap)
         {
             Component parent = getParent();
-            return ((parent == null) ? true :
-                    (getUI().getPreferredSize(this).width <
-                    parent.getSize().width));
+            return parent == null || getUI().getPreferredSize(this).width < parent.getSize().width;
         } else
             return super.getScrollableTracksViewportWidth();
     }
@@ -77,14 +92,14 @@ public class TextEditorPane extends JTextPane
         }
     }
 
-    public void setDelegate(TextEditorPaneDelegate delegate) {
+    public void setDelegate(EditorTextPaneDelegate delegate) {
         this.delegate = delegate;
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if(delegate != null)
-            delegate.textEditorPaneDidPaint(g);
+            delegate.editorTextPaneDidPaint(g);
     }
 
 }
