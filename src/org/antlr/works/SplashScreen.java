@@ -39,8 +39,6 @@ import org.antlr.works.util.Localizable;
 import javax.swing.*;
 import java.awt.*;
 
-import edu.usfca.xj.foundation.XJSystem;
-
 public class SplashScreen extends JWindow {
 
     protected JPanel backgroundPanel;
@@ -57,11 +55,6 @@ public class SplashScreen extends JWindow {
         infoLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_INFO));
         versionLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_VERSION));
         copyrightLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_COPYRIGHT));
-
-        if(XJSystem.isWindows()) {
-        } else if(XJSystem.isMacOS()) {
-
-        }
 
         backgroundPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         backgroundPanel.setBackground(Color.white);

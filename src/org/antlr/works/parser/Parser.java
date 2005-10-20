@@ -433,6 +433,9 @@ public class Parser {
             return this.name.compareTo(otherRule.name);
         }
 
+        public boolean canBeCollapsed() {
+            return start.line <= end.line - 1;
+        }
     }
 
     public class Block {

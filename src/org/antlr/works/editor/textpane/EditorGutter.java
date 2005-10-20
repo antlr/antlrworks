@@ -37,7 +37,6 @@ import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -46,12 +45,15 @@ import java.util.List;
 
 public class EditorGutter extends JComponent {
 
-    public static final int MARKER_HEIGHT = 7;
-    public static final int ICON_WIDTH = 9;
+    public static final int BREAKPOINT_WIDTH = 9;
+    public static final int BREAKPOINT_HEIGHT = 9;
+    public static final int FOLDING_ICON_WIDTH = 9;
+    public static final int FOLDING_ICON_HEIGHT = 9;
+
     public static final int OFFSET_FROM_TEXT = 2;
 
     protected static final Color BACKGROUND_COLOR = new Color(240,240,240);
-    protected static final Stroke DASHED_STROKE = new BasicStroke(0.0f, BasicStroke.CAP_BUTT,
+    protected static final Stroke FOLDING_DASHED_STROKE = new BasicStroke(0.0f, BasicStroke.CAP_BUTT,
                                                     BasicStroke.JOIN_MITER, 1.0f, new float[] { 1.0f}, 0.0f);
 
     protected Map bps = new HashMap();
@@ -59,21 +61,32 @@ public class EditorGutter extends JComponent {
     protected List lines = null;
     protected boolean folding = false;
 
-    protected JTextPane textPane = null;
+    protected EditorTextPane editorTextPane;
     protected List markerInfos = new ArrayList();
 
-    public EditorGutter(JTextPane textPane) {
+    protected Image collapseDown;
+    protected Image collapseUp;
+    protected Image expand;
+
+    public EditorGutter(EditorTextPane textPane) {
         super();
 
-        this.textPane = textPane;
+        this.editorTextPane = textPane;
+
+        collapseDown = IconManager.shared().getIconCollapseDown().getImage();
+        collapseUp = IconManager.shared().getIconCollapseUp().getImage();
+        expand = IconManager.shared().getIconExpand().getImage();
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 Point m = e.getPoint();
                 for(int i=0; i<markerInfos.size(); i++) {
                     MarkerInfo info = (MarkerInfo)markerInfos.get(i);
-                    if(m.y >= info.coord_y-MARKER_HEIGHT*0.5 && m.y <= info.coord_y+MARKER_HEIGHT*0.5) {                        
-                        toggleBreakpoint(info.line);
+                    if(m.y >= info.coord_y-BREAKPOINT_HEIGHT*0.5 && m.y <= info.coord_y+BREAKPOINT_HEIGHT*0.5) {
+                        if(m.x <= BREAKPOINT_WIDTH)
+                            toggleBreakpoint(info.line);
+                        else
+                            toggleFolding(info.line);
                         break;
                     }
                 }
@@ -102,121 +115,123 @@ public class EditorGutter extends JComponent {
         return set;
     }
 
-    public void toggleBreakpoint(int line) {
-
-        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-            Parser.Rule rule = (Parser.Rule) iterator.next();
-            if(rule.start.line == line && folding) {
-                int start = rule.colon.getEndIndex();
-                int end = rule.end.getEndIndex();
-                SimpleAttributeSet attr = new SimpleAttributeSet();
-                attr.addAttribute("custom", rule);
-                rule.setCollapsed(!rule.isCollapsed());
-                ((EditorStyledDocument)textPane.getDocument()).setCharacterAttributes(start, end-start, attr, false);
-                //((EditorStyledDocument)textPane.getDocument()).setParagraphAttributes(start, end-start, attr, false);
-                repaint();
-                break;
-            }
-        }
-
-        /*Integer value = new Integer(line);
+    protected void toggleBreakpoint(int line) {
+        Integer value = new Integer(line);
         Boolean state = (Boolean)bps.get(value);
         if(state != null)
             bps.put(value, Boolean.valueOf(!state.booleanValue()));
         else
             bps.put(value, Boolean.TRUE);
-        repaint();*/
+        repaint();
     }
 
-    public double getLineY(int lineIndex) {
+    protected void toggleFolding(int line) {
+        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
+            Parser.Rule rule = (Parser.Rule) iterator.next();
+            if(rule.start.line == line && rule.canBeCollapsed() && folding) {
+                editorTextPane.toggleFolding(rule);
+                repaint();
+                break;
+            }
+        }
+    }
+
+    protected int getLineY(int lineIndex) {
         Line line;
         Rectangle lineRectangle;
         try {
             line = (Line)lines.get(lineIndex);
-            lineRectangle = textPane.modelToView(line.position);
+            lineRectangle = editorTextPane.modelToView(line.position);
         } catch (BadLocationException e) {
             return 0;
         }
-        return lineRectangle.y+lineRectangle.height*0.5;
+        return (int) (lineRectangle.y+lineRectangle.height*0.5);
     }
 
     public void paintComponent(Graphics g) {
         Rectangle r = g.getClipBounds();
 
-        g.setColor(textPane.getBackground());
-        g.fillRect(r.x+r.width-ICON_WIDTH/2-OFFSET_FROM_TEXT, r.y, ICON_WIDTH/2+OFFSET_FROM_TEXT, r.height);
+        paintGutter(g, r);
+
+        if(rules != null && lines != null) {
+            updateMarkerInfo();
+
+            paintFolding((Graphics2D)g, r);
+            paintBreakpoints((Graphics2D)g, r);
+        }
+    }
+
+    protected void paintGutter(Graphics g, Rectangle r) {
+        g.setColor(editorTextPane.getBackground());
+        g.fillRect(r.x+r.width-FOLDING_ICON_WIDTH/2-OFFSET_FROM_TEXT, r.y, FOLDING_ICON_WIDTH/2+OFFSET_FROM_TEXT, r.height);
 
         g.setColor(BACKGROUND_COLOR);
-        g.fillRect(r.x, r.y, r.width-ICON_WIDTH/2-OFFSET_FROM_TEXT, r.height);
+        g.fillRect(r.x, r.y, r.width-FOLDING_ICON_WIDTH/2-OFFSET_FROM_TEXT, r.height);
 
         g.setColor(Color.lightGray);
-        g.drawLine(r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, r.y, r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, r.y+r.height);
+        g.drawLine(r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, r.y, r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, r.y+r.height);
+    }
 
-        Graphics2D g2d = (Graphics2D)g;
-        //g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-
-        g.setColor(Color.black);
-
-        if(rules == null || lines == null)
-            return;
-
+    protected void updateMarkerInfo() {
         markerInfos.clear();
-
-        Image collapseDown = IconManager.shared().getIconCollapseDown().getImage();
-        Image collapseUp = IconManager.shared().getIconCollapseUp().getImage();
-        Image expand = IconManager.shared().getIconExpand().getImage();
-
         for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
             Parser.Rule rule = (Parser.Rule) iterator.next();
-
-            int rule_y = (int)getLineY(rule.start.line);
-
+            int rule_y = getLineY(rule.start.line);
             markerInfos.add(new MarkerInfo(rule.start.line, rule_y));
-
-            if(rule_y < r.y || rule_y > r.y+r.height)
-                continue;
-
-            Boolean bp = (Boolean)bps.get(new Integer(rule.start.line));
-            if(bp != null && bp.booleanValue())
-                continue;
-
-            if(folding) {
-                if(rule.isCollapsed()) {
-                    g.drawImage(expand, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-expand.getHeight(null)*0.5), null);
-                } else {
-                    int bottom_rule_y = (int)getLineY(rule.end.line);
-
-                    g.setColor(Color.white);
-                    g.drawLine(r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);
-
-                    Stroke s = g2d.getStroke();
-                    g2d.setStroke(DASHED_STROKE);
-                    g.setColor(Color.black);
-                    g.drawLine(r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);
-                    g2d.setStroke(s);
-
-                    g.drawImage(collapseUp, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-collapseUp.getHeight(null)*0.5), null);
-                    g.drawImage(collapseDown, r.x+r.width-ICON_WIDTH-OFFSET_FROM_TEXT, (int) (bottom_rule_y-collapseDown.getHeight(null)*0.5), null);
-                }
-            } else {
-                g.setColor(Color.white);
-                g.fillRect(r.x+r.width-(MARKER_HEIGHT+3), (int) (rule_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT);
-                g.setColor(Color.black);
-                g.drawRect(r.x+r.width-(MARKER_HEIGHT+3), (int) (rule_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT);
-            }
         }
+    }
+
+    protected void paintBreakpoints(Graphics2D g, Rectangle r) {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
 
         g.setColor(Color.red);
         for (Iterator iterator = bps.keySet().iterator(); iterator.hasNext();) {
             Integer line = (Integer) iterator.next();
             Boolean bp = (Boolean)bps.get(line);
 
-            int line_y = (int)getLineY(line.intValue());
+            int line_y = getLineY(line.intValue());
             if(line_y < r.y || line_y > r.y+r.height)
                 continue;
 
             if(bp.booleanValue()) {
-                g.fillArc(r.x+r.width-(MARKER_HEIGHT+3), (int) (line_y-MARKER_HEIGHT*0.5), MARKER_HEIGHT, MARKER_HEIGHT, 0, 360);
+                g.fillArc(r.x+1, (int) (line_y-BREAKPOINT_HEIGHT*0.5), BREAKPOINT_WIDTH, BREAKPOINT_HEIGHT, 0, 360);
+            }
+        }
+    }
+
+    protected void paintFolding(Graphics2D g, Rectangle r) {
+        // Do not alias otherwise the dotted line between collapsed icon doesn't show up really well
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
+
+        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
+            Parser.Rule rule = (Parser.Rule) iterator.next();
+            int rule_y = getLineY(rule.start.line);
+            if(rule_y < r.y || rule_y > r.y+r.height)
+                continue;
+
+            if(folding && rule.canBeCollapsed()) {
+                if(rule.isCollapsed()) {
+                    g.drawImage(expand, r.x+r.width-FOLDING_ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-expand.getHeight(null)*0.5), null);
+                } else {
+                    int bottom_rule_y = (int)getLineY(rule.end.line);
+
+                    g.setColor(Color.white);
+                    g.drawLine(r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);
+
+                    Stroke s = g.getStroke();
+                    g.setStroke(FOLDING_DASHED_STROKE);
+                    g.setColor(Color.black);
+                    g.drawLine(r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);
+                    g.setStroke(s);
+
+                    g.drawImage(collapseUp, r.x+r.width-FOLDING_ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-collapseUp.getHeight(null)*0.5), null);
+                    g.drawImage(collapseDown, r.x+r.width-FOLDING_ICON_WIDTH-OFFSET_FROM_TEXT, (int) (bottom_rule_y-collapseDown.getHeight(null)*0.5), null);
+                }
+            } else {
+                g.setColor(Color.white);
+                g.fillRect(r.x+r.width-(FOLDING_ICON_WIDTH+3), (int) (rule_y-FOLDING_ICON_HEIGHT*0.5), FOLDING_ICON_WIDTH, FOLDING_ICON_HEIGHT);
+                g.setColor(Color.lightGray);
+                g.drawRect(r.x+r.width-(FOLDING_ICON_WIDTH+3), (int) (rule_y-FOLDING_ICON_HEIGHT*0.5), FOLDING_ICON_WIDTH, FOLDING_ICON_HEIGHT);
             }
         }
     }

@@ -34,11 +34,15 @@ package org.antlr.works.editor.textpane;
 import org.antlr.works.parser.Parser;
 
 import javax.swing.*;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.View;
 import java.awt.*;
 
 public class EditorTextPane extends JTextPane
 {
+    protected static final String ATTRIBUTE_FOLDING_RULE = "folding_rule";
+    protected static final String ATTRIBUTE_FOLDING_VISIBLE = "folding_enabled";
+
     protected boolean wrap = false;
     protected boolean highlightCursorLine = true;
     protected EditorTextPaneDelegate delegate = null;
@@ -65,12 +69,12 @@ public class EditorTextPane extends JTextPane
     }
 
     public boolean isViewVisible(View v) {
-        Object value = v.getAttributes().getAttribute("custom");
+        Object value = v.getAttributes().getAttribute(ATTRIBUTE_FOLDING_VISIBLE);
         if(value == null)
             return true;
 
-        Parser.Rule rule = (Parser.Rule)value;
-        return !rule.isCollapsed();
+        Boolean enabled = (Boolean)value;
+        return enabled.booleanValue();
     }
 
     public boolean getScrollableTracksViewportWidth() {
@@ -102,4 +106,15 @@ public class EditorTextPane extends JTextPane
             delegate.editorTextPaneDidPaint(g);
     }
 
+    public void toggleFolding(Parser.Rule rule) {
+        int start = rule.start.getStartIndex();
+        int end = rule.end.getEndIndex();
+        rule.setCollapsed(!rule.isCollapsed());
+
+        SimpleAttributeSet attr = new SimpleAttributeSet();
+        attr.addAttribute(ATTRIBUTE_FOLDING_RULE, rule);
+        attr.addAttribute(ATTRIBUTE_FOLDING_VISIBLE, new Boolean(!rule.isCollapsed()));
+        ((EditorStyledDocument)getDocument()).setCharacterAttributes(start, end-start, attr, false);
+        ((EditorStyledDocument)getDocument()).setParagraphAttributes(start, end-start, attr, false);
+    }
 }
