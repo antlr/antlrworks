@@ -1,9 +1,4 @@
-package org.antlr.works.editor.idea;
-
-import org.antlr.works.parser.Token;
-import org.antlr.works.parser.ParserRule;
-
-import java.util.List;
+package org.antlr.works.parser;
 /*
 
 [The "BSD licence"]
@@ -35,6 +30,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface IdeaProvider {
-    public List ideaProviderGetActions(Token token, ParserRule rule, ParserRule enclosingRule);
+public class ParserGroup {
+
+    public String name = null;
+    public int ruleIndex = -1;
+    public boolean openGroup = false;
+    public Token token = null;
+
+    public ParserGroup(String name, int ruleIndex, Token token) {
+        this.name = name;
+        this.ruleIndex = ruleIndex;
+        this.token = token;
+        this.openGroup = true;
+    }
+
+    public ParserGroup(int ruleIndex, Token token) {
+        this.ruleIndex = ruleIndex;
+        this.token = token;
+        this.openGroup = false;
+    }
+
+    public String toString() {
+        return "Group "+name+", open ="+openGroup+", ruleIndex = "+ruleIndex;
+    }
+
 }

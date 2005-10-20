@@ -35,4 +35,5 @@ import java.awt.*;
 
 public interface EditorTextPaneDelegate {
     public void editorTextPaneDidPaint(Graphics g);
+    public void editorTextPaneDidFold();
 }

@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.tool;
 
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -105,7 +105,7 @@ public class TUsage {
         return panel;
     }
 
-    public void addMatch(Parser.Rule rule, Token token) {
+    public void addMatch(ParserRule rule, Token token) {
         if(lastRule == null || lastRule != null && !lastRule.equals(rule.name)) {
             node = new DefaultMutableTreeNode();
             node.setUserObject(rule.name);
@@ -126,11 +126,11 @@ public class TUsage {
     }
 
     public class UsageMatch {
-        public Parser.Rule rule;
+        public ParserRule rule;
         public Token token;
         public String contextualText;
 
-        public UsageMatch(Parser.Rule rule, Token token) {
+        public UsageMatch(ParserRule rule, Token token) {
             this.rule = rule;
             this.token = token;
             createContextString();

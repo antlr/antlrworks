@@ -33,8 +33,8 @@ package org.antlr.works.editor.actions;
 
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Line;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -55,7 +55,7 @@ public class MenuGoTo extends AbstractActions {
         if(token == null)
             return;
 
-        Parser.Rule rule = editor.rules.selectRuleName(token.getAttribute());
+        ParserRule rule = editor.rules.selectRuleName(token.getAttribute());
         if(rule == null)
             return;
 

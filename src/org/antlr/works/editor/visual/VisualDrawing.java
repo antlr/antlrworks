@@ -33,7 +33,7 @@ package org.antlr.works.editor.visual;
 
 import org.antlr.analysis.NFAState;
 import org.antlr.works.editor.helper.EditorThread;
-import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.visualization.graphics.GFactory;
 
 import java.util.HashMap;
@@ -48,14 +48,14 @@ public class VisualDrawing extends EditorThread {
 
     protected String text;
     protected String filename;
-    protected Parser.Rule rule;
+    protected ParserRule rule;
 
     protected boolean latchSilent = false;
 
     protected String threadText;
-    protected Parser.Rule threadRule;
+    protected ParserRule threadRule;
 
-    protected Parser.Rule threadLastProcessedRule;
+    protected ParserRule threadLastProcessedRule;
 
     protected Map cacheGraphs = new HashMap();
 
@@ -76,7 +76,7 @@ public class VisualDrawing extends EditorThread {
         awakeThread(500);
     }
 
-    public synchronized void setRule(Parser.Rule rule, boolean immediate) {
+    public synchronized void setRule(ParserRule rule, boolean immediate) {
         this.rule = rule;
         awakeThread(immediate?0:500);
     }
@@ -146,7 +146,7 @@ public class VisualDrawing extends EditorThread {
         refresh();
     }
 
-    protected synchronized void createGraphsForRule(Parser.Rule rule) {
+    protected synchronized void createGraphsForRule(ParserRule rule) {
         List graphs = (List)cacheGraphs.get(rule);
         if(graphs == null) {
             graphs = factory.buildGraphsForRule(visual.engine, rule.name, rule.errors);

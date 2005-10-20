@@ -49,7 +49,7 @@ public class ThreadedParser extends EditorThread {
     protected List rules = null;
     protected List groups = null;
     protected List blocks = null;
-    protected Parser.Name name = null;
+    protected ParserName name = null;
 
     protected static int delay = 250;
 
@@ -87,7 +87,7 @@ public class ThreadedParser extends EditorThread {
         return blocks;
     }
 
-    public synchronized Parser.Name getName() {
+    public synchronized ParserName getName() {
         return name;
     }
 
@@ -95,18 +95,18 @@ public class ThreadedParser extends EditorThread {
         List names = new ArrayList();
         if(rules != null) {
             for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-                Parser.Rule rule = (Parser.Rule) iterator.next();
+                ParserRule rule = (ParserRule) iterator.next();
                 names.add(rule.name);
             }
         }
         return names;
     }
 
-    public synchronized Parser.Rule getRuleAtIndex(int index) {
+    public synchronized ParserRule getRuleAtIndex(int index) {
         if(index < 0 || index >= rules.size())
             return null;
         else
-            return (Parser.Rule)rules.get(index);
+            return (ParserRule)rules.get(index);
     }
 
     public synchronized List getTokens() {

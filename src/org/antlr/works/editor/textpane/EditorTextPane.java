@@ -31,7 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.textpane;
 
-import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserRule;
+import org.antlr.works.editor.EditorWindow;
 
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
@@ -41,8 +42,8 @@ import java.awt.*;
 public class EditorTextPane extends JTextPane
 {
     protected static final String ATTRIBUTE_FOLDING_RULE = "folding_rule";
-    protected static final String ATTRIBUTE_FOLDING_VISIBLE = "folding_enabled";
 
+    protected EditorWindow editor;
     protected boolean wrap = false;
     protected boolean highlightCursorLine = true;
     protected EditorTextPaneDelegate delegate = null;
@@ -50,6 +51,12 @@ public class EditorTextPane extends JTextPane
     public EditorTextPane() {
         super(new EditorStyledDocument());
         setEditorKit(new EditorCustomEditorKit());
+    }
+
+    public EditorTextPane(EditorWindow editor) {
+        super(new EditorStyledDocument());
+        setEditorKit(new EditorCustomEditorKit());
+        this.editor = editor;
     }
 
     public void setWordWrap(boolean flag) {
@@ -68,13 +75,20 @@ public class EditorTextPane extends JTextPane
         return highlightCursorLine;
     }
 
-    public boolean isViewVisible(View v) {
-        Object value = v.getAttributes().getAttribute(ATTRIBUTE_FOLDING_VISIBLE);
-        if(value == null)
-            return true;
+    public ParserRule getRule(View v) {
+        Object value = v.getAttributes().getAttribute(EditorTextPane.ATTRIBUTE_FOLDING_RULE);
+        if(value != null && value instanceof ParserRule)
+            return (ParserRule)value;
+        else
+            return null;
+    }
 
-        Boolean enabled = (Boolean)value;
-        return enabled.booleanValue();
+    public boolean isViewVisible(View v) {
+        ParserRule rule = getRule(v);
+        if(rule == null)
+            return true;
+        else
+            return !rule.isCollapsed();
     }
 
     public boolean getScrollableTracksViewportWidth() {
@@ -106,15 +120,23 @@ public class EditorTextPane extends JTextPane
             delegate.editorTextPaneDidPaint(g);
     }
 
-    public void toggleFolding(Parser.Rule rule) {
-        int start = rule.start.getStartIndex();
-        int end = rule.end.getEndIndex();
+    public void toggleFolding(ParserRule rule) {
+        int start = rule.getStartIndex();
+        int end = rule.getEndIndex();
         rule.setCollapsed(!rule.isCollapsed());
 
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(ATTRIBUTE_FOLDING_RULE, rule);
-        attr.addAttribute(ATTRIBUTE_FOLDING_VISIBLE, new Boolean(!rule.isCollapsed()));
+        if(rule.isCollapsed())
+            editor.beginTextPaneUndoGroup("Collapse Rule");
+        else
+            editor.beginTextPaneUndoGroup("Expand Rule");
         ((EditorStyledDocument)getDocument()).setCharacterAttributes(start, end-start, attr, false);
         ((EditorStyledDocument)getDocument()).setParagraphAttributes(start, end-start, attr, false);
+        editor.endTextPaneUndoGroup();
+
+        if(delegate != null)
+            delegate.editorTextPaneDidFold();
     }
+
 }

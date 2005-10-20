@@ -37,6 +37,8 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.tool.TDecisionDFA;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.ParserGroup;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -60,7 +62,7 @@ public class MenuGrammar extends AbstractActions implements TDecisionDFA.TDecisi
     public void decisionDFADidCompleted(TDecisionDFA decision, String error) {
         progress.close();
         if(error == null) {
-            Parser.Rule rule = editor.getCurrentRule();
+            ParserRule rule = editor.getCurrentRule();
             editor.getTabbedPane().add("Decision "+decision.decisionNumber+" of \""+rule.name+"\"", decision.getContainer());
             editor.getTabbedPane().setSelectedIndex(editor.getTabbedPane().getTabCount()-1);
         } else {
@@ -89,7 +91,7 @@ public class MenuGrammar extends AbstractActions implements TDecisionDFA.TDecisi
     }
 
     public void ungroup() {
-        Parser.Group openGroup = editor.rules.getSelectedGroup();
+        ParserGroup openGroup = editor.rules.getSelectedGroup();
         if(openGroup == null) {
             // No open group selected in the tree. Try to find the closest open group
             // by moving backward
@@ -101,7 +103,7 @@ public class MenuGrammar extends AbstractActions implements TDecisionDFA.TDecisi
             }
         }
 
-        Parser.Group closingGroup = editor.rules.findClosingGroupForGroup(openGroup);
+        ParserGroup closingGroup = editor.rules.findClosingGroupForGroup(openGroup);
 
         editor.beginGroupChange("Ungroup");
 

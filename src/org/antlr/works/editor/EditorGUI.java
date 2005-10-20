@@ -46,8 +46,8 @@ import org.antlr.works.editor.tool.TImmediateColorization;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.undo.UndoDelegate;
 import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -141,7 +141,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
                 if(n == null)
                     return "";
 
-                Parser.Rule r = n.rule;
+                ParserRule r = n.rule;
                 if(r == null || !r.hasErrors())
                     return "";
                 else
@@ -235,7 +235,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
     }
 
     public void createTextPane() {
-        textPane = new EditorTextPane();
+        textPane = new EditorTextPane(editor);
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
 
@@ -456,6 +456,12 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         textPane.repaint();
     }
 
+    public void editorTextPaneDidFold() {
+        // Reset the shape because folding causes the view dimension to change
+        analysisStrip.repaint();
+        underlyingShape.reset();
+    }
+
     public void editorTextPaneDidPaint(Graphics g) {
         if(editor.getTokens() == null)
             return;
@@ -488,7 +494,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
                 drawUnderlineAtIndexes(g, Color.blue, token.getStartIndex(), token.getEndIndex());
             }
 
-            Parser.Rule rule = editor.rules.getRuleStartingWithToken(token);
+            ParserRule rule = editor.rules.getRuleStartingWithToken(token);
             if(rule != null && rule.hasLeftRecursion()) {
                 drawUnderlineAtIndexes(g, Color.green, token.getStartIndex(), token.getEndIndex());
             }
@@ -644,7 +650,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
             // to redraw the highlighting
             if(highlightCursorLine)
                 editor.getTextPane().repaint();
-            
+
             // Update the auto-completion list
             editor.autoCompletionMenu.updateAutoCompleteList();
 
@@ -653,7 +659,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
             // the parser was able to complete
             //displayIdeas(e.getDot());
 
-            Parser.Rule rule = editor.rules.selectRuleAtPosition(e.getDot());
+            ParserRule rule = editor.rules.selectRuleAtPosition(e.getDot());
             if(rule == null || rule.name == null)
                 return;
 

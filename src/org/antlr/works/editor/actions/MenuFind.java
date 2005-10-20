@@ -2,8 +2,8 @@ package org.antlr.works.editor.actions;
 
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.tool.TUsage;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
 
 import java.util.Iterator;
@@ -71,7 +71,7 @@ public class MenuFind extends AbstractActions {
         while(iterator.hasNext()) {
             Token candidate = (Token)iterator.next();
             if(candidate.getAttribute().equals(tokenAttribute)) {
-                Parser.Rule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStartIndex());
+                ParserRule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStartIndex());
                 if(matchedRule != null)
                     usage.addMatch(matchedRule, candidate);
             }

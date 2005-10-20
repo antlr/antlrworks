@@ -34,7 +34,7 @@ package org.antlr.works.visualization.graphics.panel;
 import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
-import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
 import org.antlr.works.visualization.graphics.GContext;
@@ -64,7 +64,7 @@ public class GPanel implements XJNotificationObserver {
     private GContext context;
     private GView view;
 
-    private Parser.Rule rule;
+    private ParserRule rule;
 
     public GPanel(GContext context) {
         this.context = context;
@@ -84,7 +84,7 @@ public class GPanel implements XJNotificationObserver {
         updateCurrentAlternative();
     }
 
-    public void setRule(Parser.Rule rule) {
+    public void setRule(ParserRule rule) {
         if(view != null)
             view.setEnable(false);
 

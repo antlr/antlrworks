@@ -226,6 +226,10 @@ public class DebuggerInputText implements EditorTextPaneDelegate, XJNotification
         StyleConstants.setItalic(attributeLookahead, true);
     }
 
+    public void editorTextPaneDidFold() {
+
+    }
+    
     public void editorTextPaneDidPaint(Graphics g) {
         if(!drawTokensBox)
             return;
@@ -257,6 +261,7 @@ public class DebuggerInputText implements EditorTextPaneDelegate, XJNotification
                 } else
                     g.drawRect(r1.x, r1.y, r2.x-r1.x, r1.height);
             } catch (BadLocationException e) {
+                // Ignore exception
             }
         }
     }

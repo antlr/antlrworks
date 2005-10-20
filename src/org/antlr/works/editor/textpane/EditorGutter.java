@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.textpane;
 
 import org.antlr.works.parser.Line;
-import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
@@ -40,6 +40,7 @@ import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.*;
 import java.util.List;
 
@@ -79,17 +80,30 @@ public class EditorGutter extends JComponent {
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                Point m = e.getPoint();
-                for(int i=0; i<markerInfos.size(); i++) {
-                    MarkerInfo info = (MarkerInfo)markerInfos.get(i);
-                    if(m.y >= info.coord_y-BREAKPOINT_HEIGHT*0.5 && m.y <= info.coord_y+BREAKPOINT_HEIGHT*0.5) {
-                        if(m.x <= BREAKPOINT_WIDTH)
-                            toggleBreakpoint(info.line);
-                        else
-                            toggleFolding(info.line);
-                        break;
-                    }
+                MarkerInfo info = getMarkerInfoAtPoint(e.getPoint(), false);
+                if(info != null) {
+                    toggleBreakpoint(info.line);
+                    return;
                 }
+
+                info = getMarkerInfoAtPoint(e.getPoint(), true);
+                if(info != null) {
+                    toggleFolding(info.line);
+                }
+            }
+
+            public void mouseExited(MouseEvent e) {
+                setCursor(Cursor.getDefaultCursor());
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseMoved(MouseEvent e) {
+                MarkerInfo info = getMarkerInfoAtPoint(e.getPoint(), true);
+                if(info != null && getCollapsableRuleAtLine(info.line) != null)
+                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                else
+                    setCursor(Cursor.getDefaultCursor());
             }
         });
     }
@@ -115,6 +129,19 @@ public class EditorGutter extends JComponent {
         return set;
     }
 
+    protected MarkerInfo getMarkerInfoAtPoint(Point m, boolean folding) {
+        for(int i=0; i<markerInfos.size(); i++) {
+            MarkerInfo info = (MarkerInfo)markerInfos.get(i);
+            if(m.y >= info.coord_y-BREAKPOINT_HEIGHT*0.5 && m.y <= info.coord_y+BREAKPOINT_HEIGHT*0.5) {
+                if(m.x <= BREAKPOINT_WIDTH && !folding)
+                    return info;
+                else if(m.x > BREAKPOINT_WIDTH && folding)
+                    return info;
+            }
+        }
+        return null;
+    }
+
     protected void toggleBreakpoint(int line) {
         Integer value = new Integer(line);
         Boolean state = (Boolean)bps.get(value);
@@ -126,14 +153,20 @@ public class EditorGutter extends JComponent {
     }
 
     protected void toggleFolding(int line) {
-        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-            Parser.Rule rule = (Parser.Rule) iterator.next();
-            if(rule.start.line == line && rule.canBeCollapsed() && folding) {
-                editorTextPane.toggleFolding(rule);
-                repaint();
-                break;
-            }
+        ParserRule rule = getCollapsableRuleAtLine(line);
+        if(rule != null) {
+            editorTextPane.toggleFolding(rule);
+            repaint();
         }
+    }
+
+    protected ParserRule getCollapsableRuleAtLine(int line) {
+        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
+            ParserRule rule = (ParserRule) iterator.next();
+            if(rule.start.line == line && rule.canBeCollapsed() && folding)
+                return rule;
+        }
+        return null;
     }
 
     protected int getLineY(int lineIndex) {
@@ -175,7 +208,7 @@ public class EditorGutter extends JComponent {
     protected void updateMarkerInfo() {
         markerInfos.clear();
         for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-            Parser.Rule rule = (Parser.Rule) iterator.next();
+            ParserRule rule = (ParserRule) iterator.next();
             int rule_y = getLineY(rule.start.line);
             markerInfos.add(new MarkerInfo(rule.start.line, rule_y));
         }
@@ -204,7 +237,7 @@ public class EditorGutter extends JComponent {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 
         for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-            Parser.Rule rule = (Parser.Rule) iterator.next();
+            ParserRule rule = (ParserRule) iterator.next();
             int rule_y = getLineY(rule.start.line);
             if(rule_y < r.y || rule_y > r.y+r.height)
                 continue;
@@ -213,7 +246,7 @@ public class EditorGutter extends JComponent {
                 if(rule.isCollapsed()) {
                     g.drawImage(expand, r.x+r.width-FOLDING_ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-expand.getHeight(null)*0.5), null);
                 } else {
-                    int bottom_rule_y = (int)getLineY(rule.end.line);
+                    int bottom_rule_y = getLineY(rule.end.line);
 
                     g.setColor(Color.white);
                     g.drawLine(r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);

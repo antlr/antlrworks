@@ -33,9 +33,9 @@ package org.antlr.works.editor.tool;
 
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.swing.MultiLineToolTip;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
@@ -104,7 +104,7 @@ public class TActions implements ActionListener {
     }
 
     public Token getBlockAtPosition(int pos) {
-        Parser.Rule rule = rules.getEnclosingRuleAtPosition(pos);
+        ParserRule rule = rules.getEnclosingRuleAtPosition(pos);
         if(rule == null)
             return null;
 
@@ -139,7 +139,7 @@ public class TActions implements ActionListener {
         rules.setSkipParseRules(true);
         List rules = parser.getRules();
         for(int r=rules.size()-1; r>=0; r--) {
-            Parser.Rule rule = (Parser.Rule)rules.get(r);
+            ParserRule rule = (ParserRule)rules.get(r);
             List blocks = rule.getBlocks();
             for(int b=blocks.size()-1; b>=0; b--) {
                 Token block = (Token)blocks.get(b);

@@ -1,0 +1,246 @@
+package org.antlr.works.parser;
+
+import org.antlr.works.visualization.grammar.GrammarEngineError;
+
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
+/*
+
+[The "BSD licence"]
+Copyright (c) 2005 Jean Bovet
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+3. The name of the author may not be used to endorse or promote products
+derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+
+public class ParserRule implements Comparable {
+
+    public String name;
+    public Token start;
+    public Token colon;
+    public Token end;
+
+    public boolean collapsed = false;
+    public boolean isAllUpperCase = false;
+
+    public List errors;
+    private Parser parser;
+
+    public ParserRule(Parser parser, String name, Token start, Token colon, Token end) {
+        this.parser = parser;
+        this.name = name;
+        this.start = start;
+        this.colon = colon;
+        this.end = end;
+        this.isAllUpperCase =  name.equals(name.toUpperCase());
+    }
+
+    public int getStartIndex() {
+        return start.getStartIndex();
+    }
+
+    public int getEndIndex() {
+        return end.getEndIndex();
+    }
+
+    public int getLength() {
+        return getEndIndex()-getStartIndex();
+    }
+
+    public int getInternalTokensStartIndex() {
+        for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
+            Token token = (Token)iter.next();
+            if(token.getAttribute().equals(":")) {
+                token = (Token)iter.next();
+                return token.getStartIndex();
+            }
+        }
+        return -1;
+    }
+
+    public int getInternalTokensEndIndex() {
+        Token token = (Token)parser.tokens.get(parser.tokens.indexOf(end)-1);
+        return token.getEndIndex();
+    }
+
+    public List getBlocks() {
+        List blocks = new ArrayList();
+        Token lastToken = null;
+        for(int index=parser.tokens.indexOf(start); index<parser.tokens.indexOf(end); index++) {
+            Token token = (Token)parser.tokens.get(index);
+            if(token.type == Lexer.TOKEN_BLOCK) {
+                if(lastToken != null && lastToken.type == Lexer.TOKEN_ID && lastToken.getAttribute().equals("options"))
+                    continue;
+
+                blocks.add(token);
+            }
+            lastToken = token;
+        }
+        return blocks;
+    }
+
+    public List getTokens() {
+        List t = new ArrayList();
+        for(int index=parser.tokens.indexOf(start); index<parser.tokens.indexOf(end); index++) {
+            t.add(parser.tokens.get(index));
+        }
+        return t;
+    }
+
+    public List getAlternatives() {
+        List alts = new ArrayList();
+        List alt = null;
+        boolean findColon = true;
+        int level = 0;
+        for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
+            Token token = (Token)iter.next();
+            if(findColon) {
+                if(token.getAttribute().equals(":")) {
+                    findColon = false;
+                    alt = new ArrayList();
+                }
+            } else {
+                if(token.getAttribute().equals("("))
+                    level++;
+                else if(token.getAttribute().equals(")"))
+                    level--;
+                else if(token.type != Lexer.TOKEN_BLOCK && level == 0) {
+                    if(token.getAttribute().equals("|")) {
+                        alts.add(alt);
+                        alt = new ArrayList();
+                        continue;
+                    }
+                }
+                alt.add(token);
+            }
+        }
+        if(alt != null && !alt.isEmpty())
+            alts.add(alt);
+        return alts;
+    }
+
+    public void setErrors(List errors) {
+        this.errors = errors;
+    }
+
+    public void setCollapsed(boolean collapsed) {
+        this.collapsed = collapsed;
+    }
+
+    public boolean isCollapsed() {
+        return collapsed;
+    }
+
+    public boolean isLexerRule() {
+        return isAllUpperCase;
+    }
+
+    public boolean hasLeftRecursion() {
+        for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
+            List alts = (List)iter.next();
+            if(alts.isEmpty())
+                continue;
+
+            Token firstTokenInAlt = (Token)alts.get(0);
+            if(firstTokenInAlt.getAttribute().equals(name))
+                return true;
+        }
+        return false;
+    }
+
+    public String getTextRuleAfterRemovingLeftRecursion() {
+        StringBuffer head = new StringBuffer();
+        StringBuffer star = new StringBuffer();
+
+        for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
+            List alts = (List)iter.next();
+            Token firstTokenInAlt = (Token)alts.get(0);
+            if(firstTokenInAlt.getAttribute().equals(name)) {
+                if(alts.size() > 1) {
+                    if(star.length() > 0)
+                        star.append(" | ");
+                    int start = ((Token)alts.get(1)).getStartIndex();
+                    int end = ((Token)alts.get(alts.size()-1)).getEndIndex();
+                    star.append(firstTokenInAlt.text.substring(start, end));
+                }
+            } else {
+                if(head.length() > 0)
+                    head.append(" | ");
+                int start = firstTokenInAlt.getStartIndex();
+                int end = ((Token)alts.get(alts.size()-1)).getEndIndex();
+                head.append(firstTokenInAlt.text.substring(start, end));
+            }
+        }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("(");
+        sb.append(head);
+        sb.append(") ");
+        sb.append("(");
+        sb.append(star);
+        sb.append(")*");
+
+        return sb.toString();
+    }
+
+    public boolean hasErrors() {
+        if(errors == null)
+            return false;
+        else
+            return errors.size()>0;
+    }
+
+    public String getErrorMessageString(int index) {
+        GrammarEngineError error = (GrammarEngineError) errors.get(index);
+        return error.message;
+    }
+
+    public String getErrorMessageHTML() {
+        StringBuffer message = new StringBuffer();
+        message.append("<html>");
+        for (Iterator iterator = errors.iterator(); iterator.hasNext();) {
+            GrammarEngineError error = (GrammarEngineError) iterator.next();
+            message.append(error.message);
+            if(iterator.hasNext())
+                message.append("<br>");
+        }
+        message.append("</html>");
+        return message.toString();
+    }
+
+    public String toString() {
+        return name;
+    }
+
+    public int compareTo(Object o) {
+        ParserRule otherRule = (ParserRule) o;
+        return this.name.compareTo(otherRule.name);
+    }
+
+    public boolean canBeCollapsed() {
+        return start.line <= end.line - 1;
+    }
+}

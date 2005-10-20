@@ -3,8 +3,8 @@ package org.antlr.works.editor.analysis;
 import edu.usfca.xj.appkit.gview.timer.GTimer;
 import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
 
 import javax.swing.*;
 import java.awt.*;
@@ -88,7 +88,7 @@ public class AnalysisStrip extends JPanel {
                         sb.append("\"");
                     }
 
-                    Parser.Rule dupRule = getDuplicateRuleAtPoint(e.getPoint());
+                    ParserRule dupRule = getDuplicateRuleAtPoint(e.getPoint());
                     if(dupRule != null) {
                         if(sb.length() > 0)
                             sb.append("\n");
@@ -97,7 +97,7 @@ public class AnalysisStrip extends JPanel {
                         sb.append("\"");
                     }
 
-                    Parser.Rule leftRecurRule = getHasLeftRecursionRuleAtPoint(e.getPoint());
+                    ParserRule leftRecurRule = getHasLeftRecursionRuleAtPoint(e.getPoint());
                     if(leftRecurRule != null) {
                         if(sb.length() > 0)
                             sb.append("\n");
@@ -125,7 +125,7 @@ public class AnalysisStrip extends JPanel {
                 if(t != null)
                     return t.getStartIndex();
 
-                Parser.Rule r = getDuplicateRuleAtPoint(p);
+                ParserRule r = getDuplicateRuleAtPoint(p);
                 if(r != null)
                     return r.getStartIndex();
 
@@ -159,18 +159,18 @@ public class AnalysisStrip extends JPanel {
         return null;
     }
 
-    public Parser.Rule getDuplicateRuleAtPoint(Point p) {
+    public ParserRule getDuplicateRuleAtPoint(Point p) {
         for(Iterator iter = editor.rules.getDuplicateRules().iterator(); iter.hasNext(); ) {
-            Parser.Rule rule = (Parser.Rule) iter.next();
+            ParserRule rule = (ParserRule) iter.next();
             if(composeIndicatorRectangle(rule.start.line, 2).contains(p))
                 return rule;
         }
         return null;
     }
 
-    public Parser.Rule getHasLeftRecursionRuleAtPoint(Point p) {
+    public ParserRule getHasLeftRecursionRuleAtPoint(Point p) {
         for(Iterator iter = editor.rules.getHasLeftRecursionRules().iterator(); iter.hasNext(); ) {
-            Parser.Rule rule = (Parser.Rule) iter.next();
+            ParserRule rule = (ParserRule) iter.next();
             if(composeIndicatorRectangle(rule.start.line, 2).contains(p))
                 return rule;
         }
@@ -209,14 +209,14 @@ public class AnalysisStrip extends JPanel {
 
         g2d.setColor(Color.blue);
         for(Iterator iter = editor.rules.getDuplicateRules().iterator(); iter.hasNext(); ) {
-            Parser.Rule rule = (Parser.Rule) iter.next();
+            ParserRule rule = (ParserRule) iter.next();
             g2d.fill(composeIndicatorRectangle(rule.start.line, 0));
             numberOfErrors++;
         }
 
         g2d.setColor(Color.green);
         for(Iterator iter = editor.rules.getHasLeftRecursionRules().iterator(); iter.hasNext(); ) {
-            Parser.Rule rule = (Parser.Rule) iter.next();
+            ParserRule rule = (ParserRule) iter.next();
             g2d.fill(composeIndicatorRectangle(rule.start.line, 0));
             numberOfWarnings++;
         }

@@ -3,8 +3,8 @@ package org.antlr.works.editor.actions;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -112,7 +112,7 @@ public class MenuRefactor extends AbstractActions {
     }
 
     public void removeLeftRecursion() {
-        Parser.Rule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
+        ParserRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {
             XJAlert.display(editor.getWindowContainer(), "Remove Left Recursion", "There is no rule at cursor position.");
             return;

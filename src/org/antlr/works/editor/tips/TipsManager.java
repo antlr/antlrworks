@@ -2,8 +2,8 @@ package org.antlr.works.editor.tips;
 
 import org.antlr.works.editor.idea.IdeaProvider;
 import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class TipsManager {
         providers.add(provider);
     }
 
-    public void displayAnyTipsAvailable(Token token, Parser.Rule rule, Parser.Rule enclosingRule, Point location) {
+    public void displayAnyTipsAvailable(Token token, ParserRule rule, ParserRule enclosingRule, Point location) {
         if(location == null) {
             hide();
             return;
@@ -87,7 +87,7 @@ public class TipsManager {
         lastToken = null;
     }
 
-    public List generateTips(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
+    public List generateTips(Token token, ParserRule rule, ParserRule enclosingRule) {
         List tips = new ArrayList();
         for(Iterator iter = providers.iterator(); iter.hasNext(); ) {
             TipsProvider provider = (TipsProvider)iter.next();

@@ -34,7 +34,7 @@ package org.antlr.works.editor.tool;
 
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.OverlayObject;
-import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserRule;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -152,7 +152,7 @@ public class TGoToRule extends OverlayObject {
 
         int index = matchingRuleList.getSelectedIndex();
         if(index >= 0) {
-            Parser.Rule rule = editor.rules.selectRuleName((String)matchingRuleListModel.get(index));
+            ParserRule rule = editor.rules.selectRuleName((String)matchingRuleListModel.get(index));
             if(rule != null) {
                 editor.goToHistoryRememberCurrentPosition();
                 editor.rules.goToRule(rule);

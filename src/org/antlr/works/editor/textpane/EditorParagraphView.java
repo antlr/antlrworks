@@ -1,6 +1,6 @@
 package org.antlr.works.editor.textpane;
 
-import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserRule;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -40,7 +40,7 @@ public class EditorParagraphView extends ParagraphView {
 
     public Rectangle tempRect = new Rectangle();
     public final Color highlightColor = new Color(1.0f, 1.0f, 0.5f, 0.3f);
-    public final Color foldedColor = new Color(0.6f, 0.6f, 0.6f, 0.3f);
+    public final Color foldedColor = new Color(0.8f, 0.8f, 0.8f, 0.4f);
 
     public EditorParagraphView(Element elem) {
         super(elem);
@@ -50,12 +50,8 @@ public class EditorParagraphView extends ParagraphView {
         return (EditorTextPane)getContainer();
     }
 
-    public Parser.Rule getRule() {
-        Object value = getAttributes().getAttribute(EditorTextPane.ATTRIBUTE_FOLDING_RULE);
-        if(value != null && value instanceof Parser.Rule)
-            return (Parser.Rule)value;
-        else
-            return null;
+    public ParserRule getRule() {
+        return getEditorPane().getRule(this);
     }
 
     public boolean isVisible() {
@@ -70,6 +66,8 @@ public class EditorParagraphView extends ParagraphView {
                           throws BadLocationException
     {
         if(!isVisible()) {
+            // If the paragraph view is not visible, make sure to jump
+            // at the start/end of the rule (because it is collapsed).
             if(direction == SwingConstants.SOUTH)
                 return getRule().getEndIndex()+1;
             if(direction == SwingConstants.NORTH)
@@ -125,59 +123,68 @@ public class EditorParagraphView extends ParagraphView {
     }
 
     public void paint(Graphics g, Shape allocation) {
-        if(!isVisible()) {
-            Rectangle alloc = (allocation instanceof Rectangle) ?
-                    (Rectangle)allocation :
-                    allocation.getBounds();
+        if(isVisible()) {
+            // Paragraph visible, see if we should paint the
+            // underlying cursor line highlighting
+            if(getEditorPane().highlightCursorLine()) {
+                Rectangle alloc = (allocation instanceof Rectangle) ?
+                        (Rectangle)allocation :
+                        allocation.getBounds();
+                int n = getViewCount();
+                int x = alloc.x + getLeftInset();
+                int y = alloc.y + getTopInset();
 
-            int x = alloc.x + getLeftInset();
-            int y = alloc.y + getTopInset();
-            g.setColor(Color.blue);
-            //g.drawRect(x, y, alloc.width, alloc.height);
-            if(getStartOffset() == getRule().getStartIndex()) {
-                FontMetrics fm = g.getFontMetrics();
-                String placeholder = getRule().name+": ... ;";
-                g.setColor(Color.lightGray);
-                g.drawString(placeholder, x, y+fm.getHeight());
-                g.setColor(foldedColor);
-                g.fillRect(x, y, fm.stringWidth(placeholder), alloc.height);
-            }
-            return;
-        }
+                Rectangle clip = g.getClipBounds();
+                int cursorPosition = getEditorPane().getCaretPosition()+1;
+                for (int i = 0; i < n; i++) {
+                    tempRect.x = x + getOffset(X_AXIS, i);
+                    tempRect.y = y + getOffset(Y_AXIS, i);
+                    tempRect.width = getSpan(X_AXIS, i);
+                    tempRect.height = getSpan(Y_AXIS, i);
+                    if (tempRect.intersects(clip)) {
+                        View v = getView(i);
 
-        if(getEditorPane().highlightCursorLine()) {
-            Rectangle alloc = (allocation instanceof Rectangle) ?
-                    (Rectangle)allocation :
-                    allocation.getBounds();
-            int n = getViewCount();
-            int x = alloc.x + getLeftInset();
-            int y = alloc.y + getTopInset();
-
-           // g.setColor(Color.blue);
-           // g.drawRect(x, y, alloc.width, alloc.height);
-
-            Rectangle clip = g.getClipBounds();
-            int cursorPosition = getEditorPane().getCaretPosition()+1;
-            for (int i = 0; i < n; i++) {
-                tempRect.x = x + getOffset(X_AXIS, i);
-                tempRect.y = y + getOffset(Y_AXIS, i);
-                tempRect.width = getSpan(X_AXIS, i);
-                tempRect.height = getSpan(Y_AXIS, i);
-                if (tempRect.intersects(clip)) {
-                    View v = getView(i);
-
-                    if (v.getStartOffset() < cursorPosition &&
-                            cursorPosition <= v.getEndOffset())
-                    {
-                        g.setColor(highlightColor);
-                        g.fillRect(tempRect.x, tempRect.y,
-                                alloc.width, tempRect.height);
+                        if (v.getStartOffset() < cursorPosition &&
+                                cursorPosition <= v.getEndOffset())
+                        {
+                            g.setColor(highlightColor);
+                            g.fillRect(tempRect.x, tempRect.y,
+                                    alloc.width, tempRect.height);
+                        }
+                        paintChild(g, tempRect, i);
                     }
-                    paintChild(g, tempRect, i);
                 }
+            } else {
+                super.paint(g, allocation);
             }
         } else {
-            super.paint(g, allocation);
+            Rectangle alloc = (allocation instanceof Rectangle) ?
+                    (Rectangle)allocation :
+                    allocation.getBounds();
+
+            int x = alloc.x + getLeftInset();
+            int y = alloc.y + getTopInset();
+            if(getStartOffset() == getRule().getStartIndex()) {
+                // Draw the placeholder only in the first rule paragraph. A rule
+                // may have multiple paragraphs view ;-)
+
+                FontMetrics fm = g.getFontMetrics();
+                String leftString = getRule().name+" :";
+                String placeholder = " ... ";
+                String rightString = ";";
+
+                g.setColor(Color.black);
+                g.drawString(leftString, x, y+fm.getHeight());
+
+                g.setColor(Color.lightGray);
+                g.drawString(placeholder, x+fm.stringWidth(leftString), y+fm.getHeight());
+
+                g.setColor(foldedColor);
+                g.fillRect(x+fm.stringWidth(leftString), y, fm.stringWidth(placeholder), alloc.height);
+
+                g.setColor(Color.black);
+                g.drawString(rightString, x+fm.stringWidth(leftString+placeholder), y+fm.getHeight());
+            }
         }
     }
 }

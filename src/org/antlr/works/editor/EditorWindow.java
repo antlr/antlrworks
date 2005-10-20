@@ -454,7 +454,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         editorGUI.selectTextRange(start, end);
     }
 
-    public Parser.Rule getCurrentRule() {
+    public ParserRule getCurrentRule() {
         return rules.getEnclosingRuleAtPosition(getCaretPosition());
     }
 
@@ -491,7 +491,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     */
 
     public void updateVisualization(boolean immediate) {
-        Parser.Rule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
+        ParserRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
         if(r != null) {
             visual.setRule(r, immediate);
         }
@@ -562,7 +562,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             Collections.sort(sortedRules);
 
             for(Iterator iterator = sortedRules.iterator(); iterator.hasNext(); ) {
-                Parser.Rule rule = (Parser.Rule)iterator.next();
+                ParserRule rule = (ParserRule)iterator.next();
                 if(rule.name.toLowerCase().startsWith(partialWord) && !matchingRules.contains(rule.name))
                     matchingRules.add(rule.name);
             }
@@ -602,8 +602,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         int position = getTextPane().viewToModel(relativePoint);
 
         Token token = getTokenAtPosition(position);
-        Parser.Rule enclosingRule = rules.getEnclosingRuleAtPosition(position);
-        Parser.Rule rule = rules.getRuleStartingWithToken(token);
+        ParserRule enclosingRule = rules.getEnclosingRuleAtPosition(position);
+        ParserRule rule = rules.getRuleStartingWithToken(token);
 
         Point p = null;
         try {
@@ -623,7 +623,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         tipsManager.displayAnyTipsAvailable(token, rule, enclosingRule, p);
     }
 
-    public List tipsProviderGetTips(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
+    public List tipsProviderGetTips(Token token, ParserRule rule, ParserRule enclosingRule) {
         List tips = new ArrayList();
 
         if(rules.isUndefinedToken(token)) {
@@ -647,7 +647,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public static final int IDEA_CREATE_RULE = 1;
     public static final int IDEA_REMOVE_LEFT_RECURSION = 2;
 
-    public List ideaProviderGetActions(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
+    public List ideaProviderGetActions(Token token, ParserRule rule, ParserRule enclosingRule) {
         List actions = new ArrayList();
 
         if(rules.isUndefinedToken(token)) {
@@ -668,7 +668,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public void ideaActionFire(IdeaAction action, int actionID) {
         switch(actionID) {
             case IDEA_DELETE_RULE:
-                Parser.Rule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
+                ParserRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
                 if(r != null)
                     editorGUI.replaceText(r.getStartIndex(), r.getEndIndex(), "");
                 break;
@@ -698,8 +698,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             return;
 
         Token token = getTokenAtPosition(position);
-        Parser.Rule rule = rules.getRuleStartingWithToken(token);
-        Parser.Rule enclosingRule = rules.getEnclosingRuleAtPosition(position);
+        ParserRule rule = rules.getRuleStartingWithToken(token);
+        ParserRule enclosingRule = rules.getEnclosingRuleAtPosition(position);
         ideaManager.displayAnyIdeasAvailable(token, rule, enclosingRule);
     }
 
@@ -710,7 +710,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         Point p = getLineTextPositionsAtTextPosition(getCaretPosition());
         int insertionIndex = p.y + 2;
 
-        Parser.Rule rule = rules.getEnclosingRuleAtPosition(getCaretPosition());
+        ParserRule rule = rules.getEnclosingRuleAtPosition(getCaretPosition());
         if(rule != null) {
             if(rule.isLexerRule()) {
                 if(lexerToken) {
@@ -718,7 +718,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
                     insertionIndex = rule.getEndIndex()+2;
                 } else {
                     // Add new rule after the last parser rule
-                    Parser.Rule last = rules.getLastParserRule();
+                    ParserRule last = rules.getLastParserRule();
                     if(last != null) {
                         insertionIndex = last.getEndIndex()+2;
                     }
@@ -726,7 +726,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             } else {
                 if(lexerToken) {
                     // Add new rule after the last lexer rule
-                    Parser.Rule last = rules.getLastLexerRule();
+                    ParserRule last = rules.getLastLexerRule();
                     if(last != null) {
                         insertionIndex = last.getEndIndex()+2;
                     }

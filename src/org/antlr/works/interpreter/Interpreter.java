@@ -44,7 +44,7 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextUtils;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.undo.Undo;
-import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.ErrorListener;
 import org.antlr.works.util.IconManager;
@@ -168,7 +168,7 @@ public class Interpreter implements Runnable {
         rulesCombo = new JComboBox();
         rulesCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                Parser.Rule rule = (Parser.Rule)rulesCombo.getSelectedItem();
+                ParserRule rule = (ParserRule)rulesCombo.getSelectedItem();
                 if(rule != null)
                     startSymbol = rule.name;
             }

@@ -35,8 +35,8 @@ import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.tool.DOTGenerator;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ThreadedParser;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.DotGenerator;
 import org.antlr.works.visualization.fa.FAFactory;
@@ -135,7 +135,7 @@ public class Visual {
             drawing.setText(text, filename);
     }
 
-    public void setRule(Parser.Rule rule, boolean immediate) {
+    public void setRule(ParserRule rule, boolean immediate) {
         if(isEnable())
             drawing.setRule(rule, immediate);
     }
@@ -159,7 +159,7 @@ public class Visual {
         return XJFileChooser.shared().getSelectedFilePath();
     }
 
-    public void saveANTLRNFA2DOT(Parser.Rule rule) {
+    public void saveANTLRNFA2DOT(ParserRule rule) {
         String dotFile = chooseDOTFile();
         if(dotFile == null)
             return;
@@ -177,7 +177,7 @@ public class Visual {
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_ANTLRNFA_DOT);
     }
 
-    public void saveOptimizedNFA2DOT(Parser.Rule rule) {
+    public void saveOptimizedNFA2DOT(ParserRule rule) {
         String dotFile = chooseDOTFile();
         if(dotFile == null)
             return;
@@ -196,7 +196,7 @@ public class Visual {
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_OPTIMIZEDNFA_DOT);
     }
 
-    public void saveRawNFA2DOT(Parser.Rule rule) {
+    public void saveRawNFA2DOT(ParserRule rule) {
         String dotFile = chooseDOTFile();
         if(dotFile == null)
             return;

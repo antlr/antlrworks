@@ -31,10 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.parser;
 
-import org.antlr.works.visualization.grammar.GrammarEngineError;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Parser {
@@ -56,7 +53,7 @@ public class Parser {
     public List rules = null;
     public List groups = null;
     public List blocks = null;
-    public Name name = null;
+    public ParserName name = null;
 
     static {
         blockIdentifiers = new ArrayList();
@@ -84,13 +81,13 @@ public class Parser {
         tokens = lexer.parseTokens();
         position = -1;
         while(nextToken()) {
-            Name n = matchName();
+            ParserName n = matchName();
             if(n != null) {
                 name = n;
                 continue;
             }
 
-            Block block = matchBlock();
+            ParserBlock block = matchBlock();
             if(block != null) {
                 blocks.add(block);
                 continue;
@@ -100,11 +97,11 @@ public class Parser {
                 continue;
             
             if(T(0).type == Lexer.TOKEN_ID) {
-                Rule rule = matchRule();
+                ParserRule rule = matchRule();
                 if(rule != null)
                     rules.add(rule);
             } else if(T(0).type == Lexer.TOKEN_SINGLE_COMMENT) {
-                Group group = matchRuleGroup(rules);
+                ParserGroup group = matchRuleGroup(rules);
                 if(group != null)
                     groups.add(group);
             }
@@ -125,7 +122,7 @@ public class Parser {
             return lexer.line;
     }
 
-    public Name matchName() {
+    public ParserName matchName() {
         Token start = T(0);
 
         if(start.type != Lexer.TOKEN_ID)
@@ -134,14 +131,14 @@ public class Parser {
         if(start.getAttribute().equals("grammar")) {
             while(nextToken()) {
                 if(T(0).type == Lexer.TOKEN_SEMI)
-                    return new Name(start.getAttribute(), start, T(0));
+                    return new ParserName(start.getAttribute(), start, T(0));
             }
             return null;
         } else
             return null;
     }
 
-    public Block matchBlock() {
+    public ParserBlock matchBlock() {
         Token start = T(0);
         if(start == null)
             return null;
@@ -157,12 +154,12 @@ public class Parser {
                 return null;
 
             nextToken();
-            return new Block(start.getAttribute(), start, T(0));
+            return new ParserBlock(start.getAttribute(), start, T(0));
         } else
             return null;
     }
 
-    public Rule matchRule() {
+    public ParserRule matchRule() {
         Token start = T(0);
         if(start == null)
             return null;
@@ -202,19 +199,19 @@ public class Parser {
 
         while(nextToken()) {
             if(T(0).type == Lexer.TOKEN_SEMI)
-                return new Rule(name, start, colonToken, T(0));
+                return new ParserRule(this, name, start, colonToken, T(0));
         }
         return null;
     }
 
-    public Group matchRuleGroup(List rules) {
+    public ParserGroup matchRuleGroup(List rules) {
         Token token = T(0);
         String comment = token.getAttribute();
 
         if(comment.startsWith(BEGIN_GROUP)) {
-            return new Group(comment.substring(BEGIN_GROUP.length(), comment.length()-1), rules.size()-1, token);
+            return new ParserGroup(comment.substring(BEGIN_GROUP.length(), comment.length()-1), rules.size()-1, token);
         } else if(comment.startsWith(END_GROUP)) {
-                return new Group(rules.size()-1, token);
+                return new ParserGroup(rules.size()-1, token);
         } else
             return null;
     }
@@ -231,262 +228,4 @@ public class Parser {
             return null;
     }
 
-    public class Rule implements Comparable {
-
-        public String name;
-        public Token start;
-        public Token colon;
-        public Token end;
-
-        public boolean collapsed = false;
-        public boolean isAllUpperCase = false;
-
-        public List errors;
-
-        public Rule(String name, Token start, Token colon, Token end) {
-            this.name = name;
-            this.start = start;
-            this.colon = colon;
-            this.end = end;
-            this.isAllUpperCase =  name.equals(name.toUpperCase());
-        }
-
-        public int getStartIndex() {
-            return start.getStartIndex();
-        }
-
-        public int getEndIndex() {
-            return end.getEndIndex();
-        }
-
-        public int getLength() {
-            return getEndIndex()-getStartIndex();
-        }
-
-        public int getInternalTokensStartIndex() {
-            for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
-                Token token = (Token)iter.next();
-                if(token.getAttribute().equals(":")) {
-                    token = (Token)iter.next();
-                    return token.getStartIndex();
-                }
-            }
-            return -1;
-        }
-
-        public int getInternalTokensEndIndex() {
-            Token token = (Token)tokens.get(tokens.indexOf(end)-1);
-            return token.getEndIndex();
-        }
-
-        public List getBlocks() {
-            List blocks = new ArrayList();
-            Token lastToken = null;
-            for(int index=tokens.indexOf(start); index<tokens.indexOf(end); index++) {
-                Token token = (Token)tokens.get(index);
-                if(token.type == Lexer.TOKEN_BLOCK) {
-                    if(lastToken != null && lastToken.type == Lexer.TOKEN_ID && lastToken.getAttribute().equals("options"))
-                        continue;
-
-                    blocks.add(token);
-                }
-                lastToken = token;
-            }
-            return blocks;
-        }
-
-        public List getTokens() {
-            List t = new ArrayList();
-            for(int index=tokens.indexOf(start); index<tokens.indexOf(end); index++) {
-                t.add(tokens.get(index));
-            }
-            return t;
-        }
-
-        public List getAlternatives() {
-            List alts = new ArrayList();
-            List alt = null;
-            boolean findColon = true;
-            int level = 0;
-            for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
-                Token token = (Token)iter.next();
-                if(findColon) {
-                    if(token.getAttribute().equals(":")) {
-                        findColon = false;
-                        alt = new ArrayList();
-                    }
-                } else {
-                    if(token.getAttribute().equals("("))
-                        level++;
-                    else if(token.getAttribute().equals(")"))
-                        level--;
-                    else if(token.type != Lexer.TOKEN_BLOCK && level == 0) {
-                        if(token.getAttribute().equals("|")) {
-                            alts.add(alt);
-                            alt = new ArrayList();
-                            continue;
-                        }
-                    }
-                    alt.add(token);
-                }
-            }
-            if(alt != null && !alt.isEmpty())
-                alts.add(alt);
-            return alts;
-        }
-
-        public void setErrors(List errors) {
-            this.errors = errors;
-        }
-
-        public void setCollapsed(boolean collapsed) {
-            this.collapsed = collapsed;
-        }
-
-        public boolean isCollapsed() {
-            return collapsed;
-        }
-
-        public boolean isLexerRule() {
-            return isAllUpperCase;
-        }
-
-        public boolean hasLeftRecursion() {
-            for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
-                List alts = (List)iter.next();
-                if(alts.isEmpty())
-                    continue;
-                
-                Token firstTokenInAlt = (Token)alts.get(0);
-                if(firstTokenInAlt.getAttribute().equals(name))
-                    return true;
-            }
-            return false;
-        }
-
-        public String getTextRuleAfterRemovingLeftRecursion() {
-            StringBuffer head = new StringBuffer();
-            StringBuffer star = new StringBuffer();
-
-            for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
-                List alts = (List)iter.next();
-                Token firstTokenInAlt = (Token)alts.get(0);
-                if(firstTokenInAlt.getAttribute().equals(name)) {
-                    if(alts.size() > 1) {
-                        if(star.length() > 0)
-                            star.append(" | ");
-                        int start = ((Token)alts.get(1)).getStartIndex();
-                        int end = ((Token)alts.get(alts.size()-1)).getEndIndex();
-                        star.append(firstTokenInAlt.text.substring(start, end));
-                    }
-                } else {
-                    if(head.length() > 0)
-                        head.append(" | ");
-                    int start = firstTokenInAlt.getStartIndex();
-                    int end = ((Token)alts.get(alts.size()-1)).getEndIndex();
-                    head.append(firstTokenInAlt.text.substring(start, end));
-                }
-            }
-
-            StringBuffer sb = new StringBuffer();
-            sb.append("(");
-            sb.append(head);
-            sb.append(") ");
-            sb.append("(");
-            sb.append(star);
-            sb.append(")*");
-
-            return sb.toString();
-        }
-
-        public boolean hasErrors() {
-            if(errors == null)
-                return false;
-            else
-                return errors.size()>0;
-        }
-
-        public String getErrorMessageString(int index) {
-            GrammarEngineError error = (GrammarEngineError) errors.get(index);
-            return error.message;
-        }
-
-        public String getErrorMessageHTML() {
-            StringBuffer message = new StringBuffer();
-            message.append("<html>");
-            for (Iterator iterator = errors.iterator(); iterator.hasNext();) {
-                GrammarEngineError error = (GrammarEngineError) iterator.next();
-                message.append(error.message);
-                if(iterator.hasNext())
-                    message.append("<br>");
-            }
-            message.append("</html>");
-            return message.toString();
-        }
-
-        public String toString() {
-            return name;
-        }
-
-        public int compareTo(Object o) {
-            Rule otherRule = (Rule) o;
-            return this.name.compareTo(otherRule.name);
-        }
-
-        public boolean canBeCollapsed() {
-            return start.line <= end.line - 1;
-        }
-    }
-
-    public class Block {
-
-        public String name;
-        public Token start;
-        public Token end;
-
-        public Block(String name, Token start, Token end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
-
-    public class Name {
-
-        public String name;
-        public Token start;
-        public Token end;
-
-        public Name(String name, Token start, Token end) {
-            this.name = name;
-            this.start = start;
-            this.end = end;
-        }
-    }
-
-    public class Group {
-
-        public String name = null;
-        public int ruleIndex = -1;
-        public boolean openGroup = false;
-        public Token token = null;
-
-        public Group(String name, int ruleIndex, Token token) {
-            this.name = name;
-            this.ruleIndex = ruleIndex;
-            this.token = token;
-            this.openGroup = true;
-        }
-
-        public Group(int ruleIndex, Token token) {
-            this.ruleIndex = ruleIndex;
-            this.token = token;
-            this.openGroup = false;
-        }
-
-        public String toString() {
-            return "Group "+name+", open ="+openGroup+", ruleIndex = "+ruleIndex;
-        }
-
-    }
 }

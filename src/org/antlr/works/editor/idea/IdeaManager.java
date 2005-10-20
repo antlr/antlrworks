@@ -1,8 +1,8 @@
 package org.antlr.works.editor.idea;
 
 import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -78,7 +78,7 @@ public class IdeaManager {
         overlay.hide();
     }
 
-    public void displayAnyIdeasAvailable(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
+    public void displayAnyIdeasAvailable(Token token, ParserRule rule, ParserRule enclosingRule) {
         List ideas = null;
         if(token != null && token.type == Lexer.TOKEN_ID) {
             ideas = generateIdeaActions(token, rule, enclosingRule);
@@ -92,7 +92,7 @@ public class IdeaManager {
         }
     }
 
-    public List generateIdeaActions(Token token, Parser.Rule rule, Parser.Rule enclosingRule) {
+    public List generateIdeaActions(Token token, ParserRule rule, ParserRule enclosingRule) {
         List actions = new ArrayList();
         for(Iterator iter = providers.iterator(); iter.hasNext(); ) {
             IdeaProvider provider = (IdeaProvider)iter.next();

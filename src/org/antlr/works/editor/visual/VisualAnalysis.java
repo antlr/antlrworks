@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.visual;
 
 import org.antlr.works.editor.helper.EditorThread;
-import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.visualization.grammar.GrammarEngineError;
 
 import java.util.ArrayList;
@@ -83,18 +83,18 @@ public class VisualAnalysis extends EditorThread {
         visual.drawing.clearCacheGraphs();
 
         for (Iterator iterator = visual.parser.getRules().iterator(); iterator.hasNext();) {
-            Parser.Rule rule = (Parser.Rule)iterator.next();
+            ParserRule rule = (ParserRule)iterator.next();
             updateRuleWithErrors(rule, threadFetchErrorsForRule(rule));
         }
         visual.delegate.visualizationDidMarkRules(visual);
     }
 
-    private void updateRuleWithErrors(Parser.Rule rule, List errors) {
+    private void updateRuleWithErrors(ParserRule rule, List errors) {
         rule.setErrors(errors);
         visual.drawing.createGraphsForRule(rule);
     }
 
-    private List threadFetchErrorsForRule(Parser.Rule rule) {
+    private List threadFetchErrorsForRule(ParserRule rule) {
         List errors = new ArrayList();
 
         for (Iterator iterator = visual.engine.errors.iterator(); iterator.hasNext();) {
