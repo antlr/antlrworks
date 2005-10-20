@@ -1,7 +1,7 @@
 - contextual menus on rules to group using selected rules (do not rely on text selection)
-- finish folding rules: when modifying the text we have to somewho refresh the rule
-  instance in each View
-  
+- ideas: undefined rule: rename rule, delete token
+- during debug: no ideas nor tips
+
 - createTabs in TextUtils: modify to apply to the whole text
 - test with empty preferences file
 - toolbar with button for: go backward, forward, enable/disable ideas/tips/analysis

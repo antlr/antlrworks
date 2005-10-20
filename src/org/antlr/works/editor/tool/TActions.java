@@ -33,9 +33,9 @@ package org.antlr.works.editor.tool;
 
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.swing.MultiLineToolTip;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.parser.Token;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;

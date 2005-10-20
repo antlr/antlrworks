@@ -31,8 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.textpane;
 
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.textpane.folding.Entity;
+import org.antlr.works.editor.textpane.folding.EntityProxy;
 
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
@@ -41,11 +42,11 @@ import java.awt.*;
 
 public class EditorTextPane extends JTextPane
 {
-    protected static final String ATTRIBUTE_FOLDING_RULE = "folding_rule";
+    protected static final String ATTRIBUTE_FOLDING_PROXY = "folding_proxy";
 
     protected EditorWindow editor;
     protected boolean wrap = false;
-    protected boolean highlightCursorLine = true;
+    protected boolean highlightCursorLine = false;
     protected EditorTextPaneDelegate delegate = null;
 
     public EditorTextPane() {
@@ -75,20 +76,21 @@ public class EditorTextPane extends JTextPane
         return highlightCursorLine;
     }
 
-    public ParserRule getRule(View v) {
-        Object value = v.getAttributes().getAttribute(EditorTextPane.ATTRIBUTE_FOLDING_RULE);
-        if(value != null && value instanceof ParserRule)
-            return (ParserRule)value;
-        else
+    public Entity getEntity(View v) {
+        Object value = v.getAttributes().getAttribute(EditorTextPane.ATTRIBUTE_FOLDING_PROXY);
+        if(value != null && value instanceof EntityProxy) {
+            EntityProxy proxy =  (EntityProxy)value;
+            return proxy.getEntity();
+        } else
             return null;
     }
 
     public boolean isViewVisible(View v) {
-        ParserRule rule = getRule(v);
-        if(rule == null)
+        Entity entity = getEntity(v);
+        if(entity == null)
             return true;
         else
-            return !rule.isCollapsed();
+            return entity.foldingEntityIsExpanded();
     }
 
     public boolean getScrollableTracksViewportWidth() {
@@ -120,20 +122,18 @@ public class EditorTextPane extends JTextPane
             delegate.editorTextPaneDidPaint(g);
     }
 
-    public void toggleFolding(ParserRule rule) {
-        int start = rule.getStartIndex();
-        int end = rule.getEndIndex();
-        rule.setCollapsed(!rule.isCollapsed());
+    public void toggleFolding(EntityProxy proxy) {
+        Entity fo = proxy.getEntity();
+        int start = fo.foldingEntityGetStartIndex();
+        int end = fo.foldingEntityGetEndIndex();
+        fo.foldingEntitySetExpanded(!fo.foldingEntityIsExpanded());
 
         SimpleAttributeSet attr = new SimpleAttributeSet();
-        attr.addAttribute(ATTRIBUTE_FOLDING_RULE, rule);
-        if(rule.isCollapsed())
-            editor.beginTextPaneUndoGroup("Collapse Rule");
-        else
-            editor.beginTextPaneUndoGroup("Expand Rule");
+        attr.addAttribute(ATTRIBUTE_FOLDING_PROXY, proxy);
+        editor.disableTextPaneUndo();
         ((EditorStyledDocument)getDocument()).setCharacterAttributes(start, end-start, attr, false);
         ((EditorStyledDocument)getDocument()).setParagraphAttributes(start, end-start, attr, false);
-        editor.endTextPaneUndoGroup();
+        editor.enableTextPaneUndo();
 
         if(delegate != null)
             delegate.editorTextPaneDidFold();

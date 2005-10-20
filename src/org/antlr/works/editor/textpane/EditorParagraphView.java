@@ -1,6 +1,6 @@
 package org.antlr.works.editor.textpane;
 
-import org.antlr.works.parser.ParserRule;
+import org.antlr.works.editor.textpane.folding.Entity;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -50,8 +50,8 @@ public class EditorParagraphView extends ParagraphView {
         return (EditorTextPane)getContainer();
     }
 
-    public ParserRule getRule() {
-        return getEditorPane().getRule(this);
+    public Entity getEntity() {
+        return getEditorPane().getEntity(this);
     }
 
     public boolean isVisible() {
@@ -69,12 +69,12 @@ public class EditorParagraphView extends ParagraphView {
             // If the paragraph view is not visible, make sure to jump
             // at the start/end of the rule (because it is collapsed).
             if(direction == SwingConstants.SOUTH)
-                return getRule().getEndIndex()+1;
+                return getEntity().foldingEntityGetEndIndex()+1;
             if(direction == SwingConstants.NORTH)
-                return getRule().getStartIndex()-1;
+                return getEntity().foldingEntityGetStartIndex()-1;
         }
 
-        return super.getNextEastWestVisualPositionFrom(pos, b, a, direction, biasRet);
+        return super.getNextVisualPositionFrom(pos, b, a, direction, biasRet);
     }
 
     public float getAlignment(int axis) {
@@ -85,7 +85,7 @@ public class EditorParagraphView extends ParagraphView {
     }
 
     public float getInvisibleSpan(int axis) {
-        if(getStartOffset() == getRule().getStartIndex()) {
+        if(getStartOffset() == getEntity().foldingEntityGetStartIndex()) {
             // This view is the first paragraph view for the collapsed rule.
             // We adjust its size to display the placeholder.
             if(axis == X_AXIS)
@@ -164,14 +164,14 @@ public class EditorParagraphView extends ParagraphView {
 
             int x = alloc.x + getLeftInset();
             int y = alloc.y + getTopInset();
-            if(getStartOffset() == getRule().getStartIndex()) {
+            if(getStartOffset() == getEntity().foldingEntityGetStartIndex()) {
                 // Draw the placeholder only in the first rule paragraph. A rule
                 // may have multiple paragraphs view ;-)
 
                 FontMetrics fm = g.getFontMetrics();
-                String leftString = getRule().name+" :";
-                String placeholder = " ... ";
-                String rightString = ";";
+                String leftString = getEntity().getFoldedLeftString();
+                String placeholder = getEntity().getFoldedPlaceholderString();
+                String rightString = getEntity().getFoldedRightString();
 
                 g.setColor(Color.black);
                 g.drawString(leftString, x, y+fm.getHeight());

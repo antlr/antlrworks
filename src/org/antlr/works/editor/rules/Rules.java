@@ -34,6 +34,8 @@ package org.antlr.works.editor.rules;
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
 import org.antlr.works.editor.helper.KeyBindings;
+import org.antlr.works.editor.textpane.folding.Entity;
+import org.antlr.works.editor.textpane.folding.Provider;
 import org.antlr.works.editor.tool.TActions;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
@@ -59,7 +61,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public class Rules implements ThreadedParserObserver, XJTreeDelegate {
+public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
 
     protected RulesDelegate delegate = null;
     protected ThreadedParser parser = null;
@@ -156,6 +158,19 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         return moveRule(sourceRule, targetRule, dropLocation == XJTree.DROP_ABOVE);
     }
 
+    public Entity getEntityForKey(String key) {
+        // @todo optimize later with a map
+        if(parser.getRules() == null)
+            return null;
+
+        for(Iterator iterator = parser.getRules().iterator(); iterator.hasNext(); ) {
+            ParserRule rule = (ParserRule)iterator.next();
+            if(rule.name.equals(key))
+                return rule;
+        }
+        return null;
+    }
+
     public class RuleMoveUpAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
             ParserRule sourceRule = getEnclosingRuleAtPosition(textPane.getCaretPosition());
@@ -250,6 +265,14 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
                 open--;
             index++;
         }
+        return null;
+    }
+
+    public ParserRule getLastRule() {
+        List rules = parser.getRules();
+        if(rules != null && !rules.isEmpty())
+            return (ParserRule)rules.get(rules.size()-1);
+        else
         return null;
     }
 
@@ -636,18 +659,24 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     public void storeRulesFoldingState() {
         rulesFoldingStateMap.clear();
+        if(parser.getRules() == null)
+            return;
+
         for(Iterator iter = parser.getRules().iterator(); iter.hasNext(); ) {
             ParserRule rule = (ParserRule)iter.next();
-            rulesFoldingStateMap.put(rule.name, Boolean.valueOf(rule.isCollapsed()));
+            rulesFoldingStateMap.put(rule.name, Boolean.valueOf(rule.isExpanded()));
         }
     }
 
     public void restoreRulesFoldingState() {
+        if(parser.getRules() == null)
+            return;
+        
         for(Iterator iter = parser.getRules().iterator(); iter.hasNext(); ) {
             ParserRule rule = (ParserRule)iter.next();
-            Boolean collapsed = (Boolean)rulesFoldingStateMap.get(rule.name);
-            if(collapsed != null)
-                rule.setCollapsed(collapsed.booleanValue());
+            Boolean expanded = (Boolean)rulesFoldingStateMap.get(rule.name);
+            if(expanded != null)
+                rule.setExpanded(expanded.booleanValue());
         }
     }
 

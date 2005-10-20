@@ -1,9 +1,5 @@
-package org.antlr.works.editor.idea;
+package org.antlr.works.editor.textpane.folding;
 
-import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
-
-import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -35,6 +31,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface IdeaProvider {
-    public List ideaProviderGetActions(Token token, ParserRule rule, ParserRule enclosingRule);
+public class EntityProxy {
+
+    protected Provider provider;
+    protected String key;
+
+    public EntityProxy(Provider provider, String key) {
+        this.provider = provider;
+        this.key = key;
+    }
+
+    public Entity getEntity() {
+        return provider.getEntityForKey(key);
+    }
 }

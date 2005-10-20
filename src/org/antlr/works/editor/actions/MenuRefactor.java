@@ -3,8 +3,8 @@ package org.antlr.works.editor.actions;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.Token;
 import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;

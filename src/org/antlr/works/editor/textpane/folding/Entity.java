@@ -1,9 +1,4 @@
-package org.antlr.works.editor.idea;
-
-import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
-
-import java.util.List;
+package org.antlr.works.editor.textpane.folding;
 /*
 
 [The "BSD licence"]
@@ -35,6 +30,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface IdeaProvider {
-    public List ideaProviderGetActions(Token token, ParserRule rule, ParserRule enclosingRule);
+public interface Entity {
+    public void foldingEntitySetExpanded(boolean expanded);
+    public boolean foldingEntityIsExpanded();
+    public int foldingEntityGetStartIndex();
+    public int foldingEntityGetEndIndex();
+    public String getFoldedLeftString();
+    public String getFoldedPlaceholderString();
+    public String getFoldedRightString();
 }

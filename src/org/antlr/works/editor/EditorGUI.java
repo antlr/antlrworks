@@ -46,8 +46,8 @@ import org.antlr.works.editor.tool.TImmediateColorization;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.undo.UndoDelegate;
 import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.Token;
 import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.Token;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;

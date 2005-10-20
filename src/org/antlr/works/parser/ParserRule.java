@@ -1,10 +1,11 @@
 package org.antlr.works.parser;
 
+import org.antlr.works.editor.textpane.folding.Entity;
 import org.antlr.works.visualization.grammar.GrammarEngineError;
 
-import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -36,14 +37,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ParserRule implements Comparable {
+public class ParserRule implements Comparable, Entity {
 
     public String name;
     public Token start;
     public Token colon;
     public Token end;
 
-    public boolean collapsed = false;
+    public boolean expanded = true;
     public boolean isAllUpperCase = false;
 
     public List errors;
@@ -146,12 +147,12 @@ public class ParserRule implements Comparable {
         this.errors = errors;
     }
 
-    public void setCollapsed(boolean collapsed) {
-        this.collapsed = collapsed;
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
     }
 
-    public boolean isCollapsed() {
-        return collapsed;
+    public boolean isExpanded() {
+        return expanded;
     }
 
     public boolean isLexerRule() {
@@ -242,5 +243,33 @@ public class ParserRule implements Comparable {
 
     public boolean canBeCollapsed() {
         return start.line <= end.line - 1;
+    }
+
+    public void foldingEntitySetExpanded(boolean expanded) {
+        setExpanded(expanded);
+    }
+
+    public boolean foldingEntityIsExpanded() {
+        return isExpanded();
+    }
+
+    public int foldingEntityGetStartIndex() {
+        return getStartIndex();
+    }
+
+    public int foldingEntityGetEndIndex() {
+        return getEndIndex();
+    }
+
+    public String getFoldedLeftString() {
+        return name+": ";
+    }
+
+    public String getFoldedPlaceholderString() {
+        return "...";
+    }
+
+    public String getFoldedRightString() {
+        return " ;";
     }
 }

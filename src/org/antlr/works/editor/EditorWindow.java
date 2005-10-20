@@ -161,6 +161,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         rules.setActions(actions);
         rules.setKeyBindings(keyBindings);
 
+        getGutter().setProvider(rules);
         actions.setRules(rules);
         visual.setParser(parser);
 
@@ -279,12 +280,37 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_NFA_OPTIMIZATION);
     }
 
+    protected void adjustTokens(int location, int length) {
+        // @todo see with colorize if the colorize thread
+        // can use this calculation rather than doing it again
+        // We have to do shift of every offset past the location in order
+        // for collapsed view to be correctly rendered (the rule has to be
+        // immediately at the right position and cannot wait for the
+        // parser to finish)
+
+        List tokens = getTokens();
+
+        // This may interfer with TColoriz thread which will also
+        // offset all tokens
+        for(int t=0; t<tokens.size(); t++) {
+            Token token = (Token) tokens.get(t);
+            if(token.getStartIndex() > location) {
+                token.offsetPositionBy(length);
+            }
+        }
+    }
+
     public void changeUpdate() {
         changeUpdate(-1, -1);
     }
 
     public void changeUpdate(int offset, int length) {
         changeDone();
+
+        // Too slow - see why
+        //adjustTokens(offset, length);
+        //getGutter().repaint();
+
         rules.parseRules();
         visual.cancelDrawingProcess();
 
@@ -712,6 +738,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         ParserRule rule = rules.getEnclosingRuleAtPosition(getCaretPosition());
         if(rule != null) {
+            // @todo +2 means two lines - find the real line because +2 only walk two characters
             if(rule.isLexerRule()) {
                 if(lexerToken) {
                     // Add new rule just after this one
@@ -729,6 +756,12 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
                     ParserRule last = rules.getLastLexerRule();
                     if(last != null) {
                         insertionIndex = last.getEndIndex()+2;
+                    } else {
+                        // Add new rule after the last rule
+                        last = rules.getLastRule();
+                        if(last != null) {
+                            insertionIndex = last.getEndIndex()+2;
+                        }
                     }
                 } else {
                     // Add new rule just after this one

@@ -2,8 +2,8 @@ package org.antlr.works.editor.actions;
 
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.tool.TUsage;
-import org.antlr.works.parser.Token;
 import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 
 import java.util.Iterator;

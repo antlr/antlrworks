@@ -36,9 +36,9 @@ import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.tool.TDecisionDFA;
 import org.antlr.works.parser.Parser;
-import org.antlr.works.parser.Token;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.ParserGroup;
+import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;

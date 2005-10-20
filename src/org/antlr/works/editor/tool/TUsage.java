@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.tool;
 
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.parser.Token;
 import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.Token;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

@@ -156,7 +156,6 @@ public class TDecisionDFA implements Runnable {
         slider.setMinimum(1);
         slider.setMaximum(800);
         slider.setValue(100);
-        slider.setToolTipText("Zoom");
 
         slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent event) {

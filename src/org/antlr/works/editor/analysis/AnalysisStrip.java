@@ -3,8 +3,8 @@ package org.antlr.works.editor.analysis;
 import edu.usfca.xj.appkit.gview.timer.GTimer;
 import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.parser.Token;
 import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.Token;
 
 import javax.swing.*;
 import java.awt.*;

@@ -33,6 +33,7 @@ package org.antlr.works;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
+import edu.usfca.xj.foundation.XJSystem;
 import org.antlr.works.util.IconManager;
 import org.antlr.works.util.Localizable;
 
@@ -43,10 +44,10 @@ public class SplashScreen extends JWindow {
 
     protected JPanel backgroundPanel;
 
-	public SplashScreen() {
+    public SplashScreen() {
         backgroundPanel = new JPanel();
 
-		initComponents();
+        initComponents();
 
         iconButton.setIcon(IconManager.shared().getIconApplication());
         iconButton.setContentAreaFilled(false);
@@ -57,12 +58,13 @@ public class SplashScreen extends JWindow {
         copyrightLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_COPYRIGHT));
 
         backgroundPanel.setBorder(BorderFactory.createLineBorder(Color.black));
-        backgroundPanel.setBackground(Color.white);
+        if(!XJSystem.isMacOS())
+            backgroundPanel.setBackground(Color.white);
         getContentPane().add(backgroundPanel);
 
         pack();
         setLocationRelativeTo(null);
-	}
+    }
 
     // !!!!! Replace getContentPane() with backgroundPanel after re-generation
     // with JFormDesigner !!!!

@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.textpane;
 
+import org.antlr.works.editor.textpane.folding.EntityProxy;
+import org.antlr.works.editor.textpane.folding.Provider;
 import org.antlr.works.parser.Line;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.util.IconManager;
@@ -64,6 +66,7 @@ public class EditorGutter extends JComponent {
 
     protected EditorTextPane editorTextPane;
     protected List markerInfos = new ArrayList();
+    protected Provider provider;
 
     protected Image collapseDown;
     protected Image collapseUp;
@@ -106,6 +109,10 @@ public class EditorGutter extends JComponent {
                     setCursor(Cursor.getDefaultCursor());
             }
         });
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
     }
 
     public void setRules(List rules, List lines) {
@@ -155,7 +162,7 @@ public class EditorGutter extends JComponent {
     protected void toggleFolding(int line) {
         ParserRule rule = getCollapsableRuleAtLine(line);
         if(rule != null) {
-            editorTextPane.toggleFolding(rule);
+            editorTextPane.toggleFolding(new EntityProxy(provider, rule.name));
             repaint();
         }
     }
@@ -169,6 +176,16 @@ public class EditorGutter extends JComponent {
         return null;
     }
 
+    protected int getLineYPixelPosition(int indexInText) {
+        try {
+            //int rowStartIndex = Utilities.getRowStart(editorTextPane, indexInText);
+            Rectangle r = editorTextPane.modelToView(indexInText);
+            return r.y + r.height;
+        } catch (BadLocationException e) {
+            return -1;
+        }
+    }
+
     protected int getLineY(int lineIndex) {
         Line line;
         Rectangle lineRectangle;
@@ -179,6 +196,15 @@ public class EditorGutter extends JComponent {
             return 0;
         }
         return (int) (lineRectangle.y+lineRectangle.height*0.5);
+    }
+
+    public void updateMarkerInfo() {
+        markerInfos.clear();
+        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
+            ParserRule rule = (ParserRule) iterator.next();
+            int rule_y = getLineY(rule.start.line);
+            markerInfos.add(new MarkerInfo(rule.start.line, rule_y));
+        }
     }
 
     public void paintComponent(Graphics g) {
@@ -203,15 +229,6 @@ public class EditorGutter extends JComponent {
 
         g.setColor(Color.lightGray);
         g.drawLine(r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, r.y, r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, r.y+r.height);
-    }
-
-    protected void updateMarkerInfo() {
-        markerInfos.clear();
-        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-            ParserRule rule = (ParserRule) iterator.next();
-            int rule_y = getLineY(rule.start.line);
-            markerInfos.add(new MarkerInfo(rule.start.line, rule_y));
-        }
     }
 
     protected void paintBreakpoints(Graphics2D g, Rectangle r) {
@@ -239,13 +256,13 @@ public class EditorGutter extends JComponent {
         for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
             ParserRule rule = (ParserRule) iterator.next();
             int rule_y = getLineY(rule.start.line);
+            //int rule_y = getLineYPixelPosition(rule.getStartIndex());
             if(rule_y < r.y || rule_y > r.y+r.height)
                 continue;
 
             if(folding && rule.canBeCollapsed()) {
-                if(rule.isCollapsed()) {
-                    g.drawImage(expand, r.x+r.width-FOLDING_ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-expand.getHeight(null)*0.5), null);
-                } else {
+                if(rule.isExpanded()) {
+                    //int bottom_rule_y = getLineYPixelPosition(rule.getEndIndex());
                     int bottom_rule_y = getLineY(rule.end.line);
 
                     g.setColor(Color.white);
@@ -259,6 +276,8 @@ public class EditorGutter extends JComponent {
 
                     g.drawImage(collapseUp, r.x+r.width-FOLDING_ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-collapseUp.getHeight(null)*0.5), null);
                     g.drawImage(collapseDown, r.x+r.width-FOLDING_ICON_WIDTH-OFFSET_FROM_TEXT, (int) (bottom_rule_y-collapseDown.getHeight(null)*0.5), null);
+                } else {
+                    g.drawImage(expand, r.x+r.width-FOLDING_ICON_WIDTH-OFFSET_FROM_TEXT, (int) (rule_y-expand.getHeight(null)*0.5), null);
                 }
             } else {
                 g.setColor(Color.white);

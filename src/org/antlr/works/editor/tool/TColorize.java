@@ -153,6 +153,9 @@ public class TColorize extends EditorThread {
     }
 
     private void threadAdjustTokens(int location, int length) {
+        if(tokens == null)
+            return;
+
         for(int t=0; t<tokens.size(); t++) {
             Token token = (Token) tokens.get(t);
             if(token.getStartIndex() > location) {

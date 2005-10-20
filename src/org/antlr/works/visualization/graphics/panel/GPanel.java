@@ -306,7 +306,6 @@ public class GPanel implements XJNotificationObserver {
         slider.setMinimum(1);
         slider.setMaximum(800);
         slider.setValue((int)(context.getFactor()*40));
-        slider.setToolTipText("Factor");
 
         slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent event) {
