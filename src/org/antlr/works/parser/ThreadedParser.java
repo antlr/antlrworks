@@ -92,6 +92,7 @@ public class ThreadedParser extends EditorThread {
     }
 
     public synchronized List getRuleNames() {
+        // @todo cache this info
         List names = new ArrayList();
         if(rules != null) {
             for (Iterator iterator = rules.iterator(); iterator.hasNext();) {

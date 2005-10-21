@@ -57,18 +57,19 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_RENAME = 21;
     public static final int MI_REPLACE_LITERAL_WITH_TOKEN_LABEL = 22;
     public static final int MI_REMOVE_LEFT_RECURSION = 23;
-    public static final int MI_INSERT_TEMPLATE = 24;
-    public static final int MI_GROUP = 25;
-    public static final int MI_UNGROUP = 26;
-    public static final int MI_HIDE_ACTION = 27;
-    public static final int MI_SHOW_ALL_ACTION = 28;
-    public static final int MI_HIDE_ALL_ACTION = 29;
-    public static final int MI_CHECK_GRAMMAR = 30;
+    public static final int MI_REMOVE_ALL_LEFT_RECURSION = 24;
+    public static final int MI_INSERT_TEMPLATE = 25;
+    public static final int MI_GROUP = 26;
+    public static final int MI_UNGROUP = 27;
+    public static final int MI_HIDE_ACTION = 28;
+    public static final int MI_SHOW_ALL_ACTION = 29;
+    public static final int MI_HIDE_ALL_ACTION = 30;
+    public static final int MI_CHECK_GRAMMAR = 31;
 
-    public static final int MI_FIND = 31;
-    public static final int MI_FIND_NEXT = 32;
-    public static final int MI_FIND_PREV = 33;
-    public static final int MI_SHOW_DECISION_DFA = 34;
+    public static final int MI_FIND = 32;
+    public static final int MI_FIND_NEXT = 33;
+    public static final int MI_FIND_PREV = 34;
+    public static final int MI_SHOW_DECISION_DFA = 35;
 
     public static final int MI_GOTO_RULE = 40;
     public static final int MI_GOTO_DECLARATION = 41;
@@ -263,6 +264,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItem("Replace Literal With Token Label...", MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Remove Left Recursion", MI_REMOVE_LEFT_RECURSION, this));
+        menu.addItem(new XJMenuItem("Remove All Left Recursion", MI_REMOVE_ALL_LEFT_RECURSION, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -326,6 +328,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
             case MI_RENAME:
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
             case MI_REMOVE_LEFT_RECURSION:
+            case MI_REMOVE_ALL_LEFT_RECURSION:
             case MI_INSERT_TEMPLATE:
             case MI_GROUP:
             case MI_UNGROUP:
@@ -489,6 +492,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_REMOVE_LEFT_RECURSION:
                 editor.menuRefactorActions.removeLeftRecursion();
+                break;
+
+            case MI_REMOVE_ALL_LEFT_RECURSION:
+                editor.menuRefactorActions.removeAllLeftRecursion();
                 break;
         }
     }

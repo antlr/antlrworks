@@ -203,7 +203,7 @@ public class TColorize extends EditorThread {
     }
 
     private void threadColorize() {
-        threadAdjustTokens();
+        //threadAdjustTokens();
 
         List modifiedTokens = threadFetchModifiedTokens();
         if(modifiedTokens.size() == 0)

@@ -9,6 +9,7 @@ import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.Iterator;
 /*
 
 [The "BSD licence"]
@@ -126,6 +127,19 @@ public class MenuRefactor extends AbstractActions {
         editor.beginGroupChange("Remove Left Recursion");
         String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
         editor.editorGUI.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
+        editor.endGroupChange();
+    }
+
+    public void removeAllLeftRecursion() {
+        editor.beginGroupChange("Remove All Left Recursion");
+        List rules = editor.rules.getRules();
+        for(int index = rules.size()-1; index >= 0; index--) {
+            ParserRule rule = (ParserRule)rules.get(index);
+            if(rule.hasLeftRecursion()) {
+                String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
+                editor.editorGUI.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);                
+            }
+        }
         editor.endGroupChange();
     }
 

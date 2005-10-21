@@ -68,7 +68,7 @@ public class IdeaOverlay extends OverlayObject {
         panel.setOpaque(false);
 
         ideaButton = new JToggleButton();
-        ideaButton.setIcon(IconManager.shared().getIconWarning());
+        ideaButton.setIcon(IconManager.shared().getIconIdea());
 
         ideaButton.setContentAreaFilled(false);
         ideaButton.setBorder(null);

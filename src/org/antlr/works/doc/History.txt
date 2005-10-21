@@ -10,7 +10,7 @@ Version 1.0ea4 - 10/20/05
 - undefined rules are now underlined in red
 - rules can now be grouped and displayed in a tree view
 - replace literal with token label
-- remove left recursion
+- remove left recursion (one or all)
 - insert rule from template
 - support Perforce SCM commands
 - show decision DFA (using DOT tool defined in the preferences)

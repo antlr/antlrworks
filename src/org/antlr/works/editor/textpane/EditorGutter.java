@@ -178,9 +178,8 @@ public class EditorGutter extends JComponent {
 
     protected int getLineYPixelPosition(int indexInText) {
         try {
-            //int rowStartIndex = Utilities.getRowStart(editorTextPane, indexInText);
             Rectangle r = editorTextPane.modelToView(indexInText);
-            return r.y + r.height;
+            return r.y + r.height / 2;
         } catch (BadLocationException e) {
             return -1;
         }
@@ -202,7 +201,8 @@ public class EditorGutter extends JComponent {
         markerInfos.clear();
         for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
             ParserRule rule = (ParserRule) iterator.next();
-            int rule_y = getLineY(rule.start.line);
+            //int rule_y = getLineY(rule.start.line);
+            int rule_y = getLineYPixelPosition(rule.getStartIndex());
             markerInfos.add(new MarkerInfo(rule.start.line, rule_y));
         }
     }
@@ -255,15 +255,15 @@ public class EditorGutter extends JComponent {
 
         for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
             ParserRule rule = (ParserRule) iterator.next();
-            int rule_y = getLineY(rule.start.line);
-            //int rule_y = getLineYPixelPosition(rule.getStartIndex());
+            //int rule_y = getLineY(rule.start.line);
+            int rule_y = getLineYPixelPosition(rule.getStartIndex());
             if(rule_y < r.y || rule_y > r.y+r.height)
                 continue;
 
             if(folding && rule.canBeCollapsed()) {
                 if(rule.isExpanded()) {
-                    //int bottom_rule_y = getLineYPixelPosition(rule.getEndIndex());
-                    int bottom_rule_y = getLineY(rule.end.line);
+                    int bottom_rule_y = getLineYPixelPosition(rule.getEndIndex());
+                    //int bottom_rule_y = getLineY(rule.end.line);
 
                     g.setColor(Color.white);
                     g.drawLine(r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, rule_y, r.x+r.width-FOLDING_ICON_WIDTH/2-1-OFFSET_FROM_TEXT, bottom_rule_y);

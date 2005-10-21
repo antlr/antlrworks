@@ -46,6 +46,7 @@ public class ParserRule implements Comparable, Entity {
 
     public boolean expanded = true;
     public boolean isAllUpperCase = false;
+    public boolean hasLeftRecursion = false;
 
     public List errors;
     private Parser parser;
@@ -57,6 +58,7 @@ public class ParserRule implements Comparable, Entity {
         this.colon = colon;
         this.end = end;
         this.isAllUpperCase =  name.equals(name.toUpperCase());
+        this.hasLeftRecursion = detectLeftRecursion();
     }
 
     public int getStartIndex() {
@@ -160,6 +162,10 @@ public class ParserRule implements Comparable, Entity {
     }
 
     public boolean hasLeftRecursion() {
+        return hasLeftRecursion;
+    }
+
+    public boolean detectLeftRecursion() {
         for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
             List alts = (List)iter.next();
             if(alts.isEmpty())

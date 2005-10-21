@@ -304,8 +304,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public void changeUpdate(int offset, int length) {
         changeDone();
 
-        //adjustTokens(offset, length);
-        //getGutter().repaint();
+        adjustTokens(offset, length);
+        getGutter().repaint();
 
         rules.parseRules();
         visual.cancelDrawingProcess();

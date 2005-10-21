@@ -8,7 +8,7 @@ WORKSHOP:
 
 - createTabs in TextUtils: modify to apply to the whole text
 - test with empty preferences file
-- toolbar with button for: go backward, forward, enable/disable ideas/tips/analysis
+- toolbar with button for: coloring, syntax diagram, go backward, forward, enable/disable ideas/tips/analysis
 - P4: if file read-only and under P4, propose to open for edit
 - check environment (see e-mail from Jim Idle)
 

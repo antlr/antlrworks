@@ -66,17 +66,20 @@ public abstract class OverlayObject {
     private void createListeners() {
         parentFrame.addComponentListener(new ComponentAdapter() {
             public void componentHidden(ComponentEvent e) {
-                content.setVisible(false);
+                if(content.isVisible())
+                    content.setVisible(false);
             }
         });
 
         parentComponent.addComponentListener(new ComponentAdapter() {
             public void componentMoved(ComponentEvent e) {
-                resize();
+                if(content.isVisible())
+                    resize();
             }
 
             public void componentResized(ComponentEvent e) {
-                resize();
+                if(content.isVisible())
+                    resize();
             }
         });
 

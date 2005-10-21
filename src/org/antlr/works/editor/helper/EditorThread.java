@@ -62,7 +62,7 @@ public abstract class EditorThread implements Runnable, CancelObject {
     }
 
     private void start_() {
-        if(run == false) {
+        if(!run) {
             run = true;
             thread = new Thread(this);
             thread.start();

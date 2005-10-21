@@ -48,6 +48,7 @@ import org.antlr.works.editor.undo.UndoDelegate;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
+import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -88,6 +89,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
     public JSplitPane rulesTextSplitPane;
     public JSplitPane upDownSplitPane;
 
+    public EditorToolbar toolbar;
     public EditorTextPane textPane;
     public TextPaneListener textPaneListener;
 
@@ -210,7 +212,10 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         infoPanel.add(Box.createHorizontalStrut(5));
         infoPanel.add(scmLabel);
 
+        toolbar = new EditorToolbar();
+
         mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(toolbar.getToolbar(), BorderLayout.NORTH);
         mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
         mainPanel.add(infoPanel, BorderLayout.SOUTH);
 
@@ -466,8 +471,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         if(editor.getTokens() == null)
             return;
 
-       // long t = System.currentTimeMillis();
-
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
@@ -496,17 +499,14 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
                 drawUnderlineAtIndexes(g, Color.blue, token.getStartIndex(), token.getEndIndex());
             }
 
-            // @todo put that back by cached the info for each rule
-           /* ParserRule rule = editor.rules.getRuleStartingWithToken(token);
+           ParserRule rule = editor.rules.getRuleStartingWithToken(token);
            if(rule != null && rule.hasLeftRecursion()) {
                drawUnderlineAtIndexes(g, Color.green, token.getStartIndex(), token.getEndIndex());
-           }*/
+           }
         }
 
-       // long delta = System.currentTimeMillis()-t;
-       // System.out.println("Rebuild in "+delta);
-
         underlyingShape.end();
+        underlyingShape.draw(g2d);
     }
 
     public void drawUnderlineAtIndexes(Graphics g, Color c, int start, int end) {

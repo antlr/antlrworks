@@ -72,6 +72,34 @@ public class IconManager {
         return createImageIcon(path+"warning.png");
     }
 
+    public ImageIcon getIconColoring() {
+        return createImageIcon(path+"coloring.png");
+    }
+
+    public ImageIcon getIconSyntaxDiagram() {
+        return createImageIcon(path+"sd.png");
+    }
+
+    public ImageIcon getIconIdea() {
+        return createImageIcon(path+"warning.png");
+    }
+
+    public ImageIcon getIconTips() {
+        return createImageIcon(path+"tips.png");
+    }
+
+    public ImageIcon getIconUnderlying() {
+        return createImageIcon(path+"underlying.png");
+    }
+
+    public ImageIcon getIconAnalysis() {
+        return createImageIcon(path+"analysis.png");
+    }
+
+    public ImageIcon getIconFind() {
+        return createImageIcon(path+"find.png");
+    }
+
     public ImageIcon getIconBackward() {
         return createImageIcon(path+"back.png");
     }
