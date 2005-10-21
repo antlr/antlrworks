@@ -121,17 +121,17 @@ public class MenuGrammar extends AbstractActions implements TDecisionDFA.TDecisi
     }
 
     public void hideAction() {
-        editor.actions.hideAction();
+        //editor.actions.hideAction();
         Statistics.shared().recordEvent(Statistics.EVENT_HIDE_SINGLE_ACTION);
     }
 
     public void showAllActions() {
-        editor.actions.showAllActions();
+        //editor.actions.showAllActions();
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_ALL_ACTIONS);
     }
 
     public void hideAllActions() {
-        editor.actions.hideAllActions();
+        //editor.actions.hideAllActions();
         Statistics.shared().recordEvent(Statistics.EVENT_HIDE_ALL_ACTIONS);
     }
 

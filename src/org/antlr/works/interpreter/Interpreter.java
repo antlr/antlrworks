@@ -265,7 +265,7 @@ public class Interpreter implements Runnable {
             ErrorManager.setErrorListener(ErrorListener.shared());
 
             try {
-                parser = new Grammar(editor.getFileName(), editor.getPlainText());
+                parser = new Grammar(editor.getFileName(), editor.getText());
 
                 String lexerGrammarText = parser.getLexerGrammar();
                 lexer = new Grammar();

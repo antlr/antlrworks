@@ -86,7 +86,7 @@ public class CodeGenerate implements Runnable {
         if(parserGrammar == null) {
             try {
                 String fileName = provider.getFileName();
-                parserGrammar = new Grammar(fileName==null?"<notsaved>":fileName, provider.getPlainText());
+                parserGrammar = new Grammar(fileName==null?"<notsaved>":fileName, provider.getText());
             } catch (Exception e) {
                 e.printStackTrace();
             }

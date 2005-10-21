@@ -108,7 +108,7 @@ public class TDecisionDFA implements Runnable {
     }
 
     public void run() {
-        text = editor.getPlainText();
+        text = editor.getText();
         line = editor.editorGUI.getCurrentLinePosition();
         column = editor.editorGUI.getCurrentColumnPosition();
 

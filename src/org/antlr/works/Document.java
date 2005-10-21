@@ -41,7 +41,7 @@ public class Document extends XJDocument {
     public void documentWillWriteData() {
         EditorWindow w = (EditorWindow)getWindow();
         XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        data.setText(XJUtils.getLocalizedText(w.getPlainText()));
+        data.setText(XJUtils.getLocalizedText(w.getText()));
     }
 
     public void documentDidReadData() {

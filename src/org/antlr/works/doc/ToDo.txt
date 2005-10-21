@@ -1,6 +1,10 @@
+WORKSHOP:
+- handle the complete rule definition as stated in slides
+- drag and drop doesn't work on Windows anymore
+
 - contextual menus on rules to group using selected rules (do not rely on text selection)
 - ideas: undefined rule: rename rule, delete token
-- during debug: no ideas nor tips
+- during debug: no ideas nor tips, disable all other non-related debug items in menu
 
 - createTabs in TextUtils: modify to apply to the whole text
 - test with empty preferences file

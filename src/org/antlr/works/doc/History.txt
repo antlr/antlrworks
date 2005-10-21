@@ -1,10 +1,11 @@
 
-Version 1.0ea4 - 10/18/05
+Version 1.0ea4 - 10/20/05
 
 - compatible with ANTLR 3.0ea6
 
 - find and replace
 - first implementation of ideas actions
+- first implementation of rule folding
 - duplicates rules are now underlined in blue
 - undefined rules are now underlined in red
 - rules can now be grouped and displayed in a tree view
@@ -19,7 +20,7 @@ Version 1.0ea4 - 10/18/05
 - refactored the main menu bar
 - improved drag and drop visual feedback (can now drop below or above a rule)
 - improved auto-completion (different is inside a rule or defining a rule)
-- new analysis strip displaying the location and kind of errors and warnings
+- new analysis column displaying the location and kind of errors and warnings
 - remove collapse/expand actions - will reintroduce that later on
 - removed duplicate names in auto-completion
 

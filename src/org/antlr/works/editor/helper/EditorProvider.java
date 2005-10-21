@@ -36,7 +36,6 @@ import java.awt.*;
 public interface EditorProvider {
     public void changeDone();
     public String getText();
-    public String getPlainText();
     public String getFileName();
     public Container getWindowContainer();
 }

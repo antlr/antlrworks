@@ -36,7 +36,6 @@ import edu.usfca.xj.appkit.swing.XJTreeDelegate;
 import org.antlr.works.editor.helper.KeyBindings;
 import org.antlr.works.editor.textpane.folding.Entity;
 import org.antlr.works.editor.textpane.folding.Provider;
-import org.antlr.works.editor.tool.TActions;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
@@ -65,7 +64,6 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
 
     protected RulesDelegate delegate = null;
     protected ThreadedParser parser = null;
-    protected TActions actions = null;
 
     protected List duplicateRules = null;
     protected List undefinedTokens = null;
@@ -116,10 +114,6 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
 
     public void setDelegate(RulesDelegate delegate) {
         this.delegate = delegate;
-    }
-
-    public void setActions(TActions actions) {
-        this.actions = actions;
     }
 
     public void setKeyBindings(KeyBindings keyBindings) {
@@ -703,7 +697,7 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
         if(sourceRule == null || targetRule == null)
             return false;
         
-        String sourceRuleText = actions.getPlainText(sourceRule.getStartIndex(), sourceRule.getEndIndex())+"\n";
+        String sourceRuleText = textPane.getText();
 
         try {
             Document doc = textPane.getDocument();
@@ -785,13 +779,14 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
                     setIcon(IconManager.shared().getIconParser());                
             }
 
+            // @todo setFont is really slow (profiler)
             if(n.rule != null && n.rule.hasErrors()) {
                 setForeground(Color.red);
-                setFont(getFont().deriveFont(Font.BOLD));
+                //setFont(getFont().deriveFont(Font.BOLD));
                 setToolTipText(n.rule.getErrorMessageHTML());
             } else {
                 setForeground(Color.black);
-                setFont(getFont().deriveFont(Font.PLAIN));
+                //setFont(getFont().deriveFont(Font.PLAIN));
             }
 
             return r;

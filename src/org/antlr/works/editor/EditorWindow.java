@@ -48,7 +48,7 @@ import org.antlr.works.editor.swing.TemplateRules;
 import org.antlr.works.editor.textpane.EditorGutter;
 import org.antlr.works.editor.tips.TipsManager;
 import org.antlr.works.editor.tips.TipsOverlay;
-import org.antlr.works.editor.tool.TActions;
+import org.antlr.works.editor.tips.TipsProvider;
 import org.antlr.works.editor.tool.TColorize;
 import org.antlr.works.editor.tool.TGoToRule;
 import org.antlr.works.editor.tool.TGrammar;
@@ -66,14 +66,13 @@ import java.util.List;
 
 public class EditorWindow extends XJWindow implements ThreadedParserObserver,
      AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate,
-     IdeaManagerDelegate, IdeaProvider, org.antlr.works.editor.tips.TipsProvider
+     IdeaManagerDelegate, IdeaProvider, TipsProvider
 {
     public ThreadedParser parser = null;
     public KeyBindings keyBindings = null;
     public AutoCompletionMenu autoCompletionMenu = null;
     public TGoToRule goToRule = null;
     public FindAndReplace findAndReplace = null;
-    public TActions actions = null;
     public TColorize colorize = null;
     public TGrammar grammar = null;
     public TemplateRules templateRules = null;
@@ -154,15 +153,12 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         tipsManager.addProvider(this);
 
         rules = new Rules(parser, getTextPane(), editorGUI.rulesTree);
-        actions = new TActions(parser, getTextPane());
         grammar = new TGrammar(this);
 
         rules.setDelegate(this);
-        rules.setActions(actions);
         rules.setKeyBindings(keyBindings);
 
         getGutter().setProvider(rules);
-        actions.setRules(rules);
         visual.setParser(parser);
 
         colorize = new TColorize(this);
@@ -192,6 +188,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void close() {
+        ideaManager.close();
         editorGUI.close();
         editorMenu.close();
         debugger.close();
@@ -268,7 +265,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public void toggleSyntaxDiagram() {
         visual.setEnable(!visual.isEnable());
         if(visual.isEnable()) {
-            visual.setText(getPlainText(), getFileName());
+            visual.setText(getText(), getFileName());
             updateVisualization(false);
         }
         Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_DIAGRAM);
@@ -307,7 +304,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public void changeUpdate(int offset, int length) {
         changeDone();
 
-        // Too slow - see why
         //adjustTokens(offset, length);
         //getGutter().repaint();
 
@@ -388,12 +384,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return editorCache.getString(EditorCache.CACHE_TEXT);
     }
 
-    public synchronized String getPlainText() {
-        if(editorCache.getString(EditorCache.CACHE_PLAIN_TEXT) == null)
-            editorCache.setObject(EditorCache.CACHE_PLAIN_TEXT, actions.getPlainText());
-        return editorCache.getString(EditorCache.CACHE_PLAIN_TEXT);
-    }
-
     public synchronized String getFilePath() {
         return getDocument().getDocumentPath();
     }
@@ -470,7 +460,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void grammarChanged() {
-        // @todo add listeners (see if it is fast enough)
         interpreter.grammarChanged();
         debugger.grammarChanged();
         menuGenerateActions.generateCode.grammarChanged();
@@ -541,7 +530,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public void parserDidComplete() {
         editorGUI.parserDidComplete();
 
-        visual.setText(getPlainText(), getFileName());
+        visual.setText(getText(), getFileName());
         updateVisualization(false);
 
         colorize.colorize();

@@ -73,6 +73,10 @@ public class IdeaManager {
         providers.add(provider);
     }
 
+    public void close() {
+        timer.stop();
+    }
+
     public void hide() {
         timer.stop();
         overlay.hide();

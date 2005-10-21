@@ -518,7 +518,7 @@ public class Debugger {
             editor.console.makeCurrent();
             
             ErrorManager.setErrorListener(ErrorListener.shared());
-            grammar = new Grammar(editor.getFileName(), editor.getPlainText());
+            grammar = new Grammar(editor.getFileName(), editor.getText());
         } catch (Exception e) {
             e.printStackTrace();
             return false;

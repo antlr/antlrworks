@@ -110,8 +110,10 @@ public abstract class OverlayObject {
     }
 
     public void hide() {
-        content.setVisible(false);
-        parentComponent.requestFocus();
+        if(content.isVisible()) {
+            content.setVisible(false);
+            parentComponent.requestFocus();            
+        }
     }
 
     public void resize() {

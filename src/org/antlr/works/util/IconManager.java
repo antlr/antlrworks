@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.util;
 
 import javax.swing.*;
+import java.util.Map;
+import java.util.HashMap;
 
 public class IconManager {
 
@@ -39,6 +41,7 @@ public class IconManager {
     public static final String path = "org/antlr/works/icons/";
 
     protected static IconManager shared = null;
+    protected static Map cache = new HashMap();
 
     public static IconManager shared() {
         if(shared == null)
@@ -47,8 +50,14 @@ public class IconManager {
     }
 
     public ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = this.getClass().getClassLoader().getResource(path);
-        return imgURL != null ? new ImageIcon(imgURL) : null;
+        ImageIcon image = (ImageIcon)cache.get(path);
+        if(image == null) {
+            java.net.URL imgURL = this.getClass().getClassLoader().getResource(path);
+            image = imgURL != null ? new ImageIcon(imgURL) : null;
+            if(image != null)
+                cache.put(path, image);
+        }
+        return image;
     }
 
     public ImageIcon getIconApplication() {

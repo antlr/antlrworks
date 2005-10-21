@@ -466,6 +466,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         if(editor.getTokens() == null)
             return;
 
+       // long t = System.currentTimeMillis();
+
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
@@ -494,11 +496,15 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
                 drawUnderlineAtIndexes(g, Color.blue, token.getStartIndex(), token.getEndIndex());
             }
 
-            ParserRule rule = editor.rules.getRuleStartingWithToken(token);
-            if(rule != null && rule.hasLeftRecursion()) {
-                drawUnderlineAtIndexes(g, Color.green, token.getStartIndex(), token.getEndIndex());
-            }
+            // @todo put that back by cached the info for each rule
+           /* ParserRule rule = editor.rules.getRuleStartingWithToken(token);
+           if(rule != null && rule.hasLeftRecursion()) {
+               drawUnderlineAtIndexes(g, Color.green, token.getStartIndex(), token.getEndIndex());
+           }*/
         }
+
+       // long delta = System.currentTimeMillis()-t;
+       // System.out.println("Rebuild in "+delta);
 
         underlyingShape.end();
     }
