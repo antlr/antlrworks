@@ -65,7 +65,7 @@ public class Parser {
         keywords.add("options");
         keywords.add("tokens");
         keywords.add("header");
-        keywords.add("grammar");
+        //keywords.add("grammar");
         keywords.add("fragment");
     }
 
@@ -129,9 +129,22 @@ public class Parser {
             return null;
 
         if(start.getAttribute().equals("grammar")) {
+            Token type = T(-1);
+            if(type != null && type.type == Lexer.TOKEN_ID) {
+                String typeString = type.getAttribute();
+                if(!typeString.equals("lexer")
+                        && !typeString.equals("parser")
+                        && !typeString.equals("combined")
+                        && !typeString.equals("treeparser"))
+                {
+                    type = null;
+                }
+            } else
+                type = null;
+
             while(nextToken()) {
                 if(T(0).type == Lexer.TOKEN_SEMI)
-                    return new ParserName(start.getAttribute(), start, T(0));
+                    return new ParserName(start.getAttribute(), start, T(0), type);
             }
             return null;
         } else
@@ -222,7 +235,7 @@ public class Parser {
     }
 
     public Token T(int index) {
-        if(position+index<tokens.size())
+        if(position+index >= 0 && position+index < tokens.size())
             return (Token)tokens.get(position+index);
         else
             return null;

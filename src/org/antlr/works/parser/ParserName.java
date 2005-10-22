@@ -35,10 +35,12 @@ public class ParserName {
     public String name;
     public Token start;
     public Token end;
+    public Token type;
 
-    public ParserName(String name, Token start, Token end) {
+    public ParserName(String name, Token start, Token end, Token type) {
         this.name = name;
-        this.start = start;
+        this.start = type==null?start:type;
         this.end = end;
+        this.type = type;
     }
 }
