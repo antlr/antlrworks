@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0 early access 2
-June 12, 2005
+Version 1.0 early access 4
+October 22, 2005
 
 (c) 2005 Jean Bovet & Terence Parr
 University of San Francisco
@@ -65,25 +65,86 @@ using "java org.antlr.works.IDE".
 
 * KNOWN ISSUES *
 
-This version disables emacs key-bindings on all OS except Mac OS X.  It
-will be available in future version.
+- This version disables emacs key-bindings on all OS except Mac OS X.
+  It will be available in future version.
+- Rule collapsing is still experimental. Collapsed rule may visually
+  disappear but are still in the underlying text buffer.
 
 
 * HISTORY *
 
+10/22/05 - version 1.0ea4
+  - find and replace
+  - ideas actions
+  - rule folding (experimental)
+  - duplicates rules are now underlined in blue
+  - undefined rules are now underlined in red
+  - rules can now be grouped and displayed in a tree view
+  - auto-indentation
+  - show decision DFA (using DOT tool defined in the preferences)
+  - replace literal with token label
+  - remove left recursion (one or all)
+  - insert rule from template
+
+  - new analysis column displaying the location and kind of
+    errors and warnings
+  - support Perforce SCM commands
+  - console moved from Window menu to project's window
+  - improved console with events list
+  - refactored the main menu bar
+  - remove collapse/expand actions (will reintroduce them later)
+  - improved drag and drop visual feedback (can now drop below
+    or above a rule)
+  - improved auto-completion (context sensitive)
+  - removed duplicate names in auto-completion
+
+  - current line is now highlighted
+  - display line and column number in bottom status bar
+  - HOME/END key move to beginning/end of line
+  - can now navigate backward/forward
+  - rules have now icon in the tree view
+  - go to rule now move the cursor to the beginning of the rule
+    instead of selecting it
+  - new toolbar
+
+  - prefs: auto-save every n minutes
+  - prefs: syntax coloring parser delay
+  - prefs: can now specify the colors of each type of token in
+    the debugger input text panel
+  - prefs: can specify rule folding (experimental yet)
+
+  - include a pre-version of ANTLR 3.0ea6
+
+  - fixed a bug where a new document created on Windows would not
+    be correctly colorized
+  - fixed several visual bugs on Windows and Linux
+
+07/04/05 - version 1.0ea3
+  - compatible with ANTLR 3.0ea5
+  - fixed a bug where generating lexer/parser without saving the
+    grammar to a file would fail
+  - fixed a bug where the first Look and Feel pop-up item could
+    not be applied
+  - fixed a bug where error during code generation would not be
+    reported
+  - fixed the bug where grammar file containing Windows new line
+    (\r\n) would not be parsed correctly, including associated
+    features like copy, cut, colorization, rule selection,
+    debugger location, etc.
+
 06/12/05 - version 1.0ea2
-        - added a launch parameter to specify a file to open at startup
-          ("-f /document/example.g")
-        - improved immediate colorization for comments and new lines
-        - console is hidden by default (can be changed in preferences)
-        - application is closed on Linux/Windows when the last project
-          window is closed and an auxiliary window is still open
-          (Console, Preferences or About dialog)
-        - fixed a bug where ANTLRWorks would quit on Windows/Linux if
-          the last opened project was not found
+  - added a launch parameter to specify a file to open at startup
+    ("-f /document/example.g")
+  - improved immediate colorization for comments and new lines
+  - console is hidden by default (can be changed in preferences)
+  - application is closed on Linux/Windows when the last project
+    window is closed and an auxiliary window is still open
+    (Console, Preferences or About dialog)
+  - fixed a bug where ANTLRWorks would quit on Windows/Linux if
+    the last opened project was not found
 
 06/01/05 - version 1.0ea1
-         - first release to the public (no source)
+  - first release to the public (no source)
 
 
 * WARNING *
