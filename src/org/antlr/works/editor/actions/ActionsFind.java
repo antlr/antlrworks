@@ -38,9 +38,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class MenuFind extends AbstractActions {
+public class ActionsFind extends AbstractActions {
 
-    public MenuFind(EditorWindow editor) {
+    public ActionsFind(EditorWindow editor) {
         super(editor);
     }
 

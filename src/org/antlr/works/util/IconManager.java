@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.util;
 
 import javax.swing.*;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class IconManager {
 

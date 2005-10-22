@@ -41,13 +41,13 @@ import org.antlr.works.scm.SCMDelegate;
 import org.antlr.works.scm.p4.P4;
 import org.antlr.works.scm.p4.P4SubmitDialog;
 
-public class MenuSCM extends AbstractActions implements SCMDelegate {
+public class ActionsSCM extends AbstractActions implements SCMDelegate {
 
     protected XJDialogProgress progress;
     protected SCM scm;
     protected boolean silent;
 
-    public MenuSCM(EditorWindow editor) {
+    public ActionsSCM(EditorWindow editor) {
         super(editor);
         scm = new P4(editor.console, this);
         progress = new XJDialogProgress(editor.getWindowContainer());

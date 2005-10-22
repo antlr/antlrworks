@@ -47,6 +47,7 @@ public class IdeaManager {
     protected Timer timer;
     protected IdeaOverlay overlay;
     protected IdeaManagerDelegate delegate;
+    protected boolean enabled = true;
 
     public IdeaManager() {
         timer = new Timer(1000, new ActionListener() {
@@ -69,6 +70,17 @@ public class IdeaManager {
         this.overlay = overlay;
     }
 
+    public void setEnabled(boolean flag) {
+        this.enabled = flag;
+        if(!enabled) {
+            hide();
+        }
+    }
+
+    public boolean enabled() {
+        return enabled;
+    }
+
     public void addProvider(IdeaProvider provider) {
         providers.add(provider);
     }
@@ -83,6 +95,9 @@ public class IdeaManager {
     }
 
     public void displayAnyIdeasAvailable(Token token, ParserRule rule, ParserRule enclosingRule) {
+        if(!enabled)
+            return;
+
         List ideas = null;
         if(token != null && token.type == Lexer.TOKEN_ID) {
             ideas = generateIdeaActions(token, rule, enclosingRule);
@@ -107,4 +122,5 @@ public class IdeaManager {
         }
         return actions;
     }
+
 }

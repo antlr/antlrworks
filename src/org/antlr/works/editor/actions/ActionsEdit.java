@@ -34,15 +34,11 @@ package org.antlr.works.editor.actions;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.undo.Undo;
 
-import javax.swing.*;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
-import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 
-public class MenuEdit extends AbstractActions {
+public class ActionsEdit extends AbstractActions {
 
-    public MenuEdit(EditorWindow editor) {
+    public ActionsEdit(EditorWindow editor) {
         super(editor);
     }
 

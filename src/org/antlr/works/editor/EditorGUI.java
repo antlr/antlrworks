@@ -35,7 +35,7 @@ import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.dialog.DialogPrefs;
-import org.antlr.works.editor.analysis.AnalysisStrip;
+import org.antlr.works.editor.analysis.AnalysisColumn;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.swing.TextUtils;
 import org.antlr.works.editor.textpane.EditorGutter;
@@ -48,7 +48,6 @@ import org.antlr.works.editor.undo.UndoDelegate;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
-import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -71,7 +70,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
     public EditorWindow editor;
 
     public EditorGutter gutter;
-    public AnalysisStrip analysisStrip;
+    public AnalysisColumn analysisColumn;
 
     public JScrollPane textScrollPane;
 
@@ -103,6 +102,9 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
     protected boolean highlightCursorLine = false;
     protected boolean isTyping = false;
     protected UnderlyingShape underlyingShape = new UnderlyingShape();
+    protected boolean underlying = true;
+
+    protected static int ANALYSIS_COLUMN_WIDTH = 18;
 
     public EditorGUI(EditorWindow editor) {
         this.editor = editor;
@@ -161,14 +163,14 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         rulesScrollPane.setWheelScrollingEnabled(true);
 
         // Assemble right text pane
-        analysisStrip = new AnalysisStrip(editor);
-        analysisStrip.setMinimumSize(new Dimension(18, 0));
-        analysisStrip.setMaximumSize(new Dimension(18, Integer.MAX_VALUE));
-        analysisStrip.setPreferredSize(new Dimension(18, analysisStrip.getPreferredSize().height));
+        analysisColumn = new AnalysisColumn(editor);
+        analysisColumn.setMinimumSize(new Dimension(ANALYSIS_COLUMN_WIDTH, 0));
+        analysisColumn.setMaximumSize(new Dimension(ANALYSIS_COLUMN_WIDTH, Integer.MAX_VALUE));
+        analysisColumn.setPreferredSize(new Dimension(ANALYSIS_COLUMN_WIDTH, analysisColumn.getPreferredSize().height));
 
         Box rightPaneBox = Box.createHorizontalBox();
         rightPaneBox.add(textScrollPane);
-        rightPaneBox.add(analysisStrip);
+        rightPaneBox.add(analysisColumn);
 
         // Assemble
 
@@ -212,7 +214,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         infoPanel.add(Box.createHorizontalStrut(5));
         infoPanel.add(scmLabel);
 
-        toolbar = new EditorToolbar();
+        toolbar = new EditorToolbar(editor);
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(toolbar.getToolbar(), BorderLayout.NORTH);
@@ -257,12 +259,12 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         textPane.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent event) {
                 if(event.getKeyCode() == KeyEvent.VK_C && (event.isMetaDown() || event.isControlDown())) {
-                    editor.menuEditActions.performCopyToClipboard();
+                    editor.actionsEdit.performCopyToClipboard();
                     event.consume();
                 }
 
                 if(event.getKeyCode() == KeyEvent.VK_X && (event.isMetaDown() || event.isControlDown())) {
-                    editor.menuEditActions.performCutToClipboard();
+                    editor.actionsEdit.performCutToClipboard();
                     event.consume();
                 }
             }
@@ -280,11 +282,27 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         });
     }
 
-    public synchronized void setIsTyping(boolean flag) {
+    public void toggleAnalysis() {
+        analysisColumn.setVisible(!analysisColumn.isVisible());
+        if(analysisColumn.isVisible())
+            analysisColumn.setPreferredSize(new Dimension(ANALYSIS_COLUMN_WIDTH, 0));
+        else
+            analysisColumn.setPreferredSize(new Dimension(0, 0));
+    }
+
+    public void setUnderlying(boolean flag) {
+        this.underlying = flag;
+    }
+
+    public boolean underlying() {
+        return underlying;
+    }
+
+    public void setIsTyping(boolean flag) {
         isTyping = flag;
     }
 
-    public synchronized boolean isTyping() {
+    public boolean isTyping() {
         return isTyping;
     }
 
@@ -456,19 +474,19 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         setIsTyping(false);
         updateInformation();
         updateCursorInfo();
-        analysisStrip.repaint();
+        analysisColumn.repaint();
         underlyingShape.reset();
         textPane.repaint();
     }
 
     public void editorTextPaneDidFold() {
         // Reset the shape because folding causes the view dimension to change
-        analysisStrip.repaint();
+        analysisColumn.repaint();
         underlyingShape.reset();
     }
 
     public void editorTextPaneDidPaint(Graphics g) {
-        if(editor.getTokens() == null)
+        if(editor.getTokens() == null || !underlying)
             return;
 
         Graphics2D g2d = (Graphics2D)g;

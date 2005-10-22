@@ -1,11 +1,3 @@
-package org.antlr.works.editor.analysis;
-
-import org.antlr.works.editor.swing.OverlayObject;
-import org.antlr.works.editor.tooltip.ToolTipList;
-import org.antlr.works.editor.tooltip.ToolTipListDelegate;
-
-import javax.swing.*;
-import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -37,41 +29,49 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AnalysisStripOverlay extends OverlayObject implements ToolTipListDelegate {
+package org.antlr.works.editor.actions;
 
-    public ToolTipList toolTip;
-    public Point location;
+import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.appkit.utils.XJFileChooser;
+import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.stats.Statistics;
 
-    public AnalysisStripOverlay(JFrame parentFrame, JComponent parentComponent) {
-        super(parentFrame, parentComponent);
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+
+public class ActionsExport extends AbstractActions {
+
+    public ActionsExport(EditorWindow editor) {
+        super(editor);
     }
 
-    public void setLocation(Point location) {
-        this.location = SwingUtilities.convertPoint(parentComponent, location, parentFrame);
-        resize();
-    }
+    public void exportEventsAsTextFile() {
+        if(!XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "TXT", "Text file", false))
+            return;
 
-    public void setText(String text) {
-        toolTip.setText(text);
-    }
+        String file = XJFileChooser.shared().getSelectedFilePath();
+        if(file == null)
+            return;
 
-    public void resize() {
-        toolTip.resize();
-        if(location != null)
-            content.setBounds(location.x-toolTip.getWidth(),  location.y, toolTip.getWidth(), toolTip.getHeight());
-    }
+        StringBuffer text = new StringBuffer();
+        List events = editor.debugger.getEvents();
+        for(int i=0; i<events.size(); i++) {
+            text.append(i + 1);
+            text.append(": ");
+            text.append(events.get(i).toString());
+            text.append("\n");
+        }
 
-    public JComponent overlayCreateInterface() {
-        toolTip = new ToolTipList(this);
-        return toolTip;
-    }
+        try {
+            FileWriter writer = new FileWriter(file);
+            writer.write(text.toString());
+            writer.close();
+        } catch (IOException e) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot save text file: "+file+"\nError: "+e);
+        }
 
-    public boolean overlayWillDisplay() {
-        return true;
-    }
-
-    public void toolTipListHide() {
-        hide();
+        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_EVENTS_TEXT);
     }
 
 }

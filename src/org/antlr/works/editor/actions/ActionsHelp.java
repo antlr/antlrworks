@@ -32,37 +32,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.actions;
 
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.util.HelpManager;
 
-public class MenuRun extends AbstractActions {
+public class ActionsHelp extends AbstractActions {
 
-    public MenuRun(EditorWindow editor) {
+    public ActionsHelp(EditorWindow editor) {
         super(editor);
     }
 
-    public void runInterpreter() {
-        try {
-            Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_MENU);
-            editor.selectInterpreterTab();
-            editor.interpreter.interpret();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void submitStats() {
+        HelpManager.submitStats(editor.getJavaContainer());
     }
 
-    public void debug() {
-        editor.debugger.setBreakpoints(editor.editorGUI.gutter.getBreakpoints());
-        editor.debugger.launchLocalDebugger(false);
+    public void sendFeedback() {
+        HelpManager.sendFeedback(editor.getJavaContainer());
     }
 
-    public void buildAndDebug() {
-        editor.debugger.setBreakpoints(editor.editorGUI.gutter.getBreakpoints());
-        editor.debugger.launchLocalDebugger(true);
+    public void checkUpdates() {
+        HelpManager.checkUpdates(editor.getJavaContainer(), false);
     }
-
-    public void debugRemote() {
-        editor.debugger.setBreakpoints(editor.editorGUI.gutter.getBreakpoints());
-        editor.debugger.launchRemoteDebugger();
-    }
-
 }

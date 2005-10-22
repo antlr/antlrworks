@@ -315,8 +315,8 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItem("Select All", 'a', KeyEvent.VK_A, MI_EDIT_SELECT_ALL, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItemCheck("Auto-Indentation", MI_TOGGLE_AUTOINDENT, this, true));
-        menu.addItem(new XJMenuItemCheck("Syntax Coloring", MI_TOGGLE_SYNTAX_COLORING, this, true));
-        menu.addItem(new XJMenuItemCheck("Syntax Diagram", MI_TOGGLE_SYNTAX_DIAGRAM, this, true));
+        //menu.addItem(new XJMenuItemCheck("Syntax Coloring", MI_TOGGLE_SYNTAX_COLORING, this, true));
+        //menu.addItem(new XJMenuItemCheck("Syntax Diagram", MI_TOGGLE_SYNTAX_DIAGRAM, this, true));
         menu.addItem(new XJMenuItemCheck("Optimize Syntax Diagram", MI_TOGGLE_NFA_OPTIMIZATION, this, true));
 
         menubar.addCustomMenu(menu);
@@ -383,27 +383,27 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuEdit(int itemTag) {
         switch(itemTag) {
             case MI_EDIT_UNDO:
-                editor.menuEditActions.performUndo();
+                editor.actionsEdit.performUndo();
                 break;
 
             case MI_EDIT_REDO:
-                editor.menuEditActions.performRedo();
+                editor.actionsEdit.performRedo();
                 break;
 
             case MI_EDIT_CUT:
-                editor.menuEditActions.performCutToClipboard();
+                editor.actionsEdit.performCutToClipboard();
                 break;
 
             case MI_EDIT_COPY:
-                editor.menuEditActions.performCopyToClipboard();
+                editor.actionsEdit.performCopyToClipboard();
                 break;
 
             case MI_EDIT_PASTE:
-                editor.menuEditActions.performPasteFromClipboard();
+                editor.actionsEdit.performPasteFromClipboard();
                 break;
 
             case MI_EDIT_SELECT_ALL:
-                editor.menuEditActions.performSelectAll();
+                editor.actionsEdit.performSelectAll();
                 break;
 
             case MI_TOGGLE_AUTOINDENT:
@@ -427,19 +427,19 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuFind(int itemTag) {
         switch(itemTag) {
             case MI_FIND:
-                editor.menuFindActions.find();
+                editor.actionsFind.find();
                 break;
 
             case MI_FIND_NEXT:
-                editor.menuFindActions.findNext();
+                editor.actionsFind.findNext();
                 break;
 
             case MI_FIND_PREV:
-                editor.menuFindActions.findPrev();
+                editor.actionsFind.findPrev();
                 break;
 
             case MI_FIND_USAGE:
-                editor.menuFindActions.findUsage();
+                editor.actionsFind.findUsage();
                 break;
         }
     }
@@ -447,35 +447,35 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuGrammar(int itemTag) {
         switch(itemTag) {
             case MI_SHOW_DECISION_DFA:
-                editor.menuGrammarActions.showDecisionDFA();
+                editor.actionsGrammar.showDecisionDFA();
                 break;
 
             case MI_INSERT_TEMPLATE:
-                editor.menuGrammarActions.insertRuleFromTemplate();
+                editor.actionsGrammar.insertRuleFromTemplate();
                 break;
 
             case MI_GROUP:
-                editor.menuGrammarActions.group();
+                editor.actionsGrammar.group();
                 break;
 
             case MI_UNGROUP:
-                editor.menuGrammarActions.ungroup();
+                editor.actionsGrammar.ungroup();
                 break;
 
             case MI_HIDE_ACTION:
-                editor.menuGrammarActions.hideAction();
+                editor.actionsGrammar.hideAction();
                 break;
 
             case MI_SHOW_ALL_ACTION:
-                editor.menuGrammarActions.showAllActions();
+                editor.actionsGrammar.showAllActions();
                 break;
 
             case MI_HIDE_ALL_ACTION:
-                editor.menuGrammarActions.hideAllActions();
+                editor.actionsGrammar.hideAllActions();
                 break;
 
             case MI_CHECK_GRAMMAR:
-                editor.menuGrammarActions.checkGrammar();
+                editor.actionsGrammar.checkGrammar();
                 break;
         }
     }
@@ -483,19 +483,19 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuRefactor(int itemTag) {
         switch(itemTag) {
             case MI_RENAME:
-                editor.menuRefactorActions.rename();
+                editor.actionsRefactor.rename();
                 break;
 
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
-                editor.menuRefactorActions.replaceLiteralWithTokenLabel();
+                editor.actionsRefactor.replaceLiteralWithTokenLabel();
                 break;
 
             case MI_REMOVE_LEFT_RECURSION:
-                editor.menuRefactorActions.removeLeftRecursion();
+                editor.actionsRefactor.removeLeftRecursion();
                 break;
 
             case MI_REMOVE_ALL_LEFT_RECURSION:
-                editor.menuRefactorActions.removeAllLeftRecursion();
+                editor.actionsRefactor.removeAllLeftRecursion();
                 break;
         }
     }
@@ -503,35 +503,35 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuGoTo(int itemTag) {
         switch(itemTag) {
             case MI_GOTO_RULE:
-                editor.menuGoToActions.goToRule();
+                editor.actionsGoTo.goToRule();
                 break;
 
             case MI_GOTO_DECLARATION:
-                editor.menuGoToActions.goToDeclaration();
+                editor.actionsGoTo.goToDeclaration();
                 break;
 
             case MI_GOTO_LINE:
-                editor.menuGoToActions.goToLine();
+                editor.actionsGoTo.goToLine();
                 break;
 
             case MI_GOTO_CHARACTER:
-                editor.menuGoToActions.goToCharacter();
+                editor.actionsGoTo.goToCharacter();
                 break;
 
             case MI_GOTO_BACKWARD:
-                editor.menuGoToActions.goToBackward();
+                editor.actionsGoTo.goToBackward();
                 break;
 
             case MI_GOTO_FORWARD:
-                editor.menuGoToActions.goToForward();
+                editor.actionsGoTo.goToForward();
                 break;
 
             case MI_PREV_BREAKPOINT:
-                editor.menuGoToActions.goToBreakpoint(-1);
+                editor.actionsGoTo.goToBreakpoint(-1);
                 break;
 
             case MI_NEXT_BREAKPOINT:
-                editor.menuGoToActions.goToBreakpoint(1);
+                editor.actionsGoTo.goToBreakpoint(1);
                 break;
         }
     }
@@ -539,19 +539,19 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuGenerate(int itemTag) {
         switch(itemTag) {
             case MI_GENERATE_CODE:
-                editor.menuGenerateActions.generateCode();
+                editor.actionsGenerate.generateCode();
                 break;
 
             case MI_SHOW_GENERATED_LEXER_CODE:
-                editor.menuGenerateActions.showGeneratedCode(true);
+                editor.actionsGenerate.showGeneratedCode(true);
                 break;
 
             case MI_SHOW_GENERATED_PARSER_CODE:
-                editor.menuGenerateActions.showGeneratedCode(false);
+                editor.actionsGenerate.showGeneratedCode(false);
                 break;
 
             case MI_SHOW_RULE_GENCODE:
-                editor.menuGenerateActions.showRuleGeneratedCode();
+                editor.actionsGenerate.showRuleGeneratedCode();
                 break;
         }
     }
@@ -559,18 +559,18 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuRun(int itemTag) {
         switch(itemTag) {
             case MI_RUN_INTERPRETER:
-                editor.menuRunActions.runInterpreter();
+                editor.actionsRun.runInterpreter();
                 break;
             case MI_DEBUG:
-                editor.menuRunActions.debug();
+                editor.actionsRun.debug();
                 break;
 
             case MI_BUILD_AND_DEBUG:
-                editor.menuRunActions.buildAndDebug();
+                editor.actionsRun.buildAndDebug();
                 break;
 
             case MI_DEBUG_REMOTE:
-                editor.menuRunActions.debugRemote();
+                editor.actionsRun.debugRemote();
                 break;
         }
     }
@@ -578,22 +578,22 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuSCM(int itemTag) {
         switch(itemTag) {
             case MI_P4_EDIT:
-                editor.menuSCMActions.editFile();
+                editor.actionsSCM.editFile();
                 break;
             case MI_P4_ADD:
-                editor.menuSCMActions.addFile();
+                editor.actionsSCM.addFile();
                 break;
             case MI_P4_DELETE:
-                editor.menuSCMActions.deleteFile();
+                editor.actionsSCM.deleteFile();
                 break;
             case MI_P4_REVERT:
-                editor.menuSCMActions.revertFile();
+                editor.actionsSCM.revertFile();
                 break;
             case MI_P4_SUBMIT:
-                editor.menuSCMActions.submitFile();
+                editor.actionsSCM.submitFile();
                 break;
             case MI_P4_SYNC:
-                editor.menuSCMActions.sync();
+                editor.actionsSCM.sync();
                 break;
         }
     }
@@ -601,13 +601,13 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuHelp(int itemTag) {
         switch(itemTag) {
             case MI_SUBMIT_STATS:
-                editor.menuHelpActions.submitStats();
+                editor.actionsHelp.submitStats();
                 break;
             case MI_SEND_FEEDBACK:
-                editor.menuHelpActions.sendFeedback();
+                editor.actionsHelp.sendFeedback();
                 break;
             case MI_CHECK_UPDATES:
-                editor.menuHelpActions.checkUpdates();
+                editor.actionsHelp.checkUpdates();
                 break;
         }
     }
@@ -642,7 +642,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
                 break;
 
             case MI_EXPORT_EVENT:
-                editor.menuExportActions.exportEventsAsTextFile();
+                editor.actionsExport.exportEventsAsTextFile();
                 break;
         }
     }

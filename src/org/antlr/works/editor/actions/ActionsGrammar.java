@@ -43,11 +43,11 @@ import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
 
-public class MenuGrammar extends AbstractActions implements TDecisionDFA.TDecisionDFADelegate {
+public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDecisionDFADelegate {
 
     protected XJDialogProgress progress;
 
-    public MenuGrammar(EditorWindow editor) {
+    public ActionsGrammar(EditorWindow editor) {
         super(editor);
         progress = new XJDialogProgress(editor.getWindowContainer());
     }

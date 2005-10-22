@@ -1,3 +1,11 @@
+package org.antlr.works.editor.analysis;
+
+import org.antlr.works.editor.swing.OverlayObject;
+import org.antlr.works.editor.tooltip.ToolTipList;
+import org.antlr.works.editor.tooltip.ToolTipListDelegate;
+
+import javax.swing.*;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -29,26 +37,41 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.actions;
+public class AnalysisColumnOverlay extends OverlayObject implements ToolTipListDelegate {
 
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.util.HelpManager;
+    public ToolTipList toolTip;
+    public Point location;
 
-public class MenuHelp extends AbstractActions {
-
-    public MenuHelp(EditorWindow editor) {
-        super(editor);
+    public AnalysisColumnOverlay(JFrame parentFrame, JComponent parentComponent) {
+        super(parentFrame, parentComponent);
     }
 
-    public void submitStats() {
-        HelpManager.submitStats(editor.getJavaContainer());
+    public void setLocation(Point location) {
+        this.location = SwingUtilities.convertPoint(parentComponent, location, parentFrame);
+        resize();
     }
 
-    public void sendFeedback() {
-        HelpManager.sendFeedback(editor.getJavaContainer());
+    public void setText(String text) {
+        toolTip.setText(text);
     }
 
-    public void checkUpdates() {
-        HelpManager.checkUpdates(editor.getJavaContainer(), false);
+    public void resize() {
+        toolTip.resize();
+        if(location != null)
+            content.setBounds(location.x-toolTip.getWidth(),  location.y, toolTip.getWidth(), toolTip.getHeight());
     }
+
+    public JComponent overlayCreateInterface() {
+        toolTip = new ToolTipList(this);
+        return toolTip;
+    }
+
+    public boolean overlayWillDisplay() {
+        return true;
+    }
+
+    public void toolTipListHide() {
+        hide();
+    }
+
 }

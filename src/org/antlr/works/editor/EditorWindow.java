@@ -39,12 +39,12 @@ import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.actions.*;
 import org.antlr.works.editor.autocompletion.AutoCompletionMenu;
 import org.antlr.works.editor.autocompletion.AutoCompletionMenuDelegate;
+import org.antlr.works.editor.autocompletion.TemplateRules;
 import org.antlr.works.editor.find.FindAndReplace;
 import org.antlr.works.editor.helper.*;
 import org.antlr.works.editor.idea.*;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.rules.RulesDelegate;
-import org.antlr.works.editor.swing.TemplateRules;
 import org.antlr.works.editor.textpane.EditorGutter;
 import org.antlr.works.editor.tips.TipsManager;
 import org.antlr.works.editor.tips.TipsOverlay;
@@ -94,16 +94,16 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     protected EditorCache editorCache = null;
     protected EditorMenu editorMenu = null;
 
-    protected MenuEdit menuEditActions = null;
-    protected MenuFind menuFindActions = null;
-    protected MenuGrammar menuGrammarActions = null;
-    protected MenuRefactor menuRefactorActions = null;
-    protected MenuGoTo menuGoToActions = null;
-    protected MenuGenerate menuGenerateActions = null;
-    protected MenuRun menuRunActions = null;
-    protected MenuSCM menuSCMActions = null;
-    protected MenuExport menuExportActions = null;
-    protected MenuHelp menuHelpActions = null;
+    protected ActionsEdit actionsEdit = null;
+    protected ActionsFind actionsFind = null;
+    protected ActionsGrammar actionsGrammar = null;
+    protected ActionsRefactor actionsRefactor = null;
+    protected ActionsGoTo actionsGoTo = null;
+    protected ActionsGenerate actionsGenerate = null;
+    protected ActionsRun actionsRun = null;
+    protected ActionsSCM actionsSCM = null;
+    protected ActionsExport actionsExport = null;
+    protected ActionsHelp actionsHelp = null;
 
     public EditorWindow() {
 
@@ -116,16 +116,16 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         editorCache = new EditorCache();
         editorMenu = new EditorMenu(this);
 
-        menuEditActions = new MenuEdit(this);
-        menuFindActions = new MenuFind(this);
-        menuGrammarActions = new MenuGrammar(this);
-        menuRefactorActions = new MenuRefactor(this);
-        menuGoToActions = new MenuGoTo(this);
-        menuGenerateActions = new MenuGenerate(this);
-        menuRunActions = new MenuRun(this);
-        menuSCMActions = new MenuSCM(this);
-        menuExportActions = new MenuExport(this);
-        menuHelpActions = new MenuHelp(this);
+        actionsEdit = new ActionsEdit(this);
+        actionsFind = new ActionsFind(this);
+        actionsGrammar = new ActionsGrammar(this);
+        actionsRefactor = new ActionsRefactor(this);
+        actionsGoTo = new ActionsGoTo(this);
+        actionsGenerate = new ActionsGenerate(this);
+        actionsRun = new ActionsRun(this);
+        actionsSCM = new ActionsSCM(this);
+        actionsExport = new ActionsExport(this);
+        actionsHelp = new ActionsHelp(this);
 
         editorGUI.createInterface();
 
@@ -183,8 +183,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         textPaneRequestFocusLater();
         editorGUI.updateInformation();
         editorGUI.updateCursorInfo();
-        menuSCMActions.setSilent(true);
-        menuSCMActions.queryFileStatus();
+        actionsSCM.setSilent(true);
+        actionsSCM.queryFileStatus();
     }
 
     public void close() {
@@ -275,6 +275,23 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         visual.toggleNFAOptimization();
         updateVisualization(false);
         Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_NFA_OPTIMIZATION);
+    }
+
+    public void toggleIdeas() {
+        ideaManager.setEnabled(!ideaManager.enabled());
+    }
+
+    public void toggleUnderlying() {
+        editorGUI.setUnderlying(!editorGUI.underlying());
+        getTextPane().repaint();
+    }
+
+    public void toggleTips() {
+        tipsManager.setEnabled(!tipsManager.enabled());
+    }
+
+    public void toggleAnalysis() {
+        editorGUI.toggleAnalysis();
     }
 
     protected void adjustTokens(int location, int length) {
@@ -462,7 +479,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public void grammarChanged() {
         interpreter.grammarChanged();
         debugger.grammarChanged();
-        menuGenerateActions.generateCode.grammarChanged();
+        actionsGenerate.generateCode.grammarChanged();
     }
 
     public void selectTextRange(int start, int end) {
@@ -691,7 +708,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
                 ideaCreateRule(action);
                 break;
             case IDEA_REMOVE_LEFT_RECURSION:
-                menuRefactorActions.removeLeftRecursion();
+                actionsRefactor.removeLeftRecursion();
                 break;
         }
     }

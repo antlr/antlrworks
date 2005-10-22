@@ -39,11 +39,11 @@ import org.antlr.works.editor.code.CodeDisplay;
 import org.antlr.works.editor.code.CodeGenerate;
 import org.antlr.works.stats.Statistics;
 
-public class MenuGenerate extends AbstractActions {
+public class ActionsGenerate extends AbstractActions {
 
     public CodeGenerate generateCode = null;
 
-    public MenuGenerate(EditorWindow editor) {
+    public ActionsGenerate(EditorWindow editor) {
         super(editor);
         generateCode = new CodeGenerate(editor);
     }

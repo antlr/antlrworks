@@ -40,9 +40,9 @@ import org.antlr.works.stats.Statistics;
 import javax.swing.*;
 import java.util.Set;
 
-public class MenuGoTo extends AbstractActions {
+public class ActionsGoTo extends AbstractActions {
 
-    public MenuGoTo(EditorWindow editor) {
+    public ActionsGoTo(EditorWindow editor) {
         super(editor);
     }
 

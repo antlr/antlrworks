@@ -9,7 +9,6 @@ import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
 import java.util.List;
-import java.util.Iterator;
 /*
 
 [The "BSD licence"]
@@ -41,9 +40,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class MenuRefactor extends AbstractActions {
+public class ActionsRefactor extends AbstractActions {
 
-    public MenuRefactor(EditorWindow editor) {
+    public ActionsRefactor(EditorWindow editor) {
         super(editor);
     }
 

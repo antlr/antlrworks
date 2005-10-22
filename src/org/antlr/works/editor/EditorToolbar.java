@@ -4,6 +4,8 @@ import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 /*
 
 [The "BSD licence"]
@@ -39,25 +41,128 @@ public class EditorToolbar {
 
     public Box toolbar;
 
-    public EditorToolbar() {
-        toolbar = Box.createHorizontalBox();
-        toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
-        toolbar.add(Box.createHorizontalStrut(5));
-        toolbar.add(new JButton(IconManager.shared().getIconBackward()));
-        toolbar.add(new JButton(IconManager.shared().getIconForward()));
-        toolbar.add(Box.createHorizontalStrut(15));
-        toolbar.add(new JButton(IconManager.shared().getIconSyntaxDiagram()));
-        toolbar.add(new JButton(IconManager.shared().getIconColoring()));
-        toolbar.add(new JButton(IconManager.shared().getIconAnalysis()));
-        toolbar.add(Box.createHorizontalStrut(15));
-        toolbar.add(new JButton(IconManager.shared().getIconIdea()));
-        toolbar.add(new JButton(IconManager.shared().getIconUnderlying()));
-        toolbar.add(new JButton(IconManager.shared().getIconTips()));
-        toolbar.add(Box.createHorizontalStrut(15));
-        toolbar.add(new JButton(IconManager.shared().getIconFind()));
+    public JButton backward;
+    public JButton forward;
+
+    public JButton sd;
+    public JButton coloring;
+    public JButton analysis;
+
+    public JButton ideas;
+    public JButton underlying;
+    public JButton tips;
+
+    public JButton find;
+
+    public EditorWindow editor;
+
+    public EditorToolbar(EditorWindow editor) {
+        this.editor = editor;
+
+        createInterface();
+        addActions();
+        //applyPrefs();
     }
 
     public JComponent getToolbar() {
         return toolbar;
+    }
+
+    public void applyPrefs() {
+        sd.setSelected(true);
+        coloring.setSelected(true);
+        analysis.setSelected(true);
+        ideas.setSelected(true);
+        underlying.setSelected(true);
+        tips.setSelected(true);
+    }
+
+    public void createInterface() {
+        toolbar = Box.createHorizontalBox();
+        toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
+        toolbar.add(Box.createHorizontalStrut(5));
+        toolbar.add(backward = (JButton)createNewButton(IconManager.shared().getIconBackward(), "Backward", false));
+        toolbar.add(forward = (JButton)createNewButton(IconManager.shared().getIconForward(), "Forward", false));
+        toolbar.add(Box.createHorizontalStrut(15));
+        toolbar.add(sd = (JButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Syntax diagram", false));
+        toolbar.add(coloring = (JButton)createNewButton(IconManager.shared().getIconColoring(), "Syntax coloring", false));
+        toolbar.add(analysis = (JButton)createNewButton(IconManager.shared().getIconAnalysis(), "Syntax analysis", false));
+        toolbar.add(Box.createHorizontalStrut(15));
+        toolbar.add(ideas = (JButton)createNewButton(IconManager.shared().getIconIdea(), "Syntax ideas", false));
+        toolbar.add(underlying = (JButton)createNewButton(IconManager.shared().getIconUnderlying(), "Syntax underlying", false));
+        toolbar.add(tips = (JButton)createNewButton(IconManager.shared().getIconTips(), "Syntax tips", false));
+        toolbar.add(Box.createHorizontalStrut(15));
+        toolbar.add(find = (JButton)createNewButton(IconManager.shared().getIconFind(), "Find text", false));
+    }
+
+    public void addActions() {
+        backward.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.actionsGoTo.goToBackward();
+            }
+        });
+
+        forward.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.actionsGoTo.goToForward();
+            }
+        });
+
+        sd.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.toggleSyntaxDiagram();
+            }
+        });
+
+        coloring.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.toggleSyntaxColoring();
+            }
+        });
+
+        analysis.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.toggleAnalysis();
+            }
+        });
+
+        ideas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.toggleIdeas();
+            }
+        });
+
+        underlying.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.toggleUnderlying();
+            }
+        });
+
+        tips.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.toggleTips();
+            }
+        });
+
+        find.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.actionsFind.find();
+            }
+        });
+    }
+
+    public AbstractButton createNewButton(ImageIcon icon, String tooltip, boolean toggle) {
+        AbstractButton button;
+        if(toggle)
+            button = new JToggleButton(icon);
+        else
+            button = new JButton(icon);
+        button.setToolTipText(tooltip);
+        Dimension d = new Dimension(32, 32);
+        button.setMinimumSize(d);
+        button.setMaximumSize(d);
+        button.setPreferredSize(d);
+        button.setFocusable(false);
+        return button;
     }
 }

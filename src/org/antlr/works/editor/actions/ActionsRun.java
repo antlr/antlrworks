@@ -31,44 +31,38 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.actions;
 
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.stats.Statistics;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
+public class ActionsRun extends AbstractActions {
 
-public class MenuExport extends AbstractActions {
-
-    public MenuExport(EditorWindow editor) {
+    public ActionsRun(EditorWindow editor) {
         super(editor);
     }
 
-    public void exportEventsAsTextFile() {
-        if(XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "TXT", "Text file", false) == false)
-            return;
-
-        String file = XJFileChooser.shared().getSelectedFilePath();
-        if(file == null)
-            return;
-
-        StringBuffer text = new StringBuffer();
-        List events = editor.debugger.getEvents();
-        for(int i=0; i<events.size(); i++) {
-            text.append((i+1)+": "+events.get(i).toString()+"\n");
-        }
-
+    public void runInterpreter() {
         try {
-            FileWriter writer = new FileWriter(file);
-            writer.write(text.toString());
-            writer.close();
-        } catch (IOException e) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot save text file: "+file+"\nError: "+e);
+            Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_MENU);
+            editor.selectInterpreterTab();
+            editor.interpreter.interpret();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 
-        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_EVENTS_TEXT);
+    public void debug() {
+        editor.debugger.setBreakpoints(editor.editorGUI.gutter.getBreakpoints());
+        editor.debugger.launchLocalDebugger(false);
+    }
+
+    public void buildAndDebug() {
+        editor.debugger.setBreakpoints(editor.editorGUI.gutter.getBreakpoints());
+        editor.debugger.launchLocalDebugger(true);
+    }
+
+    public void debugRemote() {
+        editor.debugger.setBreakpoints(editor.editorGUI.gutter.getBreakpoints());
+        editor.debugger.launchRemoteDebugger();
     }
 
 }

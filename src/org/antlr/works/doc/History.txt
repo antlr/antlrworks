@@ -31,10 +31,12 @@ Version 1.0ea4 - 10/20/05
 - can now navigate backward/forward
 - rules have now icon in the tree view
 - go to rule now move the cursor to the beginning of the rule instead of selecting it
+- toolbar
 
 - prefs: auto-save every n minutes
 - prefs: syntax coloring parser delay
 - prefs: can now specify the colors of each type of token in the debugger input text panel
+- prefs: can specify rule folding (experimental yet)
 
 - fixed a bug where a new document created on Windows would not be correctly colorized
 - fixed several visual bugs on Windows and Linux

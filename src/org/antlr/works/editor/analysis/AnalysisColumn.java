@@ -43,11 +43,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AnalysisStrip extends JPanel {
+public class AnalysisColumn extends JPanel {
 
     protected EditorWindow editor;
     protected AnalysisBox analysisBox;
-    protected AnalysisStripOverlay overlay;
+    protected AnalysisColumnOverlay overlay;
 
     protected int topOffset = 30;
     protected int bottomOffset = 50;
@@ -55,13 +55,13 @@ public class AnalysisStrip extends JPanel {
     protected int numberOfErrors;
     protected int numberOfWarnings;
 
-    public AnalysisStrip(EditorWindow editor) {
+    public AnalysisColumn(EditorWindow editor) {
         this.editor = editor;
 
         setFocusable(false);
 
         analysisBox = new AnalysisBox();
-        overlay = new AnalysisStripOverlay(editor.getJFrame(), this);
+        overlay = new AnalysisColumnOverlay(editor.getJFrame(), this);
 
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseMoved(MouseEvent e) {
@@ -140,7 +140,7 @@ public class AnalysisStrip extends JPanel {
                 int index = getIndexOfFirstErrors(e.getPoint());                
                 if(index > -1) {
                     overlay.hide();
-                    AnalysisStrip.this.editor.setCaretPosition(index);
+                    AnalysisColumn.this.editor.setCaretPosition(index);
                 }
             }
 
@@ -248,7 +248,7 @@ public class AnalysisStrip extends JPanel {
         }
 
         public void paint(Graphics g) {
-            BorderFactory.createEtchedBorder().paintBorder(AnalysisStrip.this, g, r.x, r.y, r.width, r.height);
+            BorderFactory.createEtchedBorder().paintBorder(AnalysisColumn.this, g, r.x, r.y, r.width, r.height);
 
             if(activity)
                 g.setColor(color?Color.white:Color.yellow);

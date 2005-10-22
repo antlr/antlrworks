@@ -45,6 +45,7 @@ public class TipsManager {
     protected List providers = new ArrayList();
     protected TipsOverlay overlay;
     protected Token lastToken;
+    protected boolean enabled = true;
 
     public TipsManager() {
     }
@@ -57,7 +58,20 @@ public class TipsManager {
         providers.add(provider);
     }
 
+    public void setEnabled(boolean flag) {
+        this.enabled = flag;
+        if(!enabled)
+            hide();
+    }
+
+    public boolean enabled() {
+        return enabled;
+    }
+
     public void displayAnyTipsAvailable(Token token, ParserRule rule, ParserRule enclosingRule, Point location) {
+        if(!enabled)
+            return;
+
         if(location == null) {
             hide();
             return;
