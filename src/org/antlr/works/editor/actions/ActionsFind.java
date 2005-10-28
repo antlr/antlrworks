@@ -57,7 +57,7 @@ public class ActionsFind extends AbstractActions {
     }
 
     public void findUsage() {
-        Token token = editor.getTokenAtPosition(getCaretPosition());
+        Token token = editor.getCurrentToken();
         if(token == null)
             return;
 

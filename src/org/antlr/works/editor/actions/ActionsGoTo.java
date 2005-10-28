@@ -51,7 +51,7 @@ public class ActionsGoTo extends AbstractActions {
     }
 
     public void goToDeclaration() {
-        Token token = editor.getTokenAtPosition(getCaretPosition());
+        Token token = editor.getCurrentToken();
         if(token == null)
             return;
 

@@ -31,7 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.parser;
 
-public class Token implements Comparable {
+import org.antlr.works.editor.textpane.folding.Entity;
+
+public class Token implements Comparable, Entity {
 
     public int type;
 
@@ -44,6 +46,7 @@ public class Token implements Comparable {
 
     protected String attribute;
     protected boolean isAllUpperCase;
+    protected boolean expanded = true;
 
     public Token(int type, int start, int end, int line, int linePosition, String text) {
         this.type = type;
@@ -93,6 +96,38 @@ public class Token implements Comparable {
     public int compareTo(Object o) {
         Token otherToken = (Token)o;
         return this.getAttribute().compareTo(otherToken.getAttribute());
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    public void foldingEntitySetExpanded(boolean expanded) {
+        setExpanded(expanded);
+    }
+
+    public boolean foldingEntityIsExpanded() {
+        return isExpanded();
+    }
+
+    public int foldingEntityGetStartParagraphIndex() {
+        return getStartIndex();
+    }
+
+    public int foldingEntityGetStartIndex() {
+        return getStartIndex();
+    }
+
+    public int foldingEntityGetEndIndex() {
+        return getEndIndex();
+    }
+
+    public String getFoldedPlaceholderString() {
+        return "{...}";
     }
 
     public String toString() {

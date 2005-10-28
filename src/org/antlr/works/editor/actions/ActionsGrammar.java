@@ -34,16 +34,17 @@ package org.antlr.works.editor.actions;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.textpane.folding.Entity;
+import org.antlr.works.editor.textpane.folding.EntityProxy;
+import org.antlr.works.editor.textpane.folding.Provider;
 import org.antlr.works.editor.tool.TDecisionDFA;
-import org.antlr.works.parser.Parser;
-import org.antlr.works.parser.ParserGroup;
-import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
+import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
+import java.util.List;
 
-public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDecisionDFADelegate {
+public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDecisionDFADelegate, Provider {
 
     protected XJDialogProgress progress;
 
@@ -120,19 +121,34 @@ public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDec
         editor.endGroupChange();
     }
 
+    public void showAction() {
+    }
+
     public void hideAction() {
-        //editor.actions.hideAction();
-        Statistics.shared().recordEvent(Statistics.EVENT_HIDE_SINGLE_ACTION);
+        Token t = editor.getCurrentToken();
+        if(t.type == Lexer.TOKEN_BLOCK) {
+            editor.getTextPane().toggleFolding(new EntityProxy(this, t));
+        }
     }
 
     public void showAllActions() {
-        //editor.actions.showAllActions();
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_ALL_ACTIONS);
     }
 
     public void hideAllActions() {
-        //editor.actions.hideAllActions();
-        Statistics.shared().recordEvent(Statistics.EVENT_HIDE_ALL_ACTIONS);
+    }
+
+    public Entity getEntityForKey(Object key) {
+        List tokens = editor.getTokens();
+        if(tokens == null)
+            return null;
+
+        Token previous = (Token)key;
+        for(int i = 0; i<tokens.size(); i++) {
+            Token t = (Token)tokens.get(i);
+            if(t.equals(previous))
+                return t;
+        }
+        return null;
     }
 
     public void checkGrammar() {

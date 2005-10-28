@@ -46,6 +46,8 @@ import org.antlr.works.editor.idea.*;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.rules.RulesDelegate;
 import org.antlr.works.editor.textpane.EditorGutter;
+import org.antlr.works.editor.textpane.EditorTextPane;
+import org.antlr.works.editor.textpane.folding.EntityProxy;
 import org.antlr.works.editor.tips.TipsManager;
 import org.antlr.works.editor.tips.TipsOverlay;
 import org.antlr.works.editor.tips.TipsProvider;
@@ -226,7 +228,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return (Undo)undos.get(object);
     }
 
-    public JTextPane getTextPane() {
+    public EditorTextPane getTextPane() {
         return editorGUI.textPane;
     }
 
@@ -455,6 +457,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         }
     }
 
+    public Token getCurrentToken() {
+        return getTokenAtPosition(getCaretPosition());
+    }
+
     public Token getTokenAtPosition(int pos) {
         Iterator iterator = getTokens().iterator();
         while(iterator.hasNext()) {
@@ -491,6 +497,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void setCaretPosition(int position) {
+        ParserRule rule = rules.getEnclosingRuleAtPosition(position);
+        if(rule != null && !rule.isExpanded()) {
+            editorGUI.textPane.toggleFolding(new EntityProxy(rules, rule.name));
+            getGutter().repaint();
+        }
         editorGUI.textPane.setCaretPosition(position);
     }
 
@@ -732,7 +743,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         Token token = getTokenAtPosition(position);
         ParserRule rule = rules.getRuleStartingWithToken(token);
         ParserRule enclosingRule = rules.getEnclosingRuleAtPosition(position);
-        ideaManager.displayAnyIdeasAvailable(token, rule, enclosingRule);
+        if(enclosingRule == null || enclosingRule.isExpanded())
+            ideaManager.displayAnyIdeasAvailable(token, rule, enclosingRule);
     }
 
     public void ideaCreateRule(IdeaAction action) {

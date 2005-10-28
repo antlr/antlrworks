@@ -152,7 +152,7 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
         return moveRule(sourceRule, targetRule, dropLocation == XJTree.DROP_ABOVE);
     }
 
-    public Entity getEntityForKey(String key) {
+    public Entity getEntityForKey(Object key) {
         // @todo optimize later with a map
         if(parser.getRules() == null)
             return null;

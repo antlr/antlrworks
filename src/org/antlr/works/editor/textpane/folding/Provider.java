@@ -32,5 +32,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface Provider {
-    public Entity getEntityForKey(String key);
+    public Entity getEntityForKey(Object key);
 }

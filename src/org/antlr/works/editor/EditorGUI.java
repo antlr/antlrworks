@@ -483,6 +483,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         // Reset the shape because folding causes the view dimension to change
         analysisColumn.repaint();
         underlyingShape.reset();
+        editor.ideasHide();
+        editor.tipsHide();
     }
 
     public void editorTextPaneDidPaint(Graphics g) {

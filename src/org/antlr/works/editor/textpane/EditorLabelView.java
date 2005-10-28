@@ -1,7 +1,10 @@
 package org.antlr.works.editor.textpane;
 
+import org.antlr.works.editor.textpane.folding.Entity;
+
 import javax.swing.text.Element;
 import javax.swing.text.LabelView;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -35,6 +38,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorLabelView extends LabelView {
 
+    public final Color foldedColor = new Color(0.8f, 0.8f, 0.8f, 0.4f);
+
     public EditorLabelView(Element elem) {
         super(elem);
     }
@@ -43,29 +48,83 @@ public class EditorLabelView extends LabelView {
         return (EditorTextPane)getContainer();
     }
 
+    public Entity getEntity() {
+        return getEditorPane().getEntity(this);
+    }
+
     public boolean isVisible() {
         return getEditorPane().isViewVisible(this);
+    }
+
+    public float getInvisibleSpan(int axis) {
+        if(getStartOffset() == getEntity().foldingEntityGetStartIndex()) {
+            // This view is the first paragraph view for the collapsed rule.
+            // We adjust its size to display the placeholder.
+            if(axis == X_AXIS)
+                return 100;
+            else
+                // @todo replace by the real height of the font
+                return super.getPreferredSpan(axis);
+        } else {
+            // This view is not the first paragraph view for the collapsed rule.
+            // We simply set its size to 0 because we really don't want it to be
+            // visible nor to take any space.
+            return 0;
+        }
     }
 
     public float getPreferredSpan(int axis) {
         if(isVisible())
             return super.getPreferredSpan(axis);
         else
-            return 0;
+            return getInvisibleSpan(axis);
     }
 
     public float getMaximumSpan(int axis) {
         if(isVisible())
             return super.getMaximumSpan(axis);
         else
-            return 0;
+            return getInvisibleSpan(axis);
     }
 
     public float getMinimumSpan(int axis) {
         if(isVisible())
             return super.getMinimumSpan(axis);
         else
-            return 0;
+            return getInvisibleSpan(axis);
+    }
+
+    public void paint(Graphics g, Shape allocation) {
+        if(isVisible()) {
+            super.paint(g, allocation);
+        } else {
+            if(getStartOffset() == getEntity().foldingEntityGetStartIndex()) {
+                // Draw the placeholder only in the first rule paragraph. A rule
+                // may have multiple paragraphs view ;-)
+
+                Rectangle alloc = (allocation instanceof Rectangle) ?
+                        (Rectangle)allocation :
+                        allocation.getBounds();
+
+                FontMetrics fm = g.getFontMetrics();
+                String placeholder = getEntity().getFoldedPlaceholderString();
+
+                int x = alloc.x ;
+                int y = alloc.y + fm.getHeight() - fm.getDescent();
+
+                g.setColor(foldedColor);
+                g.fillRect(x, alloc.y, fm.stringWidth(placeholder), alloc.height);
+
+                g.setColor(Color.lightGray);
+                g.drawString(placeholder, x, y);
+            }
+        }
+
+        /*if(getEditorPane().isViewVisible(this))
+            g.setColor(Color.black);
+        else
+            g.setColor(Color.red);
+        g.drawRect(alloc.x+1, alloc.y+1, alloc.width-2, alloc.height-2);*/
     }
 
 }

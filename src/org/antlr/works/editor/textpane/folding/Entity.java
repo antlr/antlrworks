@@ -33,9 +33,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public interface Entity {
     public void foldingEntitySetExpanded(boolean expanded);
     public boolean foldingEntityIsExpanded();
+    public int foldingEntityGetStartParagraphIndex();
     public int foldingEntityGetStartIndex();
     public int foldingEntityGetEndIndex();
-    public String getFoldedLeftString();
     public String getFoldedPlaceholderString();
-    public String getFoldedRightString();
 }

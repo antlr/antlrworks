@@ -1,4 +1,5 @@
-WORKSHOP:
+- Java 1.5: Executors to reuse thread easily
+- make sure synchronized get method copy objects (if needed) - idem for setters
 - handle the complete rule definition as stated in slides
 - drag and drop doesn't work on Windows anymore
 

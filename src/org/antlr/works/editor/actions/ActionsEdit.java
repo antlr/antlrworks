@@ -70,21 +70,10 @@ public class ActionsEdit extends AbstractActions {
 
     public void performCutToClipboard() {
         getTextPane().getActionMap().get(DefaultEditorKit.cutAction).actionPerformed(null);
-/*        performCopyToClipboard();
-        try {
-            JTextPane tp = getTextPane();
-            tp.getDocument().remove(tp.getSelectionStart(), tp.getSelectionEnd()-tp.getSelectionStart());
-        } catch (BadLocationException e) {
-            e.printStackTrace();
-        }*/
     }
 
     public void performCopyToClipboard() {
         getTextPane().getActionMap().get(DefaultEditorKit.copyAction).actionPerformed(null);
-/*        JTextPane tp = getTextPane();
-        String text = editor.getText(tp.getSelectionStart(),
-                                                   tp.getSelectionEnd());
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);*/
     }
 
     public void performPasteFromClipboard() {

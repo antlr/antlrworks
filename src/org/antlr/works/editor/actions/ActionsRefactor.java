@@ -47,7 +47,7 @@ public class ActionsRefactor extends AbstractActions {
     }
 
     public void rename() {
-        Token token = editor.getTokenAtPosition(getCaretPosition());
+        Token token = editor.getCurrentToken();
         if(token == null)
             return;
 
@@ -73,7 +73,7 @@ public class ActionsRefactor extends AbstractActions {
     }
 
     public void replaceLiteralWithTokenLabel() {
-        Token token = editor.getTokenAtPosition(getCaretPosition());
+        Token token = editor.getCurrentToken();
         if(token == null)
             return;
 

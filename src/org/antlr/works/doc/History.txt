@@ -1,4 +1,8 @@
 
+Version 1.0ea5 - 10/27/05
+
+- improved rule folding
+
 Version 1.0ea4 - 10/22/05
 
 - find and replace

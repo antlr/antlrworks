@@ -259,23 +259,20 @@ public class ParserRule implements Comparable, Entity {
         return isExpanded();
     }
 
-    public int foldingEntityGetStartIndex() {
+    public int foldingEntityGetStartParagraphIndex() {
         return getStartIndex();
+    }
+
+    public int foldingEntityGetStartIndex() {
+        return start.getEndIndex()+1;
     }
 
     public int foldingEntityGetEndIndex() {
         return getEndIndex();
     }
 
-    public String getFoldedLeftString() {
-        return name+": ";
-    }
-
     public String getFoldedPlaceholderString() {
-        return "...";
+        return " : ... ;";
     }
 
-    public String getFoldedRightString() {
-        return " ;";
-    }
 }

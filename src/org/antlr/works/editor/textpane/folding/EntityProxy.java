@@ -34,9 +34,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class EntityProxy {
 
     protected Provider provider;
-    protected String key;
+    protected Object key;
 
-    public EntityProxy(Provider provider, String key) {
+    public EntityProxy(Provider provider, Object key) {
         this.provider = provider;
         this.key = key;
     }

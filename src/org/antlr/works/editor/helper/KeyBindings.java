@@ -59,11 +59,10 @@ public class KeyBindings {
         InputMap inputMap = textComponent.getInputMap();
 
         // HOME to move cursor to begin of line
-        KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0);
-        inputMap.put(key, DefaultEditorKit.beginLineAction);
+        addKeyBinding("HOME", KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), new GoToStartOfLine());
 
         // END to move cursor to end of line
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_END, 0);
+        KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_END, 0);
         inputMap.put(key, DefaultEditorKit.endLineAction);
     }
 
@@ -91,8 +90,7 @@ public class KeyBindings {
         inputMap.put(key, DefaultEditorKit.deleteNextCharAction);
 
         // Ctrl-a to move cursor to begin of line
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK);
-        inputMap.put(key, DefaultEditorKit.beginLineAction);
+        addKeyBinding("CONTROL_A", KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK), new GoToStartOfLine());
 
         // Ctrl-e to move cursor to end of line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK);
@@ -104,7 +102,7 @@ public class KeyBindings {
             public void actionPerformed(ActionEvent e) {
 
                 int start = textComponent.getCaretPosition();
-                String t = null;
+                String t;
                 try {
                     t = textComponent.getText(start, textComponent.getDocument().getLength()-start);
                 } catch (BadLocationException e1) {
@@ -130,5 +128,22 @@ public class KeyBindings {
     public void addKeyBinding(String name, KeyStroke keystroke, AbstractAction action) {
         textComponent.getActionMap().put(name, action);
         textComponent.getInputMap().put(keystroke, name);
+    }
+
+    public class GoToStartOfLine extends AbstractAction {
+
+        public void actionPerformed(ActionEvent e) {
+            int start = textComponent.getCaretPosition()-1;
+            String t = textComponent.getText();
+
+            while(start > 0 && t.charAt(start) != '\n' && t.charAt(start) != '\r') {
+                start--;
+            }
+
+            if(start != 0)
+                start++;
+
+            textComponent.setCaretPosition(start);
+        }
     }
 }

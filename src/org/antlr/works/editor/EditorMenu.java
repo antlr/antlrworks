@@ -61,15 +61,16 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_INSERT_TEMPLATE = 25;
     public static final int MI_GROUP = 26;
     public static final int MI_UNGROUP = 27;
-    public static final int MI_HIDE_ACTION = 28;
-    public static final int MI_SHOW_ALL_ACTION = 29;
-    public static final int MI_HIDE_ALL_ACTION = 30;
-    public static final int MI_CHECK_GRAMMAR = 31;
+    public static final int MI_SHOW_ACTION = 28;
+    public static final int MI_HIDE_ACTION = 29;
+    public static final int MI_SHOW_ALL_ACTION = 30;
+    public static final int MI_HIDE_ALL_ACTION = 31;
+    public static final int MI_CHECK_GRAMMAR = 32;
 
-    public static final int MI_FIND = 32;
-    public static final int MI_FIND_NEXT = 33;
-    public static final int MI_FIND_PREV = 34;
-    public static final int MI_SHOW_DECISION_DFA = 35;
+    public static final int MI_FIND = 33;
+    public static final int MI_FIND_NEXT = 34;
+    public static final int MI_FIND_PREV = 35;
+    public static final int MI_SHOW_DECISION_DFA = 36;
 
     public static final int MI_GOTO_RULE = 40;
     public static final int MI_GOTO_DECLARATION = 41;
@@ -280,10 +281,12 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
         menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
         menu.addSeparator();
-       /* menu.addItem(new XJMenuItem("Hide Action", '-', KeyEvent.VK_MINUS, MI_HIDE_ACTION, this));
+        menu.addItem(new XJMenuItem("Show Action", 's', KeyEvent.VK_PLUS, MI_SHOW_ACTION, this));
+        menu.addItem(new XJMenuItem("Hide Action", 'h', KeyEvent.VK_MINUS, MI_HIDE_ACTION, this));
+        menu.addSeparator();
         menu.addItem(new XJMenuItem("Show All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_SHOW_ALL_ACTION, this));
         menu.addItem(new XJMenuItem("Hide All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_HIDE_ALL_ACTION, this));
-        menu.addSeparator();*/
+        menu.addSeparator();
         menu.addItem(new XJMenuItem("Check Grammar", 'r', KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
 
         menubar.addCustomMenu(menu);
@@ -332,6 +335,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
             case MI_INSERT_TEMPLATE:
             case MI_GROUP:
             case MI_UNGROUP:
+            case MI_SHOW_ACTION:
             case MI_HIDE_ACTION:
             case MI_SHOW_ALL_ACTION:
             case MI_HIDE_ALL_ACTION:
@@ -460,6 +464,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_UNGROUP:
                 editor.actionsGrammar.ungroup();
+                break;
+
+            case MI_SHOW_ACTION:
+                editor.actionsGrammar.showAction();
                 break;
 
             case MI_HIDE_ACTION:

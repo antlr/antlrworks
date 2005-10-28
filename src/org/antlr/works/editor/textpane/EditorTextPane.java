@@ -42,7 +42,8 @@ import java.awt.*;
 
 public class EditorTextPane extends JTextPane
 {
-    protected static final String ATTRIBUTE_FOLDING_PROXY = "folding_proxy";
+    protected static final String ATTRIBUTE_CHARACTER_FOLDING_PROXY = "char_folding_proxy";
+    protected static final String ATTRIBUTE_PARAGRAPH_FOLDING_PROXY = "para_folding_proxy";
 
     protected EditorWindow editor;
     protected boolean wrap = false;
@@ -77,7 +78,11 @@ public class EditorTextPane extends JTextPane
     }
 
     public Entity getEntity(View v) {
-        Object value = v.getAttributes().getAttribute(EditorTextPane.ATTRIBUTE_FOLDING_PROXY);
+        Object value = null;
+        if(v instanceof EditorLabelView)
+            value = v.getAttributes().getAttribute(EditorTextPane.ATTRIBUTE_CHARACTER_FOLDING_PROXY);
+        else if(v instanceof EditorParagraphView)
+            value = v.getAttributes().getAttribute(EditorTextPane.ATTRIBUTE_PARAGRAPH_FOLDING_PROXY);
         if(value != null && value instanceof EntityProxy) {
             EntityProxy proxy =  (EntityProxy)value;
             return proxy.getEntity();
@@ -125,15 +130,25 @@ public class EditorTextPane extends JTextPane
     public void toggleFolding(EntityProxy proxy) {
         Entity fo = proxy.getEntity();
         int start = fo.foldingEntityGetStartIndex();
+        int startPara = fo.foldingEntityGetStartParagraphIndex();
         int end = fo.foldingEntityGetEndIndex();
         fo.foldingEntitySetExpanded(!fo.foldingEntityIsExpanded());
 
-        SimpleAttributeSet attr = new SimpleAttributeSet();
-        attr.addAttribute(ATTRIBUTE_FOLDING_PROXY, proxy);
+        SimpleAttributeSet paraAttr = new SimpleAttributeSet();
+        paraAttr.addAttribute(ATTRIBUTE_PARAGRAPH_FOLDING_PROXY, proxy);
+
+        SimpleAttributeSet charAttr = new SimpleAttributeSet();
+        charAttr.addAttribute(ATTRIBUTE_CHARACTER_FOLDING_PROXY, proxy);
+
         editor.disableTextPaneUndo();
-        ((EditorStyledDocument)getDocument()).setCharacterAttributes(start, end-start, attr, false);
-        ((EditorStyledDocument)getDocument()).setParagraphAttributes(start, end-start, attr, false);
+        ((EditorStyledDocument)getDocument()).setParagraphAttributes(startPara, end-startPara, paraAttr, false);
+        ((EditorStyledDocument)getDocument()).setCharacterAttributes(start, end-start, charAttr, false);
         editor.enableTextPaneUndo();
+
+        // Make sure to move the caret out of the collapsed zone
+        if(!proxy.getEntity().foldingEntityIsExpanded()
+                && getCaretPosition() >= start && getCaretPosition() <= end)
+            setCaretPosition(start-1);
 
         if(delegate != null)
             delegate.editorTextPaneDidFold();

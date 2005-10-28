@@ -40,7 +40,6 @@ public class EditorParagraphView extends ParagraphView {
 
     public Rectangle tempRect = new Rectangle();
     public final Color highlightColor = new Color(1.0f, 1.0f, 0.5f, 0.3f);
-    public final Color foldedColor = new Color(0.8f, 0.8f, 0.8f, 0.4f);
 
     public EditorParagraphView(Element elem) {
         super(elem);
@@ -63,128 +62,59 @@ public class EditorParagraphView extends ParagraphView {
                                          Shape a,
                                          int direction,
                                          Position.Bias[] biasRet)
-                          throws BadLocationException
+            throws BadLocationException
     {
+        pos = super.getNextVisualPositionFrom(pos, b, a, direction, biasRet);
         if(!isVisible()) {
             // If the paragraph view is not visible, make sure to jump
-            // at the start/end of the rule (because it is collapsed).
-            if(direction == SwingConstants.SOUTH)
-                return getEntity().foldingEntityGetEndIndex()+1;
-            if(direction == SwingConstants.NORTH)
-                return getEntity().foldingEntityGetStartIndex()-1;
+            // at the start/end of the entity (because it is collapsed).
+            if(pos > getEntity().foldingEntityGetStartIndex()
+                        && pos < getEntity().foldingEntityGetEndIndex())
+            {
+                // Position is in collapsed zone, move it out
+                if(direction == SwingConstants.NORTH || direction == SwingConstants.WEST)
+                    pos = getEntity().foldingEntityGetStartIndex();
+                else
+                    pos = getEntity().foldingEntityGetEndIndex();
+            }
         }
-
-        return super.getNextVisualPositionFrom(pos, b, a, direction, biasRet);
-    }
-
-    public float getAlignment(int axis) {
-        if(isVisible())
-            return super.getAlignment(axis);
-        else
-    	    return 0.0f;
-    }
-
-    public float getInvisibleSpan(int axis) {
-        if(getStartOffset() == getEntity().foldingEntityGetStartIndex()) {
-            // This view is the first paragraph view for the collapsed rule.
-            // We adjust its size to display the placeholder.
-            if(axis == X_AXIS)
-                return getWidth();
-            else
-            // @todo replace by the real height of the font
-                return 20;
-        } else {
-            // This view is not the first paragraph view for the collapsed rule.
-            // We simply set its size to 0 because we really don't want it to be
-            // visible nor to take any space.
-            return 0;
-        }
-    }
-
-    public float getPreferredSpan(int axis) {
-        if(isVisible())
-            return super.getPreferredSpan(axis);
-        else
-            return getInvisibleSpan(axis);
-    }
-
-    public float getMaximumSpan(int axis) {
-        if(isVisible())
-            return super.getMaximumSpan(axis);
-        else
-            return getInvisibleSpan(axis);
-    }
-
-    public float getMinimumSpan(int axis) {
-        if(isVisible())
-            return super.getMinimumSpan(axis);
-        else
-            return getInvisibleSpan(axis);
+        return pos;
     }
 
     public void paint(Graphics g, Shape allocation) {
-        if(isVisible()) {
-            // Paragraph visible, see if we should paint the
-            // underlying cursor line highlighting
-            if(getEditorPane().highlightCursorLine()) {
-                Rectangle alloc = (allocation instanceof Rectangle) ?
-                        (Rectangle)allocation :
-                        allocation.getBounds();
-                int n = getViewCount();
-                int x = alloc.x + getLeftInset();
-                int y = alloc.y + getTopInset();
 
-                Rectangle clip = g.getClipBounds();
-                int cursorPosition = getEditorPane().getCaretPosition()+1;
-                for (int i = 0; i < n; i++) {
-                    tempRect.x = x + getOffset(X_AXIS, i);
-                    tempRect.y = y + getOffset(Y_AXIS, i);
-                    tempRect.width = getSpan(X_AXIS, i);
-                    tempRect.height = getSpan(Y_AXIS, i);
-                    if (tempRect.intersects(clip)) {
-                        View v = getView(i);
-
-                        if (v.getStartOffset() < cursorPosition &&
-                                cursorPosition <= v.getEndOffset())
-                        {
-                            g.setColor(highlightColor);
-                            g.fillRect(tempRect.x, tempRect.y,
-                                    alloc.width, tempRect.height);
-                        }
-                        paintChild(g, tempRect, i);
-                    }
-                }
-            } else {
-                super.paint(g, allocation);
-            }
-        } else {
+        // Paragraph visible, see if we should paint the
+        // underlying cursor line highlighting
+        if(getEditorPane().highlightCursorLine()) {
             Rectangle alloc = (allocation instanceof Rectangle) ?
                     (Rectangle)allocation :
                     allocation.getBounds();
-
+            int n = getViewCount();
             int x = alloc.x + getLeftInset();
             int y = alloc.y + getTopInset();
-            if(getStartOffset() == getEntity().foldingEntityGetStartIndex()) {
-                // Draw the placeholder only in the first rule paragraph. A rule
-                // may have multiple paragraphs view ;-)
 
-                FontMetrics fm = g.getFontMetrics();
-                String leftString = getEntity().getFoldedLeftString();
-                String placeholder = getEntity().getFoldedPlaceholderString();
-                String rightString = getEntity().getFoldedRightString();
+            Rectangle clip = g.getClipBounds();
+            int cursorPosition = getEditorPane().getCaretPosition()+1;
+            for (int i = 0; i < n; i++) {
+                tempRect.x = x + getOffset(X_AXIS, i);
+                tempRect.y = y + getOffset(Y_AXIS, i);
+                tempRect.width = getSpan(X_AXIS, i);
+                tempRect.height = getSpan(Y_AXIS, i);
+                if (tempRect.intersects(clip)) {
+                    View v = getView(i);
 
-                g.setColor(Color.black);
-                g.drawString(leftString, x, y+fm.getHeight());
-
-                g.setColor(Color.lightGray);
-                g.drawString(placeholder, x+fm.stringWidth(leftString), y+fm.getHeight());
-
-                g.setColor(foldedColor);
-                g.fillRect(x+fm.stringWidth(leftString), y, fm.stringWidth(placeholder), alloc.height);
-
-                g.setColor(Color.black);
-                g.drawString(rightString, x+fm.stringWidth(leftString+placeholder), y+fm.getHeight());
+                    if (v.getStartOffset() < cursorPosition &&
+                            cursorPosition <= v.getEndOffset())
+                    {
+                        g.setColor(highlightColor);
+                        g.fillRect(tempRect.x, tempRect.y,
+                                alloc.width, tempRect.height);
+                    }
+                    paintChild(g, tempRect, i);
+                }
             }
-        }
+        } else
+            super.paint(g, allocation);
+
     }
 }
