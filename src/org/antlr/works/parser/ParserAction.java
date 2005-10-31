@@ -1,4 +1,6 @@
-package org.antlr.works.editor.textpane.folding;
+package org.antlr.works.parser;
+
+import org.antlr.works.editor.ate.ATEFoldingEntity;
 /*
 
 [The "BSD licence"]
@@ -30,11 +32,50 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface Entity {
-    public void foldingEntitySetExpanded(boolean expanded);
-    public boolean foldingEntityIsExpanded();
-    public int foldingEntityGetStartParagraphIndex();
-    public int foldingEntityGetStartIndex();
-    public int foldingEntityGetEndIndex();
-    public String getFoldedPlaceholderString();
+public class ParserAction implements ATEFoldingEntity {
+
+    public String ruleName;
+    public Token token;
+    public boolean expanded = true;
+
+    public ParserAction(String ruleName, Token token) {
+        this.ruleName = ruleName;
+        this.token = token;
+    }
+
+    public boolean equals(Object other) {
+        return this.token.equals(((ParserAction)other).token);
+    }
+
+    public void foldingEntitySetExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
+
+    public boolean foldingEntityIsExpanded() {
+        return expanded;
+    }
+
+    public boolean foldingEntityCanBeCollapsed() {
+        return true;
+    }
+
+    public int foldingEntityGetStartParagraphIndex() {
+        return token.start;
+    }
+
+    public int foldingEntityGetStartIndex() {
+        return token.start;
+    }
+
+    public int foldingEntityGetEndIndex() {
+        return token.end;
+    }
+
+    public String foldingEntityPlaceholderString() {
+        return "{...}";
+    }
+
+    public String foldingEntityIdentifier() {
+        return ruleName+token.getAttribute().hashCode();
+    }
 }

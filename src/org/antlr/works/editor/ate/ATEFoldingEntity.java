@@ -1,6 +1,4 @@
-package org.antlr.works.editor.textpane;
-
-import javax.swing.text.*;
+package org.antlr.works.editor.ate;
 /*
 
 [The "BSD licence"]
@@ -32,28 +30,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorCustomEditorKit extends StyledEditorKit implements ViewFactory {
+public interface ATEFoldingEntity {
 
-    public EditorCustomEditorKit() {
-    }
+    public String foldingEntityIdentifier();
 
-    public ViewFactory getViewFactory() {
-        return this;
-    }
+    public void foldingEntitySetExpanded(boolean expanded);
+    public boolean foldingEntityIsExpanded();
 
-    public Document createDefaultDocument() {
-        return new EditorStyledDocument();
-    }
+    public boolean foldingEntityCanBeCollapsed();
 
-    public View create(Element elem) {
-        String kind = elem.getName();
+    public int foldingEntityGetStartParagraphIndex();
+    public int foldingEntityGetStartIndex();
+    public int foldingEntityGetEndIndex();
 
-        if(AbstractDocument.ParagraphElementName.equals(kind))
-            return new EditorParagraphView(elem);
-
-        if(AbstractDocument.ContentElementName.equals(kind))
-            return new EditorLabelView(elem);
-
-        return super.getViewFactory().create(elem);
-    }
+    public String foldingEntityPlaceholderString();
 }

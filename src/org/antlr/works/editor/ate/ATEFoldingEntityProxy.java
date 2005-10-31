@@ -1,3 +1,5 @@
+package org.antlr.works.editor.ate;
+
 /*
 
 [The "BSD licence"]
@@ -29,11 +31,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.textpane;
+public class ATEFoldingEntityProxy {
 
-import java.awt.*;
+    protected ATEFoldingManager manager;
+    protected Object key;
+    protected int tag;
 
-public interface EditorTextPaneDelegate {
-    public void editorTextPaneDidPaint(Graphics g);
-    public void editorTextPaneDidFold();
+    public ATEFoldingEntityProxy(ATEFoldingManager manager, Object key, int tag) {
+        this.manager = manager;
+        this.key = key;
+        this.tag = tag;
+    }
+
+    public ATEFoldingEntity getEntity() {
+        return manager.getEntityForKey(key, tag);
+    }
 }

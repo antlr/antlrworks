@@ -1,9 +1,9 @@
-package org.antlr.works.editor.textpane;
-
-import org.antlr.works.editor.textpane.folding.Entity;
+package org.antlr.works.editor.ate;
 
 import javax.swing.text.Element;
 import javax.swing.text.LabelView;
+import javax.swing.text.Position;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 /*
 
@@ -36,19 +36,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorLabelView extends LabelView {
+public class ATELabelView extends LabelView {
 
     public final Color foldedColor = new Color(0.8f, 0.8f, 0.8f, 0.4f);
 
-    public EditorLabelView(Element elem) {
+    public ATELabelView(Element elem) {
         super(elem);
     }
 
-    public EditorTextPane getEditorPane() {
-        return (EditorTextPane)getContainer();
+    public ATETextPane getEditorPane() {
+        return (ATETextPane)getContainer();
     }
 
-    public Entity getEntity() {
+    public ATEFoldingEntity getEntity() {
         return getEditorPane().getEntity(this);
     }
 
@@ -63,14 +63,25 @@ public class EditorLabelView extends LabelView {
             if(axis == X_AXIS)
                 return 100;
             else
-                // @todo replace by the real height of the font
                 return super.getPreferredSpan(axis);
         } else {
             // This view is not the first paragraph view for the collapsed rule.
             // We simply set its size to 0 because we really don't want it to be
             // visible nor to take any space.
-            return 0;
+            if(axis == X_AXIS)
+                return 0;
+            else
+            // @todo 0 always except last view only if it is followed by a return
+                return 0; //super.getPreferredSpan(axis);
         }
+    }
+
+    public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
+        Shape s = super.modelToView(pos, a, b);
+        if(!isVisible()) {
+//            s = new Rectangle(0, 0, 100, 100);
+        }
+        return s;
     }
 
     public float getPreferredSpan(int axis) {
@@ -107,7 +118,7 @@ public class EditorLabelView extends LabelView {
                         allocation.getBounds();
 
                 FontMetrics fm = g.getFontMetrics();
-                String placeholder = getEntity().getFoldedPlaceholderString();
+                String placeholder = getEntity().foldingEntityPlaceholderString();
 
                 int x = alloc.x ;
                 int y = alloc.y + fm.getHeight() - fm.getDescent();
@@ -120,7 +131,15 @@ public class EditorLabelView extends LabelView {
             }
         }
 
-        /*if(getEditorPane().isViewVisible(this))
+        /*Rectangle alloc = (allocation instanceof Rectangle) ?
+                (Rectangle)allocation :
+                allocation.getBounds();
+
+        if(getEntity() == null)
+            g.setColor(Color.black);
+        else
+            g.setColor(Color.green);
+        if(getEditorPane().isViewVisible(this))
             g.setColor(Color.black);
         else
             g.setColor(Color.red);

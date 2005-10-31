@@ -110,6 +110,10 @@ public class ThreadedParser extends EditorThread {
             return (ParserRule)rules.get(index);
     }
 
+    public synchronized List getActions() {
+        return parser.actions;
+    }
+
     public synchronized List getTokens() {
         return parser.tokens;
     }
@@ -126,7 +130,23 @@ public class ThreadedParser extends EditorThread {
         awakeThread(delay);
     }
 
+    public void notifyWillParse() {
+        for(int i=0; i<observers.size(); i++) {
+            ThreadedParserObserver obs = (ThreadedParserObserver)observers.get(i);
+            obs.parserWillParse();
+        }
+    }
+
+    public void notifyDidParse() {
+        for(int i=0; i<observers.size(); i++) {
+            ThreadedParserObserver obs = (ThreadedParserObserver)observers.get(i);
+            obs.parserDidParse();
+        }
+    }
+
     public void threadRun() throws Exception {
+        notifyWillParse();
+        
 //        long t = System.currentTimeMillis();
         parser.parse(provider.getText());
         setParserAttribute(parser);
@@ -135,10 +155,7 @@ public class ThreadedParser extends EditorThread {
 
         SwingUtilities.invokeAndWait(new Runnable() {
             public void run() {
-                for(int i=0; i<observers.size(); i++) {
-                    ThreadedParserObserver obs = (ThreadedParserObserver)observers.get(i);
-                    obs.parserDidComplete();
-                }
+                notifyDidParse();
             }
         });
     }

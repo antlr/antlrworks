@@ -94,7 +94,7 @@ public class FindAndReplace implements XJFrameDelegate {
     }
 
     public void replace() {
-        editor.editorGUI.replaceSelectedText(replaceString);
+        editor.editorGUI.textEditor.replaceSelectedText(replaceString);
     }
 
     public void replaceAll() {

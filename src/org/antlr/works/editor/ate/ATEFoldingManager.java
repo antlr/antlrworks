@@ -1,5 +1,6 @@
-package org.antlr.works.editor.textpane.folding;
+package org.antlr.works.editor.ate;
 
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -31,6 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface Provider {
-    public Entity getEntityForKey(Object key);
+public abstract class ATEFoldingManager {
+    public abstract ATEFoldingEntityProxy createEntityProxy(ATEFoldingEntity entity);
+    public abstract ATEFoldingEntity getEntityForKey(Object key, int tag);
+    public abstract List getFoldingEntities();
+    public abstract void toggleFolding(ATEFoldingEntity entity);
 }

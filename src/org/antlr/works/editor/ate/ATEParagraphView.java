@@ -1,6 +1,4 @@
-package org.antlr.works.editor.textpane;
-
-import org.antlr.works.editor.textpane.folding.Entity;
+package org.antlr.works.editor.ate;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -36,20 +34,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorParagraphView extends ParagraphView {
+public class ATEParagraphView extends ParagraphView {
 
     public Rectangle tempRect = new Rectangle();
     public final Color highlightColor = new Color(1.0f, 1.0f, 0.5f, 0.3f);
 
-    public EditorParagraphView(Element elem) {
+    public ATEParagraphView(Element elem) {
         super(elem);
     }
 
-    public EditorTextPane getEditorPane() {
-        return (EditorTextPane)getContainer();
+    public ATETextPane getEditorPane() {
+        return (ATETextPane)getContainer();
     }
 
-    public Entity getEntity() {
+    public ATEFoldingEntity getEntity() {
         return getEditorPane().getEntity(this);
     }
 
@@ -80,6 +78,15 @@ public class EditorParagraphView extends ParagraphView {
         }
         return pos;
     }
+
+    /*public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
+        Shape s = super.modelToView(pos, a, b);
+        if(!isVisible()) {
+           // System.out.println(getStartOffset()+"/"+s.getBounds());
+//            s = new Rectangle(0, 0, 100, 100);
+        }
+        return s;
+    } */
 
     public void paint(Graphics g, Shape allocation) {
 

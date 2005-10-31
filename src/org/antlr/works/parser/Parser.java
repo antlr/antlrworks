@@ -41,11 +41,11 @@ public class Parser {
 
     protected Token currentToken;
 
-    public static final String ATTRIBUTE_FRAGMENT = "fragment";
     public static final String BEGIN_GROUP = "// $<";
     public static final String END_GROUP = "// $>";
 
     public static final List blockIdentifiers;
+    public static final List ruleModifiers;
     public static final List keywords;
 
     protected Lexer lexer;
@@ -53,6 +53,7 @@ public class Parser {
     public List rules = null;
     public List groups = null;
     public List blocks = null;
+    public List actions = null;
     public ParserName name = null;
 
     static {
@@ -61,12 +62,17 @@ public class Parser {
         blockIdentifiers.add("tokens");
         blockIdentifiers.add("header");
 
+        ruleModifiers = new ArrayList();
+        ruleModifiers.add("protected");
+        ruleModifiers.add("public");
+        ruleModifiers.add("private");
+        ruleModifiers.add("fragment");
+
         keywords = new ArrayList();
-        keywords.add("options");
-        keywords.add("tokens");
-        keywords.add("header");
-        //keywords.add("grammar");
-        keywords.add("fragment");
+        keywords.addAll(blockIdentifiers);
+        keywords.addAll(ruleModifiers);
+        keywords.add("returns");
+        keywords.add("init");
     }
 
     public Parser() {
@@ -76,6 +82,7 @@ public class Parser {
         rules = new ArrayList();
         groups = new ArrayList();
         blocks = new ArrayList();
+        actions = new ArrayList();
 
         lexer = new Lexer(text);
         tokens = lexer.parseTokens();
@@ -97,7 +104,7 @@ public class Parser {
                 continue;
             
             if(T(0).type == Lexer.TOKEN_ID) {
-                ParserRule rule = matchRule();
+                ParserRule rule = matchRule(actions);
                 if(rule != null)
                     rules.add(rule);
             } else if(T(0).type == Lexer.TOKEN_SINGLE_COMMENT) {
@@ -172,45 +179,63 @@ public class Parser {
             return null;
     }
 
-    public ParserRule matchRule() {
+    public ParserRule matchRule(List actions) {
+        // ("protected" | "public" | "private" | "fragment")? rulename_id '!'?
+        // ARG_ACTION? ("returns" ARG_ACTION)? throwsSpec? optionsSpec? ruleScopeSpec?
+        // ("init" ACTION)? ":" ... ";"
+
         Token start = T(0);
-        if(start == null)
+
+        // Match any modifiers
+        if(ruleModifiers.contains(T(0).getAttribute())) {
+            if(!nextToken())
+                return null;
+        }
+
+        // Match the name
+        String name = T(0).getAttribute();
+        if(!nextToken())
             return null;
 
-        String name = start.getAttribute();
-
-        if(start.getAttribute().equals(ATTRIBUTE_FRAGMENT)) {
-            nextToken();
-            name = T(0).getAttribute();
+        // Match any optional "!"
+        if(T(0).getAttribute().equals("!")) {
+            if(!nextToken())
+                return null;
         }
 
-        // Skip any comments
-        while(T(1) != null && (T(1).type == Lexer.TOKEN_SINGLE_COMMENT || T(1).type == Lexer.TOKEN_COMPLEX_COMMENT)) {
-            nextToken();
+        // Match any comments
+        while((T(0).type == Lexer.TOKEN_SINGLE_COMMENT || T(0).type == Lexer.TOKEN_COMPLEX_COMMENT)) {
+            if(!nextToken())
+                return null;
         }
 
-        // Make sure it is a rule
-        if(T(1) == null || T(1).type != Lexer.TOKEN_COLON) {
-            // @todo check for that but a rule name should always be followed by a colon ?
-            return null;
-        }
-
-        boolean colonFound = false;
-        while(nextToken()) {
-            if(T(0).type == Lexer.TOKEN_SEMI) {
-                break;
+        // Loop until a COLON is found (defining the beginning of the body of the rule)
+        if(T(0).type != Lexer.TOKEN_COLON) {
+            boolean colonFound = false;
+            while(nextToken()) {
+                if(T(0).type == Lexer.TOKEN_SEMI) {
+                    break;
+                }
+                if(T(0).type == Lexer.TOKEN_COLON) {
+                    colonFound = true;
+                    break;
+                }
             }
-            if(T(0).type == Lexer.TOKEN_COLON) {
-                colonFound = true;
-                break;
-            }
+            if(!colonFound)
+                return null;
         }
-        if(!colonFound)
-            return null;
 
         Token colonToken = T(0);
-
         while(nextToken()) {
+            // Match also all actions inside the rule
+            if(T(0).type == Lexer.TOKEN_BLOCK) {
+                Token t = T(-1);
+                if(t == null || !blockIdentifiers.contains(t.getAttribute().toLowerCase())) {
+                    // An action is a block not preceeded by a block identifier
+                    actions.add(new ParserAction(name, T(0)));
+                }
+            }
+
             if(T(0).type == Lexer.TOKEN_SEMI)
                 return new ParserRule(this, name, start, colonToken, T(0));
         }

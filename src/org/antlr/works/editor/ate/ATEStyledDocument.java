@@ -1,5 +1,3 @@
-package org.antlr.works.editor.textpane.folding;
-
 /*
 
 [The "BSD licence"]
@@ -31,17 +29,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EntityProxy {
+package org.antlr.works.editor.ate;
 
-    protected Provider provider;
-    protected Object key;
+import javax.swing.text.DefaultStyledDocument;
 
-    public EntityProxy(Provider provider, Object key) {
-        this.provider = provider;
-        this.key = key;
+public class ATEStyledDocument extends DefaultStyledDocument {
+
+    public void lock() {
+        super.writeLock();
     }
 
-    public Entity getEntity() {
-        return provider.getEntityForKey(key);
+    public void unlock() {
+        super.writeUnlock();
     }
 }

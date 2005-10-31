@@ -29,18 +29,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.textpane;
+package org.antlr.works.editor.ate;
 
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.textpane.folding.Entity;
-import org.antlr.works.editor.textpane.folding.EntityProxy;
 
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.View;
+import javax.swing.text.Element;
 import java.awt.*;
 
-public class EditorTextPane extends JTextPane
+public class ATETextPane extends JTextPane
 {
     protected static final String ATTRIBUTE_CHARACTER_FOLDING_PROXY = "char_folding_proxy";
     protected static final String ATTRIBUTE_PARAGRAPH_FOLDING_PROXY = "para_folding_proxy";
@@ -48,16 +47,16 @@ public class EditorTextPane extends JTextPane
     protected EditorWindow editor;
     protected boolean wrap = false;
     protected boolean highlightCursorLine = false;
-    protected EditorTextPaneDelegate delegate = null;
+    protected ATETextPaneDelegate delegate = null;
 
-    public EditorTextPane() {
-        super(new EditorStyledDocument());
-        setEditorKit(new EditorCustomEditorKit());
+    public ATETextPane() {
+        super(new ATEStyledDocument());
+        setEditorKit(new ATECustomEditorKit());
     }
 
-    public EditorTextPane(EditorWindow editor) {
-        super(new EditorStyledDocument());
-        setEditorKit(new EditorCustomEditorKit());
+    public ATETextPane(EditorWindow editor) {
+        super(new ATEStyledDocument());
+        setEditorKit(new ATECustomEditorKit());
         this.editor = editor;
     }
 
@@ -77,21 +76,29 @@ public class EditorTextPane extends JTextPane
         return highlightCursorLine;
     }
 
-    public Entity getEntity(View v) {
+    public ATEFoldingEntityProxy getEntityProxy(Element e) {
+        Object value = e.getAttributes().getAttribute(ATTRIBUTE_CHARACTER_FOLDING_PROXY);
+        if(value instanceof ATEFoldingEntityProxy) {
+            return (ATEFoldingEntityProxy)value;
+        } else
+            return null;
+    }
+
+    public ATEFoldingEntity getEntity(View v) {
         Object value = null;
-        if(v instanceof EditorLabelView)
-            value = v.getAttributes().getAttribute(EditorTextPane.ATTRIBUTE_CHARACTER_FOLDING_PROXY);
-        else if(v instanceof EditorParagraphView)
-            value = v.getAttributes().getAttribute(EditorTextPane.ATTRIBUTE_PARAGRAPH_FOLDING_PROXY);
-        if(value != null && value instanceof EntityProxy) {
-            EntityProxy proxy =  (EntityProxy)value;
+        if(v instanceof ATELabelView)
+            value = v.getAttributes().getAttribute(ATTRIBUTE_CHARACTER_FOLDING_PROXY);
+        else if(v instanceof ATEParagraphView)
+            value = v.getAttributes().getAttribute(ATTRIBUTE_PARAGRAPH_FOLDING_PROXY);
+        if(value instanceof ATEFoldingEntityProxy) {
+            ATEFoldingEntityProxy proxy =  (ATEFoldingEntityProxy)value;
             return proxy.getEntity();
         } else
             return null;
     }
 
     public boolean isViewVisible(View v) {
-        Entity entity = getEntity(v);
+        ATEFoldingEntity entity = getEntity(v);
         if(entity == null)
             return true;
         else
@@ -117,18 +124,18 @@ public class EditorTextPane extends JTextPane
         }
     }
 
-    public void setDelegate(EditorTextPaneDelegate delegate) {
+    public void setDelegate(ATETextPaneDelegate delegate) {
         this.delegate = delegate;
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if(delegate != null)
-            delegate.editorTextPaneDidPaint(g);
+            delegate.ateTextPaneDidPaint(g);
     }
 
-    public void toggleFolding(EntityProxy proxy) {
-        Entity fo = proxy.getEntity();
+    public void toggleFolding(ATEFoldingEntityProxy proxy) {
+        ATEFoldingEntity fo = proxy.getEntity();
         int start = fo.foldingEntityGetStartIndex();
         int startPara = fo.foldingEntityGetStartParagraphIndex();
         int end = fo.foldingEntityGetEndIndex();
@@ -141,8 +148,8 @@ public class EditorTextPane extends JTextPane
         charAttr.addAttribute(ATTRIBUTE_CHARACTER_FOLDING_PROXY, proxy);
 
         editor.disableTextPaneUndo();
-        ((EditorStyledDocument)getDocument()).setParagraphAttributes(startPara, end-startPara, paraAttr, false);
-        ((EditorStyledDocument)getDocument()).setCharacterAttributes(start, end-start, charAttr, false);
+        ((ATEStyledDocument)getDocument()).setParagraphAttributes(startPara, end-startPara, paraAttr, false);
+        ((ATEStyledDocument)getDocument()).setCharacterAttributes(start, end-start, charAttr, false);
         editor.enableTextPaneUndo();
 
         // Make sure to move the caret out of the collapsed zone
@@ -151,7 +158,7 @@ public class EditorTextPane extends JTextPane
             setCaretPosition(start-1);
 
         if(delegate != null)
-            delegate.editorTextPaneDidFold();
+            delegate.ateTextPaneDidFold();
     }
 
 }

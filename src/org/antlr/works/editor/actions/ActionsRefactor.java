@@ -67,7 +67,7 @@ public class ActionsRefactor extends AbstractActions {
         for(int index = tokens.size()-1; index>0; index--) {
             Token token = (Token) tokens.get(index);
             if(token.type == t.type && token.getAttribute().equals(attr)) {
-                editor.editorGUI.replaceText(token.getStartIndex(), token.getEndIndex(), name);
+                editor.editorGUI.textEditor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
             }
         }
     }
@@ -94,7 +94,7 @@ public class ActionsRefactor extends AbstractActions {
     public void replaceLiteralTokenWithTokenLabel(Token t, String name) {
         // First insert the rule at the end of the grammar
         int insertionIndex = editor.getText().length();
-        editor.editorGUI.insertText(insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
+        editor.editorGUI.textEditor.insertText(insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
 
         // Then rename all strings token
         List tokens = editor.getTokens();
@@ -107,7 +107,7 @@ public class ActionsRefactor extends AbstractActions {
             if(!token.getAttribute().equals(attr))
                 continue;
 
-            editor.editorGUI.replaceText(token.getStartIndex(), token.getEndIndex(), name);
+            editor.editorGUI.textEditor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
         }
     }
 
@@ -125,7 +125,7 @@ public class ActionsRefactor extends AbstractActions {
 
         editor.beginGroupChange("Remove Left Recursion");
         String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
-        editor.editorGUI.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
+        editor.editorGUI.textEditor.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
         editor.endGroupChange();
     }
 
@@ -136,7 +136,7 @@ public class ActionsRefactor extends AbstractActions {
             ParserRule rule = (ParserRule)rules.get(index);
             if(rule.hasLeftRecursion()) {
                 String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
-                editor.editorGUI.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);                
+                editor.editorGUI.textEditor.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);                
             }
         }
         editor.endGroupChange();

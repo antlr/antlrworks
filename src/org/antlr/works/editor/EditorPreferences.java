@@ -63,7 +63,7 @@ public class EditorPreferences {
     public static String DEFAULT_EDITOR_FONT;
     public static final int DEFAULT_EDITOR_FONT_SIZE = 12;
     public static final boolean DEFAULT_CONSOLE_SHOW = false;
-    public static final boolean DEFAULT_EDITOR_FOLDING = false;
+    public static final boolean DEFAULT_EDITOR_FOLDING = true;
     public static final int DEFAULT_PARSER_DELAY = 250;
 
     // Visualization

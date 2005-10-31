@@ -29,40 +29,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.actions;
+package org.antlr.works.editor.ate;
 
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.stats.Statistics;
+import java.awt.*;
 
-public class ActionsRun extends AbstractActions {
-
-    public ActionsRun(EditorWindow editor) {
-        super(editor);
-    }
-
-    public void runInterpreter() {
-        try {
-            Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_MENU);
-            editor.selectInterpreterTab();
-            editor.interpreter.interpret();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void debug() {
-        editor.debugger.setBreakpoints(editor.editorGUI.textEditor.gutter.getBreakpoints());
-        editor.debugger.launchLocalDebugger(false);
-    }
-
-    public void buildAndDebug() {
-        editor.debugger.setBreakpoints(editor.editorGUI.textEditor.gutter.getBreakpoints());
-        editor.debugger.launchLocalDebugger(true);
-    }
-
-    public void debugRemote() {
-        editor.debugger.setBreakpoints(editor.editorGUI.textEditor.gutter.getBreakpoints());
-        editor.debugger.launchRemoteDebugger();
-    }
-
+public interface ATETextPaneDelegate {
+    public void ateTextPaneDidPaint(Graphics g);
+    public void ateTextPaneDidFold();
 }

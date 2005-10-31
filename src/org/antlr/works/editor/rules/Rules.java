@@ -34,8 +34,7 @@ package org.antlr.works.editor.rules;
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
 import org.antlr.works.editor.helper.KeyBindings;
-import org.antlr.works.editor.textpane.folding.Entity;
-import org.antlr.works.editor.textpane.folding.Provider;
+import org.antlr.works.editor.ate.ATEFoldingEntity;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
@@ -60,7 +59,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
+public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     protected RulesDelegate delegate = null;
     protected ThreadedParser parser = null;
@@ -70,7 +69,6 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
     protected List hasLeftRecursionRules = null;
 
     protected boolean programmaticallySelectingRule = false;
-    protected boolean skipParseRules = false;
     protected boolean selectNextRule = false;
 
     protected JTextPane textPane;
@@ -80,8 +78,6 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
     protected DefaultTreeModel rulesTreeModel;
     protected List rulesTreeExpandedNodes;
 
-    protected Map rulesFoldingStateMap;
-
     public Rules(ThreadedParser parser, JTextPane textPane, XJTree rulesTree) {
         this.parser = parser;
         this.textPane = textPane;
@@ -90,7 +86,6 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
         duplicateRules = new ArrayList();
         undefinedTokens = new ArrayList();
         hasLeftRecursionRules = new ArrayList();
-        rulesFoldingStateMap = new HashMap();
 
         rulesTree.setDelegate(this);
         rulesTree.setEnableDragAndDrop();
@@ -152,7 +147,7 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
         return moveRule(sourceRule, targetRule, dropLocation == XJTree.DROP_ABOVE);
     }
 
-    public Entity getEntityForKey(Object key) {
+    public ATEFoldingEntity getEntityForKey(Object key) {
         // @todo optimize later with a map
         if(parser.getRules() == null)
             return null;
@@ -186,18 +181,6 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
                 selectNextRule = true;
             }
         }
-    }
-
-    public void setSkipParseRules(boolean flag) {
-        // @todo see if this is still used and valid
-        this.skipParseRules = flag;
-    }
-
-    public void parseRules() {
-        if(skipParseRules)
-            return;
-        storeRulesFoldingState();
-        parser.parse();
     }
 
     public void refreshRules() {
@@ -655,32 +638,12 @@ public class Rules implements ThreadedParserObserver, Provider, XJTreeDelegate {
         }
     }
 
-    public void storeRulesFoldingState() {
-        rulesFoldingStateMap.clear();
-        if(parser.getRules() == null)
-            return;
 
-        for(Iterator iter = parser.getRules().iterator(); iter.hasNext(); ) {
-            ParserRule rule = (ParserRule)iter.next();
-            rulesFoldingStateMap.put(rule.name, Boolean.valueOf(rule.isExpanded()));
-        }
+    public void parserWillParse() {
     }
 
-    public void restoreRulesFoldingState() {
-        if(parser.getRules() == null)
-            return;
-        
-        for(Iterator iter = parser.getRules().iterator(); iter.hasNext(); ) {
-            ParserRule rule = (ParserRule)iter.next();
-            Boolean expanded = (Boolean)rulesFoldingStateMap.get(rule.name);
-            if(expanded != null)
-                rule.setExpanded(expanded.booleanValue());
-        }
-    }
-
-    public void parserDidComplete() {
+    public void parserDidParse() {
         //long t = System.currentTimeMillis();
-        restoreRulesFoldingState();
         rebuildDuplicateRulesList();
         rebuildUndefinedTokensList();
         rebuildHasLeftRecursionRulesList();

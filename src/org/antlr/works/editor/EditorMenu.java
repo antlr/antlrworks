@@ -42,6 +42,7 @@ import java.awt.event.KeyEvent;
 
 public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
+    // Edit
     public static final int MI_EDIT_UNDO = 0;
     public static final int MI_EDIT_REDO = 1;
     public static final int MI_EDIT_CUT = 2;
@@ -53,25 +54,19 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_TOGGLE_NFA_OPTIMIZATION = 9;
     public static final int MI_TOGGLE_AUTOINDENT = 10;
 
-    public static final int MI_FIND_USAGE = 20;
-    public static final int MI_RENAME = 21;
-    public static final int MI_REPLACE_LITERAL_WITH_TOKEN_LABEL = 22;
-    public static final int MI_REMOVE_LEFT_RECURSION = 23;
-    public static final int MI_REMOVE_ALL_LEFT_RECURSION = 24;
-    public static final int MI_INSERT_TEMPLATE = 25;
-    public static final int MI_GROUP = 26;
-    public static final int MI_UNGROUP = 27;
-    public static final int MI_SHOW_ACTION = 28;
-    public static final int MI_HIDE_ACTION = 29;
-    public static final int MI_SHOW_ALL_ACTION = 30;
-    public static final int MI_HIDE_ALL_ACTION = 31;
-    public static final int MI_CHECK_GRAMMAR = 32;
+    // View
+    public static final int MI_EXPAND_COLLAPSE_RULE = 20;
+    public static final int MI_EXPAND_COLLAPSE_ACTION = 21;
+    public static final int MI_EXPAND_ALL_ACTION = 22;
+    public static final int MI_COLLAPSE_ALL_ACTION = 23;
 
-    public static final int MI_FIND = 33;
-    public static final int MI_FIND_NEXT = 34;
-    public static final int MI_FIND_PREV = 35;
-    public static final int MI_SHOW_DECISION_DFA = 36;
+    // Find
+    public static final int MI_FIND = 30;
+    public static final int MI_FIND_NEXT = 31;
+    public static final int MI_FIND_PREV = 32;
+    public static final int MI_FIND_USAGE = 33;
 
+    // Go To
     public static final int MI_GOTO_RULE = 40;
     public static final int MI_GOTO_DECLARATION = 41;
     public static final int MI_GOTO_LINE = 42;
@@ -81,35 +76,53 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_PREV_BREAKPOINT = 46;
     public static final int MI_NEXT_BREAKPOINT = 47;
 
-    public static final int MI_GENERATE_CODE = 50;
-    public static final int MI_SHOW_GENERATED_PARSER_CODE = 51;
-    public static final int MI_SHOW_GENERATED_LEXER_CODE = 52;
-    public static final int MI_SHOW_RULE_GENCODE = 53;
+    // Grammar
+    public static final int MI_SHOW_DECISION_DFA = 50;
+    public static final int MI_INSERT_TEMPLATE = 51;
+    public static final int MI_GROUP = 52;
+    public static final int MI_UNGROUP = 53;
+    public static final int MI_CHECK_GRAMMAR = 54;
 
-    public static final int MI_SAVE_AS_IMAGE = 54;
-    public static final int MI_SAVE_ANTLR_NFA_DOT = 55;
-    public static final int MI_SAVE_RAW_NFA_DOT = 56;
-    public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 57;
-    public static final int MI_EXPORT_EVENT = 58;
+    // Refactor
+    public static final int MI_RENAME = 60;
+    public static final int MI_REPLACE_LITERAL_WITH_TOKEN_LABEL = 61;
+    public static final int MI_REMOVE_LEFT_RECURSION = 62;
+    public static final int MI_REMOVE_ALL_LEFT_RECURSION = 63;
 
-    public static final int MI_RUN_INTERPRETER = 60;
-    public static final int MI_DEBUG = 61;
-    public static final int MI_BUILD_AND_DEBUG = 62;
-    public static final int MI_DEBUG_REMOTE = 63;
+    // Generate
+    public static final int MI_GENERATE_CODE = 70;
+    public static final int MI_SHOW_GENERATED_PARSER_CODE = 71;
+    public static final int MI_SHOW_GENERATED_LEXER_CODE = 72;
+    public static final int MI_SHOW_RULE_GENCODE = 73;
 
-    public static final int MI_P4_EDIT = 70;
-    public static final int MI_P4_ADD = 71;
-    public static final int MI_P4_DELETE = 72;
-    public static final int MI_P4_REVERT = 73;
-    public static final int MI_P4_SUBMIT = 74;
-    public static final int MI_P4_SYNC = 75;
+    // Run
+    public static final int MI_RUN_INTERPRETER = 80;
+    public static final int MI_DEBUG = 81;
+    public static final int MI_BUILD_AND_DEBUG = 82;
+    public static final int MI_DEBUG_REMOTE = 83;
 
-    public static final int MI_SUBMIT_STATS = 80;
-    public static final int MI_SEND_FEEDBACK = 81;
-    public static final int MI_CHECK_UPDATES = 82;
+    // SCM
+    public static final int MI_P4_EDIT = 90;
+    public static final int MI_P4_ADD = 91;
+    public static final int MI_P4_DELETE = 92;
+    public static final int MI_P4_REVERT = 93;
+    public static final int MI_P4_SUBMIT = 94;
+    public static final int MI_P4_SYNC = 95;
 
-    public static final int MI_PRIVATE_STATS = 100;
-    public static final int MI_PRIVATE_UNREGISTER = 101;
+    // Help
+    public static final int MI_SUBMIT_STATS = 100;
+    public static final int MI_SEND_FEEDBACK = 101;
+    public static final int MI_CHECK_UPDATES = 102;
+
+    // File Export
+    public static final int MI_SAVE_AS_IMAGE = 110;
+    public static final int MI_SAVE_ANTLR_NFA_DOT = 111;
+    public static final int MI_SAVE_RAW_NFA_DOT = 112;
+    public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 113;
+    public static final int MI_EXPORT_EVENT = 114;
+
+    public static final int MI_PRIVATE_STATS = 200;
+    public static final int MI_PRIVATE_UNREGISTER = 201;
 
     protected EditorWindow editor = null;
 
@@ -170,7 +183,8 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     }
 
     public void customizeMenuBar(XJMainMenuBar menubar) {
-        createMenuEdit(menubar);
+        createEditMenu(menubar);
+        createViewMenu(menubar);
         createFindMenu(menubar);
         createGoToMenu(menubar);
         createGrammarMenu(menubar);
@@ -281,12 +295,6 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
         menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show Action", 's', KeyEvent.VK_PLUS, MI_SHOW_ACTION, this));
-        menu.addItem(new XJMenuItem("Hide Action", 'h', KeyEvent.VK_MINUS, MI_HIDE_ACTION, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_SHOW_ALL_ACTION, this));
-        menu.addItem(new XJMenuItem("Hide All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_HIDE_ALL_ACTION, this));
-        menu.addSeparator();
         menu.addItem(new XJMenuItem("Check Grammar", 'r', KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
 
         menubar.addCustomMenu(menu);
@@ -305,7 +313,20 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menubar.addCustomMenu(menu);
     }
 
-    private void createMenuEdit(XJMainMenuBar menubar) {
+    private void createViewMenu(XJMainMenuBar menubar) {
+        XJMenu menu;
+        menu = new XJMenu();
+        menu.setTitle("View");
+        menu.addItem(new XJMenuItem("Expand/Collapse Rule", 'r', KeyEvent.VK_PERIOD, MI_EXPAND_COLLAPSE_RULE, this));
+        menu.addItem(new XJMenuItem("Expand/Collapse Action", 's', KeyEvent.VK_MINUS, MI_EXPAND_COLLAPSE_ACTION, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Expand All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EXPAND_ALL_ACTION, this));
+        menu.addItem(new XJMenuItem("Collapse All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_COLLAPSE_ALL_ACTION, this));
+
+        menubar.addCustomMenu(menu);
+    }
+
+    private void createEditMenu(XJMainMenuBar menubar) {
         XJMenu menu = new XJMenu();
         menu.setTitle("Edit");
         menu.addItem(menuItemUndo = new XJMenuItem("Undo", 'z', KeyEvent.VK_Z, MI_EDIT_UNDO, this));
@@ -335,10 +356,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
             case MI_INSERT_TEMPLATE:
             case MI_GROUP:
             case MI_UNGROUP:
-            case MI_SHOW_ACTION:
-            case MI_HIDE_ACTION:
-            case MI_SHOW_ALL_ACTION:
-            case MI_HIDE_ALL_ACTION:
+            case MI_EXPAND_COLLAPSE_RULE:
+            case MI_EXPAND_COLLAPSE_ACTION:
+            case MI_EXPAND_ALL_ACTION:
+            case MI_COLLAPSE_ALL_ACTION:
             case MI_CHECK_GRAMMAR:
             case MI_FIND:
             case MI_RUN_INTERPRETER:
@@ -372,6 +393,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
         editor.handleMenuEvent(menu, item);
         handleMenuEdit(item.getTag());
+        handleMenuView(item.getTag());
         handleMenuFind(item.getTag());
         handleMenuGrammar(item.getTag());
         handleMenuRefactor(item.getTag());
@@ -428,6 +450,26 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         }
     }
 
+    public void handleMenuView(int itemTag) {
+        switch(itemTag) {
+            case MI_EXPAND_COLLAPSE_RULE:
+                editor.actionsView.expandCollapseRule();
+                break;
+
+            case MI_EXPAND_COLLAPSE_ACTION:
+                editor.actionsView.expandCollapseAction();
+                break;
+
+            case MI_EXPAND_ALL_ACTION:
+                editor.actionsView.expandAllActions();
+                break;
+
+            case MI_COLLAPSE_ALL_ACTION:
+                editor.actionsView.collapseAllActions();
+                break;
+        }
+    }
+
     public void handleMenuFind(int itemTag) {
         switch(itemTag) {
             case MI_FIND:
@@ -464,22 +506,6 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_UNGROUP:
                 editor.actionsGrammar.ungroup();
-                break;
-
-            case MI_SHOW_ACTION:
-                editor.actionsGrammar.showAction();
-                break;
-
-            case MI_HIDE_ACTION:
-                editor.actionsGrammar.hideAction();
-                break;
-
-            case MI_SHOW_ALL_ACTION:
-                editor.actionsGrammar.showAllActions();
-                break;
-
-            case MI_HIDE_ALL_ACTION:
-                editor.actionsGrammar.hideAllActions();
                 break;
 
             case MI_CHECK_GRAMMAR:

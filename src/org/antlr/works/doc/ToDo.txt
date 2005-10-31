@@ -1,3 +1,7 @@
+- EditorGutter: make a separate list of marker for the folding
+- EditorGutter: handle also collapsing using the bottom anchor
+- expand if mouse click in collapsed zone
+
 - Java 1.5: Executors to reuse thread easily
 - make sure synchronized get method copy objects (if needed) - idem for setters
 - handle the complete rule definition as stated in slides

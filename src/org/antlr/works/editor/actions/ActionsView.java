@@ -1,3 +1,9 @@
+package org.antlr.works.editor.actions;
+
+import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.parser.ParserAction;
+
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -29,17 +35,39 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.textpane;
+public class ActionsView extends AbstractActions {
 
-import javax.swing.text.DefaultStyledDocument;
-
-public class EditorStyledDocument extends DefaultStyledDocument {
-
-    public void lock() {
-        super.writeLock();
+    public ActionsView(EditorWindow editor) {
+        super(editor);
     }
 
-    public void unlock() {
-        super.writeUnlock();
+    public void expandCollapseAction() {
+        editor.foldingManager.toggleFolding(editor.getCurrentAction());
     }
+
+    public void expandCollapseRule() {
+        editor.foldingManager.toggleFolding(editor.getCurrentRule());
+    }
+
+    public void expandAllActions() {
+        expandCollapseAllActions(true);
+    }
+
+    public void collapseAllActions() {
+        expandCollapseAllActions(false);
+    }
+
+    public void expandCollapseAllActions(boolean expand) {
+        List actions = editor.getActions();
+        if(actions == null)
+            return;
+
+        for(int i = 0; i<actions.size(); i++) {
+            ParserAction action = (ParserAction)actions.get(i);
+            if(!action.foldingEntityIsExpanded() != expand) {
+                editor.foldingManager.toggleFolding(action);
+            }
+        }
+    }
+
 }

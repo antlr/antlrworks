@@ -33,7 +33,7 @@ package org.antlr.works.editor.tool;
 
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.helper.EditorThread;
-import org.antlr.works.editor.textpane.EditorStyledDocument;
+import org.antlr.works.editor.ate.ATEStyledDocument;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Token;
 
@@ -111,7 +111,7 @@ public class TColorize extends EditorThread {
         adjustTokens();
         // skip any job in the thread to be executed
         // because colorize() has been called probably a while ago
-        // in the parserDidComplete() method of EditorWindow
+        // in the parserDidParse() method of EditorWindow
         skip();
     }
 
@@ -210,7 +210,7 @@ public class TColorize extends EditorThread {
             return;
 
         editor.disableTextPane(true);
-        EditorStyledDocument doc = (EditorStyledDocument) editor.getTextPane().getDocument();
+        ATEStyledDocument doc = (ATEStyledDocument) editor.getTextPane().getDocument();
         doc.lock();
 
         try {

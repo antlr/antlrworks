@@ -32,5 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.parser;
 
 public interface ThreadedParserObserver {
-    public void parserDidComplete();
+    public void parserWillParse();
+    public void parserDidParse();
 }

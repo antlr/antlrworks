@@ -1,3 +1,6 @@
+package org.antlr.works.editor.ate;
+
+import javax.swing.text.*;
 /*
 
 [The "BSD licence"]
@@ -29,40 +32,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.actions;
+public class ATECustomEditorKit extends StyledEditorKit implements ViewFactory {
 
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.stats.Statistics;
-
-public class ActionsRun extends AbstractActions {
-
-    public ActionsRun(EditorWindow editor) {
-        super(editor);
+    public ATECustomEditorKit() {
     }
 
-    public void runInterpreter() {
-        try {
-            Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_MENU);
-            editor.selectInterpreterTab();
-            editor.interpreter.interpret();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public ViewFactory getViewFactory() {
+        return this;
     }
 
-    public void debug() {
-        editor.debugger.setBreakpoints(editor.editorGUI.textEditor.gutter.getBreakpoints());
-        editor.debugger.launchLocalDebugger(false);
+    public Document createDefaultDocument() {
+        return new ATEStyledDocument();
     }
 
-    public void buildAndDebug() {
-        editor.debugger.setBreakpoints(editor.editorGUI.textEditor.gutter.getBreakpoints());
-        editor.debugger.launchLocalDebugger(true);
-    }
+    public View create(Element elem) {
+        String kind = elem.getName();
 
-    public void debugRemote() {
-        editor.debugger.setBreakpoints(editor.editorGUI.textEditor.gutter.getBreakpoints());
-        editor.debugger.launchRemoteDebugger();
-    }
+        if(AbstractDocument.ParagraphElementName.equals(kind))
+            return new ATEParagraphView(elem);
 
+        if(AbstractDocument.ContentElementName.equals(kind))
+            return new ATELabelView(elem);
+
+        return super.getViewFactory().create(elem);
+    }
 }

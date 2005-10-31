@@ -34,17 +34,16 @@ package org.antlr.works.editor.actions;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.textpane.folding.Entity;
-import org.antlr.works.editor.textpane.folding.EntityProxy;
-import org.antlr.works.editor.textpane.folding.Provider;
 import org.antlr.works.editor.tool.TDecisionDFA;
-import org.antlr.works.parser.*;
+import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserGroup;
+import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
-import java.util.List;
 
-public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDecisionDFADelegate, Provider {
+public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDecisionDFADelegate {
 
     protected XJDialogProgress progress;
 
@@ -82,10 +81,10 @@ public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDec
             editor.beginGroupChange("Group");
 
             int end = editor.getTextPane().getSelectionEnd();
-            editor.editorGUI.insertText(end+1, "\n"+Parser.END_GROUP+"\n");
+            editor.editorGUI.textEditor.insertText(end+1, "\n"+Parser.END_GROUP+"\n");
 
             int start = editor.getTextPane().getSelectionStart();
-            editor.editorGUI.insertText(start-1, "\n"+Parser.BEGIN_GROUP+s+"\n");
+            editor.editorGUI.textEditor.insertText(start-1, "\n"+Parser.BEGIN_GROUP+s+"\n");
 
             editor.endGroupChange();
         }
@@ -112,43 +111,13 @@ public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDec
             // End of file is considered as a closing group but no group really exists
             // for that purpose
             Token t = closingGroup.token;
-            editor.editorGUI.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
+            editor.editorGUI.textEditor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
         }
 
         Token t = openGroup.token;
-        editor.editorGUI.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
+        editor.editorGUI.textEditor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
 
         editor.endGroupChange();
-    }
-
-    public void showAction() {
-    }
-
-    public void hideAction() {
-        Token t = editor.getCurrentToken();
-        if(t.type == Lexer.TOKEN_BLOCK) {
-            editor.getTextPane().toggleFolding(new EntityProxy(this, t));
-        }
-    }
-
-    public void showAllActions() {
-    }
-
-    public void hideAllActions() {
-    }
-
-    public Entity getEntityForKey(Object key) {
-        List tokens = editor.getTokens();
-        if(tokens == null)
-            return null;
-
-        Token previous = (Token)key;
-        for(int i = 0; i<tokens.size(); i++) {
-            Token t = (Token)tokens.get(i);
-            if(t.equals(previous))
-                return t;
-        }
-        return null;
     }
 
     public void checkGrammar() {
@@ -166,4 +135,5 @@ public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDec
     protected void hideProgress() {
         progress.close();
     }
+
 }

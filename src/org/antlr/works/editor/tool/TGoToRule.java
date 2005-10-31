@@ -125,7 +125,10 @@ public class TGoToRule extends OverlayObject {
         List rules = editor.rules.getRulesStartingWith(ruleNameField.getText());
         if(rules.isEmpty()) {
             matchingRuleScrollPane.setVisible(false);
+            ruleNameField.setForeground(Color.red);
             return;
+        } else {
+            ruleNameField.setForeground(Color.black);            
         }
 
         for(Iterator iter = rules.iterator(); iter.hasNext(); ) {

@@ -78,7 +78,9 @@ public class Lexer {
             else if(C(0) == '/' && C(1) == '*')
                 token = matchComplexComment();
             else if(C(0) == '{')
-                token = matchBlock();
+                token = matchBlock('{', '}');
+            else if(C(0) == '[')
+                token = matchBlock('[', ']');
             else if(C(0) == ':')
                 token = createNewToken(TOKEN_COLON);
             else if(C(0) == ';')
@@ -142,7 +144,7 @@ public class Lexer {
         return createNewToken(TOKEN_COMPLEX_COMMENT, sp, position);
     }
 
-    public Token matchBlock() {
+    public Token matchBlock(char start, char end) {
         // Skip all strings, comments and embedded blocks
         int sp = position;
         int embedded = 0;
@@ -155,9 +157,9 @@ public class Lexer {
                 matchSingleComment();
             } else if(C(0) == '/' && C(1) == '*') {
                 matchComplexComment();
-            } else if(C(0) == '{') {
+            } else if(C(0) == start) {
                 embedded++;
-            } else if(C(0) == '}') {
+            } else if(C(0) == end) {
                 if(embedded == 0)
                     return createNewToken(TOKEN_BLOCK, sp);
                 else

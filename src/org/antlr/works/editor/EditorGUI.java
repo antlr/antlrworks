@@ -35,12 +35,9 @@ import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.dialog.DialogPrefs;
-import org.antlr.works.editor.analysis.AnalysisColumn;
 import org.antlr.works.editor.rules.Rules;
-import org.antlr.works.editor.swing.TextUtils;
-import org.antlr.works.editor.textpane.EditorGutter;
-import org.antlr.works.editor.textpane.EditorTextPane;
-import org.antlr.works.editor.textpane.EditorTextPaneDelegate;
+import org.antlr.works.editor.ate.ATETextPaneDelegate;
+import org.antlr.works.editor.ate.ATEPanel;
 import org.antlr.works.editor.tool.TAutoIndent;
 import org.antlr.works.editor.tool.TImmediateColorization;
 import org.antlr.works.editor.undo.Undo;
@@ -50,12 +47,7 @@ import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
 
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -65,14 +57,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTextPaneDelegate {
+public class EditorGUI implements UndoDelegate, XJNotificationObserver, ATETextPaneDelegate {
 
     public EditorWindow editor;
 
-    public EditorGutter gutter;
-    public AnalysisColumn analysisColumn;
-
-    public JScrollPane textScrollPane;
 
     public JScrollPane rulesScrollPane;
     public XJTree rulesTree;
@@ -89,22 +77,13 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
     public JSplitPane upDownSplitPane;
 
     public EditorToolbar toolbar;
-    public EditorTextPane textPane;
-    public TextPaneListener textPaneListener;
-
-    public String lastSelectedRule;
-
-    public static final String unixEndOfLine = "\n";
+    public ATEPanel textEditor;
 
     protected TImmediateColorization immediateColorization;
     protected TAutoIndent autoIndent;
 
-    protected boolean highlightCursorLine = false;
-    protected boolean isTyping = false;
     protected UnderlyingShape underlyingShape = new UnderlyingShape();
     protected boolean underlying = true;
-
-    protected static int ANALYSIS_COLUMN_WIDTH = 18;
 
     public EditorGUI(EditorWindow editor) {
         this.editor = editor;
@@ -116,23 +95,12 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         r.height *= 0.75;
         editor.getRootPane().setPreferredSize(r.getSize());
 
-        createTextPane();
+        textEditor = new ATEPanel(editor);
+        textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
+        textEditor.textPane.setDelegate(this);
 
-        immediateColorization = new TImmediateColorization(textPane);
-        autoIndent = new TAutoIndent(textPane);
-
-        highlightCursorLine = EditorPreferences.getHighlightCursorEnabled();
-
-        // Set by default the end of line property in order to always use the Unix style
-        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, unixEndOfLine);
-        textPane.setDelegate(this);
-
-        gutter = new EditorGutter(textPane);
-        gutter.setFolding(EditorPreferences.getFoldingEnabled());
-        
-        textScrollPane = new JScrollPane(textPane);
-        textScrollPane.setWheelScrollingEnabled(true);
-        textScrollPane.setRowHeaderView(gutter);
+        immediateColorization = new TImmediateColorization(textEditor.textPane);
+        autoIndent = new TAutoIndent(textEditor.textPane);
 
         rulesTree = new XJTree() {
             public String getToolTipText(MouseEvent e) {
@@ -162,16 +130,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         rulesScrollPane.setPreferredSize(new Dimension(200, 0));
         rulesScrollPane.setWheelScrollingEnabled(true);
 
-        // Assemble right text pane
-        analysisColumn = new AnalysisColumn(editor);
-        analysisColumn.setMinimumSize(new Dimension(ANALYSIS_COLUMN_WIDTH, 0));
-        analysisColumn.setMaximumSize(new Dimension(ANALYSIS_COLUMN_WIDTH, Integer.MAX_VALUE));
-        analysisColumn.setPreferredSize(new Dimension(ANALYSIS_COLUMN_WIDTH, analysisColumn.getPreferredSize().height));
-
-        Box rightPaneBox = Box.createHorizontalBox();
-        rightPaneBox.add(textScrollPane);
-        rightPaneBox.add(analysisColumn);
-
         // Assemble
 
         viewTabbedPane = new JTabbedPane();
@@ -182,7 +140,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         rulesTextSplitPane.setBorder(null);
         rulesTextSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         rulesTextSplitPane.setLeftComponent(rulesScrollPane);
-        rulesTextSplitPane.setRightComponent(rightPaneBox);
+        rulesTextSplitPane.setRightComponent(textEditor);
         rulesTextSplitPane.setContinuousLayout(true);
         rulesTextSplitPane.setPreferredSize(new Dimension(0, 400));
         rulesTextSplitPane.setOneTouchExpandable(true);
@@ -241,55 +199,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 
-    public void createTextPane() {
-        textPane = new EditorTextPane(editor);
-        textPane.setBackground(Color.white);
-        textPane.setBorder(null);
-
-        textPane.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
-
-        applyFont();
-        textPane.setWordWrap(false);
-
-        textPaneListener = new TextPaneListener();
-        textPane.getDocument().addDocumentListener(textPaneListener);
-
-        textPane.addCaretListener(new TextPaneCaretListener());
-
-        textPane.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent event) {
-                if(event.getKeyCode() == KeyEvent.VK_C && (event.isMetaDown() || event.isControlDown())) {
-                    editor.actionsEdit.performCopyToClipboard();
-                    event.consume();
-                }
-
-                if(event.getKeyCode() == KeyEvent.VK_X && (event.isMetaDown() || event.isControlDown())) {
-                    editor.actionsEdit.performCutToClipboard();
-                    event.consume();
-                }
-            }
-        });
-
-        textPane.addMouseListener(new TextPaneMouseAdapter());
-        textPane.addMouseMotionListener(new TextPaneMouseMotionAdapter());
-
-        textPane.addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
-                Dimension d = textPane.getSize();
-                d.width = 25;
-                gutter.setPreferredSize(d);
-            }
-        });
-    }
-
-    public void toggleAnalysis() {
-        analysisColumn.setVisible(!analysisColumn.isVisible());
-        if(analysisColumn.isVisible())
-            analysisColumn.setPreferredSize(new Dimension(ANALYSIS_COLUMN_WIDTH, 0));
-        else
-            analysisColumn.setPreferredSize(new Dimension(0, 0));
-    }
-
     public void setUnderlying(boolean flag) {
         this.underlying = flag;
     }
@@ -298,13 +207,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
         return underlying;
     }
 
-    public void setIsTyping(boolean flag) {
-        isTyping = flag;
-    }
-
-    public boolean isTyping() {
-        return isTyping;
-    }
 
     public void setAutoIndent(boolean flag) {
         autoIndent.setEnabled(flag);
@@ -312,15 +214,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
 
     public boolean autoIndent() {
         return autoIndent.enabled();
-    }
-
-    public void applyFont() {
-        textPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
-        TextUtils.createTabs(textPane);
-    }
-
-    public int getCaretPosition() {
-        return textPane.getCaretPosition();
     }
 
     public int getCurrentLinePosition() {
@@ -334,49 +227,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
             return 1;
         else
             return editor.getCaretPosition() - linePosition.x + 1;
-    }
-
-    public int getSelectionStart() {
-        return textPane.getSelectionStart();
-    }
-
-    public int getSelectionEnd() {
-        return textPane.getSelectionEnd();
-    }
-
-    public void insertText(int index, String text) {
-        try {
-            textPane.getDocument().insertString(index, text, null);
-        } catch (BadLocationException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void replaceSelectedText(String replace) {
-        replaceText(getSelectionStart(), getSelectionEnd(), replace);
-    }
-
-    public void replaceText(int start, int end, String text) {
-        try {
-            textPane.getDocument().remove(start, end-start);
-            textPane.getDocument().insertString(start, text, null);
-        } catch (BadLocationException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void selectTextRange(int start, int end) {
-        textPane.setCaretPosition(start);
-        textPane.moveCaretPosition(end);
-        textPane.getCaret().setSelectionVisible(true);
-
-        Rectangle r;
-        try {
-            r = textPane.modelToView(start);
-            textPane.scrollRectToVisible(r);
-        } catch (BadLocationException e) {
-            e.printStackTrace();
-        }
     }
 
     public void updateInformation() {
@@ -452,13 +302,11 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
 
     public void notificationFire(Object source, String name) {
         if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
-            highlightCursorLine = EditorPreferences.getHighlightCursorEnabled();
-            gutter.setFolding(EditorPreferences.getFoldingEnabled());
-            textPane.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
-            applyFont();
-            textScrollPane.repaint();
+            textEditor.gutter.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
+            textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
+            textEditor.applyFont();
+            textEditor.repaint();
             editor.getMainMenuBar().refreshState();
-            textPane.repaint();
             underlyingShape.reset();
             updateSCMStatus(null);
         }
@@ -471,23 +319,23 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
     }
 
     public void parserDidComplete() {
-        setIsTyping(false);
+        textEditor.setIsTyping(false);
         updateInformation();
         updateCursorInfo();
-        analysisColumn.repaint();
+        textEditor.analysisColumn.repaint();
         underlyingShape.reset();
-        textPane.repaint();
+        textEditor.textPane.repaint();
     }
 
-    public void editorTextPaneDidFold() {
+    public void ateTextPaneDidFold() {
         // Reset the shape because folding causes the view dimension to change
-        analysisColumn.repaint();
+        textEditor.analysisColumn.repaint();
         underlyingShape.reset();
         editor.ideasHide();
         editor.tipsHide();
     }
 
-    public void editorTextPaneDidPaint(Graphics g) {
+    public void ateTextPaneDidPaint(Graphics g) {
         if(editor.getTokens() == null || !underlying)
             return;
 
@@ -500,7 +348,7 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
             return;
         }
 
-        if(isTyping())
+        if(textEditor.isTyping())
             return;
 
         underlyingShape.begin();
@@ -531,8 +379,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
 
     public void drawUnderlineAtIndexes(Graphics g, Color c, int start, int end) {
         try {
-            Rectangle r1 = textPane.modelToView(start);
-            Rectangle r2 = textPane.modelToView(end);
+            Rectangle r1 = textEditor.textPane.modelToView(start);
+            Rectangle r2 = textEditor.textPane.modelToView(end);
 
             g.setColor(c);
 
@@ -659,113 +507,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, EditorTe
             // focus lost can be, for example, when opening a menu on Windows/Linux.
             if(!event.isTemporary())
                 updateUndoRedo(null);
-        }
-    }
-
-    protected class TextPaneCaretListener implements CaretListener {
-
-        public void caretUpdate(CaretEvent e) {
-            updateCursorInfo();
-            if(textPane.hasFocus()) {
-                editor.ideasHide();
-                if(!isTyping())
-                    editor.displayIdeas(getCaretPosition());
-            }
-
-            // Each time the cursor moves, update the visible part of the text pane
-            // to redraw the highlighting
-            if(highlightCursorLine)
-                editor.getTextPane().repaint();
-
-            // Update the auto-completion list
-            editor.autoCompletionMenu.updateAutoCompleteList();
-
-            // Only display ideas using the mouse because otherwise when a rule
-            // is deleted (for example), the idea might be displayed before
-            // the parser was able to complete
-            //displayIdeas(e.getDot());
-
-            ParserRule rule = editor.rules.selectRuleAtPosition(e.getDot());
-            if(rule == null || rule.name == null)
-                return;
-
-            if(lastSelectedRule == null || !lastSelectedRule.equals(rule.name)) {
-                lastSelectedRule = rule.name;
-                editor.updateVisualization(false);
-            } else {
-                // @todo display message "no rule selected"
-            }
-        }
-    }
-
-    protected class TextPaneListener implements DocumentListener {
-
-        protected int enable = 0;
-
-        public synchronized void enable() {
-            enable--;
-        }
-
-        public synchronized void disable() {
-            enable++;
-        }
-
-        public synchronized boolean isEnable() {
-            return enable == 0;
-        }
-
-        public void changeUpdate(int offset, int length) {
-            editor.changeUpdate(offset, length);
-        }
-
-        public void insertUpdate(DocumentEvent e) {
-            setIsTyping(true);
-
-            if(isEnable()) {
-                immediateColorization.colorize(e.getOffset(), e.getLength());
-                autoIndent.indent(e.getOffset(), e.getLength());
-
-                changeUpdate(e.getOffset(), e.getLength());
-            }
-        }
-
-        public void removeUpdate(DocumentEvent e) {
-            setIsTyping(true);
-
-            if(isEnable()) {
-                changeUpdate(e.getOffset(), -e.getLength());
-            }
-        }
-
-        public void changedUpdate(DocumentEvent e) {
-        }
-    }
-
-    protected class TextPaneMouseAdapter extends MouseAdapter {
-        public void mousePressed(MouseEvent e) {
-            // Update the cursor highligthing
-            if(highlightCursorLine)
-                textPane.repaint();
-
-            editor.displayIdeas(e.getPoint());
-        }
-
-        public void mouseExited(MouseEvent e) {
-            if(textPane.hasFocus()) {
-                // Do not hide the ideas because
-                // otherwise we don't be able to access the idea
-                editor.tipsHide();
-            }
-        }
-    }
-
-    protected class TextPaneMouseMotionAdapter extends MouseMotionAdapter {
-        public void mouseMoved(MouseEvent e) {
-            if(textPane.hasFocus()) {
-                Point relativePoint = e.getPoint();
-                Point absolutePoint = SwingUtilities.convertPoint(textPane, relativePoint, editor.getJavaContainer());
-                editor.displayTips(relativePoint, absolutePoint);
-            }
         }
     }
 

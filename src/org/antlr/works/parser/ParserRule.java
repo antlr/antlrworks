@@ -1,6 +1,6 @@
 package org.antlr.works.parser;
 
-import org.antlr.works.editor.textpane.folding.Entity;
+import org.antlr.works.editor.ate.ATEFoldingEntity;
 import org.antlr.works.visualization.grammar.GrammarEngineError;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ParserRule implements Comparable, Entity {
+public class ParserRule implements Comparable, ATEFoldingEntity {
 
     public String name;
     public Token start;
@@ -248,7 +248,7 @@ public class ParserRule implements Comparable, Entity {
     }
 
     public boolean canBeCollapsed() {
-        return start.line <= end.line - 1;
+        return colon.line <= end.line - 1;
     }
 
     public void foldingEntitySetExpanded(boolean expanded) {
@@ -259,20 +259,28 @@ public class ParserRule implements Comparable, Entity {
         return isExpanded();
     }
 
+    public boolean foldingEntityCanBeCollapsed() {
+        return canBeCollapsed();
+    }
+
     public int foldingEntityGetStartParagraphIndex() {
         return getStartIndex();
     }
 
     public int foldingEntityGetStartIndex() {
-        return start.getEndIndex()+1;
+        return colon.getStartIndex();
     }
 
     public int foldingEntityGetEndIndex() {
         return getEndIndex();
     }
 
-    public String getFoldedPlaceholderString() {
-        return " : ... ;";
+    public String foldingEntityPlaceholderString() {
+        return ": ... ;";
+    }
+
+    public String foldingEntityIdentifier() {
+        return name;
     }
 
 }
