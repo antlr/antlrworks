@@ -3,8 +3,8 @@ package org.antlr.works.editor.helper;
 import org.antlr.works.parser.*;
 import org.antlr.works.editor.ate.ATEFoldingEntity;
 import org.antlr.works.editor.ate.ATEFoldingEntityProxy;
-import org.antlr.works.editor.ate.ATETextPane;
 import org.antlr.works.editor.ate.ATEFoldingManager;
+import org.antlr.works.editor.EditorWindow;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -50,13 +50,13 @@ public class FoldingManager extends ATEFoldingManager implements ThreadedParserO
     protected static final int TAG_ACTIONS = 1;
 
     protected Map foldingMap;
-    protected ThreadedParser parser;
-    protected ATETextPane textPane;
+    protected EditorWindow editor;
 
-    public FoldingManager(ThreadedParser parser, ATETextPane textPane) {
-        this.parser = parser;
-        this.parser.addObserver(this);
-        this.textPane = textPane;
+    public FoldingManager(EditorWindow editor) {
+        super(editor.editorGUI.textEditor);
+
+        this.editor = editor;
+        this.editor.parser.addObserver(this);
 
         foldingMap = new HashMap();
     }
@@ -92,20 +92,25 @@ public class FoldingManager extends ATEFoldingManager implements ThreadedParserO
 
     public void parserWillParse() {
         foldingMap.clear();
-        storeFoldingStates(parser.getRules(), KEY_RULES);
-        storeFoldingStates(parser.getActions(), KEY_ACTIONS);
+        storeFoldingStates(editor.parser.getRules(), KEY_RULES);
+        storeFoldingStates(editor.parser.getActions(), KEY_ACTIONS);
     }
 
     public void parserDidParse() {
-        restoreFoldingStates(parser.getRules(), KEY_RULES);
-        restoreFoldingStates(parser.getActions(), KEY_ACTIONS);
+        restoreFoldingStates(editor.parser.getRules(), KEY_RULES);
+        restoreFoldingStates(editor.parser.getActions(), KEY_ACTIONS);
     }
 
-    public void toggleFolding(ATEFoldingEntity entity) {
-        if(entity instanceof ParserRule)
-            toggleFolding((ParserRule)entity);
-        else if(entity instanceof ParserAction)
-            toggleFolding((ParserAction)entity);
+    public void textPaneWillFold() {
+        super.textPaneWillFold();
+        editor.disableTextPaneUndo();
+    }
+
+    public void textPaneDidFold() {
+        super.textPaneDidFold();
+        editor.enableTextPaneUndo();
+        editor.ideasHide();
+        editor.tipsHide();
     }
 
     public ATEFoldingEntityProxy createEntityProxy(ATEFoldingEntity entity) {
@@ -122,21 +127,17 @@ public class FoldingManager extends ATEFoldingManager implements ThreadedParserO
 
     public List getFoldingEntities() {
         List entities = new ArrayList();
-        entities.addAll(parser.getRules());
-        entities.addAll(parser.getActions());
+        entities.addAll(editor.parser.getRules());
+
+        // Add only actions that are in expanded rules
+        List actions = editor.parser.getActions();
+        for(int index=0; index<actions.size(); index++) {
+            ParserAction action = (ParserAction)actions.get(index);
+            if(action.rule.isExpanded())
+                entities.add(action);
+        }
+
         return entities;
-    }
-
-    public void toggleFolding(ParserRule rule) {
-        textPane.toggleFolding(new ATEFoldingEntityProxy(this, rule.foldingEntityIdentifier(), TAG_RULES));
-        // @todo
-        //editor.getGutter().repaint();
-    }
-
-    public void toggleFolding(ParserAction action) {
-        textPane.toggleFolding(new ATEFoldingEntityProxy(this, action.foldingEntityIdentifier(), TAG_ACTIONS));
-        // @todo
-        //editor.getGutter().repaint();
     }
 
     public ATEFoldingEntity getEntityForIdentifier(List entities, String identifier) {
@@ -153,9 +154,9 @@ public class FoldingManager extends ATEFoldingManager implements ThreadedParserO
 
     public ATEFoldingEntity getEntityForKey(Object key, int tag) {
         if(tag == TAG_ACTIONS)
-            return getEntityForIdentifier(parser.getActions(), (String)key);
+            return getEntityForIdentifier(editor.parser.getActions(), (String)key);
         else if(tag == TAG_RULES)
-            return getEntityForIdentifier(parser.getRules(), (String)key);
+            return getEntityForIdentifier(editor.parser.getRules(), (String)key);
         else
             return null;
     }

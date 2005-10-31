@@ -43,6 +43,7 @@ import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextUtils;
 import org.antlr.works.editor.swing.TreeUtilities;
+import org.antlr.works.editor.swing.TextPane;
 import org.antlr.works.editor.ate.ATETextPane;
 import org.antlr.works.parser.Line;
 import org.antlr.works.stats.Statistics;
@@ -70,7 +71,7 @@ public class Debugger {
     public static final String NOTIF_DEBUG_STOPPED = "NOTIF_DEBUG_STOPPED";
 
     protected JPanel panel;
-    protected ATETextPane textPane;
+    protected TextPane textPane;
 
     protected JScrollPane treeScrollPane;
     protected JTree tree;
@@ -148,7 +149,7 @@ public class Debugger {
     }
 
     public JComponent createInputPanel() {
-        textPane = new ATETextPane();
+        textPane = new TextPane();
         textPane.setPreferredSize(new Dimension(200, 0));
         textPane.setBackground(Color.white);
         textPane.setBorder(null);

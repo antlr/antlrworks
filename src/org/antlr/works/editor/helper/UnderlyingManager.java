@@ -1,8 +1,13 @@
-package org.antlr.works.editor.ate;
+package org.antlr.works.editor.helper;
 
+import org.antlr.works.editor.ate.ATEUnderlyingManager;
+import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.parser.Token;
+import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserRule;
 
 import java.util.List;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -34,28 +39,38 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class ATEFoldingManager {
+public class UnderlyingManager extends ATEUnderlyingManager {
 
-    protected ATEPanel textEditor;
+    protected EditorWindow editor;
 
-    public ATEFoldingManager(ATEPanel textEditor) {
-        this.textEditor = textEditor;
+    public UnderlyingManager(EditorWindow editor) {
+        super(editor.editorGUI.textEditor);
+        this.editor = editor;
     }
 
-    public void textPaneWillFold() {
-        
-    }
+    public void render(Graphics g) {
+        List tokens = editor.getTokens();
+        if(tokens == null)
+            return;
 
-    public void textPaneDidFold() {
-        textEditor.refresh();
-    }
+        for(int index=0; index<tokens.size(); index++) {
+            Token token = (Token)tokens.get(index);
 
-    public abstract ATEFoldingEntityProxy createEntityProxy(ATEFoldingEntity entity);
-    public abstract ATEFoldingEntity getEntityForKey(Object key, int tag);
-    public abstract List getFoldingEntities();
-    
-    public void toggleFolding(ATEFoldingEntity entity) {
-        textEditor.textPane.toggleFolding(createEntityProxy(entity));
-    }
+            if(token.type != Lexer.TOKEN_ID)
+                continue;
 
+            if(editor.rules.isUndefinedToken(token)) {
+                drawUnderlineAtIndexes(g, Color.red, token.getStartIndex(), token.getEndIndex());
+            }
+
+            if(editor.rules.isDuplicateRule(token.getAttribute())) {
+                drawUnderlineAtIndexes(g, Color.blue, token.getStartIndex(), token.getEndIndex());
+            }
+
+           ParserRule rule = editor.rules.getRuleStartingWithToken(token);
+           if(rule != null && rule.hasLeftRecursion()) {
+               drawUnderlineAtIndexes(g, Color.green, token.getStartIndex(), token.getEndIndex());
+           }
+        }
+    }
 }

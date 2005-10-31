@@ -124,6 +124,10 @@ public class IconManager {
         return createImageIcon(path+"collapseall.png");
     }
 
+    public ImageIcon getIconCollapse() {
+        return createImageIcon(path+"collapse.png");
+    }
+
     public ImageIcon getIconCollapseDown() {
         return createImageIcon(path+"collapsedown.png");
     }

@@ -79,15 +79,6 @@ public class ATEParagraphView extends ParagraphView {
         return pos;
     }
 
-    /*public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
-        Shape s = super.modelToView(pos, a, b);
-        if(!isVisible()) {
-           // System.out.println(getStartOffset()+"/"+s.getBounds());
-//            s = new Rectangle(0, 0, 100, 100);
-        }
-        return s;
-    } */
-
     public void paint(Graphics g, Shape allocation) {
 
         // Paragraph visible, see if we should paint the

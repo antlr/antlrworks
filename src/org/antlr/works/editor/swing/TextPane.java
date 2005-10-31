@@ -1,6 +1,7 @@
-package org.antlr.works.parser;
+package org.antlr.works.editor.swing;
 
-import org.antlr.works.editor.ate.ATEFoldingEntity;
+import javax.swing.*;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -32,54 +33,46 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ParserAction implements ATEFoldingEntity {
+public class TextPane extends JTextPane {
 
-    public ParserRule rule;
-    public Token token;
-    public boolean expanded = true;
+    protected TextPaneDelegate delegate = null;
+    protected boolean wrap = false;
 
-    public ParserAction(ParserRule rule, Token token) {
-        this.rule = rule;
-        this.token = token;
+    public void setDelegate(TextPaneDelegate delegate) {
+        this.delegate = delegate;
     }
 
-    public boolean equals(Object other) {
-        return this.token.equals(((ParserAction)other).token);
+    public void setWordWrap(boolean flag) {
+        this.wrap = flag;
     }
 
-    public void foldingEntitySetExpanded(boolean expanded) {
-        this.expanded = expanded;
+    public boolean getWordWrap() {
+        return wrap;
     }
 
-    public boolean foldingEntityIsExpanded() {
-        return expanded;
+    public boolean getScrollableTracksViewportWidth() {
+        if (!wrap)
+        {
+            Component parent = getParent();
+            return parent == null || getUI().getPreferredSize(this).width < parent.getSize().width;
+        } else
+            return super.getScrollableTracksViewportWidth();
     }
 
-    public boolean foldingEntityCanBeCollapsed() {
-        return true;
+    public void setBounds(int x, int y, int width, int height) {
+        if (!wrap) {
+            Dimension size = this.getPreferredSize();
+            super.setBounds(x, y,
+                    Math.max(size.width, width), Math.max(size.height, height));
+        } else {
+            super.setBounds(x, y, width, height);
+        }
     }
 
-    public int foldingEntityGetStartParagraphIndex() {
-        return token.start;
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if(delegate != null)
+            delegate.textPaneDidPaint(g);
     }
 
-    public int foldingEntityGetStartIndex() {
-        return token.start;
-    }
-
-    public int foldingEntityGetEndIndex() {
-        return token.end;
-    }
-
-    public String foldingEntityPlaceholderString() {
-        return "{...}";
-    }
-
-    public String foldingEntityIdentifier() {
-        return rule.name+token.getAttribute().hashCode();
-    }
-
-    public int foldingEntityLevel() {
-        return 1;
-    }
 }

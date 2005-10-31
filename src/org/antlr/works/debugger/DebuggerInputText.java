@@ -36,8 +36,8 @@ import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.editor.ate.ATETextPane;
-import org.antlr.works.editor.ate.ATETextPaneDelegate;
+import org.antlr.works.editor.swing.TextPaneDelegate;
+import org.antlr.works.editor.swing.TextPane;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -48,7 +48,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class DebuggerInputText implements ATETextPaneDelegate, XJNotificationObserver {
+public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserver {
 
     public static final boolean USE_PERSISTENCE = true;
 
@@ -56,7 +56,7 @@ public class DebuggerInputText implements ATETextPaneDelegate, XJNotificationObs
     public static final int TOKEN_HIDDEN = 2;
     public static final int TOKEN_DEAD = 3;
 
-    protected ATETextPane textPane;
+    protected TextPane textPane;
     // Location where the next token will be inserted
     protected int cursorIndex;
     protected Map tokens;
@@ -73,7 +73,7 @@ public class DebuggerInputText implements ATETextPaneDelegate, XJNotificationObs
 
     protected boolean drawTokensBox;
 
-    public DebuggerInputText(ATETextPane textPane) {
+    public DebuggerInputText(TextPane textPane) {
         tokens = new HashMap();
         drawTokensBox = false;
         this.textPane = textPane;
@@ -226,11 +226,7 @@ public class DebuggerInputText implements ATETextPaneDelegate, XJNotificationObs
         StyleConstants.setItalic(attributeLookahead, true);
     }
 
-    public void ateTextPaneDidFold() {
-
-    }
-    
-    public void ateTextPaneDidPaint(Graphics g) {
+    public void textPaneDidPaint(Graphics g) {
         if(!drawTokensBox)
             return;
 

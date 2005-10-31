@@ -31,33 +31,27 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.ate;
 
-import org.antlr.works.editor.EditorWindow;
-
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.View;
 import javax.swing.text.Element;
+import java.util.List;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class ATETextPane extends JTextPane
 {
-    protected static final String ATTRIBUTE_CHARACTER_FOLDING_PROXY = "char_folding_proxy";
-    protected static final String ATTRIBUTE_PARAGRAPH_FOLDING_PROXY = "para_folding_proxy";
+    private static final String ATTRIBUTE_CHARACTER_FOLDING_PROXY = "char_folding_proxy";
+    private static final String ATTRIBUTE_PARAGRAPH_FOLDING_PROXY = "para_folding_proxy";
 
-    protected EditorWindow editor;
+    protected ATEPanel textEditor;
     protected boolean wrap = false;
     protected boolean highlightCursorLine = false;
-    protected ATETextPaneDelegate delegate = null;
 
-    public ATETextPane() {
+    public ATETextPane(ATEPanel textEditor) {
         super(new ATEStyledDocument());
         setEditorKit(new ATECustomEditorKit());
-    }
-
-    public ATETextPane(EditorWindow editor) {
-        super(new ATEStyledDocument());
-        setEditorKit(new ATECustomEditorKit());
-        this.editor = editor;
+        this.textEditor = textEditor;
     }
 
     public void setWordWrap(boolean flag) {
@@ -76,33 +70,50 @@ public class ATETextPane extends JTextPane
         return highlightCursorLine;
     }
 
-    public ATEFoldingEntityProxy getEntityProxy(Element e) {
-        Object value = e.getAttributes().getAttribute(ATTRIBUTE_CHARACTER_FOLDING_PROXY);
-        if(value instanceof ATEFoldingEntityProxy) {
-            return (ATEFoldingEntityProxy)value;
-        } else
+    public List getAttributeFromElement(Element e, String key) {
+        List attributes = new ArrayList();
+        Object o;
+        for(int level=0; level<=1; level++) {
+            o = e.getAttributes().getAttribute(key+level);
+            if(o instanceof ATEFoldingEntityProxy)
+                attributes.add(o);
+        }
+        return attributes;
+    }
+
+    public ATEFoldingEntityProxy getTopLevelEntityProxy(Element e) {
+        List attributes = getAttributeFromElement(e, ATTRIBUTE_CHARACTER_FOLDING_PROXY);
+        if(attributes.isEmpty())
             return null;
+        else
+            return (ATEFoldingEntityProxy)attributes.get(attributes.size()-1);
+    }
+
+    public String getKeyForView(View v) {
+        if(v instanceof ATELabelView)
+            return ATTRIBUTE_CHARACTER_FOLDING_PROXY;
+        else if(v instanceof ATEParagraphView)
+            return ATTRIBUTE_PARAGRAPH_FOLDING_PROXY;
+        return null;
     }
 
     public ATEFoldingEntity getEntity(View v) {
-        Object value = null;
-        if(v instanceof ATELabelView)
-            value = v.getAttributes().getAttribute(ATTRIBUTE_CHARACTER_FOLDING_PROXY);
-        else if(v instanceof ATEParagraphView)
-            value = v.getAttributes().getAttribute(ATTRIBUTE_PARAGRAPH_FOLDING_PROXY);
-        if(value instanceof ATEFoldingEntityProxy) {
-            ATEFoldingEntityProxy proxy =  (ATEFoldingEntityProxy)value;
+        List attributes = getAttributeFromElement(v.getElement(), getKeyForView(v));
+        if(!attributes.isEmpty()) {
+            ATEFoldingEntityProxy proxy = (ATEFoldingEntityProxy)attributes.get(attributes.size()-1);
             return proxy.getEntity();
         } else
             return null;
     }
 
     public boolean isViewVisible(View v) {
-        ATEFoldingEntity entity = getEntity(v);
-        if(entity == null)
-            return true;
-        else
-            return entity.foldingEntityIsExpanded();
+        List attributes = getAttributeFromElement(v.getElement(), getKeyForView(v));
+        for(int index=0; index<attributes.size(); index++) {
+            ATEFoldingEntityProxy proxy =  (ATEFoldingEntityProxy)attributes.get(index);
+            if(!proxy.getEntity().foldingEntityIsExpanded())
+                return false;
+        }
+        return true;
     }
 
     public boolean getScrollableTracksViewportWidth() {
@@ -124,41 +135,36 @@ public class ATETextPane extends JTextPane
         }
     }
 
-    public void setDelegate(ATETextPaneDelegate delegate) {
-        this.delegate = delegate;
-    }
-
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(delegate != null)
-            delegate.ateTextPaneDidPaint(g);
+        textEditor.textPaneDidPaint(g);
     }
 
     public void toggleFolding(ATEFoldingEntityProxy proxy) {
-        ATEFoldingEntity fo = proxy.getEntity();
-        int start = fo.foldingEntityGetStartIndex();
-        int startPara = fo.foldingEntityGetStartParagraphIndex();
-        int end = fo.foldingEntityGetEndIndex();
-        fo.foldingEntitySetExpanded(!fo.foldingEntityIsExpanded());
+        ATEFoldingEntity entity = proxy.getEntity();
+        int start = entity.foldingEntityGetStartIndex();
+        int startPara = entity.foldingEntityGetStartParagraphIndex();
+        int end = entity.foldingEntityGetEndIndex();
+        int level = entity.foldingEntityLevel();
+        entity.foldingEntitySetExpanded(!entity.foldingEntityIsExpanded());
 
         SimpleAttributeSet paraAttr = new SimpleAttributeSet();
-        paraAttr.addAttribute(ATTRIBUTE_PARAGRAPH_FOLDING_PROXY, proxy);
+        paraAttr.addAttribute(ATTRIBUTE_PARAGRAPH_FOLDING_PROXY+level, proxy);
 
         SimpleAttributeSet charAttr = new SimpleAttributeSet();
-        charAttr.addAttribute(ATTRIBUTE_CHARACTER_FOLDING_PROXY, proxy);
+        charAttr.addAttribute(ATTRIBUTE_CHARACTER_FOLDING_PROXY+level, proxy);
 
-        editor.disableTextPaneUndo();
+        textEditor.foldingManager.textPaneWillFold();
+
         ((ATEStyledDocument)getDocument()).setParagraphAttributes(startPara, end-startPara, paraAttr, false);
         ((ATEStyledDocument)getDocument()).setCharacterAttributes(start, end-start, charAttr, false);
-        editor.enableTextPaneUndo();
 
         // Make sure to move the caret out of the collapsed zone
         if(!proxy.getEntity().foldingEntityIsExpanded()
                 && getCaretPosition() >= start && getCaretPosition() <= end)
             setCaretPosition(start-1);
 
-        if(delegate != null)
-            delegate.ateTextPaneDidFold();
+        textEditor.foldingManager.textPaneDidFold();
     }
 
 }

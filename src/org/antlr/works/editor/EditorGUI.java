@@ -36,7 +36,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.rules.Rules;
-import org.antlr.works.editor.ate.ATETextPaneDelegate;
+import org.antlr.works.editor.swing.TextPaneDelegate;
 import org.antlr.works.editor.ate.ATEPanel;
 import org.antlr.works.editor.tool.TAutoIndent;
 import org.antlr.works.editor.tool.TImmediateColorization;
@@ -57,7 +57,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class EditorGUI implements UndoDelegate, XJNotificationObserver, ATETextPaneDelegate {
+public class EditorGUI implements UndoDelegate, XJNotificationObserver {
 
     public EditorWindow editor;
 
@@ -82,9 +82,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, ATETextP
     protected TImmediateColorization immediateColorization;
     protected TAutoIndent autoIndent;
 
-    protected UnderlyingShape underlyingShape = new UnderlyingShape();
-    protected boolean underlying = true;
-
     public EditorGUI(EditorWindow editor) {
         this.editor = editor;
     }
@@ -97,7 +94,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, ATETextP
 
         textEditor = new ATEPanel(editor);
         textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
-        textEditor.textPane.setDelegate(this);
 
         immediateColorization = new TImmediateColorization(textEditor.textPane);
         autoIndent = new TAutoIndent(textEditor.textPane);
@@ -199,15 +195,6 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, ATETextP
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 
-    public void setUnderlying(boolean flag) {
-        this.underlying = flag;
-    }
-
-    public boolean underlying() {
-        return underlying;
-    }
-
-
     public void setAutoIndent(boolean flag) {
         autoIndent.setEnabled(flag);
     }
@@ -305,9 +292,8 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, ATETextP
             textEditor.gutter.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
             textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
             textEditor.applyFont();
-            textEditor.repaint();
+            textEditor.refresh();
             editor.getMainMenuBar().refreshState();
-            underlyingShape.reset();
             updateSCMStatus(null);
         }
     }
@@ -320,127 +306,9 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver, ATETextP
 
     public void parserDidComplete() {
         textEditor.setIsTyping(false);
+        textEditor.refresh();
         updateInformation();
         updateCursorInfo();
-        textEditor.analysisColumn.repaint();
-        underlyingShape.reset();
-        textEditor.textPane.repaint();
-    }
-
-    public void ateTextPaneDidFold() {
-        // Reset the shape because folding causes the view dimension to change
-        textEditor.analysisColumn.repaint();
-        underlyingShape.reset();
-        editor.ideasHide();
-        editor.tipsHide();
-    }
-
-    public void ateTextPaneDidPaint(Graphics g) {
-        if(editor.getTokens() == null || !underlying)
-            return;
-
-        Graphics2D g2d = (Graphics2D)g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-
-        if(underlyingShape.isReady()) {
-            underlyingShape.draw(g2d);
-            return;
-        }
-
-        if(textEditor.isTyping())
-            return;
-
-        underlyingShape.begin();
-
-        for (Iterator iterator = editor.getTokens().iterator(); iterator.hasNext();) {
-            Token token = (Token) iterator.next();
-
-            if(token.type != Lexer.TOKEN_ID)
-                continue;
-
-            if(editor.rules.isUndefinedToken(token)) {
-                drawUnderlineAtIndexes(g, Color.red, token.getStartIndex(), token.getEndIndex());
-            }
-
-            if(editor.rules.isDuplicateRule(token.getAttribute())) {
-                drawUnderlineAtIndexes(g, Color.blue, token.getStartIndex(), token.getEndIndex());
-            }
-
-           ParserRule rule = editor.rules.getRuleStartingWithToken(token);
-           if(rule != null && rule.hasLeftRecursion()) {
-               drawUnderlineAtIndexes(g, Color.green, token.getStartIndex(), token.getEndIndex());
-           }
-        }
-
-        underlyingShape.end();
-        underlyingShape.draw(g2d);
-    }
-
-    public void drawUnderlineAtIndexes(Graphics g, Color c, int start, int end) {
-        try {
-            Rectangle r1 = textEditor.textPane.modelToView(start);
-            Rectangle r2 = textEditor.textPane.modelToView(end);
-
-            g.setColor(c);
-
-            int width = r2.x-r1.x;
-            int triangle_size = 5;
-            for(int triangle=0; triangle<width/triangle_size; triangle++) {
-                int x = r1.x+triangle*triangle_size;
-                int y = r1.y+r1.height-1;
-                g.drawLine(x, y, x+triangle_size/2, y-triangle_size/2);
-                g.drawLine(x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
-
-
-                underlyingShape.addLine(c, x, y, x+triangle_size/2, y-triangle_size/2);
-                underlyingShape.addLine(c, x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
-            }
-        } catch (BadLocationException e) {
-            // Ignore
-        }
-    }
-
-    protected class UnderlyingShape {
-
-        public Map shapes = new HashMap();
-        public boolean ready = false;
-
-        public void addLine(Color c, int x1, int y1, int x2, int y2) {
-            GeneralPath gp = (GeneralPath)shapes.get(c);
-            if(gp == null) {
-                gp = new GeneralPath();
-                shapes.put(c, gp);
-            }
-            gp.moveTo(x1, y1);
-            gp.lineTo(x2, y2);
-        }
-
-        public void draw(Graphics2D g) {
-            for(Iterator iter = shapes.keySet().iterator(); iter.hasNext(); ) {
-                Color c = (Color)iter.next();
-                g.setColor(c);
-                GeneralPath gp = (GeneralPath)shapes.get(c);
-                g.draw(gp);
-            }
-        }
-
-        public void begin() {
-            reset();
-        }
-
-        public void end() {
-            ready = true;
-        }
-
-        public boolean isReady() {
-            return ready;
-        }
-
-        public void reset() {
-            shapes.clear();
-            ready = false;
-        }
     }
 
     protected class TabMouseListener extends MouseAdapter {

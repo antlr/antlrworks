@@ -60,6 +60,7 @@ public class ATEPanel extends JPanel {
     public TextPaneListener textPaneListener;
 
     protected ATEFoldingManager foldingManager;
+    protected ATEUnderlyingManager underlyingManager;
 
     protected boolean isTyping = false;
 
@@ -72,42 +73,12 @@ public class ATEPanel extends JPanel {
         createTextPane();
     }
 
-    protected void createTextPane() {
-        textPane = new ATETextPane(editor);
-        textPane.setBackground(Color.white);
-        textPane.setBorder(null);
+    public void setFoldingManager(ATEFoldingManager manager) {
+        this.foldingManager = manager;
+    }
 
-        applyFont();
-        textPane.setWordWrap(false);
-
-        textPane.getDocument().addDocumentListener(textPaneListener = new TextPaneListener());
-        // Set by default the end of line property in order to always use the Unix style
-        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, unixEndOfLine);
-
-        textPane.addCaretListener(new TextPaneCaretListener());
-        textPane.addMouseListener(new TextPaneMouseAdapter());
-        textPane.addMouseMotionListener(new TextPaneMouseMotionAdapter());
-
-        // Gutter
-        gutter = new ATEGutter(this);
-        gutter.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
-
-        // Scroll pane
-        JScrollPane textScrollPane = new JScrollPane(textPane);
-        textScrollPane.setWheelScrollingEnabled(true);
-        textScrollPane.setRowHeaderView(gutter);
-
-        // Analysis column
-        analysisColumn = new AnalysisColumn(editor);
-        analysisColumn.setMinimumSize(new Dimension(ANALYSIS_COLUMN_WIDTH, 0));
-        analysisColumn.setMaximumSize(new Dimension(ANALYSIS_COLUMN_WIDTH, Integer.MAX_VALUE));
-        analysisColumn.setPreferredSize(new Dimension(ANALYSIS_COLUMN_WIDTH, analysisColumn.getPreferredSize().height));
-
-        Box box = Box.createHorizontalBox();
-        box.add(textScrollPane);
-        box.add(analysisColumn);
-
-        add(box, BorderLayout.CENTER);
+    public void setUnderlyingManager(ATEUnderlyingManager manager) {
+        this.underlyingManager = manager;
     }
 
     public void setIsTyping(boolean flag) {
@@ -130,8 +101,12 @@ public class ATEPanel extends JPanel {
         textPane.setHighlightCursorLine(flag);
     }
 
-    public void setFoldingManager(ATEFoldingManager manager) {
-        this.foldingManager = manager;
+    public void setUnderlying(boolean flag) {
+        underlyingManager.setUnderlying(flag);
+    }
+
+    public boolean isUnderlying() {
+        return underlyingManager.underlying;
     }
 
     public void toggleAnalysis() {
@@ -145,6 +120,11 @@ public class ATEPanel extends JPanel {
     public void applyFont() {
         textPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
         TextUtils.createTabs(textPane);
+    }
+
+    public void refresh() {
+        underlyingManager.reset();
+        repaint();
     }
 
     public int getSelectionStart() {
@@ -190,6 +170,48 @@ public class ATEPanel extends JPanel {
         }
     }
 
+    public void textPaneDidPaint(Graphics g) {
+        underlyingManager.paint(g);
+    }
+
+    protected void createTextPane() {
+        textPane = new ATETextPane(this);
+        textPane.setBackground(Color.white);
+        textPane.setBorder(null);
+
+        applyFont();
+        textPane.setWordWrap(false);
+
+        textPane.getDocument().addDocumentListener(textPaneListener = new TextPaneListener());
+        // Set by default the end of line property in order to always use the Unix style
+        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, unixEndOfLine);
+
+        textPane.addCaretListener(new TextPaneCaretListener());
+        textPane.addMouseListener(new TextPaneMouseAdapter());
+        textPane.addMouseMotionListener(new TextPaneMouseMotionAdapter());
+
+        // Gutter
+        gutter = new ATEGutter(this);
+        gutter.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
+
+        // Scroll pane
+        JScrollPane textScrollPane = new JScrollPane(textPane);
+        textScrollPane.setWheelScrollingEnabled(true);
+        textScrollPane.setRowHeaderView(gutter);
+
+        // Analysis column
+        analysisColumn = new AnalysisColumn(editor);
+        analysisColumn.setMinimumSize(new Dimension(ANALYSIS_COLUMN_WIDTH, 0));
+        analysisColumn.setMaximumSize(new Dimension(ANALYSIS_COLUMN_WIDTH, Integer.MAX_VALUE));
+        analysisColumn.setPreferredSize(new Dimension(ANALYSIS_COLUMN_WIDTH, analysisColumn.getPreferredSize().height));
+
+        Box box = Box.createHorizontalBox();
+        box.add(textScrollPane);
+        box.add(analysisColumn);
+
+        add(box, BorderLayout.CENTER);
+    }
+
     protected class TextPaneCaretListener implements CaretListener {
 
         public void caretUpdate(CaretEvent e) {
@@ -202,6 +224,7 @@ public class ATEPanel extends JPanel {
         }
     }
 
+    // @todo change public to protected and refactor if needed
     public class TextPaneListener implements DocumentListener {
 
         protected int enable = 0;
@@ -251,7 +274,7 @@ public class ATEPanel extends JPanel {
             // Expand any collapsed rule if the caret
             // has been placed in the placeholder zone
             Element elem = textPane.getStyledDocument().getCharacterElement(getCaretPosition());
-            ATEFoldingEntityProxy proxy = textPane.getEntityProxy(elem);
+            ATEFoldingEntityProxy proxy = textPane.getTopLevelEntityProxy(elem);
             if(proxy != null && !proxy.getEntity().foldingEntityIsExpanded()) {
                 textPane.toggleFolding(proxy);
                 gutter.markDirty();

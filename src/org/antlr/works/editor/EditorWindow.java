@@ -69,24 +69,26 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
      AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate,
      IdeaManagerDelegate, IdeaProvider, TipsProvider
 {
-    public ThreadedParser parser = null;
-    public KeyBindings keyBindings = null;
-    public AutoCompletionMenu autoCompletionMenu = null;
-    public TGoToRule goToRule = null;
-    public FindAndReplace findAndReplace = null;
-    public TColorize colorize = null;
-    public TGrammar grammar = null;
-    public TemplateRules templateRules = null;
-    public IdeaManager ideaManager = null;
-    public TipsManager tipsManager = null;
+    public ThreadedParser parser;
+    public KeyBindings keyBindings;
+    public AutoCompletionMenu autoCompletionMenu;
+    public TGoToRule goToRule;
+    public FindAndReplace findAndReplace;
+    public TColorize colorize;
+    public TGrammar grammar;
+    public TemplateRules templateRules;
+    public IdeaManager ideaManager;
+    public TipsManager tipsManager;
 
-    public FoldingManager foldingManager = null;
-    public Rules rules = null;
-    public Visual visual = null;
-    public Interpreter interpreter = null;
-    public Debugger debugger = null;
-    public Console console = null;
-    public GoToHistory goToHistory = null;
+    public FoldingManager foldingManager;
+    public UnderlyingManager underlyingManager;
+
+    public Rules rules;
+    public Visual visual;
+    public Interpreter interpreter;
+    public Debugger debugger;
+    public Console console;
+    public GoToHistory goToHistory;
 
     private Map undos = new HashMap();
 
@@ -94,21 +96,21 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     private boolean windowFirstDisplay = true;
 
-    public EditorGUI editorGUI = null;
-    protected EditorCache editorCache = null;
-    protected EditorMenu editorMenu = null;
+    public EditorGUI editorGUI;
+    protected EditorCache editorCache;
+    protected EditorMenu editorMenu;
 
-    protected ActionsEdit actionsEdit = null;
-    protected ActionsView actionsView = null;
-    protected ActionsFind actionsFind = null;
-    protected ActionsGrammar actionsGrammar = null;
-    protected ActionsRefactor actionsRefactor = null;
-    protected ActionsGoTo actionsGoTo = null;
-    protected ActionsGenerate actionsGenerate = null;
-    protected ActionsRun actionsRun = null;
-    protected ActionsSCM actionsSCM = null;
-    protected ActionsExport actionsExport = null;
-    protected ActionsHelp actionsHelp = null;
+    protected ActionsEdit actionsEdit;
+    protected ActionsView actionsView;
+    protected ActionsFind actionsFind;
+    protected ActionsGrammar actionsGrammar;
+    protected ActionsRefactor actionsRefactor;
+    protected ActionsGoTo actionsGoTo;
+    protected ActionsGenerate actionsGenerate;
+    protected ActionsRun actionsRun;
+    protected ActionsSCM actionsSCM;
+    protected ActionsExport actionsExport;
+    protected ActionsHelp actionsHelp;
 
     public EditorWindow() {
 
@@ -137,8 +139,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         parser.addObserver(this);
 
         editorGUI.createInterface();
-        foldingManager = new FoldingManager(parser, editorGUI.textEditor.textPane);
+        foldingManager = new FoldingManager(this);
         editorGUI.textEditor.setFoldingManager(foldingManager);
+
+        underlyingManager = new UnderlyingManager(this);
+        editorGUI.textEditor.setUnderlyingManager(underlyingManager);
 
         visual = new Visual(this);
         interpreter = new Interpreter(this);
@@ -289,8 +294,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void toggleUnderlying() {
-        editorGUI.setUnderlying(!editorGUI.underlying());
-        getTextPane().repaint();
+        editorGUI.textEditor.setUnderlying(!editorGUI.textEditor.isUnderlying());
+        editorGUI.textEditor.refresh();
     }
 
     public void toggleTips() {

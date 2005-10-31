@@ -283,4 +283,8 @@ public class ParserRule implements Comparable, ATEFoldingEntity {
         return name;
     }
 
+    public int foldingEntityLevel() {
+        return 0;
+    }
+
 }

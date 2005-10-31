@@ -29,11 +29,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.ate;
+package org.antlr.works.editor.swing;
 
 import java.awt.*;
 
-public interface ATETextPaneDelegate {
-    public void ateTextPaneDidPaint(Graphics g);
-    public void ateTextPaneDidFold();
+public interface TextPaneDelegate {
+    public void textPaneDidPaint(Graphics g);
 }

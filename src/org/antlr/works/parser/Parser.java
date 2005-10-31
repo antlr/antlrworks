@@ -226,18 +226,21 @@ public class Parser {
         }
 
         Token colonToken = T(0);
+        ParserRule rule = new ParserRule(this, name, start, colonToken, null);
         while(nextToken()) {
             // Match also all actions inside the rule
             if(T(0).type == Lexer.TOKEN_BLOCK) {
                 Token t = T(-1);
                 if(t == null || !blockIdentifiers.contains(t.getAttribute().toLowerCase())) {
                     // An action is a block not preceeded by a block identifier
-                    actions.add(new ParserAction(name, T(0)));
+                    actions.add(new ParserAction(rule, T(0)));
                 }
             }
 
-            if(T(0).type == Lexer.TOKEN_SEMI)
-                return new ParserRule(this, name, start, colonToken, T(0));
+            if(T(0).type == Lexer.TOKEN_SEMI) {
+                rule.end = T(0);
+                return rule;
+            }
         }
         return null;
     }

@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.code;
 
 import org.antlr.works.editor.ate.ATETextPane;
+import org.antlr.works.editor.swing.TextPane;
 import org.antlr.works.util.Localizable;
 
 import javax.swing.*;
@@ -40,13 +41,13 @@ import java.awt.*;
 public class CodeDisplay {
 
     protected JPanel panel;
-    protected ATETextPane textPane;
+    protected TextPane textPane;
 
     public CodeDisplay() {
 
         panel = new JPanel(new BorderLayout());
 
-        textPane = new ATETextPane();
+        textPane = new TextPane();
         textPane.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
         textPane.setWordWrap(false);
 

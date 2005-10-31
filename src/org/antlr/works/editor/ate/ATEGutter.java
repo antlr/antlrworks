@@ -66,6 +66,7 @@ public class ATEGutter extends JComponent {
 
     protected Image collapseDown;
     protected Image collapseUp;
+    protected Image collapse;
     protected Image expand;
 
     protected boolean dirty = true;
@@ -75,6 +76,7 @@ public class ATEGutter extends JComponent {
 
         collapseDown = IconManager.shared().getIconCollapseDown().getImage();
         collapseUp = IconManager.shared().getIconCollapseUp().getImage();
+        collapse = IconManager.shared().getIconCollapse().getImage();
         expand = IconManager.shared().getIconExpand().getImage();
 
         addMouseListener(new MyMouseAdapter());
@@ -140,8 +142,9 @@ public class ATEGutter extends JComponent {
         }
 
         folding.clear();
-        for(int i=0; i<textEditor.foldingManager.getFoldingEntities().size(); i++) {
-            ATEFoldingEntity entity = (ATEFoldingEntity)textEditor.foldingManager.getFoldingEntities().get(i);
+        List entities = textEditor.foldingManager.getFoldingEntities();
+        for(int i=0; i<entities.size(); i++) {
+            ATEFoldingEntity entity = (ATEFoldingEntity)entities.get(i);
 
             int top_y = getLineYPixelPosition(entity.foldingEntityGetStartIndex());
             int bottom_y = getLineYPixelPosition(entity.foldingEntityGetEndIndex());
@@ -237,8 +240,12 @@ public class ATEGutter extends JComponent {
                     g.drawLine(top.x, top.y, bottom.x, bottom.y);
                     g.setStroke(s);
 
-                    drawCenteredImageAtPoint(g, collapseUp, top);
-                    drawCenteredImageAtPoint(g, collapseDown, bottom);
+                    if(top.equals(bottom)) {
+                        drawCenteredImageAtPoint(g, collapse, top);
+                    } else {
+                        drawCenteredImageAtPoint(g, collapseUp, top);
+                        drawCenteredImageAtPoint(g, collapseDown, bottom);
+                    }
                 } else {
                     drawCenteredImageAtPoint(g, expand, top);
                 }
@@ -252,7 +259,7 @@ public class ATEGutter extends JComponent {
     }
 
     public Dimension getPreferredSize() {
-        Dimension d = getSize();
+        Dimension d = textEditor.textPane.getSize();
         d.width = 25;
         return d;
     }
