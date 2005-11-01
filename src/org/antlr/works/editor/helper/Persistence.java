@@ -1,12 +1,10 @@
 package org.antlr.works.editor.helper;
 
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.ate.ATEUnderlyingManager;
-import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
+import org.antlr.works.editor.EditorWindow;
 
-import java.awt.*;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 /*
 
@@ -39,38 +37,59 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class UnderlyingManager extends ATEUnderlyingManager {
+public class Persistence {
 
-    protected EditorWindow editor;
+    public static final String KEY_RULES = "rules";
+    public static final String KEY_ACTIONS = "actions";
 
-    public UnderlyingManager(EditorWindow editor) {
-        super(editor.editorGUI.textEditor);
+    public Map persistence = new HashMap();
+
+    public EditorWindow editor;
+
+    public Persistence(EditorWindow editor) {
         this.editor = editor;
     }
 
-    public void render(Graphics g) {
-        List tokens = editor.getTokens();
-        if(tokens == null)
+    public void store() {
+        store(editor.parser.getRules(), KEY_RULES);
+        store(editor.parser.getActions(), KEY_ACTIONS);
+    }
+
+    public void restore() {
+        restore(editor.parser.getRules(), KEY_RULES);
+        restore(editor.parser.getActions(), KEY_ACTIONS);
+    }
+    
+    public void store(List objects, String key) {
+        Map m = (Map)persistence.get(key);
+        if(m == null) {
+            m = new HashMap();
+            persistence.put(key, m);
+        }
+
+        m.clear();
+        if(objects == null)
             return;
 
-        for(int index=0; index<tokens.size(); index++) {
-            Token token = (Token)tokens.get(index);
+        for(int index=0; index<objects.size(); index++) {
+            PersistentObject o = (PersistentObject)objects.get(index);
+            m.put(o.getPersistentID(), o);
+        }
+    }
 
-            if(token.type != Lexer.TOKEN_ID)
-                continue;
+    public void restore(List objects, String key) {
+        Map m = (Map)persistence.get(key);
+        if(m == null)
+            return;
 
-            if(editor.rules.isUndefinedToken(token)) {
-                drawUnderlineAtIndexes(g, Color.red, token.getStartIndex(), token.getEndIndex());
-            }
+        if(objects == null)
+            return;
 
-            if(editor.rules.isDuplicateRule(token.getAttribute())) {
-                drawUnderlineAtIndexes(g, Color.blue, token.getStartIndex(), token.getEndIndex());
-            }
-
-           ParserRule rule = editor.rules.getRuleStartingWithToken(token);
-           if(rule != null && rule.hasLeftRecursion()) {
-               drawUnderlineAtIndexes(g, Color.green, token.getStartIndex(), token.getEndIndex());
-           }
+        for(int index=0; index<objects.size(); index++) {
+            PersistentObject o = (PersistentObject)objects.get(index);
+            PersistentObject oldO = (PersistentObject) m.get(o.getPersistentID());
+            if(oldO != null)
+                o.persistentAssign(oldO);
         }
     }
 }

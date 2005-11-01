@@ -33,8 +33,8 @@ package org.antlr.works.editor.rules;
 
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
-import org.antlr.works.editor.helper.KeyBindings;
 import org.antlr.works.editor.ate.ATEFoldingEntity;
+import org.antlr.works.editor.helper.KeyBindings;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;

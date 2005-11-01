@@ -1,15 +1,17 @@
 package org.antlr.works.editor.helper;
 
-import org.antlr.works.parser.*;
+import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.ate.ATEFoldingEntity;
 import org.antlr.works.editor.ate.ATEFoldingEntityProxy;
 import org.antlr.works.editor.ate.ATEFoldingManager;
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.parser.ParserAction;
+import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.ThreadedParserObserver;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -41,64 +43,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class FoldingManager extends ATEFoldingManager implements ThreadedParserObserver {
-
-    protected static final String KEY_RULES = "RULES";
-    protected static final String KEY_ACTIONS = "ACTIONS";
+public class FoldingManager extends ATEFoldingManager {
 
     protected static final int TAG_RULES = 0;
     protected static final int TAG_ACTIONS = 1;
 
-    protected Map foldingMap;
     protected EditorWindow editor;
 
     public FoldingManager(EditorWindow editor) {
         super(editor.editorGUI.textEditor);
-
         this.editor = editor;
-        this.editor.parser.addObserver(this);
-
-        foldingMap = new HashMap();
-    }
-
-    public void storeFoldingStates(List entities, String key) {
-        if(entities == null || entities.isEmpty())
-            return;
-
-        Map m = new HashMap();
-        for(int index=0; index<entities.size(); index++) {
-            ATEFoldingEntity entity = (ATEFoldingEntity)entities.get(index);
-            m.put(entity.foldingEntityIdentifier(), Boolean.valueOf(entity.foldingEntityIsExpanded()));
-        }
-
-        foldingMap.put(key, m);
-    }
-
-    public void restoreFoldingStates(List entities, String key) {
-        if(entities == null || entities.isEmpty())
-            return;
-
-        Map m = (Map)foldingMap.get(key);
-        if(m == null)
-            return;
-
-        for(int index=0; index<entities.size(); index++) {
-            ATEFoldingEntity entity = (ATEFoldingEntity)entities.get(index);
-            Boolean expanded = (Boolean)m.get(entity.foldingEntityIdentifier());
-            if(expanded != null)
-                entity.foldingEntitySetExpanded(expanded.booleanValue());
-        }
-    }
-
-    public void parserWillParse() {
-        foldingMap.clear();
-        storeFoldingStates(editor.parser.getRules(), KEY_RULES);
-        storeFoldingStates(editor.parser.getActions(), KEY_ACTIONS);
-    }
-
-    public void parserDidParse() {
-        restoreFoldingStates(editor.parser.getRules(), KEY_RULES);
-        restoreFoldingStates(editor.parser.getActions(), KEY_ACTIONS);
     }
 
     public void textPaneWillFold() {

@@ -2,8 +2,6 @@ package org.antlr.works.editor.ate;
 
 import javax.swing.text.Element;
 import javax.swing.text.LabelView;
-import javax.swing.text.Position;
-import javax.swing.text.BadLocationException;
 import java.awt.*;
 /*
 
@@ -56,8 +54,12 @@ public class ATELabelView extends LabelView {
         return getEditorPane().isViewVisible(this);
     }
 
+    public boolean isTopMostInvisible() {
+        return getEditorPane().isTopMostInvisible(this);
+    }
+
     public float getInvisibleSpan(int axis) {
-        if(getStartOffset() == getEntity().foldingEntityGetStartIndex()) {
+        if(getStartOffset() == getEntity().foldingEntityGetStartIndex() && isTopMostInvisible()) {
             // This view is the first paragraph view for the collapsed rule.
             // We adjust its size to display the placeholder.
             if(axis == X_AXIS)
@@ -74,14 +76,6 @@ public class ATELabelView extends LabelView {
             // @todo 0 always except last view only if it is followed by a return
                 return 0; //super.getPreferredSpan(axis);
         }
-    }
-
-    public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
-        Shape s = super.modelToView(pos, a, b);
-        if(!isVisible()) {
-//            s = new Rectangle(0, 0, 100, 100);
-        }
-        return s;
     }
 
     public float getPreferredSpan(int axis) {
@@ -108,27 +102,25 @@ public class ATELabelView extends LabelView {
     public void paint(Graphics g, Shape allocation) {
         if(isVisible()) {
             super.paint(g, allocation);
-        } else {
-            if(getStartOffset() == getEntity().foldingEntityGetStartIndex()) {
-                // Draw the placeholder only in the first rule paragraph. A rule
-                // may have multiple paragraphs view ;-)
+        } else if(getStartOffset() == getEntity().foldingEntityGetStartIndex() && isTopMostInvisible()) {
+            // Draw the placeholder only in the first rule paragraph. A rule
+            // may have multiple paragraphs view ;-)
 
-                Rectangle alloc = (allocation instanceof Rectangle) ?
-                        (Rectangle)allocation :
-                        allocation.getBounds();
+            Rectangle alloc = (allocation instanceof Rectangle) ?
+                    (Rectangle)allocation :
+                    allocation.getBounds();
 
-                FontMetrics fm = g.getFontMetrics();
-                String placeholder = getEntity().foldingEntityPlaceholderString();
+            FontMetrics fm = g.getFontMetrics();
+            String placeholder = getEntity().foldingEntityPlaceholderString();
 
-                int x = alloc.x ;
-                int y = alloc.y + fm.getHeight() - fm.getDescent();
+            int x = alloc.x ;
+            int y = alloc.y + fm.getHeight() - fm.getDescent();
 
-                g.setColor(foldedColor);
-                g.fillRect(x, alloc.y, fm.stringWidth(placeholder), alloc.height);
+            g.setColor(foldedColor);
+            g.fillRect(x, alloc.y, fm.stringWidth(placeholder), alloc.height);
 
-                g.setColor(Color.lightGray);
-                g.drawString(placeholder, x, y);
-            }
+            g.setColor(Color.lightGray);
+            g.drawString(placeholder, x, y);
         }
 
         /*Rectangle alloc = (allocation instanceof Rectangle) ?

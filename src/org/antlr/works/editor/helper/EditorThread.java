@@ -65,6 +65,7 @@ public abstract class EditorThread implements Runnable, CancelObject {
         if(!run) {
             run = true;
             thread = new Thread(this);
+            thread.setName(getClass().toString());
             thread.start();
         }
     }

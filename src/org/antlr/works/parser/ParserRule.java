@@ -1,6 +1,8 @@
 package org.antlr.works.parser;
 
 import org.antlr.works.editor.ate.ATEFoldingEntity;
+import org.antlr.works.editor.ate.ATEBreakpointEntity;
+import org.antlr.works.editor.helper.PersistentObject;
 import org.antlr.works.visualization.grammar.GrammarEngineError;
 
 import java.util.ArrayList;
@@ -37,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ParserRule implements Comparable, ATEFoldingEntity {
+public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntity, ATEBreakpointEntity {
 
     public String name;
     public Token start;
@@ -45,6 +47,8 @@ public class ParserRule implements Comparable, ATEFoldingEntity {
     public Token end;
 
     public boolean expanded = true;
+    public boolean breakpoint;
+
     public boolean isAllUpperCase = false;
     public boolean hasLeftRecursion = false;
 
@@ -287,4 +291,33 @@ public class ParserRule implements Comparable, ATEFoldingEntity {
         return 0;
     }
 
+    public int breakpointEntityUniqueID() {
+        return name.hashCode();
+    }
+
+    public int breakpointEntityIndex() {
+        return getStartIndex();
+    }
+
+    public int breakpointEntityLine() {
+        return start.line;
+    }
+
+    public void breakpointEntitySetBreakpoint(boolean flag) {
+        this.breakpoint = flag;
+    }
+
+    public boolean breakpointEntityIsBreakpoint() {
+        return breakpoint;
+    }
+
+    public Object getPersistentID() {
+        return new Integer(name.hashCode());
+    }
+
+    public void persistentAssign(PersistentObject otherObject) {
+        ParserRule oldRule = (ParserRule)otherObject;
+        this.expanded = oldRule.expanded;
+        this.breakpoint = oldRule.breakpoint;
+    }
 }

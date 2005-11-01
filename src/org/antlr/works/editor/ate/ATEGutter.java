@@ -58,7 +58,6 @@ public class ATEGutter extends JComponent {
 
     protected ATEPanel textEditor;
 
-    protected List rules = null;
     protected List breakpoints = new ArrayList();
 
     protected List folding = new ArrayList();
@@ -83,10 +82,6 @@ public class ATEGutter extends JComponent {
         addMouseMotionListener(new MyMouseMotionAdapter());
     }
 
-    public void setRules(List rules) {
-        this.rules = rules;
-    }
-
     public void setFoldingEnabled(boolean foldingEnabled) {
         this.foldingEnabled = foldingEnabled;
     }
@@ -101,8 +96,8 @@ public class ATEGutter extends JComponent {
         Set set = new HashSet();
         for (Iterator iterator = breakpoints.iterator(); iterator.hasNext();) {
             BreakpointInfo info = (BreakpointInfo) iterator.next();
-            if(info.enabled)
-                set.add(new Integer(info.line));
+            if(info.entity.breakpointEntityIsBreakpoint())
+                set.add(new Integer(info.entity.breakpointEntityLine()));
         }
         return set;
     }
@@ -111,7 +106,7 @@ public class ATEGutter extends JComponent {
         if(info == null)
             return;
 
-        info.enabled = !info.enabled;
+        info.entity.breakpointEntitySetBreakpoint(!info.entity.breakpointEntityIsBreakpoint());
         repaint();
     }
 
@@ -134,15 +129,16 @@ public class ATEGutter extends JComponent {
 
     public void updateInfo() {
         breakpoints.clear();
-        for (int i=0; i<rules.size(); i++) {
-            ParserRule rule = (ParserRule) rules.get(i);
-            int y = getLineYPixelPosition(rule.getStartIndex());
+        List entities = textEditor.breakpointManager.getBreakpointEntities();
+        for (int i=0; i<entities.size(); i++) {
+            ATEBreakpointEntity entity = (ATEBreakpointEntity)entities.get(i);
+            int y = getLineYPixelPosition(entity.breakpointEntityIndex());
             Rectangle r = new Rectangle(0, y-BREAKPOINT_HEIGHT/2, BREAKPOINT_WIDTH, BREAKPOINT_HEIGHT);
-            breakpoints.add(new BreakpointInfo(rule.start.line, r));
+            breakpoints.add(new BreakpointInfo(entity, r));
         }
 
         folding.clear();
-        List entities = textEditor.foldingManager.getFoldingEntities();
+        entities = textEditor.foldingManager.getFoldingEntities();
         for(int i=0; i<entities.size(); i++) {
             ATEFoldingEntity entity = (ATEFoldingEntity)entities.get(i);
 
@@ -182,14 +178,13 @@ public class ATEGutter extends JComponent {
 
         paintGutter(g, r);
 
-        if(rules != null) {
-            if(dirty) {
-                updateInfo();
-                dirty = false;
-            }
-            paintFolding((Graphics2D)g, r);
-            paintBreakpoints((Graphics2D)g, r);
+        if(dirty) {
+            updateInfo();
+            dirty = false;
         }
+
+        paintFolding((Graphics2D)g, r);
+        paintBreakpoints((Graphics2D)g, r);
     }
 
     public void paintGutter(Graphics g, Rectangle r) {
@@ -207,9 +202,9 @@ public class ATEGutter extends JComponent {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
 
         g.setColor(Color.red);
-        for (Iterator iterator = breakpoints.iterator(); iterator.hasNext();) {
-            BreakpointInfo info = (BreakpointInfo) iterator.next();
-            if(info.enabled) {
+        for (int index = 0; index < breakpoints.size(); index++) {
+            BreakpointInfo info = (BreakpointInfo) breakpoints.get(index);
+            if(info.entity.breakpointEntityIsBreakpoint()) {
                 Rectangle r = info.r;
                 if(clip.intersects(r))
                     g.fillArc(r.x, r.y, r.width, r.height, 0, 360);
@@ -221,8 +216,8 @@ public class ATEGutter extends JComponent {
         // Do not alias otherwise the dotted line between collapsed icon doesn't show up really well
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 
-        for (Iterator iterator = folding.iterator(); iterator.hasNext();) {
-            FoldingInfo info = (FoldingInfo) iterator.next();
+        for (int index = 0; index < folding.size(); index++) {
+            FoldingInfo info = (FoldingInfo) folding.get(index);
 
             if(!clip.intersects(info.top_r) && !clip.intersects(info.bottom_r))
                 continue;
@@ -269,12 +264,11 @@ public class ATEGutter extends JComponent {
     }
 
     protected class BreakpointInfo {
-        public int line;
+        public ATEBreakpointEntity entity;
         public Rectangle r;
-        public boolean enabled;
 
-        public BreakpointInfo(int line, Rectangle r) {
-            this.line = line;
+        public BreakpointInfo(ATEBreakpointEntity entity, Rectangle r) {
+            this.entity = entity;
             this.r = r;
         }
 

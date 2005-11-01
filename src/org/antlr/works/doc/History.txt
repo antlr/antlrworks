@@ -1,7 +1,8 @@
 
-Version 1.0ea5 - 10/27/05
+Version 1.0ea5 - 11/01/05
 
-- improved rule folding
+- improved rule folding: can now fold using the bottom anchor
+- re-introduced actions folding
 - go to rule: rule displayed in red if not match found
 
 Version 1.0ea4 - 10/22/05

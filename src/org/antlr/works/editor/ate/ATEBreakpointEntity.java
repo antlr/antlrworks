@@ -1,3 +1,4 @@
+package org.antlr.works.editor.ate;
 /*
 
 [The "BSD licence"]
@@ -29,40 +30,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.code;
+public interface ATEBreakpointEntity {
+    public int breakpointEntityUniqueID();
 
-import org.antlr.works.editor.swing.TextPane;
-import org.antlr.works.util.Localizable;
+    public int breakpointEntityIndex();
+    public int breakpointEntityLine();
 
-import javax.swing.*;
-import java.awt.*;
-
-public class CodeDisplay {
-
-    protected JPanel panel;
-    protected TextPane textPane;
-
-    public CodeDisplay() {
-
-        panel = new JPanel(new BorderLayout());
-
-        textPane = new TextPane();
-        textPane.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
-        textPane.setWordWrap(false);
-
-        JScrollPane scrollPane = new JScrollPane(textPane);
-        scrollPane.setWheelScrollingEnabled(true);
-
-        panel.add(scrollPane, BorderLayout.CENTER);
-    }
-
-    public void setText(String text) {
-        textPane.setText(text);
-        textPane.setCaretPosition(0);
-    }
-
-    public Container getContainer() {
-        return panel;
-    }
-
+    public void breakpointEntitySetBreakpoint(boolean flag);
+    public boolean breakpointEntityIsBreakpoint();
 }

@@ -36,8 +36,8 @@ import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.editor.swing.TextPaneDelegate;
 import org.antlr.works.editor.swing.TextPane;
+import org.antlr.works.editor.swing.TextPaneDelegate;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;

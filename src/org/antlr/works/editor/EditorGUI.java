@@ -35,27 +35,19 @@ import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.dialog.DialogPrefs;
-import org.antlr.works.editor.rules.Rules;
-import org.antlr.works.editor.swing.TextPaneDelegate;
 import org.antlr.works.editor.ate.ATEPanel;
+import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.tool.TAutoIndent;
 import org.antlr.works.editor.tool.TImmediateColorization;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.undo.UndoDelegate;
-import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.GeneralPath;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class EditorGUI implements UndoDelegate, XJNotificationObserver {
 

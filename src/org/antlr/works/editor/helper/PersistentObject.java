@@ -1,3 +1,4 @@
+package org.antlr.works.editor.helper;
 /*
 
 [The "BSD licence"]
@@ -29,40 +30,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.code;
-
-import org.antlr.works.editor.swing.TextPane;
-import org.antlr.works.util.Localizable;
-
-import javax.swing.*;
-import java.awt.*;
-
-public class CodeDisplay {
-
-    protected JPanel panel;
-    protected TextPane textPane;
-
-    public CodeDisplay() {
-
-        panel = new JPanel(new BorderLayout());
-
-        textPane = new TextPane();
-        textPane.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
-        textPane.setWordWrap(false);
-
-        JScrollPane scrollPane = new JScrollPane(textPane);
-        scrollPane.setWheelScrollingEnabled(true);
-
-        panel.add(scrollPane, BorderLayout.CENTER);
-    }
-
-    public void setText(String text) {
-        textPane.setText(text);
-        textPane.setCaretPosition(0);
-    }
-
-    public Container getContainer() {
-        return panel;
-    }
-
+public interface PersistentObject {
+    public Object getPersistentID();
+    public void persistentAssign(PersistentObject otherObject);
 }

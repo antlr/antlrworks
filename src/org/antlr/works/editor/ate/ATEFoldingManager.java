@@ -1,7 +1,5 @@
 package org.antlr.works.editor.ate;
 
-import org.antlr.works.parser.ParserRule;
-
 import java.util.List;
 /*
 

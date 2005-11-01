@@ -1,3 +1,10 @@
+package org.antlr.works.editor.helper;
+
+import org.antlr.works.editor.ate.ATEBreakpointManager;
+import org.antlr.works.editor.EditorWindow;
+
+import java.util.List;
+import java.util.ArrayList;
 /*
 
 [The "BSD licence"]
@@ -29,40 +36,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.code;
+public class BreakpointManager extends ATEBreakpointManager {
 
-import org.antlr.works.editor.swing.TextPane;
-import org.antlr.works.util.Localizable;
+    protected EditorWindow editor;
 
-import javax.swing.*;
-import java.awt.*;
-
-public class CodeDisplay {
-
-    protected JPanel panel;
-    protected TextPane textPane;
-
-    public CodeDisplay() {
-
-        panel = new JPanel(new BorderLayout());
-
-        textPane = new TextPane();
-        textPane.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
-        textPane.setWordWrap(false);
-
-        JScrollPane scrollPane = new JScrollPane(textPane);
-        scrollPane.setWheelScrollingEnabled(true);
-
-        panel.add(scrollPane, BorderLayout.CENTER);
+    public BreakpointManager(EditorWindow editor) {
+        super(editor.editorGUI.textEditor);
+        this.editor = editor;
     }
 
-    public void setText(String text) {
-        textPane.setText(text);
-        textPane.setCaretPosition(0);
+    public List getBreakpointEntities() {
+        List entities = new ArrayList();
+        entities.addAll(editor.parser.getRules());
+        return entities;
     }
-
-    public Container getContainer() {
-        return panel;
-    }
-
 }

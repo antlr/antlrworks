@@ -1,16 +1,11 @@
 package org.antlr.works.editor.ate;
 
-import org.antlr.works.editor.EditorGUI;
-import org.antlr.works.parser.Token;
-import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.ParserRule;
-
 import javax.swing.text.BadLocationException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -131,8 +126,7 @@ public abstract class ATEUnderlyingManager {
             for(Iterator iter = shapes.keySet().iterator(); iter.hasNext(); ) {
                 Color c = (Color)iter.next();
                 g.setColor(c);
-                GeneralPath gp = (GeneralPath)shapes.get(c);
-                g.draw(gp);
+                g.draw((GeneralPath)shapes.get(c));
             }
         }
 

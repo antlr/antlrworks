@@ -32,12 +32,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.ate;
 
 import javax.swing.*;
+import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.View;
-import javax.swing.text.Element;
-import java.util.List;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ATETextPane extends JTextPane
 {
@@ -106,10 +106,30 @@ public class ATETextPane extends JTextPane
             return null;
     }
 
+    public boolean isTopMostInvisible(View v) {
+        List attributes = getAttributeFromElement(v.getElement(), getKeyForView(v));
+        boolean hidden = false;
+        for(int index=0; index<attributes.size(); index++) {
+            ATEFoldingEntityProxy proxy = (ATEFoldingEntityProxy)attributes.get(index);
+            if(proxy.getEntity() == null)
+                continue;
+
+            if(index == attributes.size()-1)
+                return !hidden;
+
+            if(!proxy.getEntity().foldingEntityIsExpanded())
+                hidden = true;
+        }
+        return false;
+    }
+
     public boolean isViewVisible(View v) {
         List attributes = getAttributeFromElement(v.getElement(), getKeyForView(v));
         for(int index=0; index<attributes.size(); index++) {
             ATEFoldingEntityProxy proxy =  (ATEFoldingEntityProxy)attributes.get(index);
+            if(proxy.getEntity() == null)
+                continue;
+
             if(!proxy.getEntity().foldingEntityIsExpanded())
                 return false;
         }
@@ -141,6 +161,9 @@ public class ATETextPane extends JTextPane
     }
 
     public void toggleFolding(ATEFoldingEntityProxy proxy) {
+        if(proxy == null)
+            return;
+        
         ATEFoldingEntity entity = proxy.getEntity();
         int start = entity.foldingEntityGetStartIndex();
         int startPara = entity.foldingEntityGetStartParagraphIndex();

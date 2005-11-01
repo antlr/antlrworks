@@ -2,19 +2,21 @@ package org.antlr.works.editor.ate;
 
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.swing.TextUtils;
 import org.antlr.works.editor.analysis.AnalysisColumn;
+import org.antlr.works.editor.swing.TextUtils;
 
 import javax.swing.*;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.CaretEvent;
-import javax.swing.text.Element;
-import javax.swing.text.DefaultEditorKit;
+import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.Element;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 /*
 
 [The "BSD licence"]
@@ -59,6 +61,7 @@ public class ATEPanel extends JPanel {
     public AnalysisColumn analysisColumn;
     public TextPaneListener textPaneListener;
 
+    protected ATEBreakpointManager breakpointManager;
     protected ATEFoldingManager foldingManager;
     protected ATEUnderlyingManager underlyingManager;
 
@@ -71,6 +74,10 @@ public class ATEPanel extends JPanel {
         super(new BorderLayout());
         this.editor = editor;
         createTextPane();
+    }
+
+    public void setBreakpointManager(ATEBreakpointManager manager) {
+        this.breakpointManager = manager;
     }
 
     public void setFoldingManager(ATEFoldingManager manager) {

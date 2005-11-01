@@ -37,6 +37,8 @@ import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.actions.*;
+import org.antlr.works.editor.ate.ATEGutter;
+import org.antlr.works.editor.ate.ATETextPane;
 import org.antlr.works.editor.autocompletion.AutoCompletionMenu;
 import org.antlr.works.editor.autocompletion.AutoCompletionMenuDelegate;
 import org.antlr.works.editor.autocompletion.TemplateRules;
@@ -45,8 +47,6 @@ import org.antlr.works.editor.helper.*;
 import org.antlr.works.editor.idea.*;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.rules.RulesDelegate;
-import org.antlr.works.editor.ate.ATEGutter;
-import org.antlr.works.editor.ate.ATETextPane;
 import org.antlr.works.editor.tips.TipsManager;
 import org.antlr.works.editor.tips.TipsOverlay;
 import org.antlr.works.editor.tips.TipsProvider;
@@ -80,6 +80,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public IdeaManager ideaManager;
     public TipsManager tipsManager;
 
+    public BreakpointManager breakpointManager;
     public FoldingManager foldingManager;
     public UnderlyingManager underlyingManager;
 
@@ -112,6 +113,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     protected ActionsExport actionsExport;
     protected ActionsHelp actionsHelp;
 
+    protected Persistence persistence;
+
     public EditorWindow() {
 
         console = new Console(this);
@@ -135,10 +138,14 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         actionsExport = new ActionsExport(this);
         actionsHelp = new ActionsHelp(this);
 
+        persistence = new Persistence(this);
+
         parser = new ThreadedParser(this);
         parser.addObserver(this);
 
         editorGUI.createInterface();
+        breakpointManager = new BreakpointManager(this);
+        editorGUI.textEditor.setBreakpointManager(breakpointManager);
         foldingManager = new FoldingManager(this);
         editorGUI.textEditor.setFoldingManager(foldingManager);
 
@@ -585,10 +592,12 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
      */
 
     public void parserWillParse() {
-
+        persistence.store();
     }
 
     public void parserDidParse() {
+        persistence.restore();
+
         editorGUI.parserDidComplete();
 
         visual.setText(getText(), getFileName());
@@ -596,7 +605,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         colorize.colorize();
         interpreter.setRules(parser.getRules());
-        getGutter().setRules(parser.getRules());
         getGutter().markDirty();
 
         if(windowFirstDisplay) {

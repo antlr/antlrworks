@@ -1,12 +1,4 @@
-- when rule is collapsed, don't display placeholder of collapsed actions that are inside the rule (see ATELabelView to play with the level)
-
-- next/prev breakpoint
-- breakpoint doesn't display anymore
-- expand/collapse all actions
-- check debugger tokens overlay painting
-
-- EditorGutter: make a separate list of marker for the folding
-- EditorGutter: handle also collapsing using the bottom anchor
+- refactorize the proxy to see if we can use only hashcode - faster
 
 - Java 1.5: Executors to reuse thread easily
 - make sure synchronized get method copy objects (if needed) - idem for setters

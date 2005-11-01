@@ -64,7 +64,7 @@ public class ActionsView extends AbstractActions {
 
         for(int i = 0; i<actions.size(); i++) {
             ParserAction action = (ParserAction)actions.get(i);
-            if(!action.foldingEntityIsExpanded() != expand) {
+            if(action.foldingEntityIsExpanded() != expand) {
                 editor.foldingManager.toggleFolding(action);
             }
         }
