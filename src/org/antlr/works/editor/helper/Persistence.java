@@ -1,11 +1,10 @@
 package org.antlr.works.editor.helper;
 
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.editor.EditorWindow;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 /*
 
 [The "BSD licence"]

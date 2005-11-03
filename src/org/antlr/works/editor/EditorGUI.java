@@ -37,6 +37,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.ate.ATEPanel;
 import org.antlr.works.editor.rules.Rules;
+import org.antlr.works.editor.swing.TextUtils;
 import org.antlr.works.editor.tool.TAutoIndent;
 import org.antlr.works.editor.tool.TImmediateColorization;
 import org.antlr.works.editor.undo.Undo;
@@ -52,7 +53,6 @@ import java.awt.event.*;
 public class EditorGUI implements UndoDelegate, XJNotificationObserver {
 
     public EditorWindow editor;
-
 
     public JScrollPane rulesScrollPane;
     public XJTree rulesTree;
@@ -84,11 +84,14 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
         r.height *= 0.75;
         editor.getRootPane().setPreferredSize(r.getSize());
 
-        textEditor = new ATEPanel(editor);
+        textEditor = new ATEPanel(editor.getJFrame());
+        textEditor.setDelegate(editor);
+        textEditor.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
         textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
-
-        immediateColorization = new TImmediateColorization(textEditor.textPane);
-        autoIndent = new TAutoIndent(textEditor.textPane);
+        applyFont();
+        
+        immediateColorization = new TImmediateColorization(textEditor.getTextPane());
+        autoIndent = new TAutoIndent(textEditor.getTextPane());
 
         rulesTree = new XJTree() {
             public String getToolTipText(MouseEvent e) {
@@ -281,10 +284,10 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
 
     public void notificationFire(Object source, String name) {
         if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
-            textEditor.gutter.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
+            textEditor.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
             textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
-            textEditor.applyFont();
             textEditor.refresh();
+            applyFont();
             editor.getMainMenuBar().refreshState();
             updateSCMStatus(null);
         }
@@ -301,6 +304,11 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
         textEditor.refresh();
         updateInformation();
         updateCursorInfo();
+    }
+
+    public void applyFont() {
+        textEditor.getTextPane().setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
+        TextUtils.createTabs(textEditor.getTextPane());
     }
 
     protected class TabMouseListener extends MouseAdapter {

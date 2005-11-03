@@ -73,7 +73,7 @@ public class ParserAction implements PersistentObject, ATEFoldingEntity {
     }
 
     public String foldingEntityPlaceholderString() {
-        return "{ actions }";
+        return "{ ... }";
     }
 
     public String foldingEntityIdentifier() {

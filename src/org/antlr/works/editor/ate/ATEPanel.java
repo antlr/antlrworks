@@ -1,10 +1,5 @@
 package org.antlr.works.editor.ate;
 
-import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.analysis.AnalysisColumn;
-import org.antlr.works.editor.swing.TextUtils;
-
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -50,30 +45,37 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ATEPanel extends JPanel {
 
-    // @todo eliminiate all import to other package (like preferences)
+    protected JFrame parentFrame;
 
-    // @todo refactorize
-    public EditorWindow editor;
-
-    // @todo see who is using these fields !!!
-    public ATETextPane textPane;
-    public ATEGutter gutter;
-    public AnalysisColumn analysisColumn;
-    public TextPaneListener textPaneListener;
+    protected ATEPanelDelegate delegate;
+    protected ATETextPane textPane;
+    protected ATEGutter gutter;
+    protected ATEAnalysisColumn analysisColumn;
 
     protected ATEBreakpointManager breakpointManager;
     protected ATEFoldingManager foldingManager;
     protected ATEUnderlyingManager underlyingManager;
+    protected ATEAnalysisManager analysisManager;
+
+    protected TextPaneListener textPaneListener;
 
     protected boolean isTyping = false;
 
-    public static final String unixEndOfLine = "\n";
-    public static int ANALYSIS_COLUMN_WIDTH = 18;
+    protected static final String unixEndOfLine = "\n";
+    protected static int ANALYSIS_COLUMN_WIDTH = 18;
 
-    public ATEPanel(EditorWindow editor) {
+    public ATEPanel(JFrame parentFrame) {
         super(new BorderLayout());
-        this.editor = editor;
+        this.parentFrame = parentFrame;
         createTextPane();
+    }
+
+    public JFrame getParentFrame() {
+        return parentFrame;
+    }
+
+    public void setDelegate(ATEPanelDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public void setBreakpointManager(ATEBreakpointManager manager) {
@@ -86,6 +88,10 @@ public class ATEPanel extends JPanel {
 
     public void setUnderlyingManager(ATEUnderlyingManager manager) {
         this.underlyingManager = manager;
+    }
+
+    public void setAnalysisManager(ATEAnalysisManager manager) {
+        this.analysisManager = manager;
     }
 
     public void setIsTyping(boolean flag) {
@@ -116,6 +122,17 @@ public class ATEPanel extends JPanel {
         return underlyingManager.underlying;
     }
 
+    public void setFoldingEnabled(boolean flag) {
+        gutter.setFoldingEnabled(flag);
+    }
+
+    public void setEnableRecordChange(boolean flag) {
+        if(flag)
+            textPaneListener.enable();
+        else
+            textPaneListener.disable();
+    }
+
     public void toggleAnalysis() {
         analysisColumn.setVisible(!analysisColumn.isVisible());
         if(analysisColumn.isVisible())
@@ -124,14 +141,17 @@ public class ATEPanel extends JPanel {
             analysisColumn.setPreferredSize(new Dimension(0, 0));
     }
 
-    public void applyFont() {
-        textPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
-        TextUtils.createTabs(textPane);
-    }
-
     public void refresh() {
         underlyingManager.reset();
+        gutter.markDirty();
         repaint();
+    }
+
+    public void changeOccurred() {
+        // Method called only when a change occurred in the document
+        // which needs an immediate effect (in this case, the gutter
+        // has to be repainted)
+        gutter.markDirty();
     }
 
     public int getSelectionStart() {
@@ -186,7 +206,6 @@ public class ATEPanel extends JPanel {
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
 
-        applyFont();
         textPane.setWordWrap(false);
 
         textPane.getDocument().addDocumentListener(textPaneListener = new TextPaneListener());
@@ -199,7 +218,6 @@ public class ATEPanel extends JPanel {
 
         // Gutter
         gutter = new ATEGutter(this);
-        gutter.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
 
         // Scroll pane
         JScrollPane textScrollPane = new JScrollPane(textPane);
@@ -207,7 +225,7 @@ public class ATEPanel extends JPanel {
         textScrollPane.setRowHeaderView(gutter);
 
         // Analysis column
-        analysisColumn = new AnalysisColumn(editor);
+        analysisColumn = new ATEAnalysisColumn(this);
         analysisColumn.setMinimumSize(new Dimension(ANALYSIS_COLUMN_WIDTH, 0));
         analysisColumn.setMaximumSize(new Dimension(ANALYSIS_COLUMN_WIDTH, Integer.MAX_VALUE));
         analysisColumn.setPreferredSize(new Dimension(ANALYSIS_COLUMN_WIDTH, analysisColumn.getPreferredSize().height));
@@ -219,10 +237,15 @@ public class ATEPanel extends JPanel {
         add(box, BorderLayout.CENTER);
     }
 
+    public ATETextPane getTextPane() {
+        return textPane;
+    }
+
     protected class TextPaneCaretListener implements CaretListener {
 
         public void caretUpdate(CaretEvent e) {
-            editor.caretUpdate(e.getDot());
+            if(delegate != null)
+                delegate.ateCaretUpdate(e.getDot());
 
             // Each time the cursor moves, update the visible part of the text pane
             // to redraw the highlighting
@@ -231,8 +254,7 @@ public class ATEPanel extends JPanel {
         }
     }
 
-    // @todo change public to protected and refactor if needed
-    public class TextPaneListener implements DocumentListener {
+    protected class TextPaneListener implements DocumentListener {
 
         protected int enable = 0;
 
@@ -249,7 +271,8 @@ public class ATEPanel extends JPanel {
         }
 
         public void changeUpdate(int offset, int length, boolean insert) {
-            editor.changeUpdate(offset, length, insert);
+            if(delegate != null)
+                delegate.ateChangeUpdate(offset, length, insert);
         }
 
         public void insertUpdate(DocumentEvent e) {
@@ -287,25 +310,20 @@ public class ATEPanel extends JPanel {
                 gutter.markDirty();
             }
 
-            editor.displayIdeas(e.getPoint());
+            if(delegate != null)
+                delegate.ateMousePressed(e.getPoint());
         }
 
         public void mouseExited(MouseEvent e) {
-            if(textPane.hasFocus()) {
-                // Do not hide the ideas because
-                // otherwise we don't be able to access the idea
-                editor.tipsHide();
-            }
+            if(delegate != null)
+                delegate.ateMouseExited();
         }
     }
 
     protected class TextPaneMouseMotionAdapter extends MouseMotionAdapter {
         public void mouseMoved(MouseEvent e) {
-            if(textPane.hasFocus()) {
-                Point relativePoint = e.getPoint();
-                Point absolutePoint = SwingUtilities.convertPoint(textPane, relativePoint, editor.getJavaContainer());
-                editor.displayTips(relativePoint, absolutePoint);
-            }
+            if(delegate != null)
+                delegate.ateMouseMoved(e.getPoint());
         }
     }
 

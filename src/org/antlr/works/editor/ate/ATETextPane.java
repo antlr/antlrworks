@@ -62,8 +62,8 @@ public class ATETextPane extends JTextPane
         return wrap;
     }
 
-    public void setHighlightCursorLine(boolean highlightCursorLine) {
-        this.highlightCursorLine = highlightCursorLine;
+    public void setHighlightCursorLine(boolean flag) {
+        this.highlightCursorLine = flag;
     }
 
     public boolean highlightCursorLine() {
@@ -163,7 +163,7 @@ public class ATETextPane extends JTextPane
     public void toggleFolding(ATEFoldingEntityProxy proxy) {
         if(proxy == null)
             return;
-        
+
         ATEFoldingEntity entity = proxy.getEntity();
         int start = entity.foldingEntityGetStartIndex();
         int startPara = entity.foldingEntityGetStartParagraphIndex();

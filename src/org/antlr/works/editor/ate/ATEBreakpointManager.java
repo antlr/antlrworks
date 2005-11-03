@@ -1,6 +1,7 @@
 package org.antlr.works.editor.ate;
 
 import java.util.List;
+import java.util.Set;
 /*
 
 [The "BSD licence"]
@@ -40,6 +41,9 @@ public abstract class ATEBreakpointManager {
         this.textEditor = textEditor;
     }
 
-    public abstract List getBreakpointEntities();
+    public Set getBreakpoints() {
+        return textEditor.gutter.getBreakpoints();
+    }
 
+    public abstract List getBreakpointEntities();
 }

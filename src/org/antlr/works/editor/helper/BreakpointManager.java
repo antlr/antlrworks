@@ -1,10 +1,10 @@
 package org.antlr.works.editor.helper;
 
-import org.antlr.works.editor.ate.ATEBreakpointManager;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.ate.ATEBreakpointManager;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 /*
 
 [The "BSD licence"]

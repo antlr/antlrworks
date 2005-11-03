@@ -103,8 +103,6 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         rulesTree.setCellRenderer(new CustomTableRenderer());
         rulesTree.setRowHeight(17);
         rulesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-
-        parser.addObserver(this);
     }
 
     public void setDelegate(RulesDelegate delegate) {

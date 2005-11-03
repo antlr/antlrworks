@@ -1,3 +1,7 @@
+package org.antlr.works.editor.ate;
+
+import java.awt.*;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -29,40 +33,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.actions;
-
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.stats.Statistics;
-
-public class ActionsRun extends AbstractActions {
-
-    public ActionsRun(EditorWindow editor) {
-        super(editor);
-    }
-
-    public void runInterpreter() {
-        try {
-            Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_MENU);
-            editor.selectInterpreterTab();
-            editor.interpreter.interpret();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void debug() {
-        editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchLocalDebugger(false);
-    }
-
-    public void buildAndDebug() {
-        editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchLocalDebugger(true);
-    }
-
-    public void debugRemote() {
-        editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchRemoteDebugger();
-    }
-
+public abstract class ATEAnalysisManager {
+    public abstract int[] getAvailableTypes();
+    public abstract List getItemsForType(int type);
+    public abstract Color getItemColorForType(int type);
+    public abstract int getLinesCount();
+    public abstract Color getAnalysisColor();
+    public abstract String getAnalysisDescription();
 }

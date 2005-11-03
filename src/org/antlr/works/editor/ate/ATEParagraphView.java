@@ -36,8 +36,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ATEParagraphView extends ParagraphView {
 
+    public static final Color highlightColor = new Color(1.0f, 1.0f, 0.5f, 0.3f);
     public Rectangle tempRect = new Rectangle();
-    public final Color highlightColor = new Color(1.0f, 1.0f, 0.5f, 0.3f);
 
     public ATEParagraphView(Element elem) {
         super(elem);

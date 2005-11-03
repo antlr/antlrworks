@@ -4,6 +4,7 @@
 - make sure synchronized get method copy objects (if needed) - idem for setters
 - handle the complete rule definition as stated in slides
 - drag and drop doesn't work on Windows anymore
+- jump to location should center if possible
 
 - contextual menus on rules to group using selected rules (do not rely on text selection)
 - ideas: undefined rule: rename rule, delete token

@@ -1,7 +1,7 @@
 package org.antlr.works.parser;
 
-import org.antlr.works.editor.ate.ATEFoldingEntity;
 import org.antlr.works.editor.ate.ATEBreakpointEntity;
+import org.antlr.works.editor.ate.ATEFoldingEntity;
 import org.antlr.works.editor.helper.PersistentObject;
 import org.antlr.works.visualization.grammar.GrammarEngineError;
 
@@ -62,6 +62,10 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
         this.colon = colon;
         this.end = end;
         this.isAllUpperCase =  name.equals(name.toUpperCase());
+    }
+
+    public void completed() {
+        // Called when the rule has been completely parsed
         this.hasLeftRecursion = detectLeftRecursion();
     }
 
@@ -221,7 +225,7 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
         if(errors == null)
             return false;
         else
-            return errors.size()>0;
+            return !errors.isEmpty();
     }
 
     public String getErrorMessageString(int index) {
@@ -320,4 +324,5 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
         this.expanded = oldRule.expanded;
         this.breakpoint = oldRule.breakpoint;
     }
+
 }

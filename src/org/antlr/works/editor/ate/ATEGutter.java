@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.ate;
 
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;

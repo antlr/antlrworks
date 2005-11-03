@@ -239,6 +239,7 @@ public class Parser {
 
             if(T(0).type == Lexer.TOKEN_SEMI) {
                 rule.end = T(0);
+                rule.completed();
                 return rule;
             }
         }

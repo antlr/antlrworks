@@ -37,7 +37,7 @@ import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.actions.*;
-import org.antlr.works.editor.ate.ATEGutter;
+import org.antlr.works.editor.ate.ATEPanelDelegate;
 import org.antlr.works.editor.ate.ATETextPane;
 import org.antlr.works.editor.autocompletion.AutoCompletionMenu;
 import org.antlr.works.editor.autocompletion.AutoCompletionMenuDelegate;
@@ -67,7 +67,7 @@ import java.util.List;
 
 public class EditorWindow extends XJWindow implements ThreadedParserObserver,
      AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate,
-     IdeaManagerDelegate, IdeaProvider, TipsProvider
+     IdeaManagerDelegate, IdeaProvider, TipsProvider, ATEPanelDelegate
 {
     public ThreadedParser parser;
     public KeyBindings keyBindings;
@@ -83,6 +83,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public BreakpointManager breakpointManager;
     public FoldingManager foldingManager;
     public UnderlyingManager underlyingManager;
+    public AnalysisManager analysisManager;
 
     public Rules rules;
     public Visual visual;
@@ -141,16 +142,17 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         persistence = new Persistence(this);
 
         parser = new ThreadedParser(this);
-        parser.addObserver(this);
 
         editorGUI.createInterface();
+
         breakpointManager = new BreakpointManager(this);
         editorGUI.textEditor.setBreakpointManager(breakpointManager);
         foldingManager = new FoldingManager(this);
         editorGUI.textEditor.setFoldingManager(foldingManager);
-
         underlyingManager = new UnderlyingManager(this);
         editorGUI.textEditor.setUnderlyingManager(underlyingManager);
+        analysisManager = new AnalysisManager(this);
+        editorGUI.textEditor.setAnalysisManager(analysisManager);
 
         visual = new Visual(this);
         interpreter = new Interpreter(this);
@@ -181,6 +183,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         visual.setParser(parser);
 
         colorize = new TColorize(this);
+
+        // First rules, then EditorWindow
+        parser.addObserver(rules);
+        parser.addObserver(this);
 
         getTabbedPane().addTab("Syntax Diagram", visual.getContainer());
         getTabbedPane().addTab("Interpreter", interpreter.getContainer());
@@ -246,11 +252,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public ATETextPane getTextPane() {
-        return editorGUI.textEditor.textPane;
-    }
-
-    public ATEGutter getGutter() {
-        return editorGUI.textEditor.gutter;
+        return editorGUI.textEditor.getTextPane();
     }
 
     public JTabbedPane getTabbedPane() {
@@ -334,10 +336,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void changeUpdate() {
-        changeUpdate(-1, -1, false);
+        ateChangeUpdate(-1, -1, false);
     }
 
-    public void changeUpdate(int offset, int length, boolean insert) {
+    public void ateChangeUpdate(int offset, int length, boolean insert) {
         if(insert) {
             editorGUI.immediateColorization.colorize(offset, length);
             editorGUI.autoIndent.indent(offset, length);
@@ -346,12 +348,31 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         changeDone();
 
         adjustTokens(offset, length);
-        getGutter().markDirty();
+        editorGUI.textEditor.changeOccurred();
 
         parser.parse();
         visual.cancelDrawingProcess();
 
         colorize.setColorizeLocation(offset, length);
+    }
+
+    public void ateMousePressed(Point point) {
+        displayIdeas(point);
+    }
+
+    public void ateMouseExited() {
+        if(getTextPane().hasFocus()) {
+            // Do not hide the ideas because
+            // otherwise we don't be able to access the idea
+            tipsHide();
+        }
+    }
+
+    public void ateMouseMoved(Point relativePoint) {
+        if(getTextPane().hasFocus()) {
+            Point absolutePoint = SwingUtilities.convertPoint(getTextPane(), relativePoint, getJavaContainer());
+            displayTips(relativePoint, absolutePoint);
+        }
     }
 
     public void beginGroupChange(String name) {
@@ -368,13 +389,13 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void enableTextPane(boolean undo) {
-        editorGUI.textEditor.textPaneListener.enable();
+        editorGUI.textEditor.setEnableRecordChange(true);
         if(undo)
             enableTextPaneUndo();
     }
 
     public void disableTextPane(boolean undo) {
-        editorGUI.textEditor.textPaneListener.disable();
+        editorGUI.textEditor.setEnableRecordChange(false);
         if(undo)
             disableTextPaneUndo();
     }
@@ -597,6 +618,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public void parserDidParse() {
         persistence.restore();
+        analysisManager.refresh();
 
         editorGUI.parserDidComplete();
 
@@ -605,7 +627,6 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
         colorize.colorize();
         interpreter.setRules(parser.getRules());
-        getGutter().markDirty();
 
         if(windowFirstDisplay) {
             windowFirstDisplay = false;
@@ -841,9 +862,9 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         setCaretPosition(insertionIndex);
     }
 
-    public void caretUpdate(int index) {
+    public void ateCaretUpdate(int index) {
         editorGUI.updateCursorInfo();
-        if(editorGUI.textEditor.textPane.hasFocus()) {
+        if(getTextPane().hasFocus()) {
             ideasHide();
             if(!editorGUI.textEditor.isTyping())
                 displayIdeas(getCaretPosition());

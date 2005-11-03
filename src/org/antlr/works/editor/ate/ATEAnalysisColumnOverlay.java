@@ -1,3 +1,11 @@
+package org.antlr.works.editor.ate;
+
+import org.antlr.works.editor.swing.OverlayObject;
+import org.antlr.works.editor.tooltip.ToolTipList;
+import org.antlr.works.editor.tooltip.ToolTipListDelegate;
+
+import javax.swing.*;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -29,40 +37,41 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.actions;
+public class ATEAnalysisColumnOverlay extends OverlayObject implements ToolTipListDelegate {
 
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.stats.Statistics;
+    public ToolTipList toolTip;
+    public Point location;
 
-public class ActionsRun extends AbstractActions {
-
-    public ActionsRun(EditorWindow editor) {
-        super(editor);
+    public ATEAnalysisColumnOverlay(JFrame parentFrame, JComponent parentComponent) {
+        super(parentFrame, parentComponent);
     }
 
-    public void runInterpreter() {
-        try {
-            Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_MENU);
-            editor.selectInterpreterTab();
-            editor.interpreter.interpret();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void setLocation(Point location) {
+        this.location = SwingUtilities.convertPoint(parentComponent, location, parentFrame);
+        resize();
     }
 
-    public void debug() {
-        editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchLocalDebugger(false);
+    public void setText(String text) {
+        toolTip.setText(text);
     }
 
-    public void buildAndDebug() {
-        editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchLocalDebugger(true);
+    public void resize() {
+        toolTip.resize();
+        if(location != null)
+            content.setBounds(location.x-toolTip.getWidth(),  location.y, toolTip.getWidth(), toolTip.getHeight());
     }
 
-    public void debugRemote() {
-        editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchRemoteDebugger();
+    public JComponent overlayCreateInterface() {
+        toolTip = new ToolTipList(this);
+        return toolTip;
+    }
+
+    public boolean overlayWillDisplay() {
+        return true;
+    }
+
+    public void toolTipListHide() {
+        hide();
     }
 
 }

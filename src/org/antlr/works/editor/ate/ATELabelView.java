@@ -36,7 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ATELabelView extends LabelView {
 
-    public final Color foldedColor = new Color(0.8f, 0.8f, 0.8f, 0.4f);
+    public static final Color foldedColor = new Color(0.8f, 0.8f, 0.8f, 0.4f);
 
     public ATELabelView(Element elem) {
         super(elem);
@@ -104,7 +104,7 @@ public class ATELabelView extends LabelView {
             super.paint(g, allocation);
         } else if(getStartOffset() == getEntity().foldingEntityGetStartIndex() && isTopMostInvisible()) {
             // Draw the placeholder only in the first rule paragraph. A rule
-            // may have multiple paragraphs view ;-)
+            // may have multiple paragraphs view
 
             Rectangle alloc = (allocation instanceof Rectangle) ?
                     (Rectangle)allocation :

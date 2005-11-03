@@ -6,12 +6,9 @@ import org.antlr.works.editor.ate.ATEFoldingEntityProxy;
 import org.antlr.works.editor.ate.ATEFoldingManager;
 import org.antlr.works.parser.ParserAction;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.ThreadedParserObserver;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 /*
 
 [The "BSD licence"]

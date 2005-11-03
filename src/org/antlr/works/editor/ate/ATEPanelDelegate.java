@@ -1,10 +1,5 @@
-package org.antlr.works.editor.analysis;
+package org.antlr.works.editor.ate;
 
-import org.antlr.works.editor.swing.OverlayObject;
-import org.antlr.works.editor.tooltip.ToolTipList;
-import org.antlr.works.editor.tooltip.ToolTipListDelegate;
-
-import javax.swing.*;
 import java.awt.*;
 /*
 
@@ -37,41 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AnalysisColumnOverlay extends OverlayObject implements ToolTipListDelegate {
-
-    public ToolTipList toolTip;
-    public Point location;
-
-    public AnalysisColumnOverlay(JFrame parentFrame, JComponent parentComponent) {
-        super(parentFrame, parentComponent);
-    }
-
-    public void setLocation(Point location) {
-        this.location = SwingUtilities.convertPoint(parentComponent, location, parentFrame);
-        resize();
-    }
-
-    public void setText(String text) {
-        toolTip.setText(text);
-    }
-
-    public void resize() {
-        toolTip.resize();
-        if(location != null)
-            content.setBounds(location.x-toolTip.getWidth(),  location.y, toolTip.getWidth(), toolTip.getHeight());
-    }
-
-    public JComponent overlayCreateInterface() {
-        toolTip = new ToolTipList(this);
-        return toolTip;
-    }
-
-    public boolean overlayWillDisplay() {
-        return true;
-    }
-
-    public void toolTipListHide() {
-        hide();
-    }
-
+public interface ATEPanelDelegate {
+    public void ateCaretUpdate(int index);
+    public void ateChangeUpdate(int offset, int length, boolean insert);
+    public void ateMousePressed(Point point);
+    public void ateMouseExited();
+    public void ateMouseMoved(Point relativePoint);
 }

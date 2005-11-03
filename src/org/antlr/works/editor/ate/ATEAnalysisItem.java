@@ -1,3 +1,4 @@
+package org.antlr.works.editor.ate;
 /*
 
 [The "BSD licence"]
@@ -29,40 +30,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.actions;
+public class ATEAnalysisItem {
 
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.stats.Statistics;
+    public int type;
+    public int line;
+    public int index;
+    public String description;
 
-public class ActionsRun extends AbstractActions {
-
-    public ActionsRun(EditorWindow editor) {
-        super(editor);
+    public ATEAnalysisItem(int type, int line, int index, String description) {
+        this.type = type;
+        this.line = line;
+        this.index = index;
+        this.description = description;
     }
-
-    public void runInterpreter() {
-        try {
-            Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_MENU);
-            editor.selectInterpreterTab();
-            editor.interpreter.interpret();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void debug() {
-        editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchLocalDebugger(false);
-    }
-
-    public void buildAndDebug() {
-        editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchLocalDebugger(true);
-    }
-
-    public void debugRemote() {
-        editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchRemoteDebugger();
-    }
-
 }

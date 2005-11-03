@@ -66,7 +66,7 @@ public class ActionsGoTo extends AbstractActions {
     }
 
     public void goToBreakpoint(int direction) {
-        Set breakpoints = editor.getGutter().getBreakpoints();
+        Set breakpoints = editor.breakpointManager.getBreakpoints();
         int line = editor.getLineIndexAtTextPosition(getCaretPosition());
         if(line == -1)
             return;
