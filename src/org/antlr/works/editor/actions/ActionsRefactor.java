@@ -72,7 +72,7 @@ public class ActionsRefactor extends AbstractActions {
         for(int index = tokens.size()-1; index>0; index--) {
             Token token = (Token) tokens.get(index);
             if(token.type == t.type && token.getAttribute().equals(attr)) {
-                editor.editorGUI.textEditor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
+                editor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
             }
         }
     }
@@ -112,7 +112,7 @@ public class ActionsRefactor extends AbstractActions {
             if(!token.getAttribute().equals(attr))
                 continue;
 
-            editor.editorGUI.textEditor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
+            editor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
         }
     }
 
@@ -130,7 +130,7 @@ public class ActionsRefactor extends AbstractActions {
 
         editor.beginGroupChange("Remove Left Recursion");
         String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
-        editor.editorGUI.textEditor.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
+        editor.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
         editor.endGroupChange();
     }
 
@@ -141,7 +141,7 @@ public class ActionsRefactor extends AbstractActions {
             ParserRule rule = (ParserRule)rules.get(index);
             if(rule.hasLeftRecursion()) {
                 String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
-                editor.editorGUI.textEditor.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);                
+                editor.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
             }
         }
         editor.endGroupChange();
@@ -154,12 +154,14 @@ public class ActionsRefactor extends AbstractActions {
             editor.beginGroupChange("Extract Rule");
             boolean lexer = ruleName.equals(ruleName.toUpperCase());
             int index = insertionIndexForRule(lexer);
-            String ruleContent = editor.getSelectedText();
+            int leftIndex = editor.getSelectionLeftIndexOnTokenBoundary();
+            int rightIndex = editor.getSelectionRightIndexOnTokenBoundary();
+            String ruleContent = editor.getText().substring(leftIndex, rightIndex);
             if(index > editor.getCaretPosition()) {
                 insertRuleAtIndex(createRule(ruleName, ruleContent), index);
-                editor.getTextPane().replaceSelection(ruleName);
+                editor.replaceText(leftIndex, rightIndex, ruleName);
             } else {
-                editor.editorGUI.textEditor.replaceSelectedText(ruleName);
+                editor.replaceText(leftIndex, rightIndex, ruleName);
                 insertRuleAtIndex(createRule(ruleName, ruleContent), index);
             }
             editor.endGroupChange();
@@ -191,16 +193,27 @@ public class ActionsRefactor extends AbstractActions {
 
         String ruleName = rule.name;
         String ruleContent = Utils.trimString(oldContent.substring(rule.colon.getEndIndex(), rule.end.getStartIndex()));
+
         List rules = editor.rules.getRules();
+        List tokens = editor.getTokens();
+
+        if(tokens.indexOf(rule.end)-tokens.indexOf(rule.colon) > 2) {
+            // More than one token, append ()
+            ruleContent = "("+ruleContent+")";
+        }
+
         for(int r=rules.size()-1; r>=0; r--) {
             ParserRule candidate = (ParserRule)rules.get(r);
-            Token tstart = candidate.colon;
-            Token tend = candidate.end;
-            List tokens = editor.getTokens();
-            for(int index=tokens.indexOf(tend)-1; index>tokens.indexOf(tstart); index--) {
-                Token t = (Token)tokens.get(index);
-                if(t.getAttribute().equals(ruleName))
-                    s.replace(t.getStartIndex(), t.getEndIndex(), ruleContent);
+            if(candidate == rule) {
+                s.delete(rule.getStartIndex(), rule.getEndIndex()+1);
+            } else {
+                Token tstart = candidate.colon;
+                Token tend = candidate.end;
+                for(int index=tokens.indexOf(tend)-1; index>tokens.indexOf(tstart); index--) {
+                    Token t = (Token)tokens.get(index);
+                    if(t.getAttribute().equals(ruleName))
+                        s.replace(t.getStartIndex(), t.getEndIndex(), ruleContent);
+                }
             }
         }
 
@@ -217,7 +230,7 @@ public class ActionsRefactor extends AbstractActions {
         editor.disableTextPaneUndo();
         editor.getTextPane().setText(newText);
         editor.enableTextPaneUndo();
-        editor.getTextPane().setCaretPosition(oldCaretPosition +caretOffset);
+        editor.getTextEditor().setCaretPosition(oldCaretPosition +caretOffset);
     }
 
     public int insertionIndexForRule(boolean lexer) {

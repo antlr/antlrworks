@@ -68,14 +68,14 @@ public class EditorToolbar {
         return toolbar;
     }
 
-    public void applyPrefs() {
+    /*public void applyPrefs() {
         sd.setSelected(true);
         coloring.setSelected(true);
         analysis.setSelected(true);
         ideas.setSelected(true);
         underlying.setSelected(true);
         tips.setSelected(true);
-    }
+    } */
 
     public void createInterface() {
         toolbar = Box.createHorizontalBox();
@@ -86,11 +86,11 @@ public class EditorToolbar {
         toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(sd = (JButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Syntax diagram", false));
         toolbar.add(coloring = (JButton)createNewButton(IconManager.shared().getIconColoring(), "Syntax coloring", false));
-        toolbar.add(analysis = (JButton)createNewButton(IconManager.shared().getIconAnalysis(), "Syntax analysis", false));
-        toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(ideas = (JButton)createNewButton(IconManager.shared().getIconIdea(), "Syntax ideas", false));
-        toolbar.add(underlying = (JButton)createNewButton(IconManager.shared().getIconUnderlying(), "Syntax underlying", false));
-        toolbar.add(tips = (JButton)createNewButton(IconManager.shared().getIconTips(), "Syntax tips", false));
+//        toolbar.add(analysis = (JButton)createNewButton(IconManager.shared().getIconAnalysis(), "Syntax analysis", false));
+        toolbar.add(Box.createHorizontalStrut(15));
+//        toolbar.add(underlying = (JButton)createNewButton(IconManager.shared().getIconUnderlying(), "Syntax underlying", false));
+//        toolbar.add(tips = (JButton)createNewButton(IconManager.shared().getIconTips(), "Syntax tips", false));
         toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(find = (JButton)createNewButton(IconManager.shared().getIconFind(), "Find text", false));
     }
@@ -120,11 +120,11 @@ public class EditorToolbar {
             }
         });
 
-        analysis.addActionListener(new ActionListener() {
+/*        analysis.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 editor.toggleAnalysis();
             }
-        });
+        });*/
 
         ideas.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -132,7 +132,7 @@ public class EditorToolbar {
             }
         });
 
-        underlying.addActionListener(new ActionListener() {
+/*        underlying.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 editor.toggleUnderlying();
             }
@@ -142,7 +142,7 @@ public class EditorToolbar {
             public void actionPerformed(ActionEvent e) {
                 editor.toggleTips();
             }
-        });
+        });*/
 
         find.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

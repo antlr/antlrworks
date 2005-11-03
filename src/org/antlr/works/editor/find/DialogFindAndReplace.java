@@ -98,6 +98,12 @@ public class DialogFindAndReplace extends XJPanel {
             }
         });
 
+        regexButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                delegate.setRegex(regexButton.isSelected());
+            }
+        });
+
         optionsCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 delegate.setOptions(optionsCombo.getSelectedIndex());
@@ -120,6 +126,7 @@ public class DialogFindAndReplace extends XJPanel {
         label2 = new JLabel();
         replaceField = new JTextField();
         ignoreCaseButton = new JCheckBox();
+        regexButton = new JCheckBox();
         optionsCombo = new JComboBox();
         replaceAllButton = new JButton();
         replaceButton = new JButton();
@@ -178,6 +185,10 @@ public class DialogFindAndReplace extends XJPanel {
         ignoreCaseButton.setText("Ignore case");
         contentPane.add(ignoreCaseButton, cc.xy(5, 7));
 
+        //---- regexButton ----
+        regexButton.setText("Regular expression");
+        contentPane.add(regexButton, cc.xy(7, 7));
+
         //---- optionsCombo ----
         optionsCombo.setModel(new DefaultComboBoxModel(new String[] {
             "Contains",
@@ -215,6 +226,7 @@ public class DialogFindAndReplace extends XJPanel {
     private JLabel label2;
     private JTextField replaceField;
     private JCheckBox ignoreCaseButton;
+    private JCheckBox regexButton;
     private JComboBox optionsCombo;
     private JButton replaceAllButton;
     private JButton replaceButton;
@@ -222,6 +234,5 @@ public class DialogFindAndReplace extends XJPanel {
     private JButton previousButton;
     private JButton nextButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
-
 
 }

@@ -78,14 +78,18 @@ public class FoldingManager extends ATEFoldingManager {
 
     public List getFoldingEntities() {
         List entities = new ArrayList();
-        entities.addAll(editor.parser.getRules());
+        List rules = editor.parser.getRules();
+        if(rules != null)
+            entities.addAll(rules);
 
         // Add only actions that are in expanded rules
         List actions = editor.parser.getActions();
-        for(int index=0; index<actions.size(); index++) {
-            ParserAction action = (ParserAction)actions.get(index);
-            if(action.rule.isExpanded())
-                entities.add(action);
+        if(actions != null) {
+            for(int index=0; index<actions.size(); index++) {
+                ParserAction action = (ParserAction)actions.get(index);
+                if(action.rule.isExpanded())
+                    entities.add(action);
+            }
         }
 
         return entities;

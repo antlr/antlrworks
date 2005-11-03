@@ -34,7 +34,9 @@ package org.antlr.works.editor.rules;
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
 import org.antlr.works.editor.ate.ATEFoldingEntity;
+import org.antlr.works.editor.ate.ATETextPane;
 import org.antlr.works.editor.helper.KeyBindings;
+import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
@@ -61,26 +63,25 @@ import java.util.List;
 
 public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
-    protected RulesDelegate delegate = null;
-    protected ThreadedParser parser = null;
+    protected EditorWindow editor;
+    protected ThreadedParser parser;
+    protected RulesDelegate delegate;
 
-    protected List duplicateRules = null;
-    protected List undefinedTokens = null;
-    protected List hasLeftRecursionRules = null;
+    protected List duplicateRules;
+    protected List undefinedTokens;
+    protected List hasLeftRecursionRules;
 
     protected boolean programmaticallySelectingRule = false;
     protected boolean selectNextRule = false;
-
-    protected JTextPane textPane;
 
     protected JTree rulesTree;
     protected DefaultMutableTreeNode rulesTreeRootNode;
     protected DefaultTreeModel rulesTreeModel;
     protected List rulesTreeExpandedNodes;
 
-    public Rules(ThreadedParser parser, JTextPane textPane, XJTree rulesTree) {
+    public Rules(EditorWindow editor, ThreadedParser parser, XJTree rulesTree) {
+        this.editor = editor;
         this.parser = parser;
-        this.textPane = textPane;
         this.rulesTree = rulesTree;
 
         duplicateRules = new ArrayList();
@@ -160,7 +161,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     public class RuleMoveUpAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
-            ParserRule sourceRule = getEnclosingRuleAtPosition(textPane.getCaretPosition());
+            ParserRule sourceRule = getEnclosingRuleAtPosition(editor.getCaretPosition());
             int previousRuleIndex = parser.getRules().indexOf(sourceRule)-1;
             if(previousRuleIndex>=0) {
                 ParserRule targetRule = parser.getRuleAtIndex(previousRuleIndex);
@@ -171,7 +172,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     public class RuleMoveDownAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
-            ParserRule targetRule = getEnclosingRuleAtPosition(textPane.getCaretPosition());
+            ParserRule targetRule = getEnclosingRuleAtPosition(editor.getCaretPosition());
             int nextRuleIndex = parser.getRules().indexOf(targetRule)+1;
             ParserRule sourceRule = parser.getRuleAtIndex(nextRuleIndex);
             if(sourceRule != null) {
@@ -187,7 +188,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         restoreExpandedNodes();
 
         // Select again the row (otherwise, the selection is lost)
-        selectRuleAtPosition(textPane.getCaretPosition());
+        selectRuleAtPosition(editor.getCaretPosition());
     }
 
     public ParserGroup getSelectedGroup() {
@@ -418,11 +419,11 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     public void selectNextRule() {
-        ParserRule rule = getEnclosingRuleAtPosition(textPane.getCaretPosition());
+        ParserRule rule = getEnclosingRuleAtPosition(editor.getCaretPosition());
         int index = parser.getRules().indexOf(rule)+1;
         rule = parser.getRuleAtIndex(index);
         if(rule != null) {
-            textPane.setCaretPosition(rule.getStartIndex());
+            editor.setCaretPosition(rule.getStartIndex());
             delegate.rulesCaretPositionDidChange();
         }
     }
@@ -444,7 +445,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         }
     }
 
-    public void selectTextRules(List rules) {
+    /*public void selectTextRules(List rules) {
         if(rules == null || rules.isEmpty())
             return;
 
@@ -468,13 +469,13 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         programmaticallySelectingRule = false;
 
         delegate.rulesDidSelectRule();
-    }
+    } */
 
     public void goToRule(ParserRule rule) {
-        textPane.setCaretPosition(rule.start.getStartIndex());
+        editor.setCaretPosition(rule.start.getStartIndex());
     }
 
-    public void selectTextRule(ParserRule rule) {
+    /*public void selectTextRule(ParserRule rule) {
         if(rule == null)
             return;
 
@@ -494,7 +495,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         programmaticallySelectingRule = false;
 
         delegate.rulesDidSelectRule();
-    }
+    } */
 
     public void rebuildHasLeftRecursionRulesList() {
         if(parser.getRules() == null)
@@ -666,17 +667,17 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             selectNextRule = false;
             selectNextRule();
         } else
-            selectRuleAtPosition(textPane.getCaret().getDot());
+            selectRuleAtPosition(editor.getCaretPosition());
     }
 
     public boolean moveRule(ParserRule sourceRule, ParserRule targetRule, boolean dropAbove) {
         if(sourceRule == null || targetRule == null)
             return false;
         
-        String sourceRuleText = textPane.getText();
+        String sourceRuleText = editor.getText();
 
         try {
-            Document doc = textPane.getDocument();
+            Document doc = editor.getTextPane().getDocument();
 
             int removeStartIndex = sourceRule.getStartIndex();
             int targetInsertionIndex = dropAbove ? targetRule.getStartIndex() : targetRule.getEndIndex()+2;
@@ -689,11 +690,11 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             if(sourceRule.getStartIndex()>targetRule.getStartIndex()) {
                 doc.remove(removeStartIndex, removeLength);
                 doc.insertString(targetInsertionIndex, sourceRuleText, null);
-                textPane.setCaretPosition(targetInsertionIndex);
+                editor.setCaretPosition(targetInsertionIndex);
             } else {
                 doc.insertString(targetInsertionIndex, sourceRuleText, null);
                 doc.remove(removeStartIndex, removeLength);
-                textPane.setCaretPosition(targetInsertionIndex-removeLength);
+                editor.setCaretPosition(targetInsertionIndex-removeLength);
             }
             return true;
         } catch (BadLocationException e) {

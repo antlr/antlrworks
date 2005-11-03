@@ -111,11 +111,11 @@ public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDec
             // End of file is considered as a closing group but no group really exists
             // for that purpose
             Token t = closingGroup.token;
-            editor.editorGUI.textEditor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
+            editor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
         }
 
         Token t = openGroup.token;
-        editor.editorGUI.textEditor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
+        editor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
 
         editor.endGroupChange();
     }

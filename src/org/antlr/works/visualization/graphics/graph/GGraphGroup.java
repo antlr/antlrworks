@@ -122,7 +122,7 @@ public class GGraphGroup extends GGraphAbstract {
             }
 
             // Find the next non-skipped state
-            NFAState nextState = null;
+            NFAState nextState;
             while(true) {
                 nextState = (NFAState)stateList.get(i+1);
                 if(node.state.containsStateNumber(nextState.stateNumber))

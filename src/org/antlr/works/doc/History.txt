@@ -4,12 +4,16 @@ Version 1.0ea5 - 11/02/05
 - refactor: inline rule
 - refactor: extract rule
 
+- added regex expression in the Find dialog
+
+- improved caret jump to position by centering the text
 - improved syntax coloring to match more ANTLR 3 specification
 - improved rule folding: can now fold using the bottom anchor
 - re-introduced actions folding
 - go to rule: rule displayed in red if not match found
 
 - fixed a bug where the undo/redo menu item title would not display the correct action name
+- fixed a bug in the Find dialog where some pattern would cause an exception (didn't quote in the regex)
 
 Version 1.0ea4 - 10/22/05
 

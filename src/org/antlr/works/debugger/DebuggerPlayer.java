@@ -244,7 +244,6 @@ public class DebuggerPlayer {
     public void playLT(int index, Token token) {
         if(getLookAheadText() != null) {
             getLookAheadText().LT(index, token);
-            return;
         }
     }
 
@@ -328,14 +327,12 @@ public class DebuggerPlayer {
     public void playMark(int id) {
         if(getLookAheadText() != null) {
             getLookAheadText().setEventMark(id);
-            return;
         }
     }
 
     public void playRewind(int id) {
         if(getLookAheadText() != null) {
             getLookAheadText().setEventRewind(id);
-            return;
         }
     }
 

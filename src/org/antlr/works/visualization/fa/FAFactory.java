@@ -186,7 +186,7 @@ public class FAFactory {
     }
 
     public NFAState targetStateOfTransition(Transition transition) {
-        NFAState target = null;
+        NFAState target;
         if(transition instanceof RuleClosureTransition) {
             RuleClosureTransition rct = (RuleClosureTransition)transition;
             target = rct.getFollowState();
@@ -233,7 +233,7 @@ public class FAFactory {
 
     public boolean hasOneOrMoreEpsilonTransitionOnly(NFAState state) {
         for(int t=0; t<state.getNumberOfTransitions(); t++) {
-            Transition transition = (Transition)state.transition(t);
+            Transition transition = state.transition(t);
             if(!transition.isEpsilon())
                 return false;
         }
@@ -242,7 +242,7 @@ public class FAFactory {
 
     public boolean hasMoreThanOneEpsilonTransitionOnly(NFAState state) {
         for(int t=0; t<state.getNumberOfTransitions(); t++) {
-            Transition transition = (Transition)state.transition(t);
+            Transition transition = state.transition(t);
             if(!transition.isEpsilon())
                 return false;
         }
@@ -253,7 +253,7 @@ public class FAFactory {
         NFAState endState = endStateOfAlternative((NFAState)state.transition(0).target);
 
         for(int t=1; t<state.getNumberOfTransitions(); t++) {
-            Transition transition = (Transition)state.transition(t);
+            Transition transition = state.transition(t);
             NFAState newEndState = endStateOfAlternative((NFAState)transition.target);
             if(!endState.equals(newEndState))
                 return false;

@@ -104,6 +104,7 @@ public class ATEPanel extends JPanel {
 
     public void setCaretPosition(int position) {
         textPane.setCaretPosition(position);
+        scrollCenterToPosition(position);
     }
 
     public int getCaretPosition() {
@@ -131,6 +132,20 @@ public class ATEPanel extends JPanel {
             textPaneListener.enable();
         else
             textPaneListener.disable();
+    }
+
+    public void scrollCenterToPosition(int position) {
+        try {
+            Rectangle r = textPane.modelToView(position);
+            if (r != null) {
+                Rectangle vis = getVisibleRect();
+                r.y -= (vis.height / 2);
+                r.height = vis.height;
+                textPane.scrollRectToVisible(r);
+            }
+        } catch (BadLocationException ble) {
+            // ignore
+        }
     }
 
     public void toggleAnalysis() {
@@ -188,13 +203,7 @@ public class ATEPanel extends JPanel {
         textPane.moveCaretPosition(end);
         textPane.getCaret().setSelectionVisible(true);
 
-        Rectangle r;
-        try {
-            r = textPane.modelToView(start);
-            textPane.scrollRectToVisible(r);
-        } catch (BadLocationException e) {
-            e.printStackTrace();
-        }
+        scrollCenterToPosition(start);
     }
 
     public void textPaneDidPaint(Graphics g) {

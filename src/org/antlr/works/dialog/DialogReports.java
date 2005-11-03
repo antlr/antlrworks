@@ -162,7 +162,7 @@ public class DialogReports extends XJDialog {
             } else {
                 for(int i=0; i<sm.getStatsCount(); i++) {
                     if(humanReadable && multiple)
-                        s.append("\n**** "+(i+1)+" ****\n\n");
+                        s.append("\n**** ").append(i + 1).append(" ****\n\n");
                     s.append(isHumanReadable() ? sm.getReadableString(i) : sm.getRawString(i));
                     if(!humanReadable && multiple)
                         s.append('\n');

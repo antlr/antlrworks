@@ -87,8 +87,7 @@ public class SDLink {
     }
 
     public static void drawUpSloop(GContext context, GLink link, float x0, float y0, float x1, float y1) {
-        float xm = x0+(x1-x0)/2;
-        xm = x1;
+        float xm = x1;
         if(link.last) {
             float r = (x1-x0)/4;
             if(link.transition.loop) {

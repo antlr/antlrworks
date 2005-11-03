@@ -137,7 +137,7 @@ public class CodeGenerate implements Runnable {
         }
     }
 
-    protected void generateGrammar(Grammar grammar) throws IOException {
+    protected void generateGrammar(Grammar grammar) {
         String language = (String)grammar.getOption("language");
         if ( language!=null ) {
             CodeGenerator generator = new CodeGenerator(new MyTool(getOutputPath()), grammar, language);
@@ -152,7 +152,7 @@ public class CodeGenerate implements Runnable {
 
             GrammarReport report = new GrammarReport(grammar);
             GrammarReport.writeReport(GrammarReport.GRAMMAR_STATS_FILENAME,
-                                      report.toNotifyString());            
+                                      report.toNotifyString());
         }
     }
 
@@ -216,7 +216,7 @@ public class CodeGenerate implements Runnable {
         generateError = null;
 
         try {
-            if(generate(debug) == false) {
+            if(!generate(debug)) {
                 generateError = getLastError();
             }
         } catch (Exception e) {

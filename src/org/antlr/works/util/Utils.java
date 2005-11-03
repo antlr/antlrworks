@@ -56,6 +56,6 @@ public class Utils {
         if(a == s.length() || b == 0)
             return "";
         else
-            return s.substring(a, b);
+            return s.substring(a, b+1);
     }
 }

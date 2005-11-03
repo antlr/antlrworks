@@ -320,7 +320,7 @@ public class P4 implements SCM {
             // To submit, we have to get the depot file corresponding to the local file
             String depotFile = previousCommand.completion.getObjectForKey(P4Results.OTHER, "depotFile");
             if(depotFile != null) {
-                String[] commands = null;
+                String[] commands;
                 if(remainOpen)
                     commands = new String[] { "submit", "-r", "-i" };
                 else
@@ -488,7 +488,7 @@ public class P4 implements SCM {
         public void run() {
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line=null;
+                String line;
                 while ( (line = br.readLine()) != null) {
                     if(delegate != null)
                         delegate.streamWatcherDidReceiveText(this, line);

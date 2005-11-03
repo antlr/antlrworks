@@ -78,7 +78,7 @@ public class FAAnalysis {
         processedStates.add(state);
 
         for(int t=0; t<state.getNumberOfTransitions(); t++) {
-            Transition transition = (Transition)state.transition(t);
+            Transition transition = state.transition(t);
             addIncomingTransitionToState((NFAState)transition.target);
             recursiveAnalysis((NFAState)transition.target);
         }
@@ -90,7 +90,7 @@ public class FAAnalysis {
         processedStates.add(state);
 
         for(int t=0; t<state.getNumberOfTransitions(); t++) {
-            FATransition transition = (FATransition)state.transition(t);            
+            FATransition transition = state.transition(t);
             addIncomingTransitionToState(transition.target);
             recursiveAnalysis(transition.target);
         }

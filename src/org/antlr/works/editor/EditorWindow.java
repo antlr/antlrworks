@@ -39,6 +39,7 @@ import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.actions.*;
 import org.antlr.works.editor.ate.ATEPanelDelegate;
 import org.antlr.works.editor.ate.ATETextPane;
+import org.antlr.works.editor.ate.ATEPanel;
 import org.antlr.works.editor.autocompletion.AutoCompletionMenu;
 import org.antlr.works.editor.autocompletion.AutoCompletionMenuDelegate;
 import org.antlr.works.editor.autocompletion.TemplateRules;
@@ -174,7 +175,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         tipsManager.setOverlay(new TipsOverlay(this, getJFrame(), getTextPane()));
         tipsManager.addProvider(this);
 
-        rules = new Rules(parser, getTextPane(), editorGUI.rulesTree);
+        rules = new Rules(this, parser, editorGUI.rulesTree);
         grammar = new TGrammar(this);
 
         rules.setDelegate(this);
@@ -252,7 +253,12 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public ATETextPane getTextPane() {
+        // @todo need to access it directly ?
         return editorGUI.textEditor.getTextPane();
+    }
+
+    public ATEPanel getTextEditor() {
+        return editorGUI.textEditor;
     }
 
     public JTabbedPane getTabbedPane() {
@@ -444,8 +450,12 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return editorCache.getString(EditorCache.CACHE_TEXT);
     }
 
-    public synchronized String getSelectedText() {
-        return getTextPane().getSelectedText();
+    public int getSelectionLeftIndexOnTokenBoundary() {
+        return getTokenAtPosition(getTextPane().getSelectionStart()).getStartIndex();
+    }
+
+    public int getSelectionRightIndexOnTokenBoundary() {
+        return getTokenAtPosition(getTextPane().getSelectionEnd()).getEndIndex();
     }
 
     public synchronized String getFilePath() {
@@ -778,7 +788,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             case IDEA_DELETE_RULE:
                 ParserRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
                 if(r != null)
-                    editorGUI.textEditor.replaceText(r.getStartIndex(), r.getEndIndex(), "");
+                    replaceText(r.getStartIndex(), r.getEndIndex(), "");
                 break;
             case IDEA_CREATE_RULE:
                 ideaCreateRule(action);
@@ -846,4 +856,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         }
     }
 
+    public void replaceText(int leftIndex, int rightIndex, String text) {
+        editorGUI.textEditor.replaceText(leftIndex, rightIndex, text);
+    }
 }

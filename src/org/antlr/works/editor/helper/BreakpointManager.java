@@ -47,7 +47,9 @@ public class BreakpointManager extends ATEBreakpointManager {
 
     public List getBreakpointEntities() {
         List entities = new ArrayList();
-        entities.addAll(editor.parser.getRules());
+        List rules = editor.parser.getRules();
+        if(rules != null)
+            entities.addAll(rules);
         return entities;
     }
 }

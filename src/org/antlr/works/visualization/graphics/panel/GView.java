@@ -91,10 +91,6 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         }
     }
 
-    public void setParent(XJFrame parent) {
-      //  this.parent = parent;
-    }
-
     public void setGraphs(List graphs) {
         if(graphs == null)
             return;

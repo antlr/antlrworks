@@ -85,8 +85,8 @@ public class StatisticsReporter {
         s.append("&caffeine=");
         s.append(XJUtils.encodeToURL((String)info.get(DialogPersonalInfo.INFO_CAFFEINE), "-"));
 
-        URLConnection urc = null;
-        URL url = null;
+        URLConnection urc;
+        URL url;
         try {
             url = new URL(s.toString());
             urc = url.openConnection();
@@ -95,7 +95,7 @@ public class StatisticsReporter {
             return null;
         }
 
-        DataInputStream dis = null;
+        DataInputStream dis;
         try {
             dis = new DataInputStream(new BufferedInputStream(urc.getInputStream()));
         } catch (IOException e) {
@@ -103,7 +103,7 @@ public class StatisticsReporter {
             return null;
         }
 
-        String id = null;
+        String id;
 
         try {
             id = dis.readLine();
@@ -163,9 +163,9 @@ public class StatisticsReporter {
         param.append("&data=");
         param.append(XJUtils.encodeToURL(data));
 
-        URLConnection urc = null;
-        URL url = null;
-        DataInputStream dis = null;
+        URLConnection urc;
+        URL url;
+        DataInputStream dis;
         boolean success = false;
         try {
             url = new URL(param.toString());

@@ -148,7 +148,6 @@ public class Console {
 
                 ListSelectionModel lsm = (ListSelectionModel)e.getSource();
                 if(!lsm.isSelectionEmpty()) {
-                    int row = lsm.getMinSelectionIndex();
                     updateTextArea();
                 }
             }

@@ -59,7 +59,7 @@ public class TColorize extends EditorThread {
     private List tokens;
 
     private List offsets;
-    private Object offsetLock = new Object();
+    private final Object offsetLock = new Object();
 
     private boolean enable = true;
 
@@ -137,18 +137,6 @@ public class TColorize extends EditorThread {
         int startLocation = colorizeLength<0?colorizeOffset-colorizeLength:colorizeOffset;
         synchronized(offsetLock) {
             offsets.add(new Offset(startLocation, colorizeLength));
-        }
-    }
-
-    private void threadAdjustTokens(int location, int length) {
-        if(tokens == null)
-            return;
-
-        for(int t=0; t<tokens.size(); t++) {
-            Token token = (Token) tokens.get(t);
-            if(token.getStartIndex() > location) {
-                token.offsetPositionBy(length);
-            }
         }
     }
 

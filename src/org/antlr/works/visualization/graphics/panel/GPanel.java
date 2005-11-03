@@ -117,7 +117,6 @@ public class GPanel implements XJNotificationObserver {
 
     public void setParent(XJFrame parent) {
         this.parent = parent;
-        view.setParent(parent);
     }
 
     public void createNormalPanel() {
@@ -139,9 +138,7 @@ public class GPanel implements XJNotificationObserver {
 
     private Container createVisualizationPane() {
         view = new GView(context);
-        view.setParent(parent);
-        JScrollPane scrollPane = new JScrollPane(view);
-        return scrollPane;
+        return new JScrollPane(view);
     }
 
     private Container createErrorPane() {

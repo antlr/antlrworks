@@ -34,6 +34,7 @@ package org.antlr.works.editor.find;
 
 import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.frame.XJFrameDelegate;
+import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.editor.EditorWindow;
 
 import java.util.regex.Matcher;
@@ -41,12 +42,17 @@ import java.util.regex.Pattern;
 
 public class FindAndReplace implements XJFrameDelegate {
 
+    public static final String BEGIN_QUOTE = "\\Q";
+    public static final String END_QUOTE = "\\E";
+
     public EditorWindow editor;
     public String findString;
     public String replaceString;
     public int flags;
     public String prefix = "";
     public String suffix = "";
+    public String prefixRegex = BEGIN_QUOTE;
+    public String suffixRegex = END_QUOTE;
 
     public DialogFindAndReplace dialog;
 
@@ -58,6 +64,20 @@ public class FindAndReplace implements XJFrameDelegate {
         display();
     }
 
+    public String getCompilableString() {
+        return prefix+prefixRegex+findString+suffixRegex+suffix;
+    }
+
+    public Pattern getCompiledPattern() {
+        Pattern p = null;
+        try {
+            p = Pattern.compile(getCompilableString(), flags);
+        } catch(Exception e) {
+            XJAlert.display(dialog.getJFrame(), "Regex Find", "Pattern error:\n"+e.getLocalizedMessage());
+        }
+        return p;
+    }
+
     public void next() {
         if(findString == null || findString.length() == 0)
             return;
@@ -65,7 +85,10 @@ public class FindAndReplace implements XJFrameDelegate {
         int position = editor.getTextPane().getSelectionEnd();
         String text = editor.getText();
 
-        Pattern p = Pattern.compile(prefix+findString+suffix, flags);
+        Pattern p = getCompiledPattern();
+        if(p == null)
+            return;
+
         Matcher m = p.matcher(text);
         if(m.find(position)) {
             editor.selectTextRange(m.start(), m.end());
@@ -79,7 +102,10 @@ public class FindAndReplace implements XJFrameDelegate {
         int position = editor.getTextPane().getSelectionStart();
         String text = editor.getText();
 
-        Pattern p = Pattern.compile(prefix+findString+suffix, flags);
+        Pattern p = getCompiledPattern();
+        if(p == null)
+            return;
+
         Matcher m = p.matcher(text.substring(0, position));
         int matchStart = 0;
         int matchEnd = 0;
@@ -125,6 +151,16 @@ public class FindAndReplace implements XJFrameDelegate {
             flags = 0;
     }
 
+    public void setRegex(boolean flag) {
+        if(flag) {
+            prefixRegex = "";
+            suffixRegex = "";
+        } else {
+            prefixRegex = BEGIN_QUOTE;
+            suffixRegex = END_QUOTE;
+        }
+    }
+
     public void setOptions(int options) {
         prefix = "";
         suffix = "";
@@ -147,4 +183,5 @@ public class FindAndReplace implements XJFrameDelegate {
     public void frameDidClose(XJFrame frame) {
         dialog = null;
     }
+
 }

@@ -47,7 +47,7 @@ public class GrammarEngineError {
 
     public void addPath(List path, boolean disabled) {
         this.paths.add(path);
-        this.pathsDisabled.add(new Boolean(disabled));
+        this.pathsDisabled.add(Boolean.valueOf(disabled));
     }
 
     public void addRule(String rule) {
