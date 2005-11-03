@@ -61,7 +61,7 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
         this.start = start;
         this.colon = colon;
         this.end = end;
-        this.isAllUpperCase =  name.equals(name.toUpperCase());
+        this.isAllUpperCase = name.equals(name.toUpperCase());
     }
 
     public void completed() {
@@ -255,6 +255,10 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
         return this.name.compareTo(otherRule.name);
     }
 
+    public int getUniqueIdentifier() {
+        return name.hashCode();
+    }
+
     public boolean canBeCollapsed() {
         return colon.line <= end.line - 1;
     }
@@ -287,8 +291,8 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
         return ": ... ;";
     }
 
-    public String foldingEntityIdentifier() {
-        return name;
+    public String foldingEntityID() {
+        return String.valueOf(getUniqueIdentifier());
     }
 
     public int foldingEntityLevel() {
@@ -296,7 +300,7 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
     }
 
     public int breakpointEntityUniqueID() {
-        return name.hashCode();
+        return getUniqueIdentifier();
     }
 
     public int breakpointEntityIndex() {
@@ -316,7 +320,7 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
     }
 
     public Object getPersistentID() {
-        return new Integer(name.hashCode());
+        return new Integer(getUniqueIdentifier());
     }
 
     public void persistentAssign(PersistentObject otherObject) {

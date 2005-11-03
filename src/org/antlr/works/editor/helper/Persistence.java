@@ -86,9 +86,9 @@ public class Persistence {
 
         for(int index=0; index<objects.size(); index++) {
             PersistentObject o = (PersistentObject)objects.get(index);
-            PersistentObject oldO = (PersistentObject) m.get(o.getPersistentID());
-            if(oldO != null)
-                o.persistentAssign(oldO);
+            PersistentObject oldObject = (PersistentObject) m.get(o.getPersistentID());
+            if(oldObject != null)
+                o.persistentAssign(oldObject);
         }
     }
 }

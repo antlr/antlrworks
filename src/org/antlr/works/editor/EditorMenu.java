@@ -88,6 +88,8 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_REPLACE_LITERAL_WITH_TOKEN_LABEL = 61;
     public static final int MI_REMOVE_LEFT_RECURSION = 62;
     public static final int MI_REMOVE_ALL_LEFT_RECURSION = 63;
+    public static final int MI_EXTRACT_RULE = 64;
+    public static final int MI_INLINE_RULE = 65;
 
     // Generate
     public static final int MI_GENERATE_CODE = 70;
@@ -280,6 +282,9 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Remove Left Recursion", MI_REMOVE_LEFT_RECURSION, this));
         menu.addItem(new XJMenuItem("Remove All Left Recursion", MI_REMOVE_ALL_LEFT_RECURSION, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Extract Rule...", MI_EXTRACT_RULE, this));
+        menu.addItem(new XJMenuItem("Inline Rule", MI_INLINE_RULE, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -353,6 +358,8 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
             case MI_REMOVE_LEFT_RECURSION:
             case MI_REMOVE_ALL_LEFT_RECURSION:
+            case MI_EXTRACT_RULE:
+            case MI_INLINE_RULE:
             case MI_INSERT_TEMPLATE:
             case MI_GROUP:
             case MI_UNGROUP:
@@ -530,6 +537,14 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_REMOVE_ALL_LEFT_RECURSION:
                 editor.actionsRefactor.removeAllLeftRecursion();
+                break;
+
+            case MI_EXTRACT_RULE:
+                editor.actionsRefactor.extractRule();
+                break;
+
+            case MI_INLINE_RULE:
+                editor.actionsRefactor.inlineRule();
                 break;
         }
     }

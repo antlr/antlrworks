@@ -73,7 +73,7 @@ public class FoldingManager extends ATEFoldingManager {
         else
             return null;
 
-        return new ATEFoldingEntityProxy(this, entity.foldingEntityIdentifier(), tag);
+        return new ATEFoldingEntityProxy(this, entity.foldingEntityID(), tag);
     }
 
     public List getFoldingEntities() {
@@ -94,10 +94,10 @@ public class FoldingManager extends ATEFoldingManager {
     public ATEFoldingEntity getEntityForIdentifier(List entities, String identifier) {
         if(entities == null || entities.isEmpty())
             return null;
-
+        // @todo optimize using a map ?
         for(int index=0; index<entities.size(); index++) {
             ATEFoldingEntity entity = (ATEFoldingEntity)entities.get(index);
-            if(entity.foldingEntityIdentifier().equals(identifier))
+            if(entity.foldingEntityID().equals(identifier))
                 return entity;
         }
         return null;

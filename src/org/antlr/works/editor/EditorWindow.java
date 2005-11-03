@@ -316,17 +316,15 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     protected void adjustTokens(int location, int length) {
-        // @todo see with colorize if the colorize thread
-        // can use this calculation rather than doing it again
         // We have to do shift of every offset past the location in order
         // for collapsed view to be correctly rendered (the rule has to be
         // immediately at the right position and cannot wait for the
         // parser to finish)
 
+        if(location == -1)
+            return;
+        
         List tokens = getTokens();
-
-        // This may interfer with TColoriz thread which will also
-        // offset all tokens
         for(int t=0; t<tokens.size(); t++) {
             Token token = (Token) tokens.get(t);
             if(token.getStartIndex() > location) {
@@ -444,6 +442,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         if(editorCache.getString(EditorCache.CACHE_TEXT) == null)
             editorCache.setObject(EditorCache.CACHE_TEXT, getTextPane().getText());
         return editorCache.getString(EditorCache.CACHE_TEXT);
+    }
+
+    public synchronized String getSelectedText() {
+        return getTextPane().getSelectedText();
     }
 
     public synchronized String getFilePath() {
@@ -811,55 +813,9 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void ideaCreateRule(IdeaAction action) {
-        boolean lexerToken = action.token.isAllUpperCase();
-
-        // Add the rule in the next line by default
-        Point p = getLineTextPositionsAtTextPosition(getCaretPosition());
-        int insertionIndex = p.y + 2;
-
-        ParserRule rule = rules.getEnclosingRuleAtPosition(getCaretPosition());
-        if(rule != null) {
-            // @todo +2 means two lines - find the real line because +2 only walk two characters
-            if(rule.isLexerRule()) {
-                if(lexerToken) {
-                    // Add new rule just after this one
-                    insertionIndex = rule.getEndIndex()+2;
-                } else {
-                    // Add new rule after the last parser rule
-                    ParserRule last = rules.getLastParserRule();
-                    if(last != null) {
-                        insertionIndex = last.getEndIndex()+2;
-                    }
-                }
-            } else {
-                if(lexerToken) {
-                    // Add new rule after the last lexer rule
-                    ParserRule last = rules.getLastLexerRule();
-                    if(last != null) {
-                        insertionIndex = last.getEndIndex()+2;
-                    } else {
-                        // Add new rule after the last rule
-                        last = rules.getLastRule();
-                        if(last != null) {
-                            insertionIndex = last.getEndIndex()+2;
-                        }
-                    }
-                } else {
-                    // Add new rule just after this one
-                    insertionIndex = rule.getEndIndex()+2;
-                }
-            }
-        }
-
-        int tabSize = EditorPreferences.getEditorTabSize();
-        String ruleName = action.token.getAttribute();
-        insertionIndex = Math.min(getText().length(), insertionIndex);
-        if(ruleName.length() > tabSize + 1)
-            editorGUI.textEditor.insertText(insertionIndex, action.token.getAttribute()+"\n\t:\n\t;\n\n");
-        else
-            editorGUI.textEditor.insertText(insertionIndex, action.token.getAttribute()+"\t:\n\t;\n\n");
-
-        setCaretPosition(insertionIndex);
+        int index = actionsRefactor.insertionIndexForRule(action.token.isAllUpperCase());
+        actionsRefactor.insertRuleAtIndex(actionsRefactor.createRule(action.token.getAttribute(), null), index);
+        setCaretPosition(index);
     }
 
     public void ateCaretUpdate(int index) {
@@ -889,4 +845,5 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             // @todo display message "no rule selected"
         }
     }
+
 }

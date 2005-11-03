@@ -48,6 +48,10 @@ public class ParserAction implements PersistentObject, ATEFoldingEntity {
         return this.token.equals(((ParserAction)other).token);
     }
 
+    public int getUniqueIdentifier() {
+        return (rule.name+token.getAttribute()).hashCode();
+    }
+
     public void foldingEntitySetExpanded(boolean expanded) {
         this.expanded = expanded;
     }
@@ -76,8 +80,8 @@ public class ParserAction implements PersistentObject, ATEFoldingEntity {
         return "{ ... }";
     }
 
-    public String foldingEntityIdentifier() {
-        return rule.name+token.getAttribute().hashCode();
+    public String foldingEntityID() {
+        return String.valueOf(getUniqueIdentifier());
     }
 
     public int foldingEntityLevel() {
@@ -85,7 +89,7 @@ public class ParserAction implements PersistentObject, ATEFoldingEntity {
     }
 
     public Object getPersistentID() {
-        return new Integer((rule.name+token.getAttribute()).hashCode());
+        return new Integer(getUniqueIdentifier());
     }
 
     public void persistentAssign(PersistentObject otherObject) {

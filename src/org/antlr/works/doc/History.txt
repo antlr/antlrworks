@@ -1,9 +1,15 @@
 
-Version 1.0ea5 - 11/01/05
+Version 1.0ea5 - 11/02/05
 
+- refactor: inline rule
+- refactor: extract rule
+
+- improved syntax coloring to match more ANTLR 3 specification
 - improved rule folding: can now fold using the bottom anchor
 - re-introduced actions folding
 - go to rule: rule displayed in red if not match found
+
+- fixed a bug where the undo/redo menu item title would not display the correct action name
 
 Version 1.0ea4 - 10/22/05
 

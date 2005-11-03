@@ -271,24 +271,18 @@ public class ATEPanel extends JPanel {
         }
 
         public void changeUpdate(int offset, int length, boolean insert) {
-            if(delegate != null)
+            if(isEnable() && delegate != null)
                 delegate.ateChangeUpdate(offset, length, insert);
         }
 
         public void insertUpdate(DocumentEvent e) {
             setIsTyping(true);
-
-            if(isEnable()) {
-                changeUpdate(e.getOffset(), e.getLength(), true);
-            }
+            changeUpdate(e.getOffset(), e.getLength(), true);
         }
 
         public void removeUpdate(DocumentEvent e) {
             setIsTyping(true);
-
-            if(isEnable()) {
-                changeUpdate(e.getOffset(), -e.getLength(), false);
-            }
+            changeUpdate(e.getOffset(), -e.getLength(), false);
         }
 
         public void changedUpdate(DocumentEvent e) {

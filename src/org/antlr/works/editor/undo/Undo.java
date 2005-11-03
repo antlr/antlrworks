@@ -109,7 +109,7 @@ public class Undo {
         return undoManager.canRedo();
     }
 
-    protected void addEditEvent(UndoableEdit edit) {
+    public void addEditEvent(UndoableEdit edit) {
         undoManager.addEdit(edit);
         undoAction.updateUndoState();
         redoAction.updateRedoState();

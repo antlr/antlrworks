@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public interface ATEFoldingEntity {
 
-    public String foldingEntityIdentifier();
+    public String foldingEntityID();
     public int foldingEntityLevel();
 
     public void foldingEntitySetExpanded(boolean expanded);

@@ -1,13 +1,18 @@
 package org.antlr.works.editor.actions;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
+import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.util.Utils;
 
 import javax.swing.*;
+import javax.swing.undo.AbstractUndoableEdit;
+import java.awt.*;
 import java.util.List;
 /*
 
@@ -140,6 +145,164 @@ public class ActionsRefactor extends AbstractActions {
             }
         }
         editor.endGroupChange();
+    }
+
+    public void extractRule() {
+        String ruleName = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Rule name:", "Extract Rule",
+                            JOptionPane.QUESTION_MESSAGE, null, null, "");
+        if(ruleName != null && ruleName.length() > 0) {
+            editor.beginGroupChange("Extract Rule");
+            boolean lexer = ruleName.equals(ruleName.toUpperCase());
+            int index = insertionIndexForRule(lexer);
+            String ruleContent = editor.getSelectedText();
+            if(index > editor.getCaretPosition()) {
+                insertRuleAtIndex(createRule(ruleName, ruleContent), index);
+                editor.getTextPane().replaceSelection(ruleName);
+            } else {
+                editor.editorGUI.textEditor.replaceSelectedText(ruleName);
+                insertRuleAtIndex(createRule(ruleName, ruleContent), index);
+            }
+            editor.endGroupChange();
+        }
+    }
+
+    public void inlineRule() {
+        ParserRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
+        if(rule == null) {
+            XJAlert.display(editor.getWindowContainer(), "Inline Rule", "There is no rule at cursor position.");
+            return;
+        }
+
+        inlineRule(rule);
+    }
+
+    protected void inlineRule(String ruleName) {
+        ParserRule rule = editor.rules.getRuleWithName(ruleName);
+        if(rule == null) {
+            XJAlert.display(editor.getWindowContainer(), "Inline Rule", "Rule \""+ruleName+"\" doesn't exist.");
+            return;
+        }
+        inlineRule(rule);
+    }
+
+    protected void inlineRule(ParserRule rule) {
+        String oldContent = editor.getText();
+        StringBuffer s = new StringBuffer(oldContent);
+
+        String ruleName = rule.name;
+        String ruleContent = Utils.trimString(oldContent.substring(rule.colon.getEndIndex(), rule.end.getStartIndex()));
+        List rules = editor.rules.getRules();
+        for(int r=rules.size()-1; r>=0; r--) {
+            ParserRule candidate = (ParserRule)rules.get(r);
+            Token tstart = candidate.colon;
+            Token tend = candidate.end;
+            List tokens = editor.getTokens();
+            for(int index=tokens.indexOf(tend)-1; index>tokens.indexOf(tstart); index--) {
+                Token t = (Token)tokens.get(index);
+                if(t.getAttribute().equals(ruleName))
+                    s.replace(t.getStartIndex(), t.getEndIndex(), ruleContent);
+            }
+        }
+
+        replaceEditorTextAndAdjustCaretPosition(s.toString());
+
+        Undo undo = editor.getUndo(getTextPane());
+        undo.addEditEvent(new UndoableInlineRuleEdit(oldContent, rule.name));
+    }
+
+    protected void replaceEditorTextAndAdjustCaretPosition(String newText) {
+        int oldCaretPosition = editor.getTextPane().getCaretPosition();
+        String oldText = editor.getText();
+        int caretOffset = newText.length()-oldText.length();
+        editor.disableTextPaneUndo();
+        editor.getTextPane().setText(newText);
+        editor.enableTextPaneUndo();
+        editor.getTextPane().setCaretPosition(oldCaretPosition +caretOffset);
+    }
+
+    public int insertionIndexForRule(boolean lexer) {
+        // Add the rule in the next line by default
+        Point p = editor.getLineTextPositionsAtTextPosition(getCaretPosition());
+        int insertionIndex = p.y;
+
+        ParserRule rule = editor.rules.getEnclosingRuleAtPosition(getCaretPosition());
+        if(rule != null) {
+            if(rule.isLexerRule()) {
+                if(lexer) {
+                    // Add new rule just after this one
+                    insertionIndex = rule.getEndIndex();
+                } else {
+                    // Add new rule after the last parser rule
+                    ParserRule last = editor.rules.getLastParserRule();
+                    if(last != null) insertionIndex = last.getEndIndex();
+                }
+            } else {
+                if(lexer) {
+                    // Add new rule after the last lexer rule
+                    ParserRule last = editor.rules.getLastLexerRule();
+                    if(last != null) {
+                        insertionIndex = last.getEndIndex();
+                    } else {
+                        // Add new rule after the last rule
+                        last = editor.rules.getLastRule();
+                        if(last != null) insertionIndex = last.getEndIndex();
+                    }
+                } else {
+                    // Add new rule just after this one
+                    insertionIndex = rule.getEndIndex();
+                }
+            }
+        }
+        return insertionIndex;
+    }
+
+    public String createRule(String name, String content) {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("\n");
+        sb.append("\n");
+        sb.append(name);
+
+        if(name.length() >= EditorPreferences.getEditorTabSize())
+            sb.append("\n");
+
+        sb.append("\t:");
+        if(content != null && content.length() > 0) {
+            sb.append("\t");
+            sb.append(content);
+        }
+        sb.append("\n\t;");
+        sb.append("\n");
+        return sb.toString();
+    }
+
+    public void insertRuleAtIndex(String rule, int index) {
+        editor.editorGUI.textEditor.insertText(index, rule);
+    }
+
+    protected class UndoableInlineRuleEdit extends AbstractUndoableEdit {
+
+        public String oldContent;
+        public String ruleName;
+
+        public UndoableInlineRuleEdit(String oldContent, String ruleName) {
+            this.oldContent = oldContent;
+            this.ruleName = ruleName;
+        }
+
+        public String getPresentationName() {
+            return "Inline Rule \""+ruleName+"\"";
+        }
+
+        public void redo() {
+            super.redo();
+            inlineRule(ruleName);
+        }
+
+        public void undo() {
+            super.undo();
+            replaceEditorTextAndAdjustCaretPosition(oldContent);
+        }
     }
 
 }

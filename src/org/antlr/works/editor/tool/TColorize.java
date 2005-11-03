@@ -140,18 +140,6 @@ public class TColorize extends EditorThread {
         }
     }
 
-    private void threadAdjustTokens() {
-        List copyOffsets = new ArrayList();
-        synchronized(offsetLock) {
-            copyOffsets.addAll(offsets);
-            offsets.clear();
-        }
-        for(int i = 0; i<copyOffsets.size(); i++) {
-            Offset offset = (Offset)copyOffsets.get(i);
-            threadAdjustTokens(offset.location, offset.length);
-        }
-    }
-
     private void threadAdjustTokens(int location, int length) {
         if(tokens == null)
             return;
@@ -203,8 +191,6 @@ public class TColorize extends EditorThread {
     }
 
     private void threadColorize() {
-        //threadAdjustTokens();
-
         List modifiedTokens = threadFetchModifiedTokens();
         if(modifiedTokens.size() == 0)
             return;

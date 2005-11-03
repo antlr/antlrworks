@@ -272,9 +272,9 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
             editor.editorMenu.menuItemRedo.setEnabled(undo.canRedo());
 
             if(undo.canUndo())
-                editor.editorMenu.menuItemUndo.setTitle("Undo "+undo.undoManager.getPresentationName());
+                editor.editorMenu.menuItemUndo.setTitle(undo.undoManager.getUndoPresentationName());
             if(undo.canRedo())
-                editor.editorMenu.menuItemRedo.setTitle("Redo "+undo.undoManager.getPresentationName());
+                editor.editorMenu.menuItemRedo.setTitle(undo.undoManager.getRedoPresentationName());
         }
     }
 

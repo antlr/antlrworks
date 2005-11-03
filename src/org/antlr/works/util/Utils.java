@@ -41,4 +41,21 @@ public class Utils {
         }
         return sb.toString();
     }
+
+    public static String trimString(String s) {
+        int a = 0;
+        while(a < s.length() && s.charAt(a) == ' ' || s.charAt(a) == '\n' || s.charAt(a) == '\t') {
+            a++;
+        }
+
+        int b = s.length()-1;
+        while(b >0 && s.charAt(b) == ' ' || s.charAt(b) == '\n' || s.charAt(b) == '\t') {
+            b--;
+        }
+
+        if(a == s.length() || b == 0)
+            return "";
+        else
+            return s.substring(a, b);
+    }
 }

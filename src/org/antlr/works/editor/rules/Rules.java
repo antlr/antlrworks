@@ -275,13 +275,24 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         return null;
     }
 
+    public ParserRule getRuleWithName(String name) {
+        List rules = parser.getRules();
+        for(int index=0; index<rules.size(); index++) {
+            ParserRule r = (ParserRule)rules.get(index);
+            if(r.name.equals(name))
+                return r;
+        }
+        return null;
+    }
+
     public List getRulesStartingWith(String match) {
         List matches = new ArrayList();
         if(parser.getRules() == null)
             return matches;
 
-        for(Iterator iterator = parser.getRules().iterator(); iterator.hasNext(); ) {
-            ParserRule r = (ParserRule)iterator.next();
+        List rules = parser.getRules();
+        for(int index=0; index<rules.size(); index++) {
+            ParserRule r = (ParserRule)rules.get(index);
             if(r.name.startsWith(match) && !matches.contains(r.name))
                 matches.add(r.name);
         }
