@@ -87,6 +87,7 @@ public class ActionsRefactor extends AbstractActions {
             return;
         }
 
+        editor.selectTextRange(token.getStartIndex(), token.getEndIndex());
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Replace Literal '"+token.getAttribute()+"' with token label:", "Replace Literal With Token Label",
                 JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(s != null && !s.equals(token.getAttribute())) {
@@ -148,14 +149,16 @@ public class ActionsRefactor extends AbstractActions {
     }
 
     public void extractRule() {
+        int leftIndex = editor.getSelectionLeftIndexOnTokenBoundary();
+        int rightIndex = editor.getSelectionRightIndexOnTokenBoundary();
+        editor.selectTextRange(leftIndex, rightIndex);
+
         String ruleName = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Rule name:", "Extract Rule",
                             JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(ruleName != null && ruleName.length() > 0) {
             editor.beginGroupChange("Extract Rule");
             boolean lexer = ruleName.equals(ruleName.toUpperCase());
             int index = insertionIndexForRule(lexer);
-            int leftIndex = editor.getSelectionLeftIndexOnTokenBoundary();
-            int rightIndex = editor.getSelectionRightIndexOnTokenBoundary();
             String ruleContent = editor.getText().substring(leftIndex, rightIndex);
             if(index > editor.getCaretPosition()) {
                 insertRuleAtIndex(createRule(ruleName, ruleContent), index);
