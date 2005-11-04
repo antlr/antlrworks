@@ -75,13 +75,6 @@ public class ThreadedParser extends EditorThread {
         this.name = parser.name;
     }
 
-    public synchronized void reset() {
-        rules = null;
-        groups = null;
-        blocks = null;
-        name = null;
-    }
-
     public synchronized List getRules() {
         return rules;
     }
@@ -119,6 +112,10 @@ public class ThreadedParser extends EditorThread {
 
     public synchronized List getActions() {
         return parser.actions;
+    }
+
+    public synchronized List getReferences() {
+        return parser.references;
     }
 
     public synchronized List getTokens() {

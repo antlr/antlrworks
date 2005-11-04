@@ -2,9 +2,8 @@ package org.antlr.works.editor.helper;
 
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.ate.ATEUnderlyingManager;
-import org.antlr.works.parser.Lexer;
+import org.antlr.works.parser.ParserReference;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
 
 import java.awt.*;
 import java.util.List;
@@ -49,28 +48,44 @@ public class UnderlyingManager extends ATEUnderlyingManager {
     }
 
     public void render(Graphics g) {
-        List tokens = editor.getTokens();
-        if(tokens == null)
+        renderUndefinedReferences(g);
+        renderDuplicateRules(g);
+        renderHasLeftRecursionRules(g);
+    }
+
+    protected void renderUndefinedReferences(Graphics g) {
+        List undefinedRefs = editor.rules.getUndefinedReferences();
+        if(undefinedRefs == null)
             return;
 
-        for(int index=0; index<tokens.size(); index++) {
-            Token token = (Token)tokens.get(index);
-
-            if(token.type != Lexer.TOKEN_ID)
-                continue;
-
-            if(editor.rules.isUndefinedToken(token)) {
-                drawUnderlineAtIndexes(g, Color.red, token.getStartIndex(), token.getEndIndex());
-            }
-
-            if(editor.rules.isDuplicateRule(token.getAttribute())) {
-                drawUnderlineAtIndexes(g, Color.blue, token.getStartIndex(), token.getEndIndex());
-            }
-
-           ParserRule rule = editor.rules.getRuleStartingWithToken(token);
-           if(rule != null && rule.hasLeftRecursion()) {
-               drawUnderlineAtIndexes(g, Color.green, token.getStartIndex(), token.getEndIndex());
-           }
+        for(int index=0; index<undefinedRefs.size(); index++) {
+            ParserReference ref = (ParserReference)undefinedRefs.get(index);
+            drawUnderlineAtIndexes(g, Color.red, ref.token.getStartIndex(), ref.token.getEndIndex());
         }
     }
+
+    protected void renderDuplicateRules(Graphics g) {
+        List refs = editor.rules.getReferences();
+        if(refs == null)
+            return;
+
+        for(int index=0; index<refs.size(); index++) {
+            ParserReference ref = (ParserReference)refs.get(index);
+            if(editor.rules.isDuplicateRule(ref.token.getAttribute()))
+                drawUnderlineAtIndexes(g, Color.blue, ref.token.getStartIndex(), ref.token.getEndIndex());
+        }
+    }
+
+    protected void renderHasLeftRecursionRules(Graphics g) {
+        List rules = editor.rules.getRules();
+        if(rules == null)
+            return;
+
+        for(int index=0; index<rules.size(); index++) {
+            ParserRule rule = (ParserRule)rules.get(index);
+            if(rule.hasLeftRecursion())
+                drawUnderlineAtIndexes(g, Color.green, rule.start.getStartIndex(), rule.start.getEndIndex());
+        }
+    }
+
 }

@@ -1,3 +1,8 @@
+- check splitter size on Windows/Linux
+- handle tokens in tokens {} block
+- add "show action folding anchors" in preferences
+
+- display current token in syntax diagram
 - refactor ideas and tips out of EditorWindow
 - see if EditorGUI is still useful
 - reintroduce breakpoint on exception

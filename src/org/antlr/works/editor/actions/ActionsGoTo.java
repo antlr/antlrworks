@@ -34,7 +34,7 @@ package org.antlr.works.editor.actions;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Line;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserReference;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -51,17 +51,17 @@ public class ActionsGoTo extends AbstractActions {
     }
 
     public void goToDeclaration() {
-        Token token = editor.getCurrentToken();
-        if(token == null)
+        ParserReference ref = editor.getCurrentReference();
+        if(ref == null)
             return;
 
-        ParserRule rule = editor.rules.selectRuleName(token.getAttribute());
+        ParserRule rule = editor.rules.selectRuleName(ref.token.getAttribute());
         if(rule == null)
             return;
 
         editor.goToHistoryRememberCurrentPosition();
-
         editor.rules.goToRule(rule);
+
         Statistics.shared().recordEvent(Statistics.EVENT_GOTO_DECLARATION);
     }
 

@@ -53,7 +53,10 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
     public boolean hasLeftRecursion = false;
 
     public List errors;
-    private Parser parser;
+    protected Parser parser;
+
+    protected int refsStartIndex = -1;
+    protected int refsEndIndex = -1;
 
     public ParserRule(Parser parser, String name, Token start, Token colon, Token end) {
         this.parser = parser;
@@ -67,6 +70,18 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
     public void completed() {
         // Called when the rule has been completely parsed
         this.hasLeftRecursion = detectLeftRecursion();
+    }
+
+    public void setReferencesIndexes(int startIndex, int endIndex) {
+        this.refsStartIndex = Math.max(0, startIndex);
+        this.refsEndIndex = endIndex;
+    }
+
+    public List getReferences() {
+        if(refsStartIndex != -1 && refsEndIndex != -1)
+            return parser.references.subList(refsStartIndex, refsEndIndex+1);
+        else
+            return null;
     }
 
     public int getStartIndex() {
@@ -93,14 +108,14 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
     }
 
     public int getInternalTokensEndIndex() {
-        Token token = (Token)parser.tokens.get(parser.tokens.indexOf(end)-1);
+        Token token = (Token)parser.tokens.get(end.index-1);
         return token.getEndIndex();
     }
 
     public List getBlocks() {
         List blocks = new ArrayList();
         Token lastToken = null;
-        for(int index=parser.tokens.indexOf(start); index<parser.tokens.indexOf(end); index++) {
+        for(int index=start.index; index<end.index; index++) {
             Token token = (Token)parser.tokens.get(index);
             if(token.type == Lexer.TOKEN_BLOCK) {
                 if(lastToken != null && lastToken.type == Lexer.TOKEN_ID && lastToken.getAttribute().equals("options"))
@@ -115,7 +130,7 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
 
     public List getTokens() {
         List t = new ArrayList();
-        for(int index=parser.tokens.indexOf(start); index<parser.tokens.indexOf(end); index++) {
+        for(int index=start.index; index<end.index; index++) {
             t.add(parser.tokens.get(index));
         }
         return t;
@@ -250,6 +265,10 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
         return name;
     }
 
+    public boolean containsIndex(int index) {
+        return index >= getStartIndex() && index <= getEndIndex();
+    }
+    
     public int compareTo(Object o) {
         ParserRule otherRule = (ParserRule) o;
         return this.name.compareTo(otherRule.name);

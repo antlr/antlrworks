@@ -151,8 +151,8 @@ public class EditorPreferences {
 
         if(XJSystem.isMacOS()) {
             DEFAULT_DOT_TOOL_PATH = "/Applications/Graphviz.app/Contents/MacOS/dot";
-            if(Font.getFont("Courier") != null)
-                DEFAULT_EDITOR_FONT = "Courier";
+            if(Font.getFont("Monospaced") != null)
+                DEFAULT_EDITOR_FONT = "Monospaced";
         } else if(XJSystem.isWindows()) {
             if(Font.getFont("Tahoma") != null)
                 DEFAULT_EDITOR_FONT = "Tahoma";
@@ -160,8 +160,8 @@ public class EditorPreferences {
             if(Font.getFont("Monospaced") != null)
                 DEFAULT_EDITOR_FONT = "Monospaced";
         } else {
-            if(Font.getFont("Tahoma") != null)
-                DEFAULT_EDITOR_FONT = "Tahoma";
+            if(Font.getFont("Courier") != null)
+                DEFAULT_EDITOR_FONT = "Courier";
         }
     }
 

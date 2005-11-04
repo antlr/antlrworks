@@ -50,11 +50,12 @@ public class Parser {
 
     protected Lexer lexer;
 
-    public List rules = null;
-    public List groups = null;
-    public List blocks = null;
-    public List actions = null;
-    public ParserName name = null;
+    public List rules;
+    public List groups;
+    public List blocks;
+    public List actions;
+    public List references;
+    public ParserName name;
 
     static {
         blockIdentifiers = new ArrayList();
@@ -83,6 +84,7 @@ public class Parser {
         groups = new ArrayList();
         blocks = new ArrayList();
         actions = new ArrayList();
+        references = new ArrayList();
 
         lexer = new Lexer(text);
         tokens = lexer.parseTokens();
@@ -104,7 +106,7 @@ public class Parser {
                 continue;
             
             if(T(0).type == Lexer.TOKEN_ID) {
-                ParserRule rule = matchRule(actions);
+                ParserRule rule = matchRule(actions, references);
                 if(rule != null)
                     rules.add(rule);
             } else if(T(0).type == Lexer.TOKEN_SINGLE_COMMENT) {
@@ -179,7 +181,7 @@ public class Parser {
             return null;
     }
 
-    public ParserRule matchRule(List actions) {
+    public ParserRule matchRule(List actions, List references) {
         // ("protected" | "public" | "private" | "fragment")? rulename_id '!'?
         // ARG_ACTION? ("returns" ARG_ACTION)? throwsSpec? optionsSpec? ruleScopeSpec?
         // ("init" ACTION)? ":" ... ";"
@@ -193,6 +195,7 @@ public class Parser {
         }
 
         // Match the name
+        T(0).isRule = true;
         String name = T(0).getAttribute();
         if(!nextToken())
             return null;
@@ -227,20 +230,44 @@ public class Parser {
 
         Token colonToken = T(0);
         ParserRule rule = new ParserRule(this, name, start, colonToken, null);
+        int refOldSize = references.size();
         while(nextToken()) {
-            // Match also all actions inside the rule
-            if(T(0).type == Lexer.TOKEN_BLOCK) {
-                Token t = T(-1);
-                if(t == null || !blockIdentifiers.contains(t.getAttribute().toLowerCase())) {
-                    // An action is a block not preceeded by a block identifier
-                    actions.add(new ParserAction(rule, T(0)));
-                }
-            }
+            switch(T(0).type) {
+                case Lexer.TOKEN_SEMI:
+                    rule.end = T(0);
+                    if(references.size() > refOldSize)
+                        rule.setReferencesIndexes(refOldSize-1, references.size()-1);
+                    rule.completed();
+                    return rule;
 
-            if(T(0).type == Lexer.TOKEN_SEMI) {
-                rule.end = T(0);
-                rule.completed();
-                return rule;
+                case Lexer.TOKEN_ID: {
+                    // Match also all references inside the rule
+                    Token t = T(1);
+                    if(t != null && t.type == Lexer.TOKEN_CHAR && t.getAttribute().equals("="))
+                        // Skip label
+                        continue;
+
+                    // Skip also reserved keywords
+                    if(keywords.contains(T(0).getAttribute()))
+                        continue;
+
+                    // Set the token flags
+                    T(0).isReference = true;
+
+                    // Add the new reference
+                    references.add(new ParserReference(rule, T(0)));
+                    break;
+                }
+
+                case Lexer.TOKEN_BLOCK: {
+                    // Match also all actions inside the rule
+                    Token t = T(-1);
+                    if(t == null || !blockIdentifiers.contains(t.getAttribute().toLowerCase())) {
+                        // An action is a block not preceeded by a block identifier
+                        actions.add(new ParserAction(rule, T(0)));
+                    }
+                    break;
+                }
             }
         }
         return null;

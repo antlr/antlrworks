@@ -34,6 +34,7 @@ package org.antlr.works.editor;
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import edu.usfca.xj.foundation.XJSystem;
 import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.ate.ATEPanel;
 import org.antlr.works.editor.rules.Rules;
@@ -174,6 +175,11 @@ public class EditorGUI implements UndoDelegate, XJNotificationObserver {
         editor.pack();
 
         upDownSplitPane.setDividerLocation(0.5);
+
+        if(!XJSystem.isMacOS()) {
+            rulesTextSplitPane.setDividerSize(10);
+            upDownSplitPane.setDividerSize(10);
+        }
 
         XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
     }

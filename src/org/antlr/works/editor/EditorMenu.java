@@ -64,7 +64,8 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_FIND = 30;
     public static final int MI_FIND_NEXT = 31;
     public static final int MI_FIND_PREV = 32;
-    public static final int MI_FIND_USAGE = 33;
+    public static final int MI_FIND_TOKEN = 33;
+    public static final int MI_FIND_USAGE = 34;
 
     // Go To
     public static final int MI_GOTO_RULE = 40;
@@ -311,7 +312,8 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.setTitle("Find");
         menu.addItem(new XJMenuItem("Find...", 'f', KeyEvent.VK_F, MI_FIND, this));
         menu.addItem(new XJMenuItem("Find Next", 'n', KeyEvent.VK_F3, 0, MI_FIND_NEXT, this));
-        menu.addItem(new XJMenuItem("Find Previous", 'p', KeyEvent.VK_F3, Event.ALT_MASK, MI_FIND_PREV, this));
+        menu.addItem(new XJMenuItem("Find Previous", 'p', KeyEvent.VK_F3, Event.SHIFT_MASK, MI_FIND_PREV, this));
+        menu.addItem(new XJMenuItem("Find Text at Caret", 't', KeyEvent.VK_F3, MI_FIND_TOKEN, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Find Usages", 'f', KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
 
@@ -489,6 +491,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_FIND_PREV:
                 editor.actionsFind.findPrev();
+                break;
+
+            case MI_FIND_TOKEN:
+                editor.actionsFind.findSelection();
                 break;
 
             case MI_FIND_USAGE:

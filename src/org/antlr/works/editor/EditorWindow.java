@@ -322,7 +322,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     protected void adjustTokens(int location, int length) {
-        // We have to do shift of every offset past the location in order
+        // We have to shift every offset past the location in order
         // for collapsed view to be correctly rendered (the rule has to be
         // immediately at the right position and cannot wait for the
         // parser to finish)
@@ -451,11 +451,19 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public int getSelectionLeftIndexOnTokenBoundary() {
-        return getTokenAtPosition(getTextPane().getSelectionStart()).getStartIndex();
+        Token t = getTokenAtPosition(getTextPane().getSelectionStart());
+        if(t == null)
+            return -1;
+        else
+            return t.getStartIndex();
     }
 
     public int getSelectionRightIndexOnTokenBoundary() {
-        return getTokenAtPosition(getTextPane().getSelectionEnd()).getEndIndex();
+        Token t = getTokenAtPosition(getTextPane().getSelectionEnd());
+        if(t == null)
+            return -1;
+        else
+            return t.getEndIndex();
     }
 
     public synchronized String getFilePath() {
@@ -472,6 +480,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public List getActions() {
         return parser.getActions();
+    }
+
+    public List getReferences() {
+        return parser.getReferences();
     }
 
     public List getTokens() {
@@ -537,15 +549,29 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         editorGUI.textEditor.selectTextRange(start, end);
     }
 
+    public ParserReference getCurrentReference() {
+        return getReferenceAtPosition(getCaretPosition());
+    }
+
+    public ParserReference getReferenceAtPosition(int pos) {
+        List refs = getReferences();
+        for(int index=0; index<refs.size(); index++) {
+            ParserReference ref = (ParserReference)refs.get(index);
+            if(ref.containsIndex(pos))
+                return ref;
+        }
+        return null;
+    }
+
     public Token getCurrentToken() {
         return getTokenAtPosition(getCaretPosition());
     }
 
     public Token getTokenAtPosition(int pos) {
-        Iterator iterator = getTokens().iterator();
-        while(iterator.hasNext()) {
-            Token token = (Token)iterator.next();
-            if(pos >= token.getStartIndex() && pos <= token.getEndIndex())
+        List tokens = getTokens();
+        for(int index=0; index<tokens.size(); index++) {
+            Token token = (Token)tokens.get(index);
+            if(token.containsIndex(pos))
                 return token;
         }
         return null;
@@ -560,7 +586,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         int position = getCaretPosition();
         for(int index=0; index<actions.size(); index++) {
             ParserAction action = (ParserAction)actions.get(index);
-            if(position >= action.token.getStartIndex() && position <= action.token.getEndIndex())
+            if(action.containsIndex(position))
                 return action;
         }
         return null;
@@ -687,15 +713,18 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         } else {
             // Not inside rule - show only undefined rules
 
-            List sortedUndefinedRules = Collections.list(Collections.enumeration(rules.getUndefinedTokens()));
-            Collections.sort(sortedUndefinedRules);
+            List sortedUndefinedReferences = Collections.list(Collections.enumeration(rules.getUndefinedReferences()));
+            Collections.sort(sortedUndefinedReferences);
 
-            for(Iterator iterator = sortedUndefinedRules.iterator(); iterator.hasNext(); ) {
-                Token t = (Token)iterator.next();
-                if(t.getAttribute().toLowerCase().startsWith(partialWord)
-                        && !t.getAttribute().equals(partialWord)
-                        && !matchingRules.contains(t.getAttribute()))
-                    matchingRules.add(t.getAttribute());
+            for(Iterator iterator = sortedUndefinedReferences.iterator(); iterator.hasNext(); ) {
+                ParserReference ref = (ParserReference)iterator.next();
+                String attr = ref.token.getAttribute();
+                if(attr.toLowerCase().startsWith(partialWord)
+                        && !attr.equals(partialWord)
+                        && !matchingRules.contains(attr))
+                {
+                    matchingRules.add(attr);
+                }
             }
         }
 
@@ -744,8 +773,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public List tipsProviderGetTips(Token token, ParserRule rule, ParserRule enclosingRule) {
         List tips = new ArrayList();
 
-        if(rules.isUndefinedToken(token)) {
-            tips.add("Undefined symbol '"+token.getAttribute()+"'");
+        if(rules.isUndefinedReference(token)) {
+            tips.add("Undefined reference '"+token.getAttribute()+"'");
         }
 
         if(rules.isDuplicateRule(token.getAttribute())) {
@@ -768,7 +797,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     public List ideaProviderGetActions(Token token, ParserRule rule, ParserRule enclosingRule) {
         List actions = new ArrayList();
 
-        if(rules.isUndefinedToken(token)) {
+        if(rules.isUndefinedReference(token)) {
             actions.add(new IdeaAction("Create rule '"+token.getAttribute()+"'", this, IDEA_CREATE_RULE, token));
         }
 
@@ -777,7 +806,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         }
 
         if(rule != null && rule.hasLeftRecursion()) {
-            actions.add(new IdeaAction("Remove Left Recursion of rule '"+token.getAttribute()+"'", this, IDEA_REMOVE_LEFT_RECURSION, token));
+            actions.add(new IdeaAction("Remove left recursion of rule '"+token.getAttribute()+"'", this, IDEA_REMOVE_LEFT_RECURSION, token));
         }
 
         return actions;
@@ -823,9 +852,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void ideaCreateRule(IdeaAction action) {
+        beginGroupChange("Create Rule");
         int index = actionsRefactor.insertionIndexForRule(action.token.isAllUpperCase());
         actionsRefactor.insertRuleAtIndex(actionsRefactor.createRule(action.token.getAttribute(), null), index);
         setCaretPosition(index);
+        endGroupChange();
     }
 
     public void ateCaretUpdate(int index) {

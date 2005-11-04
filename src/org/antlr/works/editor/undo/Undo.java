@@ -141,8 +141,12 @@ public class Undo {
             this.name = name;
         }
 
-        public String getPresentationName() {
-            return name;
+        public String getUndoPresentationName() {
+            return "Undo "+name;
+        }
+
+        public String getRedoPresentationName() {
+            return "Redo "+name;
         }
 
     }

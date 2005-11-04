@@ -56,6 +56,11 @@ public class ActionsFind extends AbstractActions {
         editor.findAndReplace.prev();
     }
 
+    public void findSelection() {
+        editor.findAndReplace.setFindString(editor.getTextPane().getSelectedText());
+        editor.findAndReplace.next();
+    }
+
     public void findUsage() {
         Token token = editor.getCurrentToken();
         if(token == null)

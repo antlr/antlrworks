@@ -7,6 +7,7 @@ import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserReference;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.Utils;
 
@@ -83,7 +84,7 @@ public class ActionsRefactor extends AbstractActions {
             return;
 
         if(token.type != Lexer.TOKEN_SINGLE_QUOTE_STRING && token.type != Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
-            XJAlert.display(editor.getJavaContainer(), "Cannot Replace Literal With Token Label", "The current token is not a string.");
+            XJAlert.display(editor.getJavaContainer(), "Cannot Replace Literal With Token Label", "The current token is not a literal.");
             return;
         }
 
@@ -151,6 +152,11 @@ public class ActionsRefactor extends AbstractActions {
     public void extractRule() {
         int leftIndex = editor.getSelectionLeftIndexOnTokenBoundary();
         int rightIndex = editor.getSelectionRightIndexOnTokenBoundary();
+        if(leftIndex == -1 || rightIndex == -1) {
+            XJAlert.display(editor.getWindowContainer(), "Extract Rule", "At least one token must be selected.");
+            return;
+        }
+
         editor.selectTextRange(leftIndex, rightIndex);
 
         String ruleName = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Rule name:", "Extract Rule",
@@ -198,9 +204,7 @@ public class ActionsRefactor extends AbstractActions {
         String ruleContent = Utils.trimString(oldContent.substring(rule.colon.getEndIndex(), rule.end.getStartIndex()));
 
         List rules = editor.rules.getRules();
-        List tokens = editor.getTokens();
-
-        if(tokens.indexOf(rule.end)-tokens.indexOf(rule.colon) > 2) {
+        if(rule.end.index - rule.colon.index > 2) {
             // More than one token, append ()
             ruleContent = "("+ruleContent+")";
         }
@@ -210,12 +214,15 @@ public class ActionsRefactor extends AbstractActions {
             if(candidate == rule) {
                 s.delete(rule.getStartIndex(), rule.getEndIndex()+1);
             } else {
-                Token tstart = candidate.colon;
-                Token tend = candidate.end;
-                for(int index=tokens.indexOf(tend)-1; index>tokens.indexOf(tstart); index--) {
-                    Token t = (Token)tokens.get(index);
-                    if(t.getAttribute().equals(ruleName))
-                        s.replace(t.getStartIndex(), t.getEndIndex(), ruleContent);
+                List references = candidate.getReferences();
+                if(references == null)
+                    continue;
+
+                for(int index=references.size()-1; index>=0; index--) {
+                    ParserReference ref = (ParserReference)references.get(index);
+                    if(ref.token.getAttribute().equals(ruleName)) {
+                        s.replace(ref.token.getStartIndex(), ref.token.getEndIndex(), ruleContent);
+                    }
                 }
             }
         }

@@ -44,6 +44,10 @@ public class ParserAction implements PersistentObject, ATEFoldingEntity {
         this.token = token;
     }
 
+    public boolean containsIndex(int index) {
+        return index >= token.getStartIndex() && index <= token.getEndIndex();
+    }
+
     public boolean equals(Object other) {
         return this.token.equals(((ParserAction)other).token);
     }

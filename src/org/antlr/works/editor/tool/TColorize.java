@@ -53,7 +53,8 @@ public class TColorize extends EditorThread {
 
     private SimpleAttributeSet commentAttr;
     private SimpleAttributeSet stringAttr;
-    private SimpleAttributeSet tokenAttr;
+    private SimpleAttributeSet parserRefAttr;
+    private SimpleAttributeSet lexerRefAttr;
     private SimpleAttributeSet standardAttr;
 
     private List tokens;
@@ -74,9 +75,13 @@ public class TColorize extends EditorThread {
         StyleConstants.setForeground(stringAttr, new Color(0, 0.5f, 0));
         StyleConstants.setBold(stringAttr, true);
 
-        tokenAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(tokenAttr, new Color(0, 0, 0.5f));
-        StyleConstants.setBold(tokenAttr, true);
+        parserRefAttr = new SimpleAttributeSet();
+        StyleConstants.setForeground(parserRefAttr, new Color(0.42f, 0, 0.42f));
+        StyleConstants.setBold(parserRefAttr, true);
+
+        lexerRefAttr = new SimpleAttributeSet();
+        StyleConstants.setForeground(lexerRefAttr, new Color(0, 0, 0.5f));
+        StyleConstants.setBold(lexerRefAttr, true);
 
         standardAttr = new SimpleAttributeSet();
         StyleConstants.setForeground(standardAttr, Color.black);
@@ -210,9 +215,12 @@ public class TColorize extends EditorThread {
                         doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), stringAttr, false);
                         break;
                     case Lexer.TOKEN_ID:
-                        if(token.isAllUpperCase())
-                            // Lexer rule
-                            doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), tokenAttr, false);
+                        if(token.isReference || token.isRule) {
+                            if(token.isAllUpperCase())
+                                doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), lexerRefAttr, false);
+                            else
+                                doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), parserRefAttr, false);
+                        }
                         break;
                 }
             }

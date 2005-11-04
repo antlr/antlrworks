@@ -122,7 +122,7 @@ public class TGoToRule extends OverlayObject {
     public void updateAutoCompletionList() {
         matchingRuleListModel.removeAllElements();
 
-        List rules = editor.rules.getRulesStartingWith(ruleNameField.getText());
+        List rules = editor.rules.getRulesStartingWith(ruleNameField.getText().toLowerCase());
         if(rules.isEmpty()) {
             matchingRuleScrollPane.setVisible(false);
             ruleNameField.setForeground(Color.red);

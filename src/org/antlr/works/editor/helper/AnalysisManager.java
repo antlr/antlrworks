@@ -5,6 +5,7 @@ import org.antlr.works.editor.ate.ATEAnalysisItem;
 import org.antlr.works.editor.ate.ATEAnalysisManager;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserReference;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -129,9 +130,9 @@ public class AnalysisManager extends ATEAnalysisManager {
 
     public List getErrors() {
         List errors = new ArrayList();
-        for(Iterator iter = editor.rules.getUndefinedTokens().iterator(); iter.hasNext(); ) {
-            Token token = (Token)iter.next();
-            errors.add(new ATEAnalysisItem(ANALYSIS_ITEM_ERROR, token.line, token.getStartIndex(), "Undefined token \""+token.getAttribute()+"\""));
+        for(Iterator iter = editor.rules.getUndefinedReferences().iterator(); iter.hasNext(); ) {
+            ParserReference ref = (ParserReference)iter.next();
+            errors.add(new ATEAnalysisItem(ANALYSIS_ITEM_ERROR, ref.token.line, ref.token.getStartIndex(), "Undefined reference \""+ref.token.getAttribute()+"\""));
         }
         return errors;
     }

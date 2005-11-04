@@ -45,6 +45,10 @@ public class Token implements Comparable {
     protected String attribute;
     protected boolean isAllUpperCase;
 
+    public int index;   // index inside the tokens list
+    public boolean isReference; // true if this token is a reference token
+    public boolean isRule;  // true if this token is the token containing the name of the rule
+
     public Token(int type, int start, int end, int line, int linePosition, String text) {
         this.type = type;
 
@@ -83,6 +87,10 @@ public class Token implements Comparable {
 
     public boolean isAllUpperCase() {
         return isAllUpperCase;
+    }
+
+    public boolean containsIndex(int index) {
+        return index >= getStartIndex() && index <= getEndIndex();
     }
 
     public boolean equals(Object otherObject) {

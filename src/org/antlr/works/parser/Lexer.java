@@ -94,8 +94,10 @@ public class Lexer {
             else if(!isWhitespace())
                 token = createNewToken(TOKEN_CHAR);
 
-            if(token != null)
+            if(token != null) {
+                token.index = tokens.size();
                 tokens.add(token);
+            }
         }
         return tokens;
     }
@@ -194,15 +196,9 @@ public class Lexer {
     }
 
     public boolean matchNewLine() {
-        if(C(0) == '\n') {
-            return true;    // Unix style
-        } else if(C(0) == '\r' && C(1) == '\n') {
-            // The internal position keeps track of the exact number of new line
-            // while the visible position consider all new line as 1 character
-            return true;    // Windows style
-        } else if(C(0) == '\r' && C(1) != '\n') {
-            return true;    // Mac style
-        }
+        if(C(0) == '\n') return true;    // Unix style
+        else if(C(0) == '\r' && C(1) == '\n') return true;    // Windows style
+        else if(C(0) == '\r' && C(1) != '\n') return true;    // Mac style
 
         return false;
     }
