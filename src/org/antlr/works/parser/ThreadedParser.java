@@ -91,12 +91,26 @@ public class ThreadedParser extends EditorThread {
         return name;
     }
 
+    public synchronized List getDeclaredTokenNames() {
+        List names = new ArrayList();
+        for(int index=0; index<blocks.size(); index++) {
+            ParserBlock block = (ParserBlock)blocks.get(index);
+            if(block.isTokenBlock) {
+                List internalTokens = block.getInternalTokens();
+                for(int t=0; t<internalTokens.size(); t++) {
+                    Token token = (Token)internalTokens.get(t);
+                    names.add(token.getAttribute());
+                }
+            }
+        }
+        return names;
+    }
+
     public synchronized List getRuleNames() {
-        // @todo cache this info
         List names = new ArrayList();
         if(rules != null) {
-            for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-                ParserRule rule = (ParserRule) iterator.next();
+            for (int index=0; index<rules.size(); index++) {
+                ParserRule rule = (ParserRule) rules.get(index);
                 names.add(rule.name);
             }
         }

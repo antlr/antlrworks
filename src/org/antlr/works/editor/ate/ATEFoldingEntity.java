@@ -43,6 +43,8 @@ public interface ATEFoldingEntity {
     public int foldingEntityGetStartParagraphIndex();
     public int foldingEntityGetStartIndex();
     public int foldingEntityGetEndIndex();
+    public int foldingEntityGetStartLine();
+    public int foldingEntityGetEndLine();
 
     public String foldingEntityPlaceholderString();
 

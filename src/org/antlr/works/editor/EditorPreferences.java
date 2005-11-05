@@ -57,6 +57,7 @@ public class EditorPreferences {
     public static final String PREF_EDITOR_FONT = "PREF_EDITOR_FONT";
     public static final String PREF_EDITOR_FONT_SIZE = "PREF_EDITOR_FONT_SIZE";
     public static final String PREF_EDITOR_FOLDING = "PREF_EDITOR_FOLDING";
+    public static final String PREF_ACTIONS_ANCHORS_FOLDING = "PREF_ACTIONS_ANCHORS_FOLDING";
     public static final String PREF_PARSER_DELAY = "PREF_PARSER_DELAY";
 
     public static final int DEFAULT_TAB_WIDTH = 8;
@@ -64,6 +65,7 @@ public class EditorPreferences {
     public static final int DEFAULT_EDITOR_FONT_SIZE = 12;
     public static final boolean DEFAULT_CONSOLE_SHOW = false;
     public static final boolean DEFAULT_EDITOR_FOLDING = true;
+    public static final boolean DEFAULT_ACTIONS_ANCHORS_FOLDING = true;
     public static final int DEFAULT_PARSER_DELAY = 250;
 
     // Visualization
@@ -215,6 +217,10 @@ public class EditorPreferences {
 
     public static boolean getFoldingEnabled() {
         return getPreferences().getBoolean(PREF_EDITOR_FOLDING, DEFAULT_EDITOR_FOLDING);
+    }
+
+    public static boolean getDisplayActionsAnchorsFolding() {
+        return getPreferences().getBoolean(PREF_ACTIONS_ANCHORS_FOLDING, DEFAULT_ACTIONS_ANCHORS_FOLDING);        
     }
 
     public static int getParserDelay() {

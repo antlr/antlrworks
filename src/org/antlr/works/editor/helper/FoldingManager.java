@@ -1,6 +1,7 @@
 package org.antlr.works.editor.helper;
 
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.ate.ATEFoldingEntity;
 import org.antlr.works.editor.ate.ATEFoldingEntityProxy;
 import org.antlr.works.editor.ate.ATEFoldingManager;
@@ -9,6 +10,8 @@ import org.antlr.works.parser.ParserRule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 /*
 
 [The "BSD licence"]
@@ -76,23 +79,26 @@ public class FoldingManager extends ATEFoldingManager {
         return new ATEFoldingEntityProxy(this, entity.foldingEntityID(), tag);
     }
 
-    public List getFoldingEntities() {
-        List entities = new ArrayList();
+    public void provideFoldingEntities() {
         List rules = editor.parser.getRules();
-        if(rules != null)
-            entities.addAll(rules);
-
-        // Add only actions that are in expanded rules
-        List actions = editor.parser.getActions();
-        if(actions != null) {
-            for(int index=0; index<actions.size(); index++) {
-                ParserAction action = (ParserAction)actions.get(index);
-                if(action.rule.isExpanded())
-                    entities.add(action);
+        if(rules != null) {
+            for(int index=0; index<rules.size(); index++) {
+                ParserRule rule = (ParserRule)rules.get(index);
+                addEntity(rule);
             }
         }
 
-        return entities;
+        // Add only actions that are in expanded rules
+        if(EditorPreferences.getFoldingEnabled() && EditorPreferences.getDisplayActionsAnchorsFolding()) {
+            List actions = editor.parser.getActions();
+            if(actions != null) {
+                for(int index=0; index<actions.size(); index++) {
+                    ParserAction action = (ParserAction)actions.get(index);
+                    if(action.rule.isExpanded())
+                        addEntity(action);
+                }
+            }
+        }
     }
 
     public ATEFoldingEntity getEntityForIdentifier(List entities, String identifier) {

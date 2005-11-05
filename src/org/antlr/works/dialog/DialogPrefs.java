@@ -70,6 +70,12 @@ public class DialogPrefs extends XJPanel {
             }
         });
 
+        foldingButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
+            }
+        });
+
         browseDotToolPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
@@ -145,6 +151,7 @@ public class DialogPrefs extends XJPanel {
         getPreferences().bindToPreferences(editorFontSizeSpinner, EditorPreferences.PREF_EDITOR_FONT_SIZE, EditorPreferences.DEFAULT_EDITOR_FONT_SIZE);
         getPreferences().bindToPreferences(parserDelayField, EditorPreferences.PREF_PARSER_DELAY, EditorPreferences.DEFAULT_PARSER_DELAY);
         getPreferences().bindToPreferences(foldingButton, EditorPreferences.PREF_EDITOR_FOLDING, EditorPreferences.DEFAULT_EDITOR_FOLDING);
+        getPreferences().bindToPreferences(actionsFoldingAnchorsButton, EditorPreferences.PREF_ACTIONS_ANCHORS_FOLDING, EditorPreferences.DEFAULT_ACTIONS_ANCHORS_FOLDING);
 
         // Visualization
         getPreferences().bindToPreferences(dotToolPathField, EditorPreferences.PREF_DOT_TOOL_PATH, EditorPreferences.DEFAULT_DOT_TOOL_PATH);
@@ -179,6 +186,7 @@ public class DialogPrefs extends XJPanel {
 
     public void dialogWillDisplay() {
         lafIndex = lafCombo.getSelectedIndex();
+        actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());        
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_PREFERENCES);
     }
 
@@ -287,6 +295,7 @@ public class DialogPrefs extends XJPanel {
         label11 = new JLabel();
         highlightCursorLineButton = new JCheckBox();
         foldingButton = new JCheckBox();
+        actionsFoldingAnchorsButton = new JCheckBox();
         label1 = new JLabel();
         tabWidthField = new JTextField();
         label22 = new JLabel();
@@ -449,6 +458,8 @@ public class DialogPrefs extends XJPanel {
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
                                 new RowSpec(Sizes.dluY(10))
                             }));
 
@@ -481,26 +492,30 @@ public class DialogPrefs extends XJPanel {
                         foldingButton.setText("Enable folding");
                         tabEditor.add(foldingButton, cc.xywh(5, 9, 3, 1));
 
+                        //---- actionsFoldingAnchorsButton ----
+                        actionsFoldingAnchorsButton.setText("Display actions anchors");
+                        tabEditor.add(actionsFoldingAnchorsButton, cc.xy(7, 11));
+
                         //---- label1 ----
                         label1.setHorizontalAlignment(SwingConstants.RIGHT);
                         label1.setText("Tab width:");
-                        tabEditor.add(label1, cc.xy(3, 11));
+                        tabEditor.add(label1, cc.xy(3, 13));
 
                         //---- tabWidthField ----
                         tabWidthField.setText("8");
-                        tabEditor.add(tabWidthField, cc.xy(5, 11));
+                        tabEditor.add(tabWidthField, cc.xy(5, 13));
 
                         //---- label22 ----
                         label22.setText("Parser delay:");
-                        tabEditor.add(label22, cc.xy(3, 13));
+                        tabEditor.add(label22, cc.xy(3, 15));
 
                         //---- parserDelayField ----
                         parserDelayField.setText("250");
-                        tabEditor.add(parserDelayField, cc.xy(5, 13));
+                        tabEditor.add(parserDelayField, cc.xy(5, 15));
 
                         //---- label23 ----
                         label23.setText("ms");
-                        tabEditor.add(label23, cc.xy(7, 13));
+                        tabEditor.add(label23, cc.xy(7, 15));
                     }
                     tabbedPane1.addTab("Editor", tabEditor);
 
@@ -906,6 +921,7 @@ public class DialogPrefs extends XJPanel {
     private JLabel label11;
     private JCheckBox highlightCursorLineButton;
     private JCheckBox foldingButton;
+    private JCheckBox actionsFoldingAnchorsButton;
     private JLabel label1;
     private JTextField tabWidthField;
     private JLabel label22;

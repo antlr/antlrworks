@@ -51,8 +51,8 @@ public class Lexer {
     protected String text;
     protected int position;
 
-    protected int line;
-    protected int linePosition;    // position of the line in characters
+    protected int lineNumber;
+    protected int lineIndex;    // position of the line in characters
     protected List lines;
 
     public Lexer(String text) {
@@ -63,7 +63,7 @@ public class Lexer {
     public List parseTokens() {
         List tokens = new ArrayList();
         position = -1;
-        line = 0;
+        lineNumber = 0;
         lines.add(new Line(0));
 
         while(nextCharacter()) {
@@ -150,6 +150,8 @@ public class Lexer {
         // Skip all strings, comments and embedded blocks
         int sp = position;
         int embedded = 0;
+        int startLineNumber = lineNumber;
+        int startLineIndex = lineIndex;
         while(nextCharacter()) {
             if(C(0) == '\'') {
                 matchSingleQuoteString();
@@ -163,7 +165,7 @@ public class Lexer {
                 embedded++;
             } else if(C(0) == end) {
                 if(embedded == 0)
-                    return createNewToken(TOKEN_BLOCK, sp);
+                    return createNewToken(TOKEN_BLOCK, sp, position+1, startLineNumber, lineNumber, startLineIndex, lineIndex);
                 else
                     embedded--;
             }
@@ -179,9 +181,9 @@ public class Lexer {
                 position += 2;
 
             if(matchNewLine()) {
-                line++;
-                linePosition = position+1;
-                lines.add(new Line(linePosition));
+                lineNumber++;
+                lineIndex = position+1;
+                lines.add(new Line(lineIndex));
             }
             return position<text.length();
         } else
@@ -235,7 +237,13 @@ public class Lexer {
     }
 
     public Token createNewToken(int type, int start, int end) {
-        return new Token(type, start, end, line, linePosition, text);
+        return createNewToken(type, start, end, lineNumber, lineNumber, lineIndex, lineIndex);
+    }
+
+    public Token createNewToken(int type, int start, int end,
+                                int startLineNumber, int endLineNumber,
+                                int startLineIndex, int endLineIndex) {
+        return new Token(type, start, end, startLineNumber, endLineNumber, startLineIndex, endLineIndex, text);
     }
 
 }

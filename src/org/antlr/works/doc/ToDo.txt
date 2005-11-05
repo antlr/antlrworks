@@ -1,6 +1,7 @@
 - check splitter size on Windows/Linux
-- handle tokens in tokens {} block
-- add "show action folding anchors" in preferences
+- correct bug where console doesn't display the messages
+- detect version 2 grammars
+- all actions should be safely refactored using undo like in inline
 
 - display current token in syntax diagram
 - refactor ideas and tips out of EditorWindow
@@ -9,10 +10,10 @@
 - breakpoint on input text
 - drag and drop doesn't work on Windows anymore
 
+- generate code without debugging information
+- afficher plusieurs regles en meme temps
 - Java 1.5: Executors to reuse thread easily
 - make sure synchronized get method copy objects (if needed) - idem for setters
-- handle the complete rule definition as stated in slides
-- jump to location should center if possible
 - contextual menus on rules to group using selected rules (do not rely on text selection)
 - ideas: undefined rule: rename rule, delete token
 - during debug: no ideas nor tips, disable all other non-related debug items in menu

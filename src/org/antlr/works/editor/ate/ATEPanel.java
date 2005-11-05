@@ -103,8 +103,13 @@ public class ATEPanel extends JPanel {
     }
 
     public void setCaretPosition(int position) {
+        setCaretPosition(position, true);
+    }
+
+    public void setCaretPosition(int position, boolean adjustScroll) {
         textPane.setCaretPosition(position);
-        scrollCenterToPosition(position);
+        if(adjustScroll)
+            scrollCenterToPosition(position);
     }
 
     public int getCaretPosition() {

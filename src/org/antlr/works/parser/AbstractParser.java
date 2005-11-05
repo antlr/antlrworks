@@ -1,9 +1,6 @@
-package org.antlr.works.editor.ate;
+package org.antlr.works.parser;
 
 import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
 /*
 
 [The "BSD licence"]
@@ -35,50 +32,42 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class ATEFoldingManager {
+public abstract class AbstractParser {
 
-    protected ATEPanel textEditor;
-    protected Set usedEntityLines = new HashSet();
-    protected List entities = new ArrayList();
+    protected List tokens;
+    protected int position;
 
-    public ATEFoldingManager(ATEPanel textEditor) {
-        this.textEditor = textEditor;
+    protected Lexer lexer;
+
+    public void init(String text) {
+        lexer = new Lexer(text);
+        tokens = lexer.parseTokens();
+        position = -1;
     }
 
-    public void textPaneWillFold() {
-        
+    public List getLines() {
+        if(lexer == null)
+            return null;
+        else
+            return lexer.lines;
     }
 
-    public void textPaneDidFold() {
-        textEditor.refresh();
+    public int getMaxLines() {
+        if(lexer == null)
+            return 0;
+        else
+            return lexer.lineNumber;
     }
 
-    public abstract ATEFoldingEntityProxy createEntityProxy(ATEFoldingEntity entity);
-    public abstract ATEFoldingEntity getEntityForKey(Object key, int tag);
-
-    public void addEntity(ATEFoldingEntity entity) {
-        Integer start = new Integer(entity.foldingEntityGetStartLine());
-        Integer end = new Integer(entity.foldingEntityGetEndLine());
-        if(usedEntityLines.contains(start) || usedEntityLines.contains(end))
-            return;
-
-        usedEntityLines.add(start);
-        usedEntityLines.add(end);
-
-        entities.add(entity);
+    public boolean nextToken() {
+        position++;
+        return position<tokens.size();
     }
 
-    public List getFoldingEntities() {
-        usedEntityLines.clear();
-        entities.clear();
-        provideFoldingEntities();
-        return entities;
+    public Token T(int index) {
+        if(position+index >= 0 && position+index < tokens.size())
+            return (Token)tokens.get(position+index);
+        else
+            return null;
     }
-
-    public abstract void provideFoldingEntities();
-    
-    public void toggleFolding(ATEFoldingEntity entity) {
-        textEditor.textPane.toggleFolding(createEntityProxy(entity));
-    }
-
 }

@@ -238,9 +238,9 @@ public class ActionsRefactor extends AbstractActions {
         String oldText = editor.getText();
         int caretOffset = newText.length()-oldText.length();
         editor.disableTextPaneUndo();
-        editor.getTextPane().setText(newText);
+        editor.setText(newText);
         editor.enableTextPaneUndo();
-        editor.getTextEditor().setCaretPosition(oldCaretPosition +caretOffset);
+        editor.getTextEditor().setCaretPosition(oldCaretPosition +caretOffset, false);
     }
 
     public int insertionIndexForRule(boolean lexer) {

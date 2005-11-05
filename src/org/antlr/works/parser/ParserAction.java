@@ -80,6 +80,14 @@ public class ParserAction implements PersistentObject, ATEFoldingEntity {
         return token.end;
     }
 
+    public int foldingEntityGetStartLine() {
+        return token.startLineNumber;
+    }
+
+    public int foldingEntityGetEndLine() {
+        return token.endLineNumber;
+    }
+
     public String foldingEntityPlaceholderString() {
         return "{ ... }";
     }

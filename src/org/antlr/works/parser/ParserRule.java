@@ -279,7 +279,7 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
     }
 
     public boolean canBeCollapsed() {
-        return colon.line <= end.line - 1;
+        return colon.startLineNumber <= end.startLineNumber - 1;
     }
 
     public void foldingEntitySetExpanded(boolean expanded) {
@@ -306,6 +306,14 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
         return getEndIndex();
     }
 
+    public int foldingEntityGetStartLine() {
+        return colon.startLineNumber;
+    }
+
+    public int foldingEntityGetEndLine() {
+        return end.endLineNumber;
+    }
+
     public String foldingEntityPlaceholderString() {
         return ": ... ;";
     }
@@ -327,7 +335,7 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
     }
 
     public int breakpointEntityLine() {
-        return start.line;
+        return start.startLineNumber;
     }
 
     public void breakpointEntitySetBreakpoint(boolean flag) {

@@ -1,4 +1,8 @@
 package org.antlr.works.parser;
+
+import java.util.List;
+import java.util.ArrayList;
+
 /*
 
 [The "BSD licence"]
@@ -36,9 +40,42 @@ public class ParserBlock {
     public Token start;
     public Token end;
 
+    public boolean isTokenBlock;
+    public List internalTokens;
+
     public ParserBlock(String name, Token start, Token end) {
         this.name = name;
         this.start = start;
         this.end = end;
+    }
+
+    public List getInternalTokens() {
+        if(internalTokens == null) {
+            internalTokens = new ParseInternalTokens().parseTokens();
+        }
+        return internalTokens;
+    }
+
+    public class ParseInternalTokens extends AbstractParser {
+
+        public ParseInternalTokens() {
+        }
+
+        public List parseTokens() {
+            List tokens = new ArrayList();
+            String content = end.getAttribute();
+            init(content.substring(1, content.length()));
+            while(nextToken()) {
+                if(T(0).type == Lexer.TOKEN_ID && T(1) != null) {
+                    if(T(1).getAttribute().equals("=")) {
+                        tokens.add(T(0));
+                    } else if(T(1).getAttribute().equals(";")) {
+                        tokens.add(T(0));
+                    }
+                }
+            }
+            return tokens;
+        }
+
     }
 }

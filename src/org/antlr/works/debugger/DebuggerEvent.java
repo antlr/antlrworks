@@ -39,19 +39,19 @@ public class DebuggerEvent {
     public static final int LOCATION = 0;
     public static final int CONSUME_TOKEN = 1;
     public static final int LT = 2;
-    public static final int ALL = 3;
-    public static final int NONE = 4;
-    public static final int CONSUME_HIDDEN_TOKEN = 5;
-    public static final int ENTER_RULE = 6;
-    public static final int EXIT_RULE = 7;
-    public static final int ENTER_SUBRULE = 8;
-    public static final int EXIT_SUBRULE = 9;
-    public static final int ENTER_DECISION = 10;
-    public static final int EXIT_DECISION = 11;
-    public static final int ENTER_ALT = 12;
-    public static final int MARK = 13;
-    public static final int REWIND = 14;
-    public static final int RECOGNITION_EXCEPTION = 15;
+    public static final int RECOGNITION_EXCEPTION = 3;
+    public static final int ALL = 4;
+    public static final int NONE = 5;
+    public static final int CONSUME_HIDDEN_TOKEN = 6;
+    public static final int ENTER_RULE = 7;
+    public static final int EXIT_RULE = 8;
+    public static final int ENTER_SUBRULE = 9;
+    public static final int EXIT_SUBRULE = 10;
+    public static final int ENTER_DECISION = 11;
+    public static final int EXIT_DECISION = 12;
+    public static final int ENTER_ALT = 13;
+    public static final int MARK = 14;
+    public static final int REWIND = 15;
     public static final int BEGIN_RESYNC = 16;
     public static final int END_RESYNC = 17;
     public static final int COMMENCE = 18;
@@ -100,18 +100,29 @@ public class DebuggerEvent {
         this.exception = e;
     }
 
-    public static String[] getEvents() {
-        return new String[] { "Location", "Consume token", "LT", "All",
-                              "None", "Consume hidden token",
-                              "Enter rule", "Exit rule",
-                              "Enter subrule", "Exit subrule",
-                              "Enter decision", "Exit decision",
-                              "Enter alternative",
-                              "Mark", "Rewind",
-                              "Recognition exception",
-                              "Begin resync", "End resync",
-                              "Commence", "Terminate"
-                              };
+    public static String getEventName(int type) {
+        switch(type) {
+            case CONSUME_TOKEN: return "Consume token";
+            case CONSUME_HIDDEN_TOKEN: return "Consume hidden token";
+            case ENTER_RULE:    return "Enter rule";
+            case EXIT_RULE:     return "Exit rule";
+            case ENTER_SUBRULE: return "Enter subrule";
+            case EXIT_SUBRULE:  return "Exit subrule";
+            case ENTER_DECISION:    return "Enter decision";
+            case EXIT_DECISION:    return "Exit decision";
+            case ENTER_ALT:     return "Enter alternative";
+            case LOCATION:      return "Location";
+            case LT:            return "LT";
+            case MARK:     return "Mark";
+            case REWIND:     return "Rewind";
+            case RECOGNITION_EXCEPTION: return "Recognition exception";
+            case BEGIN_RESYNC:     return "Begin resync";
+            case END_RESYNC:     return "End resync";
+            case COMMENCE:    return "Commence";
+            case TERMINATE:     return "Terminate";
+            case ALL:     return "All";
+        }
+        return "?";
     }
 
     public String toString() {

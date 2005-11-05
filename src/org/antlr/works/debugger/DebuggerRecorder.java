@@ -197,7 +197,7 @@ public class DebuggerRecorder {
 
         boolean connected = false;
         int retryCount = 6;
-        while(!connected && retryCount-- > 0) {
+        while(retryCount-- > 0) {
             listener = null;
             try {
                 listener = new RemoteDebugEventSocketListener(eventListener, address, port);
@@ -248,7 +248,7 @@ public class DebuggerRecorder {
         debugger.recorderDidStop();
     }
 
-    public void eventOccurred(DebuggerEvent event) {
+    public void eventOccurred(DebuggerEvent event) {        
         switch(getStatus()) {
             case STATUS_LAUNCHING:
                 setStatus(STATUS_RUNNING);

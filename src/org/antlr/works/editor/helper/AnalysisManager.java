@@ -4,7 +4,6 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.ate.ATEAnalysisItem;
 import org.antlr.works.editor.ate.ATEAnalysisManager;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
 import org.antlr.works.parser.ParserReference;
 
 import java.awt.*;
@@ -132,7 +131,7 @@ public class AnalysisManager extends ATEAnalysisManager {
         List errors = new ArrayList();
         for(Iterator iter = editor.rules.getUndefinedReferences().iterator(); iter.hasNext(); ) {
             ParserReference ref = (ParserReference)iter.next();
-            errors.add(new ATEAnalysisItem(ANALYSIS_ITEM_ERROR, ref.token.line, ref.token.getStartIndex(), "Undefined reference \""+ref.token.getAttribute()+"\""));
+            errors.add(new ATEAnalysisItem(ANALYSIS_ITEM_ERROR, ref.token.startLineNumber, ref.token.getStartIndex(), "Undefined reference \""+ref.token.getAttribute()+"\""));
         }
         return errors;
     }
@@ -141,7 +140,7 @@ public class AnalysisManager extends ATEAnalysisManager {
         List warnings = new ArrayList();
         for(Iterator iter = editor.rules.getDuplicateRules().iterator(); iter.hasNext(); ) {
             ParserRule rule = (ParserRule) iter.next();
-            warnings.add(new ATEAnalysisItem(ANALYSIS_ITEM_WARNING, rule.start.line, rule.getStartIndex(), "Duplicate rule \""+rule.name+"\""));
+            warnings.add(new ATEAnalysisItem(ANALYSIS_ITEM_WARNING, rule.start.startLineNumber, rule.getStartIndex(), "Duplicate rule \""+rule.name+"\""));
         }
         return warnings;
     }
@@ -150,7 +149,7 @@ public class AnalysisManager extends ATEAnalysisManager {
         List refactors = new ArrayList();
         for(Iterator iter = editor.rules.getHasLeftRecursionRules().iterator(); iter.hasNext(); ) {
             ParserRule rule = (ParserRule) iter.next();
-            refactors.add(new ATEAnalysisItem(ANALYSIS_ITEM_REFACTOR, rule.start.line, rule.getStartIndex(), "Left recursion in rule \""+rule.name+"\""));
+            refactors.add(new ATEAnalysisItem(ANALYSIS_ITEM_REFACTOR, rule.start.startLineNumber, rule.getStartIndex(), "Left recursion in rule \""+rule.name+"\""));
         }
         return refactors;
     }

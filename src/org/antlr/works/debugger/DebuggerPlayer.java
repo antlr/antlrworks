@@ -57,7 +57,7 @@ public class DebuggerPlayer {
 
     public DebuggerPlayer(Debugger debugger) {
         this.debugger = debugger;
-        inputText = new DebuggerInputText(debugger.textPane);
+        inputText = new DebuggerInputText(debugger.inputTextPane);
         lookAheadTextStack = new Stack();
     }
 

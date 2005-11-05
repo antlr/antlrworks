@@ -331,6 +331,9 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
             return;
         
         List tokens = getTokens();
+        if(tokens == null)
+            return;
+
         for(int t=0; t<tokens.size(); t++) {
             Token token = (Token) tokens.get(t);
             if(token.getStartIndex() > location) {
@@ -442,6 +445,13 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         } finally {
             enableTextPane(true);
         }
+    }
+
+    public void setText(String text) {
+        getTextPane().setText(text);
+        colorize.reset();
+        parser.parse();
+//        colorize.colorize();
     }
 
     public synchronized String getText() {

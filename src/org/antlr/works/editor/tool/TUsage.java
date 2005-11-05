@@ -151,7 +151,7 @@ public class TUsage {
 
         public String toString() {
             // @todo it seems that I have to add white space in order for the string not to be truncated in the tree view
-            return token.getAttribute()+" @ ("+token.line+", "+(token.getStartIndex()-token.getLinePosition())+") "+contextualText+"        ";
+            return token.getAttribute()+" @ ("+token.startLineNumber +", "+(token.getStartIndex()-token.getStartLineIndex())+") "+contextualText+"        ";
         }
     }
 }

@@ -34,21 +34,18 @@ package org.antlr.works.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parser {
-
-    protected List tokens;
-    protected int position;
-
-    protected Token currentToken;
+public class Parser extends AbstractParser {
 
     public static final String BEGIN_GROUP = "// $<";
     public static final String END_GROUP = "// $>";
 
+    public static final String TOKENS_BLOCK_NAME = "tokens";
+    public static final String OPTIONS_BLOCK_NAME = "options";
+    public static final String HEADER_BLOCK_NAME = "header";
+
     public static final List blockIdentifiers;
     public static final List ruleModifiers;
     public static final List keywords;
-
-    protected Lexer lexer;
 
     public List rules;
     public List groups;
@@ -59,9 +56,9 @@ public class Parser {
 
     static {
         blockIdentifiers = new ArrayList();
-        blockIdentifiers.add("options");
-        blockIdentifiers.add("tokens");
-        blockIdentifiers.add("header");
+        blockIdentifiers.add(OPTIONS_BLOCK_NAME);
+        blockIdentifiers.add(HEADER_BLOCK_NAME);
+        blockIdentifiers.add(TOKENS_BLOCK_NAME);
 
         ruleModifiers = new ArrayList();
         ruleModifiers.add("protected");
@@ -86,9 +83,7 @@ public class Parser {
         actions = new ArrayList();
         references = new ArrayList();
 
-        lexer = new Lexer(text);
-        tokens = lexer.parseTokens();
-        position = -1;
+        init(text);
         while(nextToken()) {
             ParserName n = matchName();
             if(n != null) {
@@ -115,20 +110,6 @@ public class Parser {
                     groups.add(group);
             }
         }
-    }
-
-    public List getLines() {
-        if(lexer == null)
-            return null;
-        else
-            return lexer.lines;
-    }
-
-    public int getMaxLines() {
-        if(lexer == null)
-            return 0;
-        else
-            return lexer.line;
     }
 
     public ParserName matchName() {
@@ -176,7 +157,10 @@ public class Parser {
                 return null;
 
             nextToken();
-            return new ParserBlock(start.getAttribute(), start, T(0));
+            ParserBlock block = new ParserBlock(start.getAttribute(), start, T(0));
+            if(start.getAttribute().toLowerCase().equals(TOKENS_BLOCK_NAME))
+                block.isTokenBlock = true;
+            return block;
         } else
             return null;
     }
@@ -243,9 +227,11 @@ public class Parser {
                 case Lexer.TOKEN_ID: {
                     // Match also all references inside the rule
                     Token t = T(1);
-                    if(t != null && t.type == Lexer.TOKEN_CHAR && t.getAttribute().equals("="))
+                    if(t != null && t.type == Lexer.TOKEN_CHAR && t.getAttribute().equals("=")) {
                         // Skip label
+                        T(0).isLabel = true;
                         continue;
+                    }
 
                     // Skip also reserved keywords
                     if(keywords.contains(T(0).getAttribute()))
@@ -282,18 +268,6 @@ public class Parser {
         } else if(comment.startsWith(END_GROUP)) {
                 return new ParserGroup(rules.size()-1, token);
         } else
-            return null;
-    }
-
-    public boolean nextToken() {
-        position++;
-        return position<tokens.size();
-    }
-
-    public Token T(int index) {
-        if(position+index >= 0 && position+index < tokens.size())
-            return (Token)tokens.get(position+index);
-        else
             return null;
     }
 

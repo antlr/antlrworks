@@ -372,7 +372,9 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             // are not correctly handled in a single string (why?)
             remoteParserProcess = Runtime.getRuntime().exec(new String[] { "java", "-classpath", classPath, remoteParserClassName});
             new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher").start();
-            new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher").start();
+            StreamWatcher sw = new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher");
+            sw.setDelegate(debugger);
+            sw.start();
         } catch (IOException e) {
             XJAlert.display(debugger.editor.getWindowContainer(), "Runtime Error", "Cannot launch the local debugger.\nCannot launch the remote parser: "+e);
             return false;
@@ -390,22 +392,38 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         return true;
     }
 
-    private class StreamWatcher extends Thread {
+    public interface StreamWatcherDelegate {
+        public void streamWatcherDidStarted();
+        public void streamWatcherDidReceiveString(String string);
+    }
 
-        InputStream is;
-        String type;
+    public class StreamWatcher extends Thread {
+
+        protected InputStream is;
+        protected String type;
+        protected StreamWatcherDelegate delegate;
 
         public StreamWatcher(InputStream is, String type) {
             this.is = is;
             this.type = type;
         }
 
+        public void setDelegate(StreamWatcherDelegate delegate) {
+            this.delegate = delegate;
+        }
+
         public void run() {
             try {
+                if(delegate != null)
+                    delegate.streamWatcherDidStarted();
+
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line;
-                while ( (line = br.readLine()) != null)
+                while ( (line = br.readLine()) != null) {
                     debugger.editor.console.println(type + ">" + line);
+                    if(delegate != null)
+                        delegate.streamWatcherDidReceiveString(line+"\n");
+                }
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }

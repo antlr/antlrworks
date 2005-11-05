@@ -99,7 +99,7 @@ public class VisualAnalysis extends EditorThread {
 
         for (Iterator iterator = visual.engine.errors.iterator(); iterator.hasNext();) {
             GrammarEngineError error = (GrammarEngineError) iterator.next();
-            if(error.line>=rule.start.line && error.line<=rule.end.line)
+            if(error.line>=rule.start.startLineNumber && error.line<=rule.end.startLineNumber)
                 errors.add(error);
         }
         return errors;

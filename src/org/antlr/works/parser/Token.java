@@ -35,8 +35,10 @@ public class Token implements Comparable {
 
     public int type;
 
-    public int line;
-    protected int linePosition;
+    public int startLineNumber; // starting line number
+    public int endLineNumber; // ending line number
+    protected int startLineIndex; // starting line character index
+    protected int endLineIndex; // ending line character index
     public String text;
 
     protected int start;
@@ -48,15 +50,21 @@ public class Token implements Comparable {
     public int index;   // index inside the tokens list
     public boolean isReference; // true if this token is a reference token
     public boolean isRule;  // true if this token is the token containing the name of the rule
+    public boolean isLabel; // true if this token is a label
 
-    public Token(int type, int start, int end, int line, int linePosition, String text) {
+    public Token(int type, int start, int end,
+                 int startLineNumber, int endLineNumber,
+                 int startLineIndex, int endLineIndex,
+                 String text) {
         this.type = type;
 
         this.start = start;
         this.end = end;
 
-        this.line = line;
-        this.linePosition = linePosition;
+        this.startLineNumber = startLineNumber;
+        this.endLineNumber = endLineNumber;
+        this.startLineIndex = startLineIndex;
+        this.endLineIndex = endLineIndex;
 
         this.text = text;
 
@@ -68,8 +76,8 @@ public class Token implements Comparable {
         return attribute;
     }
 
-    public int getLinePosition() {
-        return linePosition;
+    public int getStartLineIndex() {
+        return startLineIndex;
     }
 
     public int getStartIndex() {

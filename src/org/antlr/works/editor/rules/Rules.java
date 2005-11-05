@@ -487,12 +487,14 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     public void rebuildUndefinedReferencesList() {
-        List ruleNames = parser.getRuleNames();
+        List existingReferences = parser.getRuleNames();
+        existingReferences.addAll(parser.getDeclaredTokenNames());
+
         undefinedReferences.clear();
         List references = parser.getReferences();
         for(int index=0; index<references.size(); index++) {
             ParserReference ref = (ParserReference)references.get(index);
-            if(!ruleNames.contains(ref.token.getAttribute()))
+            if(!existingReferences.contains(ref.token.getAttribute()))
                 undefinedReferences.add(ref);
         }
     }

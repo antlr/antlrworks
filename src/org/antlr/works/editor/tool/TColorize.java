@@ -40,6 +40,7 @@ import org.antlr.works.parser.Token;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.swing.text.AttributeSet;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,7 @@ public class TColorize extends EditorThread {
     private SimpleAttributeSet stringAttr;
     private SimpleAttributeSet parserRefAttr;
     private SimpleAttributeSet lexerRefAttr;
+    private SimpleAttributeSet labelAttr;
     private SimpleAttributeSet standardAttr;
 
     private List tokens;
@@ -82,6 +84,10 @@ public class TColorize extends EditorThread {
         lexerRefAttr = new SimpleAttributeSet();
         StyleConstants.setForeground(lexerRefAttr, new Color(0, 0, 0.5f));
         StyleConstants.setBold(lexerRefAttr, true);
+
+        labelAttr = new SimpleAttributeSet();
+        StyleConstants.setForeground(labelAttr, Color.black);
+        StyleConstants.setItalic(labelAttr, true);
 
         standardAttr = new SimpleAttributeSet();
         StyleConstants.setForeground(standardAttr, Color.black);
@@ -205,24 +211,28 @@ public class TColorize extends EditorThread {
 
             for(int t = 0; t<modifiedTokens.size(); t++) {
                 Token token = (Token) modifiedTokens.get(t);
+                AttributeSet attr = null;
                 switch(token.type) {
                     case Lexer.TOKEN_COMPLEX_COMMENT:
                     case Lexer.TOKEN_SINGLE_COMMENT:
-                        doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), commentAttr, false);
+                        attr = commentAttr;
                         break;
                     case Lexer.TOKEN_DOUBLE_QUOTE_STRING:
                     case Lexer.TOKEN_SINGLE_QUOTE_STRING:
-                        doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), stringAttr, false);
+                        attr = stringAttr;
                         break;
                     case Lexer.TOKEN_ID:
                         if(token.isReference || token.isRule) {
                             if(token.isAllUpperCase())
-                                doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), lexerRefAttr, false);
+                                attr = lexerRefAttr;
                             else
-                                doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), parserRefAttr, false);
-                        }
+                                attr = parserRefAttr;
+                        } else if(token.isLabel)
+                            attr = labelAttr;
                         break;
                 }
+                if(attr != null)
+                    doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), attr, false);
             }
         } catch(Exception e) {
             e.printStackTrace();

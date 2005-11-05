@@ -61,7 +61,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-public class Debugger {
+public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
     public static final int DEFAULT_LOCAL_PORT = 2005;
@@ -70,7 +70,8 @@ public class Debugger {
     public static final String NOTIF_DEBUG_STOPPED = "NOTIF_DEBUG_STOPPED";
 
     protected JPanel panel;
-    protected TextPane textPane;
+    protected TextPane inputTextPane;
+    protected TextPane outputTextPane;
 
     protected JScrollPane treeScrollPane;
     protected JTree tree;
@@ -107,13 +108,16 @@ public class Debugger {
     protected Grammar grammar;
 
     protected boolean running;
+    protected JSplitPane ioSplitPane;
+    protected JSplitPane ioTreeSplitPane;
+    protected JSplitPane treeStackSplitPane;
 
     public Debugger(EditorWindow editor) {
         this.editor = editor;
 
         panel = new JPanel(new BorderLayout());
 
-        JSplitPane treeStackSplitPane = new JSplitPane();
+        treeStackSplitPane = new JSplitPane();
         treeStackSplitPane.setBorder(null);
         treeStackSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         treeStackSplitPane.setLeftComponent(createTreePanel());
@@ -121,22 +125,38 @@ public class Debugger {
         treeStackSplitPane.setContinuousLayout(true);
         treeStackSplitPane.setOneTouchExpandable(true);
 
-        JSplitPane splitPane = new JSplitPane();
-        splitPane.setBorder(null);
-        splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setLeftComponent(createInputPanel());
-        splitPane.setRightComponent(treeStackSplitPane);
-        splitPane.setContinuousLayout(true);
-        splitPane.setOneTouchExpandable(true);
+        ioSplitPane = new JSplitPane();
+        ioSplitPane.setBorder(null);
+        ioSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        ioSplitPane.setLeftComponent(createInputPanel());
+        ioSplitPane.setRightComponent(createOutputPanel());
+        ioSplitPane.setContinuousLayout(true);
+        ioSplitPane.setOneTouchExpandable(true);
+
+        ioTreeSplitPane = new JSplitPane();
+        ioTreeSplitPane.setBorder(null);
+        ioTreeSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        ioTreeSplitPane.setLeftComponent(ioSplitPane);
+        ioTreeSplitPane.setRightComponent(treeStackSplitPane);
+        ioTreeSplitPane.setContinuousLayout(true);
+        ioTreeSplitPane.setOneTouchExpandable(true);
 
         panel.add(createControlPanel(), BorderLayout.NORTH);
-        panel.add(splitPane, BorderLayout.CENTER);
+        panel.add(ioTreeSplitPane, BorderLayout.CENTER);
 
         debuggerLocal = new DebuggerLocal(this);
         recorder = new DebuggerRecorder(this);
         player = new DebuggerPlayer(this);
 
         updateStatusInfo();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                ioSplitPane.setDividerLocation(0.7);
+                ioTreeSplitPane.setDividerLocation(0.2);
+                treeStackSplitPane.setDividerLocation(0.5);
+            }
+        });
     }
 
     public Container getWindowComponent() {
@@ -148,39 +168,44 @@ public class Debugger {
     }
 
     public JComponent createInputPanel() {
-        textPane = new TextPane();
-        textPane.setPreferredSize(new Dimension(200, 0));
-        textPane.setBackground(Color.white);
-        textPane.setBorder(null);
-        textPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
-        textPane.setText("");
-        textPane.setEditable(false);
+        inputTextPane = new TextPane();
+        inputTextPane.setBackground(Color.white);
+        inputTextPane.setBorder(null);
+        inputTextPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
+        inputTextPane.setText("");
+        inputTextPane.setEditable(false);
 
-        TextUtils.createTabs(textPane);
+        TextUtils.createTabs(inputTextPane);
 
-        JScrollPane textScrollPane = new JScrollPane(textPane);
+        JScrollPane textScrollPane = new JScrollPane(inputTextPane);
         textScrollPane.setWheelScrollingEnabled(true);
 
-        JButton tokenButton = new JButton(IconManager.shared().getIconTokens());
-        tokenButton.setToolTipText("Show/hide tokens boxes");
-        tokenButton.setFocusable(false);
-        tokenButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                player.inputText.setDrawTokensBox(!player.inputText.isDrawTokensBox());
-                textPane.repaint();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
-            }
-        });
 
-        Box box = Box.createHorizontalBox();
+/*        Box box = Box.createHorizontalBox();
         box.add(Box.createHorizontalGlue());
-        box.add(tokenButton);
+        box.add(tokenButton);*/
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(textScrollPane, BorderLayout.CENTER);
-        panel.add(box, BorderLayout.SOUTH);
+        //JPanel panel = new JPanel(new BorderLayout());
+        //panel.add(textScrollPane, BorderLayout.CENTER);
+        //panel.add(box, BorderLayout.SOUTH);
 
-        return panel;
+        return textScrollPane;
+    }
+
+    public JComponent createOutputPanel() {
+        outputTextPane = new TextPane();
+        outputTextPane.setBackground(Color.white);
+        outputTextPane.setBorder(null);
+        outputTextPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
+        outputTextPane.setText("");
+        outputTextPane.setEditable(false);
+
+        TextUtils.createTabs(outputTextPane);
+
+        JScrollPane textScrollPane = new JScrollPane(outputTextPane);
+        textScrollPane.setWheelScrollingEnabled(true);
+
+        return textScrollPane;
     }
 
     public JComponent createTreePanel() {
@@ -222,8 +247,6 @@ public class Debugger {
         treePanel.add(treeScrollPane, BorderLayout.CENTER);
         treePanel.add(box, BorderLayout.SOUTH);
 
-        treeScrollPane.setPreferredSize(new Dimension(400, 100));
-
         return treePanel;
     }
 
@@ -261,7 +284,7 @@ public class Debugger {
 
         JScrollPane listScrollPane = new JScrollPane(infoList);
         listScrollPane.setWheelScrollingEnabled(true);
-        listScrollPane.setPreferredSize(new Dimension(50, 0));
+        //listScrollPane.setPreferredSize(new Dimension(50, 0));
 
         JPanel infoListControlPanel = new JPanel();
         infoListControlPanel.add(displayStackButton);
@@ -285,6 +308,8 @@ public class Debugger {
         box.add(forwardButton = createStepForwardButton());
         box.add(Box.createHorizontalStrut(20));
         box.add(createBreakComboBox());
+        box.add(Box.createHorizontalStrut(20));
+        box.add(createRevealTokensButton());
         box.add(Box.createHorizontalGlue());
         box.add(createInfoPanel());
         return box;
@@ -367,7 +392,7 @@ public class Debugger {
         breakCombo = new JComboBox();
 
         for (int i = 0; i < DebuggerEvent.ALL+1; i++) {
-            breakCombo.addItem(DebuggerEvent.getEvents()[i]);
+            breakCombo.addItem(DebuggerEvent.getEventName(i));
         }
 
         EditorPreferences.getPreferences().bindToPreferences(breakCombo, EditorPreferences.PREF_DEBUG_BREAK_EVENT, DebuggerEvent.CONSUME_TOKEN);
@@ -375,6 +400,20 @@ public class Debugger {
         box.add(breakCombo);
 
         return box;
+    }
+
+    public JButton createRevealTokensButton() {
+        JButton tokenButton = new JButton(IconManager.shared().getIconTokens());
+        tokenButton.setToolTipText("Reveal tokens in input text");
+        tokenButton.setFocusable(false);
+        tokenButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                player.inputText.setDrawTokensBox(!player.inputText.isDrawTokensBox());
+                inputTextPane.repaint();
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
+            }
+        });
+        return tokenButton;
     }
 
     public JButton createExpandAllButton() {
@@ -655,6 +694,14 @@ public class Debugger {
                 XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STOPPED);
             }
         });
+    }
+
+    public void streamWatcherDidStarted() {
+        outputTextPane.setText("");
+    }
+
+    public void streamWatcherDidReceiveString(String string) {
+        outputTextPane.setText(outputTextPane.getText()+string);
     }
 
     protected class StackListModel extends DefaultListModel {
