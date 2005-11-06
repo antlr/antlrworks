@@ -33,7 +33,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.scm.p4;
 
 import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.editor.helper.EditorConsole;
 import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
 
@@ -53,15 +52,15 @@ public class P4 implements SCM {
     protected static final int CMD_SYNC = 6;
     protected static final int CMD_FSTAT = 7;
 
-    protected EditorConsole console = null;
     protected SCMDelegate delegate = null;
     protected String fileStatus = null;
 
     protected P4Scheduler scheduler = new P4Scheduler();
     protected P4CommandCompletion lastCompletion = null;
 
-    public P4(EditorConsole console, SCMDelegate delegate) {
-        this.console = console;
+    private final Object lock = new Object();
+
+    public P4(SCMDelegate delegate) {
         this.delegate = delegate;
     }
 
@@ -70,38 +69,32 @@ public class P4 implements SCM {
     }
 
     public synchronized void editFile(String file) {
-        openConsoleGroup("P4: edit file");
         scheduleCommand(new P4Command(CMD_EDIT, new String[] { "edit", file }, null));
         queryFileStatus(file);
     }
 
     public synchronized void addFile(String file) {
-        openConsoleGroup("P4: add file");
         scheduleCommand(new P4Command(CMD_ADD, new String[] { "add", file }, null));
         queryFileStatus(file);
     }
 
     public synchronized void deleteFile(String file) {
-        openConsoleGroup("P4: delete file");
         scheduleCommand(new P4Command(CMD_DELETE, new String[] { "delete", file }, null));
         queryFileStatus(file);
     }
 
     public synchronized void revertFile(String file) {
-        openConsoleGroup("P4: revert file");
         scheduleCommand(new P4Command(CMD_REVERT, new String[] { "revert", file }, null));
         queryFileStatus(file);
     }
 
     public synchronized void submitFile(String file, String description, boolean remainOpen) {
-        openConsoleGroup("P4: submit file");
         scheduleCommand(new P4Command(CMD_FSTAT, new String[] { "fstat", file }, null));
         scheduleCommand(new P4CommandSubmit(file, description, remainOpen));
         queryFileStatus(file);
     }
 
     public synchronized void sync() {
-        openConsoleGroup("P4: sync");
         runCommand(new P4Command(CMD_SYNC, new String[] { "sync" }, null));
     }
 
@@ -125,12 +118,6 @@ public class P4 implements SCM {
 
     public void resetErrors() {
         lastCompletion = null;
-    }
-
-    protected synchronized void openConsoleGroup(String name) {
-        // When the two StreamWatcher thread
-        // terminate, the console group will be closed.
-        console.openGroup(name);
     }
 
     protected void runCommand(P4Command command) {
@@ -161,7 +148,7 @@ public class P4 implements SCM {
         }
 
         protected void scheduleCommand(P4Command command) {
-            synchronized(scheduledCommands) {
+            synchronized(lock) {
                 scheduledCommands.add(command);
             }
         }
@@ -179,7 +166,7 @@ public class P4 implements SCM {
                 }
             }
 
-            synchronized(scheduledCommands) {
+            synchronized(lock) {
                 if(scheduledCommands.size() > 0) {
                     runningCommand = (P4Command)scheduledCommands.get(0);
                     scheduledCommands.remove(0);
@@ -213,7 +200,7 @@ public class P4 implements SCM {
 
             if(completion.hasErrors()) {
                 // Doesn't run the other commands if there is an error in one command
-                synchronized(scheduledCommands) {
+                synchronized(lock) {
                     scheduledCommands.clear();
                     runningCommand = null;
                     delegate.scmCommandsDidComplete();
@@ -436,8 +423,8 @@ public class P4 implements SCM {
         }
 
         public synchronized void streamWatcherDidReceiveText(StreamWatcher sw, String line) {
-            if(console != null)
-                console.println(line);
+            if(P4.this.delegate != null)
+                P4.this.delegate.scmLog(line);
 
             int index = line.indexOf(':');
             String text = line;

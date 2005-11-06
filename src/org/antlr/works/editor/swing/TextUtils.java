@@ -50,7 +50,6 @@ public class TextUtils {
             // ignore exception
         }
 
-        // @todo I have to create a fixed size array - any other way to do that ?
         TabStop[] tstops = new TabStop[100];
         for(int i = 0; i<100; i++) {
             tstops[i] = new TabStop(i*tabSize*charWidth);
@@ -59,7 +58,6 @@ public class TextUtils {
 
         Style style = textPane.getLogicalStyle();
         if(style != null) {
-            // @todo logical style is per paragraph. Need to modify more
             StyleConstants.setTabSet(style, tabs);
             textPane.setLogicalStyle(style);
         }

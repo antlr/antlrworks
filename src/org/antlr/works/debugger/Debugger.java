@@ -155,8 +155,8 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 ioSplitPane.setDividerLocation(0.7);
-                ioTreeSplitPane.setDividerLocation(0.2);
                 treeStackSplitPane.setDividerLocation(0.5);
+                ioTreeSplitPane.setDividerLocation(0.2);
             }
         });
     }
@@ -181,15 +181,6 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
 
         JScrollPane textScrollPane = new JScrollPane(inputTextPane);
         textScrollPane.setWheelScrollingEnabled(true);
-
-
-/*        Box box = Box.createHorizontalBox();
-        box.add(Box.createHorizontalGlue());
-        box.add(tokenButton);*/
-
-        //JPanel panel = new JPanel(new BorderLayout());
-        //panel.add(textScrollPane, BorderLayout.CENTER);
-        //panel.add(box, BorderLayout.SOUTH);
 
         return textScrollPane;
     }
@@ -573,6 +564,8 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
                 recorder.forceStop();
         } else
             recorder.stop();
+
+        editor.console.closeGroup();
     }
 
     public boolean isRunning() {

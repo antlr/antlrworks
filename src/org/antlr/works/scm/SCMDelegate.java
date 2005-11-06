@@ -35,4 +35,5 @@ package org.antlr.works.scm;
 public interface SCMDelegate {
     public void scmCommandsDidComplete();
     public void scmFileStatusDidChange(String status);
+    public void scmLog(String log);
 }

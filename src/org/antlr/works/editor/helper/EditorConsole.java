@@ -56,6 +56,8 @@ public class EditorConsole {
 
     protected JPanel panel;
     protected JTextArea textArea;
+    protected JSplitPane splitPane;
+
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     protected Action currentAction = null;
@@ -76,15 +78,13 @@ public class EditorConsole {
 
         panel = new JPanel(new BorderLayout());
 
-        JSplitPane splitPane = new JSplitPane();
+        splitPane = new JSplitPane();
         splitPane.setBorder(null);
         splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setLeftComponent(createGroupTable());
         splitPane.setRightComponent(createTextArea());
         splitPane.setContinuousLayout(true);
-        splitPane.setPreferredSize(new Dimension(0, 400));
         splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(0.3);
 
         Box box = Box.createHorizontalBox();
 
@@ -99,6 +99,12 @@ public class EditorConsole {
 
         panel.add(splitPane, BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                splitPane.setDividerLocation(0.2);
+            }
+        });
     }
 
     public void makeCurrent() {
@@ -153,7 +159,6 @@ public class EditorConsole {
             }
         });
 
-
         groupScrollPane = new JScrollPane(groupTable);
         groupScrollPane.setBorder(null);
         groupScrollPane.setPreferredSize(new Dimension(200, 0));
@@ -180,7 +185,7 @@ public class EditorConsole {
     }
 
     public String getActionTextAtIndex(int index) {
-        Action a = (Action)actions.get(index);
+        Action a = (Action)actions.get(Math.min(Math.max(0, index), actions.size()-1));
         return a.text.toString();
     }
 
@@ -194,10 +199,7 @@ public class EditorConsole {
         if(currentAction != null)
             closeGroup();
 
-        currentAction = new Action(name);
-        actions.add(0, currentAction);
-
-        groupTableModel.fireTableDataChanged();
+        newAction(name);
 
         if(groupTable.getSelectionModel().getMinSelectionIndex() == -1)
             groupTable.getSelectionModel().setSelectionInterval(0, 0);
@@ -211,8 +213,17 @@ public class EditorConsole {
 
     public synchronized void println(String s) {
         String t = "["+dateFormat.format(new Date())+"] "+s;
-        if(currentAction != null)
-            currentAction.appendString(t+"\n");
+        if(currentAction == null) {
+            newAction("Idle");
+        }
+        currentAction.appendString(t+"\n");
+        System.out.println(s);
+    }
+
+    protected synchronized void newAction(String name) {
+        currentAction = new Action(name);
+        actions.add(0, currentAction);
+        groupTableModel.fireTableDataChanged();
     }
 
     public class Action {

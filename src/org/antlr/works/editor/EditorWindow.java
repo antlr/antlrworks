@@ -76,27 +76,37 @@ public class EditorWindow
         RulesDelegate, EditorProvider, UndoDelegate, ATEPanelDelegate,
         XJNotificationObserver
 {
-    public EditorKeyBindings keyBindings;
+    /* Auto-completion */
+
     public AutoCompletionMenu autoCompletionMenu;
     public TemplateRules templateRules;
 
+    /* Tools */
+
     public FindAndReplace findAndReplace;
+
     public TGoToRule goToRule;
     public TColorize colorize;
     public TGrammar grammar;
     public TImmediateColorization immediateColorization;
     public TAutoIndent autoIndent;
 
+    /* Managers */
+
     public EditorBreakpointManager breakpointManager;
     public EditorFoldingManager foldingManager;
     public EditorUnderlyingManager underlyingManager;
     public EditorAnalysisManager analysisManager;
+
+    /* Components */
 
     public ThreadedParser parser;
     public Rules rules;
     public Visual visual;
     public Interpreter interpreter;
     public Debugger debugger;
+
+    /* Helpers */
 
     public EditorConsole console;
     public EditorGoToHistory editorGoToHistory;
@@ -105,6 +115,8 @@ public class EditorWindow
     public EditorMenu editorMenu;
     public EditorIdeas editorIdeas;
     public EditorTips editorTips;
+    public EditorPersistence persistence;
+    public EditorKeyBindings keyBindings;
 
     /* Actions */
 
@@ -124,23 +136,21 @@ public class EditorWindow
 
     /* Swing */
 
-    public JScrollPane rulesScrollPane;
-    public XJTree rulesTree;
+    protected JScrollPane rulesScrollPane;
+    protected XJTree rulesTree;
 
-    public JTabbedPane viewTabbedPane;
-    public JPanel mainPanel;
+    protected JTabbedPane viewTabbedPane;
+    protected JPanel mainPanel;
 
-    public Box infoPanel;
-    public JLabel infoLabel;
-    public JLabel cursorLabel;
-    public JLabel scmLabel;
+    protected Box infoBox;
+    protected JLabel infoLabel;
+    protected JLabel cursorLabel;
+    protected JLabel scmLabel;
 
-    public JSplitPane rulesTextSplitPane;
-    public JSplitPane upDownSplitPane;
+    protected JSplitPane rulesTextSplitPane;
+    protected JSplitPane upDownSplitPane;
 
     /* Other */
-
-    protected EditorPersistence persistence;
 
     protected Map undos = new HashMap();
 
@@ -148,7 +158,6 @@ public class EditorWindow
     protected String lastSelectedRule;
 
     public EditorWindow() {
-
         createInterface();
 
         initHelpers();
@@ -160,8 +169,8 @@ public class EditorWindow
         initAutoCompletion();
         initTools();
 
-        awakeInterface();
         awakeInstances();
+        awakeInterface();
 
         register();
     }
@@ -238,7 +247,7 @@ public class EditorWindow
         textEditor.setAnalysisManager(analysisManager);
     }
 
-    public void awakeInstances() {
+    protected void awakeInstances() {
         editorIdeas.awake();
         editorTips.awake();
 
@@ -250,7 +259,7 @@ public class EditorWindow
         rules.setKeyBindings(keyBindings);
     }
 
-    public void createInterface() {
+    protected void createInterface() {
         Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         r.width *= 0.75;
         r.height *= 0.75;
@@ -293,7 +302,7 @@ public class EditorWindow
 
         viewTabbedPane = new JTabbedPane();
         viewTabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
-        viewTabbedPane.addMouseListener(new TabMouseListener());
+        viewTabbedPane.addMouseListener(new TabbedPaneMouseListener());
 
         rulesTextSplitPane = new JSplitPane();
         rulesTextSplitPane.setBorder(null);
@@ -315,26 +324,26 @@ public class EditorWindow
         cursorLabel = new JLabel();
         scmLabel = new JLabel();
 
-        infoPanel = new InfoPanel();
-        infoPanel.setPreferredSize(new Dimension(0, 30));
+        infoBox = new InfoPanel();
+        infoBox.setPreferredSize(new Dimension(0, 30));
 
-        infoPanel.add(Box.createHorizontalStrut(5));
-        infoPanel.add(infoLabel);
-        infoPanel.add(Box.createHorizontalStrut(5));
-        infoPanel.add(createSeparator());
-        infoPanel.add(Box.createHorizontalStrut(5));
-        infoPanel.add(cursorLabel);
-        infoPanel.add(Box.createHorizontalStrut(5));
-        infoPanel.add(createSeparator());
-        infoPanel.add(Box.createHorizontalStrut(5));
-        infoPanel.add(scmLabel);
+        infoBox.add(Box.createHorizontalStrut(5));
+        infoBox.add(infoLabel);
+        infoBox.add(Box.createHorizontalStrut(5));
+        infoBox.add(createSeparator());
+        infoBox.add(Box.createHorizontalStrut(5));
+        infoBox.add(cursorLabel);
+        infoBox.add(Box.createHorizontalStrut(5));
+        infoBox.add(createSeparator());
+        infoBox.add(Box.createHorizontalStrut(5));
+        infoBox.add(scmLabel);
 
         toolbar = new EditorToolbar(this);
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(toolbar.getToolbar(), BorderLayout.NORTH);
         mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
-        mainPanel.add(infoPanel, BorderLayout.SOUTH);
+        mainPanel.add(infoBox, BorderLayout.SOUTH);
 
         getContentPane().add(mainPanel);
         pack();
@@ -367,7 +376,10 @@ public class EditorWindow
         parser.addObserver(this);
 
         registerUndo(new Undo(this), getTextPane());
+
         XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
+        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
+        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STOPPED);
     }
 
     public void applyFont() {
@@ -944,6 +956,9 @@ public class EditorWindow
             applyFont();
             getMainMenuBar().refreshState();
             updateSCMStatus(null);
+        } else if(name.equals(Debugger.NOTIF_DEBUG_STARTED)) {
+            editorIdeas.hide();
+        } else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED)) {
         }
     }
 
@@ -1020,7 +1035,8 @@ public class EditorWindow
     }
 
     public void ateMousePressed(Point point) {
-        editorIdeas.display(point);
+        if(!debugger.isRunning())
+            editorIdeas.display(point);
     }
 
     public void ateMouseExited() {
@@ -1042,7 +1058,7 @@ public class EditorWindow
         updateCursorInfo();
         if(getTextPane().hasFocus()) {
             editorIdeas.hide();
-            if(!textEditor.isTyping())
+            if(!textEditor.isTyping() && !debugger.isRunning())
                 editorIdeas.display(getCaretPosition());
         }
 
@@ -1092,7 +1108,7 @@ public class EditorWindow
         }
     }
 
-    protected class TabMouseListener extends MouseAdapter {
+    protected class TabbedPaneMouseListener extends MouseAdapter {
 
         protected static final int CLOSING_INDEX_LIMIT = 4;
 

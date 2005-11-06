@@ -1,5 +1,5 @@
 
-Version 1.0ea5 - 11/04/05
+Version 1.0ea5 - 11/06/05
 
 - refactor: inline rule
 - refactor: extract rule
@@ -14,12 +14,15 @@ Version 1.0ea5 - 11/04/05
 - improved rule folding: can now fold using the bottom anchor
 - re-introduced actions folding (anchors can be disabled in the preferences)
 - improved Go To Rule: ignore case and display typed text in red if no match found
-- now display a message if the syntax diagram cannot be displayed
-- now detect ANTLR 2.x grammars and display warning message
+
+- hide and disable ideas during debugging
+- display a message if the syntax diagram cannot be displayed
+- display warning message if ANTLR 2.x grammars detected
 
 - fixed a bug where the undo/redo menu item title would not display the correct action name
 - fixed a bug in the Find dialog where some pattern would cause an exception (didn't quote in the regex)
 - fixed a bug which would prevent drag and drop of rules to work on Windows
+- fixed a bug where not all messages would be displayed in the console (added group "idle")
 
 Version 1.0ea4 - 10/22/05
 

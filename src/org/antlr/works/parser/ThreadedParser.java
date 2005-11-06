@@ -45,10 +45,14 @@ public class ThreadedParser extends EditorThread {
     protected Parser parser = null;
     protected List observers = null;
 
-    protected List rules = null;
-    protected List groups = null;
-    protected List blocks = null;
-    protected ParserName name = null;
+    protected List rules;
+    protected List groups;
+    protected List blocks;
+    protected List actions;
+    protected List references;
+    protected List tokens;
+
+    protected ParserName name;
 
     protected static int delay = 250;
 
@@ -70,13 +74,6 @@ public class ThreadedParser extends EditorThread {
         observers.add(observer);
     }
 
-    private synchronized void setParserAttribute(Parser parser) {
-        this.rules = parser.rules;
-        this.groups = parser.groups;
-        this.blocks = parser.blocks;
-        this.name = parser.name;
-    }
-
     public synchronized List getRules() {
         return rules;
     }
@@ -87,6 +84,26 @@ public class ThreadedParser extends EditorThread {
 
     public synchronized List getBlocks() {
         return blocks;
+    }
+
+    public synchronized List getActions() {
+        return actions;
+    }
+
+    public synchronized List getReferences() {
+        return references;
+    }
+
+    public synchronized List getTokens() {
+        return tokens;
+    }
+
+    public synchronized List getLines() {
+        return parser.getLines();
+    }
+
+    public synchronized int getMaxLines() {
+        return parser.getMaxLines();
     }
 
     public synchronized ParserName getName() {
@@ -126,52 +143,44 @@ public class ThreadedParser extends EditorThread {
             return (ParserRule)rules.get(index);
     }
 
-    public synchronized List getActions() {
-        return parser.actions;
-    }
-
-    public synchronized List getReferences() {
-        return parser.references;
-    }
-
-    public synchronized List getTokens() {
-        return parser.tokens;
-    }
-
-    public synchronized List getLines() {
-        return parser.getLines();
-    }
-
-    public synchronized int getMaxLines() {
-        return parser.getMaxLines();
-    }
-
     public void parse() {
         awakeThread(delay);
     }
 
-    public void notifyWillParse() {
+    protected void notifyWillParse() {
         for(int i=0; i<observers.size(); i++) {
             ThreadedParserObserver obs = (ThreadedParserObserver)observers.get(i);
             obs.parserWillParse();
         }
     }
 
-    public void notifyDidParse() {
+    protected void notifyDidParse() {
         for(int i=0; i<observers.size(); i++) {
             ThreadedParserObserver obs = (ThreadedParserObserver)observers.get(i);
             obs.parserDidParse();
         }
     }
 
+    protected synchronized void setParserAttribute(Parser parser) {
+        this.rules = copyArray(parser.rules);
+        this.groups = copyArray(parser.groups);
+        this.blocks = copyArray(parser.blocks);
+        this.actions = copyArray(parser.actions);
+        this.references = copyArray(parser.references);
+        this.tokens = copyArray(parser.tokens);
+        this.name = parser.name;
+    }
+
+    protected List copyArray(List list) {
+        ArrayList array = (ArrayList)list;
+        return (List)array.clone();
+    }
+
     public void threadRun() throws Exception {
         notifyWillParse();
         
-//        long t = System.currentTimeMillis();
         parser.parse(provider.getText());
         setParserAttribute(parser);
-//        long delta = System.currentTimeMillis()-t;
-//        System.out.println("Parsing in "+delta);
 
         SwingUtilities.invokeAndWait(new Runnable() {
             public void run() {

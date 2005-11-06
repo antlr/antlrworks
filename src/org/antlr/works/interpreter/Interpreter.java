@@ -258,6 +258,8 @@ public class Interpreter implements Runnable {
         treeModel.setTree(t);
         tree.updateUI();
         TreeUtilities.expandAll(tree);
+
+        editor.console.closeGroup();
     }
 
     public void run() {

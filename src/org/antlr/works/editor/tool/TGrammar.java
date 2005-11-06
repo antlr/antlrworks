@@ -65,6 +65,7 @@ public class TGrammar implements VisualDelegate {
     public void visualizationProcessDidEnd(Visual visual) {
         editor.updateInformation();
         progress.close();
+        editor.console.closeGroup();
     }
 
     public void visualizationDidMarkRules(Visual visual) {
