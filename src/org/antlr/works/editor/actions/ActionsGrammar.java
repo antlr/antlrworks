@@ -81,10 +81,10 @@ public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDec
             editor.beginGroupChange("Group");
 
             int end = editor.getTextPane().getSelectionEnd();
-            editor.editorGUI.textEditor.insertText(end+1, "\n"+Parser.END_GROUP+"\n");
+            editor.textEditor.insertText(end+1, "\n"+Parser.END_GROUP+"\n");
 
             int start = editor.getTextPane().getSelectionStart();
-            editor.editorGUI.textEditor.insertText(start-1, "\n"+Parser.BEGIN_GROUP+s+"\n");
+            editor.textEditor.insertText(start-1, "\n"+Parser.BEGIN_GROUP+s+"\n");
 
             editor.endGroupChange();
         }

@@ -114,7 +114,9 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
 
     public Debugger(EditorWindow editor) {
         this.editor = editor;
+    }
 
+    public void awake() {
         panel = new JPanel(new BorderLayout());
 
         treeStackSplitPane = new JSplitPane();

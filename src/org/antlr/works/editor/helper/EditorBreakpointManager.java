@@ -1,4 +1,10 @@
 package org.antlr.works.editor.helper;
+
+import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.ate.ATEBreakpointManager;
+
+import java.util.ArrayList;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -30,7 +36,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface PersistentObject {
-    public Object getPersistentID();
-    public void persistentAssign(PersistentObject otherObject);
+public class EditorBreakpointManager extends ATEBreakpointManager {
+
+    protected EditorWindow editor;
+
+    public EditorBreakpointManager(EditorWindow editor) {
+        super(editor.textEditor);
+        this.editor = editor;
+    }
+
+    public List getBreakpointEntities() {
+        List entities = new ArrayList();
+        List rules = editor.parser.getRules();
+        if(rules != null)
+            entities.addAll(rules);
+        return entities;
+    }
 }

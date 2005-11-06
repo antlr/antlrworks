@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics.panel;
 
-import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.parser.ParserRule;
@@ -55,16 +54,14 @@ import java.util.List;
 
 public class GPanel implements XJNotificationObserver {
 
-    private XJFrame parent;
+    protected Container container;
+    protected Box pathButtonSelectionBox;
+    protected JLabel errorLabel;
 
-    private Container container;
-    private Box pathButtonSelectionBox;
-    private JLabel errorLabel;
+    protected GContext context;
+    protected GView view;
 
-    private GContext context;
-    private GView view;
-
-    private ParserRule rule;
+    protected ParserRule rule;
 
     public GPanel(GContext context) {
         this.context = context;
@@ -93,6 +90,10 @@ public class GPanel implements XJNotificationObserver {
         view.setEnable(true);
     }
 
+    public void setPlaceholder(String placeholder) {
+        view.setPlaceholder(placeholder);
+    }
+
     public void update() {
         updateCurrentError();
     }
@@ -113,10 +114,6 @@ public class GPanel implements XJNotificationObserver {
             createErrorPanel();
         else
             createNormalPanel();
-    }
-
-    public void setParent(XJFrame parent) {
-        this.parent = parent;
     }
 
     public void createNormalPanel() {
@@ -212,7 +209,11 @@ public class GPanel implements XJNotificationObserver {
         int count = view.getGraphs().size();
         int index = view.getCurrentGraphIndex();
         if(count>1) {
-            sb.append("("+(index+1)+"/"+count+") ");
+            sb.append("(");
+            sb.append(index + 1);
+            sb.append("/");
+            sb.append(count);
+            sb.append(") ");
         }
         sb.append(rule.getErrorMessageString(index));
         errorLabel.setText(sb.toString());
@@ -314,7 +315,7 @@ public class GPanel implements XJNotificationObserver {
         return slider;
     }
 
-    private JSlider createLineSpaceSlider() {
+    /*private JSlider createLineSpaceSlider() {
         JSlider slider = new JSlider();
         slider.setFocusable(false);
         slider.setMinimum(0);
@@ -378,7 +379,7 @@ public class GPanel implements XJNotificationObserver {
             }
         });
         return button;
-    }
+    }      */
 
     private JCheckBox createShowNFAButton() {
         JCheckBox button = new JCheckBox("Show NFA");
@@ -400,7 +401,7 @@ public class GPanel implements XJNotificationObserver {
         return button;
     }
 
-    private JCheckBox createUseCacheButton() {
+    /*private JCheckBox createUseCacheButton() {
         JCheckBox button = new JCheckBox("Use cache image");
         button.setFocusable(false);
         button.setSelected(view.isCachedEnabled());
@@ -412,7 +413,7 @@ public class GPanel implements XJNotificationObserver {
             }
         });
         return button;
-    }
+    } */
 
     public void notificationFire(Object source, String name) {
         if(name.equals(GPathGroup.NOTIF_CURRENT_PATH_DID_CHANGE))

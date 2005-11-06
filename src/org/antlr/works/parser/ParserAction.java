@@ -1,7 +1,7 @@
 package org.antlr.works.parser;
 
 import org.antlr.works.editor.ate.ATEFoldingEntity;
-import org.antlr.works.editor.helper.PersistentObject;
+import org.antlr.works.editor.helper.EditorPersistentObject;
 /*
 
 [The "BSD licence"]
@@ -33,7 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ParserAction implements PersistentObject, ATEFoldingEntity {
+public class ParserAction implements EditorPersistentObject, ATEFoldingEntity {
 
     public ParserRule rule;
     public Token token;
@@ -104,7 +104,7 @@ public class ParserAction implements PersistentObject, ATEFoldingEntity {
         return new Integer(getUniqueIdentifier());
     }
 
-    public void persistentAssign(PersistentObject otherObject) {
+    public void persistentAssign(EditorPersistentObject otherObject) {
         ParserAction otherAction = (ParserAction)otherObject;
         this.expanded = otherAction.expanded;
     }

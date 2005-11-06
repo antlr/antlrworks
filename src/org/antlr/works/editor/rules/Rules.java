@@ -33,9 +33,9 @@ package org.antlr.works.editor.rules;
 
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
-import org.antlr.works.editor.ate.ATEFoldingEntity;
-import org.antlr.works.editor.helper.KeyBindings;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.ate.ATEFoldingEntity;
+import org.antlr.works.editor.helper.EditorKeyBindings;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
@@ -109,7 +109,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         this.delegate = delegate;
     }
 
-    public void setKeyBindings(KeyBindings keyBindings) {
+    public void setKeyBindings(EditorKeyBindings keyBindings) {
         keyBindings.addKeyBinding("RULE_MOVE_UP", KeyStroke.getKeyStroke(KeyEvent.VK_UP, Event.CTRL_MASK),
                 new RuleMoveUpAction());
         keyBindings.addKeyBinding("RULE_MOVE_DOWN", KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Event.CTRL_MASK),

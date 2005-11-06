@@ -33,7 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.scm.p4;
 
 import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.editor.helper.Console;
+import org.antlr.works.editor.helper.EditorConsole;
 import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
 
@@ -53,14 +53,14 @@ public class P4 implements SCM {
     protected static final int CMD_SYNC = 6;
     protected static final int CMD_FSTAT = 7;
 
-    protected Console console = null;
+    protected EditorConsole console = null;
     protected SCMDelegate delegate = null;
     protected String fileStatus = null;
 
     protected P4Scheduler scheduler = new P4Scheduler();
     protected P4CommandCompletion lastCompletion = null;
 
-    public P4(Console console, SCMDelegate delegate) {
+    public P4(EditorConsole console, SCMDelegate delegate) {
         this.console = console;
         this.delegate = delegate;
     }

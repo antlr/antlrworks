@@ -35,12 +35,12 @@ package org.antlr.works.editor.helper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GoToHistory {
+public class EditorGoToHistory {
 
     protected List history = new ArrayList();
     protected int currentIndex = 0;
 
-    public GoToHistory() {
+    public EditorGoToHistory() {
 
     }
 

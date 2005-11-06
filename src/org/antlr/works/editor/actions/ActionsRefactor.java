@@ -5,9 +5,9 @@ import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.parser.Lexer;
+import org.antlr.works.parser.ParserReference;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
-import org.antlr.works.parser.ParserReference;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.Utils;
 
@@ -101,7 +101,7 @@ public class ActionsRefactor extends AbstractActions {
     public void replaceLiteralTokenWithTokenLabel(Token t, String name) {
         // First insert the rule at the end of the grammar
         int insertionIndex = editor.getText().length();
-        editor.editorGUI.textEditor.insertText(insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
+        editor.textEditor.insertText(insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
 
         // Then rename all strings token
         List tokens = editor.getTokens();
@@ -233,6 +233,14 @@ public class ActionsRefactor extends AbstractActions {
         undo.addEditEvent(new UndoableInlineRuleEdit(oldContent, rule.name));
     }
 
+    public void createRuleAtIndex(boolean lexer, String name, String content) {
+        editor.beginGroupChange("Create Rule");
+        int index = insertionIndexForRule(lexer);
+        insertRuleAtIndex(createRule(name, content), index);
+        setCaretPosition(index);
+        editor.endGroupChange();
+    }
+
     protected void replaceEditorTextAndAdjustCaretPosition(String newText) {
         int oldCaretPosition = editor.getTextPane().getCaretPosition();
         String oldText = editor.getText();
@@ -300,7 +308,13 @@ public class ActionsRefactor extends AbstractActions {
     }
 
     public void insertRuleAtIndex(String rule, int index) {
-        editor.editorGUI.textEditor.insertText(index, rule);
+        editor.textEditor.insertText(index, rule);
+    }
+
+    public void deleteRuleAtIndex(int index) {
+        ParserRule r = editor.rules.getEnclosingRuleAtPosition(index);
+        if(r != null)
+            editor.replaceText(r.getStartIndex(), r.getEndIndex(), "");
     }
 
     protected class UndoableInlineRuleEdit extends AbstractUndoableEdit {

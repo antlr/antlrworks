@@ -36,7 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class Persistence {
+public class EditorPersistence {
 
     public static final String KEY_RULES = "rules";
     public static final String KEY_ACTIONS = "actions";
@@ -45,7 +45,7 @@ public class Persistence {
 
     public EditorWindow editor;
 
-    public Persistence(EditorWindow editor) {
+    public EditorPersistence(EditorWindow editor) {
         this.editor = editor;
     }
 
@@ -71,7 +71,7 @@ public class Persistence {
             return;
 
         for(int index=0; index<objects.size(); index++) {
-            PersistentObject o = (PersistentObject)objects.get(index);
+            EditorPersistentObject o = (EditorPersistentObject)objects.get(index);
             m.put(o.getPersistentID(), o);
         }
     }
@@ -85,8 +85,8 @@ public class Persistence {
             return;
 
         for(int index=0; index<objects.size(); index++) {
-            PersistentObject o = (PersistentObject)objects.get(index);
-            PersistentObject oldObject = (PersistentObject) m.get(o.getPersistentID());
+            EditorPersistentObject o = (EditorPersistentObject)objects.get(index);
+            EditorPersistentObject oldObject = (EditorPersistentObject) m.get(o.getPersistentID());
             if(oldObject != null)
                 o.persistentAssign(oldObject);
         }

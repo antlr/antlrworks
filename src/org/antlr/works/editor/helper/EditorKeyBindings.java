@@ -42,11 +42,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-public class KeyBindings {
+public class EditorKeyBindings {
 
     private JTextComponent textComponent = null;
 
-    public KeyBindings(JTextComponent textComponent) {
+    public EditorKeyBindings(JTextComponent textComponent) {
         this.textComponent = textComponent;
         // @todo currently only on Mac OS
         if(XJSystem.isMacOS())

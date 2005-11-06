@@ -49,6 +49,9 @@ public class ActionsSCM extends AbstractActions implements SCMDelegate {
 
     public ActionsSCM(EditorWindow editor) {
         super(editor);
+    }
+
+    public void awake() {
         scm = new P4(editor.console, this);
         progress = new XJDialogProgress(editor.getWindowContainer());
     }
@@ -148,7 +151,7 @@ public class ActionsSCM extends AbstractActions implements SCMDelegate {
     }
 
     public void scmFileStatusDidChange(String status) {
-        editor.editorGUI.updateSCMStatus(status);
+        editor.updateSCMStatus(status);
     }
 
 }

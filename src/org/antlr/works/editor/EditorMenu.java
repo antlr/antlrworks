@@ -379,10 +379,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
                 break;
 
             case MI_GOTO_BACKWARD:
-                item.setEnabled(editor.goToHistory.canGoBackward());
+                item.setEnabled(editor.editorGoToHistory.canGoBackward());
                 break;
             case MI_GOTO_FORWARD:
-                item.setEnabled(editor.goToHistory.canGoForward());
+                item.setEnabled(editor.editorGoToHistory.canGoForward());
                 break;
 
             case MI_P4_EDIT:

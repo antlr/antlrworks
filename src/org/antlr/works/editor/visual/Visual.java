@@ -91,7 +91,6 @@ public class Visual {
         engine = new GrammarEngine();
 
         panel = new GPanel(context);
-        panel.setParent(parent);
 
         drawing = new VisualDrawing(this);
         analysis = new VisualAnalysis(this);
@@ -138,6 +137,11 @@ public class Visual {
     public void setRule(ParserRule rule, boolean immediate) {
         if(isEnable())
             drawing.setRule(rule, immediate);
+    }
+
+    public void setPlaceholder(String placeholder) {
+        panel.setPlaceholder(placeholder);
+        panel.setGraphs(null);
     }
 
     public void checkGrammar() {

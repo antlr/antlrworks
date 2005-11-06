@@ -126,14 +126,24 @@ public class VisualDrawing extends EditorThread {
         if(threadRule == null)
             return;
 
+        String error = null;
+
         if(visual.engine.g == null) {
-            System.err.println("Cannot display rule \""+threadRule+"\" because Grammar is null");
-            return;
+            error = "Cannot display rule \""+threadRule+"\" because Grammar is null";
+        } else {
+            NFAState startState = visual.engine.g.getRuleStartState(threadRule.name);
+            if(startState == null) {
+                if(threadRule.name.equals(threadRule.name.toUpperCase())) {
+                    error = "Visualization currently not supported for lexer rule";
+                } else {
+                    error = "Cannot display rule \""+threadRule+"\" because start state not found";
+                }
+            }
         }
 
-        NFAState startState = visual.engine.g.getRuleStartState(threadRule.name);
-        if(startState == null) {
-            System.err.println("Cannot find start state for rule \""+threadRule+"\"");
+        if(error != null) {
+            visual.setPlaceholder(error);
+            System.err.println(error);
             return;
         }
 

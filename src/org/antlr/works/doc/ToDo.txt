@@ -1,18 +1,12 @@
 - check splitter size on Windows/Linux
 - correct bug where console doesn't display the messages
-- detect version 2 grammars
 - all actions should be safely refactored using undo like in inline
 
 - display current token in syntax diagram
-- refactor ideas and tips out of EditorWindow
-- see if EditorGUI is still useful
-- reintroduce breakpoint on exception
 - breakpoint on input text
-- drag and drop doesn't work on Windows anymore
 
 - generate code without debugging information
 - afficher plusieurs regles en meme temps
-- Java 1.5: Executors to reuse thread easily
 - make sure synchronized get method copy objects (if needed) - idem for setters
 - contextual menus on rules to group using selected rules (do not rely on text selection)
 - ideas: undefined rule: rename rule, delete token
@@ -31,7 +25,6 @@
 - SCM: add diff
 - display all literals in list
 - use Grammar randomText to generate random valid input text
-- message pour indiquer lorsque le syntax diagram n'est pas affiche (comme par exemple sur les regles du lexer)
 
 - lexical ambiguities (ask Terence)
 - LT are not always displayed - see if we are too restricting

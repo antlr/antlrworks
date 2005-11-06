@@ -84,7 +84,9 @@ public class Interpreter implements Runnable {
 
     public Interpreter(EditorWindow editor) {
         this.editor = editor;
+    }
 
+    public void awake() {
         progress = new XJDialogProgress(editor);
 
         panel = new JPanel(new BorderLayout());
@@ -139,7 +141,7 @@ public class Interpreter implements Runnable {
         panel.add(createControlPanel(), BorderLayout.NORTH);
         panel.add(splitPane, BorderLayout.CENTER);
 
-        editor.registerUndo(new Undo(editor.editorGUI), textPane);
+        editor.registerUndo(new Undo(editor), textPane);
     }
 
     public Box createControlPanel() {

@@ -3,8 +3,8 @@ package org.antlr.works.editor.helper;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.ate.ATEAnalysisItem;
 import org.antlr.works.editor.ate.ATEAnalysisManager;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.ParserReference;
+import org.antlr.works.parser.ParserRule;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AnalysisManager extends ATEAnalysisManager {
+public class EditorAnalysisManager extends ATEAnalysisManager {
 
     protected static final int ANALYSIS_ITEM_ERROR = 0;
     protected static final int ANALYSIS_ITEM_WARNING = 1;
@@ -55,7 +55,7 @@ public class AnalysisManager extends ATEAnalysisManager {
     protected int numberOfWarnings;
     protected int numberOfRefactorings;
 
-    public AnalysisManager(EditorWindow editor) {
+    public EditorAnalysisManager(EditorWindow editor) {
         this.editor = editor;
     }
 

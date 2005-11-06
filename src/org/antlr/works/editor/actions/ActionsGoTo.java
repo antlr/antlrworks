@@ -33,8 +33,8 @@ package org.antlr.works.editor.actions;
 
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Line;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.ParserReference;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
@@ -108,15 +108,15 @@ public class ActionsGoTo extends AbstractActions {
     }
 
     public void goToBackward() {
-        if(editor.goToHistory.canGoBackward()) {
-            setCaretPosition(editor.goToHistory.getBackwardPosition(getCaretPosition()));
+        if(editor.editorGoToHistory.canGoBackward()) {
+            setCaretPosition(editor.editorGoToHistory.getBackwardPosition(getCaretPosition()));
             editor.getMainMenuBar().refreshState();
         }
     }
 
     public void goToForward() {
-        if(editor.goToHistory.canGoForward()) {
-            setCaretPosition(editor.goToHistory.getForwardPosition());
+        if(editor.editorGoToHistory.canGoForward()) {
+            setCaretPosition(editor.editorGoToHistory.getForwardPosition());
             editor.getMainMenuBar().refreshState();
         }
     }

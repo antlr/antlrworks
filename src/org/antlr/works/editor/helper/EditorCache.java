@@ -39,7 +39,7 @@ public class EditorCache {
     public static final String CACHE_TEXT = "CacheText";
     public static final String CACHE_PLAIN_TEXT = "CachePlainText";
 
-    private Map cacheMap = new HashMap();
+    protected Map cacheMap = new HashMap();
 
     public synchronized void invalidate() {
         cacheMap.clear();

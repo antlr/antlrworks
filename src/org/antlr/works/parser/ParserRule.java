@@ -2,7 +2,7 @@ package org.antlr.works.parser;
 
 import org.antlr.works.editor.ate.ATEBreakpointEntity;
 import org.antlr.works.editor.ate.ATEFoldingEntity;
-import org.antlr.works.editor.helper.PersistentObject;
+import org.antlr.works.editor.helper.EditorPersistentObject;
 import org.antlr.works.visualization.grammar.GrammarEngineError;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntity, ATEBreakpointEntity {
+public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldingEntity, ATEBreakpointEntity {
 
     public String name;
     public Token start;
@@ -350,7 +350,7 @@ public class ParserRule implements Comparable, PersistentObject, ATEFoldingEntit
         return new Integer(getUniqueIdentifier());
     }
 
-    public void persistentAssign(PersistentObject otherObject) {
+    public void persistentAssign(EditorPersistentObject otherObject) {
         ParserRule oldRule = (ParserRule)otherObject;
         this.expanded = oldRule.expanded;
         this.breakpoint = oldRule.breakpoint;

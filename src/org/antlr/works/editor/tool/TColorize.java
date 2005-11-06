@@ -37,10 +37,10 @@ import org.antlr.works.editor.helper.EditorThread;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Token;
 
+import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import javax.swing.text.AttributeSet;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -223,7 +223,7 @@ public class TColorize extends EditorThread {
                         break;
                     case Lexer.TOKEN_ID:
                         if(token.isReference || token.isRule) {
-                            if(token.isAllUpperCase())
+                            if(token.isLexer())
                                 attr = lexerRefAttr;
                             else
                                 attr = parserRefAttr;

@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Console {
+public class EditorConsole {
 
     protected EditorWindow editor;
 
@@ -61,17 +61,17 @@ public class Console {
     protected Action currentAction = null;
     protected List actions = new ArrayList();
 
-    protected static Console current = null;
+    protected static EditorConsole current = null;
 
-    public static synchronized void setCurrent(Console console) {
+    public static synchronized void setCurrent(EditorConsole console) {
         current = console;
     }
 
-    public static synchronized Console getCurrent() {
+    public static synchronized EditorConsole getCurrent() {
         return current;
     }
 
-    public Console(EditorWindow editor) {
+    public EditorConsole(EditorWindow editor) {
         this.editor = editor;
 
         panel = new JPanel(new BorderLayout());
@@ -102,7 +102,7 @@ public class Console {
     }
 
     public void makeCurrent() {
-        Console.setCurrent(this);
+        EditorConsole.setCurrent(this);
     }
     
     public Container getContainer() {

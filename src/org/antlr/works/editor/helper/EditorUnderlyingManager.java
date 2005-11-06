@@ -38,12 +38,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class UnderlyingManager extends ATEUnderlyingManager {
+public class EditorUnderlyingManager extends ATEUnderlyingManager {
 
     protected EditorWindow editor;
 
-    public UnderlyingManager(EditorWindow editor) {
-        super(editor.editorGUI.textEditor);
+    public EditorUnderlyingManager(EditorWindow editor) {
+        super(editor.textEditor);
         this.editor = editor;
     }
 

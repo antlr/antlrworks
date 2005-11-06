@@ -35,99 +35,182 @@ import edu.usfca.xj.appkit.frame.XJWindow;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
+import edu.usfca.xj.appkit.swing.XJTree;
+import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.foundation.XJSystem;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.dialog.DialogPrefs;
 import org.antlr.works.editor.actions.*;
+import org.antlr.works.editor.ate.ATEPanel;
 import org.antlr.works.editor.ate.ATEPanelDelegate;
 import org.antlr.works.editor.ate.ATETextPane;
-import org.antlr.works.editor.ate.ATEPanel;
 import org.antlr.works.editor.autocompletion.AutoCompletionMenu;
 import org.antlr.works.editor.autocompletion.AutoCompletionMenuDelegate;
 import org.antlr.works.editor.autocompletion.TemplateRules;
 import org.antlr.works.editor.find.FindAndReplace;
 import org.antlr.works.editor.helper.*;
-import org.antlr.works.editor.idea.*;
 import org.antlr.works.editor.rules.Rules;
 import org.antlr.works.editor.rules.RulesDelegate;
-import org.antlr.works.editor.tips.TipsManager;
-import org.antlr.works.editor.tips.TipsOverlay;
-import org.antlr.works.editor.tips.TipsProvider;
-import org.antlr.works.editor.tool.TColorize;
-import org.antlr.works.editor.tool.TGoToRule;
-import org.antlr.works.editor.tool.TGrammar;
+import org.antlr.works.editor.swing.TextUtils;
+import org.antlr.works.editor.tool.*;
 import org.antlr.works.editor.undo.Undo;
+import org.antlr.works.editor.undo.UndoDelegate;
 import org.antlr.works.editor.visual.Visual;
 import org.antlr.works.interpreter.Interpreter;
 import org.antlr.works.parser.*;
 import org.antlr.works.stats.Statistics;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
-public class EditorWindow extends XJWindow implements ThreadedParserObserver,
-     AutoCompletionMenuDelegate, RulesDelegate, EditorProvider, IdeaActionDelegate,
-     IdeaManagerDelegate, IdeaProvider, TipsProvider, ATEPanelDelegate
+public class EditorWindow
+        extends XJWindow
+        implements ThreadedParserObserver, AutoCompletionMenuDelegate,
+        RulesDelegate, EditorProvider, UndoDelegate, ATEPanelDelegate,
+        XJNotificationObserver
 {
-    public ThreadedParser parser;
-    public KeyBindings keyBindings;
+    public EditorKeyBindings keyBindings;
     public AutoCompletionMenu autoCompletionMenu;
-    public TGoToRule goToRule;
+    public TemplateRules templateRules;
+
     public FindAndReplace findAndReplace;
+    public TGoToRule goToRule;
     public TColorize colorize;
     public TGrammar grammar;
-    public TemplateRules templateRules;
-    public IdeaManager ideaManager;
-    public TipsManager tipsManager;
+    public TImmediateColorization immediateColorization;
+    public TAutoIndent autoIndent;
 
-    public BreakpointManager breakpointManager;
-    public FoldingManager foldingManager;
-    public UnderlyingManager underlyingManager;
-    public AnalysisManager analysisManager;
+    public EditorBreakpointManager breakpointManager;
+    public EditorFoldingManager foldingManager;
+    public EditorUnderlyingManager underlyingManager;
+    public EditorAnalysisManager analysisManager;
 
+    public ThreadedParser parser;
     public Rules rules;
     public Visual visual;
     public Interpreter interpreter;
     public Debugger debugger;
-    public Console console;
-    public GoToHistory goToHistory;
 
-    private Map undos = new HashMap();
+    public EditorConsole console;
+    public EditorGoToHistory editorGoToHistory;
+    public EditorToolbar toolbar;
+    public EditorCache editorCache;
+    public EditorMenu editorMenu;
+    public EditorIdeas editorIdeas;
+    public EditorTips editorTips;
 
-    public String lastSelectedRule;
+    /* Actions */
 
-    private boolean windowFirstDisplay = true;
+    public ActionsEdit actionsEdit;
+    public ActionsView actionsView;
+    public ActionsFind actionsFind;
+    public ActionsGrammar actionsGrammar;
+    public ActionsRefactor actionsRefactor;
+    public ActionsGoTo actionsGoTo;
+    public ActionsGenerate actionsGenerate;
+    public ActionsRun actionsRun;
+    public ActionsSCM actionsSCM;
+    public ActionsExport actionsExport;
+    public ActionsHelp actionsHelp;
 
-    public EditorGUI editorGUI;
-    protected EditorCache editorCache;
-    protected EditorMenu editorMenu;
+    public ATEPanel textEditor;
 
-    protected ActionsEdit actionsEdit;
-    protected ActionsView actionsView;
-    protected ActionsFind actionsFind;
-    protected ActionsGrammar actionsGrammar;
-    protected ActionsRefactor actionsRefactor;
-    protected ActionsGoTo actionsGoTo;
-    protected ActionsGenerate actionsGenerate;
-    protected ActionsRun actionsRun;
-    protected ActionsSCM actionsSCM;
-    protected ActionsExport actionsExport;
-    protected ActionsHelp actionsHelp;
+    /* Swing */
 
-    protected Persistence persistence;
+    public JScrollPane rulesScrollPane;
+    public XJTree rulesTree;
+
+    public JTabbedPane viewTabbedPane;
+    public JPanel mainPanel;
+
+    public Box infoPanel;
+    public JLabel infoLabel;
+    public JLabel cursorLabel;
+    public JLabel scmLabel;
+
+    public JSplitPane rulesTextSplitPane;
+    public JSplitPane upDownSplitPane;
+
+    /* Other */
+
+    protected EditorPersistence persistence;
+
+    protected Map undos = new HashMap();
+
+    protected boolean windowFirstDisplay = true;
+    protected String lastSelectedRule;
 
     public EditorWindow() {
 
-        console = new Console(this);
+        createInterface();
+
+        initHelpers();
+        initActions();
+
+        initManagers();
+        initComponents();
+
+        initAutoCompletion();
+        initTools();
+
+        awakeInterface();
+        awakeInstances();
+
+        register();
+    }
+
+    protected void initComponents() {
+        parser = new ThreadedParser(this);
+        parser.awake();
+
+        rules = new Rules(this, parser, rulesTree);
+        rules.setDelegate(this);
+
+        visual = new Visual(this);
+        visual.setParser(parser);
+
+        interpreter = new Interpreter(this);
+        debugger = new Debugger(this);
+    }
+
+    protected void initTools() {
+        colorize = new TColorize(this);
+        goToRule = new TGoToRule(this, getJFrame(), getTextPane());
+        immediateColorization = new TImmediateColorization(textEditor.getTextPane());
+        autoIndent = new TAutoIndent(textEditor.getTextPane());
+        grammar = new TGrammar(this);
+
+        findAndReplace = new FindAndReplace(this);
+    }
+
+    protected void initAutoCompletion() {
+        autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), getJFrame());
+        templateRules = new TemplateRules(this, getTextPane(), getJFrame());
+    }
+
+    protected void initHelpers() {
+        console = new EditorConsole(this);
         console.makeCurrent();
 
-        goToHistory = new GoToHistory();
-
-        editorGUI = new EditorGUI(this);
         editorCache = new EditorCache();
         editorMenu = new EditorMenu(this);
+        editorIdeas = new EditorIdeas(this);
+        editorTips = new EditorTips(this);
+        editorGoToHistory = new EditorGoToHistory();
 
+        keyBindings = new EditorKeyBindings(getTextPane());
+
+        persistence = new EditorPersistence(this);
+    }
+
+    protected void initActions() {
         actionsEdit = new ActionsEdit(this);
         actionsView = new ActionsView(this);
         actionsFind = new ActionsFind(this);
@@ -139,87 +222,181 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         actionsSCM = new ActionsSCM(this);
         actionsExport = new ActionsExport(this);
         actionsHelp = new ActionsHelp(this);
+    }
 
-        persistence = new Persistence(this);
+    protected void initManagers() {
+        breakpointManager = new EditorBreakpointManager(this);
+        textEditor.setBreakpointManager(breakpointManager);
 
-        parser = new ThreadedParser(this);
+        foldingManager = new EditorFoldingManager(this);
+        textEditor.setFoldingManager(foldingManager);
 
-        editorGUI.createInterface();
+        underlyingManager = new EditorUnderlyingManager(this);
+        textEditor.setUnderlyingManager(underlyingManager);
 
-        breakpointManager = new BreakpointManager(this);
-        editorGUI.textEditor.setBreakpointManager(breakpointManager);
-        foldingManager = new FoldingManager(this);
-        editorGUI.textEditor.setFoldingManager(foldingManager);
-        underlyingManager = new UnderlyingManager(this);
-        editorGUI.textEditor.setUnderlyingManager(underlyingManager);
-        analysisManager = new AnalysisManager(this);
-        editorGUI.textEditor.setAnalysisManager(analysisManager);
+        analysisManager = new EditorAnalysisManager(this);
+        textEditor.setAnalysisManager(analysisManager);
+    }
 
-        visual = new Visual(this);
-        interpreter = new Interpreter(this);
-        debugger = new Debugger(this);
+    public void awakeInstances() {
+        editorIdeas.awake();
+        editorTips.awake();
 
-        keyBindings = new KeyBindings(getTextPane());
+        actionsSCM.awake();
 
-        autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), getJFrame());
-        templateRules = new TemplateRules(this, getTextPane(), getJFrame());
-        goToRule = new TGoToRule(this, getJFrame(), getTextPane());
-        findAndReplace = new FindAndReplace(this);
+        interpreter.awake();
+        debugger.awake();
 
-        ideaManager = new IdeaManager();
-        ideaManager.setOverlay(new IdeaOverlay(this, getJFrame(), getTextPane()));
-        ideaManager.addProvider(this);
-        ideaManager.setDelegate(this);
-
-        tipsManager = new TipsManager();
-        tipsManager.setOverlay(new TipsOverlay(this, getJFrame(), getTextPane()));
-        tipsManager.addProvider(this);
-
-        rules = new Rules(this, parser, editorGUI.rulesTree);
-        grammar = new TGrammar(this);
-
-        rules.setDelegate(this);
         rules.setKeyBindings(keyBindings);
+    }
 
-        visual.setParser(parser);
+    public void createInterface() {
+        Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        r.width *= 0.75;
+        r.height *= 0.75;
+        getRootPane().setPreferredSize(r.getSize());
 
-        colorize = new TColorize(this);
+        textEditor = new ATEPanel(getJFrame());
+        textEditor.setDelegate(this);
+        textEditor.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
+        textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
+        applyFont();
 
-        // First rules, then EditorWindow
-        parser.addObserver(rules);
-        parser.addObserver(this);
+        rulesTree = new XJTree() {
+            public String getToolTipText(MouseEvent e) {
+                TreePath path = getPathForLocation(e.getX(), e.getY());
+                if(path == null)
+                    return "";
 
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                Rules.RuleTreeUserObject n = (Rules.RuleTreeUserObject) node.getUserObject();
+                if(n == null)
+                    return "";
+
+                ParserRule r = n.rule;
+                if(r == null || !r.hasErrors())
+                    return "";
+                else
+                    return r.getErrorMessageHTML();
+            }
+        };
+        rulesTree.setBorder(null);
+        // Apparently, if I don't set the tooltip here, nothing is displayed (weird)
+        rulesTree.setToolTipText("");
+        rulesTree.setDragEnabled(true);
+
+        rulesScrollPane = new JScrollPane(rulesTree);
+        rulesScrollPane.setBorder(null);
+        rulesScrollPane.setWheelScrollingEnabled(true);
+
+        // Assemble
+
+        viewTabbedPane = new JTabbedPane();
+        viewTabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
+        viewTabbedPane.addMouseListener(new TabMouseListener());
+
+        rulesTextSplitPane = new JSplitPane();
+        rulesTextSplitPane.setBorder(null);
+        rulesTextSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        rulesTextSplitPane.setLeftComponent(rulesScrollPane);
+        rulesTextSplitPane.setRightComponent(textEditor);
+        rulesTextSplitPane.setContinuousLayout(true);
+        rulesTextSplitPane.setOneTouchExpandable(true);
+
+        upDownSplitPane = new JSplitPane();
+        upDownSplitPane.setBorder(null);
+        upDownSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        upDownSplitPane.add(rulesTextSplitPane, JSplitPane.TOP);
+        upDownSplitPane.add(viewTabbedPane, JSplitPane.BOTTOM);
+        upDownSplitPane.setContinuousLayout(true);
+        upDownSplitPane.setOneTouchExpandable(true);
+
+        infoLabel = new JLabel();
+        cursorLabel = new JLabel();
+        scmLabel = new JLabel();
+
+        infoPanel = new InfoPanel();
+        infoPanel.setPreferredSize(new Dimension(0, 30));
+
+        infoPanel.add(Box.createHorizontalStrut(5));
+        infoPanel.add(infoLabel);
+        infoPanel.add(Box.createHorizontalStrut(5));
+        infoPanel.add(createSeparator());
+        infoPanel.add(Box.createHorizontalStrut(5));
+        infoPanel.add(cursorLabel);
+        infoPanel.add(Box.createHorizontalStrut(5));
+        infoPanel.add(createSeparator());
+        infoPanel.add(Box.createHorizontalStrut(5));
+        infoPanel.add(scmLabel);
+
+        toolbar = new EditorToolbar(this);
+
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(toolbar.getToolbar(), BorderLayout.NORTH);
+        mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
+        mainPanel.add(infoPanel, BorderLayout.SOUTH);
+
+        getContentPane().add(mainPanel);
+        pack();
+
+        if(!XJSystem.isMacOS()) {
+            rulesTextSplitPane.setDividerSize(10);
+            upDownSplitPane.setDividerSize(10);
+        }
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                upDownSplitPane.setDividerLocation(0.5);
+                rulesTextSplitPane.setDividerLocation(0.3);
+            }
+        });
+    }
+
+    protected void awakeInterface() {
         getTabbedPane().addTab("Syntax Diagram", visual.getContainer());
         getTabbedPane().addTab("Interpreter", interpreter.getContainer());
         getTabbedPane().addTab("Debugger", debugger.getContainer());
         getTabbedPane().addTab("Console", console.getContainer());
 
         selectVisualizationTab();
-
-        registerUndo(new Undo(editorGUI), getTextPane());
     }
 
-    public void becomingVisibleForTheFirstTime() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                // @todo why ?
-                editorGUI.rulesTextSplitPane.setDividerLocation(0.3);
-            }
-        });
-        textPaneRequestFocusLater();
-        editorGUI.updateInformation();
-        editorGUI.updateCursorInfo();
-        actionsSCM.setSilent(true);
-        actionsSCM.queryFileStatus();
+    protected void register() {
+        // First rules, then EditorWindow
+        parser.addObserver(rules);
+        parser.addObserver(this);
+
+        registerUndo(new Undo(this), getTextPane());
+        XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
+    }
+
+    public void applyFont() {
+        textEditor.getTextPane().setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
+        TextUtils.createTabs(textEditor.getTextPane());
+    }
+
+    protected static JComponent createSeparator() {
+        JSeparator s = new JSeparator(SwingConstants.VERTICAL);
+        Dimension d = s.getMaximumSize();
+        d.width = 2;
+        s.setMaximumSize(d);
+        return s;
     }
 
     public void close() {
-        ideaManager.close();
-        editorGUI.close();
+        editorIdeas.close();
         editorMenu.close();
         debugger.close();
         visual.close();
         super.close();
+    }
+
+    public void becomingVisibleForTheFirstTime() {
+        textPaneRequestFocusLater();
+        updateInformation();
+        updateCursorInfo();
+        actionsSCM.setSilent(true);
+        actionsSCM.queryFileStatus();
     }
 
     public void selectVisualizationTab() {
@@ -228,17 +405,23 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public void selectInterpreterTab() {
         getTabbedPane().setSelectedIndex(1);
-        editorGUI.makeBottomComponentVisible();
+        makeBottomComponentVisible();
     }
 
     public void selectDebuggerTab() {
         getTabbedPane().setSelectedIndex(2);
-        editorGUI.makeBottomComponentVisible();
+        makeBottomComponentVisible();
+    }
+
+    protected void makeBottomComponentVisible() {
+        if(upDownSplitPane.getBottomComponent().getHeight() == 0) {
+            upDownSplitPane.setDividerLocation(upDownSplitPane.getLastDividerLocation());
+        }
     }
 
     public void registerUndo(Undo undo, JTextPane component) {
         undo.bindTo(component);
-        editorGUI.registerUndo(undo, component);
+        component.addFocusListener(new EditorFocusListener());
         undos.put(component, undo);
     }
 
@@ -252,17 +435,47 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return (Undo)undos.get(object);
     }
 
+    public void updateUndoRedo(Object source) {
+        Undo undo = getUndo(source);
+        updateUndoRedo(undo);
+    }
+
+    public void updateUndoRedo(Undo undo) {
+        if(editorMenu == null || editorMenu.menuItemUndo == null
+                || editorMenu.menuItemRedo == null)
+            return;
+
+        editorMenu.menuItemUndo.setTitle("Undo");
+        editorMenu.menuItemRedo.setTitle("Redo");
+
+        if(undo == null) {
+            editorMenu.menuItemUndo.setEnabled(false);
+            editorMenu.menuItemRedo.setEnabled(false);
+        } else {
+            editorMenu.menuItemUndo.setEnabled(undo.canUndo());
+            editorMenu.menuItemRedo.setEnabled(undo.canRedo());
+
+            if(undo.canUndo())
+                editorMenu.menuItemUndo.setTitle(undo.undoManager.getUndoPresentationName());
+            if(undo.canRedo())
+                editorMenu.menuItemRedo.setTitle(undo.undoManager.getRedoPresentationName());
+        }
+    }
+
+    public void undoStateDidChange(Undo undo) {
+        updateUndoRedo(undo);
+    }
+
     public ATETextPane getTextPane() {
-        // @todo need to access it directly ?
-        return editorGUI.textEditor.getTextPane();
+        return textEditor.getTextPane();
     }
 
     public ATEPanel getTextEditor() {
-        return editorGUI.textEditor;
+        return textEditor;
     }
 
     public JTabbedPane getTabbedPane() {
-        return editorGUI.viewTabbedPane;
+        return viewTabbedPane;
     }
 
     public void textPaneRequestFocusLater() {
@@ -275,7 +488,7 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void toggleAutoIndent() {
-        editorGUI.setAutoIndent(!editorGUI.autoIndent());
+        setAutoIndent(!autoIndent());
     }
 
     public void toggleSyntaxColoring() {
@@ -305,20 +518,20 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void toggleIdeas() {
-        ideaManager.setEnabled(!ideaManager.enabled());
-    }
-
-    public void toggleUnderlying() {
-        editorGUI.textEditor.setUnderlying(!editorGUI.textEditor.isUnderlying());
-        editorGUI.textEditor.refresh();
+        editorIdeas.toggleEnabled();
     }
 
     public void toggleTips() {
-        tipsManager.setEnabled(!tipsManager.enabled());
+        editorTips.toggleEnabled();
+    }
+
+    public void toggleUnderlying() {
+        textEditor.setUnderlying(!textEditor.isUnderlying());
+        textEditor.refresh();
     }
 
     public void toggleAnalysis() {
-        editorGUI.textEditor.toggleAnalysis();
+        textEditor.toggleAnalysis();
     }
 
     protected void adjustTokens(int location, int length) {
@@ -346,40 +559,12 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         ateChangeUpdate(-1, -1, false);
     }
 
-    public void ateChangeUpdate(int offset, int length, boolean insert) {
-        if(insert) {
-            editorGUI.immediateColorization.colorize(offset, length);
-            editorGUI.autoIndent.indent(offset, length);
-        }
-
-        changeDone();
-
-        adjustTokens(offset, length);
-        editorGUI.textEditor.changeOccurred();
-
-        parser.parse();
-        visual.cancelDrawingProcess();
-
-        colorize.setColorizeLocation(offset, length);
+    public void setAutoIndent(boolean flag) {
+        autoIndent.setEnabled(flag);
     }
 
-    public void ateMousePressed(Point point) {
-        displayIdeas(point);
-    }
-
-    public void ateMouseExited() {
-        if(getTextPane().hasFocus()) {
-            // Do not hide the ideas because
-            // otherwise we don't be able to access the idea
-            tipsHide();
-        }
-    }
-
-    public void ateMouseMoved(Point relativePoint) {
-        if(getTextPane().hasFocus()) {
-            Point absolutePoint = SwingUtilities.convertPoint(getTextPane(), relativePoint, getJavaContainer());
-            displayTips(relativePoint, absolutePoint);
-        }
+    public boolean autoIndent() {
+        return autoIndent.enabled();
     }
 
     public void beginGroupChange(String name) {
@@ -396,13 +581,13 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void enableTextPane(boolean undo) {
-        editorGUI.textEditor.setEnableRecordChange(true);
+        textEditor.setEnableRecordChange(true);
         if(undo)
             enableTextPaneUndo();
     }
 
     public void disableTextPane(boolean undo) {
-        editorGUI.textEditor.setEnableRecordChange(false);
+        textEditor.setEnableRecordChange(false);
         if(undo)
             disableTextPaneUndo();
     }
@@ -451,13 +636,20 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         getTextPane().setText(text);
         colorize.reset();
         parser.parse();
-//        colorize.colorize();
     }
 
     public synchronized String getText() {
         if(editorCache.getString(EditorCache.CACHE_TEXT) == null)
             editorCache.setObject(EditorCache.CACHE_TEXT, getTextPane().getText());
         return editorCache.getString(EditorCache.CACHE_TEXT);
+    }
+
+    public void replaceText(int leftIndex, int rightIndex, String text) {
+        textEditor.replaceText(leftIndex, rightIndex, text);
+    }
+
+    public void selectTextRange(int start, int end) {
+        textEditor.selectTextRange(start, end);
     }
 
     public int getSelectionLeftIndexOnTokenBoundary() {
@@ -504,6 +696,19 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         return parser.getLines();
     }
 
+    public int getCurrentLinePosition() {
+        return getLineIndexAtTextPosition(getCaretPosition()) + 1;
+    }
+
+    public int getCurrentColumnPosition() {
+        int lineIndex = getLineIndexAtTextPosition(getCaretPosition());
+        Point linePosition = getLineTextPositionsAtLineIndex(lineIndex);
+        if(linePosition == null)
+            return 1;
+        else
+            return getCaretPosition() - linePosition.x + 1;
+    }
+
     public int getLineIndexAtTextPosition(int pos) {
         List lines = getLines();
         if(lines == null)
@@ -539,24 +744,8 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
     }
 
     public void goToHistoryRememberCurrentPosition() {
-        goToHistory.addPosition(getCaretPosition());
+        editorGoToHistory.addPosition(getCaretPosition());
         getMainMenuBar().refreshState();
-    }
-
-    public void changeDone() {
-        grammarChanged();
-        editorCache.invalidate();
-        getDocument().changeDone();
-    }
-
-    public void grammarChanged() {
-        interpreter.grammarChanged();
-        debugger.grammarChanged();
-        actionsGenerate.generateCode.grammarChanged();
-    }
-
-    public void selectTextRange(int start, int end) {
-        editorGUI.textEditor.selectTextRange(start, end);
     }
 
     public ParserReference getCurrentReference() {
@@ -607,11 +796,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         if(rule != null && !rule.isExpanded()) {
             foldingManager.toggleFolding(rule);
         }
-        editorGUI.textEditor.setCaretPosition(position);
+        textEditor.setCaretPosition(position);
     }
 
     public int getCaretPosition() {
-        return editorGUI.textEditor.getCaretPosition();
+        return textEditor.getCaretPosition();
     }
 
     public void customizeFileMenu(XJMenu menu) {
@@ -645,6 +834,42 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         }
     }
 
+    public void updateInformation() {
+        String t;
+        int size = 0;
+        if(parser.getRules() != null)
+            size = parser.getRules().size();
+        switch(size) {
+            case 0:
+                t = "No rules";
+                break;
+            case 1:
+                t = "One rule";
+                break;
+            default:
+                t = size+" rules";
+                break;
+        }
+
+        int warnings = rules.getNumberOfRulesWithErrors();
+        if(warnings > 0)
+            t += " ("+warnings+" warnings)";
+
+        infoLabel.setText(t);
+    }
+
+    public void updateCursorInfo() {
+        cursorLabel.setText(getCurrentLinePosition()+":"+getCurrentColumnPosition());
+    }
+
+    public void updateSCMStatus(String status) {
+        scmLabel.setVisible(EditorPreferences.getP4Enabled());
+        if(status != null)
+            scmLabel.setText("SCM Status: "+status);
+        else
+            scmLabel.setText("");
+    }
+
     /** Rules delegate methods
      *
      */
@@ -668,7 +893,10 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         persistence.restore();
         analysisManager.refresh();
 
-        editorGUI.parserDidComplete();
+        textEditor.setIsTyping(false);
+        textEditor.refresh();
+        updateInformation();
+        updateCursorInfo();
 
         visual.setText(getText(), getFileName());
         updateVisualization(false);
@@ -679,6 +907,11 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         if(windowFirstDisplay) {
             windowFirstDisplay = false;
             rules.selectFirstRule();
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    checkGrammar();
+                }
+            });
         }
 
         // Invoke the idea dectection later because rules didn't updated
@@ -686,9 +919,32 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         // on Rules - the order can change in the future).
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                displayIdeas(getCaretPosition());
+                editorIdeas.display(getCaretPosition());
             }
         });
+    }
+
+    public void changeDone() {
+        grammarChanged();
+        editorCache.invalidate();
+        getDocument().changeDone();
+    }
+
+    public void grammarChanged() {
+        interpreter.grammarChanged();
+        debugger.grammarChanged();
+        actionsGenerate.generateCode.grammarChanged();
+    }
+
+    public void notificationFire(Object source, String name) {
+        if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
+            textEditor.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
+            textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
+            textEditor.refresh();
+            applyFont();
+            getMainMenuBar().refreshState();
+            updateSCMStatus(null);
+        }
     }
 
     public void windowDocumentPathDidChange() {
@@ -743,138 +999,51 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
 
     public void autoCompletionMenuWillDisplay() {
         // Hide any ideas when displaying auto-completion menu
-        ideaManager.hide();
+        editorIdeas.hide();
     }
 
-    /* Tips provider */
-
-    public void tipsHide() {
-        tipsManager.hide();
-    }
-        
-    public void displayTips(Point relativePoint, Point absolutePoint) {
-        if(getTokens() == null)
-            return;
-
-        int position = getTextPane().viewToModel(relativePoint);
-
-        Token token = getTokenAtPosition(position);
-        ParserRule enclosingRule = rules.getEnclosingRuleAtPosition(position);
-        ParserRule rule = rules.getRuleStartingWithToken(token);
-
-        Point p = null;
-        try {
-            if(token != null) {
-                // Make sure the mouse is over the token because
-                // Swing will return a valid position even if the mouse
-                // is on the remaining blank part of the line
-                Rectangle r1 = getTextPane().modelToView(token.getStartIndex());
-                Rectangle r2 = getTextPane().modelToView(token.getEndIndex());
-                if(r1.union(r2).contains(relativePoint)) {
-                    p = SwingUtilities.convertPoint(getTextPane(), new Point(relativePoint.x+2, r2.y-5), jFrame);
-                }
-            }
-        } catch (BadLocationException e) {
-            // Ignore
+    public void ateChangeUpdate(int offset, int length, boolean insert) {
+        if(insert) {
+            immediateColorization.colorize(offset, length);
+            autoIndent.indent(offset, length);
         }
-        tipsManager.displayAnyTipsAvailable(token, rule, enclosingRule, p);
+
+        changeDone();
+
+        adjustTokens(offset, length);
+        textEditor.changeOccurred();
+
+        parser.parse();
+        visual.cancelDrawingProcess();
+
+        colorize.setColorizeLocation(offset, length);
     }
 
-    public List tipsProviderGetTips(Token token, ParserRule rule, ParserRule enclosingRule) {
-        List tips = new ArrayList();
-
-        if(rules.isUndefinedReference(token)) {
-            tips.add("Undefined reference '"+token.getAttribute()+"'");
-        }
-
-        if(rules.isDuplicateRule(token.getAttribute())) {
-            tips.add("Duplicate rule '"+token.getAttribute()+"'");
-        }
-
-        if(rule != null && rule.hasLeftRecursion()) {
-            tips.add("Rule has left recursion");
-        }
-
-        return tips;
+    public void ateMousePressed(Point point) {
+        editorIdeas.display(point);
     }
 
-    /* Idea action delegate */
-
-    public static final int IDEA_DELETE_RULE = 0;
-    public static final int IDEA_CREATE_RULE = 1;
-    public static final int IDEA_REMOVE_LEFT_RECURSION = 2;
-
-    public List ideaProviderGetActions(Token token, ParserRule rule, ParserRule enclosingRule) {
-        List actions = new ArrayList();
-
-        if(rules.isUndefinedReference(token)) {
-            actions.add(new IdeaAction("Create rule '"+token.getAttribute()+"'", this, IDEA_CREATE_RULE, token));
-        }
-
-        if(rules.isDuplicateRule(token.getAttribute())) {
-            actions.add(new IdeaAction("Delete rule '"+token.getAttribute()+"'", this, IDEA_DELETE_RULE, token));
-        }
-
-        if(rule != null && rule.hasLeftRecursion()) {
-            actions.add(new IdeaAction("Remove left recursion of rule '"+token.getAttribute()+"'", this, IDEA_REMOVE_LEFT_RECURSION, token));
-        }
-
-        return actions;
-    }
-
-    public void ideaActionFire(IdeaAction action, int actionID) {
-        switch(actionID) {
-            case IDEA_DELETE_RULE:
-                ParserRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
-                if(r != null)
-                    replaceText(r.getStartIndex(), r.getEndIndex(), "");
-                break;
-            case IDEA_CREATE_RULE:
-                ideaCreateRule(action);
-                break;
-            case IDEA_REMOVE_LEFT_RECURSION:
-                actionsRefactor.removeLeftRecursion();
-                break;
+    public void ateMouseExited() {
+        if(getTextPane().hasFocus()) {
+            // Do not hide the ideas because
+            // otherwise we don't be able to access the idea
+            editorTips.hide();
         }
     }
 
-    public boolean ideaManagerWillDisplayIdea() {
-        return !autoCompletionMenu.isVisible();
-    }
-
-    public void ideasHide() {
-        ideaManager.hide();
-    }
-
-    public void displayIdeas(Point p) {
-        displayIdeas(getTextPane().viewToModel(p));
-    }
-
-    public void displayIdeas(int position) {
-        if(getTokens() == null)
-            return;
-
-        Token token = getTokenAtPosition(position);
-        ParserRule rule = rules.getRuleStartingWithToken(token);
-        ParserRule enclosingRule = rules.getEnclosingRuleAtPosition(position);
-        if(enclosingRule == null || enclosingRule.isExpanded())
-            ideaManager.displayAnyIdeasAvailable(token, rule, enclosingRule);
-    }
-
-    public void ideaCreateRule(IdeaAction action) {
-        beginGroupChange("Create Rule");
-        int index = actionsRefactor.insertionIndexForRule(action.token.isAllUpperCase());
-        actionsRefactor.insertRuleAtIndex(actionsRefactor.createRule(action.token.getAttribute(), null), index);
-        setCaretPosition(index);
-        endGroupChange();
+    public void ateMouseMoved(Point relativePoint) {
+        if(getTextPane().hasFocus()) {
+            Point absolutePoint = SwingUtilities.convertPoint(getTextPane(), relativePoint, getJavaContainer());
+            editorTips.display(relativePoint, absolutePoint);
+        }
     }
 
     public void ateCaretUpdate(int index) {
-        editorGUI.updateCursorInfo();
+        updateCursorInfo();
         if(getTextPane().hasFocus()) {
-            ideasHide();
-            if(!editorGUI.textEditor.isTyping())
-                displayIdeas(getCaretPosition());
+            editorIdeas.hide();
+            if(!textEditor.isTyping())
+                editorIdeas.display(getCaretPosition());
         }
 
         // Update the auto-completion list
@@ -883,21 +1052,111 @@ public class EditorWindow extends XJWindow implements ThreadedParserObserver,
         // Only display ideas using the mouse because otherwise when a rule
         // is deleted (for example), the idea might be displayed before
         // the parser was able to complete
-        //displayIdeas(e.getDot());
+        // display(e.getDot());
 
         ParserRule rule = rules.selectRuleAtPosition(index);
-        if(rule == null || rule.name == null)
+        if(rule == null || rule.name == null) {
+            visual.setPlaceholder("Select a rule to display its syntax diagram");
+            lastSelectedRule = null;
             return;
+        }
 
         if(lastSelectedRule == null || !lastSelectedRule.equals(rule.name)) {
             lastSelectedRule = rule.name;
             updateVisualization(false);
-        } else {
-            // @todo display message "no rule selected"
         }
     }
 
-    public void replaceText(int leftIndex, int rightIndex, String text) {
-        editorGUI.textEditor.replaceText(leftIndex, rightIndex, text);
+    public void checkGrammar() {
+        // Check to see if "class" and "extends" are in the grammar text which
+        // means that the grammar is probably an ANTLR version 2 grammar.
+
+        boolean version2 = false;
+        List tokens = parser.getTokens();
+        for(int index=0; index<tokens.size(); index++) {
+            Token t = (Token)tokens.get(index);
+            if(t.type == Lexer.TOKEN_ID && t.getAttribute().equals("class")) {
+                if(index+2<tokens.size()) {
+                    Token t2 = (Token)tokens.get(index+2);
+                    if(t2.type == Lexer.TOKEN_ID && t2.getAttribute().equals("extends")) {
+                        version2 = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(version2) {
+            XJAlert.display(getWindowContainer(), "Incompatible Grammar Version", "This grammar does not appear to be an ANTLR 3.x grammar." +
+                    "\nANTLRWorks includes ANTLR 3.x and therefore only ANTLR 3.x grammars are recognized.");
+        }
     }
+
+    protected class TabMouseListener extends MouseAdapter {
+
+        protected static final int CLOSING_INDEX_LIMIT = 4;
+
+        public void displayPopUp(MouseEvent event) {
+            if(viewTabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
+                return;
+
+            if(!event.isPopupTrigger())
+                return;
+
+            JPopupMenu popup = new JPopupMenu();
+            JMenuItem item = new JMenuItem("Close");
+            item.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent event) {
+                    if(viewTabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
+                        return;
+
+                    viewTabbedPane.removeTabAt(viewTabbedPane.getSelectedIndex());
+                }
+            });
+            popup.add(item);
+            popup.show(event.getComponent(), event.getX(), event.getY());
+        }
+
+        public void mousePressed(MouseEvent event) {
+            displayPopUp(event);
+        }
+
+        public void mouseReleased(MouseEvent event) {
+            displayPopUp(event);
+        }
+    }
+
+    protected class EditorFocusListener implements FocusListener {
+
+        public void focusGained(FocusEvent event) {
+            updateUndoRedo(event.getSource());
+        }
+
+        public void focusLost(FocusEvent event) {
+            // Update the menu only if the event is not temporary. Temporary
+            // focus lost can be, for example, when opening a menu on Windows/Linux.
+            if(!event.isTemporary())
+                updateUndoRedo(null);
+        }
+    }
+
+    protected class InfoPanel extends Box {
+
+        public InfoPanel() {
+            super(BoxLayout.X_AXIS);
+        }
+
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            Rectangle r = getBounds();
+
+            g.setColor(Color.darkGray);
+            g.drawLine(0, 0, r.width, 0);
+
+            g.setColor(Color.lightGray);
+            g.drawLine(0, 1, r.width, 1);
+        }
+    }
+
 }

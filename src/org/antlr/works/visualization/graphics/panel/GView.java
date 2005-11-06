@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics.panel;
 
-import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
@@ -51,18 +50,19 @@ import java.util.List;
 
 public class GView extends JPanel implements XJMenuItemDelegate {
 
-    private boolean useCachedImage = true;
-    private boolean cachedImageRerender = false;
-    private boolean cachedImageResize = false;
+    protected boolean useCachedImage = true;
+    protected boolean cachedImageRerender = false;
+    protected boolean cachedImageResize = false;
 
-    private BufferedImage cachedImage = null;
-    private Dimension outOfMemoryDimension = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
+    protected String placeholder;
+    protected BufferedImage cachedImage = null;
+    protected Dimension outOfMemoryDimension = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
-    private List graphs = new ArrayList();
-    private int currentGraphIndex = 0;
-    private GContext context;
+    protected List graphs = new ArrayList();
+    protected int currentGraphIndex = 0;
+    protected GContext context;
 
-    private Point lastMouse;
+    protected Point lastMouse;
 
     public int offset_x = 10;
     public int offset_y = 10;
@@ -91,11 +91,16 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         }
     }
 
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
+    }
+
     public void setGraphs(List graphs) {
+        this.graphs.clear();
+
         if(graphs == null)
             return;
 
-        this.graphs.clear();
         this.graphs.addAll(graphs);
 
         if(currentGraphIndex >= graphs.size())
@@ -272,9 +277,10 @@ public class GView extends JPanel implements XJMenuItemDelegate {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        //System.out.println("Repaint "+System.currentTimeMillis());
-        if(!canDraw())
+        if(!canDraw()) {
+            paintPlaceholder(g);
             return;
+        }
 
         int width = getGraphWidth()+offset_x;
         int height = getGraphHeight()+offset_y+1;
@@ -341,12 +347,27 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         }
     }
 
+    public void paintPlaceholder(Graphics g) {
+        if(placeholder == null)
+            return;
+
+        g.setFont(new Font("Courier", Font.BOLD, 18));
+
+        FontMetrics fm = g.getFontMetrics();
+        Rectangle r = getVisibleRect();
+        int x = r.x+r.width/2-fm.stringWidth(placeholder)/2;
+        int y = r.y+r.height/2+fm.getHeight()/2;
+
+        g.setColor(Color.gray);
+        g.drawString(placeholder, x, y);
+    }
+
     public class DefaultMouseMotionListener extends MouseMotionAdapter {
 
         public void mouseDragged(MouseEvent e) {
             if(lastMouse == null)
                 return;
-            
+
             Point mouse = e.getPoint();
             int dx = mouse.x - lastMouse.x;
             int dy = mouse.y - lastMouse.y;

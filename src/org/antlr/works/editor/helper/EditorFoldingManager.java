@@ -1,17 +1,14 @@
 package org.antlr.works.editor.helper;
 
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.ate.ATEFoldingEntity;
 import org.antlr.works.editor.ate.ATEFoldingEntityProxy;
 import org.antlr.works.editor.ate.ATEFoldingManager;
 import org.antlr.works.parser.ParserAction;
 import org.antlr.works.parser.ParserRule;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 /*
 
 [The "BSD licence"]
@@ -43,15 +40,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class FoldingManager extends ATEFoldingManager {
+public class EditorFoldingManager extends ATEFoldingManager {
 
     protected static final int TAG_RULES = 0;
     protected static final int TAG_ACTIONS = 1;
 
     protected EditorWindow editor;
 
-    public FoldingManager(EditorWindow editor) {
-        super(editor.editorGUI.textEditor);
+    public EditorFoldingManager(EditorWindow editor) {
+        super(editor.textEditor);
         this.editor = editor;
     }
 
@@ -63,8 +60,8 @@ public class FoldingManager extends ATEFoldingManager {
     public void textPaneDidFold() {
         super.textPaneDidFold();
         editor.enableTextPaneUndo();
-        editor.ideasHide();
-        editor.tipsHide();
+        editor.editorIdeas.hide();
+        editor.editorTips.hide();
     }
 
     public ATEFoldingEntityProxy createEntityProxy(ATEFoldingEntity entity) {

@@ -36,7 +36,6 @@ import org.antlr.works.editor.helper.EditorThread;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class ThreadedParser extends EditorThread {
@@ -57,6 +56,9 @@ public class ThreadedParser extends EditorThread {
         this.provider = provider;
         parser = new Parser();
         observers = new ArrayList();
+    }
+
+    public void awake() {
         start();
     }
 

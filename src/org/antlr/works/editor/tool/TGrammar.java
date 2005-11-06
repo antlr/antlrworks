@@ -60,12 +60,10 @@ public class TGrammar implements VisualDelegate {
     }
 
     public void visualizationProcessDidBegin(Visual visual) {
-        //editor.editorGUI.activityPanel.start();
     }
 
     public void visualizationProcessDidEnd(Visual visual) {
-        //editorGUI.activityPanel.stop();
-        editor.editorGUI.updateInformation();
+        editor.updateInformation();
         progress.close();
     }
 

@@ -1,6 +1,5 @@
 package org.antlr.works.editor.tips;
 
-import org.antlr.works.editor.idea.IdeaProvider;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
@@ -54,7 +53,7 @@ public class TipsManager {
         this.overlay = overlay;
     }
 
-    public void addProvider(IdeaProvider provider) {
+    public void addProvider(TipsProvider provider) {
         providers.add(provider);
     }
 

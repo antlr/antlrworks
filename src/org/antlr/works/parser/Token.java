@@ -93,7 +93,7 @@ public class Token implements Comparable {
         end += value;
     }
 
-    public boolean isAllUpperCase() {
+    public boolean isLexer() {
         return isAllUpperCase;
     }
 
