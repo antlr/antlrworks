@@ -1,9 +1,11 @@
 package org.antlr.works.editor.helper;
 
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.idea.*;
+import org.antlr.works.editor.idea.IdeaManager;
+import org.antlr.works.editor.idea.IdeaManagerDelegate;
+import org.antlr.works.editor.idea.IdeaOverlay;
+import org.antlr.works.editor.idea.IdeaProvider;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -39,11 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorIdeas implements IdeaActionDelegate, IdeaManagerDelegate, IdeaProvider {
-
-    public static final int IDEA_DELETE_RULE = 0;
-    public static final int IDEA_CREATE_RULE = 1;
-    public static final int IDEA_REMOVE_LEFT_RECURSION = 2;
+public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
 
     public IdeaManager ideaManager;
     public EditorWindow editor;
@@ -71,37 +69,18 @@ public class EditorIdeas implements IdeaActionDelegate, IdeaManagerDelegate, Ide
         ideaManager.setEnabled(!ideaManager.enabled());
     }
 
-    public List ideaProviderGetActions(Token token, ParserRule rule, ParserRule enclosingRule) {
+    public List ideaProviderGetActions(int position) {
         List actions = new ArrayList();
-
-        if(editor.rules.isUndefinedReference(token)) {
-            actions.add(new IdeaAction("Create rule '"+token.getAttribute()+"'", this, IDEA_CREATE_RULE, token));
+        List items = editor.inspector.getAllItemsAtIndex(position);
+        for(int index=0; index<items.size(); index++) {
+            EditorInspector.Item item = (EditorInspector.Item)items.get(index);
+            List itemActions = item.getIdeaActions();
+            if(itemActions != null)
+                actions.addAll(itemActions);
         }
-
-        if(editor.rules.isDuplicateRule(token.getAttribute())) {
-            actions.add(new IdeaAction("Delete rule '"+token.getAttribute()+"'", this, IDEA_DELETE_RULE, token));
-        }
-
-        if(rule != null && rule.hasLeftRecursion()) {
-            actions.add(new IdeaAction("Remove left recursion of rule '"+token.getAttribute()+"'", this, IDEA_REMOVE_LEFT_RECURSION, token));
-        }
-
         return actions;
     }
 
-    public void ideaActionFire(IdeaAction action, int actionID) {
-        switch(actionID) {
-            case IDEA_DELETE_RULE:
-                editor.actionsRefactor.deleteRuleAtIndex(editor.getCaretPosition());
-                break;
-            case IDEA_CREATE_RULE:
-                editor.actionsRefactor.createRuleAtIndex(action.token.isLexer(), action.token.getAttribute(), null);
-                break;
-            case IDEA_REMOVE_LEFT_RECURSION:
-                editor.actionsRefactor.removeLeftRecursion();
-                break;
-        }
-    }
 
     public boolean ideaManagerWillDisplayIdea() {
         return !editor.autoCompletionMenu.isVisible();
@@ -112,14 +91,9 @@ public class EditorIdeas implements IdeaActionDelegate, IdeaManagerDelegate, Ide
     }
 
     public void display(int position) {
-        if(editor.getTokens() == null)
-            return;
-
-        Token token = editor.getTokenAtPosition(position);
-        ParserRule rule = editor.rules.getRuleStartingWithToken(token);
         ParserRule enclosingRule = editor.rules.getEnclosingRuleAtPosition(position);
         if(enclosingRule == null || enclosingRule.isExpanded())
-            ideaManager.displayAnyIdeasAvailable(token, rule, enclosingRule);
+            ideaManager.displayAnyIdeasAvailable(position);
     }
 
 }

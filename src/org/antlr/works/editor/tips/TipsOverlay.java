@@ -1,6 +1,5 @@
 package org.antlr.works.editor.tips;
 
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.OverlayObject;
 import org.antlr.works.editor.tooltip.ToolTipList;
 import org.antlr.works.editor.tooltip.ToolTipListDelegate;
@@ -42,13 +41,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class TipsOverlay extends OverlayObject implements ToolTipListDelegate {
 
-    protected EditorWindow editor;
     protected ToolTipList toolTip;
     protected Point location;
 
-    public TipsOverlay(EditorWindow editor, JFrame parentFrame, JComponent parentComponent) {
+    public TipsOverlay(JFrame parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
-        this.editor = editor;
     }
 
     public void setTips(List tips) {

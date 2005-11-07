@@ -1,4 +1,6 @@
 package org.antlr.works.editor.ate;
+
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -33,12 +35,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ATEAnalysisItem {
 
     public int type;
+    public Color color;
     public int line;
     public int index;
     public String description;
 
-    public ATEAnalysisItem(int type, int line, int index, String description) {
+    public ATEAnalysisItem(int type, Color color, int line, int index, String description) {
         this.type = type;
+        this.color = color;
         this.line = line;
         this.index = index;
         this.description = description;

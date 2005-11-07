@@ -115,6 +115,7 @@ public class EditorWindow
     public EditorMenu editorMenu;
     public EditorIdeas editorIdeas;
     public EditorTips editorTips;
+    public EditorInspector inspector;
     public EditorPersistence persistence;
     public EditorKeyBindings keyBindings;
 
@@ -212,8 +213,9 @@ public class EditorWindow
         editorMenu = new EditorMenu(this);
         editorIdeas = new EditorIdeas(this);
         editorTips = new EditorTips(this);
-        editorGoToHistory = new EditorGoToHistory();
+        inspector = new EditorInspector(this);
 
+        editorGoToHistory = new EditorGoToHistory();
         keyBindings = new EditorKeyBindings(getTextPane());
 
         persistence = new EditorPersistence(this);
@@ -903,6 +905,7 @@ public class EditorWindow
 
     public void parserDidParse() {
         persistence.restore();
+        inspector.refresh();
         analysisManager.refresh();
 
         textEditor.setIsTyping(false);

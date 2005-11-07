@@ -1,9 +1,5 @@
 package org.antlr.works.editor.tips;
 
-import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,12 +37,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class TipsManager {
 
-    protected List providers = new ArrayList();
+    protected List providers;
     protected TipsOverlay overlay;
-    protected Token lastToken;
-    protected boolean enabled = true;
+    protected int lastPosition;
+    protected boolean enabled;
 
     public TipsManager() {
+        providers = new ArrayList();
+        enabled = true;
     }
 
     public void setOverlay(TipsOverlay overlay) {
@@ -67,7 +65,7 @@ public class TipsManager {
         return enabled;
     }
 
-    public void displayAnyTipsAvailable(Token token, ParserRule rule, ParserRule enclosingRule, Point location) {
+    public void displayAnyTipsAvailable(int position, Point location) {
         if(!enabled)
             return;
 
@@ -76,16 +74,12 @@ public class TipsManager {
             return;
         }
         
-        if(token == lastToken)
+        if(position == lastPosition)
             return;
 
-        lastToken = token;
+        lastPosition = position;
 
-        List tips = null;
-        if(token != null && token.type == Lexer.TOKEN_ID) {
-            tips = generateTips(token, rule, enclosingRule);
-        }
-
+        List tips = generateTips(position);
         if(tips == null || tips.isEmpty()) {
             hide();
         } else {
@@ -97,14 +91,14 @@ public class TipsManager {
 
     public void hide() {
         overlay.hide();
-        lastToken = null;
+        lastPosition = -1;
     }
 
-    public List generateTips(Token token, ParserRule rule, ParserRule enclosingRule) {
+    public List generateTips(int position) {
         List tips = new ArrayList();
         for(Iterator iter = providers.iterator(); iter.hasNext(); ) {
             TipsProvider provider = (TipsProvider)iter.next();
-            List ptips = provider.tipsProviderGetTips(token, rule, enclosingRule);
+            List ptips = provider.tipsProviderGetTips(position);
             if(ptips != null && !ptips.isEmpty()) {
                 tips.addAll(ptips);
             }

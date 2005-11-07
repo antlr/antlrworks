@@ -4,7 +4,6 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.tips.TipsManager;
 import org.antlr.works.editor.tips.TipsOverlay;
 import org.antlr.works.editor.tips.TipsProvider;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
 
 import javax.swing.*;
@@ -54,7 +53,7 @@ public class EditorTips implements TipsProvider {
 
     public void awake() {
         tipsManager = new TipsManager();
-        tipsManager.setOverlay(new TipsOverlay(editor, editor.getJFrame(), editor.getTextPane()));
+        tipsManager.setOverlay(new TipsOverlay(editor.getJFrame(), editor.getTextPane()));
         tipsManager.addProvider(this);
     }
 
@@ -72,12 +71,9 @@ public class EditorTips implements TipsProvider {
 
         int position = editor.getTextPane().viewToModel(relativePoint);
 
-        Token token = editor.getTokenAtPosition(position);
-        ParserRule enclosingRule = editor.rules.getEnclosingRuleAtPosition(position);
-        ParserRule rule = editor.rules.getRuleStartingWithToken(token);
-
         Point p = null;
         try {
+            Token token = editor.getTokenAtPosition(position);
             if(token != null) {
                 // Make sure the mouse is over the token because
                 // Swing will return a valid position even if the mouse
@@ -91,22 +87,16 @@ public class EditorTips implements TipsProvider {
         } catch (BadLocationException e) {
             // Ignore
         }
-        tipsManager.displayAnyTipsAvailable(token, rule, enclosingRule, p);
+        tipsManager.displayAnyTipsAvailable(position, p);
     }
 
-    public List tipsProviderGetTips(Token token, ParserRule rule, ParserRule enclosingRule) {
+    public List tipsProviderGetTips(int position) {
         List tips = new ArrayList();
 
-        if(editor.rules.isUndefinedReference(token)) {
-            tips.add("Undefined reference '"+token.getAttribute()+"'");
-        }
-
-        if(editor.rules.isDuplicateRule(token.getAttribute())) {
-            tips.add("Duplicate rule '"+token.getAttribute()+"'");
-        }
-
-        if(rule != null && rule.hasLeftRecursion()) {
-            tips.add("Rule has left recursion");
+        List items = editor.inspector.getAllItemsAtIndex(position);
+        for(int index=0; index<items.size(); index++) {
+            EditorInspector.Item item = (EditorInspector.Item)items.get(index);
+            tips.add(item.description);
         }
 
         return tips;

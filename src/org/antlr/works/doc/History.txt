@@ -8,6 +8,7 @@ Version 1.0ea5 - 11/06/05
 - added break on exception in debugger
 - added regex expression in the Find dialog
 - added "Find Text at Caret" and modified menu shortcut for "Find Previous"
+- added invalid character literal detection
 
 - improved caret jump to position by centering the text
 - improved syntax coloring to match more of ANTLR 3 specification (label, tokens block, etc)

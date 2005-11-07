@@ -3,8 +3,6 @@ package org.antlr.works.editor.helper;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.ate.ATEAnalysisItem;
 import org.antlr.works.editor.ate.ATEAnalysisManager;
-import org.antlr.works.parser.ParserReference;
-import org.antlr.works.parser.ParserRule;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -45,7 +43,6 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
 
     protected static final int ANALYSIS_ITEM_ERROR = 0;
     protected static final int ANALYSIS_ITEM_WARNING = 1;
-    protected static final int ANALYSIS_ITEM_REFACTOR = 2;
 
     protected final Color greenColor = new Color(0f, 0.9f, 0.25f, 1.0f);
 
@@ -53,14 +50,13 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
 
     protected int numberOfErrors;
     protected int numberOfWarnings;
-    protected int numberOfRefactorings;
 
     public EditorAnalysisManager(EditorWindow editor) {
         this.editor = editor;
     }
 
     public int[] getAvailableTypes() {
-        return new int[] { ANALYSIS_ITEM_ERROR, ANALYSIS_ITEM_WARNING, ANALYSIS_ITEM_REFACTOR };
+        return new int[] { ANALYSIS_ITEM_WARNING, ANALYSIS_ITEM_ERROR };
     }
 
     public List getItemsForType(int type) {
@@ -69,20 +65,6 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
                 return getErrors();
             case ANALYSIS_ITEM_WARNING:
                 return getWarnings();
-            case ANALYSIS_ITEM_REFACTOR:
-                return getRefactors();
-        }
-        return null;
-    }
-
-    public Color getItemColorForType(int type) {
-        switch(type) {
-            case ANALYSIS_ITEM_ERROR:
-                return Color.red;
-            case ANALYSIS_ITEM_WARNING:
-                return Color.blue;
-            case ANALYSIS_ITEM_REFACTOR:
-                return Color.green;
         }
         return null;
     }
@@ -92,7 +74,7 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
     }
 
     public Color getAnalysisColor() {
-        if(numberOfErrors == 0 && numberOfWarnings == 0 && numberOfRefactorings == 0)
+        if(numberOfErrors == 0 && numberOfWarnings == 0)
             return greenColor;
         else if(numberOfErrors == 0)
             return Color.yellow;
@@ -113,45 +95,30 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
             sb.append(numberOfWarnings);
             sb.append(" warnings found");
         }
-        if(numberOfRefactorings > 0) {
-            sb.append("\n");
-            sb.append(numberOfRefactorings);
-            sb.append(" refactoring suggestions found");
-        }
         return sb.toString();
     }
 
     public void refresh() {
         numberOfErrors = getErrors().size();
         numberOfWarnings = getWarnings().size();
-        numberOfRefactorings = getRefactors().size();
     }
 
     public List getErrors() {
         List errors = new ArrayList();
-        for(Iterator iter = editor.rules.getUndefinedReferences().iterator(); iter.hasNext(); ) {
-            ParserReference ref = (ParserReference)iter.next();
-            errors.add(new ATEAnalysisItem(ANALYSIS_ITEM_ERROR, ref.token.startLineNumber, ref.token.getStartIndex(), "Undefined reference \""+ref.token.getAttribute()+"\""));
+        for(Iterator iter = editor.inspector.getErrors().iterator(); iter.hasNext(); ) {
+            EditorInspector.Item item = (EditorInspector.Item)iter.next();
+            errors.add(new ATEAnalysisItem(ANALYSIS_ITEM_ERROR, item.color, item.startLineNumber, item.startIndex, item.description));
         }
         return errors;
     }
 
     public List getWarnings() {
         List warnings = new ArrayList();
-        for(Iterator iter = editor.rules.getDuplicateRules().iterator(); iter.hasNext(); ) {
-            ParserRule rule = (ParserRule) iter.next();
-            warnings.add(new ATEAnalysisItem(ANALYSIS_ITEM_WARNING, rule.start.startLineNumber, rule.getStartIndex(), "Duplicate rule \""+rule.name+"\""));
+        for(Iterator iter = editor.inspector.getWarnings().iterator(); iter.hasNext(); ) {
+            EditorInspector.Item item = (EditorInspector.Item)iter.next();
+            warnings.add(new ATEAnalysisItem(ANALYSIS_ITEM_WARNING, item.color, item.startLineNumber, item.startIndex, item.description));
         }
         return warnings;
-    }
-
-    public List getRefactors() {
-        List refactors = new ArrayList();
-        for(Iterator iter = editor.rules.getHasLeftRecursionRules().iterator(); iter.hasNext(); ) {
-            ParserRule rule = (ParserRule) iter.next();
-            refactors.add(new ATEAnalysisItem(ANALYSIS_ITEM_REFACTOR, rule.start.startLineNumber, rule.getStartIndex(), "Left recursion in rule \""+rule.name+"\""));
-        }
-        return refactors;
     }
 
 }

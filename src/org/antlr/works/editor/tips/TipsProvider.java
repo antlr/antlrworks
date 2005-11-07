@@ -1,8 +1,5 @@
 package org.antlr.works.editor.tips;
 
-import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
-
 import java.util.List;
 /*
 
@@ -36,5 +33,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface TipsProvider {
-    public List tipsProviderGetTips(Token token, ParserRule rule, ParserRule enclosingRule);
+    public List tipsProviderGetTips(int position);
 }

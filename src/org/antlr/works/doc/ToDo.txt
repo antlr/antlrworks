@@ -1,7 +1,8 @@
 - check splitter size on Windows/Linux
+- see why output pane in debugger is always collapsed when window is created
+
 - all actions should be safely refactored using undo like in inline
 
-- mark as invalid string inside quote greater than 1 chars (i.e. 'blabla')
 - contextual menus on rules to group using selected rules (do not rely on text selection)
 - ideas: undefined rule: rename rule, delete token
 - P4: if file read-only and under P4, propose to open for edit

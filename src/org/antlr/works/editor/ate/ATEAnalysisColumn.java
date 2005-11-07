@@ -86,17 +86,16 @@ public class ATEAnalysisColumn extends JPanel {
         Graphics2D g2d = (Graphics2D)g;
         int[] types = getAnalysisManager().getAvailableTypes();
         for(int type=0; type<types.length; type++) {
-            paintStrips(g2d, getAnalysisManager().getItemColorForType(type),
-                    getAnalysisManager().getItemsForType(type));
+            paintStrips(g2d, getAnalysisManager().getItemsForType(type));
         }
 
         analysisBox.paint(g);
     }
 
-    protected void paintStrips(Graphics2D g, Color c, List items) {
-        g.setColor(c);
+    protected void paintStrips(Graphics2D g, List items) {
         for(Iterator iter = items.iterator(); iter.hasNext(); ) {
             ATEAnalysisItem item = (ATEAnalysisItem)iter.next();
+            g.setColor(item.color);
             g.fill(composeIndicatorRectangle(item.line, 0));
         }
     }

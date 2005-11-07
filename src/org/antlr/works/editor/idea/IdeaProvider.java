@@ -1,8 +1,5 @@
 package org.antlr.works.editor.idea;
 
-import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
-
 import java.util.List;
 /*
 
@@ -36,5 +33,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface IdeaProvider {
-    public List ideaProviderGetActions(Token token, ParserRule rule, ParserRule enclosingRule);
+    public List ideaProviderGetActions(int position);
 }

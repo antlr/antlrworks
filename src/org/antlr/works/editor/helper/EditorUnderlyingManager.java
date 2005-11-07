@@ -2,8 +2,6 @@ package org.antlr.works.editor.helper;
 
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.ate.ATEUnderlyingManager;
-import org.antlr.works.parser.ParserReference;
-import org.antlr.works.parser.ParserRule;
 
 import java.awt.*;
 import java.util.List;
@@ -48,43 +46,17 @@ public class EditorUnderlyingManager extends ATEUnderlyingManager {
     }
 
     public void render(Graphics g) {
-        renderUndefinedReferences(g);
-        renderDuplicateRules(g);
-        renderHasLeftRecursionRules(g);
+        renderItems(g, editor.inspector.getErrors());
+        renderItems(g, editor.inspector.getWarnings());
     }
 
-    protected void renderUndefinedReferences(Graphics g) {
-        List undefinedRefs = editor.rules.getUndefinedReferences();
-        if(undefinedRefs == null)
+    protected void renderItems(Graphics g, List items) {
+        if(items == null)
             return;
 
-        for(int index=0; index<undefinedRefs.size(); index++) {
-            ParserReference ref = (ParserReference)undefinedRefs.get(index);
-            drawUnderlineAtIndexes(g, Color.red, ref.token.getStartIndex(), ref.token.getEndIndex());
-        }
-    }
-
-    protected void renderDuplicateRules(Graphics g) {
-        List refs = editor.rules.getReferences();
-        if(refs == null)
-            return;
-
-        for(int index=0; index<refs.size(); index++) {
-            ParserReference ref = (ParserReference)refs.get(index);
-            if(editor.rules.isDuplicateRule(ref.token.getAttribute()))
-                drawUnderlineAtIndexes(g, Color.blue, ref.token.getStartIndex(), ref.token.getEndIndex());
-        }
-    }
-
-    protected void renderHasLeftRecursionRules(Graphics g) {
-        List rules = editor.rules.getRules();
-        if(rules == null)
-            return;
-
-        for(int index=0; index<rules.size(); index++) {
-            ParserRule rule = (ParserRule)rules.get(index);
-            if(rule.hasLeftRecursion())
-                drawUnderlineAtIndexes(g, Color.green, rule.start.getStartIndex(), rule.start.getEndIndex());
+        for(int index=0; index<items.size(); index++) {
+            EditorInspector.Item item = (EditorInspector.Item)items.get(index);
+            drawUnderlineAtIndexes(g, item.color, item.startIndex, item.endIndex);
         }
     }
 

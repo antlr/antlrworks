@@ -1,9 +1,5 @@
 package org.antlr.works.editor.idea;
 
-import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -94,15 +90,11 @@ public class IdeaManager {
         overlay.hide();
     }
 
-    public void displayAnyIdeasAvailable(Token token, ParserRule rule, ParserRule enclosingRule) {
+    public void displayAnyIdeasAvailable(int position) {
         if(!enabled)
             return;
 
-        List ideas = null;
-        if(token != null && token.type == Lexer.TOKEN_ID) {
-            ideas = generateIdeaActions(token, rule, enclosingRule);
-        }
-
+        List ideas = generateIdeaActions(position);
         if(ideas == null || ideas.isEmpty())
             overlay.hide();
         else {
@@ -111,11 +103,11 @@ public class IdeaManager {
         }
     }
 
-    public List generateIdeaActions(Token token, ParserRule rule, ParserRule enclosingRule) {
+    public List generateIdeaActions(int position) {
         List actions = new ArrayList();
         for(Iterator iter = providers.iterator(); iter.hasNext(); ) {
             IdeaProvider provider = (IdeaProvider)iter.next();
-            List pactions = provider.ideaProviderGetActions(token, rule, enclosingRule);
+            List pactions = provider.ideaProviderGetActions(position);
             if(pactions != null && !pactions.isEmpty()) {
                 actions.addAll(pactions);
             }

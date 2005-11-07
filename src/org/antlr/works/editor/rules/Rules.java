@@ -481,6 +481,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             ParserRule nextRule = (ParserRule) iter.next();
             if(currentRule != null && currentRule.name.equals(nextRule.name) && !duplicateRules.contains(currentRule)) {
                 duplicateRules.add(currentRule);
+                duplicateRules.add(nextRule);
             }
             currentRule = nextRule;
         }
