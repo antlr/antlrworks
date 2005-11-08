@@ -37,8 +37,8 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
-import org.antlr.works.dialog.DialogBuildAndDebug;
 import org.antlr.works.dialog.DialogConnectDebugRemote;
+import org.antlr.works.dialog.DialogGenerate;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextPane;
@@ -68,6 +68,9 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
 
     public static final String NOTIF_DEBUG_STARTED = "NOTIF_DEBUG_STARTED";
     public static final String NOTIF_DEBUG_STOPPED = "NOTIF_DEBUG_STOPPED";
+
+    public static final boolean BUILD_AND_DEBUG = true;
+    public static final boolean DEBUG = false;
 
     protected JPanel panel;
     protected TextPane inputTextPane;
@@ -197,6 +200,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
 
         JScrollPane textScrollPane = new JScrollPane(outputTextPane);
         textScrollPane.setWheelScrollingEnabled(true);
+        textScrollPane.setPreferredSize(new Dimension(200, 50));
 
         return textScrollPane;
     }
@@ -488,30 +492,24 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
         return recorder.getCurrentEvents();
     }
 
-    public void launchLocalDebugger(boolean build) {
-        debuggerLocal.setOutputPath(EditorPreferences.getOutputPath());
-        debuggerLocal.setStartRule(EditorPreferences.getStartSymbol());
-
-        if(build || !debuggerLocal.isRequiredFilesExisting()) {
-            DialogBuildAndDebug dialog = new DialogBuildAndDebug(this, getWindowComponent());
+    public void launchLocalDebugger(boolean buildAndDebug) {
+        if(buildAndDebug || !debuggerLocal.isRequiredFilesExisting()) {
+            DialogGenerate dialog = new DialogGenerate(getWindowComponent());
             if(dialog.runModal() == XJDialog.BUTTON_OK) {
                 debuggerLocal.setOutputPath(dialog.getOutputPath());
-                debuggerLocal.setStartRule(dialog.getRule());
-                debuggerLocal.prepareAndLaunch(true, true);
+                debuggerLocal.prepareAndLaunch(BUILD_AND_DEBUG);
             }
         } else {
-            debuggerLocal.prepareAndLaunch(false, true);
+            debuggerLocal.prepareAndLaunch(DEBUG);
         }
     }
 
-    public void debuggerLocalDidRun(boolean built, boolean success) {
-        if(success) {
-            if(built)
-                Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER_BUILD);
-            else
-                Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER);
-            debuggerLaunch(DEFAULT_LOCAL_ADDRESS, DEFAULT_LOCAL_PORT);
-        }
+    public void debuggerLocalDidRun(boolean builtAndDebug) {
+        if(builtAndDebug)
+            Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER_BUILD);
+        else
+            Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER);
+        debuggerLaunch(DEFAULT_LOCAL_ADDRESS, DEFAULT_LOCAL_PORT);
     }
 
     public void launchRemoteDebugger() {

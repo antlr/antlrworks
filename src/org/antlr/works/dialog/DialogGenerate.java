@@ -78,6 +78,8 @@ public class DialogGenerate extends XJDialog {
         return outputPathField.getText();
     }
 
+    // !!! BUTTONS OS SENSITIVE !!!
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         dialogPane = new JPanel();

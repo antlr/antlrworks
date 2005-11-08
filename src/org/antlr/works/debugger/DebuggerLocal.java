@@ -73,10 +73,8 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     protected Process remoteParserProcess;
     protected boolean remoteParserLaunched;
 
-    protected boolean build;
-    protected boolean success;
     protected boolean cancelled;
-    protected boolean generateGlueCode;
+    protected boolean buildAndDebug;
 
     protected CodeGenerate codeGenerator;
     protected Debugger debugger;
@@ -89,12 +87,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         this.debugger = debugger;
         this.codeGenerator = new CodeGenerate(debugger.editor);
         this.progress = new XJDialogProgress(debugger.editor);
-
-        setOutputPath(EditorPreferences.getOutputPath());
-    }
-
-    public void grammarChanged() {
-        codeGenerator.grammarChanged();
     }
 
     public void setOutputPath(String path) {
@@ -105,39 +97,12 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         this.startRule = rule;
     }
 
-    public void prepareAndLaunch(boolean build, boolean generateGlueCode) {
-        this.build = build;
-        this.generateGlueCode = generateGlueCode;
-
-        if(!build) {
-            if(!askUserForInputText())
-                return;
-        }
-
-        progress.setInfo("Preparing...");
-        progress.setProgress(0);
-        progress.setProgressMax(3);
-        progress.setDelegate(this);
-
-        progress.display();
-
-        cancelled = false;
-
-        new Thread(this).start();
+    public void grammarChanged() {
+        codeGenerator.grammarChanged();
     }
 
     public void dialogDidCancel() {
         cancel();
-    }
-
-    public boolean askUserForInputText() {
-        DialogDebugInput dialog = new DialogDebugInput(debugger.getWindowComponent());
-        dialog.setInputText(inputText);
-        if(dialog.runModal() == XJDialog.BUTTON_OK) {
-            inputText = dialog.getInputText();
-            return true;
-        } else
-            return false;
     }
 
     public String getInputText() {
@@ -152,61 +117,88 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         return cancelled;
     }
 
-    public void run() {
-        success = perform();
+    public void showProgress() {
+        progress.setInfo("Preparing...");
+        progress.setIndeterminate(false);
+        progress.setProgress(0);
+        progress.setProgressMax(2);
+        progress.setDelegate(this);
+        progress.display();
+    }
 
+    public void hideProgress() {
+        progress.close();
+    }
+
+    public void prepareAndLaunch(boolean buildAndDebug) {
+        this.buildAndDebug = buildAndDebug;
+        cancelled = false;
+
+        new Thread(this).start();
+    }
+
+    public void run() {
+        prepare();
+
+        if(buildAndDebug) {
+            showProgress();
+            generateAndCompileGrammar();
+        }
+
+        if(!cancelled())
+            askUserForInputText();
+
+        if(!cancelled())
+            generateAndCompileGlueCode();
+
+        if(!cancelled())
+            launchRemoteParser();
+
+        if(cancelled())
+            notifyCancellation();
+        else
+            notifyCompletion();
+    }
+
+    protected void askUserForInputText() {
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                public void run() {
+                    hideProgress();
+
+                    DialogDebugInput dialog = new DialogDebugInput(debugger, debugger.getWindowComponent());
+                    dialog.setInputText(inputText);
+                    if(dialog.runModal() == XJDialog.BUTTON_OK) {
+                        inputText = dialog.getInputText();
+                        setStartRule(dialog.getRule());
+                        showProgress();
+                    } else
+                        cancel();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void notifyCancellation() {
+        hideProgress();
+    }
+
+    protected void notifyCompletion() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                progress.close();
-                if(build && success) {
-                    success = askUserForInputText() && generateGlueCode() && launchRemoteParser();
-                }
-                debugger.debuggerLocalDidRun(build, success);
+                hideProgress();
+                if(!cancelled())
+                    debugger.debuggerLocalDidRun(buildAndDebug);
             }
         });
     }
 
-    protected boolean perform() {
+    protected void prepare() {
+        setOutputPath(EditorPreferences.getOutputPath());
+        setStartRule(EditorPreferences.getStartSymbol());
 
-        prepare();
-        if(cancelled())
-            return false;
-
-        new File(outputFileDir).mkdirs();
-
-        if(build || generateGlueCode) {
-            // Create the glue-code remote parser
-            progress.setInfo("Generating...");
-            if(!generateGlueCode() || cancelled())
-                return false;
-        }
-
-        if(build) {
-            progress.setProgress(1);
-
-            // Generate code
-            if(!generateCode() || cancelled())
-                return false;
-
-            progress.setProgress(2);
-
-            // Compile code
-            progress.setInfo("Compiling...");
-            if(!compileCode() || cancelled())
-                return false;
-        }
-
-        progress.setProgress(3);
-
-        // Launch the glue-code remote parser
-        if(build)
-            return true;
-
-        progress.setInfo("Launching...");
-        return launchRemoteParser();
-    }
-
-    public void prepare() {
         fileParser = codeGenerator.getGeneratedTextFileName(false);
         fileLexer = codeGenerator.getGeneratedTextFileName(true);
 
@@ -214,15 +206,34 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         fileRemoteParserInputText = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
 
         outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
+        new File(outputFileDir).mkdirs();
     }
 
-    public boolean isRequiredFilesExisting() {
-        prepare();
-        return new File(fileParser).exists() && new File(fileLexer).exists() && new File(fileRemoteParser).exists()
-                && new File(fileRemoteParserInputText).exists();
+    protected void generateAndCompileGrammar() {
+        progress.setInfo("Generating...");
+        progress.setProgress(1);
+        generateGrammar();
+
+        if(cancelled())
+            return;
+
+        progress.setInfo("Compiling...");
+        progress.setProgress(2);
+        compileGrammar();
     }
 
-    public boolean generateGlueCode() {
+    protected void generateAndCompileGlueCode() {
+        progress.setInfo("Preparing...");
+        progress.setIndeterminate(true);
+        generateGlueCode();
+
+        if(cancelled())
+            return;
+
+        compileGlueCode();
+    }
+
+    protected void generateGlueCode() {
         try {
             XJUtils.writeStringToFile(getInputText(), fileRemoteParserInputText);
 
@@ -235,35 +246,18 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
 
             XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
-
         } catch(Exception e) {
             e.printStackTrace();
             XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating the glue-code: "+e);
-            return false;
+            cancel();
         }
-        return true;
     }
 
-    public boolean generateCode() {
-        if(false && new File(fileParser).exists() && new File(fileParser).exists() && new File(fileRemoteParser).exists()) {
-            switch(XJAlert.displayAlert(debugger.editor.getWindowContainer(), "Debugger", "Generated code files already exists. Do you want to continue, re-generate the grammar or cancel ?",
-                    "Cancel", "Re-generate", "Continue", 2))
-            {
-                case 0: // cancel
-                    return false;
-
-                case 1: // regenerate
-                    return generate();
-
-                case 2:
-                    return true;
-            }
-            return false;
-        } else
-            return generate();
+    protected void compileGlueCode() {
+        compileFiles(new String[] { fileRemoteParser });
     }
 
-    public boolean generate() {
+    protected void generateGrammar() {
         String error = null;
         try {
             if(!codeGenerator.generate(true))
@@ -275,43 +269,32 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
         if(error != null) {
             XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating code: "+error);
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean compileCode() {
-        File f = new File(outputFileDir);
-        if(false && f.exists()) {
-            switch(XJAlert.displayAlert(debugger.editor.getWindowContainer(), "Debugger", "Compiled code files already exists. Do you want to continue, re-compile or cancel ?",
-                    "Cancel", "Re-compile", "Continue", 2))
-            {
-                case 0: // cancel
-                    return false;
-
-                case 1: // recompile
-                    return compile();
-
-                case 2:
-                    return true;
-            }
-            return false;
-
-        } else {
-            f.mkdirs();
-            return compile();
+            cancel();
         }
     }
 
-    public boolean compile() {
+    protected void compileGrammar() {
+        new File(outputFileDir).mkdirs();
+        compileFiles(new String[] { fileParser, fileLexer });
+    }
+
+    protected void compileFiles(String[] files) {
         int result = 0;
         try {
             String compiler = EditorPreferences.getCompiler();
-            String[] args;
+            String classPath = System.getProperty("java.class.path")+":"+outputFileDir;
 
             if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JAVAC)) {
-                args = new String[] { "javac", "-classpath",  System.getProperty("java.class.path"), "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
+                String[] args = new String[5+files.length];
+                args[0] = "javac";
+                args[1] = "-classpath";
+                args[2] = classPath;
+                args[3] = "-d";
+                args[4] = outputFileDir;
+                for(int i=0; i<files.length; i++)
+                    args[5+i] = files[i];
+
+                //args = new String[] { "javac", "-classpath",  System.getProperty("java.class.path"), "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
                 System.out.println("Compile:"+ Utils.toString(args));
                 Process p = Runtime.getRuntime().exec(args);
                 new StreamWatcher(p.getErrorStream(), "Compiler").start();
@@ -319,13 +302,29 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 result = p.waitFor();
             } else if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JIKES)) {
                 String jikesPath = XJUtils.concatPath(EditorPreferences.getJikesPath(), "jikes");
-                args = new String[] { jikesPath, "-classpath",  System.getProperty("java.class.path"), "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
+
+                String[] args = new String[5+files.length];
+                args[0] = jikesPath;
+                args[1] = "-classpath";
+                args[2] = classPath;
+                args[3] = "-d";
+                args[4] = outputFileDir;
+                for(int i=0; i<files.length; i++)
+                    args[5+i] = files[i];
+
+                //args = new String[] { jikesPath, "-classpath",  System.getProperty("java.class.path"), "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
                 Process p = Runtime.getRuntime().exec(args);
                 new StreamWatcher(p.getErrorStream(), "Compiler").start();
                 new StreamWatcher(p.getInputStream(), "Compiler").start();
                 result = p.waitFor();
             } else if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_INTEGRATED)) {
-                args = new String[] { "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
+                String[] args = new String[2+files.length];
+                args[0] = "-d";
+                args[1] = outputFileDir;
+                for(int i=0; i<files.length; i++)
+                    args[2+i] = files[i];
+
+//                args = new String[] { "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
                 Class javac = Class.forName("com.sun.tools.javac.Main");
                 Class[] p = new Class[] { String[].class };
                 Method m = javac.getMethod("compile", p);
@@ -337,16 +336,21 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
         } catch(Error e) {
             XJAlert.display(debugger.editor.getWindowContainer(), "Compiler Error", "An error occurred:\n"+e);
-            return false;
+            cancel();
         } catch(Exception e) {
             XJAlert.display(debugger.editor.getWindowContainer(), "Compiler Error", "An exception occurred:\n"+e);
-            return false;
+            cancel();
         }
         if(result != 0) {
             XJAlert.display(debugger.editor.getWindowContainer(), "Compiler Error", "Cannot launch the local debugger.\nCompiler error: "+result);
-            return false;
+            cancel();
         }
-        return true;
+    }
+
+    public boolean isRequiredFilesExisting() {
+        prepare();
+        return new File(fileParser).exists() && new File(fileLexer).exists() && new File(fileRemoteParser).exists()
+                && new File(fileRemoteParserInputText).exists();
     }
 
     public boolean checkForLaunch() {

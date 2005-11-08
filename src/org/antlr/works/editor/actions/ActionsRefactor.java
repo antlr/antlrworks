@@ -67,7 +67,7 @@ public class ActionsRefactor extends AbstractActions {
         }
     }
 
-    public void renameToken(Token t, String name) {
+    protected void renameToken(Token t, String name) {
         List tokens = editor.getTokens();
         String attr = t.getAttribute();
         for(int index = tokens.size()-1; index>0; index--) {

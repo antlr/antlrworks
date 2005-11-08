@@ -36,20 +36,22 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.swing.TextUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Iterator;
 
 public class DialogDebugInput extends XJDialog {
 
-    public DialogDebugInput(Container parent) {
+    public DialogDebugInput(Debugger debugger, Container parent) {
         super(parent, true);
 
         initComponents();
         setSize(600, 400);
-        
+
         setDefaultButton(okButton);
         setOKButton(okButton);
         setCancelButton(cancelButton);
@@ -57,6 +59,16 @@ public class DialogDebugInput extends XJDialog {
         TextUtils.createTabs(inputTextArea);
         inputTextArea.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
         inputTextArea.requestFocus();
+
+        rulesCombo.removeAllItems();
+        for (Iterator iterator = debugger.getRules().iterator(); iterator.hasNext();) {
+            rulesCombo.addItem(iterator.next());
+        }
+        rulesCombo.setSelectedItem(EditorPreferences.getStartSymbol());
+    }
+
+    public void dialogWillCloseOK() {
+        EditorPreferences.setStartSymbol(getRule());
     }
 
     public void setInputText(String text) {
@@ -67,15 +79,22 @@ public class DialogDebugInput extends XJDialog {
         return inputTextArea.getText();
     }
 
+    public String getRule() {
+        return (String)rulesCombo.getSelectedItem();
+    }
+
     // Note: put 500 for the width of the scrollpane
-    
+    // Also copy the line for button OS sensitive location
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         dialogPane = new JPanel();
         contentPane = new JPanel();
-        label1 = new JLabel();
         scrollPane1 = new JScrollPane();
         inputTextArea = new JTextPane();
+        label2 = new JLabel();
+        rulesCombo = new JComboBox();
+        label1 = new JLabel();
         buttonBar = new JPanel();
         okButton = new JButton();
         cancelButton = new JButton();
@@ -95,6 +114,8 @@ public class DialogDebugInput extends XJDialog {
             {
                 contentPane.setLayout(new FormLayout(
                     new ColumnSpec[] {
+                        FormFactory.DEFAULT_COLSPEC,
+                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                         new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
                         FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                         FormFactory.DEFAULT_COLSPEC
@@ -104,22 +125,29 @@ public class DialogDebugInput extends XJDialog {
                         FormFactory.LINE_GAP_ROWSPEC,
                         new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
                         FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
                         FormFactory.DEFAULT_ROWSPEC
                     }));
 
-                //---- label1 ----
-                label1.setText("Input text:");
-                contentPane.add(label1, cc.xy(1, 1));
-
                 //======== scrollPane1 ========
                 {
-                    scrollPane1.setPreferredSize(new Dimension(500, 200));
+                    scrollPane1.setPreferredSize(new Dimension(300, 200));
 
                     //---- inputTextArea ----
                     //inputTextArea.setLineWrap(false);
                     scrollPane1.setViewportView(inputTextArea);
                 }
-                contentPane.add(scrollPane1, cc.xywh(1, 3, 3, 1));
+                contentPane.add(scrollPane1, cc.xywh(1, 3, 5, 1));
+
+                //---- label2 ----
+                label2.setText("Start Rule:");
+                contentPane.add(label2, cc.xy(1, 5));
+                contentPane.add(rulesCombo, cc.xy(3, 5));
+
+                //---- label1 ----
+                label1.setText("Input text:");
+                contentPane.add(label1, cc.xywh(1, 1, 3, 1));
             }
             dialogPane.add(contentPane, BorderLayout.CENTER);
 
@@ -148,7 +176,6 @@ public class DialogDebugInput extends XJDialog {
                     buttonBar.add(okButton, cc.xy(2, 1));
                     buttonBar.add(cancelButton, cc.xy(4, 1));
                 }
-                
             }
             dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
@@ -159,9 +186,11 @@ public class DialogDebugInput extends XJDialog {
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     private JPanel dialogPane;
     private JPanel contentPane;
-    private JLabel label1;
     private JScrollPane scrollPane1;
     private JTextPane inputTextArea;
+    private JLabel label2;
+    private JComboBox rulesCombo;
+    private JLabel label1;
     private JPanel buttonBar;
     private JButton okButton;
     private JButton cancelButton;

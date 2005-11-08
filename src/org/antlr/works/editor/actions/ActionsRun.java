@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.actions;
 
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.stats.Statistics;
 
@@ -52,12 +53,12 @@ public class ActionsRun extends AbstractActions {
 
     public void debug() {
         editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchLocalDebugger(false);
+        editor.debugger.launchLocalDebugger(Debugger.DEBUG);
     }
 
     public void buildAndDebug() {
         editor.debugger.setBreakpoints(editor.breakpointManager.getBreakpoints());
-        editor.debugger.launchLocalDebugger(true);
+        editor.debugger.launchLocalDebugger(Debugger.BUILD_AND_DEBUG);
     }
 
     public void debugRemote() {

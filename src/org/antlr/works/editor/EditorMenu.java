@@ -300,6 +300,17 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
         menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
+
+        XJMenu folding = new XJMenu();
+        folding.setTitle("Folding");
+        folding.addItem(new XJMenuItem("Expand/Collapse Rule", 'r', KeyEvent.VK_PERIOD, MI_EXPAND_COLLAPSE_RULE, this));
+        folding.addItem(new XJMenuItem("Expand/Collapse Action", 's', KeyEvent.VK_MINUS, MI_EXPAND_COLLAPSE_ACTION, this));
+        folding.addSeparator();
+        folding.addItem(new XJMenuItem("Expand All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EXPAND_ALL_ACTION, this));
+        folding.addItem(new XJMenuItem("Collapse All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_COLLAPSE_ALL_ACTION, this));
+        
+        menu.addSeparator();
+        menu.addItem(folding);
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Check Grammar", 'r', KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
 
@@ -321,7 +332,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     }
 
     private void createViewMenu(XJMainMenuBar menubar) {
-        XJMenu menu;
+    /*    XJMenu menu;
         menu = new XJMenu();
         menu.setTitle("View");
         menu.addItem(new XJMenuItem("Expand/Collapse Rule", 'r', KeyEvent.VK_PERIOD, MI_EXPAND_COLLAPSE_RULE, this));
@@ -330,7 +341,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItem("Expand All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EXPAND_ALL_ACTION, this));
         menu.addItem(new XJMenuItem("Collapse All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_COLLAPSE_ALL_ACTION, this));
 
-        menubar.addCustomMenu(menu);
+        menubar.addCustomMenu(menu);*/
     }
 
     private void createEditMenu(XJMainMenuBar menubar) {

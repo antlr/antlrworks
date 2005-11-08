@@ -1,7 +1,9 @@
 - check splitter size on Windows/Linux
-- see why output pane in debugger is always collapsed when window is created
 
-- all actions should be safely refactored using undo like in inline
+- see why output pane in debugger is always collapsed when window is created
+- don't have focus the first time AW is launched
+
+- show nfa decision: go backward to find enclosing decision (':' or '(')
 
 - contextual menus on rules to group using selected rules (do not rely on text selection)
 - ideas: undefined rule: rename rule, delete token

@@ -1,5 +1,5 @@
 
-Version 1.0ea5 - 11/06/05
+Version 1.0ea5 - 11/08/05
 
 - refactor: inline rule
 - refactor: extract rule
@@ -15,6 +15,7 @@ Version 1.0ea5 - 11/06/05
 - improved rule folding: can now fold using the bottom anchor
 - re-introduced actions folding (anchors can be disabled in the preferences)
 - improved Go To Rule: ignore case and display typed text in red if no match found
+- build and debug/debug: the starting rule pop-up menu has been moved to the input text dialog
 
 - hide and disable ideas during debugging
 - display a message if the syntax diagram cannot be displayed
