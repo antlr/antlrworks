@@ -282,7 +282,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         int result = 0;
         try {
             String compiler = EditorPreferences.getCompiler();
-            String classPath = System.getProperty("java.class.path")+":"+outputFileDir;
+            String classPath = System.getProperty("java.class.path")+";"+outputFileDir;
 
             if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JAVAC)) {
                 String[] args = new String[5+files.length];
@@ -374,6 +374,8 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         try {
             // Use an array rather than a single string because white-space
             // are not correctly handled in a single string (why?)
+            System.out.println("launch using: java -classpath "+classPath+" "+remoteParserClassName);
+
             remoteParserProcess = Runtime.getRuntime().exec(new String[] { "java", "-classpath", classPath, remoteParserClassName});
             new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher").start();
             StreamWatcher sw = new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher");
