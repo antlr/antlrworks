@@ -6,6 +6,8 @@ import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.parser.Lexer;
+import org.antlr.works.parser.Token;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -107,10 +109,37 @@ public class TDecisionDFA implements Runnable {
         return true;
     }
 
+    public Token findClosetDecisionToken() {
+        Token ct = editor.getCurrentToken();
+        List tokens = editor.getTokens();
+        int nestedParen = 0;
+        for(int index=tokens.indexOf(ct); index >= 0; index--) {
+            Token t = (Token)tokens.get(index);
+            if(t.type == Lexer.TOKEN_COLON)
+                return t;
+            else if(t.type == Lexer.TOKEN_RPAREN)
+                nestedParen++;
+            else if(t.type == Lexer.TOKEN_LPAREN) {
+                if(nestedParen == 0)
+                    return t;
+                else
+                    nestedParen--;
+            }
+        }
+        return null;
+    }
+
     public void run() {
         text = editor.getText();
-        line = editor.getCurrentLinePosition();
-        column = editor.getCurrentColumnPosition();
+
+        Token t = findClosetDecisionToken();
+        if(t == null) {
+            line = editor.getCurrentLinePosition();
+            column = editor.getCurrentColumnPosition();
+        } else {
+            line = editor.getLinePositionAtIndex(t.getStartIndex());
+            column = editor.getColumnPositionAtIndex(t.getStartIndex());
+        }
 
         error = null;
 

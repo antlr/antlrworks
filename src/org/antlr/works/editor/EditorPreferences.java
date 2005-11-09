@@ -72,7 +72,7 @@ public class EditorPreferences {
     public static final String PREF_DOT_TOOL_PATH = "PREF_DOT_TOOL_PATH";
     public static final String PREF_DOT_IMAGE_FORMAT = "PREF_DOT_IMAGE_FORMAT";
 
-    public static String DEFAULT_DOT_TOOL_PATH;
+    public static final String DEFAULT_DOT_TOOL_PATH;
     public static final String DEFAULT_DOT_IMAGE_FORMAT = "png";
 
     // SCM - Perforce
@@ -117,7 +117,6 @@ public class EditorPreferences {
     public static final String DEFAULT_DOWNLOAD_PATH = System.getProperty("user.home");
 
     // Colors
-
     private static Color[] colors = { Color.BLACK, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, Color.GREEN,
                                         Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.WHITE, Color.YELLOW};
 
@@ -147,21 +146,29 @@ public class EditorPreferences {
     public static final String PREF_PERSONAL_INFO = "PREF_OUTPUT_DEV_DATE";
     public static final String PREF_PRIVATE_MENU = "PREF_PRIVATE_MENU";
 
+    public static final String DEFAULT_OUTPUT_PATH;
+
     static {
-        DEFAULT_DOT_TOOL_PATH = "";
         DEFAULT_EDITOR_FONT = "Courier New";
 
         if(XJSystem.isMacOS()) {
+            DEFAULT_OUTPUT_PATH = "/tmp/antlrworks/";
             DEFAULT_DOT_TOOL_PATH = "/Applications/Graphviz.app/Contents/MacOS/dot";
             if(Font.getFont("Monospaced") != null)
                 DEFAULT_EDITOR_FONT = "Monospaced";
         } else if(XJSystem.isWindows()) {
+            DEFAULT_OUTPUT_PATH = "\\tmp\\antlrworks\\";
+            DEFAULT_DOT_TOOL_PATH = "";
             if(Font.getFont("Tahoma") != null)
                 DEFAULT_EDITOR_FONT = "Tahoma";
         } else if(XJSystem.isLinux()) {
+            DEFAULT_OUTPUT_PATH = "/tmp/antlrworks/";
+            DEFAULT_DOT_TOOL_PATH = "";
             if(Font.getFont("Monospaced") != null)
                 DEFAULT_EDITOR_FONT = "Monospaced";
         } else {
+            DEFAULT_OUTPUT_PATH = "/tmp/antlrworks/";
+            DEFAULT_DOT_TOOL_PATH = "";
             if(Font.getFont("Courier") != null)
                 DEFAULT_EDITOR_FONT = "Courier";
         }
@@ -172,7 +179,7 @@ public class EditorPreferences {
     }
 
     public static String getOutputPath() {
-        return getPreferences().getString(PREF_OUTPUT_PATH, "/tmp/antlrworks/");
+        return getPreferences().getString(PREF_OUTPUT_PATH, DEFAULT_OUTPUT_PATH);
     }
 
     public static void setStartSymbol(String startSymbol) {

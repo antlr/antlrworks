@@ -211,6 +211,7 @@ public class DialogPrefs extends XJPanel {
         getPreferences().applyPreferences();
         if(lafIndex != lafCombo.getSelectedIndex()) {
             lafIndex = lafCombo.getSelectedIndex();
+            System.out.println("A");
             changeLookAndFeel();
         }
         applyCommonPrefs();

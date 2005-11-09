@@ -424,7 +424,9 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         if(parser.getRules().size() == 0)
             return;
 
+        programmaticallySelectingRule = true;
         selectRule((ParserRule)parser.getRules().get(0));
+        programmaticallySelectingRule = false;
     }
 
     public void selectNextRule() {

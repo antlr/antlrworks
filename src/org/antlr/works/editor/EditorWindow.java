@@ -348,19 +348,16 @@ public class EditorWindow
         mainPanel.add(infoBox, BorderLayout.SOUTH);
 
         getContentPane().add(mainPanel);
-        pack();
+        /*pack();
+
+        upDownSplitPane.setDividerLocation(0.5);
+        rulesTextSplitPane.setDividerLocation(0.3);*/
 
         if(!XJSystem.isMacOS()) {
             rulesTextSplitPane.setDividerSize(10);
             upDownSplitPane.setDividerSize(10);
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                upDownSplitPane.setDividerLocation(0.5);
-                rulesTextSplitPane.setDividerLocation(0.3);
-            }
-        });
     }
 
     protected void awakeInterface() {
@@ -370,6 +367,15 @@ public class EditorWindow
         getTabbedPane().addTab("Console", console.getContainer());
 
         selectVisualizationTab();
+
+        pack();
+
+        // setDividerLocation() must be called after pack() 
+        upDownSplitPane.setDividerLocation(0.5);
+        rulesTextSplitPane.setDividerLocation(0.3);
+
+        // Request focus in the text pane
+        getTextPane().requestFocus();
     }
 
     protected void register() {
@@ -406,7 +412,6 @@ public class EditorWindow
     }
 
     public void becomingVisibleForTheFirstTime() {
-        textPaneRequestFocusLater();
         updateInformation();
         updateCursorInfo();
         actionsSCM.setSilent(true);
@@ -490,15 +495,6 @@ public class EditorWindow
 
     public JTabbedPane getTabbedPane() {
         return viewTabbedPane;
-    }
-
-    public void textPaneRequestFocusLater() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                jFrame.setVisible(true);
-                getTextPane().requestFocus();
-            }
-        });
     }
 
     public void toggleAutoIndent() {
@@ -711,11 +707,19 @@ public class EditorWindow
     }
 
     public int getCurrentLinePosition() {
-        return getLineIndexAtTextPosition(getCaretPosition()) + 1;
+        return getLinePositionAtIndex(getCaretPosition());
+    }
+
+    public int getLinePositionAtIndex(int index) {
+        return getLineIndexAtTextPosition(index) + 1;
     }
 
     public int getCurrentColumnPosition() {
-        int lineIndex = getLineIndexAtTextPosition(getCaretPosition());
+        return getColumnPositionAtIndex(getCaretPosition());
+    }
+
+    public int getColumnPositionAtIndex(int index) {
+        int lineIndex = getLineIndexAtTextPosition(index);
         Point linePosition = getLineTextPositionsAtLineIndex(lineIndex);
         if(linePosition == null)
             return 1;

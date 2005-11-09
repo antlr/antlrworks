@@ -2,6 +2,7 @@ package org.antlr.works.editor.actions;
 
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.ParserAction;
+import org.antlr.works.parser.ParserRule;
 
 import java.util.List;
 /*
@@ -47,6 +48,27 @@ public class ActionsView extends AbstractActions {
 
     public void expandCollapseRule() {
         editor.foldingManager.toggleFolding(editor.getCurrentRule());
+    }
+
+    public void expandAllRules() {
+        expandCollapseAllRules(true);
+    }
+
+    public void collapseAllRules() {
+        expandCollapseAllRules(false);
+    }
+
+    public void expandCollapseAllRules(boolean expand) {
+        List rules = editor.rules.getRules();
+        if(rules == null)
+            return;
+
+        for(int i = 0; i<rules.size(); i++) {
+            ParserRule rule = (ParserRule)rules.get(i);
+            if(rule.foldingEntityIsExpanded() != expand) {
+                editor.foldingManager.toggleFolding(rule);
+            }
+        }
     }
 
     public void expandAllActions() {

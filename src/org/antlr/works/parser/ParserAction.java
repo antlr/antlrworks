@@ -37,11 +37,13 @@ public class ParserAction implements EditorPersistentObject, ATEFoldingEntity {
 
     public ParserRule rule;
     public Token token;
+    public int actionNum;
     public boolean expanded = true;
 
-    public ParserAction(ParserRule rule, Token token) {
+    public ParserAction(ParserRule rule, Token token, int actionNum) {
         this.rule = rule;
         this.token = token;
+        this.actionNum = actionNum;
     }
 
     public boolean containsIndex(int index) {
@@ -49,11 +51,11 @@ public class ParserAction implements EditorPersistentObject, ATEFoldingEntity {
     }
 
     public boolean equals(Object other) {
-        return this.token.equals(((ParserAction)other).token);
+        return getUniqueIdentifier() == ((ParserAction)other).getUniqueIdentifier();
     }
 
     public int getUniqueIdentifier() {
-        return (rule.name+token.getAttribute()).hashCode();
+        return (rule.name+token.getAttribute()+actionNum).hashCode();
     }
 
     public void foldingEntitySetExpanded(boolean expanded) {

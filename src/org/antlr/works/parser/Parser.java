@@ -250,7 +250,7 @@ public class Parser extends AbstractParser {
                     Token t = T(-1);
                     if(t == null || !blockIdentifiers.contains(t.getAttribute().toLowerCase())) {
                         // An action is a block not preceeded by a block identifier
-                        actions.add(new ParserAction(rule, T(0)));
+                        actions.add(new ParserAction(rule, T(0), actions.size()));
                     }
                     break;
                 }

@@ -111,9 +111,9 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
     protected Grammar grammar;
 
     protected boolean running;
-    protected JSplitPane ioSplitPane;
+    public JSplitPane ioSplitPane;
     protected JSplitPane ioTreeSplitPane;
-    protected JSplitPane treeStackSplitPane;
+    public JSplitPane treeStackSplitPane;
 
     public Debugger(EditorWindow editor) {
         this.editor = editor;
@@ -155,6 +155,9 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
 
         updateStatusInfo();
 
+        // Invoke the setDividerLocation() later - otherwise
+        // they don't resize correctly. If someone knows the reason,
+        // please let me know.
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 ioSplitPane.setDividerLocation(0.7);

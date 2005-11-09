@@ -47,6 +47,7 @@ import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
+import java.net.URL;
 
 public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
@@ -69,6 +70,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     protected String fileRemoteParserInputText;
 
     protected String startRule;
+    protected String lastStartRule;
 
     protected Process remoteParserProcess;
     protected boolean remoteParserLaunched;
@@ -225,6 +227,12 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     protected void generateAndCompileGlueCode() {
         progress.setInfo("Preparing...");
         progress.setIndeterminate(true);
+
+        if(lastStartRule != null && startRule.equals(lastStartRule))
+            return;
+
+        lastStartRule = startRule;
+
         generateGlueCode();
 
         if(cancelled())
@@ -282,7 +290,9 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         int result = 0;
         try {
             String compiler = EditorPreferences.getCompiler();
-            String classPath = System.getProperty("java.class.path")+";"+outputFileDir;
+            String classPath = File.pathSeparatorChar+outputFileDir;
+            classPath += File.pathSeparatorChar+getApplicationPath();
+            classPath += System.getProperty("java.class.path");
 
             if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JAVAC)) {
                 String[] args = new String[5+files.length];
@@ -294,7 +304,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
 
-                //args = new String[] { "javac", "-classpath",  System.getProperty("java.class.path"), "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
                 System.out.println("Compile:"+ Utils.toString(args));
                 Process p = Runtime.getRuntime().exec(args);
                 new StreamWatcher(p.getErrorStream(), "Compiler").start();
@@ -312,7 +321,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
 
-                //args = new String[] { jikesPath, "-classpath",  System.getProperty("java.class.path"), "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
                 Process p = Runtime.getRuntime().exec(args);
                 new StreamWatcher(p.getErrorStream(), "Compiler").start();
                 new StreamWatcher(p.getInputStream(), "Compiler").start();
@@ -324,7 +332,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 for(int i=0; i<files.length; i++)
                     args[2+i] = files[i];
 
-//                args = new String[] { "-d", outputFileDir, fileParser, fileLexer, fileRemoteParser };
                 Class javac = Class.forName("com.sun.tools.javac.Main");
                 Class[] p = new Class[] { String[].class };
                 Method m = javac.getMethod("compile", p);
@@ -369,13 +376,16 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         if(!checkForLaunch())
             return false;
 
-        String classPath = outputFileDir+File.pathSeparatorChar+System.getProperty("java.class.path")+File.pathSeparatorChar+".";
+        String classPath = outputFileDir;
+        classPath += File.pathSeparatorChar+getApplicationPath();
+        classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
+        classPath += File.pathSeparatorChar+".";
+
+        System.out.println("Launch with path ="+classPath);
 
         try {
             // Use an array rather than a single string because white-space
             // are not correctly handled in a single string (why?)
-            System.out.println("launch using: java -classpath "+classPath+" "+remoteParserClassName);
-
             remoteParserProcess = Runtime.getRuntime().exec(new String[] { "java", "-classpath", classPath, remoteParserClassName});
             new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher").start();
             StreamWatcher sw = new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher");
@@ -396,6 +406,25 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         }
 
         return true;
+    }
+
+    protected String getApplicationPath() {
+        String classPath = "org/antlr/works/IDE.class";
+        URL url = getClass().getClassLoader().getResource(classPath);
+        if(url == null)
+            return null;
+
+        String p = url.getPath();
+        System.out.println("Original = "+p);
+
+        if(p.startsWith("file:"))
+            p = p.substring("file:".length());
+
+        p = p.substring(0, p.length()-classPath.length());
+        if(p.endsWith("jar!/"))
+            p = p.substring(0, p.length()-2);
+
+        return p;
     }
 
     public interface StreamWatcherDelegate {
