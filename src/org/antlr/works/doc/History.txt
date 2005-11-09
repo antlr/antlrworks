@@ -1,8 +1,7 @@
 
 Version 1.0ea5 - 11/08/05
 
-- refactor: inline rule
-- refactor: extract rule
+- refactor: inline and extract rule
 
 - added output text pane in debugger (all System.out from the parser are redirected to this pane)
 - added break on exception in debugger

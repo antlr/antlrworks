@@ -136,6 +136,19 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         this.buildAndDebug = buildAndDebug;
         cancelled = false;
 
+        if(buildAndDebug)
+            showProgress();
+
+        // Start the thread a little bit later to let
+        // the progress dialog displays first
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                startThread();
+            }
+        });
+    }
+
+    public void startThread() {
         new Thread(this).start();
     }
 
@@ -143,7 +156,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         prepare();
 
         if(buildAndDebug) {
-            showProgress();
             generateAndCompileGrammar();
         }
 
@@ -152,6 +164,9 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
         if(!cancelled())
             generateAndCompileGlueCode();
+
+        if(!cancelled())
+            generateInputText();
 
         if(!cancelled())
             launchRemoteParser();
@@ -224,47 +239,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         compileGrammar();
     }
 
-    protected void generateAndCompileGlueCode() {
-        progress.setInfo("Preparing...");
-        progress.setIndeterminate(true);
-
-        if(lastStartRule != null && startRule.equals(lastStartRule))
-            return;
-
-        lastStartRule = startRule;
-
-        generateGlueCode();
-
-        if(cancelled())
-            return;
-
-        compileGlueCode();
-    }
-
-    protected void generateGlueCode() {
-        try {
-            XJUtils.writeStringToFile(getInputText(), fileRemoteParserInputText);
-
-            StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup");
-            StringTemplate glueCode = group.getInstanceOf(remoteParserTemplatePath+remoteParserTemplateName);
-            glueCode.setAttribute(ST_ATTR_CLASSNAME, remoteParserClassName);
-            glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(fileRemoteParserInputText));
-            glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(false));
-            glueCode.setAttribute(ST_ATTR_JAVA_LEXER, codeGenerator.getGeneratedClassName(true));
-            glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
-
-            XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
-        } catch(Exception e) {
-            e.printStackTrace();
-            XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating the glue-code: "+e);
-            cancel();
-        }
-    }
-
-    protected void compileGlueCode() {
-        compileFiles(new String[] { fileRemoteParser });
-    }
-
     protected void generateGrammar() {
         String error = null;
         try {
@@ -286,13 +260,61 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         compileFiles(new String[] { fileParser, fileLexer });
     }
 
+    protected void generateAndCompileGlueCode() {
+        progress.setInfo("Preparing...");
+        progress.setIndeterminate(true);
+
+        if(lastStartRule != null && startRule.equals(lastStartRule))
+            return;
+        lastStartRule = startRule;
+
+        generateGlueCode();
+
+        if(cancelled())
+            return;
+
+        compileGlueCode();
+    }
+
+    protected void generateGlueCode() {
+        try {
+            StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup");
+            StringTemplate glueCode = group.getInstanceOf(remoteParserTemplatePath+remoteParserTemplateName);
+            glueCode.setAttribute(ST_ATTR_CLASSNAME, remoteParserClassName);
+            glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(fileRemoteParserInputText));
+            glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(false));
+            glueCode.setAttribute(ST_ATTR_JAVA_LEXER, codeGenerator.getGeneratedClassName(true));
+            glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
+
+            XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
+        } catch(Exception e) {
+            e.printStackTrace();
+            XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating the glue-code: "+e);
+            cancel();
+        }
+    }
+
+    protected void compileGlueCode() {
+        compileFiles(new String[] { fileRemoteParser });
+    }
+
+    protected void generateInputText() {
+        try {
+            XJUtils.writeStringToFile(getInputText(), fileRemoteParserInputText);
+        } catch (IOException e) {
+            e.printStackTrace();
+            XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating the glue-code: "+e);
+            cancel();
+        }
+    }
+
     protected void compileFiles(String[] files) {
         int result = 0;
         try {
             String compiler = EditorPreferences.getCompiler();
-            String classPath = File.pathSeparatorChar+outputFileDir;
+            String classPath = outputFileDir;
             classPath += File.pathSeparatorChar+getApplicationPath();
-            classPath += System.getProperty("java.class.path");
+            classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
 
             if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JAVAC)) {
                 String[] args = new String[5+files.length];

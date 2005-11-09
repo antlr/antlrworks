@@ -188,8 +188,6 @@ public class DebuggerRecorder {
 
     public void goToEnd() {
         stepForward(DebuggerEvent.TERMINATE);
-//        setPositionToEnd();
-//        playEvents(false);
     }
 
     public boolean start(String address, int port) {
