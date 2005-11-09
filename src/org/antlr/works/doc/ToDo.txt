@@ -1,4 +1,9 @@
-- check splitter size on Windows/Linux
+- Windows: check debugging - doesn't work
+- error in parser should be detected in the debugger (see "HELO" with smtp.g)
+
+- Prefs: why is the window resized when applying the prefs
+- hashcode for action dependent on action # inside rule (see calc_1.g where two same action
+  cannot be distinguised)
 
 - see why output pane in debugger is always collapsed when window is created
 - don't have focus the first time AW is launched
@@ -14,7 +19,7 @@
 - display current token in syntax diagram
 - generate code without debugging information
 - shift-right, shift-left, comment/uncomment selection
-- afficher plusieurs regles en meme temps
+- display multiple rules together
 
 - DFA decision for lexer tokens (see with Terence)
 - handle "header with package" option (see with Terence for line numbering between files)
