@@ -43,12 +43,14 @@ import org.antlr.tool.GrammarReport;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.helper.EditorProvider;
 import org.antlr.works.util.ErrorListener;
+import org.antlr.works.util.Utils;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.List;
 
 public class CodeGenerate implements Runnable {
 
@@ -63,6 +65,7 @@ public class CodeGenerate implements Runnable {
     public CodeGenerate(EditorProvider provider) {
         this.provider = provider;
         this.outputPath = EditorPreferences.getOutputPath();
+
         errorListener = new ErrorListener();
         errorListener.setPrintToConsole(false);
         errorListener.setForwardListener(ErrorListener.shared());
@@ -112,56 +115,19 @@ public class CodeGenerate implements Runnable {
     public boolean generate(boolean debug) throws Exception {
         this.debug = debug;
         errorListener.clear();
-        generateParser();
-        generateLexer();
+
+        // @todo remove print later
+        String[] params;
+        if(debug)
+            params = new String[] { "-debug", "-o", getOutputPath(), provider.getFilePath() };
+        else
+            params = new String[] { "-o", getOutputPath(), provider.getFilePath() };
+
+        System.out.println("antlr.Tool = "+Utils.toString(params));
+        Tool antlr = new Tool(params);
+        antlr.process();
+
         return !errorListener.hasErrors();
-    }
-
-    protected void generateParser() throws Exception {
-        generateGrammar(getParserGrammar());
-    }
-
-    protected void generateLexer() throws Exception {
-        String lexerGrammarStr = getParserGrammar().getLexerGrammar();
-        if ( getParserGrammar().type==Grammar.COMBINED && lexerGrammarStr!=null ) {
-            FileWriter fw = getOutputFile(XJUtils.concatPath(getOutputPath(), getParserGrammar().name+".lexer.g"));
-            fw.write(lexerGrammarStr);
-            fw.close();
-            StringReader sr = new StringReader(lexerGrammarStr);
-            Grammar lexerGrammar = new Grammar();
-            lexerGrammar.setFileName("<internally-generated-lexer>");
-            lexerGrammar.importTokenVocabulary(getParserGrammar());
-            lexerGrammar.setGrammarContent(sr);
-            sr.close();
-            generateGrammar(lexerGrammar);
-        }
-    }
-
-    protected void generateGrammar(Grammar grammar) {
-        String language = (String)grammar.getOption("language");
-        if ( language!=null ) {
-            CodeGenerator generator = new CodeGenerator(new MyTool(getOutputPath()), grammar, language);
-            grammar.setCodeGenerator(generator);
-            generator.setDebug(debug);
-
-            if ( grammar.type == Grammar.LEXER ) {
-                grammar.addArtificialMatchTokensRule();
-            }
-
-            generator.genRecognizer();
-
-            GrammarReport report = new GrammarReport(grammar);
-            GrammarReport.writeReport(GrammarReport.GRAMMAR_STATS_FILENAME,
-                                      report.toNotifyString());
-        }
-    }
-
-    public FileWriter getOutputFile(String fileName) throws IOException {
-		File outDir = new File(fileName).getParentFile();
-		if( !outDir.exists() ) {
-			outDir.mkdirs();
-		}
-        return new FileWriter(fileName);
     }
 
     public String getGeneratedClassName(boolean lexer) {
@@ -229,12 +195,5 @@ public class CodeGenerate implements Runnable {
                 generateInThreadDidTerminate();
             }
         });
-    }
-
-    protected class MyTool extends Tool {
-        public MyTool(String outputPath) {
-            this.outputDirectory = outputPath;
-            this.debug = CodeGenerate.this.debug;
-        }
     }
 }

@@ -28,6 +28,7 @@ Version 1.0ea5 - 11/09/05
 - fixed a bug in the Find dialog where some pattern would cause an exception (didn't quote in the regex)
 - fixed a bug which would prevent drag and drop of rules to work on Windows
 - fixed a bug where not all messages would be displayed in the console (added group "idle")
+- fixed a bug where applying the preferences would apply the current look and feel (not needed)
 
 Version 1.0ea4 - 10/22/05
 

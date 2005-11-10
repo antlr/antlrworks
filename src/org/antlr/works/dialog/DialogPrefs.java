@@ -184,7 +184,7 @@ public class DialogPrefs extends XJPanel {
         getPreferences().bindToPreferences(lookaheadTokenColor, EditorPreferences.PREF_LOOKAHEAD_TOKEN_COLOR, EditorPreferences.DEFAULT_LOOKAHEAD_TOKEN_COLOR);
     }
 
-    public void dialogWillDisplay() {
+    public void becomingVisibleForTheFirstTime() {
         lafIndex = lafCombo.getSelectedIndex();
         actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());        
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_PREFERENCES);
@@ -211,7 +211,6 @@ public class DialogPrefs extends XJPanel {
         getPreferences().applyPreferences();
         if(lafIndex != lafCombo.getSelectedIndex()) {
             lafIndex = lafCombo.getSelectedIndex();
-            System.out.println("A");
             changeLookAndFeel();
         }
         applyCommonPrefs();

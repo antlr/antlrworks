@@ -4,7 +4,7 @@ import org.antlr.runtime.*;
 public class $class_name$ {
 
     public static void main(String args[]) throws Exception {
-		//System.out.println("Parser launched");
+		System.out.println("Parser launched");
 
         $java_parser_lexer$ lex = new $java_parser_lexer$(new ANTLRFileStream("$input_file$"));
         CommonTokenStream tokens = new CommonTokenStream(lex);
@@ -17,6 +17,6 @@ public class $class_name$ {
             e.printStackTrace();
         }
 
-		//System.out.println("Parser stopped");
+		System.out.println("Parser stopped");
     }
 }
