@@ -1,8 +1,6 @@
 
 Questions
 
-- in the non-wrap texteditpane, the scrollbar is not completely scrolled to the right when adding characters at the end of the line
 - how to update when pasting a large text which should not wrap ?
-- why the rules list is sometimes collapsed when window is created ?
 - problem of memory leak in GView paintComponent()
-- auto-scrolling works on Windows when dragging rules but not on Mac OS X (have to mouse the mouse to continue to scroll)
+- auto-scrolling works on Windows when dragging rules but not on Mac OS X (have to move the mouse to continue to scroll)

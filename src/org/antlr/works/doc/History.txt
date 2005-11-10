@@ -1,5 +1,5 @@
 
-Version 1.0ea5 - 11/08/05
+Version 1.0ea5 - 11/09/05
 
 - refactor: inline and extract rule
 

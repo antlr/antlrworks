@@ -38,6 +38,7 @@ import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.IconManager;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;
+import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.path.GPathGroup;
 import org.antlr.works.visualization.skin.nfa.NFASkin;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
@@ -100,6 +101,10 @@ public class GPanel implements XJNotificationObserver {
 
     public Container getContainer() {
         return container;
+    }
+
+    public GGraphAbstract getCurrentGraph() {
+        return view.getCurrentGraph();
     }
 
     public BufferedImage getImageOfView() {

@@ -35,6 +35,10 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.visualization.graphics.*;
+import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
+import org.antlr.works.visualization.skin.Skin;
+import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -74,4 +78,16 @@ public class ActionsExport extends AbstractActions {
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_EVENTS_TEXT);
     }
 
+    public void exportRuleAsEPS() {
+        GEnginePS engine = new GEnginePS();
+
+        GGraphAbstract graph = editor.visual.getCurrentGraph();
+        GContext context = graph.getContext();
+        GEngine oldEngine = context.engine;
+        context.setEngine(engine);
+        graph.draw();
+        context.setEngine(oldEngine);
+        
+        System.out.println(engine.getPSText());
+    }
 }

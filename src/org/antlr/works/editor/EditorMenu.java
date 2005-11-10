@@ -121,10 +121,11 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     // File Export
     public static final int MI_SAVE_AS_IMAGE = 110;
-    public static final int MI_SAVE_ANTLR_NFA_DOT = 111;
-    public static final int MI_SAVE_RAW_NFA_DOT = 112;
-    public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 113;
-    public static final int MI_EXPORT_EVENT = 114;
+    public static final int MI_SAVE_AS_EPS = 111;
+    public static final int MI_SAVE_ANTLR_NFA_DOT = 112;
+    public static final int MI_SAVE_RAW_NFA_DOT = 113;
+    public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 114;
+    public static final int MI_EXPORT_EVENT = 115;
 
     public static final int MI_PRIVATE_STATS = 200;
     public static final int MI_PRIVATE_UNREGISTER = 201;
@@ -163,6 +164,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         exportMenu = new XJMenu();
         exportMenu.setTitle("Export Rule");
         exportMenu.addItem(new XJMenuItem("As Image...", MI_SAVE_AS_IMAGE, this));
+        exportMenu.addItem(new XJMenuItem("As EPS...", MI_SAVE_AS_EPS, this));
         exportMenu.addSeparator();
         exportMenu.addItem(new XJMenuItem("ANTLR NFA as DOT...", MI_SAVE_ANTLR_NFA_DOT, this));
         exportMenu.addItem(new XJMenuItem("Raw NFA as DOT...", MI_SAVE_RAW_NFA_DOT, this));
@@ -707,6 +709,10 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         switch(itemTag) {
             case MI_SAVE_AS_IMAGE:
                 editor.visual.saveAsImage();
+                break;
+
+            case MI_SAVE_AS_EPS:
+                editor.actionsExport.exportRuleAsEPS();
                 break;
 
             case MI_SAVE_ANTLR_NFA_DOT:

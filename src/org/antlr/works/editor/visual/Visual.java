@@ -45,6 +45,8 @@ import org.antlr.works.visualization.grammar.GrammarEngine;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GEngineGraphics;
 import org.antlr.works.visualization.graphics.GRenderer;
+import org.antlr.works.visualization.graphics.GEnginePS;
+import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.panel.GPanel;
 import org.antlr.works.visualization.skin.Skin;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
@@ -67,7 +69,6 @@ public class Visual {
 
     protected ThreadedParser parser;
 
-    protected GRenderer renderer;
     protected GContext context;
     protected Skin skin;
 
@@ -79,8 +80,6 @@ public class Visual {
 
     public Visual(XJFrame parent) {
         this.parent = parent;
-
-        renderer = new GRenderer();
 
         skin = new SDSkin();
 
@@ -154,6 +153,10 @@ public class Visual {
 
     public Container getContainer() {
         return panel.getContainer();
+    }
+
+    public GGraphAbstract getCurrentGraph() {
+        return panel.getCurrentGraph();
     }
 
     public String chooseDOTFile() {

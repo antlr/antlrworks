@@ -41,6 +41,10 @@ public class GObject {
         this.context = context;
     }
 
+    public GContext getContext() {
+        return context;
+    }
+
     public boolean containsPoint(Point p) { return false; }
     public void draw() { }
 
