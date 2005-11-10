@@ -525,19 +525,22 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
 
     public void debuggerLaunch(String address, int port) {
         if(!debuggerLaunchGrammar()) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot launch the debugger.\nException while parsing grammar.");
+            XJAlert.display(editor.getWindowContainer(), "Error",
+                    "Cannot launch the debugger.\nException while parsing grammar.");
             return;
         }
 
-        if(!recorder.start(address, port)) {
-            XJAlert.display(editor.getWindowContainer(), "Connection Error", "Cannot launch the debugger.\nTime-out waiting to connect to the remote parser.");
-            return;
-        }
+        recorder.connect(address, port);
+    }
 
+    public void connectionSuccess() {
         XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STARTED);
 
         running = true;
         editor.selectDebuggerTab();
+
+        editor.console.openGroup("Debug");
+        editor.console.makeCurrent();
 
         editor.getTextPane().setEditable(false);
         editor.getTextPane().requestFocus(false);
@@ -545,11 +548,16 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
         player.resetPlayEvents(true);        
     }
 
+    public void connectionFailed() {
+        XJAlert.display(editor.getWindowContainer(), "Connection Error",
+                "Cannot launch the debugger.\nTime-out waiting to connect to the remote parser.");
+    }
+
+    public void connectionCancelled() {
+    }
+
     public boolean debuggerLaunchGrammar() {
         try {
-            editor.console.openGroup("Debug");
-            editor.console.makeCurrent();
-            
             ErrorManager.setErrorListener(ErrorListener.shared());
             grammar = new Grammar(editor.getFileName(), editor.getText());
         } catch (Exception e) {

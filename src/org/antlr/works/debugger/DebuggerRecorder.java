@@ -41,16 +41,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DebuggerRecorder {
+import edu.usfca.xj.appkit.utils.XJDialogProgress;
+import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
+
+public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
     public static final int STATUS_STOPPED = 0;
     public static final int STATUS_STOPPING = 1;
     public static final int STATUS_LAUNCHING = 2;
     public static final int STATUS_RUNNING = 3;
 
+    public static final int MAX_RETRY = 6;
+
     protected Debugger debugger;
     protected int status = STATUS_STOPPED;
     protected boolean debuggerStop = false;
+    protected boolean cancelled;
+
+    protected String address;
+    protected int port;
 
     protected ArrayList events;
     protected int position;
@@ -59,11 +68,25 @@ public class DebuggerRecorder {
     protected EventListener eventListener;
     protected RemoteDebugEventSocketListener listener;
 
+    protected XJDialogProgress progress;
+
     protected boolean debuggerReceivedTerminateEvent;
 
     public DebuggerRecorder(Debugger debugger) {
         this.debugger = debugger;
+        this.progress = new XJDialogProgress(debugger.editor);
         reset();
+    }
+
+    public void showProgress() {
+        progress.setInfo("Connecting...");
+        progress.setIndeterminate(true);
+        progress.setDelegate(this);
+        progress.display();
+    }
+
+    public void hideProgress() {
+        progress.close();
     }
 
     public synchronized void reset() {
@@ -89,7 +112,7 @@ public class DebuggerRecorder {
     public synchronized DebuggerEvent getLastEvent() {
         return (DebuggerEvent)events.get(events.size()-1);
     }
-    
+
     public synchronized List getCurrentEvents() {
         if(events.size() == 0)
             return (List)events.clone();
@@ -190,15 +213,24 @@ public class DebuggerRecorder {
         stepForward(DebuggerEvent.TERMINATE);
     }
 
-    public boolean start(String address, int port) {
+    public void connect(String address, int port) {
+        this.address = address;
+        this.port = port;
+
+        new Thread(this).start();
+    }
+
+    public void run() {
         eventListener = new EventListener();
+        cancelled = false;
 
         boolean connected = false;
-        int retryCount = 6;
-        while(retryCount-- > 0) {
+        int retryCount = MAX_RETRY;
+        while(retryCount-- > 0 && !cancelled) {
             listener = null;
             try {
-                listener = new RemoteDebugEventSocketListener(eventListener, address, port);
+                listener = new RemoteDebugEventSocketListener(eventListener,
+                        DebuggerRecorder.this.address, DebuggerRecorder.this.port);
             } catch (IOException e) {
                 listener = null;
             }
@@ -208,6 +240,9 @@ public class DebuggerRecorder {
                 break;
             }
 
+            if(retryCount == MAX_RETRY-1)
+                showProgress();
+
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -215,9 +250,14 @@ public class DebuggerRecorder {
             }
         }
 
-        if(!connected) {
+        hideProgress();
+
+        if(cancelled) {
             setStatus(STATUS_STOPPED);
-            return false;
+            connectionCancelled();
+        } else if(!connected) {
+            setStatus(STATUS_STOPPED);
+            connectionFailed();
         } else {
             debuggerStop = false;
             setStatus(STATUS_LAUNCHING);
@@ -227,8 +267,32 @@ public class DebuggerRecorder {
             reset();
             listener.start();
 
-            return true;
+            connectionSuccess();
         }
+    }
+
+    public void connectionSuccess() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                debugger.connectionSuccess();
+            }
+        });
+    }
+
+    public void connectionFailed() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                debugger.connectionFailed();
+            }
+        });
+    }
+
+    public void connectionCancelled() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                debugger.connectionCancelled();
+            }
+        });
     }
 
     public synchronized void stop() {
@@ -246,7 +310,7 @@ public class DebuggerRecorder {
         debugger.recorderDidStop();
     }
 
-    public void eventOccurred(DebuggerEvent event) {        
+    public void eventOccurred(DebuggerEvent event) {
         switch(getStatus()) {
             case STATUS_LAUNCHING:
                 setStatus(STATUS_RUNNING);
@@ -303,6 +367,10 @@ public class DebuggerRecorder {
 
     protected synchronized void playEvents(boolean reset) {
         debugger.playEvents(getCurrentEvents(), reset);
+    }
+
+    public void dialogDidCancel() {
+        cancelled = true;
     }
 
     protected class EventListener implements DebugEventListener {

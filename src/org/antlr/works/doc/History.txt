@@ -16,6 +16,7 @@ Version 1.0ea5 - 11/08/05
 - re-introduced actions folding (anchors can be disabled in the preferences)
 - expand or collapse all rules or actions
 - improved Go To Rule: ignore case and display typed text in red if no match found
+- improved debugger connection to remote parser (threaded)
 - build and debug/debug: the starting rule pop-up menu has been moved to the input text dialog
 - improved the build & debug feature to include the ANTLRWorks jar itself in the classpath
 

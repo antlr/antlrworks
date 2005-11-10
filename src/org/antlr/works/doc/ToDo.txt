@@ -1,8 +1,6 @@
 - check build & debug on Windows/Linux (remove then the System.out.println in DebuggerLocal)
-- error in parser should be detected in the debugger (see "HELO" with smtp.g)
 - prefs: why is the window resized when applying the prefs on Windows (check on Linux too)
-- debuggerlocal: improve error reporting in thread (instead of displaying XJAlert in thread)
-- debugger: improve connection to remote parser by doing that in thread
+- error in parser should be detected in the debugger (see "HELO" with smtp.g)
 
 - contextual menus on rules to group using selected rules (do not rely on text selection)
 - ideas: undefined rule: rename rule, delete token

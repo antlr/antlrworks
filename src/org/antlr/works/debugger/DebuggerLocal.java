@@ -84,6 +84,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     protected String inputText = "";
 
     protected XJDialogProgress progress;
+    protected ErrorReporter error = new ErrorReporter();
 
     public DebuggerLocal(Debugger debugger) {
         this.debugger = debugger;
@@ -153,11 +154,12 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     public void run() {
+        resetErrors();
+
         prepare();
 
-        if(buildAndDebug) {
+        if(buildAndDebug)
             generateAndCompileGrammar();
-        }
 
         if(!cancelled())
             askUserForInputText();
@@ -171,7 +173,9 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         if(!cancelled())
             launchRemoteParser();
 
-        if(cancelled())
+        if(hasErrors())
+            notifyErrors();
+        else if(cancelled())
             notifyCancellation();
         else
             notifyCompletion();
@@ -198,14 +202,40 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         }
     }
 
+    protected void reportError(String message) {
+        error.setTitle("Error");
+        error.setMessage(message);
+        error.enable();
+        cancel();
+    }
+
+    protected void resetErrors() {
+        error.reset();
+    }
+
+    protected boolean hasErrors() {
+        return error.hasErrors;
+    }
+
+    protected void notifyErrors() {
+        hideProgress();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                XJAlert.display(debugger.editor.getWindowContainer(), error.title, error.message);
+            }
+        });
+    }
+
     protected void notifyCancellation() {
         hideProgress();
     }
 
     protected void notifyCompletion() {
+        hideProgress();
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                hideProgress();
                 if(!cancelled())
                     debugger.debuggerLocalDidRun(buildAndDebug);
             }
@@ -240,18 +270,17 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     protected void generateGrammar() {
-        String error = null;
+        String errorMessage = null;
         try {
             if(!codeGenerator.generate(true))
-                error = codeGenerator.getLastError();
+                errorMessage = codeGenerator.getLastError();
         } catch (Exception e) {
             e.printStackTrace();
-            error = e.toString();
+            errorMessage = e.getLocalizedMessage();
         }
 
-        if(error != null) {
-            XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating code: "+error);
-            cancel();
+        if(errorMessage != null) {
+            reportError("Error while generating the grammar:\n"+errorMessage);
         }
     }
 
@@ -289,8 +318,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
         } catch(Exception e) {
             e.printStackTrace();
-            XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating the glue-code: "+e);
-            cancel();
+            reportError("Error while generating the glue-code:\n"+e.getLocalizedMessage());
         }
     }
 
@@ -303,8 +331,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             XJUtils.writeStringToFile(getInputText(), fileRemoteParserInputText);
         } catch (IOException e) {
             e.printStackTrace();
-            XJAlert.display(debugger.editor.getWindowContainer(), "Generate Error", "Cannot launch the local debugger.\nException while generating the glue-code: "+e);
-            cancel();
+            reportError("Error while generating the input text:\n"+e.getLocalizedMessage());
         }
     }
 
@@ -364,15 +391,13 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             }
 
         } catch(Error e) {
-            XJAlert.display(debugger.editor.getWindowContainer(), "Compiler Error", "An error occurred:\n"+e);
-            cancel();
+            reportError("Compiler error:\n"+e.getLocalizedMessage());
         } catch(Exception e) {
-            XJAlert.display(debugger.editor.getWindowContainer(), "Compiler Error", "An exception occurred:\n"+e);
-            cancel();
+            reportError("Compiler exception:\n"+e.getLocalizedMessage());
         }
+
         if(result != 0) {
-            XJAlert.display(debugger.editor.getWindowContainer(), "Compiler Error", "Cannot launch the local debugger.\nCompiler error: "+result);
-            cancel();
+            reportError("Compiler failed result:\n"+result);
         }
     }
 
@@ -388,7 +413,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             ServerSocket serverSocket = new ServerSocket(Debugger.DEFAULT_LOCAL_PORT);
             serverSocket.close();
         } catch (IOException e) {
-            XJAlert.display(debugger.editor.getWindowContainer(), "Launch Error", "Cannot launch the remote parser because port "+Debugger.DEFAULT_LOCAL_PORT+" is already in use.");
+            reportError("Cannot launch the remote parser because port "+Debugger.DEFAULT_LOCAL_PORT+" is already in use.");
             success = false;
         }
         return success;
@@ -414,7 +439,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             sw.setDelegate(debugger);
             sw.start();
         } catch (IOException e) {
-            XJAlert.display(debugger.editor.getWindowContainer(), "Runtime Error", "Cannot launch the local debugger.\nCannot launch the remote parser: "+e);
+            reportError("Cannot launch the remote parser:\n"+e.getLocalizedMessage());
             return false;
         }
 
@@ -447,6 +472,29 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             p = p.substring(0, p.length()-2);
 
         return p;
+    }
+
+    protected class ErrorReporter {
+
+        public String title;
+        public String message;
+        public boolean hasErrors;
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public void enable() {
+            hasErrors = true;
+        }
+
+        public void reset() {
+            hasErrors = false;
+        }
     }
 
     public interface StreamWatcherDelegate {
