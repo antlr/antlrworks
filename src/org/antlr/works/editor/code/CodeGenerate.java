@@ -36,10 +36,8 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
-import org.antlr.codegen.CodeGenerator;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
-import org.antlr.tool.GrammarReport;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.helper.EditorProvider;
 import org.antlr.works.util.ErrorListener;
@@ -47,10 +45,7 @@ import org.antlr.works.util.Utils;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.List;
 
 public class CodeGenerate implements Runnable {
 

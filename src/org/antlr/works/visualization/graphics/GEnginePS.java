@@ -1,5 +1,7 @@
 package org.antlr.works.visualization.graphics;
 
+import org.jibble.epsgraphics.EpsGraphics2D;
+
 import java.awt.*;
 /*
 
@@ -34,92 +36,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class GEnginePS extends GEngineGraphics {
 
-    protected StringBuffer ps;
+    protected EpsGraphics2D g2d;
 
     public GEnginePS() {
-        ps = new StringBuffer();
+        g2d = new EpsGraphics2D();
+    }
+
+    public Graphics2D getG2D() {
+        return g2d;
     }
 
     public String getPSText() {
-        return ps.toString();
-    }
-
-    public void setColor(Color color) {
-    }
-
-    public void setLineWidth(float width) {
-        ps.append((int)width);
-        ps.append(" setlinewidth");
-        ps.append("\n");
-    }
-
-    public void drawLine(float x0, float y0, float x1, float y1) {
-        ps.append((int)x0);
-        ps.append(" ");
-        ps.append((int)y0);
-        ps.append(" moveto ");
-        ps.append((int)x1);
-        ps.append(" ");
-        ps.append((int)y1);
-        ps.append(" lineto");
-        ps.append("\n");
-    }
-
-    public void drawArc(float x, float y, float w, float h, int a0, int a1) {
-    }
-
-    public void drawCircle(float x, float y, float r) {
-    }
-
-    public void drawRect(float x, float y, float dx, float dy) {
-        ps.append((int)x);
-        ps.append(" ");
-        ps.append((int)y);
-        ps.append(" ");
-        ps.append((int)dx);
-        ps.append(" ");
-        ps.append((int)dy);
-        ps.append(" rectstroke");
-        ps.append("\n");
-    }
-
-    public void drawOval(float x, float y, float dx, float dy) {
-    }
-
-    public void fillRect(float x, float y, float dx, float dy) {
-        ps.append((int)x);
-        ps.append(" ");
-        ps.append((int)y);
-        ps.append(" ");
-        ps.append((int)dx);
-        ps.append(" ");
-        ps.append((int)dy);
-        ps.append(" rectfill");
-        ps.append("\n");
-    }
-
-    public void fillOval(float x, float y, float dx, float dy) {
-    }
-
-    public void fillCircle(float x, float y, float r) {
-    }
-
-    public void drawRightArrow(float ox, float oy, float w, float h) {
-    }
-
-    public void drawUpArrow(float ox, float oy, float w, float h) {
-    }
-
-    public void drawDownArrow(float ox, float oy, float w, float h) {
-    }
-
-    public void drawString(Font font, String s, float x, float y, int align) {
-    }
-
-    public void drawSpline(float x0, float y0, float x1, float y1, float startOffset, float endOffset, float flateness, boolean arrow) {
-    }
-
-    public void drawArcConnector(float x0, float y0, float x1, float y1, float start_offset, float end_offset, float ctrl_offset, float arc_offset, boolean arrow) {
+        return g2d.toString();
     }
 
 }

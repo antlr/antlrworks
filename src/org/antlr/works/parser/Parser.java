@@ -220,7 +220,7 @@ public class Parser extends AbstractParser {
                 case Lexer.TOKEN_SEMI:
                     rule.end = T(0);
                     if(references.size() > refOldSize)
-                        rule.setReferencesIndexes(refOldSize-1, references.size()-1);
+                        rule.setReferencesIndexes(refOldSize, references.size()-1);
                     rule.completed();
                     return rule;
 

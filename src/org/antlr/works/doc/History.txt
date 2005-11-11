@@ -1,7 +1,8 @@
 
-Version 1.0ea5 - 11/09/05
+Version 1.0ea5 - 11/10/05
 
 - refactor: inline and extract rule
+- export syntax diagram (or NFA representation) of any rule to eps
 
 - added output text pane in debugger (all System.out from the parser are redirected to this pane)
 - added break on exception in debugger

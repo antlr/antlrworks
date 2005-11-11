@@ -33,12 +33,13 @@ package org.antlr.works.editor.actions;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
+import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.visualization.graphics.*;
+import org.antlr.works.visualization.graphics.GContext;
+import org.antlr.works.visualization.graphics.GEngine;
+import org.antlr.works.visualization.graphics.GEnginePS;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
-import org.antlr.works.visualization.skin.Skin;
-import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class ActionsExport extends AbstractActions {
     }
 
     public void exportEventsAsTextFile() {
-        if(!XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "TXT", "Text file", false))
+        if(!XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "txt", "Text file", false))
             return;
 
         String file = XJFileChooser.shared().getSelectedFilePath();
@@ -79,15 +80,31 @@ public class ActionsExport extends AbstractActions {
     }
 
     public void exportRuleAsEPS() {
-        GEnginePS engine = new GEnginePS();
+        if(editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition()) == null) {
+            XJAlert.display(editor.getWindowContainer(), "Export Rule to EPS", "There is no rule at cursor position.");
+            return;
+        }
 
-        GGraphAbstract graph = editor.visual.getCurrentGraph();
-        GContext context = graph.getContext();
-        GEngine oldEngine = context.engine;
-        context.setEngine(engine);
-        graph.draw();
-        context.setEngine(oldEngine);
-        
-        System.out.println(engine.getPSText());
+        if(!XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "eps", "EPS file", false))
+            return;
+
+        String file = XJFileChooser.shared().getSelectedFilePath();
+        if(file == null)
+            return;
+
+        try {
+            GEnginePS engine = new GEnginePS();
+
+            GGraphAbstract graph = editor.visual.getCurrentGraph();
+            GContext context = graph.getContext();
+            GEngine oldEngine = context.engine;
+            context.setEngine(engine);
+            graph.draw();
+            context.setEngine(oldEngine);
+
+            XJUtils.writeStringToFile(engine.getPSText(), file);
+        } catch (Exception e) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
+        }
     }
 }

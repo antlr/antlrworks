@@ -1,3 +1,6 @@
+- cannot inline ID in smtp grammar!
+- include path to javac in preferences (use default javac or this path)
+- include new EpsEngine in the depot
 
 - contextual menus on rules to group using selected rules (do not rely on text selection)
 - ideas: undefined rule: rename rule, delete token

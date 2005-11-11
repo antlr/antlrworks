@@ -44,8 +44,6 @@ import org.antlr.works.visualization.fa.FAState;
 import org.antlr.works.visualization.grammar.GrammarEngine;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GEngineGraphics;
-import org.antlr.works.visualization.graphics.GRenderer;
-import org.antlr.works.visualization.graphics.GEnginePS;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.panel.GPanel;
 import org.antlr.works.visualization.skin.Skin;

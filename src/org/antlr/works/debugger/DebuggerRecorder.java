@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger;
 
+import edu.usfca.xj.appkit.utils.XJDialogProgress;
+import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.DebugEventListener;
@@ -40,9 +42,6 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
 
 public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
