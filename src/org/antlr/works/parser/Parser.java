@@ -121,6 +121,7 @@ public class Parser extends AbstractParser {
         if(start.getAttribute().equals("grammar")) {
             Token type = T(-1);
             if(type != null && type.type == Lexer.TOKEN_ID) {
+                type.type = Lexer.TOKEN_COMPLEX_COMMENT;
                 String typeString = type.getAttribute();
                 if(!typeString.equals("lexer")
                         && !typeString.equals("parser")
@@ -179,7 +180,7 @@ public class Parser extends AbstractParser {
         }
 
         // Match the name
-        T(0).isRule = true;
+        Token tokenName = T(0);
         String name = T(0).getAttribute();
         if(!nextToken())
             return null;
@@ -219,6 +220,7 @@ public class Parser extends AbstractParser {
             switch(T(0).type) {
                 case Lexer.TOKEN_SEMI:
                     rule.end = T(0);
+                    tokenName.isRule = true;                    
                     if(references.size() > refOldSize)
                         rule.setReferencesIndexes(refOldSize, references.size()-1);
                     rule.completed();

@@ -84,9 +84,13 @@ public class EditorPreferences {
     public static final String PREF_SCM_P4_EXEC = "PREF_SCM_P4_EXEC";
 
     // Compiler
+    public static final String PREF_JAVAC_CUSTOM_PATH = "PREF_JAVAC_CUSTOM_PATH";
+    public static final String PREF_JAVAC_PATH = "PREF_JAVAC_PATH";
     public static final String PREF_JIKES_PATH = "PREF_JIKES_PATH";
     public static final String PREF_COMPILER = "PREF_COMPILER";
 
+    public static final boolean DEFAULT_JAVAC_CUSTOM_PATH = false;
+    public static final String DEFAULT_JAVAC_PATH = "";
     public static final String DEFAULT_JIKES_PATH = "";
     public static final String DEFAULT_COMPILER = "javac";
 
@@ -272,6 +276,18 @@ public class EditorPreferences {
 
     public static String getP4ExecPath() {
         return getPreferences().getString(PREF_SCM_P4_EXEC, "");
+    }
+
+    public static boolean getJavaCCustomPath() {
+        return getPreferences().getBoolean(PREF_JAVAC_CUSTOM_PATH, DEFAULT_JAVAC_CUSTOM_PATH);
+    }
+
+    public static void setJavaCPath(String path) {
+        getPreferences().setString(PREF_JAVAC_PATH, path);
+    }
+
+    public static String getJavaCPath() {
+        return getPreferences().getString(PREF_JAVAC_PATH, DEFAULT_JAVAC_PATH);
     }
 
     public static void setJikesPath(String path) {

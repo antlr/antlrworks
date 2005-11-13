@@ -44,8 +44,8 @@ public class Token implements Comparable {
     protected int start;
     protected int end;
 
+    public boolean lexer;
     protected String attribute;
-    protected boolean isAllUpperCase;
 
     public int index;   // index inside the tokens list
     public boolean isReference; // true if this token is a reference token
@@ -69,7 +69,7 @@ public class Token implements Comparable {
         this.text = text;
 
         this.attribute = text.substring(start, end);
-        this.isAllUpperCase =  attribute.equals(attribute.toUpperCase());
+        this.lexer = isLexerName(attribute);
     }
 
     public String getAttribute() {
@@ -93,10 +93,6 @@ public class Token implements Comparable {
         end += value;
     }
 
-    public boolean isLexer() {
-        return isAllUpperCase;
-    }
-
     public boolean containsIndex(int index) {
         return index >= getStartIndex() && index <= getEndIndex();
     }
@@ -115,4 +111,10 @@ public class Token implements Comparable {
         return "{ "+getAttribute()+" = "+type+" ("+start+", "+end+") }";
     }
 
+    public static boolean isLexerName(String name) {
+        if(name == null || name.length() < 1)
+            return false;
+        else
+            return name.charAt(0) == name.toUpperCase().charAt(0);
+    }
 }

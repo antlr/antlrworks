@@ -259,7 +259,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         List rules = parser.getRules();
         for(int index = rules.size()-1; index>0; index--) {
             ParserRule rule = (ParserRule)rules.get(index);
-            if(!rule.isLexerRule())
+            if(!rule.lexer)
                 return rule;
         }
         return null;
@@ -269,7 +269,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         List rules = parser.getRules();
         for(int index = rules.size()-1; index>0; index--) {
             ParserRule rule = (ParserRule)rules.get(index);
-            if(rule.isLexerRule())
+            if(rule.lexer)
                 return rule;
         }
         return null;
@@ -688,7 +688,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
             RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
             if(n.rule != null) {
-                if(n.rule.isLexerRule())
+                if(n.rule.lexer)
                     setIcon(IconManager.shared().getIconLexer());
                 else
                     setIcon(IconManager.shared().getIconParser());                

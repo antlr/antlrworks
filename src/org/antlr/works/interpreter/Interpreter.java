@@ -45,6 +45,7 @@ import org.antlr.works.editor.swing.TextUtils;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.ErrorListener;
 import org.antlr.works.util.IconManager;
@@ -239,6 +240,7 @@ public class Interpreter implements Runnable {
 
     protected void run_() {
         CharStream input = new ANTLRStringStream(textPane.getText());
+
         org.antlr.tool.Interpreter lexEngine = new org.antlr.tool.Interpreter(lexer, input);
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
         tokens.setTokenTypeChannel(lexer.getTokenType("WS"), 99);
@@ -246,9 +248,14 @@ public class Interpreter implements Runnable {
         tokens.setTokenTypeChannel(lexer.getTokenType("ML_COMMENT"), 99);
 
         org.antlr.tool.Interpreter parseEngine = new org.antlr.tool.Interpreter(parser, tokens);
+
         ParseTree t = null;
         try {
-            t = parseEngine.parse(startSymbol);
+            if(Token.isLexerName(startSymbol)) {
+                t = lexEngine.parse(startSymbol);
+            } else {                
+                t = parseEngine.parse(startSymbol);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             XJAlert.display(editor.getWindowContainer(), "Error while interpreting", "The interpreter has generated the following exception:\n"+e);

@@ -169,8 +169,8 @@ public class Visual {
         if(dotFile == null)
             return;
 
-        DOTGenerator dotgen = new DOTGenerator(engine.g);
-        String dot = dotgen.getDOT(engine.g.getRuleStartState(rule.name));
+        DOTGenerator dotgen = new DOTGenerator(engine.getGrammarForRule(rule.name));
+        String dot = dotgen.getDOT(engine.getRuleStartState(rule.name));
         try {
             FileWriter writer = new FileWriter(dotFile);
             writer.write(dot);
@@ -187,7 +187,7 @@ public class Visual {
         if(dotFile == null)
             return;
 
-        FAState state = new FAFactory(engine.g).buildNFA(engine.g.getRuleStartState(rule.name), true);
+        FAState state = new FAFactory(engine.getGrammarForRule(rule.name)).buildNFA(engine.getRuleStartState(rule.name), true);
         if(state == null)
             return;
 
@@ -206,7 +206,7 @@ public class Visual {
         if(dotFile == null)
             return;
 
-        FAState state = new FAFactory(engine.g).buildNFA(engine.g.getRuleStartState(rule.name), false);
+        FAState state = new FAFactory(engine.getGrammarForRule(rule.name)).buildNFA(engine.getRuleStartState(rule.name), false);
         if(state == null)
             return;
 

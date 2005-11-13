@@ -1,6 +1,6 @@
 package org.antlr.works.visualization.graphics;
 
-import org.jibble.epsgraphics.EpsGraphics2D;
+import edu.usfca.xj.appkit.swing.XJGraphics2DPS;
 
 import java.awt.*;
 /*
@@ -36,10 +36,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class GEnginePS extends GEngineGraphics {
 
-    protected EpsGraphics2D g2d;
+    protected XJGraphics2DPS g2d;
 
     public GEnginePS() {
-        g2d = new EpsGraphics2D();
+        g2d = new XJGraphics2DPS();
     }
 
     public Graphics2D getG2D() {
@@ -47,7 +47,7 @@ public class GEnginePS extends GEngineGraphics {
     }
 
     public String getPSText() {
-        return g2d.toString();
+        return g2d.getPSText();
     }
 
 }

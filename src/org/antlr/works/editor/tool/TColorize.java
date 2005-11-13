@@ -223,7 +223,7 @@ public class TColorize extends EditorThread {
                         break;
                     case Lexer.TOKEN_ID:
                         if(token.isReference || token.isRule) {
-                            if(token.isLexer())
+                            if(token.lexer)
                                 attr = lexerRefAttr;
                             else
                                 attr = parserRefAttr;

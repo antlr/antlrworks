@@ -49,7 +49,7 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
     public boolean expanded = true;
     public boolean breakpoint;
 
-    public boolean isAllUpperCase = false;
+    public boolean lexer = false;
     public boolean hasLeftRecursion = false;
 
     public List errors;
@@ -64,7 +64,7 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
         this.start = start;
         this.colon = colon;
         this.end = end;
-        this.isAllUpperCase = name.equals(name.toUpperCase());
+        this.lexer = Token.isLexerName(name);
     }
 
     public void completed() {
@@ -178,10 +178,6 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
 
     public boolean isExpanded() {
         return expanded;
-    }
-
-    public boolean isLexerRule() {
-        return isAllUpperCase;
     }
 
     public boolean hasLeftRecursion() {

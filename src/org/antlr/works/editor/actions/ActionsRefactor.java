@@ -163,7 +163,7 @@ public class ActionsRefactor extends AbstractActions {
                             JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(ruleName != null && ruleName.length() > 0) {
             editor.beginGroupChange("Extract Rule");
-            boolean lexer = ruleName.equals(ruleName.toUpperCase());
+            boolean lexer = Token.isLexerName(ruleName);
             int index = insertionIndexForRule(lexer);
             String ruleContent = editor.getText().substring(leftIndex, rightIndex);
             if(index > editor.getCaretPosition()) {
@@ -258,7 +258,7 @@ public class ActionsRefactor extends AbstractActions {
 
         ParserRule rule = editor.rules.getEnclosingRuleAtPosition(getCaretPosition());
         if(rule != null) {
-            if(rule.isLexerRule()) {
+            if(rule.lexer) {
                 if(lexer) {
                     // Add new rule just after this one
                     insertionIndex = rule.getEndIndex();

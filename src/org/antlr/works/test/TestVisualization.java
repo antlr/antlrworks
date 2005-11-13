@@ -122,7 +122,7 @@ public class TestVisualization {
     }
 
     public static void displayMultipleRules() {
-        createWindow(gfactory.buildGraphsForErrors(engine), false);
+       // createWindow(gfactory.buildGraphsForErrors(engine), false);
     }
 
     public static void createWindow(List graphs, boolean normal) {
@@ -140,7 +140,7 @@ public class TestVisualization {
     }
 
     public static void generateDOT() throws Exception {
-        DOTGenerator dotgen = new DOTGenerator(engine.g);
+      /*  DOTGenerator dotgen = new DOTGenerator(engine.g);
         String dot = dotgen.getDOT(engine.g.getRuleStartState("a"));
         //dotgen.writeDOTFile("/nfa", dot);
 
@@ -153,7 +153,7 @@ public class TestVisualization {
         if(state != null) {
             DotGenerator jdot = new DotGenerator(state);
             jdot.writeToFile("/simplified");
-        }
+        }*/
     }
 
     public static void displayGraphicNodes(GGraph graph, GContext context) {

@@ -1,23 +1,32 @@
-- cannot inline ID in smtp grammar!
-- include path to javac in preferences (use default javac or this path)
-- include new EpsEngine in the depot
+- check javac path on Windows
+- test eps generation
+- Terence: cannot use word "combined" for the grammar ? Cannot display SD
+
+- DFA decision in vectorial format
+- DFA decision for lexer tokens (see with Terence)
+- breakpoint on input text
+- tokenVocab
+- catch Error when ANTLR is initialize and test with corrupted installation
+- jump into source when navigating grammar text (in generated code)
+- re-check the console
+- parse tree when interpreting lexer grammar ?
+
+- prefs: customizable list of "Insert Rule From Template" - or read from a file ?
+- Windows/Linux: don't quit if last document closed ?
 
 - contextual menus on rules to group using selected rules (do not rely on text selection)
 - ideas: undefined rule: rename rule, delete token
 - P4: if file read-only and under P4, propose to open for edit
 - check environment (see e-mail from Jim Idle)
 
-- breakpoint on input text
 - display current token in syntax diagram
 - generate code without debugging information
 - shift-right, shift-left, comment/uncomment selection
 - display multiple rules together
 
-- DFA decision for lexer tokens (see with Terence)
 - handle "header with package" option (see with Terence for line numbering between files)
 - display all literals in list
 - use Grammar randomText to generate random valid input text
-
 - lexical ambiguities (ask Terence)
 
 - traduire en francais en_US.stg dans /tool/templates/messages
@@ -32,6 +41,8 @@
 - check update.xml file
 
 - upload antlrworks.pdf
+
+JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\javac
 
 * Issues *
 
@@ -56,7 +67,3 @@
 - jump to a definition by double-click in the syntax diagram
 
 - problem when more than one same LT between mark/rewind
-
-* Short-cuts *
-
-- control-t : invoke template completion

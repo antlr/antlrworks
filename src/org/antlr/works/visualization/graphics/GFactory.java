@@ -61,30 +61,30 @@ public class GFactory {
         if(errors == null || errors.size() == 0)
             return buildGraphsForRule(engine, rule);
         else
-            return buildGraphsForErrors(engine, errors);
+            return buildGraphsForErrors(engine, rule, errors);
     }
 
     public List buildGraphsForRule(GrammarEngine engine, String rule) {
-        NFAState startState = engine.g.getRuleStartState(rule);
+        NFAState startState = engine.getRuleStartState(rule);
         if(startState == null)
             return null;
 
-        FAState state = new FAFactory(engine.g).buildNFA(startState, optimize);
+        FAState state = new FAFactory(engine.getGrammarForRule(rule)).buildNFA(startState, optimize);
         GGraph graph = renderer.render(state);
         graph.setName(rule);
         return Collections.singletonList(graph);
     }
 
-    public List buildGraphsForErrors(GrammarEngine engine) {
-        return buildGraphsForErrors(engine, engine.errors);
+    public List buildGraphsForErrors(GrammarEngine engine, String rule) {
+        return buildGraphsForErrors(engine, rule, engine.errors);
     }
 
-    public List buildGraphsForErrors(GrammarEngine engine, List errors) {
+    public List buildGraphsForErrors(GrammarEngine engine, String rule, List errors) {
         List graphs = new ArrayList();
 
         Iterator iterator = errors.iterator();
         while(iterator.hasNext()) {
-            graphs.add(buildGraphGroup(engine.g, (GrammarEngineError)iterator.next()));
+            graphs.add(buildGraphGroup(engine.getGrammarForRule(rule), (GrammarEngineError)iterator.next()));
         }
 
         return graphs;

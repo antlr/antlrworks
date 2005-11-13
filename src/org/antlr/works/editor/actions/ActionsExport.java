@@ -104,6 +104,7 @@ public class ActionsExport extends AbstractActions {
 
             XJUtils.writeStringToFile(engine.getPSText(), file);
         } catch (Exception e) {
+            e.printStackTrace();
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
         }
     }

@@ -64,7 +64,7 @@ import java.util.Stack;
 public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
-    public static final int DEFAULT_LOCAL_PORT = 2005;
+    public static final int DEFAULT_LOCAL_PORT = 0xC001;
 
     public static final String NOTIF_DEBUG_STARTED = "NOTIF_DEBUG_STARTED";
     public static final String NOTIF_DEBUG_STOPPED = "NOTIF_DEBUG_STOPPED";

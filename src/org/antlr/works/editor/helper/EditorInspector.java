@@ -211,7 +211,7 @@ public class EditorInspector {
         public void ideaActionFire(IdeaAction action, int actionID) {
             switch(actionID) {
                 case IDEA_CREATE_RULE:
-                    editor.actionsRefactor.createRuleAtIndex(action.token.isLexer(), action.token.getAttribute(), null);
+                    editor.actionsRefactor.createRuleAtIndex(action.token.lexer, action.token.getAttribute(), null);
                     break;
             }
         }

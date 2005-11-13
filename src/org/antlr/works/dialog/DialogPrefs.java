@@ -85,6 +85,22 @@ public class DialogPrefs extends XJPanel {
             }
         });
 
+        javacCustomPathButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                javacPathField.setEnabled(javacCustomPathButton.isSelected());
+                browseJavacPath.setEnabled(javacCustomPathButton.isSelected());
+            }
+        });
+
+        browseJavacPath.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
+                    javacPathField.setText(XJFileChooser.shared().getSelectedFilePath());
+                    EditorPreferences.setJavaCPath(javacPathField.getText());
+                }
+            }
+        });
+
         browseJikesPath.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
@@ -166,6 +182,8 @@ public class DialogPrefs extends XJPanel {
         getPreferences().bindToPreferences(p4ExecPathField, EditorPreferences.PREF_SCM_P4_EXEC, "");
 
         // Compiler
+        getPreferences().bindToPreferences(javacCustomPathButton, EditorPreferences.PREF_JAVAC_CUSTOM_PATH, EditorPreferences.DEFAULT_JAVAC_CUSTOM_PATH);
+        getPreferences().bindToPreferences(javacPathField, EditorPreferences.PREF_JAVAC_PATH, EditorPreferences.DEFAULT_JAVAC_PATH);
         getPreferences().bindToPreferences(jikesPathField, EditorPreferences.PREF_JIKES_PATH, EditorPreferences.DEFAULT_JIKES_PATH);
         getPreferences().bindToPreferences(compilerRadioButtonGroup, EditorPreferences.PREF_COMPILER, EditorPreferences.DEFAULT_COMPILER);
 
@@ -186,7 +204,9 @@ public class DialogPrefs extends XJPanel {
 
     public void becomingVisibleForTheFirstTime() {
         lafIndex = lafCombo.getSelectedIndex();
-        actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());        
+        javacPathField.setEnabled(javacCustomPathButton.isSelected());
+        browseJavacPath.setEnabled(javacCustomPathButton.isSelected());
+        actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_PREFERENCES);
     }
 
@@ -312,6 +332,9 @@ public class DialogPrefs extends XJPanel {
         jikesRadio = new JRadioButton();
         integratedRadio = new JRadioButton();
         javacRadio = new JRadioButton();
+        javacCustomPathButton = new JCheckBox();
+        javacPathField = new JTextField();
+        browseJavacPath = new JButton();
         label4 = new JLabel();
         jikesPathField = new JTextField();
         browseJikesPath = new JButton();
@@ -595,6 +618,7 @@ public class DialogPrefs extends XJPanel {
                             new ColumnSpec[] {
                                 new ColumnSpec(Sizes.dluX(10)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(Sizes.dluX(20)),
                                 FormFactory.DEFAULT_COLSPEC,
                                 new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
                                 FormFactory.DEFAULT_COLSPEC,
@@ -609,31 +633,43 @@ public class DialogPrefs extends XJPanel {
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC
                             }));
 
                         //---- jikesRadio ----
                         jikesRadio.setText("jikes");
-                        tabCompiler.add(jikesRadio, cc.xy(3, 5));
+                        tabCompiler.add(jikesRadio, cc.xywh(3, 7, 2, 1));
 
                         //---- integratedRadio ----
                         integratedRadio.setActionCommand("integrated");
                         integratedRadio.setText("com.sun.tools.javac");
-                        tabCompiler.add(integratedRadio, cc.xywh(3, 9, 2, 1));
+                        tabCompiler.add(integratedRadio, cc.xywh(3, 11, 3, 1));
 
                         //---- javacRadio ----
                         javacRadio.setSelected(true);
                         javacRadio.setText("javac");
-                        tabCompiler.add(javacRadio, cc.xy(3, 3));
+                        tabCompiler.add(javacRadio, cc.xywh(3, 3, 2, 1));
+
+                        //---- javacCustomPathButton ----
+                        javacCustomPathButton.setText("Path:");
+                        javacCustomPathButton.setToolTipText("Check to specify a custom path if the default system path doesn't include javac");
+                        tabCompiler.add(javacCustomPathButton, cc.xy(4, 5));
+                        tabCompiler.add(javacPathField, cc.xy(5, 5));
+
+                        //---- browseJavacPath ----
+                        browseJavacPath.setText("Browse...");
+                        tabCompiler.add(browseJavacPath, cc.xy(6, 5));
 
                         //---- label4 ----
                         label4.setText("Path:");
-                        tabCompiler.add(label4, cc.xywh(3, 7, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-                        tabCompiler.add(jikesPathField, cc.xy(4, 7));
+                        tabCompiler.add(label4, cc.xywh(4, 9, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+                        tabCompiler.add(jikesPathField, cc.xy(5, 9));
 
                         //---- browseJikesPath ----
                         browseJikesPath.setText("Browse...");
-                        tabCompiler.add(browseJikesPath, cc.xy(5, 7));
+                        tabCompiler.add(browseJikesPath, cc.xy(6, 9));
                     }
                     tabbedPane1.addTab("Compiler", tabCompiler);
 
@@ -938,6 +974,9 @@ public class DialogPrefs extends XJPanel {
     private JRadioButton jikesRadio;
     private JRadioButton integratedRadio;
     private JRadioButton javacRadio;
+    private JCheckBox javacCustomPathButton;
+    private JTextField javacPathField;
+    private JButton browseJavacPath;
     private JLabel label4;
     private JTextField jikesPathField;
     private JButton browseJikesPath;
@@ -979,6 +1018,7 @@ public class DialogPrefs extends XJPanel {
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
 
 
 }

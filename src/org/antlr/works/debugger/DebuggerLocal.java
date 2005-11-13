@@ -345,9 +345,10 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
             if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JAVAC)) {
                 String[] args = new String[5+files.length];
-                args[0] = "javac";
-                // @todo put that in preferences for Windows
-//                args[0] = "C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\javac";
+                if(EditorPreferences.getJavaCCustomPath())
+                    args[0] = EditorPreferences.getJavaCPath();
+                else
+                    args[0] = "javac";
                 args[1] = "-classpath";
                 args[2] = classPath;
                 args[3] = "-d";

@@ -1,9 +1,11 @@
 
-Version 1.0ea5 - 11/10/05
+Version 1.0ea5 - 11/13/05
 
-- refactor: inline and extract rule
-- export syntax diagram (or NFA representation) of any rule to eps
+- new: display syntax diagram and NFA for lexer rules
+- new: export syntax diagram and NFA to eps file
+- new: inline and extract rule refactoring
 
+- added optional path to javac in the preferences
 - added output text pane in debugger (all System.out from the parser are redirected to this pane)
 - added break on exception in debugger
 - added regex expression in the Find dialog
@@ -24,6 +26,7 @@ Version 1.0ea5 - 11/10/05
 - hide and disable ideas during debugging
 - display a message if the syntax diagram cannot be displayed
 - display warning message if ANTLR 2.x grammars detected
+- changed debugger port from 2005 to 0xC001 (49153)
 
 - fixed a bug where the undo/redo menu item title would not display the correct action name
 - fixed a bug in the Find dialog where some pattern would cause an exception (didn't quote in the regex)

@@ -40,24 +40,48 @@ import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarNonDeterminismMessage;
 import org.antlr.works.util.CancelObject;
 import org.antlr.works.util.ErrorListener;
+import org.antlr.works.parser.Token;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.io.StringReader;
 
 public class GrammarEngine {
 
-    public Grammar g;
-    public List errors = new ArrayList();
+    public List errors;
+
+    protected Grammar grammar;
+    protected Grammar lexerGrammar;
 
     public GrammarEngine() {
+        errors = new ArrayList();
     }
 
     public void setGrammarText(String text, String filename) throws Exception {
         ErrorManager.setErrorListener(ErrorListener.shared());
-        g = new Grammar(filename, text);
-        g.createNFAs();
+        grammar = new Grammar(filename, text);
+        grammar.createNFAs();
+        createLexerGrammar();
+    }
+
+    public NFAState getRuleStartState(String name) {
+        if(Token.isLexerName(name))
+            return lexerGrammar != null ? lexerGrammar.getRuleStartState(name):null;
+        else
+            return grammar.getRuleStartState(name);
+    }
+
+    public Grammar getGrammarForRule(String name) {
+        if(Token.isLexerName(name))
+            return lexerGrammar;
+        else
+            return grammar;
+    }
+
+    public boolean hasGrammar() {
+        return grammar != null;
     }
 
     public void analyze(CancelObject cancelObject) throws Exception {
@@ -81,19 +105,34 @@ public class GrammarEngine {
         }
     }
 
-    private void createLookaheadDFAs(CancelObject cancelObject) {
-        for (int decision=1; decision<=g.getNumberOfDecisions(); decision++) {
-            NFAState decisionStartState = g.getDecisionNFAStartState(decision);
+    protected void createLexerGrammar() {
+        String lexerGrammarStr = grammar.getLexerGrammar();
+        StringReader sr = new StringReader(lexerGrammarStr);
+        lexerGrammar = new Grammar();
+        lexerGrammar.setFileName("<internally-generated-lexer>");
+        lexerGrammar.importTokenVocabulary(grammar);
+        try {
+            lexerGrammar.setGrammarContent(sr);
+            lexerGrammar.createNFAs();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sr.close();
+    }
+
+    protected void createLookaheadDFAs(CancelObject cancelObject) {
+        for (int decision=1; decision<=grammar.getNumberOfDecisions(); decision++) {
+            NFAState decisionStartState = grammar.getDecisionNFAStartState(decision);
             if ( decisionStartState.getNumberOfTransitions()>1 ) {
                 DFA lookaheadDFA = new DFA(decision, decisionStartState);
-                g.setLookaheadDFA(decision, lookaheadDFA);
+                grammar.setLookaheadDFA(decision, lookaheadDFA);
             }
             if(cancelObject != null && cancelObject.cancel())
                 break;
         }
     }
 
-    private void buildNonDeterministicErrors() {
+    protected void buildNonDeterministicErrors() {
         errors.clear();
         for (Iterator iterator = ErrorListener.shared().warnings.iterator(); iterator.hasNext();) {
             Object o = iterator.next();
@@ -102,7 +141,7 @@ public class GrammarEngine {
         }
     }
 
-    private GrammarEngineError buildNonDeterministicError(GrammarNonDeterminismMessage nondetMsg) {
+    protected GrammarEngineError buildNonDeterministicError(GrammarNonDeterminismMessage nondetMsg) {
         GrammarEngineError error = new GrammarEngineError();
 
         List nonDetAlts = nondetMsg.probe.getNonDeterministicAltsForState(nondetMsg.problemState);
@@ -114,20 +153,20 @@ public class GrammarEngine {
         error.setMessage("Decision can match input such as \""+input+"\" using multiple alternatives");
 
         int firstAlt = 0;
-		for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
+        for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
             Integer displayAltI = (Integer) iter.next();
             NFAState nfaStart = nondetMsg.probe.dfa.getNFADecisionStartState();
 
-			int tracePathAlt =
-				nfaStart.translateDisplayAltToWalkAlt(displayAltI.intValue());
-			if ( firstAlt == 0 ) {
-				firstAlt = tracePathAlt;
-			}
-			List path =
-				nondetMsg.probe.getNFAPathStatesForAlt(firstAlt,
-													   tracePathAlt,
-													   labels);
-			error.addPath(path, disabledAlts.contains(displayAltI));
+            int tracePathAlt =
+                nfaStart.translateDisplayAltToWalkAlt(displayAltI.intValue());
+            if ( firstAlt == 0 ) {
+                firstAlt = tracePathAlt;
+            }
+            List path =
+                nondetMsg.probe.getNFAPathStatesForAlt(firstAlt,
+                                                       tracePathAlt,
+                                                       labels);
+            error.addPath(path, disabledAlts.contains(displayAltI));
 
             // Find all rules enclosing each state (because a path can extend over multiple rules)
             for (Iterator iterator = path.iterator(); iterator.hasNext();) {
