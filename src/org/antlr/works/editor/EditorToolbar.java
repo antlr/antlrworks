@@ -1,16 +1,14 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.util.IconManager;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.debugger.Debugger;
-import org.antlr.works.dialog.DialogPrefs;
+import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 /*
 
 [The "BSD licence"]

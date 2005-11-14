@@ -36,11 +36,10 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.works.debugger.Debugger;
 
 import javax.swing.*;
 import java.awt.*;
-
-import org.antlr.works.debugger.Debugger;
 
 public class DialogConnectDebugRemote extends XJDialog {
 

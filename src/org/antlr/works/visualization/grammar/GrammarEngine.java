@@ -38,15 +38,15 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarNonDeterminismMessage;
+import org.antlr.works.parser.Token;
 import org.antlr.works.util.CancelObject;
 import org.antlr.works.util.ErrorListener;
-import org.antlr.works.parser.Token;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.io.StringReader;
 
 public class GrammarEngine {
 
