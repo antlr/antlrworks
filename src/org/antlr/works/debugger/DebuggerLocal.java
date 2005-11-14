@@ -346,7 +346,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JAVAC)) {
                 String[] args = new String[5+files.length];
                 if(EditorPreferences.getJavaCCustomPath())
-                    args[0] = EditorPreferences.getJavaCPath();
+                    args[0] = XJUtils.concatPath(EditorPreferences.getJavaCPath(), "javac");
                 else
                     args[0] = "javac";
                 args[1] = "-classpath";

@@ -173,6 +173,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
 
     public void close() {
         debuggerStop(true);
+        player.close();
     }
 
     public JComponent createInputPanel() {
@@ -534,9 +535,12 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
     }
 
     public void connectionSuccess() {
+        // First set the flag to true before doing anything else
+        // (don't send the notification before for example)
+        running = true;
+
         XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STARTED);
 
-        running = true;
         editor.selectDebuggerTab();
 
         editor.console.openGroup("Debug");

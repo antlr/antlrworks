@@ -2,7 +2,7 @@
 Version 1.0ea5 - 11/13/05
 
 - new: display syntax diagram and NFA for lexer rules
-- new: export syntax diagram and NFA to eps file
+- new: export syntax diagram and NFA to eps file (File>Export Rule>As EPS...)
 - new: inline and extract rule refactoring
 
 - added optional path to javac in the preferences

@@ -406,6 +406,7 @@ public class EditorWindow
     public void close() {
         XJNotificationCenter.defaultCenter().removeObserver(this);
 
+        toolbar.close();
         editorIdeas.close();
         editorMenu.close();
         debugger.close();

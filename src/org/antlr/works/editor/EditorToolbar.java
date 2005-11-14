@@ -1,11 +1,16 @@
 package org.antlr.works.editor;
 
 import org.antlr.works.util.IconManager;
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.dialog.DialogPrefs;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 /*
 
 [The "BSD licence"]
@@ -37,7 +42,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorToolbar {
+public class EditorToolbar implements XJNotificationObserver {
 
     public Box toolbar;
 
@@ -61,11 +66,25 @@ public class EditorToolbar {
 
         createInterface();
         addActions();
-        //applyPrefs();
+
+        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
+        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STOPPED);
+    }
+
+    public void close() {
+        XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 
     public JComponent getToolbar() {
         return toolbar;
+    }
+
+    public void notificationFire(Object source, String name) {
+        if(name.equals(Debugger.NOTIF_DEBUG_STARTED)) {
+            find.setEnabled(false);
+        } else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED)) {
+            find.setEnabled(true);
+        }
     }
 
     /*public void applyPrefs() {

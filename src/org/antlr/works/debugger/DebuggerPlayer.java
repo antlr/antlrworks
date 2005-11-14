@@ -61,6 +61,10 @@ public class DebuggerPlayer {
         lookAheadTextStack = new Stack();
     }
 
+    public void close() {
+        inputText.close();        
+    }
+
     public void pushLookAheadText(Object id) {
         rewindLookAheadText();
         lookAheadTextStack.push(new LookAheadText(id));

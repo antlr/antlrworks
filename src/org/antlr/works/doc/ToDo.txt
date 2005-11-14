@@ -1,5 +1,3 @@
-- check javac path on Windows
-- test eps generation
 - Terence: cannot use word "combined" for the grammar ? Cannot display SD
             -> see also elementLexer.g
 

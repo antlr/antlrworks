@@ -84,6 +84,10 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
         XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
     }
 
+    public void close() {
+        XJNotificationCenter.defaultCenter().removeObserver(this);
+    }
+
     public void notificationFire(Object source, String name) {
         if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
             createTextAttributes();

@@ -372,6 +372,9 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public void menuItemState(XJMenuItem item) {
         switch(item.getTag()) {
+            case MI_EDIT_UNDO:
+            case MI_EDIT_REDO:
+            case MI_EDIT_CUT:
             case MI_EDIT_PASTE:
             case MI_RENAME:
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
