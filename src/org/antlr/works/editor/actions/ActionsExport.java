@@ -85,6 +85,13 @@ public class ActionsExport extends AbstractActions {
             return;
         }
 
+        GGraphAbstract graph = editor.visual.getCurrentGraph();
+
+        if(graph == null) {
+            XJAlert.display(editor.getWindowContainer(), "Export Rule to EPS", "There is no graphical visualization.");
+            return;
+        }
+
         if(!XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "eps", "EPS file", false))
             return;
 
@@ -95,7 +102,6 @@ public class ActionsExport extends AbstractActions {
         try {
             GEnginePS engine = new GEnginePS();
 
-            GGraphAbstract graph = editor.visual.getCurrentGraph();
             GContext context = graph.getContext();
             GEngine oldEngine = context.engine;
             context.setEngine(engine);
