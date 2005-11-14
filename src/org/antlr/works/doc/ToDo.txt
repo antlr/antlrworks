@@ -1,6 +1,7 @@
 - check javac path on Windows
 - test eps generation
 - Terence: cannot use word "combined" for the grammar ? Cannot display SD
+            -> see also elementLexer.g
 
 - DFA decision in vectorial format
 - DFA decision for lexer tokens (see with Terence)
@@ -10,6 +11,7 @@
 - jump into source when navigating grammar text (in generated code)
 - re-check the console
 - parse tree when interpreting lexer grammar ?
+- generate code without debugging information
 
 - prefs: customizable list of "Insert Rule From Template" - or read from a file ?
 - Windows/Linux: don't quit if last document closed ?
@@ -20,7 +22,6 @@
 - check environment (see e-mail from Jim Idle)
 
 - display current token in syntax diagram
-- generate code without debugging information
 - shift-right, shift-left, comment/uncomment selection
 - display multiple rules together
 

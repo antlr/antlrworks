@@ -927,10 +927,11 @@ public class EditorWindow
 
         if(windowFirstDisplay) {
             windowFirstDisplay = false;
-            rules.selectFirstRule();
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    checkGrammar();
+                    rules.selectFirstRule();
+                    updateVisualization(true);
+                    checkGrammarVersion();
                 }
             });
         }
@@ -1079,7 +1080,7 @@ public class EditorWindow
         // the parser was able to complete
         // display(e.getDot());
 
-        ParserRule rule = rules.selectRuleAtPosition(index);
+        ParserRule rule = rules.selectRuleInTreeAtPosition(index);
         if(rule == null || rule.name == null) {
             visual.setPlaceholder("Select a rule to display its syntax diagram");
             lastSelectedRule = null;
@@ -1092,7 +1093,7 @@ public class EditorWindow
         }
     }
 
-    public void checkGrammar() {
+    public void checkGrammarVersion() {
         // Check to see if "class" and "extends" are in the grammar text which
         // means that the grammar is probably an ANTLR version 2 grammar.
 

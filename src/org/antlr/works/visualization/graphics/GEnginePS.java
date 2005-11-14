@@ -40,6 +40,7 @@ public class GEnginePS extends GEngineGraphics {
 
     public GEnginePS() {
         g2d = new XJGraphics2DPS();
+        g2d.setMargins(10, 10);
     }
 
     public Graphics2D getG2D() {

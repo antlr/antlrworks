@@ -187,7 +187,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         restoreExpandedNodes();
 
         // Select again the row (otherwise, the selection is lost)
-        selectRuleAtPosition(editor.getCaretPosition());
+        selectRuleInTreeAtPosition(editor.getCaretPosition());
     }
 
     public ParserGroup getSelectedGroup() {
@@ -313,18 +313,18 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         return null;
     }
 
-    public ParserRule selectRuleAtPosition(int pos) {
+    public ParserRule selectRuleInTreeAtPosition(int pos) {
         if(programmaticallySelectingRule || parser.getRules() == null)
             return null;
 
         programmaticallySelectingRule = true;
         ParserRule rule = getEnclosingRuleAtPosition(pos);
-        selectRule(rule);
+        selectRuleInTree(rule);
         programmaticallySelectingRule = false;
         return rule;
     }
 
-    public ParserRule selectRuleName(String name) {
+    public ParserRule selectRuleNameInTree(String name) {
         if(programmaticallySelectingRule || parser.getRules() == null)
             return null;
 
@@ -334,7 +334,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         while(iterator.hasNext()) {
             ParserRule r = (ParserRule)iterator.next();
             if(r.name.equals(name)) {
-                selectRule(r);
+                selectRuleInTree(r);
                 rule = r;
                 break;
             }
@@ -421,11 +421,13 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
     
     public void selectFirstRule() {
-        if(parser.getRules().size() == 0)
+        if(parser.getRules() == null || parser.getRules().size() == 0)
             return;
 
         programmaticallySelectingRule = true;
-        selectRule((ParserRule)parser.getRules().get(0));
+        ParserRule r = (ParserRule)parser.getRules().get(0);
+        selectRuleInTree(r);
+        goToRule(r);
         programmaticallySelectingRule = false;
     }
 
@@ -439,7 +441,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         }
     }
 
-    public void selectRule(ParserRule rule) {
+    public void selectRuleInTree(ParserRule rule) {
         if(rule == null)
             return;
 
@@ -602,7 +604,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             selectNextRule = false;
             selectNextRule();
         } else
-            selectRuleAtPosition(editor.getCaretPosition());
+            selectRuleInTreeAtPosition(editor.getCaretPosition());
     }
 
     public boolean moveRule(ParserRule sourceRule, ParserRule targetRule, boolean dropAbove) {

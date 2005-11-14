@@ -55,7 +55,7 @@ public class ActionsGoTo extends AbstractActions {
         if(ref == null)
             return;
 
-        ParserRule rule = editor.rules.selectRuleName(ref.token.getAttribute());
+        ParserRule rule = editor.rules.selectRuleNameInTree(ref.token.getAttribute());
         if(rule == null)
             return;
 
