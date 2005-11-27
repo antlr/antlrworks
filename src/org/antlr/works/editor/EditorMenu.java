@@ -120,11 +120,11 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     public static final int MI_CHECK_UPDATES = 102;
 
     // File Export
-    public static final int MI_SAVE_AS_IMAGE = 110;
-    public static final int MI_SAVE_AS_EPS = 111;
-    public static final int MI_SAVE_ANTLR_NFA_DOT = 112;
-    public static final int MI_SAVE_RAW_NFA_DOT = 113;
-    public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 114;
+    public static final int MI_EXPORT_AS_IMAGE = 110;
+    public static final int MI_EXPORT_AS_EPS = 111;
+    //public static final int MI_SAVE_ANTLR_NFA_DOT = 112;
+    //public static final int MI_SAVE_RAW_NFA_DOT = 113;
+    //public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 114;
     public static final int MI_EXPORT_EVENT = 115;
 
     public static final int MI_PRIVATE_STATS = 200;
@@ -162,13 +162,13 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.insertItemAfter(exportMenu, XJMainMenuBar.MI_SAVEAS);
 
         exportMenu = new XJMenu();
-        exportMenu.setTitle("Export Rule");
-        exportMenu.addItem(new XJMenuItem("As Image...", MI_SAVE_AS_IMAGE, this));
-        exportMenu.addItem(new XJMenuItem("As EPS...", MI_SAVE_AS_EPS, this));
-        exportMenu.addSeparator();
-        exportMenu.addItem(new XJMenuItem("ANTLR NFA as DOT...", MI_SAVE_ANTLR_NFA_DOT, this));
-        exportMenu.addItem(new XJMenuItem("Raw NFA as DOT...", MI_SAVE_RAW_NFA_DOT, this));
-        exportMenu.addItem(new XJMenuItem("Optimized NFA as DOT...", MI_SAVE_OPTIMIZED_NFA_DOT, this));
+        exportMenu.setTitle("Export");
+        exportMenu.addItem(new XJMenuItem("As Bitmap Image...", MI_EXPORT_AS_IMAGE, this));
+        exportMenu.addItem(new XJMenuItem("As EPS...", MI_EXPORT_AS_EPS, this));
+        //exportMenu.addSeparator();
+        //exportMenu.addItem(new XJMenuItem("ANTLR NFA as DOT...", MI_SAVE_ANTLR_NFA_DOT, this));
+        //exportMenu.addItem(new XJMenuItem("Raw NFA as DOT...", MI_SAVE_RAW_NFA_DOT, this));
+        //exportMenu.addItem(new XJMenuItem("Optimized NFA as DOT...", MI_SAVE_OPTIMIZED_NFA_DOT, this));
 
         menu.insertItemAfter(exportMenu, XJMainMenuBar.MI_SAVEAS);
 
@@ -191,7 +191,6 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public void customizeMenuBar(XJMainMenuBar menubar) {
         createEditMenu(menubar);
-        createViewMenu(menubar);
         createFindMenu(menubar);
         createGoToMenu(menubar);
         createGrammarMenu(menubar);
@@ -335,19 +334,6 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu.addItem(new XJMenuItem("Find Usages", 'f', KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
 
         menubar.addCustomMenu(menu);
-    }
-
-    private void createViewMenu(XJMainMenuBar menubar) {
-    /*    XJMenu menu;
-        menu = new XJMenu();
-        menu.setTitle("View");
-        menu.addItem(new XJMenuItem("Expand/Collapse Rule", 'r', KeyEvent.VK_PERIOD, MI_EXPAND_COLLAPSE_RULE, this));
-        menu.addItem(new XJMenuItem("Expand/Collapse Action", 's', KeyEvent.VK_MINUS, MI_EXPAND_COLLAPSE_ACTION, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Expand All Actions", '+', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EXPAND_ALL_ACTION, this));
-        menu.addItem(new XJMenuItem("Collapse All Actions", '-', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_COLLAPSE_ALL_ACTION, this));
-
-        menubar.addCustomMenu(menu);*/
     }
 
     private void createEditMenu(XJMainMenuBar menubar) {
@@ -710,15 +696,15 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public void handleMenuExport(int itemTag) {
         switch(itemTag) {
-            case MI_SAVE_AS_IMAGE:
-                editor.visual.saveAsImage();
+            case MI_EXPORT_AS_IMAGE:
+                editor.actionsExport.exportAsImage();
                 break;
 
-            case MI_SAVE_AS_EPS:
-                editor.actionsExport.exportRuleAsEPS();
+            case MI_EXPORT_AS_EPS:
+                editor.actionsExport.exportAsEPS();
                 break;
 
-            case MI_SAVE_ANTLR_NFA_DOT:
+/*            case MI_SAVE_ANTLR_NFA_DOT:
                 editor.visual.saveANTLRNFA2DOT(editor.getCurrentRule());
                 break;
 
@@ -728,7 +714,7 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_SAVE_OPTIMIZED_NFA_DOT:
                 editor.visual.saveOptimizedNFA2DOT(editor.getCurrentRule());
-                break;
+                break;*/
 
             case MI_EXPORT_EVENT:
                 editor.actionsExport.exportEventsAsTextFile();

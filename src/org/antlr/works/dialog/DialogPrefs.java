@@ -171,7 +171,6 @@ public class DialogPrefs extends XJPanel {
 
         // Visualization
         getPreferences().bindToPreferences(dotToolPathField, EditorPreferences.PREF_DOT_TOOL_PATH, EditorPreferences.DEFAULT_DOT_TOOL_PATH);
-        getPreferences().bindToPreferences(dotImageFormatField, EditorPreferences.PREF_DOT_IMAGE_FORMAT, EditorPreferences.DEFAULT_DOT_IMAGE_FORMAT);
 
         // SCM - Perforce
         getPreferences().bindToPreferences(enablePerforceCheckBox, EditorPreferences.PREF_SCM_P4_ENABLED, false);

@@ -40,6 +40,7 @@ import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextUtils;
 import org.antlr.works.editor.swing.TreeUtilities;
@@ -61,7 +62,7 @@ import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.List;
 
-public class Interpreter implements Runnable {
+public class Interpreter implements Runnable, EditorTab {
 
     private JPanel panel;
     private JSplitPane splitPane;
@@ -299,4 +300,11 @@ public class Interpreter implements Runnable {
         });
     }
 
+    public String getTabName() {
+        return "Interpreter";
+    }
+
+    public Component getTabComponent() {
+        return getContainer();
+    }
 }

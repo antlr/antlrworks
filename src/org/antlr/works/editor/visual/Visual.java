@@ -35,6 +35,7 @@ import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.tool.DOTGenerator;
+import org.antlr.works.editor.EditorTab;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.stats.Statistics;
@@ -49,14 +50,12 @@ import org.antlr.works.visualization.graphics.panel.GPanel;
 import org.antlr.works.visualization.skin.Skin;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.io.File;
+import java.awt.image.BufferedImage;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
-public class Visual {
+public class Visual implements EditorTab {
 
     protected XJFrame parent;
 
@@ -224,28 +223,15 @@ public class Visual {
         return panel.getImageOfView() != null;
     }
 
-    public void saveAsImage() {
-        if(!canSaveImage()) {
-            XJAlert.display(parent.getJavaContainer(), "Error", "Cannot save rule as image because there is no rule selected.");
-            return;
-        }
-
-        java.util.List extensions = new ArrayList();
-        for (int i = 0; i < ImageIO.getWriterFormatNames().length; i++) {
-            String ext = ImageIO.getWriterFormatNames()[i].toLowerCase();
-            if(!extensions.contains(ext))
-                extensions.add(ext);
-        }
-
-        if(XJFileChooser.shared().displaySaveDialog(parent.getJavaContainer(), extensions, extensions, false)) {
-            String file = XJFileChooser.shared().getSelectedFilePath();
-            try {
-                ImageIO.write(panel.getImageOfView(), file.substring(file.lastIndexOf(".")+1), new File(file));
-            } catch (IOException e) {
-                XJAlert.display(parent.getJavaContainer(), "Error", "Image \""+file+"\" cannot be saved because:\n"+e);
-            }
-            Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_RULE_IMAGE);
-        }
+    public BufferedImage getImage() {
+        return panel.getImageOfView();
     }
 
+    public String getTabName() {
+        return "Syntax Diagram";
+    }
+
+    public Component getTabComponent() {
+        return getContainer();
+    }
 }

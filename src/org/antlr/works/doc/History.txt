@@ -1,3 +1,11 @@
+Version 1.0ea6 -
+
+- improved decision DFA: vectorial representation where states can be moved using the mouse
+- improved decision DFA: exportable to EPS and bitmap image
+- improved export to EPS: file size has been reduced by up to 1/2 of the previous generated size
+
+- move caret to decision location when displaying DFA decision
+
 
 Version 1.0ea5 - 11/13/05
 

@@ -1,21 +1,27 @@
 package org.antlr.works.editor.tool;
 
+import edu.usfca.xj.appkit.gview.GView;
+import edu.usfca.xj.appkit.gview.base.Vector2D;
+import edu.usfca.xj.appkit.gview.object.GElement;
+import edu.usfca.xj.appkit.gview.object.GElementCircle;
+import edu.usfca.xj.appkit.gview.object.GLink;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.analysis.DFA;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Token;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 /*
 
@@ -48,25 +54,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class TDecisionDFA implements Runnable {
-
-    public interface TDecisionDFADelegate {
-        public void decisionDFADidCompleted(TDecisionDFA decision, String error);
-    }
+public class TDecisionDFA implements Runnable, EditorTab {
 
     protected EditorWindow editor;
     protected TDecisionDFADelegate delegate;
 
     protected JPanel panel;
-    protected ImagePanel imagePanel;
+    protected GView dfaView;
 
     protected String text;
     protected int line;
     protected int column;
 
     public int decisionNumber;
+    public String ruleName;
 
     protected String tempDOTFile;
+    protected String tempTextFile;
     protected String tempImageFile;
 
     protected String error;
@@ -74,6 +78,10 @@ public class TDecisionDFA implements Runnable {
     public TDecisionDFA(EditorWindow editor, TDecisionDFADelegate delegate) {
         this.editor = editor;
         this.delegate = delegate;
+    }
+
+    public void setRuleName(String name) {
+        this.ruleName = name;
     }
 
     public Container getContainer() {
@@ -84,8 +92,12 @@ public class TDecisionDFA implements Runnable {
         return EditorPreferences.getDOTToolPath();
     }
 
-    public String getDOTImageFormat() {
-        return EditorPreferences.getDOTImageFormat();
+    public String getEPS() {
+        return dfaView.getEPS();
+    }
+
+    public BufferedImage getImage() {
+        return dfaView.getImage();
     }
 
     public boolean launch() {
@@ -99,17 +111,12 @@ public class TDecisionDFA implements Runnable {
                     "Check the tool path in the Preferences.");
             return false;
         }
-        if(getDOTImageFormat() == null) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the decision DFA because the DOT image format not defined.\n" +
-                    "It can be defined in the Preferences.");
-            return false;
-        }
 
         new Thread(this).start();
         return true;
     }
 
-    public Token findClosetDecisionToken() {
+    public Token findClosestDecisionToken() {
         Token ct = editor.getCurrentToken();
         List tokens = editor.getTokens();
         int nestedParen = 0;
@@ -132,25 +139,24 @@ public class TDecisionDFA implements Runnable {
     public void run() {
         text = editor.getText();
 
-        Token t = findClosetDecisionToken();
+        Token t = findClosestDecisionToken();
         if(t == null) {
             line = editor.getCurrentLinePosition();
             column = editor.getCurrentColumnPosition();
         } else {
             line = editor.getLinePositionAtIndex(t.getStartIndex());
             column = editor.getColumnPositionAtIndex(t.getStartIndex());
+            editor.setCaretPosition(t.getStartIndex());
         }
 
         error = null;
 
         try {
             tempDOTFile = File.createTempFile("decisionDFA", ".dot").getAbsolutePath();
+            tempTextFile = File.createTempFile("decisionDFA", ".txt").getAbsolutePath();
             tempImageFile = File.createTempFile("decisionDFA", ".png").getAbsolutePath();
 
-            BufferedImage image = generate();
-            if(image != null) {
-                createInterface(image);
-            }
+            createInterface(generate());
         } catch(Exception e) {
             error = e.getLocalizedMessage();
         }
@@ -162,21 +168,25 @@ public class TDecisionDFA implements Runnable {
         });
 
         new File(tempDOTFile).delete();
+        new File(tempTextFile).delete();
         new File(tempImageFile).delete();
     }
 
-    private void createInterface(BufferedImage image) {
+    private void createInterface(GElement graph) {
         panel = new JPanel(new BorderLayout());
 
-        imagePanel = new ImagePanel(image);
-        imagePanel.setBackground(Color.white);
+        dfaView = new GView();
+        dfaView.setAutoAdjustSize(true);
+        dfaView.setRootElement(graph);
+        dfaView.setBackground(Color.white);
+        dfaView.setDrawBorder(false);
 
         Box b = Box.createHorizontalBox();
         b.add(new JLabel("Zoom"));
         b.add(createZoomSlider());
 
         panel.add(b, BorderLayout.NORTH);
-        panel.add(new JScrollPane(imagePanel), BorderLayout.CENTER);
+        panel.add(new JScrollPane(dfaView), BorderLayout.CENTER);
     }
 
     private JSlider createZoomSlider() {
@@ -190,17 +200,21 @@ public class TDecisionDFA implements Runnable {
             public void stateChanged(ChangeEvent event) {
                 JSlider slider = (JSlider)event.getSource();
 
-                imagePanel.setZoom((float)slider.getValue()/100);
-                imagePanel.repaint();
+                dfaView.setZoom((float)slider.getValue()/100);
+                dfaView.repaint();
+
+                // Let the JScrollPane know that the dfaView
+                // may have changed size
+                dfaView.revalidate();
             }
         });
         return slider;
     }
 
-    public BufferedImage generate() throws Exception {
+    public GElement generate() throws Exception {
         generateDOTFile();
-        generateImageFile();
-        return ImageIO.read(new File(tempImageFile));
+        generatePlainTextFile();
+        return generateGraph();
     }
 
     private void generateDOTFile() throws Exception {
@@ -224,17 +238,16 @@ public class TDecisionDFA implements Runnable {
 
         DFA dfa = g.getLookaheadDFAFromPositionInFile(line, adjustedColumn);
         decisionNumber = dfa.getDecisionNumber();
-        String dot = new DOTGenerator(g).getDOT( dfa.startState );
-        FileWriter fw = new FileWriter(tempDOTFile);
-        BufferedWriter bw = new BufferedWriter(fw);
+        DOTGenerator dg = new DOTGenerator(g);
+        dg.setArrowheadType("none");
+        String dot = dg.getDOT( dfa.startState );
+        BufferedWriter bw = new BufferedWriter(new FileWriter(tempDOTFile));
         bw.write(dot);
         bw.close();
     }
 
-    public void generateImageFile() throws Exception {
-        String size = "size=\"30,20\"";
-
-        String[] args = new String[] { getDOTToolPath(), "-T"+getDOTImageFormat(), "-G"+size, "-o", tempImageFile, tempDOTFile };
+    public void generatePlainTextFile() throws Exception {
+        String[] args = new String[] { getDOTToolPath(), "-Tplain", "-o", tempTextFile, tempDOTFile };
         Process p = Runtime.getRuntime().exec(args);
 
         new StreamWatcher(p.getErrorStream(), "DecisionDFA").start();
@@ -243,7 +256,144 @@ public class TDecisionDFA implements Runnable {
         p.waitFor();
     }
 
-    private class StreamWatcher extends Thread {
+    public GElement generateGraph() {
+        /*
+graph 1.000 2.583 9.056
+        */
+        GElement graph = null;
+        float height = 0;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(tempTextFile));
+            String line;
+            while((line = br.readLine()) != null) {
+                GElement element = null;
+                String[] tokens = parseTokens(line);
+                if(tokens[0].equals("graph")) {
+                    height = Float.parseFloat(tokens[3]);
+                } else if(tokens[0].equals("node"))
+                    element = createGraphNode(tokens, height);
+                else if(tokens[0].equals("edge"))
+                    element = createGraphEdge(graph, tokens, height);
+                else if(tokens[0].equals("stop"))
+                    break;
+
+                if(element != null) {
+                    if(graph == null)
+                        graph = element;
+                    else
+                        graph.addElement(element);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return graph;
+    }
+
+    public String[] parseTokens(String line) {
+        List tokens = new ArrayList();
+        try {
+            StreamTokenizer st = new StreamTokenizer(new StringReader(line));
+            st.parseNumbers();
+            int token = st.nextToken();
+            while(token != StreamTokenizer.TT_EOF) {
+                String element = null;
+                switch(token) {
+                    case StreamTokenizer.TT_NUMBER:
+                        element = String.valueOf(st.nval);
+                        break;
+                    case StreamTokenizer.TT_WORD:
+                        element = st.sval;
+                        break;
+                    case '"':
+                    case '\'':
+                        element = st.sval;
+                        break;
+                    case StreamTokenizer.TT_EOL:
+                        break;
+                    case StreamTokenizer.TT_EOF:
+                        break;
+                    default:
+                        element = String.valueOf((char)st.ttype);
+                        break;
+                }
+                if(element != null)
+                    tokens.add(element);
+                token = st.nextToken();
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        String[] result = new String[tokens.size()];
+        for(int index=0; index<tokens.size(); index++)
+            result[index] = (String)tokens.get(index);
+        return result;
+    }
+
+    public GElement createGraphNode(String[] tokens, float height) {
+        /*
+node s0  1.097 1.917 0.506 0.506 s0 solid circle black lightgrey
+node "s1=>2"  0.486 0.486 0.969 0.969 "s1=>2" solid doublecircle black lightgrey
+        */
+
+        float x = Float.parseFloat(tokens[2])*80;
+        float y = (height - Float.parseFloat(tokens[3]))*80;
+        float w = Float.parseFloat(tokens[4])*80;
+        //float h = Float.parseFloat(tokens[5])*30;
+
+        Node node = new Node();
+        node.setDraggable(true);
+        node.setPosition(x, y);
+        node.setRadius(w/2);
+        node.setLabel(tokens[6]);
+        node.setDouble(tokens[8].equals("doublecircle"));
+
+        return node;
+    }
+
+    public GElement createGraphEdge(GElement graph, String[] tokens, float height) {
+//  0    1     2  3 4
+//  edge start n1 7 1.153 8.556 1.125 8.417 1.097 8.236 1.111 8.083 1.111 8.042 1.125 8.014 1.125 7.972
+//  g 1.194 8.194 solid black
+
+        int controlCount = (int) Float.parseFloat(tokens[3]);
+        Vector2D points[] = new Vector2D[controlCount];
+        for(int index=0; index<controlCount; index++) {
+            points[index] = new Vector2D(Float.parseFloat(tokens[4+index*2])*80,
+                                        (height-Float.parseFloat(tokens[4+index*2+1]))*80);
+        }
+
+        int labelIndex = 3+2*controlCount+1;
+        String label = tokens[labelIndex];
+        System.out.println(label);
+        Vector2D labelPosition = new Vector2D(Float.parseFloat(tokens[labelIndex+1])*80,
+                                        (height-Float.parseFloat(tokens[labelIndex+2]))*80);
+
+        GElement source = graph.findElementWithLabel(tokens[1]);
+        GElement target = graph.findElementWithLabel(tokens[2]);
+
+        GLink link = new GLink(source, GElementCircle.ANCHOR_CENTER,
+                            target, GElementCircle.ANCHOR_CENTER,
+                            GLink.SHAPE_BEZIER, label, 0);
+        link.setBezierControlPoints(points);
+        link.setBezierLabelPosition(labelPosition);
+        return link;
+    }
+
+    public String getTabName() {
+        return "Decision "+decisionNumber+" of \""+ruleName+"\"";
+    }
+
+    public Component getTabComponent() {
+        return getContainer();
+    }
+
+    public interface TDecisionDFADelegate {
+        public void decisionDFADidCompleted(TDecisionDFA decision, String error);
+    }
+
+    protected class StreamWatcher extends Thread {
 
         InputStream is;
         String type;
@@ -265,44 +415,24 @@ public class TDecisionDFA implements Runnable {
         }
     }
 
-    private class ImagePanel extends JPanel {
+    protected class Node extends GElementCircle {
 
-        protected BufferedImage image;
-        protected int width;
-        protected int height;
-        protected float zoom;
+        public boolean doublecircle;
 
-        public ImagePanel(BufferedImage image) {
-            this.image = image;
-            this.width = image.getWidth();
-            this.height = image.getHeight();
-            this.zoom = 1;
-            adjustSize();
+        public void setDouble(boolean flag) {
+            doublecircle = flag;
         }
 
-        public float getImageWidth() {
-            return width*zoom;
+        public void drawShape(Graphics2D g) {
+            super.drawShape(g);
+
+            if(doublecircle) {
+                int x = (int)(getPositionX()-radius);
+                int y = (int)(getPositionY()-radius);
+
+                g.drawOval(x+3, y+3, (int)(radius*2-6), (int)(radius*2-6));
+            }
         }
 
-        public float getImageHeight() {
-            return height*zoom;
-        }
-
-        public void setZoom(float zoom) {
-            this.zoom = zoom;
-            adjustSize();
-        }
-
-        public void adjustSize() {
-            Dimension dimension = new Dimension((int)getImageWidth(), (int)getImageHeight());
-            setSize(dimension);
-            setPreferredSize(dimension);
-        }
-
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            // @todo try to use an image observer in order not to block the GUI for big image ?
-            g.drawImage(image, 0, 0, (int)getImageWidth(), (int)getImageHeight(), null);
-        }
     }
 }

@@ -66,16 +66,13 @@ public class ActionsFind extends AbstractActions {
         if(token == null)
             return;
 
-        String tokenAttribute = token.getAttribute();
-
-        TUsage usage = new TUsage(editor);
-        editor.getTabbedPane().add("Usages of \""+tokenAttribute+"\"", usage.getContainer());
-        editor.getTabbedPane().setSelectedIndex(editor.getTabbedPane().getTabCount()-1);
+        TUsage usage = new TUsage(editor, token);
+        editor.addTab(usage);
 
         Iterator iterator = editor.getTokens().iterator();
         while(iterator.hasNext()) {
             Token candidate = (Token)iterator.next();
-            if(candidate.getAttribute().equals(tokenAttribute)) {
+            if(candidate.getAttribute().equals(token.getAttribute())) {
                 ParserRule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStartIndex());
                 if(matchedRule != null)
                     usage.addMatch(matchedRule, candidate);

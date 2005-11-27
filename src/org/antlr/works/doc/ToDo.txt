@@ -1,14 +1,19 @@
-- Terence: cannot use word "combined" for the grammar ? Cannot display SD
-            -> see also elementLexer.g
+- implement zoom in vas
+- remove DOT image format in prefs
 
-- DFA decision in vectorial format
 - DFA decision for lexer tokens (see with Terence)
+
+- tokenVocab (of course, its for me *.tokens)
 - breakpoint on input text
-- tokenVocab
+- debugger: click on token jump to corresponding rule that matched it (build reverse index)
+- debugger: back to prev/next breakpoint
+
+- do example calculator ANTLR intro (tree): convert to 3.0 and use AW with it (try to figure out
+  the debugging part of all this)
+
 - catch Error when ANTLR is initialize and test with corrupted installation
 - jump into source when navigating grammar text (in generated code)
 - re-check the console
-- parse tree when interpreting lexer grammar ?
 - generate code without debugging information
 
 - prefs: customizable list of "Insert Rule From Template" - or read from a file ?
@@ -23,8 +28,7 @@
 - shift-right, shift-left, comment/uncomment selection
 - display multiple rules together
 
-- handle "header with package" option (see with Terence for line numbering between files)
-- display all literals in list
+- (Terence will change) handle "header with package" option (see with Terence for line numbering between files)
 - use Grammar randomText to generate random valid input text
 - lexical ambiguities (ask Terence)
 

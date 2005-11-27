@@ -140,7 +140,7 @@ public class EditorWindow
     protected JScrollPane rulesScrollPane;
     protected XJTree rulesTree;
 
-    protected JTabbedPane viewTabbedPane;
+    protected JTabbedPane tabbedPane;
     protected JPanel mainPanel;
 
     protected Box infoBox;
@@ -157,6 +157,8 @@ public class EditorWindow
 
     protected boolean windowFirstDisplay = true;
     protected String lastSelectedRule;
+
+    protected List tabs = new ArrayList();
 
     public EditorWindow() {
         createInterface();
@@ -302,9 +304,9 @@ public class EditorWindow
 
         // Assemble
 
-        viewTabbedPane = new JTabbedPane();
-        viewTabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
-        viewTabbedPane.addMouseListener(new TabbedPaneMouseListener());
+        tabbedPane = new JTabbedPane();
+        tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
+        tabbedPane.addMouseListener(new TabbedPaneMouseListener());
 
         rulesTextSplitPane = new JSplitPane();
         rulesTextSplitPane.setBorder(null);
@@ -318,7 +320,7 @@ public class EditorWindow
         upDownSplitPane.setBorder(null);
         upDownSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
         upDownSplitPane.add(rulesTextSplitPane, JSplitPane.TOP);
-        upDownSplitPane.add(viewTabbedPane, JSplitPane.BOTTOM);
+        upDownSplitPane.add(tabbedPane, JSplitPane.BOTTOM);
         upDownSplitPane.setContinuousLayout(true);
         upDownSplitPane.setOneTouchExpandable(true);
 
@@ -361,10 +363,10 @@ public class EditorWindow
     }
 
     protected void awakeInterface() {
-        getTabbedPane().addTab("Syntax Diagram", visual.getContainer());
-        getTabbedPane().addTab("Interpreter", interpreter.getContainer());
-        getTabbedPane().addTab("Debugger", debugger.getContainer());
-        getTabbedPane().addTab("Console", console.getContainer());
+        addTab(visual);
+        addTab(interpreter);
+        addTab(debugger);
+        addTab(console);
 
         selectVisualizationTab();
 
@@ -422,17 +424,31 @@ public class EditorWindow
     }
 
     public void selectVisualizationTab() {
-        getTabbedPane().setSelectedIndex(0);
+        selectTab(visual.getTabComponent());
     }
 
     public void selectInterpreterTab() {
-        getTabbedPane().setSelectedIndex(1);
+        selectTab(interpreter.getTabComponent());
         makeBottomComponentVisible();
     }
 
     public void selectDebuggerTab() {
-        getTabbedPane().setSelectedIndex(2);
+        selectTab(debugger.getTabComponent());
         makeBottomComponentVisible();
+    }
+
+    public void addTab(EditorTab tab) {
+        tabs.add(tab);
+        tabbedPane.add(tab.getTabName(), tab.getTabComponent());
+        selectTab(tab.getTabComponent());
+    }
+
+    public EditorTab getSelectedTab() {
+        return (EditorTab)tabs.get(tabbedPane.getSelectedIndex());
+    }
+
+    public void selectTab(Component c) {
+        tabbedPane.setSelectedComponent(c);
     }
 
     protected void makeBottomComponentVisible() {
@@ -494,10 +510,6 @@ public class EditorWindow
 
     public ATEPanel getTextEditor() {
         return textEditor;
-    }
-
-    public JTabbedPane getTabbedPane() {
-        return viewTabbedPane;
     }
 
     public void toggleAutoIndent() {
@@ -1124,7 +1136,7 @@ public class EditorWindow
         protected static final int CLOSING_INDEX_LIMIT = 4;
 
         public void displayPopUp(MouseEvent event) {
-            if(viewTabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
+            if(tabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
                 return;
 
             if(!event.isPopupTrigger())
@@ -1134,10 +1146,11 @@ public class EditorWindow
             JMenuItem item = new JMenuItem("Close");
             item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
-                    if(viewTabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
+                    if(tabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
                         return;
 
-                    viewTabbedPane.removeTabAt(viewTabbedPane.getSelectedIndex());
+                    tabs.remove(tabbedPane.getSelectedIndex());
+                    tabbedPane.removeTabAt(tabbedPane.getSelectedIndex());
                 }
             });
             popup.add(item);

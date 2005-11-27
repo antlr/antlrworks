@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.tool;
 
+import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
@@ -44,7 +45,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class TUsage {
+public class TUsage implements EditorTab {
 
     protected JPanel panel;
     protected JScrollPane treeScrollPane;
@@ -56,9 +57,11 @@ public class TUsage {
     protected String lastRule;
 
     protected EditorWindow editor;
+    protected Token token;
 
-    public TUsage(EditorWindow editor) {
+    public TUsage(EditorWindow editor, Token token) {
         this.editor = editor;
+        this.token = token;
 
         panel = new JPanel(new BorderLayout());
 
@@ -106,7 +109,7 @@ public class TUsage {
     }
 
     public void addMatch(ParserRule rule, Token token) {
-        if(lastRule == null || lastRule != null && !lastRule.equals(rule.name)) {
+        if(lastRule == null || !lastRule.equals(rule.name)) {
             node = new DefaultMutableTreeNode();
             node.setUserObject(rule.name);
             root.add(node);
@@ -123,6 +126,14 @@ public class TUsage {
 
     public void selectMatch(UsageMatch match) {
         editor.selectTextRange(match.token.getStartIndex(), match.token.getEndIndex());
+    }
+
+    public String getTabName() {
+        return "Usages of \""+token.getAttribute()+"\"";
+    }
+
+    public Component getTabComponent() {
+        return getContainer();
     }
 
     public class UsageMatch {

@@ -70,10 +70,8 @@ public class EditorPreferences {
 
     // Visualization
     public static final String PREF_DOT_TOOL_PATH = "PREF_DOT_TOOL_PATH";
-    public static final String PREF_DOT_IMAGE_FORMAT = "PREF_DOT_IMAGE_FORMAT";
 
     public static final String DEFAULT_DOT_TOOL_PATH;
-    public static final String DEFAULT_DOT_IMAGE_FORMAT = "png";
 
     // SCM - Perforce
     public static final String PREF_SCM_P4_ENABLED = "PREF_SCM_ENABLE_P4";
@@ -248,10 +246,6 @@ public class EditorPreferences {
 
     public static String getDOTToolPath() {
         return getPreferences().getString(PREF_DOT_TOOL_PATH, DEFAULT_DOT_TOOL_PATH);
-    }
-
-    public static String getDOTImageFormat() {
-        return getPreferences().getString(PREF_DOT_IMAGE_FORMAT, DEFAULT_DOT_IMAGE_FORMAT);
     }
 
     public static boolean getP4Enabled() {

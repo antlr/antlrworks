@@ -34,15 +34,22 @@ package org.antlr.works.editor.actions;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.editor.tool.TDecisionDFA;
+import org.antlr.works.editor.visual.Visual;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GEngine;
 import org.antlr.works.visualization.graphics.GEnginePS;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ActionsExport extends AbstractActions {
@@ -79,7 +86,57 @@ public class ActionsExport extends AbstractActions {
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_EVENTS_TEXT);
     }
 
-    public void exportRuleAsEPS() {
+    public void exportAsImage() {
+        EditorTab tab = editor.getSelectedTab();
+        if(tab instanceof Visual)
+            exportRuleAsImage();
+        else if(tab instanceof TDecisionDFA)
+            exportDecisionAsImage((TDecisionDFA)tab);
+
+    }
+
+    public void exportRuleAsImage() {
+        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_RULE_IMAGE);
+
+        if(!editor.visual.canSaveImage()) {
+            XJAlert.display(editor.getWindowContainer(), "Export Rule to Bitmap Image", "There is no rule at cursor position.");
+            return;
+        }
+
+        saveImageToDisk(editor.visual.getImage());
+    }
+
+    public void exportDecisionAsImage(TDecisionDFA decision) {
+        saveImageToDisk(decision.getImage());
+    }
+
+    public void saveImageToDisk(BufferedImage image) {
+        List extensions = new ArrayList();
+        for (int i = 0; i < ImageIO.getWriterFormatNames().length; i++) {
+            String ext = ImageIO.getWriterFormatNames()[i].toLowerCase();
+            if(!extensions.contains(ext))
+                extensions.add(ext);
+        }
+
+        if(XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), extensions, extensions, false)) {
+            String file = XJFileChooser.shared().getSelectedFilePath();
+            try {
+                ImageIO.write(image, file.substring(file.lastIndexOf(".")+1), new File(file));
+            } catch (IOException e) {
+                XJAlert.display(editor.getWindowContainer(), "Error", "Image \""+file+"\" cannot be saved because:\n"+e);
+            }
+        }
+    }
+
+    public void exportAsEPS() {
+        EditorTab tab = editor.getSelectedTab();
+        if(tab instanceof Visual)
+            exportRuleAsEPS();
+        else if(tab instanceof TDecisionDFA)
+            exportDecisionAsEPS((TDecisionDFA)tab);
+    }
+
+    protected void exportRuleAsEPS() {
         if(editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition()) == null) {
             XJAlert.display(editor.getWindowContainer(), "Export Rule to EPS", "There is no rule at cursor position.");
             return;
@@ -114,4 +171,21 @@ public class ActionsExport extends AbstractActions {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
         }
     }
+
+    protected void exportDecisionAsEPS(TDecisionDFA decision) {
+        if(!XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "eps", "EPS file", false))
+            return;
+
+        String file = XJFileChooser.shared().getSelectedFilePath();
+        if(file == null)
+            return;
+
+        try {
+            XJUtils.writeStringToFile(decision.getEPS(), file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
+        }
+    }
+
 }

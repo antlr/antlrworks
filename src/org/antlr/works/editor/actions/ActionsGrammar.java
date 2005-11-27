@@ -63,8 +63,8 @@ public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDec
         progress.close();
         if(error == null) {
             ParserRule rule = editor.getCurrentRule();
-            editor.getTabbedPane().add("Decision "+decision.decisionNumber+" of \""+rule.name+"\"", decision.getContainer());
-            editor.getTabbedPane().setSelectedIndex(editor.getTabbedPane().getTabCount()-1);
+            decision.setRuleName(rule.name);
+            editor.addTab(decision);
         } else {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the DFA because: "+error);
         }

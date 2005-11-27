@@ -40,6 +40,7 @@ import org.antlr.tool.Grammar;
 import org.antlr.works.dialog.DialogConnectDebugRemote;
 import org.antlr.works.dialog.DialogGenerate;
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextPane;
 import org.antlr.works.editor.swing.TextUtils;
@@ -61,7 +62,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
+public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
     public static final int DEFAULT_LOCAL_PORT = 0xC001;
@@ -710,6 +711,14 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate {
 
     public void streamWatcherDidReceiveString(String string) {
         outputTextPane.setText(outputTextPane.getText()+string);
+    }
+
+    public String getTabName() {
+        return "Debugger";
+    }
+
+    public Component getTabComponent() {
+        return getContainer();
     }
 
     protected class StackListModel extends DefaultListModel {

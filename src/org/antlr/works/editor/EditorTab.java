@@ -1,3 +1,6 @@
+package org.antlr.works.editor;
+
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -29,53 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.code;
-
-import org.antlr.works.editor.EditorTab;
-import org.antlr.works.editor.swing.TextPane;
-import org.antlr.works.util.Localizable;
-
-import javax.swing.*;
-import java.awt.*;
-
-public class CodeDisplay implements EditorTab {
-
-    protected JPanel panel;
-    protected TextPane textPane;
-    protected String title;
-
-    public CodeDisplay() {
-
-        panel = new JPanel(new BorderLayout());
-
-        textPane = new TextPane();
-        textPane.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
-        textPane.setWordWrap(false);
-
-        JScrollPane scrollPane = new JScrollPane(textPane);
-        scrollPane.setWheelScrollingEnabled(true);
-
-        panel.add(scrollPane, BorderLayout.CENTER);
-    }
-
-    public void setText(String text) {
-        textPane.setText(text);
-        textPane.setCaretPosition(0);
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Container getContainer() {
-        return panel;
-    }
-
-    public String getTabName() {
-        return title;
-    }
-
-    public Component getTabComponent() {
-        return getContainer();
-    }
+public interface EditorTab {
+    public String getTabName();
+    public Component getTabComponent();
 }

@@ -119,9 +119,9 @@ public class ActionsGenerate extends AbstractActions {
             }
         }
         dc.setText(text);
+        dc.setTitle(title);
 
-        editor.getTabbedPane().add(title, dc.getContainer());
-        editor.getTabbedPane().setSelectedIndex(editor.getTabbedPane().getTabCount()-1);
+        editor.addTab(dc);
     }
 
 }

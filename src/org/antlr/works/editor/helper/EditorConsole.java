@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.helper;
 
 import edu.usfca.xj.appkit.swing.XJTable;
+import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 
 import javax.swing.*;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class EditorConsole {
+public class EditorConsole implements EditorTab {
 
     protected EditorWindow editor;
 
@@ -224,6 +225,14 @@ public class EditorConsole {
         currentAction = new Action(name);
         actions.add(0, currentAction);
         groupTableModel.fireTableDataChanged();
+    }
+
+    public String getTabName() {
+        return "Console";
+    }
+
+    public Component getTabComponent() {
+        return getContainer();
     }
 
     public class Action {
