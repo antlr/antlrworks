@@ -3,7 +3,6 @@ package org.antlr.works.editor.helper;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.idea.IdeaAction;
 import org.antlr.works.editor.idea.IdeaActionDelegate;
-import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserReference;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
@@ -94,7 +93,8 @@ public class EditorInspector {
     }
 
     protected void discoverInvalidCharLiteralTokens(List items) {
-        List tokens = editor.getTokens();
+        // @todo re-introduce if needed
+        /*List tokens = editor.getTokens();
         if(tokens == null)
             return;
 
@@ -118,7 +118,7 @@ public class EditorInspector {
                         "Invalid character literal '"+t.getAttribute()+"'");
                 items.add(item);
             }
-        }
+        }    */
     }
 
     protected void discoverUndefinedReferences(List items) {

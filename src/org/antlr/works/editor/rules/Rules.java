@@ -73,10 +73,12 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     protected boolean programmaticallySelectingRule = false;
     protected boolean selectNextRule = false;
 
-    protected JTree rulesTree;
+    protected XJTree rulesTree;
     protected DefaultMutableTreeNode rulesTreeRootNode;
     protected DefaultTreeModel rulesTreeModel;
     protected List rulesTreeExpandedNodes;
+
+    protected boolean sort;
 
     public Rules(EditorWindow editor, ThreadedParser parser, XJTree rulesTree) {
         this.editor = editor;
@@ -90,7 +92,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         rulesTree.setDelegate(this);
         rulesTree.setEnableDragAndDrop();
 
-        rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeUserObject(-1));
+        rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeUserObject((ParserRule)null));
         rulesTreeModel = new DefaultTreeModel(rulesTreeRootNode);
         rulesTreeExpandedNodes = new ArrayList();
 
@@ -114,6 +116,11 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
                 new RuleMoveUpAction());
         keyBindings.addKeyBinding("RULE_MOVE_DOWN", KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Event.CTRL_MASK),
                 new RuleMoveDownAction());
+    }
+
+    public void toggleSorting() {
+        sort = !sort;
+        rebuildTree();
     }
 
     public int getNumberOfRulesWithErrors() {
@@ -580,8 +587,26 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     protected void buildTree(DefaultMutableTreeNode parentNode, List rules, int from, int to) {
-        for(int index=from; index<=to; index++) {
-            parentNode.add(new DefaultMutableTreeNode(new RuleTreeUserObject(index)));
+        // Sort the list of subrules
+        List subrules = new ArrayList(rules.subList(from, to+1));
+        if(sort && !subrules.isEmpty()) {
+            Collections.sort(subrules);
+            ParserRule firstRule = (ParserRule)subrules.get(0);
+            if(firstRule.lexer) {
+                for(int index=0; index<subrules.size(); index++) {
+                    ParserRule rule = (ParserRule)subrules.get(0);
+                    if(!rule.lexer)
+                        break;
+
+                    subrules.add(rule);
+                    subrules.remove(0);
+                }
+            }
+        }
+
+        for(int index=0; index<subrules.size(); index++) {
+            ParserRule rule = (ParserRule) subrules.get(index);
+            parentNode.add(new DefaultMutableTreeNode(new RuleTreeUserObject(rule)));
         }
     }
 
@@ -724,13 +749,11 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     public class RuleTreeUserObject implements Transferable {
 
-        public int ruleIndex;
         public ParserRule rule;
         public ParserGroup group;
 
-        public RuleTreeUserObject(int index) {
-            this.ruleIndex = index;
-            this.rule = parser.getRuleAtIndex(ruleIndex);
+        public RuleTreeUserObject(ParserRule rule) {
+            this.rule = rule;
         }
 
         public RuleTreeUserObject(ParserGroup group) {

@@ -90,6 +90,7 @@ public class IDE extends XJApplicationDelegate {
 
         registerUser();
         checkLibraries();
+        checkEnvironment();
 
         if(args.length == 2 && args[0].equals("-f")) {
             XJApplication.shared().openDocument(args[1]);
@@ -144,6 +145,16 @@ public class IDE extends XJApplicationDelegate {
             XJAlert.display(null, "Missing Libraries", missing.toString());
             System.exit(0);
         }
+    }
+
+    public void checkEnvironment() {
+        /*try {
+            ErrorManager.setTool(new Tool() {
+            });
+            ErrorManager.setErrorListener(ErrorManager.getErrorListener());
+        } catch(Error error) {
+            error.printStackTrace();
+        } */
     }
 
     public void appShowHelp() {

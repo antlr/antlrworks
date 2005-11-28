@@ -44,19 +44,24 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.GeneralPath;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserver {
 
-    public static final boolean USE_PERSISTENCE = true;
-
     public static final int TOKEN_NORMAL = 1;
     public static final int TOKEN_HIDDEN = 2;
     public static final int TOKEN_DEAD = 3;
 
+    protected Debugger debugger;
     protected TextPane textPane;
+    protected int mouseIndex;
+
     // Location where the next token will be inserted
     protected int cursorIndex;
     protected Map tokens;
@@ -64,6 +69,10 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
     protected boolean persistence;
     // Length of the persistent text (for which we have tokens)
     protected int persistenceTextLength;
+
+    // Last location event received by the debugger
+    protected int locationLine;
+    protected int locationCharInLine;
 
     protected SimpleAttributeSet attributeNonConsumed;
     protected SimpleAttributeSet attributeConsume;
@@ -73,11 +82,16 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
 
     protected boolean drawTokensBox;
 
-    public DebuggerInputText(TextPane textPane) {
-        tokens = new HashMap();
-        drawTokensBox = false;
+    public DebuggerInputText(Debugger debugger, TextPane textPane) {
+        this.debugger = debugger;
         this.textPane = textPane;
         this.textPane.setDelegate(this);
+        this.textPane.addMouseListener(new MyMouseListener());
+        this.textPane.addMouseMotionListener(new MyMouseMotionListener());
+
+        tokens = new HashMap();
+        drawTokensBox = false;
+
         reset();
         createTextAttributes();
 
@@ -102,6 +116,11 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
         return drawTokensBox;
     }
 
+    public void setLocation(int line, int charInLine) {
+        this.locationLine = line;
+        this.locationCharInLine = charInLine;
+    }
+
     public void consumeToken(Token token, int type) {
         SimpleAttributeSet attr = null;
         switch(type) {
@@ -120,6 +139,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
 
     public void reset() {
         textPane.setText("");
+
         textPane.setCharacterAttributes(SimpleAttributeSet.EMPTY, true);
         cursorIndex = 0;
 
@@ -130,7 +150,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
     }
 
     public void rewindAll() {
-        if(USE_PERSISTENCE && persistence) {
+        if(persistence) {
             textPane.selectAll();
             textPane.setCharacterAttributes(attributeNonConsumed, true);
         } else {
@@ -140,7 +160,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
     }
 
     public void rewind(int start) {
-        if(USE_PERSISTENCE && persistence) {
+        if(persistence) {
             int persistentStart = Math.max(persistenceTextLength, start);
             if(getTextLength()>persistentStart) {
                 removeText(persistentStart, getTextLength());
@@ -172,16 +192,21 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             return;
 
         // Don't add if the token is already in the map
-        if(tokens.get(new Integer(index)) != null)
+        TokenInfo info = (TokenInfo) tokens.get(new Integer(index));
+        if(info != null) {
+            // But update its position to its most recent value
+            info.line = locationLine;
+            info.charInLine = locationCharInLine;
             return;
+        }
 
-        tokens.put(new Integer(index), new TokenInfo(token, persistenceTextLength));
+        tokens.put(new Integer(index), new TokenInfo(token, persistenceTextLength, locationLine, locationCharInLine));
         persistenceTextLength += token.getText().length();
     }
 
     private void addText(Token token, AttributeSet attribute) {
         String text = token.getText();
-        if(USE_PERSISTENCE && persistence) {
+        if(persistence) {
             TokenInfo info = (TokenInfo)tokens.get(new Integer(token.getTokenIndex()));
             if(info != null) {
                 textPane.getStyledDocument().setCharacterAttributes(info.start, info.end-info.start, attribute, true);
@@ -231,51 +256,119 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
     }
 
     public void textPaneDidPaint(Graphics g) {
-        if(!drawTokensBox)
-            return;
-
-        g.setColor(Color.red);
-
         for (Iterator iterator = tokens.values().iterator(); iterator.hasNext();) {
             TokenInfo info = (TokenInfo) iterator.next();
 
-            try {
-                Rectangle r1 = textPane.modelToView(info.start);
-                Rectangle r2 = textPane.modelToView(info.end);
+            if(drawTokensBox)
+                drawToken(info, (Graphics2D)g, Color.red, false);
 
-                if(r2.y > r1.y) {
-                    // Token is displayed on more than one line
-                    // (currently only handle two lines wrapping ;-))
+            if(mouseIndex > info.start && mouseIndex <= info.end)
+                drawToken(info, (Graphics2D)g, new Color(0, 0.5f, 1, 0.4f), true);
 
-                    // Draw the first line
-                    int index = info.start+1;
-                    while(textPane.modelToView(index).y == r1.y) {
-                        index++;
-                    }
-                    Rectangle r11 = textPane.modelToView(index-1);
-                    g.drawRect(r1.x, r1.y, r11.x-r1.x, r1.height);
-
-                    // Then the second one
-                    Rectangle r20 = textPane.modelToView(index);
-                    g.drawRect(r20.x, r20.y, r2.x-r20.x, r20.height);                    
-                } else
-                    g.drawRect(r1.x, r1.y, r2.x-r1.x, r1.height);
-            } catch (BadLocationException e) {
-                // Ignore exception
-            }
         }
     }
 
-    private class TokenInfo {
+    public void drawToken(TokenInfo info, Graphics2D g, Color c, boolean fill) {
+        g.setColor(c);
+        try {
+            Rectangle r1 = textPane.modelToView(info.start);
+            Rectangle r2 = textPane.modelToView(info.end);
+
+            if(r2.y > r1.y) {
+                // Token is displayed on more than one line
+                // We will simply create a path containing the
+                // outline of the token spanning on multiple lines
+
+                GeneralPath gp = new GeneralPath();
+
+                Rectangle r = null;
+                Rectangle pr = null;
+                int line_y = r1.y;
+
+                gp.moveTo(r1.x, r1.y);
+                for(int index=info.start; index<info.end; index++) {
+                    r = textPane.modelToView(index);
+                    if(r.y > line_y) {
+                        // Draw a line between the last point of the path
+                        // and the last rectangle of the line which is pr
+                        // because r is already in the new line.
+                        line_y = r.y;
+                        if(pr != null) {
+                            gp.lineTo(pr.x+pr.width, pr.y);
+                            gp.lineTo(pr.x+pr.width, pr.y+pr.height);
+                        }
+                    }
+                    pr = r;
+                }
+                if(r != null) {
+                    gp.lineTo(r.x+r.width, r.y);
+                    gp.lineTo(r.x+r.width, r.y+r.height);
+
+                    gp.lineTo(r1.x, r.y+r.height);
+                    gp.lineTo(r1.x, r1.y);
+                }
+                if(fill)
+                    g.fill(gp);
+                else
+                    g.draw(gp);
+            } else {
+                if(fill)
+                    g.fillRect(r1.x, r1.y, r2.x-r1.x, r1.height);
+                else
+                    g.drawRect(r1.x, r1.y, r2.x-r1.x, r1.height);
+            }
+        } catch (BadLocationException e) {
+            // Ignore exception
+        }
+    }
+
+    public TokenInfo getTokenInfoAtIndex(int index) {
+        for (Iterator iterator = tokens.values().iterator(); iterator.hasNext();) {
+            TokenInfo info = (TokenInfo) iterator.next();
+
+            if(mouseIndex > info.start && mouseIndex <= info.end)
+                return info;
+        }
+        return null;
+    }
+
+    protected class TokenInfo {
 
         public Token token;
         public int start;
         public int end;
 
-        public TokenInfo(Token token, int start) {
+        public int line;
+        public int charInLine;
+
+        public TokenInfo(Token token, int start, int line, int charInLine) {
             this.token = token;
             this.start = start;
             this.end = start+token.getText().length();
+            this.line = line;
+            this.charInLine = charInLine;
+        }
+    }
+
+    protected class MyMouseListener extends MouseAdapter {
+
+        public void mousePressed(MouseEvent e) {
+            mouseIndex = textPane.getTextIndexAtLocation(e.getPoint());
+            if(mouseIndex != -1) {
+                TokenInfo info = getTokenInfoAtIndex(mouseIndex);
+                int index = debugger.computeAbsoluteGrammarIndex(info.line, info.charInLine);
+                if(index >= 0)
+                    debugger.editor.selectTextRange(index, index+1);
+            }
+        }
+
+    }
+
+    protected class MyMouseMotionListener extends MouseMotionAdapter {
+
+        public void mouseMoved(MouseEvent e) {
+            mouseIndex = textPane.getTextIndexAtLocation(e.getPoint());
+            textPane.repaint();
         }
     }
 }

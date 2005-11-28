@@ -1,6 +1,7 @@
 package org.antlr.works.editor.swing;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 /*
 
@@ -75,4 +76,21 @@ public class TextPane extends JTextPane {
             delegate.textPaneDidPaint(g);
     }
 
+    public int getTextIndexAtLocation(Point point) {
+        int index = viewToModel(point);
+        Rectangle r;
+        try {
+            r = modelToView(index);
+            if(index-1>=0)
+                r.add(modelToView(index-1));
+            if(index+1<getText().length())
+                r.add(modelToView(index+1));
+        } catch (BadLocationException e1) {
+            return -1;
+        }
+        if(r == null)
+            return -1;
+        else
+            return r.contains(point)?index:-1;
+    }
 }

@@ -50,7 +50,7 @@ import java.io.IOException;
 public class CodeGenerate implements Runnable {
 
     protected String outputPath;
-    protected boolean debug = false;
+    protected boolean debug = true;
     protected Grammar parserGrammar;
     protected Grammar lexerGrammar;
 

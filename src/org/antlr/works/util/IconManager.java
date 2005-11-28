@@ -76,6 +76,10 @@ public class IconManager {
         return createImageIcon(path+"coloring.png");
     }
 
+    public ImageIcon getIconSort() {
+        return createImageIcon(path+"sort.png");
+    }
+
     public ImageIcon getIconSyntaxDiagram() {
         return createImageIcon(path+"sd.png");
     }

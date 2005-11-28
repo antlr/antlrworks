@@ -46,7 +46,6 @@ import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.HelpManager;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -305,6 +304,9 @@ public class DialogPrefs extends XJPanel {
         label5 = new JLabel();
         lafCombo = new JComboBox();
         startupActionCombo = new JComboBox();
+        label24 = new JLabel();
+        dotToolPathField = new JTextField();
+        browseDotToolPathButton = new JButton();
         tabEditor = new JPanel();
         label3 = new JLabel();
         editorFontCombo = new JComboBox();
@@ -320,13 +322,6 @@ public class DialogPrefs extends XJPanel {
         label22 = new JLabel();
         parserDelayField = new JTextField();
         label23 = new JLabel();
-        tabVisual = new JPanel();
-        panel9 = new JPanel();
-        label24 = new JLabel();
-        dotToolPathField = new JTextField();
-        browseDotToolPathButton = new JButton();
-        label25 = new JLabel();
-        dotImageFormatField = new JTextField();
         tabCompiler = new JPanel();
         jikesRadio = new JRadioButton();
         integratedRadio = new JRadioButton();
@@ -444,6 +439,18 @@ public class DialogPrefs extends XJPanel {
                             "Open the last used document"
                         }));
                         tabGeneral.add(startupActionCombo, cc.xywh(5, 3, 3, 1));
+
+                        //---- label24 ----
+                        label24.setText("DOT path:");
+                        tabGeneral.add(label24, cc.xy(3, 7));
+
+                        //---- dotToolPathField ----
+                        dotToolPathField.setToolTipText("Absolute path to the DOT command-line tool");
+                        tabGeneral.add(dotToolPathField, cc.xywh(5, 7, 3, 1));
+
+                        //---- browseDotToolPathButton ----
+                        browseDotToolPathButton.setText("Browse...");
+                        tabGeneral.add(browseDotToolPathButton, cc.xy(9, 7));
                     }
                     tabbedPane1.addTab("General", tabGeneral);
 
@@ -540,76 +547,6 @@ public class DialogPrefs extends XJPanel {
                         tabEditor.add(label23, cc.xy(7, 15));
                     }
                     tabbedPane1.addTab("Editor", tabEditor);
-
-                    //======== tabVisual ========
-                    {
-                        tabVisual.setLayout(new FormLayout(
-                            new ColumnSpec[] {
-                                new ColumnSpec(Sizes.dluX(10)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(10))
-                            },
-                            new RowSpec[] {
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC
-                            }));
-
-                        //======== panel9 ========
-                        {
-                            panel9.setBorder(new TitledBorder("DOT"));
-                            panel9.setLayout(new FormLayout(
-                                new ColumnSpec[] {
-                                    FormFactory.DEFAULT_COLSPEC,
-                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                    new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
-                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                    new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                    FormFactory.DEFAULT_COLSPEC,
-                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                    FormFactory.DEFAULT_COLSPEC
-                                },
-                                new RowSpec[] {
-                                    FormFactory.DEFAULT_ROWSPEC,
-                                    FormFactory.LINE_GAP_ROWSPEC,
-                                    FormFactory.DEFAULT_ROWSPEC,
-                                    FormFactory.LINE_GAP_ROWSPEC,
-                                    FormFactory.DEFAULT_ROWSPEC
-                                }));
-
-                            //---- label24 ----
-                            label24.setText("Tool path:");
-                            panel9.add(label24, cc.xy(3, 1));
-                            panel9.add(dotToolPathField, cc.xy(5, 1));
-
-                            //---- browseDotToolPathButton ----
-                            browseDotToolPathButton.setText("Browse...");
-                            panel9.add(browseDotToolPathButton, cc.xy(7, 1));
-
-                            //---- label25 ----
-                            label25.setText("Image format:");
-                            panel9.add(label25, cc.xy(3, 3));
-
-                            //---- dotImageFormatField ----
-                            dotImageFormatField.setText("png");
-                            panel9.add(dotImageFormatField, cc.xy(5, 3));
-                        }
-                        tabVisual.add(panel9, cc.xywh(3, 5, 5, 1));
-                    }
-                    tabbedPane1.addTab("Visualization", tabVisual);
 
                     //======== tabCompiler ========
                     {
@@ -947,6 +884,9 @@ public class DialogPrefs extends XJPanel {
     private JLabel label5;
     private JComboBox lafCombo;
     private JComboBox startupActionCombo;
+    private JLabel label24;
+    private JTextField dotToolPathField;
+    private JButton browseDotToolPathButton;
     private JPanel tabEditor;
     private JLabel label3;
     private JComboBox editorFontCombo;
@@ -962,13 +902,6 @@ public class DialogPrefs extends XJPanel {
     private JLabel label22;
     private JTextField parserDelayField;
     private JLabel label23;
-    private JPanel tabVisual;
-    private JPanel panel9;
-    private JLabel label24;
-    private JTextField dotToolPathField;
-    private JButton browseDotToolPathButton;
-    private JLabel label25;
-    private JTextField dotImageFormatField;
     private JPanel tabCompiler;
     private JRadioButton jikesRadio;
     private JRadioButton integratedRadio;
@@ -1017,6 +950,7 @@ public class DialogPrefs extends XJPanel {
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
 
 
 

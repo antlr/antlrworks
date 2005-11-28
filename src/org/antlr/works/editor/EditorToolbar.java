@@ -47,6 +47,7 @@ public class EditorToolbar implements XJNotificationObserver {
     public JButton backward;
     public JButton forward;
 
+    public JToggleButton sort;
     public JButton sd;
     public JButton coloring;
     public JButton analysis;
@@ -101,6 +102,7 @@ public class EditorToolbar implements XJNotificationObserver {
         toolbar.add(backward = (JButton)createNewButton(IconManager.shared().getIconBackward(), "Backward", false));
         toolbar.add(forward = (JButton)createNewButton(IconManager.shared().getIconForward(), "Forward", false));
         toolbar.add(Box.createHorizontalStrut(15));
+        toolbar.add(sort = (JToggleButton)createNewButton(IconManager.shared().getIconSort(), "Sort rules", true));
         toolbar.add(sd = (JButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Syntax diagram", false));
         toolbar.add(coloring = (JButton)createNewButton(IconManager.shared().getIconColoring(), "Syntax coloring", false));
         toolbar.add(ideas = (JButton)createNewButton(IconManager.shared().getIconIdea(), "Syntax ideas", false));
@@ -122,6 +124,12 @@ public class EditorToolbar implements XJNotificationObserver {
         forward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 editor.actionsGoTo.goToForward();
+            }
+        });
+
+        sort.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.toggleRulesSorting();
             }
         });
 

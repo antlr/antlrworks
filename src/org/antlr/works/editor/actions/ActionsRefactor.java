@@ -118,6 +118,108 @@ public class ActionsRefactor extends AbstractActions {
         }
     }
 
+    public void convertLiteralsToSingleQuote() {
+        editor.beginGroupChange("Convert Literals To Single Quote Literals");
+        convertLiteralsToSpecifiedQuote(Lexer.TOKEN_DOUBLE_QUOTE_STRING, '\'', '"');
+        editor.endGroupChange();
+    }
+
+    public void convertLiteralsToDoubleQuote() {
+        editor.beginGroupChange("Convert Literals To Double Quote Literals");
+        convertLiteralsToSpecifiedQuote(Lexer.TOKEN_SINGLE_QUOTE_STRING, '"', '\'');
+        editor.endGroupChange();
+    }
+
+    public void convertLiteralsToCStyleQuote() {
+        editor.beginGroupChange("Convert Literals To C-style Quote Literals");
+
+        List tokens = editor.getTokens();
+        for(int index = tokens.size()-1; index>0; index--) {
+            Token token = (Token) tokens.get(index);
+
+            String attribute;
+            String stripped;
+            String replaced = null;
+
+            if(token.type == Lexer.TOKEN_SINGLE_QUOTE_STRING || token.type == Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
+                attribute = token.getAttribute();
+                stripped = attribute.substring(1, attribute.length()-1);
+            } else
+                continue;
+
+            if(token.type == Lexer.TOKEN_SINGLE_QUOTE_STRING) {
+                // Only one character allowed
+                if(stripped.length() == 1)
+                    continue;
+                else if(stripped.length() == 2 && stripped.charAt(0) == '\\')
+                    continue;
+
+                if(stripped.indexOf('"') != -1)
+                    stripped = escapeStringQuote(stripped, '"', '\'');
+
+                replaced = '"'+stripped+'"';
+            } else if(token.type == Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
+                // String with one character should be converted to single-quote
+
+                if(stripped.length() > 1 && stripped.charAt(0) != '\\')
+                    continue;
+
+                if(stripped.indexOf('\'') != -1)
+                    stripped = escapeStringQuote(stripped, '\'', '"');
+
+                replaced = '\''+stripped+'\'';
+            }
+
+            editor.replaceText(token.getStartIndex(), token.getEndIndex(), replaced);
+        }
+
+        editor.endGroupChange();
+    }
+
+    protected void convertLiteralsToSpecifiedQuote(int tokenType, char quote, char unescapeQuote) {
+        List tokens = editor.getTokens();
+        for(int index = tokens.size()-1; index>0; index--) {
+            Token token = (Token) tokens.get(index);
+            if(token.type != tokenType)
+                continue;
+
+            String attribute = token.getAttribute();
+            String stripped = attribute.substring(1, attribute.length()-1);
+            if(stripped.indexOf(quote) != -1)
+                stripped = escapeStringQuote(stripped, quote, unescapeQuote);
+
+            editor.replaceText(token.getStartIndex(), token.getEndIndex(), quote+stripped+quote);
+        }
+    }
+
+    protected String escapeStringQuote(String s, char escapeQuote, char unescapeQuote) {
+        // Escape the quote found in s.
+        // Example:
+        // "hello'world" -> 'hello\'world'
+        // "hello\'world" -> 'hello\'world'
+        // "hello\"world" -> 'hello"world'
+
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i<s.length(); i++) {
+            char c = s.charAt(i);
+            if(c == '\\') {
+                i++;
+                char c1 = s.charAt(i);
+                if(c1 == unescapeQuote)
+                    sb.append(c1);
+                else {
+                    sb.append('\\');
+                    sb.append(c1);
+                }
+            } else if(c == escapeQuote) {
+                sb.append('\\');
+                sb.append(escapeQuote);
+            } else
+                sb.append(c);
+        }
+        return sb.toString();
+    }
+
     public void removeLeftRecursion() {
         ParserRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {

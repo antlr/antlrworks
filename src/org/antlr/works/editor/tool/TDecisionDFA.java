@@ -366,7 +366,6 @@ node "s1=>2"  0.486 0.486 0.969 0.969 "s1=>2" solid doublecircle black lightgrey
 
         int labelIndex = 3+2*controlCount+1;
         String label = tokens[labelIndex];
-        System.out.println(label);
         Vector2D labelPosition = new Vector2D(Float.parseFloat(tokens[labelIndex+1])*80,
                                         (height-Float.parseFloat(tokens[labelIndex+2]))*80);
 

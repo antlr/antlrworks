@@ -32,15 +32,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.menu.*;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import edu.usfca.xj.foundation.notification.XJNotificationObserver;
-import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
+import org.antlr.works.editor.tool.TDecisionDFA;
+import org.antlr.works.editor.undo.Undo;
+import org.antlr.works.editor.visual.Visual;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
+public class EditorMenu implements XJMenuItemDelegate {
 
     // Edit
     public static final int MI_EDIT_UNDO = 0;
@@ -89,10 +89,13 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
     // Refactor
     public static final int MI_RENAME = 60;
     public static final int MI_REPLACE_LITERAL_WITH_TOKEN_LABEL = 61;
-    public static final int MI_REMOVE_LEFT_RECURSION = 62;
-    public static final int MI_REMOVE_ALL_LEFT_RECURSION = 63;
-    public static final int MI_EXTRACT_RULE = 64;
-    public static final int MI_INLINE_RULE = 65;
+    public static final int MI_LITERAL_TO_SINGLEQUOTE = 62;
+    public static final int MI_LITERAL_TO_DOUBLEQUOTE = 63;
+    public static final int MI_LITERAL_TO_CSTYLEQUOTE = 64;
+    public static final int MI_REMOVE_LEFT_RECURSION = 65;
+    public static final int MI_REMOVE_ALL_LEFT_RECURSION = 66;
+    public static final int MI_EXTRACT_RULE = 67;
+    public static final int MI_INLINE_RULE = 68;
 
     // Generate
     public static final int MI_GENERATE_CODE = 70;
@@ -138,16 +141,9 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
     public EditorMenu(EditorWindow editor) {
         this.editor = editor;
-        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
-        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STOPPED);
     }
 
     public void close() {
-        XJNotificationCenter.defaultCenter().removeObserver(this);
-    }
-
-    public void notificationFire(Object source, String name) {
-        editor.getMainMenuBar().refresh();
     }
 
     public boolean isDebuggerRunning() {
@@ -282,13 +278,22 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menu = new XJMenu();
         menu.setTitle("Refactor");
         menu.addItem(new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
-        menu.addItem(new XJMenuItem("Replace Literal With Token Label...", MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this));
+        menu.addItem(new XJMenuItem("Replace Literals With Token Label...", MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Remove Left Recursion", MI_REMOVE_LEFT_RECURSION, this));
         menu.addItem(new XJMenuItem("Remove All Left Recursion", MI_REMOVE_ALL_LEFT_RECURSION, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Extract Rule...", MI_EXTRACT_RULE, this));
         menu.addItem(new XJMenuItem("Inline Rule", MI_INLINE_RULE, this));
+        menu.addSeparator();
+
+        XJMenu literals = new XJMenu();
+        literals.setTitle("Convert Literals");
+        literals.addItem(new XJMenuItem("To Single Quote Literals", MI_LITERAL_TO_SINGLEQUOTE, this));
+        literals.addItem(new XJMenuItem("To Double Quote Literals", MI_LITERAL_TO_DOUBLEQUOTE, this));
+        literals.addItem(new XJMenuItem("To C-style Quote Literals", MI_LITERAL_TO_CSTYLEQUOTE, this));
+
+        menu.addItem(literals);
 
         menubar.addCustomMenu(menu);
     }
@@ -356,14 +361,41 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
         menubar.addCustomMenu(menu);
     }
 
+    public void menuUndoRedoItemState() {
+        Undo undo = editor.lastUndo;
+
+        menuItemUndo.setTitle("Undo");
+        menuItemRedo.setTitle("Redo");
+
+        if(undo == null) {
+            menuItemUndo.setEnabled(false);
+            menuItemRedo.setEnabled(false);
+        } else {
+            menuItemUndo.setEnabled(undo.canUndo());
+            menuItemRedo.setEnabled(undo.canRedo());
+
+            if(undo.canUndo())
+                menuItemUndo.setTitle(undo.undoManager.getUndoPresentationName());
+            if(undo.canRedo())
+                menuItemRedo.setTitle(undo.undoManager.getRedoPresentationName());
+        }
+    }
+
     public void menuItemState(XJMenuItem item) {
         switch(item.getTag()) {
             case MI_EDIT_UNDO:
             case MI_EDIT_REDO:
+                menuUndoRedoItemState();
+                // continue to enable/disable depending on
+                // the debugging state
+
             case MI_EDIT_CUT:
             case MI_EDIT_PASTE:
             case MI_RENAME:
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
+            case MI_LITERAL_TO_SINGLEQUOTE:
+            case MI_LITERAL_TO_DOUBLEQUOTE:
+            case MI_LITERAL_TO_CSTYLEQUOTE:
             case MI_REMOVE_LEFT_RECURSION:
             case MI_REMOVE_ALL_LEFT_RECURSION:
             case MI_EXTRACT_RULE:
@@ -403,6 +435,13 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
                     item.setEnabled(false);
                 else
                     item.setEnabled(EditorPreferences.getP4Enabled());
+                break;
+
+            case MI_EXPORT_AS_IMAGE:
+            case MI_EXPORT_AS_EPS:
+                EditorTab tab = editor.getSelectedTab();
+                item.setEnabled(tab instanceof Visual
+                                || tab instanceof TDecisionDFA);
                 break;
         }
     }
@@ -551,6 +590,18 @@ public class EditorMenu implements XJMenuItemDelegate, XJNotificationObserver {
 
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
                 editor.actionsRefactor.replaceLiteralWithTokenLabel();
+                break;
+
+            case MI_LITERAL_TO_SINGLEQUOTE:
+                editor.actionsRefactor.convertLiteralsToSingleQuote();
+                break;
+
+            case MI_LITERAL_TO_DOUBLEQUOTE:
+                editor.actionsRefactor.convertLiteralsToDoubleQuote();
+                break;
+
+            case MI_LITERAL_TO_CSTYLEQUOTE:
+                editor.actionsRefactor.convertLiteralsToCStyleQuote();
                 break;
 
             case MI_REMOVE_LEFT_RECURSION:

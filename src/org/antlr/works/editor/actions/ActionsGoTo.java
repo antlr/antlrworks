@@ -110,14 +110,12 @@ public class ActionsGoTo extends AbstractActions {
     public void goToBackward() {
         if(editor.editorGoToHistory.canGoBackward()) {
             setCaretPosition(editor.editorGoToHistory.getBackwardPosition(getCaretPosition()));
-            editor.getMainMenuBar().refreshState();
         }
     }
 
     public void goToForward() {
         if(editor.editorGoToHistory.canGoForward()) {
             setCaretPosition(editor.editorGoToHistory.getForwardPosition());
-            editor.getMainMenuBar().refreshState();
         }
     }
 

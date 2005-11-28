@@ -57,7 +57,7 @@ public class DebuggerPlayer {
 
     public DebuggerPlayer(Debugger debugger) {
         this.debugger = debugger;
-        inputText = new DebuggerInputText(debugger.inputTextPane);
+        inputText = new DebuggerInputText(debugger, debugger.inputTextPane);
         lookAheadTextStack = new Stack();
     }
 
@@ -282,6 +282,7 @@ public class DebuggerPlayer {
         // in the grammar (not needed)
         lastLocationLine = line;
         lastLocationPos = pos;
+        inputText.setLocation(lastLocationLine, lastLocationPos);
     }
 
     public void playLocation() {
@@ -298,33 +299,12 @@ public class DebuggerPlayer {
             // Select one character to be underlined
             debugger.editor.getTextPane().moveCaretPosition(index+1);
 
-            // Center the text based on the cursor position
-            centerLocation(lastLocationLine);
-
             StyleContext sc = StyleContext.getDefaultStyleContext();
             AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Background, Color.red);
             debugger.editor.getTextPane().setCharacterAttributes(aset, false);
 
         } catch(Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public void centerLocation(int line) {
-        try {
-            int top_index = debugger.computeAbsoluteGrammarIndex(line-10, 0);
-            if(top_index == -1)
-                top_index = 0;
-            int bottom_index = debugger.computeAbsoluteGrammarIndex(line+10, 0);
-            if(bottom_index == -1)
-                bottom_index = debugger.editor.getText().length();
-
-            Rectangle r1 = debugger.editor.getTextPane().modelToView(top_index);
-            Rectangle r2 = debugger.editor.getTextPane().modelToView(bottom_index);
-
-            debugger.editor.getTextPane().scrollRectToVisible(new Rectangle(r1.x, r1.y, 100, r2.y-r1.y));
-        } catch(Exception e) {
-            // ignore
         }
     }
 

@@ -1,29 +1,32 @@
-- implement zoom in vas
-- remove DOT image format in prefs
-
-- DFA decision for lexer tokens (see with Terence)
+* Prio 1
+- catch Error when ANTLR is initialize and test with corrupted installation
+- breakpoint on rule using gutter breakpoints (check if this still works)
+- breakpoint on input text
 
 - tokenVocab (of course, its for me *.tokens)
-- breakpoint on input text
-- debugger: click on token jump to corresponding rule that matched it (build reverse index)
 - debugger: back to prev/next breakpoint
 
+* Prio 2
+- implement zoom in vas
+- adopt new ANTLR grammar format (" and @)
+    -> refactoring tool to replace all single quote strings with double-quote strings
+
+- test on ANTLR v3 examples
 - do example calculator ANTLR intro (tree): convert to 3.0 and use AW with it (try to figure out
   the debugging part of all this)
 
-- catch Error when ANTLR is initialize and test with corrupted installation
-- jump into source when navigating grammar text (in generated code)
 - re-check the console
 - generate code without debugging information
+- DFA decision for lexer tokens (see with Terence)
 
-- prefs: customizable list of "Insert Rule From Template" - or read from a file ?
-- Windows/Linux: don't quit if last document closed ?
-
-- contextual menus on rules to group using selected rules (do not rely on text selection)
 - ideas: undefined rule: rename rule, delete token
 - P4: if file read-only and under P4, propose to open for edit
 - check environment (see e-mail from Jim Idle)
+- prefs: customizable list of "Insert Rule From Template" - or read from a file ?
 
+* Prio 3:
+- jump into source when navigating grammar text (in generated code)
+- Windows/Linux: don't quit if last document closed ?
 - display current token in syntax diagram
 - shift-right, shift-left, comment/uncomment selection
 - display multiple rules together
@@ -55,7 +58,6 @@ JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\java
 
 * ToDo *
 
-- reduce the height of each parse tree view
 - versioning in the prefs
 - better message when cannot connect because null id (submit statistics)
 - do something with verbose in ErrorListener later

@@ -1,11 +1,17 @@
-Version 1.0ea6 -
+Version 1.0ea6 - 11/27/05
+
+- new: convert literal quote refactoring tools (to single, to double or c-style quote)
+- new: click on an input token (debugger) selects the corresponding token in the grammar
 
 - improved decision DFA: vectorial representation where states can be moved using the mouse
 - improved decision DFA: exportable to EPS and bitmap image
 - improved export to EPS: file size has been reduced by up to 1/2 of the previous generated size
 
 - move caret to decision location when displaying DFA decision
+- rules list can be sorted (group are not sorted)
 
+- improved debugger token outline when a token spans on multiple lines
+- improved underlying menu update system
 
 Version 1.0ea5 - 11/13/05
 

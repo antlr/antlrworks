@@ -154,7 +154,8 @@ public class EditorWindow
     /* Other */
 
     protected Map undos = new HashMap();
-
+    public Undo lastUndo;
+                                 
     protected boolean windowFirstDisplay = true;
     protected String lastSelectedRule;
 
@@ -483,21 +484,7 @@ public class EditorWindow
                 || editorMenu.menuItemRedo == null)
             return;
 
-        editorMenu.menuItemUndo.setTitle("Undo");
-        editorMenu.menuItemRedo.setTitle("Redo");
-
-        if(undo == null) {
-            editorMenu.menuItemUndo.setEnabled(false);
-            editorMenu.menuItemRedo.setEnabled(false);
-        } else {
-            editorMenu.menuItemUndo.setEnabled(undo.canUndo());
-            editorMenu.menuItemRedo.setEnabled(undo.canRedo());
-
-            if(undo.canUndo())
-                editorMenu.menuItemUndo.setTitle(undo.undoManager.getUndoPresentationName());
-            if(undo.canRedo())
-                editorMenu.menuItemRedo.setTitle(undo.undoManager.getRedoPresentationName());
-        }
+        lastUndo = undo;
     }
 
     public void undoStateDidChange(Undo undo) {
@@ -525,6 +512,10 @@ public class EditorWindow
             colorize.removeColorization();
 
         Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_COLORING);
+    }
+
+    public void toggleRulesSorting() {
+        rules.toggleSorting();
     }
 
     public void toggleSyntaxDiagram() {
@@ -778,7 +769,6 @@ public class EditorWindow
 
     public void goToHistoryRememberCurrentPosition() {
         editorGoToHistory.addPosition(getCaretPosition());
-        getMainMenuBar().refreshState();
     }
 
     public ParserReference getCurrentReference() {
@@ -977,7 +967,6 @@ public class EditorWindow
             textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
             textEditor.refresh();
             applyFont();
-            getMainMenuBar().refreshState();
             updateSCMStatus(null);
         } else if(name.equals(Debugger.NOTIF_DEBUG_STARTED)) {
             editorIdeas.hide();
