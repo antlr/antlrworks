@@ -34,6 +34,7 @@ package org.antlr.works.editor.helper;
 import edu.usfca.xj.appkit.swing.XJTable;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.interfaces.Console;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -46,8 +47,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
-public class EditorConsole implements EditorTab {
+public class EditorConsole implements EditorTab, Console {
 
     protected EditorWindow editor;
 
@@ -100,18 +103,12 @@ public class EditorConsole implements EditorTab {
 
         panel.add(splitPane, BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                splitPane.setDividerLocation(0.2);
-            }
-        });
     }
 
     public void makeCurrent() {
         EditorConsole.setCurrent(this);
     }
-    
+
     public Container getContainer() {
         return panel;
     }
@@ -219,6 +216,15 @@ public class EditorConsole implements EditorTab {
         }
         currentAction.appendString(t+"\n");
         System.out.println(s);
+    }
+
+    public synchronized void print(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw, true);
+        e.printStackTrace(pw);
+        pw.flush();
+        sw.flush();
+        println(sw.toString());
     }
 
     protected synchronized void newAction(String name) {

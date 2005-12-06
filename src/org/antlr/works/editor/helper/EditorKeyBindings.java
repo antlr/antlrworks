@@ -106,7 +106,7 @@ public class EditorKeyBindings {
                 try {
                     t = textComponent.getText(start, textComponent.getDocument().getLength()-start);
                 } catch (BadLocationException e1) {
-                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e1.printStackTrace();
                     return;
                 }
 

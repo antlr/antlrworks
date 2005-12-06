@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.helper;
 
+import com.apple.crypto.provider.Debug;
+
 import java.awt.*;
 
 public interface EditorProvider {
@@ -38,5 +40,6 @@ public interface EditorProvider {
     public String getText();
     public String getFilePath();
     public String getFileName();
+    public EditorConsole getConsole();
     public Container getWindowContainer();
 }

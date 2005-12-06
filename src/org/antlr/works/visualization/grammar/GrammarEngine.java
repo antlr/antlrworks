@@ -39,7 +39,8 @@ import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarNonDeterminismMessage;
 import org.antlr.works.parser.Token;
-import org.antlr.works.util.CancelObject;
+import org.antlr.works.interfaces.CancelObject;
+import org.antlr.works.interfaces.Console;
 import org.antlr.works.util.ErrorListener;
 
 import java.io.StringReader;
@@ -54,8 +55,10 @@ public class GrammarEngine {
 
     protected Grammar grammar;
     protected Grammar lexerGrammar;
+    protected Console console;
 
-    public GrammarEngine() {
+    public GrammarEngine(Console console) {
+        this.console = console;
         errors = new ArrayList();
     }
 
@@ -63,7 +66,7 @@ public class GrammarEngine {
         ErrorManager.setErrorListener(ErrorListener.shared());
         grammar = new Grammar(filename, text);
         grammar.createNFAs();
-        lexerGrammar = createLexerGrammar(grammar);
+        lexerGrammar = createLexerGrammar(console, grammar);
     }
 
     public NFAState getRuleStartState(String name) {
@@ -105,7 +108,7 @@ public class GrammarEngine {
         }
     }
 
-    public static Grammar createLexerGrammar(Grammar grammar) {
+    public static Grammar createLexerGrammar(Console console, Grammar grammar) {
         String lexerGrammarStr = grammar.getLexerGrammar();
         StringReader sr = new StringReader(lexerGrammarStr);
         Grammar lexerGrammar = new Grammar();
@@ -115,7 +118,7 @@ public class GrammarEngine {
             lexerGrammar.setGrammarContent(sr);
             lexerGrammar.createNFAs();
         } catch (Exception e) {
-            e.printStackTrace();
+            console.print(e);
         }
         sr.close();
         return lexerGrammar;

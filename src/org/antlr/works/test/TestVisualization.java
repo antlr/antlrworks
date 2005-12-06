@@ -55,7 +55,7 @@ import java.util.List;
 
 public class TestVisualization {
 
-    static GrammarEngine engine = new GrammarEngine();
+    static GrammarEngine engine = new GrammarEngine(null);
     static NFAState startState;
     static DFA dfa;
 

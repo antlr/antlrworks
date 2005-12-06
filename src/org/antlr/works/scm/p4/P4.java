@@ -35,6 +35,7 @@ package org.antlr.works.scm.p4;
 import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
+import org.antlr.works.interfaces.Console;
 
 import javax.swing.*;
 import java.io.*;
@@ -58,10 +59,13 @@ public class P4 implements SCM {
     protected P4Scheduler scheduler = new P4Scheduler();
     protected P4CommandCompletion lastCompletion = null;
 
+    protected Console console;
+
     private final Object lock = new Object();
 
-    public P4(SCMDelegate delegate) {
+    public P4(SCMDelegate delegate, Console console) {
         this.delegate = delegate;
+        this.console = console;
     }
 
     public synchronized void queryFileStatus(String file) {
@@ -262,7 +266,7 @@ public class P4 implements SCM {
                 completion.processTerminated();
 
             } catch (Exception e) {
-                e.printStackTrace();
+                console.print(e);
             }
             return success;
         }
@@ -480,8 +484,8 @@ public class P4 implements SCM {
                     if(delegate != null)
                         delegate.streamWatcherDidReceiveText(this, line);
                 }
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
+            } catch (IOException e) {
+                console.print(e);
             }
             if(delegate != null)
                 delegate.streamWatcherDidEnd(this);

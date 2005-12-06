@@ -13,8 +13,8 @@ import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.Token;
 import org.antlr.works.parser.ParserRule;
+import org.antlr.works.parser.Token;
 import org.antlr.works.visualization.grammar.GrammarEngine;
 
 import javax.swing.*;
@@ -224,7 +224,7 @@ public class TDecisionDFA implements Runnable, EditorTab {
 
         ParserRule rule = editor.getCurrentRule();
         if(rule != null && rule.lexer) {
-            g = GrammarEngine.createLexerGrammar(g);
+            g = GrammarEngine.createLexerGrammar(editor.console, g);
             g.createNFAs();
         }
         g.createLookaheadDFAs();
@@ -292,7 +292,7 @@ graph 1.000 2.583 9.056
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            editor.console.print(e);
         }
         return graph;
     }
@@ -329,7 +329,7 @@ graph 1.000 2.583 9.056
                 token = st.nextToken();
             }
         } catch(Exception e) {
-            e.printStackTrace();
+            editor.console.print(e);
             return null;
         }
         String[] result = new String[tokens.size()];
@@ -414,9 +414,9 @@ node "s1=>2"  0.486 0.486 0.969 0.969 "s1=>2" solid doublecircle black lightgrey
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line;
                 while ( (line = br.readLine()) != null)
-                    System.err.println(type + ":" + line);
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
+                    editor.console.println(type + ":" + line);
+            } catch (IOException e) {
+                editor.console.print(e);
             }
         }
     }

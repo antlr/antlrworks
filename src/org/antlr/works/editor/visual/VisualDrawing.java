@@ -60,8 +60,8 @@ public class VisualDrawing extends EditorThread {
     protected Map cacheGraphs = new HashMap();
 
     public VisualDrawing(Visual visual) {
+        super(visual.editor.console);
         this.visual = visual;
-
         start();
     }
 
@@ -115,7 +115,7 @@ public class VisualDrawing extends EditorThread {
             visual.engine.setGrammarText(threadText, filename);
         } catch (Exception e) {
             // Ignore
-            //e.printStackTrace();
+            visual.editor.console.print(e);
         } finally {
             // Flush all caches in cache because the grammar has changed
             clearCacheGraphs();
@@ -138,7 +138,7 @@ public class VisualDrawing extends EditorThread {
 
         if(error != null) {
             visual.setPlaceholder(error);
-            System.err.println(error);
+            console.println(error);
             return;
         }
 

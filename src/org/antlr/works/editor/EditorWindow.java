@@ -386,7 +386,7 @@ public class EditorWindow
         parser.addObserver(rules);
         parser.addObserver(this);
 
-        registerUndo(new Undo(this), getTextPane());
+        registerUndo(new Undo(this, console), getTextPane());
 
         XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
         XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
@@ -489,6 +489,10 @@ public class EditorWindow
 
     public void undoStateDidChange(Undo undo) {
         updateUndoRedo(undo);
+    }
+
+    public EditorConsole getConsole() {
+        return console;
     }
 
     public ATETextPane getTextPane() {

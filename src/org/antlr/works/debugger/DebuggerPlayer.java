@@ -72,7 +72,7 @@ public class DebuggerPlayer {
 
     public void popLookAheadText(Object id) {
         if(lookAheadTextStack.empty()) {
-            System.err.println("Lookahead text stack is empty while trying to popup object id "+id);
+            debugger.editor.console.println("Lookahead text stack is empty while trying to popup object id "+id);
             return;
         }
 
@@ -80,7 +80,7 @@ public class DebuggerPlayer {
         if(lat.id.equals(id)) {
             lastLookAheadText = (LookAheadText)lookAheadTextStack.pop();
         } else
-            System.err.println("The top-of-stack LookAheadText doesn't correspond to id "+id+" ("+lat.id+")");
+            debugger.editor.console.println("The top-of-stack LookAheadText doesn't correspond to id "+id+" ("+lat.id+")");
     }
 
     public void rewindLookAheadText() {
@@ -129,7 +129,7 @@ public class DebuggerPlayer {
                 boolean lastEvent = i == events.size()-1;
                 playEvent(event, lastEvent);
             } catch(Exception e) {
-                e.printStackTrace();
+                debugger.editor.console.print(e);
             }
         }
         eventPlayedCount = events.size();        
@@ -206,7 +206,7 @@ public class DebuggerPlayer {
 
             case DebuggerEvent.TERMINATE:
                 if(lookAheadTextStack.size() > 0) {
-                    System.err.println("Lookahead text stack not empty");
+                    debugger.editor.console.println("Lookahead text stack not empty");
                 }
                 break;
         }
@@ -304,7 +304,7 @@ public class DebuggerPlayer {
             debugger.editor.getTextPane().setCharacterAttributes(aset, false);
 
         } catch(Exception e) {
-            e.printStackTrace();
+            debugger.editor.console.print(e);
         }
     }
 
@@ -357,14 +357,14 @@ public class DebuggerPlayer {
 
         public void enable() {
             if(enable)
-                System.err.println("Enabling an already enabled LookAheadText");
+                debugger.editor.console.println("Enabling an already enabled LookAheadText");
 
             enable = true;
         }
 
         public void disable() {
             if(!enable)
-                System.err.println("Disabling an already disabled LookAheadText");
+                debugger.editor.console.println("Disabling an already disabled LookAheadText");
 
             enable = false;
         }

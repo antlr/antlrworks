@@ -198,7 +198,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
+            debugger.editor.console.print(e);
         }
     }
 
@@ -275,7 +275,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             if(!codeGenerator.generate(true))
                 errorMessage = codeGenerator.getLastError();
         } catch (Exception e) {
-            e.printStackTrace();
+            debugger.editor.console.print(e);
             errorMessage = e.getLocalizedMessage();
         }
 
@@ -317,7 +317,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
             XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
         } catch(Exception e) {
-            e.printStackTrace();
+            debugger.editor.console.print(e);
             reportError("Error while generating the glue-code:\n"+e.getLocalizedMessage());
         }
     }
@@ -330,7 +330,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         try {
             XJUtils.writeStringToFile(getInputText(), fileRemoteParserInputText);
         } catch (IOException e) {
-            e.printStackTrace();
+            debugger.editor.console.print(e);
             reportError("Error while generating the input text:\n"+e.getLocalizedMessage());
         }
     }
@@ -356,7 +356,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
 
-                System.out.println("Compile:"+ Utils.toString(args));
+                debugger.editor.console.println("Compile:"+ Utils.toString(args));
                 Process p = Runtime.getRuntime().exec(args);
                 new StreamWatcher(p.getErrorStream(), "Compiler").start();
                 new StreamWatcher(p.getInputStream(), "Compiler").start();
@@ -431,7 +431,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
         classPath += File.pathSeparatorChar+".";
 
-        System.out.println("Launch with path ="+classPath);
+        debugger.editor.console.println("Launch with path ="+classPath);
 
         try {
             // Use an array rather than a single string because white-space
@@ -465,8 +465,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             return null;
 
         String p = url.getPath();
-        System.out.println("Original = "+p);
-
         if(p.startsWith("file:"))
             p = p.substring("file:".length());
 
@@ -532,8 +530,8 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                     if(delegate != null)
                         delegate.streamWatcherDidReceiveString(line+"\n");
                 }
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
+            } catch (IOException e) {
+                debugger.editor.console.print(e);
             }
         }
     }

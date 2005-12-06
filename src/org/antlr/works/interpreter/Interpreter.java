@@ -143,7 +143,7 @@ public class Interpreter implements Runnable, EditorTab {
         panel.add(createControlPanel(), BorderLayout.NORTH);
         panel.add(splitPane, BorderLayout.CENTER);
 
-        editor.registerUndo(new Undo(editor), textPane);
+        editor.registerUndo(new Undo(editor, editor.console), textPane);
     }
 
     public Box createControlPanel() {
@@ -258,7 +258,7 @@ public class Interpreter implements Runnable, EditorTab {
                 t = parseEngine.parse(startSymbol);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            editor.console.print(e);
             XJAlert.display(editor.getWindowContainer(), "Error while interpreting", "The interpreter has generated the following exception:\n"+e);
         }
 
@@ -285,7 +285,7 @@ public class Interpreter implements Runnable, EditorTab {
                 lexer.importTokenVocabulary(parser); // make sure token types line up
                 lexer.setGrammarContent(lexerGrammarText);
             } catch (Exception e) {
-                e.printStackTrace();
+                editor.console.print(e);
             }
         }
 

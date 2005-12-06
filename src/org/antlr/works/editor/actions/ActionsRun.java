@@ -47,7 +47,7 @@ public class ActionsRun extends AbstractActions {
             editor.selectInterpreterTab();
             editor.interpreter.interpret();
         } catch (Exception e) {
-            e.printStackTrace();
+            editor.console.print(e);
         }
     }
 

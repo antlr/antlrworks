@@ -29,50 +29,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.undo;
+package org.antlr.works.interfaces;
 
-import org.antlr.works.interfaces.Console;
-
-import javax.swing.*;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
-import java.awt.event.ActionEvent;
-
-public class UndoAction extends AbstractAction {
-
-    protected UndoManager undoManager;
-    protected RedoAction redoAction;
-    protected Console console;
-
-    public UndoAction(UndoManager manager, Console console) {
-        super("Undo");
-        setEnabled(false);
-        this.undoManager = manager;
-        this.console = console;
-    }
-
-    public void setRedoAction(RedoAction action) {
-        this.redoAction = action;
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        try {
-            if(undoManager.canUndo())
-                undoManager.undo();
-        } catch (CannotUndoException ex) {
-            console.print(ex);
-        }
-        updateUndoState();
-        redoAction.updateRedoState();
-    }
-
-    protected void updateUndoState() {
-        if (undoManager.canUndo()) {
-            setEnabled(true);
-            putValue(Action.NAME, undoManager.getUndoPresentationName());
-        } else {
-            setEnabled(false);
-            putValue(Action.NAME, "Undo");
-        }
-    }
+public interface CancelObject {
+    public boolean cancel();
 }

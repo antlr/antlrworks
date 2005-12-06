@@ -31,11 +31,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.visual;
 
-import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.stats.Statistics;
@@ -57,7 +57,7 @@ import java.io.IOException;
 
 public class Visual implements EditorTab {
 
-    protected XJFrame parent;
+    protected EditorWindow editor;
 
     protected VisualDrawing drawing;
     protected VisualAnalysis analysis;
@@ -75,8 +75,8 @@ public class Visual implements EditorTab {
 
     protected boolean enable = true;
 
-    public Visual(XJFrame parent) {
-        this.parent = parent;
+    public Visual(EditorWindow parent) {
+        this.editor = parent;
 
         skin = new SDSkin();
 
@@ -84,7 +84,7 @@ public class Visual implements EditorTab {
         context.setEngine(new GEngineGraphics());
         context.setSkin(skin);
 
-        engine = new GrammarEngine();
+        engine = new GrammarEngine(editor.console);
 
         panel = new GPanel(context);
 
@@ -157,7 +157,7 @@ public class Visual implements EditorTab {
     }
 
     public String chooseDOTFile() {
-        if(!XJFileChooser.shared().displaySaveDialog(parent.getJavaContainer(), "DOT", "DOT file", false))
+        if(!XJFileChooser.shared().displaySaveDialog(editor.getJavaContainer(), "DOT", "DOT file", false))
             return null;
 
         return XJFileChooser.shared().getSelectedFilePath();
@@ -175,7 +175,7 @@ public class Visual implements EditorTab {
             writer.write(dot);
             writer.close();
         } catch (IOException e) {
-            XJAlert.display(parent.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
+            XJAlert.display(editor.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
 
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_ANTLRNFA_DOT);
@@ -194,7 +194,7 @@ public class Visual implements EditorTab {
         try {
             jdot.writeToFile(dotFile);
         } catch (Exception e) {
-            XJAlert.display(parent.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
+            XJAlert.display(editor.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
 
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_OPTIMIZEDNFA_DOT);
@@ -213,7 +213,7 @@ public class Visual implements EditorTab {
         try {
             jdot.writeToFile(dotFile);
         } catch (Exception e) {
-            XJAlert.display(parent.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
+            XJAlert.display(editor.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
 
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_RAWNFA_DOT);

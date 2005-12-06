@@ -615,12 +615,9 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     public void parserDidParse() {
-        //long t = System.currentTimeMillis();
         rebuildDuplicateRulesList();
         rebuildUndefinedReferencesList();
         rebuildHasLeftRecursionRulesList();
-        //long delta = System.currentTimeMillis()-t;
-        //System.out.println("Rebuild in "+delta);
 
         rebuildTree();
         if(selectNextRule) {
@@ -663,7 +660,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             }
             return true;
         } catch (BadLocationException e) {
-            e.printStackTrace();
+            editor.console.print(e);
             return false;
         }
     }

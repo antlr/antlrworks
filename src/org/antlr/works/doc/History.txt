@@ -16,6 +16,7 @@ Version 1.0ea6 - 12/05/05
 - debugger input text is now saved and restored in preferences
 - improved caret visibility with wider caret in grammar text
 
+- improved message redirection to editor console
 - improved debugger token outline when a token spans on multiple lines
 - improved underlying menu update system
 - report a message if ANTLR installation is corrupted

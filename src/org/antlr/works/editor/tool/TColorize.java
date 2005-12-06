@@ -67,6 +67,8 @@ public class TColorize extends EditorThread {
     private boolean enable = true;
 
     public TColorize(EditorWindow editor) {
+        super(editor.console);
+
         this.editor = editor;
 
         commentAttr = new SimpleAttributeSet();

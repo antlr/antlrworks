@@ -1,3 +1,4 @@
+package org.antlr.works.interfaces;
 /*
 
 [The "BSD licence"]
@@ -29,8 +30,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.util;
-
-public interface CancelObject {
-    public boolean cancel();
+public interface Console {
+    public void println(String s);
+    public void print(Exception e);
 }

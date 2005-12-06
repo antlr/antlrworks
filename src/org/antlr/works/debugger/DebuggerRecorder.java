@@ -398,7 +398,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         try {
             wait();
         } catch (InterruptedException e) {
-            System.err.println("recorderThreadBreaksOnEvent: interrupted");
+            debugger.editor.console.println("recorderThreadBreaksOnEvent: interrupted");
         }
     }
 

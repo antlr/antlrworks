@@ -39,13 +39,14 @@ import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.swing.TextPane;
 import org.antlr.works.editor.swing.TextPaneDelegate;
 
+import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
 import java.util.*;
@@ -226,7 +227,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             textPane.getStyledDocument().insertString(getTextLength(), text, attribute);
             cursorIndex = getTextLength();
         } catch (BadLocationException e) {
-            e.printStackTrace();
+            debugger.editor.console.print(e);
         }
     }
 
@@ -235,7 +236,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             textPane.getDocument().remove(start, end-start);
             cursorIndex = getTextLength();
         } catch (BadLocationException e) {
-            e.printStackTrace();
+            debugger.editor.console.print(e);
         }
     }
 
@@ -366,6 +367,8 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
         }
     }
 
+    public int grammarIndex;
+
     protected class MyMouseListener extends MouseAdapter {
 
         public void mousePressed(MouseEvent e) {
@@ -374,10 +377,19 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
                 TokenInfo info = getTokenInfoAtIndex(mouseIndex);
                 boolean controlKey = (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK;
                 if(e.getButton() == MouseEvent.BUTTON1 && !controlKey) {
-                    int index = debugger.computeAbsoluteGrammarIndex(info.line, info.charInLine);
-                    if(index >= 0) {
-                        // @todo draw the bounding box of the character
-                        debugger.editor.selectTextRange(index, index+1);
+                    grammarIndex = debugger.computeAbsoluteGrammarIndex(info.line, info.charInLine);
+                    if(grammarIndex >= 0) {
+                        if(debugger.editor.getTextPane().hasFocus()) {
+                            // If the text pane will loose its focus,
+                            // delay the text selection otherwise
+                            // the selection will be hidden
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    debugger.editor.selectTextRange(grammarIndex, grammarIndex+1);
+                                }
+                            });
+                        } else
+                            debugger.editor.selectTextRange(grammarIndex, grammarIndex+1);
                         debugger.selectTreeParserNode(info.token);
                     }
                 } else {

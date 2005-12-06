@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.undo;
 
+import org.antlr.works.interfaces.Console;
+
 import javax.swing.*;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.UndoManager;
@@ -40,11 +42,13 @@ public class RedoAction extends AbstractAction {
 
     protected UndoManager undoManager;
     protected UndoAction undoAction;
+    protected Console console;
 
-    public RedoAction(UndoManager manager) {
+    public RedoAction(UndoManager manager, Console console) {
         super("Redo");
         setEnabled(false);
         this.undoManager = manager;
+        this.console = console;
     }
 
     public void setUndoAction(UndoAction action) {
@@ -58,8 +62,7 @@ public class RedoAction extends AbstractAction {
         try {
             undoManager.redo();
         } catch (CannotRedoException ex) {
-            System.err.println("Unable to redo: " + ex);
-            ex.printStackTrace();
+            console.print(ex);
         }
         updateRedoState();
         undoAction.updateUndoState();

@@ -31,7 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.helper;
 
-import org.antlr.works.util.CancelObject;
+import org.antlr.works.interfaces.CancelObject;
+import org.antlr.works.interfaces.Console;
 
 public abstract class EditorThread implements Runnable, CancelObject {
 
@@ -42,6 +43,11 @@ public abstract class EditorThread implements Runnable, CancelObject {
     protected Thread thread = null;
     protected boolean asleep = false;
     protected boolean skip = false;
+    protected Console console;
+
+    public EditorThread(Console console) {
+        this.console = console;
+    }
 
     public synchronized void setRunning(boolean flag) {
         running = flag;
@@ -140,8 +146,7 @@ public abstract class EditorThread implements Runnable, CancelObject {
             try {
                 threadRun();
             } catch(Exception e) {
-                System.err.println("Exception in EditorThread: "+e);
-                e.printStackTrace();
+                console.print(e);
             }
         }
         setRunning(false);

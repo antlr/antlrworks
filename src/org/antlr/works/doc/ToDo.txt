@@ -1,5 +1,4 @@
 Questions:
-- redo every error redirection (and exception stack trace) to the console
 - DFA decision for lexer tokens (see with Terence) - position in lexer grammar
 
 * Prio 1

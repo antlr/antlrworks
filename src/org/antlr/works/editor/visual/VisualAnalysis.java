@@ -45,6 +45,7 @@ public class VisualAnalysis extends EditorThread {
     private boolean analyze = false;
 
     public VisualAnalysis(Visual visual) {
+        super(visual.editor.console);
         this.visual = visual;
         start(500);
     }
@@ -68,7 +69,7 @@ public class VisualAnalysis extends EditorThread {
             if(!cancel())
                 threadMarkRulesWithWarningsOrErrors();
         } catch(Exception e) {
-            e.printStackTrace();
+            visual.editor.console.print(e);
         } finally {
             if(!cancel()) {
                 visual.panel.createPanel();

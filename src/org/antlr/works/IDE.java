@@ -39,6 +39,8 @@ import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.BrowserLauncher;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.Tool;
+import org.antlr.tool.ErrorManager;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.dialog.DialogPrefs;
@@ -48,11 +50,12 @@ import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.HelpManager;
 import org.antlr.works.util.Localizable;
 import org.antlr.works.util.Utils;
-import org.antlr.tool.ErrorManager;
-import org.antlr.Tool;
 
 import javax.swing.*;
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 
 public class IDE extends XJApplicationDelegate {
 

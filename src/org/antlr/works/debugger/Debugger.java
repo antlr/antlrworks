@@ -58,10 +58,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.Enumeration;
 
 public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab {
 
@@ -588,7 +588,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
             ErrorManager.setErrorListener(ErrorListener.shared());
             grammar = new Grammar(editor.getFileName(), editor.getText());
         } catch (Exception e) {
-            e.printStackTrace();
+            editor.console.print(e);
             return false;
         }
         return true;

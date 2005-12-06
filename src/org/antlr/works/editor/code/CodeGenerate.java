@@ -86,7 +86,7 @@ public class CodeGenerate implements Runnable {
                 String fileName = provider.getFileName();
                 parserGrammar = new Grammar(fileName==null?"<notsaved>":fileName, provider.getText());
             } catch (Exception e) {
-                e.printStackTrace();
+                provider.getConsole().print(e);
             }
         }
         return parserGrammar;
@@ -118,7 +118,6 @@ public class CodeGenerate implements Runnable {
         else
             params = new String[] { "-o", getOutputPath(), provider.getFilePath() };
 
-        System.out.println("antlr.Tool = "+Utils.toString(params));
         Tool antlr = new Tool(params);
         antlr.process();
 
@@ -182,7 +181,7 @@ public class CodeGenerate implements Runnable {
             }
         } catch (Exception e) {
             generateError = e.toString();
-            e.printStackTrace();
+            provider.getConsole().print(e);
         }
 
         SwingUtilities.invokeLater(new Runnable() {

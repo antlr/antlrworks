@@ -167,7 +167,7 @@ public class ActionsExport extends AbstractActions {
 
             XJUtils.writeStringToFile(engine.getPSText(), file);
         } catch (Exception e) {
-            e.printStackTrace();
+            editor.console.print(e);
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
         }
     }
@@ -183,7 +183,7 @@ public class ActionsExport extends AbstractActions {
         try {
             XJUtils.writeStringToFile(decision.getEPS(), file);
         } catch (Exception e) {
-            e.printStackTrace();
+            editor.console.print(e);
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
         }
     }

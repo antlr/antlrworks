@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.undo;
 
+import org.antlr.works.interfaces.Console;
+
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -44,15 +46,18 @@ public class Undo {
     protected UndoDelegate delegate;
 
     public UndoManager undoManager = new UndoManager();
-    protected UndoAction undoAction = new UndoAction(undoManager);
-    protected RedoAction redoAction = new RedoAction(undoManager);
+    protected UndoAction undoAction;
+    protected RedoAction redoAction;
 
     protected Stack groupEditEvent = new Stack();
 
     protected int enable = 0;
 
-    public Undo(UndoDelegate delegate) {
+    public Undo(UndoDelegate delegate, Console console) {
         this.delegate = delegate;
+
+        undoAction = new UndoAction(undoManager, console);
+        redoAction = new RedoAction(undoManager, console);
 
         undoAction.setRedoAction(redoAction);
         redoAction.setUndoAction(undoAction);

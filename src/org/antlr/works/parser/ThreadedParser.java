@@ -57,6 +57,7 @@ public class ThreadedParser extends EditorThread {
     protected static int delay = 250;
 
     public ThreadedParser(EditorProvider provider) {
+        super(provider.getConsole());
         this.provider = provider;
         parser = new Parser();
         observers = new ArrayList();
