@@ -41,7 +41,6 @@ public class Parser extends AbstractParser {
 
     public static final String TOKENS_BLOCK_NAME = "tokens";
     public static final String OPTIONS_BLOCK_NAME = "options";
-    public static final String HEADER_BLOCK_NAME = "header";
 
     public static final List blockIdentifiers;
     public static final List ruleModifiers;
@@ -49,15 +48,15 @@ public class Parser extends AbstractParser {
 
     public List rules;
     public List groups;
-    public List blocks;
-    public List actions;
+    public List blocks;         // tokens {}, options {}
+    public List actions;        // { action } in rules
+    public List plainActions;   // @scope::actionname {action}
     public List references;
     public ParserName name;
 
     static {
         blockIdentifiers = new ArrayList();
         blockIdentifiers.add(OPTIONS_BLOCK_NAME);
-        blockIdentifiers.add(HEADER_BLOCK_NAME);
         blockIdentifiers.add(TOKENS_BLOCK_NAME);
 
         ruleModifiers = new ArrayList();
@@ -81,6 +80,7 @@ public class Parser extends AbstractParser {
         groups = new ArrayList();
         blocks = new ArrayList();
         actions = new ArrayList();
+        plainActions = new ArrayList();
         references = new ArrayList();
 
         init(text);
@@ -88,6 +88,12 @@ public class Parser extends AbstractParser {
             ParserName n = matchName();
             if(n != null) {
                 name = n;
+                continue;
+            }
+
+            ParserPlainAction pa = matchPlainAction();
+            if(pa != null) {
+                plainActions.add(pa);
                 continue;
             }
 
@@ -140,6 +146,24 @@ public class Parser extends AbstractParser {
             return null;
         } else
             return null;
+    }
+
+    public ParserPlainAction matchPlainAction() {
+        Token start = T(0);
+        if(start == null)
+            return null;
+
+        if(start.type != Lexer.TOKEN_ID)
+            return null;
+
+        if(!start.getAttribute().startsWith("@"))
+            return null;
+
+        while(nextToken()) {
+            if(T(0).type == Lexer.TOKEN_BLOCK)
+                return new ParserPlainAction(start.getAttribute(), start, T(0));
+        }
+        return null;
     }
 
     public ParserBlock matchBlock() {

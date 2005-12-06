@@ -49,6 +49,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
     public static final int STATUS_STOPPING = 1;
     public static final int STATUS_LAUNCHING = 2;
     public static final int STATUS_RUNNING = 3;
+    public static final int STATUS_BREAK = 4;
 
     public static final int MAX_RETRY = 6;
 
@@ -63,6 +64,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
     protected ArrayList events;
     protected int position;
     protected int breakType = DebuggerEvent.NONE;
+    protected int stoppedOnEvent = DebuggerEvent.NO_EVENT;
 
     protected EventListener eventListener;
     protected RemoteDebugEventSocketListener listener;
@@ -86,6 +88,11 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
     public void hideProgress() {
         progress.close();
+    }
+
+    public synchronized boolean isRunning() {
+        return status == DebuggerRecorder.STATUS_RUNNING ||
+               status == DebuggerRecorder.STATUS_BREAK;
     }
 
     public synchronized void reset() {
@@ -139,22 +146,53 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         return breakType;
     }
 
-    public boolean isOnBreakEvent() {
-        if(breakType == DebuggerEvent.NONE)
+    public void queryGrammarBreakpoints() {
+        // Get the current breakpoints in the grammar text
+        // because they can be set/unset during a debugging
+        // session of course ;-)
+        debugger.queryGrammarBreakpoints();
+    }
+
+    public int getStoppedOnEvent() {
+        return stoppedOnEvent;
+    }
+
+    public boolean handleIsOnBreakEvent() {
+        int breakEvent = isOnBreakEvent();
+        if(breakEvent != DebuggerEvent.NO_EVENT) {
+            stoppedOnEvent = breakEvent;
+            setStatus(STATUS_BREAK);
+            return true;
+        } else
             return false;
+    }
+
+    public int isOnBreakEvent() {
+        if(breakType == DebuggerEvent.NONE)
+            return DebuggerEvent.NO_EVENT;
 
         if(breakType == DebuggerEvent.ALL)
-            return true;
+            return breakType;
 
         DebuggerEvent event = getEvent();
         if(event == null)
-            return false;
+            return DebuggerEvent.NO_EVENT;
+
+        // Stop on debugger breakpoints
+        if(event.type == DebuggerEvent.LOCATION)
+            if(debugger.isBreakpointAtLine(event.int1-1))
+                return event.type;
+
+        // Stop on input text breakpoint
+        if(event.type == DebuggerEvent.CONSUME_TOKEN)
+            if(debugger.isBreakpointAtToken(event.token))
+                return event.type;
 
         if(event.type == DebuggerEvent.CONSUME_TOKEN && breakType == DebuggerEvent.CONSUME_TOKEN) {
             // Breaks only on consume token from channel 0
-            return event.token.getChannel() == Token.DEFAULT_CHANNEL;
+            return event.token.getChannel() == Token.DEFAULT_CHANNEL?event.type:DebuggerEvent.NO_EVENT;
         } else
-            return event.type == breakType;
+            return event.type == breakType?event.type:DebuggerEvent.NO_EVENT;
     }
 
     public synchronized void setStatus(int status) {
@@ -167,17 +205,23 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public void stepBackward(int breakEvent) {
-        setBreaksOnEventType(breakEvent);
+        stepContinue(breakEvent);
         if(stepMove(-1))
             playEvents(true);
     }
 
     public void stepForward(int breakEvent) {
-        setBreaksOnEventType(breakEvent);
+        stepContinue(breakEvent);
         if(stepMove(1))
             playEvents(false);
         else
             threadNotify();
+    }
+
+    public void stepContinue(int breakEvent) {
+        setBreaksOnEventType(breakEvent);
+        queryGrammarBreakpoints();
+        setStatus(STATUS_RUNNING);
     }
 
     public boolean stepMove(int direction) {
@@ -193,8 +237,9 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
         DebuggerEvent event;
         while((event = getEvent()) != null) {
-            if(isOnBreakEvent())
+            if(handleIsOnBreakEvent())
                 break;
+
             position += direction;
         }
         if(event == null)
@@ -299,9 +344,8 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         debuggerStop = true;
         notify();
 
-        if(debuggerReceivedTerminateEvent) {
+        if(debuggerReceivedTerminateEvent)
             forceStop();
-        }
     }
 
     public void forceStop() {
@@ -316,13 +360,12 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
                 break;
 
             case STATUS_STOPPING:
-                if(event.type == DebuggerEvent.TERMINATE || debuggerReceivedTerminateEvent) {
+                if(event.type == DebuggerEvent.TERMINATE || debuggerReceivedTerminateEvent)
                     forceStop();
-                }
                 break;
         }
 
-        if(getStatus() == STATUS_RUNNING) {
+        if(isRunning()) {
             if(event.type == DebuggerEvent.TERMINATE) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -332,14 +375,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
                 debuggerReceivedTerminateEvent = true;
             }
 
-            if(event.type == DebuggerEvent.LOCATION) {
-                if(debugger.isBreakpointAtLine(event.int1-1)) {
-                    breaksOnEvent();
-                    return;
-                }
-            }
-
-            if(event.type == DebuggerEvent.COMMENCE || isOnBreakEvent()) {
+            if(event.type == DebuggerEvent.COMMENCE || handleIsOnBreakEvent()) {
                 breaksOnEvent();
                 return;
             }
@@ -351,6 +387,8 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public synchronized void breaksOnEvent() {
+        setStatus(STATUS_BREAK);
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 playEvents(false);

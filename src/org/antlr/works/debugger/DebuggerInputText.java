@@ -48,9 +48,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserver {
 
@@ -73,6 +71,9 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
     // Last location event received by the debugger
     protected int locationLine;
     protected int locationCharInLine;
+
+    // Input breakpoints
+    protected Set inputBreakpoints = new HashSet();
 
     protected SimpleAttributeSet attributeNonConsumed;
     protected SimpleAttributeSet attributeConsume;
@@ -153,6 +154,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
         if(persistence) {
             textPane.selectAll();
             textPane.setCharacterAttributes(attributeNonConsumed, true);
+            textPane.setCaretPosition(0);
         } else {
             textPane.setText("");
         }
@@ -262,9 +264,10 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             if(drawTokensBox)
                 drawToken(info, (Graphics2D)g, Color.red, false);
 
-            if(mouseIndex > info.start && mouseIndex <= info.end)
+            if(inputBreakpoints.contains(info))
+                drawToken(info, (Graphics2D)g, new Color(1, 0.2f, 0, 0.5f), true);
+            else if(mouseIndex >= info.start && mouseIndex < info.end)
                 drawToken(info, (Graphics2D)g, new Color(0, 0.5f, 1, 0.4f), true);
-
         }
     }
 
@@ -323,13 +326,22 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
     }
 
     public TokenInfo getTokenInfoAtIndex(int index) {
-        for (Iterator iterator = tokens.values().iterator(); iterator.hasNext();) {
-            TokenInfo info = (TokenInfo) iterator.next();
+        for (Iterator iter = tokens.values().iterator(); iter.hasNext();) {
+            TokenInfo info = (TokenInfo) iter.next();
 
-            if(mouseIndex > info.start && mouseIndex <= info.end)
+            if(mouseIndex >= info.start && mouseIndex < info.end)
                 return info;
         }
         return null;
+    }
+
+    public boolean isBreakpointAtToken(Token token) {
+        for(Iterator iter = inputBreakpoints.iterator(); iter.hasNext();) {
+            TokenInfo info = (TokenInfo)iter.next();
+            if(info.containsToken(token))
+                return true;
+        }
+        return false;
     }
 
     protected class TokenInfo {
@@ -348,6 +360,10 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             this.line = line;
             this.charInLine = charInLine;
         }
+
+        public boolean containsToken(Token t) {
+            return t.getTokenIndex() == token.getTokenIndex();
+        }
     }
 
     protected class MyMouseListener extends MouseAdapter {
@@ -356,12 +372,28 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             mouseIndex = textPane.getTextIndexAtLocation(e.getPoint());
             if(mouseIndex != -1) {
                 TokenInfo info = getTokenInfoAtIndex(mouseIndex);
-                int index = debugger.computeAbsoluteGrammarIndex(info.line, info.charInLine);
-                if(index >= 0)
-                    debugger.editor.selectTextRange(index, index+1);
+                boolean controlKey = (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK;
+                if(e.getButton() == MouseEvent.BUTTON1 && !controlKey) {
+                    int index = debugger.computeAbsoluteGrammarIndex(info.line, info.charInLine);
+                    if(index >= 0) {
+                        // @todo draw the bounding box of the character
+                        debugger.editor.selectTextRange(index, index+1);
+                        debugger.selectTreeParserNode(info.token);
+                    }
+                } else {
+                    if(inputBreakpoints.contains(info))
+                        inputBreakpoints.remove(info);
+                    else
+                        inputBreakpoints.add(info);
+                }
+                textPane.repaint();
             }
         }
 
+        public void mouseExited(MouseEvent e) {
+            mouseIndex = -1;
+            textPane.repaint();
+        }
     }
 
     protected class MyMouseMotionListener extends MouseMotionAdapter {

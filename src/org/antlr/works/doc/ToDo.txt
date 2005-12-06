@@ -1,23 +1,18 @@
-* Prio 1
-- catch Error when ANTLR is initialize and test with corrupted installation
-- breakpoint on rule using gutter breakpoints (check if this still works)
-- breakpoint on input text
+Questions:
+- redo every error redirection (and exception stack trace) to the console
+- DFA decision for lexer tokens (see with Terence) - position in lexer grammar
 
+* Prio 1
 - tokenVocab (of course, its for me *.tokens)
-- debugger: back to prev/next breakpoint
 
 * Prio 2
-- implement zoom in vas
 - adopt new ANTLR grammar format (" and @)
-    -> refactoring tool to replace all single quote strings with double-quote strings
-
 - test on ANTLR v3 examples
 - do example calculator ANTLR intro (tree): convert to 3.0 and use AW with it (try to figure out
   the debugging part of all this)
 
 - re-check the console
 - generate code without debugging information
-- DFA decision for lexer tokens (see with Terence)
 
 - ideas: undefined rule: rename rule, delete token
 - P4: if file read-only and under P4, propose to open for edit

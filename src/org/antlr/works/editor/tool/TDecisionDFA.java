@@ -14,6 +14,8 @@ import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parser.ParserRule;
+import org.antlr.works.visualization.grammar.GrammarEngine;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -148,7 +150,6 @@ public class TDecisionDFA implements Runnable, EditorTab {
             column = editor.getColumnPositionAtIndex(t.getStartIndex());
             editor.setCaretPosition(t.getStartIndex());
         }
-
         error = null;
 
         try {
@@ -220,6 +221,12 @@ public class TDecisionDFA implements Runnable, EditorTab {
     private void generateDOTFile() throws Exception {
         Grammar g = new Grammar(text);
         g.createNFAs();
+
+        ParserRule rule = editor.getCurrentRule();
+        if(rule != null && rule.lexer) {
+            g = GrammarEngine.createLexerGrammar(g);
+            g.createNFAs();
+        }
         g.createLookaheadDFAs();
 
         List columns = g.getLookaheadDFAColumnsForLineInFile(line);

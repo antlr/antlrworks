@@ -143,6 +143,7 @@ public class EditorPreferences {
 
     public static final String PREF_OUTPUT_PATH = "PREF_OUTPUT_PATH";
     public static final String PREF_START_SYMBOL = "PREF_START_SYMBOL";
+    public static final String PREF_DEBUGGER_INPUT_TEXT = "PREF_DEBUGGER_INPUT_TEXT";    
     public static final String PREF_DEBUG_BREAK_EVENT = "PREF_DEBUG_BREAK_EVENT";
 
     public static final String PREF_PERSONAL_INFO = "PREF_OUTPUT_DEV_DATE";
@@ -190,6 +191,14 @@ public class EditorPreferences {
 
     public static String getStartSymbol() {
         return getPreferences().getString(PREF_START_SYMBOL, "");
+    }
+
+    public static void setDebuggerInputText(String inputText) {
+        getPreferences().setString(PREF_DEBUGGER_INPUT_TEXT, inputText);
+    }
+
+    public static String getDebuggerInputText() {
+        return getPreferences().getString(PREF_DEBUGGER_INPUT_TEXT, "");
     }
 
     public static int getStartupAction() {

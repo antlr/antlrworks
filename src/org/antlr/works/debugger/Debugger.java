@@ -61,6 +61,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.Enumeration;
 
 public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab {
 
@@ -78,8 +79,8 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     protected TextPane outputTextPane;
 
     protected JScrollPane treeScrollPane;
-    protected JTree tree;
-    protected DefaultTreeModel treeModel;
+    protected JTree parseTree;
+    protected DefaultTreeModel parseTreeModel;
 
     protected JList infoList;
     protected JRadioButton displayEventButton;
@@ -103,6 +104,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
 
     protected Set breakpoints;
 
+    protected DebuggerInputText inputText;
     protected DebuggerLocal debuggerLocal;
     protected DebuggerRecorder recorder;
     protected DebuggerPlayer player;
@@ -112,9 +114,9 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     protected Grammar grammar;
 
     protected boolean running;
-    public JSplitPane ioSplitPane;
+    protected JSplitPane ioSplitPane;
     protected JSplitPane ioTreeSplitPane;
-    public JSplitPane treeStackSplitPane;
+    protected JSplitPane treeStackSplitPane;
 
     public Debugger(EditorWindow editor) {
         this.editor = editor;
@@ -150,9 +152,10 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         panel.add(createControlPanel(), BorderLayout.NORTH);
         panel.add(ioTreeSplitPane, BorderLayout.CENTER);
 
+        inputText = new DebuggerInputText(this, inputTextPane);
         debuggerLocal = new DebuggerLocal(this);
         recorder = new DebuggerRecorder(this);
-        player = new DebuggerPlayer(this);
+        player = new DebuggerPlayer(this, inputText);
 
         updateStatusInfo();
 
@@ -211,23 +214,23 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     }
 
     public JComponent createTreePanel() {
-        treeModel = new DefaultTreeModel(null);
+        parseTreeModel = new DefaultTreeModel(null);
 
-        tree = new JTree(treeModel);
-        tree.setRootVisible(false);
-        tree.setShowsRootHandles(true);
+        parseTree = new JTree(parseTreeModel);
+        parseTree.setRootVisible(false);
+        parseTree.setShowsRootHandles(true);
 
         DefaultTreeCellRenderer treeRenderer = new DefaultTreeCellRenderer();
         treeRenderer.setClosedIcon(null);
         treeRenderer.setLeafIcon(null);
         treeRenderer.setOpenIcon(null);
 
-        tree.setCellRenderer(treeRenderer);
-        
-        tree.addMouseListener(new MouseAdapter() {
+        parseTree.setCellRenderer(treeRenderer);
+
+        parseTree.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                int selRow = tree.getRowForLocation(e.getX(), e.getY());
-                TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+                int selRow = parseTree.getRowForLocation(e.getX(), e.getY());
+                TreePath selPath = parseTree.getPathForLocation(e.getX(), e.getY());
                 if(selRow != -1) {
                     if(e.getClickCount() == 2) {
                         displayNodeInfo(selPath.getLastPathComponent());
@@ -237,7 +240,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
             }
         });
 
-        treeScrollPane = new JScrollPane(tree);
+        treeScrollPane = new JScrollPane(parseTree);
         treeScrollPane.setWheelScrollingEnabled(true);
 
         Box box = Box.createHorizontalBox();
@@ -424,7 +427,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                TreeUtilities.expandAll(tree);
+                TreeUtilities.expandAll(parseTree);
             }
         });
         return button;
@@ -436,7 +439,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                TreeUtilities.collapseAll(tree);
+                TreeUtilities.collapseAll(parseTree);
             }
         });
         return button;
@@ -453,6 +456,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
             case DebuggerRecorder.STATUS_STOPPING: info = "Stopping"; break;
             case DebuggerRecorder.STATUS_LAUNCHING: info = "Launching"; break;
             case DebuggerRecorder.STATUS_RUNNING: info = "Running"; break;
+            case DebuggerRecorder.STATUS_BREAK: info = "Break on "+DebuggerEvent.getEventName(recorder.getStoppedOnEvent()); break;
         }
         infoLabel.setText("Status: "+info);
         updateInterface();
@@ -461,7 +465,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     public void updateInterface() {
         stopButton.setEnabled(recorder.getStatus() != DebuggerRecorder.STATUS_STOPPED);
 
-        boolean enabled = recorder.getStatus() == DebuggerRecorder.STATUS_RUNNING;
+        boolean enabled = recorder.isRunning();
         backwardButton.setEnabled(enabled);
         forwardButton.setEnabled(enabled);
         goToStartButton.setEnabled(enabled);
@@ -472,20 +476,37 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         debuggerLocal.grammarChanged();
     }
 
-    public void setBreakpoints(Set breakpoints) {
-        this.breakpoints = breakpoints;
+    public void queryGrammarBreakpoints() {
+        this.breakpoints = editor.breakpointManager.getBreakpoints();
     }
 
     public boolean isBreakpointAtLine(int line) {
-        return breakpoints.contains(new Integer(line));
+        if(breakpoints == null)
+            return false;
+        else
+            return breakpoints.contains(new Integer(line));
+    }
+
+    public boolean isBreakpointAtToken(Token token) {
+        return inputText.isBreakpointAtToken(token);
     }
 
     public int getBreakEvent() {
         return breakCombo.getSelectedIndex();
     }
 
+    public void selectTreeParserNode(Token token) {
+        ParseTreeNode root = (ParseTreeNode) parseTree.getModel().getRoot();
+        ParseTreeNode node = root.findNodeWithToken(token);
+        if(node != null) {
+            TreePath path = new TreePath(parseTreeModel.getPathToRoot(node));
+            parseTree.scrollPathToVisible(path);
+            parseTree.setSelectionPath(path);
+        }
+    }
+
     public void displayNodeInfo(Object node) {
-        DebuggerTreeNode treeNode = (DebuggerTreeNode)node;
+        ParseTreeNode treeNode = (ParseTreeNode)node;
         XJAlert.display(editor.getWindowContainer(), "Node info", treeNode.getInfoString());
     }
 
@@ -532,6 +553,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
             return;
         }
 
+        queryGrammarBreakpoints();
         recorder.connect(address, port);
     }
 
@@ -550,7 +572,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         editor.getTextPane().setEditable(false);
         editor.getTextPane().requestFocus(false);
         previousGrammarAttributeSet = null;
-        player.resetPlayEvents(true);        
+        player.resetPlayEvents(true);
     }
 
     public void connectionFailed() {
@@ -588,20 +610,20 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
 
     public void resetGUI() {
         playCallStack = new Stack();
-        playCallStack.push(new Debugger.DebuggerTreeNode("root"));
+        playCallStack.push(new Debugger.ParseTreeNode("root"));
 
         stackListModel.removeAllElements();
         eventListModel.removeAllElements();
 
         TreeNode node = (TreeNode)playCallStack.peek();
-        treeModel.setRoot(node);
+        parseTreeModel.setRoot(node);
         updateParseTree(node);
     }
 
     public void updateParseTree(TreeNode node) {
-        treeModel.reload();
-        TreeUtilities.expandAll(tree);
-        tree.scrollPathToVisible(new TreePath(treeModel.getPathToRoot(node)));
+        parseTreeModel.reload();
+        TreeUtilities.expandAll(parseTree);
+        parseTree.scrollPathToVisible(new TreePath(parseTreeModel.getPathToRoot(node)));
     }
 
     public void storeGrammarAttributeSet(int index) {
@@ -656,8 +678,8 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     }
 
     public void pushRule(String ruleName) {
-        Debugger.DebuggerTreeNode parentRuleNode = (Debugger.DebuggerTreeNode)playCallStack.peek();
-        Debugger.DebuggerTreeNode ruleNode = new Debugger.DebuggerTreeNode(ruleName);
+        Debugger.ParseTreeNode parentRuleNode = (Debugger.ParseTreeNode)playCallStack.peek();
+        Debugger.ParseTreeNode ruleNode = new Debugger.ParseTreeNode(ruleName);
         parentRuleNode.add(ruleNode);
         updateParseTree(ruleNode);
 
@@ -673,15 +695,15 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     }
 
     public void addToken(Token token) {
-        DebuggerTreeNode ruleNode = (DebuggerTreeNode)playCallStack.peek();
-        DebuggerTreeNode elementNode = new DebuggerTreeNode(token);
+        ParseTreeNode ruleNode = (ParseTreeNode)playCallStack.peek();
+        ParseTreeNode elementNode = new ParseTreeNode(token);
         ruleNode.add(elementNode);
         updateParseTree(elementNode);
     }
 
     public void addException(Exception e) {
-        DebuggerTreeNode ruleNode = (DebuggerTreeNode)playCallStack.peek();
-        DebuggerTreeNode errorNode = new DebuggerTreeNode(e);
+        ParseTreeNode ruleNode = (ParseTreeNode)playCallStack.peek();
+        ParseTreeNode errorNode = new ParseTreeNode(e);
         ruleNode.add(errorNode);
         updateParseTree(errorNode);
     }
@@ -729,21 +751,21 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); }
     }
 
-    protected class DebuggerTreeNode extends DefaultMutableTreeNode {
+    protected class ParseTreeNode extends DefaultMutableTreeNode {
 
         protected String s;
         protected Token token;
         protected Exception e;
 
-        public DebuggerTreeNode(String s) {
+        public ParseTreeNode(String s) {
             this.s = s;
         }
 
-        public DebuggerTreeNode(Token token) {
+        public ParseTreeNode(Token token) {
             this.token = token;
         }
 
-        public DebuggerTreeNode(Exception e) {
+        public ParseTreeNode(Exception e) {
             this.e = e;
         }
 
@@ -767,6 +789,19 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
                 return e.toString();
 
             return "?";
+        }
+
+        public ParseTreeNode findNodeWithToken(Token t) {
+            if(token != null && t.getTokenIndex() == token.getTokenIndex())
+                return this;
+
+            for(Enumeration enum = this.children(); enum.hasMoreElements(); ) {
+                ParseTreeNode node = (ParseTreeNode) enum.nextElement();
+                ParseTreeNode candidate = node.findNodeWithToken(t);
+                if(candidate != null)
+                    return candidate;
+            }
+            return null;
         }
     }
 }

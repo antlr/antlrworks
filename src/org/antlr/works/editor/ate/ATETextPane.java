@@ -32,9 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor.ate;
 
 import javax.swing.*;
-import javax.swing.text.Element;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.View;
+import javax.swing.text.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +48,7 @@ public class ATETextPane extends JTextPane
 
     public ATETextPane(ATEPanel textEditor) {
         super(new ATEStyledDocument());
+        setCaret(new ATECaret());
         setEditorKit(new ATECustomEditorKit());
         this.textEditor = textEditor;
     }
@@ -190,4 +189,36 @@ public class ATETextPane extends JTextPane
         textEditor.foldingManager.textPaneDidFold();
     }
 
+    protected class ATECaret extends DefaultCaret {
+
+        public ATECaret() {
+            setBlinkRate(500);
+        }
+        
+        public void paint(Graphics g) {
+            if (!isVisible())
+                return;
+
+            try {
+                Rectangle r = ATETextPane.this.modelToView(getDot());
+                g.setColor(ATETextPane.this.getCaretColor());
+                g.drawLine(r.x, r.y, r.x, r.y + r.height - 1);
+                g.drawLine(r.x+1, r.y, r.x+1, r.y + r.height - 1);
+            }
+            catch (BadLocationException e) {
+                // ignore
+            }
+        }
+
+        protected synchronized void damage(Rectangle r) {
+            if (r == null)
+                return;
+
+            x = r.x;
+            y = r.y;
+            width = 2;
+            height = r.height;
+            repaint();
+        }
+    }
 }

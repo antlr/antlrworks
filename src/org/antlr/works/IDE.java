@@ -47,9 +47,12 @@ import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.HelpManager;
 import org.antlr.works.util.Localizable;
+import org.antlr.works.util.Utils;
+import org.antlr.tool.ErrorManager;
+import org.antlr.Tool;
 
 import javax.swing.*;
-import java.io.IOException;
+import java.io.*;
 
 public class IDE extends XJApplicationDelegate {
 
@@ -148,13 +151,31 @@ public class IDE extends XJApplicationDelegate {
     }
 
     public void checkEnvironment() {
-        /*try {
+        PrintStream originalErr = System.err;
+        final String tempFile = "/tmp/redirect.err";
+        try {
+            PrintStream ps = null;
+            try {
+                ps = new PrintStream(new FileOutputStream(tempFile));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            System.setErr(ps);
             ErrorManager.setTool(new Tool() {
             });
             ErrorManager.setErrorListener(ErrorManager.getErrorListener());
         } catch(Error error) {
-            error.printStackTrace();
-        } */
+            String s = null;
+            try {
+                s = Utils.stringFromFile(tempFile);
+            } catch (IOException e) {
+                XJAlert.display(null, "Fatal Error", "ANTLRWorks will quit now because the installation of ANTLR is corrupted.");
+                System.exit(0);
+            }
+            XJAlert.display(null, "Fatal Error", "ANTLRWorks will quit now because ANTLR has the following problem:\n"+s);
+            System.exit(0);
+        }
+        System.setErr(originalErr);
     }
 
     public void appShowHelp() {

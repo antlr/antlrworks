@@ -81,16 +81,12 @@ public class TextPane extends JTextPane {
         Rectangle r;
         try {
             r = modelToView(index);
-            if(index-1>=0)
-                r.add(modelToView(index-1));
-            if(index+1<getText().length())
-                r.add(modelToView(index+1));
+            if(point.x <= r.x) {
+                return index-1;
+            }
         } catch (BadLocationException e1) {
             return -1;
         }
-        if(r == null)
-            return -1;
-        else
-            return r.contains(point)?index:-1;
+        return index;
     }
 }

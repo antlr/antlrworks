@@ -59,6 +59,7 @@ public class DialogDebugInput extends XJDialog {
         TextUtils.createTabs(inputTextArea);
         inputTextArea.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
         inputTextArea.requestFocus();
+        inputTextArea.setText(EditorPreferences.getDebuggerInputText());
 
         rulesCombo.removeAllItems();
         for (Iterator iterator = debugger.getRules().iterator(); iterator.hasNext();) {
@@ -69,10 +70,12 @@ public class DialogDebugInput extends XJDialog {
 
     public void dialogWillCloseOK() {
         EditorPreferences.setStartSymbol(getRule());
+        EditorPreferences.setDebuggerInputText(getInputText());
     }
 
     public void setInputText(String text) {
-        inputTextArea.setText(text);
+        if(text != null)
+            inputTextArea.setText(text);
     }
 
     public String getInputText() {

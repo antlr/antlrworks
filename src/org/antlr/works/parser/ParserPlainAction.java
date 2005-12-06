@@ -1,3 +1,4 @@
+package org.antlr.works.parser;
 /*
 
 [The "BSD licence"]
@@ -29,38 +30,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor.actions;
+public class ParserPlainAction {
 
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.stats.Statistics;
-
-public class ActionsRun extends AbstractActions {
-
-    public ActionsRun(EditorWindow editor) {
-        super(editor);
-    }
-
-    public void runInterpreter() {
-        try {
-            Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_MENU);
-            editor.selectInterpreterTab();
-            editor.interpreter.interpret();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void debug() {
-        editor.debugger.launchLocalDebugger(Debugger.DEBUG);
-    }
-
-    public void buildAndDebug() {
-        editor.debugger.launchLocalDebugger(Debugger.BUILD_AND_DEBUG);
-    }
-
-    public void debugRemote() {
-        editor.debugger.launchRemoteDebugger();
+    public String name;
+    public Token start;
+    public Token end;
+    
+    public ParserPlainAction(String name, Token start, Token end) {
+        this.name = name;
+        this.start = start;
+        this.end = end;
     }
 
 }

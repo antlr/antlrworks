@@ -85,7 +85,7 @@ public class Lexer {
                 token = createNewToken(TOKEN_COLON);
             else if(C(0) == ';')
                 token = createNewToken(TOKEN_SEMI);
-            else if(isLetter())
+            else if(isLetter() || C(0) == '@')
                 token = matchID();
             else if(C(0) == '(')
                 token = createNewToken(TOKEN_LPAREN);

@@ -55,9 +55,9 @@ public class DebuggerPlayer {
     protected int resyncing = 0;
     protected int eventPlayedCount = 0;
 
-    public DebuggerPlayer(Debugger debugger) {
+    public DebuggerPlayer(Debugger debugger, DebuggerInputText inputText) {
         this.debugger = debugger;
-        inputText = new DebuggerInputText(debugger, debugger.inputTextPane);
+        this.inputText = inputText;
         lookAheadTextStack = new Stack();
     }
 

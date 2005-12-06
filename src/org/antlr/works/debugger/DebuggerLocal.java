@@ -81,7 +81,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     protected CodeGenerate codeGenerator;
     protected Debugger debugger;
 
-    protected String inputText = "";
+    protected String inputText;
 
     protected XJDialogProgress progress;
     protected ErrorReporter error = new ErrorReporter();

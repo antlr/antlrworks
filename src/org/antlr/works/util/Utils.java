@@ -1,4 +1,8 @@
 package org.antlr.works.util;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 /*
 
 [The "BSD licence"]
@@ -31,6 +35,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public class Utils {
+
+    public static String stringFromFile(String file) throws IOException {
+        FileInputStream fis = new FileInputStream(file);
+        int x= fis.available();
+        if(x > 0) {
+            byte b[]= new byte[x];
+            int count = fis.read(b);
+            return new String(b);
+        } else
+            return null;
+    }
 
     public static String toString(String[] object) {
         StringBuffer sb = new StringBuffer();

@@ -1,8 +1,11 @@
-Version 1.0ea6 - 11/27/05
+Version 1.0ea6 - 12/05/05
 
+- new: click on an input token (debugger) selects the corresponding token in the grammar and in the parse tree
+- new: (debugger) breakpoints in input text (right-click to toggle the breakpoint on any tokens)
+- new: (debugger) breakpoints in grammar now works (click in the editor gutter to enable/disable them)
 - new: convert literal quote refactoring tools (to single, to double or c-style quote)
-- new: click on an input token (debugger) selects the corresponding token in the grammar
 
+- improved debugger: display the event where the debugger stopped at
 - improved decision DFA: vectorial representation where states can be moved using the mouse
 - improved decision DFA: exportable to EPS and bitmap image
 - improved export to EPS: file size has been reduced by up to 1/2 of the previous generated size
@@ -10,8 +13,12 @@ Version 1.0ea6 - 11/27/05
 - move caret to decision location when displaying DFA decision
 - rules list can be sorted (group are not sorted)
 
+- debugger input text is now saved and restored in preferences
+- improved caret visibility with wider caret in grammar text
+
 - improved debugger token outline when a token spans on multiple lines
 - improved underlying menu update system
+- report a message if ANTLR installation is corrupted
 
 Version 1.0ea5 - 11/13/05
 

@@ -154,7 +154,7 @@ public class ActionsRefactor extends AbstractActions {
                 else if(stripped.length() == 2 && stripped.charAt(0) == '\\')
                     continue;
 
-                if(stripped.indexOf('"') != -1)
+                if(stripped.indexOf('"') != -1 || stripped.indexOf('\'') != -1)
                     stripped = escapeStringQuote(stripped, '"', '\'');
 
                 replaced = '"'+stripped+'"';
@@ -164,7 +164,7 @@ public class ActionsRefactor extends AbstractActions {
                 if(stripped.length() > 1 && stripped.charAt(0) != '\\')
                     continue;
 
-                if(stripped.indexOf('\'') != -1)
+                if(stripped.indexOf('\'') != -1 || stripped.indexOf('"') != -1)
                     stripped = escapeStringQuote(stripped, '\'', '"');
 
                 replaced = '\''+stripped+'\'';
@@ -185,7 +185,7 @@ public class ActionsRefactor extends AbstractActions {
 
             String attribute = token.getAttribute();
             String stripped = attribute.substring(1, attribute.length()-1);
-            if(stripped.indexOf(quote) != -1)
+            if(stripped.indexOf(quote) != -1 || stripped.indexOf(unescapeQuote) != -1)
                 stripped = escapeStringQuote(stripped, quote, unescapeQuote);
 
             editor.replaceText(token.getStartIndex(), token.getEndIndex(), quote+stripped+quote);

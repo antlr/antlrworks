@@ -36,6 +36,7 @@ import org.antlr.runtime.Token;
 
 public class DebuggerEvent {
 
+    public static final int NO_EVENT = -1;
     public static final int LOCATION = 0;
     public static final int CONSUME_TOKEN = 1;
     public static final int LT = 2;
@@ -102,6 +103,7 @@ public class DebuggerEvent {
 
     public static String getEventName(int type) {
         switch(type) {
+            case NO_EVENT: return "-";
             case CONSUME_TOKEN: return "Consume token";
             case CONSUME_HIDDEN_TOKEN: return "Consume hidden token";
             case ENTER_RULE:    return "Enter rule";

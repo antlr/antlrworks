@@ -63,7 +63,7 @@ public class GrammarEngine {
         ErrorManager.setErrorListener(ErrorListener.shared());
         grammar = new Grammar(filename, text);
         grammar.createNFAs();
-        createLexerGrammar();
+        lexerGrammar = createLexerGrammar(grammar);
     }
 
     public NFAState getRuleStartState(String name) {
@@ -105,10 +105,10 @@ public class GrammarEngine {
         }
     }
 
-    protected void createLexerGrammar() {
+    public static Grammar createLexerGrammar(Grammar grammar) {
         String lexerGrammarStr = grammar.getLexerGrammar();
         StringReader sr = new StringReader(lexerGrammarStr);
-        lexerGrammar = new Grammar();
+        Grammar lexerGrammar = new Grammar();
         lexerGrammar.setFileName("<internally-generated-lexer>");
         lexerGrammar.importTokenVocabulary(grammar);
         try {
@@ -118,6 +118,7 @@ public class GrammarEngine {
             e.printStackTrace();
         }
         sr.close();
+        return lexerGrammar;
     }
 
     protected void createLookaheadDFAs(CancelObject cancelObject) {
