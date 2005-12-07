@@ -9,9 +9,12 @@ Version 1.0ea6 - 12/05/05
 - improved decision DFA: vectorial representation where states can be moved using the mouse
 - improved decision DFA: exportable to EPS and bitmap image
 - improved export to EPS: file size has been reduced by up to 1/2 of the previous generated size
+- improved: auto-scrolling when following ambiguous paths in syntax diagram
+- improved: smooth scrolling when jumping to rule in the grammar
 
 - move caret to decision location when displaying DFA decision
 - rules list can be sorted (group are not sorted)
+- can open the file using Perforce automatically when saving it if it was closed
 
 - debugger input text is now saved and restored in preferences
 - improved caret visibility with wider caret in grammar text

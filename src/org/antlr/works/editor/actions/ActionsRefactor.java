@@ -350,7 +350,7 @@ public class ActionsRefactor extends AbstractActions {
         editor.disableTextPaneUndo();
         editor.setText(newText);
         editor.enableTextPaneUndo();
-        editor.getTextEditor().setCaretPosition(oldCaretPosition +caretOffset, false);
+        editor.getTextEditor().setCaretPosition(oldCaretPosition +caretOffset, false, false);
     }
 
     public int insertionIndexForRule(boolean lexer) {

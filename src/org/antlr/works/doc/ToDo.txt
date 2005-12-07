@@ -1,33 +1,32 @@
-Questions:
-- DFA decision for lexer tokens (see with Terence) - position in lexer grammar
 
 * Prio 1
+- generate code without debugging information
 - tokenVocab (of course, its for me *.tokens)
 
 * Prio 2
-- adopt new ANTLR grammar format (" and @)
 - test on ANTLR v3 examples
 - do example calculator ANTLR intro (tree): convert to 3.0 and use AW with it (try to figure out
   the debugging part of all this)
-
-- re-check the console
-- generate code without debugging information
+- DFA decision for lexer tokens (see with Terence) - position in lexer grammar
 
 - ideas: undefined rule: rename rule, delete token
-- P4: if file read-only and under P4, propose to open for edit
-- check environment (see e-mail from Jim Idle)
 - prefs: customizable list of "Insert Rule From Template" - or read from a file ?
 
 * Prio 3:
+- check environment (see e-mail from Jim Idle)
 - jump into source when navigating grammar text (in generated code)
 - Windows/Linux: don't quit if last document closed ?
 - display current token in syntax diagram
 - shift-right, shift-left, comment/uncomment selection
 - display multiple rules together
-
 - (Terence will change) handle "header with package" option (see with Terence for line numbering between files)
 - use Grammar randomText to generate random valid input text
 - lexical ambiguities (ask Terence)
+- do something with verbose in ErrorListener later
+- if emacs is set (in preferences), disable all conflicting menu in Linux/Windows
+- optimize state arround external ref (negative state should be removed - see if it is always possible)
+- jump to a definition by double-click in the syntax diagram
+- problem when more than one same LT between mark/rewind
 
 - traduire en francais en_US.stg dans /tool/templates/messages
 - extract all strings into properties
@@ -49,20 +48,3 @@ JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\java
 - interpreter tree doesn't display correctly (but debugger tree does)
 - use "load" on Linux/Windows when opening a document on an untouched one
 - tree view of TUsage: why use white spaces to be able to display the entire string ?
-
-* ToDo *
-
-- versioning in the prefs
-- better message when cannot connect because null id (submit statistics)
-- do something with verbose in ErrorListener later
-- if emacs is set (in preferences), disable all conflicting menu in Linux/Windows
-- contextual menu in the editor (go to declaration, rename, etc)
-- update manager for stringtemplate/antlr
-- download stringtemplate/antlr if not found
-- make update manager aware of specific OS (i.e. Mac OS X packaging different from Linux/Windows)
-- optimize state arround external ref (negative state should be removed - see if it is always possible)
-- auto-scrolling when following ambiguous paths
-- show line number in gutter (via preferences and notification)
-- jump to a definition by double-click in the syntax diagram
-
-- problem when more than one same LT between mark/rewind

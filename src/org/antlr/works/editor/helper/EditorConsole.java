@@ -31,41 +31,27 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.helper;
 
-import edu.usfca.xj.appkit.swing.XJTable;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.interfaces.Console;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class EditorConsole implements EditorTab, Console {
 
     protected EditorWindow editor;
 
-    protected JScrollPane groupScrollPane;
-    protected XJTable groupTable;
-    protected AbstractTableModel groupTableModel;
-
     protected JPanel panel;
     protected JTextArea textArea;
-    protected JSplitPane splitPane;
 
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
-    protected Action currentAction = null;
-    protected List actions = new ArrayList();
 
     protected static EditorConsole current = null;
 
@@ -81,15 +67,6 @@ public class EditorConsole implements EditorTab, Console {
         this.editor = editor;
 
         panel = new JPanel(new BorderLayout());
-
-        splitPane = new JSplitPane();
-        splitPane.setBorder(null);
-        splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setLeftComponent(createGroupTable());
-        splitPane.setRightComponent(createTextArea());
-        splitPane.setContinuousLayout(true);
-        splitPane.setOneTouchExpandable(true);
-
         Box box = Box.createHorizontalBox();
 
         JButton clear = new JButton("Clear All");
@@ -101,7 +78,7 @@ public class EditorConsole implements EditorTab, Console {
         box.add(clear);
         box.add(Box.createHorizontalGlue());
 
-        panel.add(splitPane, BorderLayout.CENTER);
+        panel.add(createTextArea(), BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);
     }
 
@@ -113,58 +90,6 @@ public class EditorConsole implements EditorTab, Console {
         return panel;
     }
 
-    public Container createGroupTable() {
-        groupTable = new XJTable();
-        groupTable.setBorder(null);
-        groupTable.setPreferredScrollableViewportSize(new Dimension(200, 0));
-        groupTable.setShowGrid(false);
-        groupTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        groupTable.setModel(groupTableModel = new AbstractTableModel() {
-            public int getColumnCount() {
-                return 1;
-            }
-
-            public int getRowCount() {
-                return actions.size();
-            }
-
-            public boolean isCellEditable(int row, int col) {
-                return false;
-            }
-
-            public String getColumnName(int column) {
-                return "Actions";
-            }
-
-            public Object getValueAt(int row, int col) {
-                return getActionNameAtIndex(row);
-            }
-
-            public void setValueAt(Object value, int row, int col) {
-            }
-        });
-
-        groupTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if(e.getValueIsAdjusting())
-                    return;
-
-                ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-                if(!lsm.isSelectionEmpty()) {
-                    updateTextArea();
-                }
-            }
-        });
-
-        groupScrollPane = new JScrollPane(groupTable);
-        groupScrollPane.setBorder(null);
-        groupScrollPane.setPreferredSize(new Dimension(200, 0));
-        groupScrollPane.setWheelScrollingEnabled(true);
-
-        return groupScrollPane;
-    }
-
     public Container createTextArea() {
         textArea = new JTextArea();
         JScrollPane textAreaScrollPane = new JScrollPane(textArea);
@@ -172,49 +97,14 @@ public class EditorConsole implements EditorTab, Console {
         return textAreaScrollPane;
     }
 
-    public void updateTextArea() {
-        textArea.setText(getActionTextAtIndex(groupTable.getSelectionModel().getMinSelectionIndex()));
-        textArea.setCaretPosition(0);
-    }
-
-    public String getActionNameAtIndex(int index) {
-        Action a = (Action)actions.get(index);
-        return a.name;
-    }
-
-    public String getActionTextAtIndex(int index) {
-        Action a = (Action)actions.get(Math.min(Math.max(0, index), actions.size()-1));
-        return a.text.toString();
-    }
-
     public void clear() {
-        actions.clear();
         textArea.setText("");
-        groupTableModel.fireTableDataChanged();
-    }
-
-    public void openGroup(String name) {
-        if(currentAction != null)
-            closeGroup();
-
-        newAction(name);
-
-        if(groupTable.getSelectionModel().getMinSelectionIndex() == -1)
-            groupTable.getSelectionModel().setSelectionInterval(0, 0);
-    }
-
-    public void closeGroup() {
-        if(currentAction != null) {
-            currentAction = null;
-        }
     }
 
     public synchronized void println(String s) {
         String t = "["+dateFormat.format(new Date())+"] "+s;
-        if(currentAction == null) {
-            newAction("Idle");
-        }
-        currentAction.appendString(t+"\n");
+        textArea.setText(textArea.getText()+t+"\n");
+        textArea.setCaretPosition(textArea.getText().length());
         System.out.println(s);
     }
 
@@ -227,12 +117,6 @@ public class EditorConsole implements EditorTab, Console {
         println(sw.toString());
     }
 
-    protected synchronized void newAction(String name) {
-        currentAction = new Action(name);
-        actions.add(0, currentAction);
-        groupTableModel.fireTableDataChanged();
-    }
-
     public String getTabName() {
         return "Console";
     }
@@ -241,18 +125,4 @@ public class EditorConsole implements EditorTab, Console {
         return getContainer();
     }
 
-    public class Action {
-
-        public String name = null;
-        public StringBuffer text = new StringBuffer();
-
-        public Action(String name) {
-            this.name = name;
-        }
-
-        public synchronized void appendString(String t) {
-            text.append(t);
-            updateTextArea();
-        }
-    }
 }

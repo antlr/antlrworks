@@ -38,9 +38,9 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarNonDeterminismMessage;
-import org.antlr.works.parser.Token;
 import org.antlr.works.interfaces.CancelObject;
 import org.antlr.works.interfaces.Console;
+import org.antlr.works.parser.Token;
 import org.antlr.works.util.ErrorListener;
 
 import java.io.StringReader;

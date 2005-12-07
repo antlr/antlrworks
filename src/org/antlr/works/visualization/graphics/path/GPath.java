@@ -131,6 +131,14 @@ public class GPath extends GObject {
         element.draw();
     }
 
+    public Rectangle getBoundsOfSelectedElement() {
+        if(currentIndex == -1)
+            return null;
+
+        GPathElement element = (GPathElement)elements.get(currentIndex);
+        return element.getBounds();
+    }
+
     public boolean containsPoint(Point p) {
         for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
             GPathElement element = (GPathElement) iterator.next();

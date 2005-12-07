@@ -1,5 +1,7 @@
 package org.antlr.works.editor.ate;
 
+import edu.usfca.xj.appkit.utils.XJSmoothScrolling;
+
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -43,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ATEPanel extends JPanel {
+public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDelegate {
 
     protected JFrame parentFrame;
 
@@ -60,6 +62,7 @@ public class ATEPanel extends JPanel {
     protected TextPaneListener textPaneListener;
 
     protected boolean isTyping = false;
+    protected int caretPosition;
 
     protected static final String unixEndOfLine = "\n";
     protected static int ANALYSIS_COLUMN_WIDTH = 18;
@@ -103,13 +106,14 @@ public class ATEPanel extends JPanel {
     }
 
     public void setCaretPosition(int position) {
-        setCaretPosition(position, true);
+        setCaretPosition(position, true, true);
     }
 
-    public void setCaretPosition(int position, boolean adjustScroll) {
-        textPane.setCaretPosition(position);
+    public void setCaretPosition(int position, boolean adjustScroll, boolean animate) {
         if(adjustScroll)
-            scrollCenterToPosition(position);
+            scrollCenterToPosition(position, animate);
+        if(!animate)
+            textPane.setCaretPosition(position);
     }
 
     public int getCaretPosition() {
@@ -139,18 +143,28 @@ public class ATEPanel extends JPanel {
             textPaneListener.disable();
     }
 
-    public void scrollCenterToPosition(int position) {
+    public void scrollCenterToPosition(int position, boolean animate) {
         try {
             Rectangle r = textPane.modelToView(position);
             if (r != null) {
                 Rectangle vis = getVisibleRect();
                 r.y -= (vis.height / 2);
                 r.height = vis.height;
-                textPane.scrollRectToVisible(r);
+                if(animate) {
+                    // Will move the caret after the scrolling
+                    // has completed (see smoothScrollingDidComplete()) 
+                    caretPosition = position;
+                    new XJSmoothScrolling(textPane, r, this);
+                } else
+                    textPane.scrollRectToVisible(r);
             }
         } catch (BadLocationException ble) {
             // ignore
         }
+    }
+
+    public void smoothScrollingDidComplete() {
+        textPane.setCaretPosition(caretPosition);
     }
 
     public void toggleAnalysis() {
@@ -208,7 +222,7 @@ public class ATEPanel extends JPanel {
         textPane.moveCaretPosition(end);
         textPane.getCaret().setSelectionVisible(true);
 
-        scrollCenterToPosition(start);
+        scrollCenterToPosition(start, false);
     }
 
     public void textPaneDidPaint(Graphics g) {

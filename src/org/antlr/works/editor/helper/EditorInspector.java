@@ -49,10 +49,6 @@ public class EditorInspector {
         this.editor = editor;
     }
 
-    public void refresh() {
-        // @todo cache errors/warnings
-    }
-
     public List getErrors() {
         List errors = new ArrayList();
         discoverInvalidCharLiteralTokens(errors);

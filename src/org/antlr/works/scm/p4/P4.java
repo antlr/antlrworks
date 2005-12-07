@@ -33,9 +33,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.scm.p4;
 
 import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.interfaces.Console;
 import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
-import org.antlr.works.interfaces.Console;
 
 import javax.swing.*;
 import java.io.*;
@@ -100,6 +100,13 @@ public class P4 implements SCM {
 
     public synchronized void sync() {
         runCommand(new P4Command(CMD_SYNC, new String[] { "sync" }, null));
+    }
+
+    public synchronized boolean isFileWritable() {
+        if(fileStatus == null)
+            return true;
+        else
+            return fileStatus.equals("edit");
     }
 
     public synchronized String getFileStatus() {

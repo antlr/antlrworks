@@ -39,7 +39,7 @@ import java.awt.*;
 public class NFANode {
 
     public static void draw(GNode node) {
-        GContext context = node.context;
+        GContext context = node.getContext();
         context.setColor(context.nodeColor);
         float r = context.getPixelNodeWidth()/2;
         context.drawCircle(node.getX()+r, node.getY(), r, true);
@@ -47,7 +47,7 @@ public class NFANode {
     }
 
     public static boolean nodeContainsPoint(GNode node, Point p) {
-        float nr = node.context.getPixelNodeWidth()/2;
+        float nr = node.getContext().getPixelNodeWidth()/2;
         double r = Math.sqrt(Math.pow(p.x-node.getX()-nr, 2)+Math.pow(p.y-node.getY(), 2));
         return r<=nr;
     }

@@ -39,7 +39,7 @@ import java.awt.*;
 public class NFALink {
 
     public static void draw(GLink link) {
-        GContext context = link.context;
+        GContext context = link.getContext();
         
         float sx = link.source.getX()+context.getPixelNodeWidth()/2;
         float sy = link.source.getY();

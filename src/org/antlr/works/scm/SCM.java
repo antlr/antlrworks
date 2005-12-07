@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.scm;
 
 public interface SCM {
+    public boolean isFileWritable();
     public String getFileStatus();
     public void queryFileStatus(String file);
     public void editFile(String file);

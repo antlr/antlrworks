@@ -53,7 +53,6 @@ public class TGrammar implements VisualDelegate {
         progress.setInfo("Checking Grammar...");
         progress.display();
 
-        editor.console.openGroup("Check Grammar");
         editor.console.makeCurrent();
         editor.visual.setDelegate(this);
         editor.visual.checkGrammar();
@@ -65,7 +64,6 @@ public class TGrammar implements VisualDelegate {
     public void visualizationProcessDidEnd(Visual visual) {
         editor.updateInformation();
         progress.close();
-        editor.console.closeGroup();
     }
 
     public void visualizationDidMarkRules(Visual visual) {

@@ -94,6 +94,14 @@ public class GLink extends GObject {
             virtualPosition.cache(context, ox, oy);
     }
 
+    public Rectangle getBounds() {
+        int x1 = (int) source.getBeginX();
+        int y1 = (int) source.getBeginY();
+        int x2 = (int) target.getEndX();
+        int y2 = (int) target.getEndY();
+        return new Rectangle(x1, y1, Math.max(1, x2-x1), Math.max(1, y2-y1));
+    }
+
     public void draw() {
         context.drawLink(this);
     }

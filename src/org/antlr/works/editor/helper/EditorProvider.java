@@ -31,8 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.helper;
 
-import com.apple.crypto.provider.Debug;
-
 import java.awt.*;
 
 public interface EditorProvider {

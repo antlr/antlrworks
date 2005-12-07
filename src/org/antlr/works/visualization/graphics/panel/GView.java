@@ -34,6 +34,7 @@ package org.antlr.works.visualization.graphics.panel;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
+import edu.usfca.xj.appkit.utils.XJSmoothScrolling;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;
@@ -60,9 +61,12 @@ public class GView extends JPanel implements XJMenuItemDelegate {
 
     protected List graphs = new ArrayList();
     protected int currentGraphIndex = 0;
+    protected GPanel panel;
     protected GContext context;
 
     protected Point lastMouse;
+
+    protected static final Font DEFAULT_FONT = new Font("Courier", Font.BOLD, 18);
 
     public int offset_x = 10;
     public int offset_y = 10;
@@ -70,7 +74,8 @@ public class GView extends JPanel implements XJMenuItemDelegate {
     public int prev_offset_x = 0;
     public int prev_offset_y = 0;
 
-    public GView(GContext context) {
+    public GView(GPanel panel, GContext context) {
+        this.panel = panel;
         this.context = context;
         this.context.setContainer(this);
 
@@ -217,8 +222,8 @@ public class GView extends JPanel implements XJMenuItemDelegate {
             return;
 
         Dimension dimension = new Dimension(getGraphWidth()+2*offset_x, getGraphHeight()+2*offset_y);
-        setSize(dimension);
         setPreferredSize(dimension);
+        revalidate();
     }
 
     public int getGraphWidth() {
@@ -259,6 +264,20 @@ public class GView extends JPanel implements XJMenuItemDelegate {
                 menu.show(this, e.getX(), e.getY());
         } else
             super.processMouseEvent(e);
+    }
+
+    public void pathCurrentElementDidChange() {
+        GPath path = getCurrentPath();
+        Rectangle rect = path.getBoundsOfSelectedElement();
+        if(!rect.isEmpty()) {
+            // Expand the rectangle a little bit
+            // so the rectangle is "more" visible
+            rect.x -= 50;
+            rect.y -= 50;
+            rect.width += 100;
+            rect.height += 100;
+            new XJSmoothScrolling(this, rect, null);
+        }
     }
 
     public boolean canDraw() {
@@ -351,7 +370,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         if(placeholder == null)
             return;
 
-        g.setFont(new Font("Courier", Font.BOLD, 18));
+        g.setFont(DEFAULT_FONT);
 
         FontMetrics fm = g.getFontMetrics();
         Rectangle r = getVisibleRect();
@@ -419,18 +438,22 @@ public class GView extends JPanel implements XJMenuItemDelegate {
             switch(e.getKeyCode()) {
                 case KeyEvent.VK_RIGHT:
                     path.nextElement();
+                    pathCurrentElementDidChange();
                     e.consume();
                     break;
                 case KeyEvent.VK_LEFT:
                     path.previousElement();
+                    pathCurrentElementDidChange();
                     e.consume();
                     break;
                 case KeyEvent.VK_UP:
                     path.lastElement();
+                    pathCurrentElementDidChange();
                     e.consume();
                     break;
                 case KeyEvent.VK_DOWN:
                     path.firstElement();
+                    pathCurrentElementDidChange();
                     e.consume();
                     break;
 

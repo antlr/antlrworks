@@ -566,7 +566,6 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
 
         editor.selectDebuggerTab();
 
-        editor.console.openGroup("Debug");
         editor.console.makeCurrent();
 
         editor.getTextPane().setEditable(false);
@@ -600,8 +599,6 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
                 recorder.forceStop();
         } else
             recorder.stop();
-
-        editor.console.closeGroup();
     }
 
     public boolean isRunning() {

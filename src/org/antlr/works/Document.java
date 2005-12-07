@@ -38,6 +38,17 @@ import org.antlr.works.editor.EditorWindow;
 
 public class Document extends XJDocument {
 
+    public boolean performSave(boolean saveAs) {
+        // Make sure the document can be saved (SCM opened, etc)
+        // before calling the super class method to do
+        // the actual job
+        EditorWindow w = (EditorWindow)getWindow();
+        if(w.willSaveDocument())
+            return super.performSave(saveAs);
+        else
+            return false;
+    }
+
     public void documentWillWriteData() {
         EditorWindow w = (EditorWindow)getWindow();
         XJDataPlainText data = (XJDataPlainText)getDocumentData();

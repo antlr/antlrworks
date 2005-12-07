@@ -35,7 +35,7 @@ import java.awt.*;
 
 public class GObject {
 
-    public GContext context;
+    protected GContext context;
 
     public void setContext(GContext context) {
         this.context = context;
@@ -43,6 +43,10 @@ public class GObject {
 
     public GContext getContext() {
         return context;
+    }
+
+    public Rectangle getBounds() {
+        return null;
     }
 
     public boolean containsPoint(Point p) { return false; }

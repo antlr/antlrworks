@@ -39,7 +39,7 @@ import java.awt.*;
 public class SDLink {
 
     public static boolean linkContainsPoint(GLink link, Point p) {
-        GContext context = link.context;
+        GContext context = link.getContext();
         float ox = link.source.getX();
         float oy = link.source.getY();
         float width = link.source.linkDimension.getPixelWidth(context);
@@ -49,7 +49,7 @@ public class SDLink {
     }
 
     public static void draw(GLink link) {
-        GContext context = link.context;
+        GContext context = link.getContext();
 
         float sx = link.source.getX();
         float sy = link.source.getY();

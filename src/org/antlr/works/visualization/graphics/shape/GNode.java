@@ -120,6 +120,18 @@ public class GNode extends GObject {
         return getY();
     }
 
+    public Rectangle getBounds() {
+        float width = globalDimension.getPixelWidth(context);
+        float up = globalDimension.getPixelUp(context);
+        float down = globalDimension.getPixelDown(context);
+        
+        int x1 = (int) getX();
+        int y1 = (int) (getY()-up);
+        int x2 = (int) width;
+        int y2 = (int) (up+down);
+        return new Rectangle(x1, y1, x2-x1, y2-y1);
+    }
+
     public boolean containsPoint(Point p) {
         return context.objectContainsPoint(this, p);
     }

@@ -50,7 +50,6 @@ public class Parser extends AbstractParser {
     public List groups;
     public List blocks;         // tokens {}, options {}
     public List actions;        // { action } in rules
-    public List plainActions;   // @scope::actionname {action}
     public List references;
     public ParserName name;
 
@@ -80,7 +79,6 @@ public class Parser extends AbstractParser {
         groups = new ArrayList();
         blocks = new ArrayList();
         actions = new ArrayList();
-        plainActions = new ArrayList();
         references = new ArrayList();
 
         init(text);
@@ -91,17 +89,17 @@ public class Parser extends AbstractParser {
                 continue;
             }
 
-            ParserPlainAction pa = matchPlainAction();
-            if(pa != null) {
-                plainActions.add(pa);
+            if(matchPlainAction() != null)
                 continue;
-            }
 
             ParserBlock block = matchBlock();
             if(block != null) {
                 blocks.add(block);
                 continue;
             }
+
+            if(matchScope())
+                continue;
 
             if(T(0) == null)
                 continue;
@@ -146,6 +144,26 @@ public class Parser extends AbstractParser {
             return null;
         } else
             return null;
+    }
+
+    public boolean matchScope() {
+        Token start = T(0);
+        if(start == null)
+            return false;
+
+        if(start.type != Lexer.TOKEN_ID)
+            return false;
+
+        if(!start.getAttribute().equals("scope"))
+            return false;
+
+        while(nextToken()) {
+            if(T(0).type == Lexer.TOKEN_BLOCK)
+                return true;
+            if(T(0).type == Lexer.TOKEN_SEMI)
+                return true;
+        }
+        return false;
     }
 
     public ParserPlainAction matchPlainAction() {
@@ -193,7 +211,7 @@ public class Parser extends AbstractParser {
     public ParserRule matchRule(List actions, List references) {
         // ("protected" | "public" | "private" | "fragment")? rulename_id '!'?
         // ARG_ACTION? ("returns" ARG_ACTION)? throwsSpec? optionsSpec? ruleScopeSpec?
-        // ("init" ACTION)? ":" ... ";"
+        // ("@init" ACTION)? ":" ... ";"
 
         Token start = T(0);
 
@@ -221,10 +239,19 @@ public class Parser extends AbstractParser {
                 return null;
         }
 
+        // Match any scope statement
+        matchScope();
+
         // Loop until a COLON is found (defining the beginning of the body of the rule)
         if(T(0).type != Lexer.TOKEN_COLON) {
             boolean colonFound = false;
             while(nextToken()) {
+                if(matchScope())
+                    continue;
+
+                if(matchPlainAction() != null)
+                    continue;
+
                 if(T(0).type == Lexer.TOKEN_SEMI) {
                     break;
                 }

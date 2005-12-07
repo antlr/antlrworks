@@ -37,6 +37,7 @@ import org.antlr.works.visualization.graphics.shape.GLink;
 import org.antlr.works.visualization.graphics.shape.GNode;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -99,24 +100,42 @@ public class GPathElement extends GObject {
         return objects;
     }
 
+    protected Point2D getBeginPoint() {
+        float x0;
+        float y0;
+        if(source instanceof GNode) {
+            GNode node = (GNode)source;
+            x0 = node.getCenterX();
+            y0 = node.getCenterY();
+        } else {
+            GLink link = (GLink)source;
+            x0 = link.target.getBeginX();
+            y0 = link.target.getBeginY();
+        }
+        return new Point2D.Float(x0, y0);
+    }
+
+    public Rectangle getBounds() {
+        if(nodeOrLink != null) {
+            return nodeOrLink.getBounds();
+        } else {
+            Point2D a = getBeginPoint();
+            int x1 = (int)a.getX();
+            int y1 = (int)a.getY();
+            int x2 = (int)target.getCenterX();
+            int y2 = (int)target.getCenterY();
+            return new Rectangle(x1, y1, x2-x1, y2-y1);
+        }
+    }
+
     public void draw() {
         if(nodeOrLink != null)
             nodeOrLink.draw();
 
         if(source != null && target != null) {
+            Point2D p = getBeginPoint();
             context.setColor(context.linkColor);
-            float x0;
-            float y0;
-            if(source instanceof GNode) {
-                GNode node = (GNode)source;
-                x0 = node.getCenterX();
-                y0 = node.getCenterY();
-            } else {
-                GLink link = (GLink)source;
-                x0 = link.target.getBeginX();
-                y0 = link.target.getBeginY();
-            }
-            context.drawSpline(x0, y0, target.getCenterX(), target.getCenterY(),
+            context.drawSpline((float)p.getX(), (float)p.getY(), target.getCenterX(), target.getCenterY(),
                     0, context.getEndOffset(), 0, true);
         }
     }

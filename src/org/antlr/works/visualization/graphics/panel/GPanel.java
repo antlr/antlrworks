@@ -61,6 +61,7 @@ public class GPanel implements XJNotificationObserver {
 
     protected GContext context;
     protected GView view;
+    protected JScrollPane viewScrollPane;
 
     protected ParserRule rule;
 
@@ -139,8 +140,9 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private Container createVisualizationPane() {
-        view = new GView(context);
-        return new JScrollPane(view);
+        view = new GView(this, context);
+        viewScrollPane = new JScrollPane(view);
+        return viewScrollPane;
     }
 
     private Container createErrorPane() {

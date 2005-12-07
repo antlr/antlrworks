@@ -918,7 +918,6 @@ public class EditorWindow
 
     public void parserDidParse() {
         persistence.restore();
-        inspector.refresh();
         analysisManager.refresh();
 
         textEditor.setIsTyping(false);
@@ -938,7 +937,7 @@ public class EditorWindow
                 public void run() {
                     rules.selectFirstRule();
                     updateVisualization(true);
-                    checkGrammarVersion();
+                    executeFirstOpeningOperations();
                 }
             });
         }
@@ -1099,6 +1098,11 @@ public class EditorWindow
         }
     }
 
+    public void executeFirstOpeningOperations() {
+        // Called after parser has completed
+        checkGrammarVersion();
+    }
+
     public void checkGrammarVersion() {
         // Check to see if "class" and "extends" are in the grammar text which
         // means that the grammar is probably an ANTLR version 2 grammar.
@@ -1121,6 +1125,29 @@ public class EditorWindow
         if(version2) {
             XJAlert.display(getWindowContainer(), "Incompatible Grammar Version", "This grammar does not appear to be an ANTLR 3.x grammar." +
                     "\nANTLRWorks includes ANTLR 3.x and therefore only ANTLR 3.x grammars are recognized.");
+        }
+    }
+
+    public boolean wasSaving = false;
+
+    public boolean willSaveDocument() {
+        if(actionsSCM.isFileWritable())
+            return true;
+
+        if(XJAlert.displayAlertYESNO(getWindowContainer(), "Cannot Save", "This file is currently closed in the SCM depot.\nDo you want to open it for edit before saving its content ?") == XJAlert.YES) {
+            // Open the file using the SCM
+            actionsSCM.editFile();
+            // Will save the file again once the SCM commands
+            // is completed (see scmCommandsDidComplete)
+            wasSaving = true;
+        }
+        return false;
+    }
+
+    public void scmCommandsDidComplete() {
+        if(wasSaving) {
+            wasSaving = false;
+            getDocument().performSave(false);
         }
     }
 

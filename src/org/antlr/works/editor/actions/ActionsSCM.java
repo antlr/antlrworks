@@ -65,6 +65,10 @@ public class ActionsSCM extends AbstractActions implements SCMDelegate {
             scm.queryFileStatus(getFilePath());
     }
 
+    public boolean isFileWritable() {
+        return scm.isFileWritable();
+    }
+
     public void editFile() {
         if(check()) {
             showProgress("Open for Edit");
@@ -147,8 +151,8 @@ public class ActionsSCM extends AbstractActions implements SCMDelegate {
         if(!silent) {
             hideProgress();
             displayErrors();
-            editor.console.closeGroup();
         }
+        editor.scmCommandsDidComplete();
     }
 
     public void scmFileStatusDidChange(String status) {

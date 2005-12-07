@@ -223,7 +223,6 @@ public class Interpreter implements Runnable, EditorTab {
     }
 
     public void interpret() {
-        editor.console.openGroup("Interpret");
         editor.console.makeCurrent();
 
         ErrorManager.setErrorListener(ErrorListener.shared());
@@ -266,8 +265,6 @@ public class Interpreter implements Runnable, EditorTab {
         treeModel.setTree(t);
         tree.updateUI();
         TreeUtilities.expandAll(tree);
-
-        editor.console.closeGroup();
     }
 
     public void run() {
