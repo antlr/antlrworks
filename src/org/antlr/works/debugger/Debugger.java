@@ -521,6 +521,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     public void launchLocalDebugger(boolean buildAndDebug) {
         if(buildAndDebug || !debuggerLocal.isRequiredFilesExisting()) {
             DialogGenerate dialog = new DialogGenerate(getWindowComponent());
+            dialog.setDebugOnly();
             if(dialog.runModal() == XJDialog.BUTTON_OK) {
                 debuggerLocal.setOutputPath(dialog.getOutputPath());
                 debuggerLocal.prepareAndLaunch(BUILD_AND_DEBUG);

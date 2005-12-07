@@ -1,6 +1,5 @@
 
 * Prio 1
-- generate code without debugging information
 - tokenVocab (of course, its for me *.tokens)
 
 * Prio 2

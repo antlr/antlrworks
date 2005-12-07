@@ -59,6 +59,7 @@ public class EditorPreferences {
     public static final String PREF_EDITOR_FOLDING = "PREF_EDITOR_FOLDING";
     public static final String PREF_ACTIONS_ANCHORS_FOLDING = "PREF_ACTIONS_ANCHORS_FOLDING";
     public static final String PREF_PARSER_DELAY = "PREF_PARSER_DELAY";
+    public static final String PREF_SMOOTH_SCROLLING = "PREF_SMOOTH_SCROLLING";
 
     public static final int DEFAULT_TAB_WIDTH = 8;
     public static String DEFAULT_EDITOR_FONT;
@@ -67,6 +68,7 @@ public class EditorPreferences {
     public static final boolean DEFAULT_EDITOR_FOLDING = true;
     public static final boolean DEFAULT_ACTIONS_ANCHORS_FOLDING = true;
     public static final int DEFAULT_PARSER_DELAY = 250;
+    public static final boolean DEFAULT_SMOOTH_SCROLLING = true;
 
     // Visualization
     public static final String PREF_DOT_TOOL_PATH = "PREF_DOT_TOOL_PATH";
@@ -231,6 +233,10 @@ public class EditorPreferences {
 
     public static int getEditorFontSize() {
         return getPreferences().getInt(PREF_EDITOR_FONT_SIZE, DEFAULT_EDITOR_FONT_SIZE);
+    }
+
+    public static boolean getSmoothScrolling() {
+        return getPreferences().getBoolean(PREF_SMOOTH_SCROLLING, DEFAULT_SMOOTH_SCROLLING);
     }
 
     public static boolean getFoldingEnabled() {

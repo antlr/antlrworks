@@ -54,10 +54,12 @@ public class CodeGenerate implements Runnable {
     protected Grammar lexerGrammar;
 
     protected EditorProvider provider;
+    protected CodeGenerateDelegate delegate;
     protected ErrorListener errorListener;
 
-    public CodeGenerate(EditorProvider provider) {
+    public CodeGenerate(EditorProvider provider, CodeGenerateDelegate delegate) {
         this.provider = provider;
+        this.delegate = delegate;
         this.outputPath = EditorPreferences.getOutputPath();
 
         errorListener = new ErrorListener();
@@ -67,6 +69,10 @@ public class CodeGenerate implements Runnable {
 
     public void grammarChanged() {
         parserGrammar = null;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
     public void setOutputPath(String path) {
@@ -106,11 +112,9 @@ public class CodeGenerate implements Runnable {
             return errorListener.errors.get(0).toString();
     }
 
-    public boolean generate(boolean debug) throws Exception {
-        this.debug = debug;
+    public boolean generate() throws Exception {
         errorListener.clear();
 
-        // @todo remove print later
         String[] params;
         if(debug)
             params = new String[] { "-debug", "-o", getOutputPath(), provider.getFilePath() };
@@ -148,9 +152,7 @@ public class CodeGenerate implements Runnable {
         }
     }
 
-    public void generateInThread(XJFrame parent, boolean debug) {
-        this.debug = debug;
-
+    public void generateInThread(XJFrame parent) {
         progress = new XJDialogProgress(parent);
         progress.setInfo("Generating...");
         progress.setCancellable(false);
@@ -164,8 +166,12 @@ public class CodeGenerate implements Runnable {
         progress.close();
         if(generateError != null)
             XJAlert.display(provider.getWindowContainer(), "Error", "Cannot generate the grammar because:\n"+generateError);
-        else
-            XJAlert.display(provider.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+outputPath);
+        else {
+            if(delegate == null || delegate.codeGenerateDisplaySuccess())
+                XJAlert.display(provider.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+outputPath);
+            else
+                delegate.codeGenerateDidComplete();
+        }
     }
 
     protected String generateError = null;
@@ -175,7 +181,7 @@ public class CodeGenerate implements Runnable {
         generateError = null;
 
         try {
-            if(!generate(debug)) {
+            if(!generate()) {
                 generateError = getLastError();
             }
         } catch (Exception e) {
@@ -189,4 +195,5 @@ public class CodeGenerate implements Runnable {
             }
         });
     }
+
 }

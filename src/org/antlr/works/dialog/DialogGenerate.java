@@ -53,7 +53,7 @@ public class DialogGenerate extends XJDialog {
         super(parent, true);
 
         initComponents();
-        setSize(612, 121);
+        setSize(612, 145);
         
         setDefaultButton(okButton);
         setOKButton(okButton);
@@ -74,6 +74,15 @@ public class DialogGenerate extends XJDialog {
         EditorPreferences.setOutputPath(getOutputPath());
     }
 
+    public void setDebugOnly() {
+        debugInfoButton.setSelected(true);
+        debugInfoButton.setVisible(false);
+    }
+
+    public boolean generateDebugInformation() {
+        return debugInfoButton.isSelected();
+    }
+
     public String getOutputPath() {
         return outputPathField.getText();
     }
@@ -87,6 +96,7 @@ public class DialogGenerate extends XJDialog {
         label1 = new JLabel();
         outputPathField = new JTextField();
         browseButton = new JButton();
+        debugInfoButton = new JCheckBox();
         buttonBar = new JPanel();
         okButton = new JButton();
         cancelButton = new JButton();
@@ -127,6 +137,10 @@ public class DialogGenerate extends XJDialog {
                 //---- browseButton ----
                 browseButton.setText("Browse...");
                 contentPane.add(browseButton, cc.xy(5, 1));
+
+                //---- debugInfoButton ----
+                debugInfoButton.setText("Debug information");
+                contentPane.add(debugInfoButton, cc.xy(3, 3));
             }
             dialogPane.add(contentPane, BorderLayout.CENTER);
 
@@ -168,6 +182,7 @@ public class DialogGenerate extends XJDialog {
     private JLabel label1;
     private JTextField outputPathField;
     private JButton browseButton;
+    private JCheckBox debugInfoButton;
     private JPanel buttonBar;
     private JButton okButton;
     private JButton cancelButton;

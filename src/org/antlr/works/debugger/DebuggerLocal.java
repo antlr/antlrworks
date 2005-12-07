@@ -88,7 +88,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
     public DebuggerLocal(Debugger debugger) {
         this.debugger = debugger;
-        this.codeGenerator = new CodeGenerate(debugger.editor);
+        this.codeGenerator = new CodeGenerate(debugger.editor, null);
         this.progress = new XJDialogProgress(debugger.editor);
     }
 
@@ -272,7 +272,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     protected void generateGrammar() {
         String errorMessage = null;
         try {
-            if(!codeGenerator.generate(true))
+            if(!codeGenerator.generate())
                 errorMessage = codeGenerator.getLastError();
         } catch (Exception e) {
             debugger.editor.console.print(e);

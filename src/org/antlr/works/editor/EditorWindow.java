@@ -823,7 +823,7 @@ public class EditorWindow
         if(rule != null && !rule.isExpanded()) {
             foldingManager.toggleFolding(rule);
         }
-        textEditor.setCaretPosition(position);
+        textEditor.setCaretPosition(position, true, EditorPreferences.getSmoothScrolling());
     }
 
     public int getCaretPosition() {

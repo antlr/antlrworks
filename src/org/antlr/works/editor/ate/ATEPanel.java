@@ -106,7 +106,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public void setCaretPosition(int position) {
-        setCaretPosition(position, true, true);
+        setCaretPosition(position, true, false);
     }
 
     public void setCaretPosition(int position, boolean adjustScroll, boolean animate) {

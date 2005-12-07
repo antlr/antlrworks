@@ -37,25 +37,35 @@ import org.antlr.works.dialog.DialogGenerate;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.code.CodeDisplay;
 import org.antlr.works.editor.code.CodeGenerate;
+import org.antlr.works.editor.code.CodeGenerateDelegate;
 import org.antlr.works.stats.Statistics;
 
-public class ActionsGenerate extends AbstractActions {
+public class ActionsGenerate extends AbstractActions implements CodeGenerateDelegate {
 
     public CodeGenerate generateCode = null;
 
+    protected String actionShowCodeRule;
+    protected boolean actionShowCodeLexer;
+
     public ActionsGenerate(EditorWindow editor) {
         super(editor);
-        generateCode = new CodeGenerate(editor);
+        generateCode = new CodeGenerate(editor, this);
     }
 
     public void generateCode() {
+        actionShowCodeRule = null;
+        generateCode_();
+    }
+
+    protected void generateCode_() {
         if(!checkLanguage())
             return;
 
         DialogGenerate dialog = new DialogGenerate(editor.getWindowContainer());
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
+            generateCode.setDebug(dialog.generateDebugInformation());
             generateCode.setOutputPath(dialog.getOutputPath());
-            generateCode.generateInThread(editor, true);
+            generateCode.generateInThread(editor);
             Statistics.shared().recordEvent(Statistics.EVENT_GENERATE_CODE);
         }
     }
@@ -92,7 +102,11 @@ public class ActionsGenerate extends AbstractActions {
             return;
 
         if(!generateCode.isGeneratedTextFileExisting(lexer)) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "No generated files found. Please generate the file before perform this action.");
+            // Generate automatically the code and call again
+            // this method (using actionShowCodeRule as flag)
+            actionShowCodeRule = rule;
+            actionShowCodeLexer = lexer;
+            generateCode_();
             return;
         }
 
@@ -122,6 +136,16 @@ public class ActionsGenerate extends AbstractActions {
         dc.setTitle(title);
 
         editor.addTab(dc);
+    }
+
+    public boolean codeGenerateDisplaySuccess() {
+        return actionShowCodeRule == null;
+    }
+
+    public void codeGenerateDidComplete() {
+        if(actionShowCodeRule != null) {
+            showGeneratedCode(actionShowCodeRule, actionShowCodeLexer);
+        }
     }
 
 }
