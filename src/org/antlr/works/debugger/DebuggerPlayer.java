@@ -296,13 +296,9 @@ public class DebuggerPlayer {
             debugger.editor.setCaretPosition(index);
             debugger.storeGrammarAttributeSet(index);
 
-            // Select one character to be underlined
-            debugger.editor.getTextPane().moveCaretPosition(index+1);
-
             StyleContext sc = StyleContext.getDefaultStyleContext();
-            AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Background, Color.red);
-            debugger.editor.getTextPane().setCharacterAttributes(aset, false);
-
+            AttributeSet attr = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Background, Color.red);
+            debugger.editor.getTextPane().getStyledDocument().setCharacterAttributes(index, 1, attr, false);
         } catch(Exception e) {
             debugger.editor.console.print(e);
         }

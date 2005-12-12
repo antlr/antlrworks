@@ -819,11 +819,15 @@ public class EditorWindow
     }
 
     public void setCaretPosition(int position) {
+        setCaretPosition(position, EditorPreferences.getSmoothScrolling());
+    }
+
+    public void setCaretPosition(int position, boolean animate) {
         ParserRule rule = rules.getEnclosingRuleAtPosition(position);
         if(rule != null && !rule.isExpanded()) {
             foldingManager.toggleFolding(rule);
         }
-        textEditor.setCaretPosition(position, true, EditorPreferences.getSmoothScrolling());
+        textEditor.setCaretPosition(position, true, animate);
     }
 
     public int getCaretPosition() {

@@ -52,6 +52,10 @@ public class ActionsGrammar extends AbstractActions implements TDecisionDFA.TDec
         progress = new XJDialogProgress(editor.getWindowContainer());
     }
 
+    public void showTokensSD() {
+        editor.visual.setRule(new ParserRule("Tokens"), true);
+    }
+
     public void showDecisionDFA() {
         showProgress("Generating...");
         TDecisionDFA decision = new TDecisionDFA(editor, this);

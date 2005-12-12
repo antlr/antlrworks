@@ -99,13 +99,13 @@ public class EditorToolbar implements XJNotificationObserver {
         toolbar = Box.createHorizontalBox();
         toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
         toolbar.add(Box.createHorizontalStrut(5));
-        toolbar.add(backward = (JButton)createNewButton(IconManager.shared().getIconBackward(), "Backward", false));
+        toolbar.add(backward = (JButton)createNewButton(IconManager.shared().getIconBackward(), "Back", false));
         toolbar.add(forward = (JButton)createNewButton(IconManager.shared().getIconForward(), "Forward", false));
         toolbar.add(Box.createHorizontalStrut(15));
-        toolbar.add(sort = (JToggleButton)createNewButton(IconManager.shared().getIconSort(), "Sort rules", true));
-        toolbar.add(sd = (JButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Syntax diagram", false));
-        toolbar.add(coloring = (JButton)createNewButton(IconManager.shared().getIconColoring(), "Syntax coloring", false));
-        toolbar.add(ideas = (JButton)createNewButton(IconManager.shared().getIconIdea(), "Syntax ideas", false));
+        toolbar.add(sort = (JToggleButton)createNewButton(IconManager.shared().getIconSort(), "Toggle Sort rules", true));
+        toolbar.add(sd = (JButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Toggle Syntax diagram", false));
+        toolbar.add(coloring = (JButton)createNewButton(IconManager.shared().getIconColoring(), "Toggle Syntax coloring", false));
+        toolbar.add(ideas = (JButton)createNewButton(IconManager.shared().getIconIdea(), "Toggle Syntax ideas", false));
 //        toolbar.add(analysis = (JButton)createNewButton(IconManager.shared().getIconAnalysis(), "Syntax analysis", false));
         toolbar.add(Box.createHorizontalStrut(15));
 //        toolbar.add(underlying = (JButton)createNewButton(IconManager.shared().getIconUnderlying(), "Syntax underlying", false));

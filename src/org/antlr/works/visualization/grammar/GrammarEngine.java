@@ -116,6 +116,7 @@ public class GrammarEngine {
         lexerGrammar.importTokenVocabulary(grammar);
         try {
             lexerGrammar.setGrammarContent(sr);
+            lexerGrammar.addArtificialMatchTokensRule();
             lexerGrammar.createNFAs();
         } catch (Exception e) {
             console.print(e);

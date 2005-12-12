@@ -84,6 +84,10 @@ public class IconManager {
         return createImageIcon(path+"sd.png");
     }
 
+    public ImageIcon getIconGraph() {
+        return createImageIcon(path+"graph.png");
+    }
+
     public ImageIcon getIconIdea() {
         return createImageIcon(path+"warning.png");
     }

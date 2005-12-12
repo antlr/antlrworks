@@ -58,6 +58,11 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
     protected int refsStartIndex = -1;
     protected int refsEndIndex = -1;
 
+    public ParserRule(String name) {
+        this.name = name;
+        this.lexer = Token.isLexerName(name);
+    }
+
     public ParserRule(Parser parser, String name, Token start, Token colon, Token end) {
         this.parser = parser;
         this.name = name;

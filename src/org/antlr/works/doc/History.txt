@@ -1,8 +1,12 @@
-Version 1.0ea6 - 12/06/05
+Version 1.0ea6 - 12/12/05
 
-- new: click on an input token (debugger) selects the corresponding token in the grammar and in the parse tree
-- new: (debugger) breakpoints in input text (right-click to toggle the breakpoint on any tokens)
-- new: (debugger) breakpoints in grammar now works (click in the editor gutter to enable/disable them)
+- new: graphical representation of the parse tree (interpreter and debugger) that
+       can also be exported to bitmap or eps
+- new: show artificial Tokens rule
+- new: click on an input token (debugger) selects the corresponding token in the grammar
+       and in the parse tree
+- new: breakpoints in input text (right-click to toggle the breakpoint on any tokens)
+- new: breakpoints in grammar now works (click in the editor gutter to enable/disable them)
 - new: convert literal quote refactoring tools (to single, to double or c-style quote)
 
 - improved debugger: display the event where the debugger stopped at

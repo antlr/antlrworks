@@ -97,7 +97,6 @@ public class VisualAnalysis extends EditorThread {
 
     private List threadFetchErrorsForRule(ParserRule rule) {
         List errors = new ArrayList();
-
         for (Iterator iterator = visual.engine.errors.iterator(); iterator.hasNext();) {
             GrammarEngineError error = (GrammarEngineError) iterator.next();
             if(error.line>=rule.start.startLineNumber && error.line<=rule.end.startLineNumber)

@@ -43,46 +43,42 @@ import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextUtils;
-import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
+import org.antlr.works.parsetree.ParseTreePanel;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.ErrorListener;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.List;
 
 public class Interpreter implements Runnable, EditorTab {
 
-    private JPanel panel;
-    private JSplitPane splitPane;
-    private JTextPane textPane;
-    private JScrollPane textScrollPane;
-    private JTree tree;
-    private JScrollPane treeScrollPane;
-    private InterpreterTreeModel treeModel;
-    private JComboBox rulesCombo;
+    protected JPanel panel;
+    protected JSplitPane splitPane;
+    protected JTextPane textPane;
+    protected JScrollPane textScrollPane;
+    protected InterpreterTreeModel treeModel;
+    protected ParseTreePanel parseTreePanel;
+    protected JComboBox rulesCombo;
 
-    private XJDialogProgress progress;
+    protected XJDialogProgress progress;
 
-    private boolean grammarDirty = true;
+    protected boolean grammarDirty = true;
 
-    private String startSymbol = null;
+    protected String startSymbol = null;
 
-    private Grammar parser;
-    private Grammar lexer;
+    protected Grammar parser;
+    protected Grammar lexer;
 
-    private EditorWindow editor;
+    protected EditorWindow editor;
 
     public Interpreter(EditorWindow editor) {
         this.editor = editor;
@@ -105,38 +101,13 @@ public class Interpreter implements Runnable, EditorTab {
         textScrollPane.setWheelScrollingEnabled(true);
 
         treeModel = new InterpreterTreeModel();
-        tree = new JTree(treeModel);
-        tree.setRootVisible(false);
-        tree.setShowsRootHandles(true);
-
-        DefaultTreeCellRenderer treeRenderer = new DefaultTreeCellRenderer();
-        treeRenderer.setClosedIcon(null);
-        treeRenderer.setLeafIcon(null);
-        treeRenderer.setOpenIcon(null);
-
-        tree.setCellRenderer(treeRenderer);
-
-        tree.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                int selRow = tree.getRowForLocation(e.getX(), e.getY());
-                TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-                if(selRow != -1) {
-                    if(e.getClickCount() == 2) {
-                        displayNodeInfo(selPath.getLastPathComponent());
-                        e.consume();
-                    }
-                }
-            }
-        });
-
-        treeScrollPane = new JScrollPane(tree);
-        treeScrollPane.setWheelScrollingEnabled(true);
+        parseTreePanel = new ParseTreePanel(treeModel);
 
         splitPane = new JSplitPane();
         splitPane.setBorder(null);
         splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setLeftComponent(textScrollPane);
-        splitPane.setRightComponent(treeScrollPane);
+        splitPane.setRightComponent(parseTreePanel);
         splitPane.setContinuousLayout(true);
         splitPane.setOneTouchExpandable(true);
 
@@ -151,8 +122,7 @@ public class Interpreter implements Runnable, EditorTab {
         box.add(createRunButton());
         box.add(createRulesPopUp());
         box.add(Box.createHorizontalGlue());
-        box.add(createExpandAllButton());
-        box.add(createCollapseAllButton());
+        box.add(createToggleGraphButton());
         return box;
     }
 
@@ -180,23 +150,13 @@ public class Interpreter implements Runnable, EditorTab {
         return rulesCombo;
     }
 
-    public JButton createExpandAllButton() {
-        JButton button = new JButton(IconManager.shared().getIconExpandAll());
-        button.setToolTipText("Expand All");
+    public JButton createToggleGraphButton() {
+        JButton button = new JButton(IconManager.shared().getIconGraph());
+        button.setToolTipText("Toggle Graph");
+        button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                TreeUtilities.expandAll(tree);
-            }
-        });
-        return button;
-    }
-
-    public JButton createCollapseAllButton() {
-        JButton button = new JButton(IconManager.shared().getIconCollapseAll());
-        button.setToolTipText("Collapse All");
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                TreeUtilities.collapseAll(tree);
+                parseTreePanel.toggleGraph();
             }
         });
         return button;
@@ -215,11 +175,6 @@ public class Interpreter implements Runnable, EditorTab {
 
     public void grammarChanged() {
         grammarDirty = true;
-    }
-
-    public void displayNodeInfo(Object node) {
-        InterpreterTreeModel.NodeWrapper wrapper = (InterpreterTreeModel.NodeWrapper)node;
-        XJAlert.display(editor.getWindowContainer(), "Node info", wrapper.getInfoString());
     }
 
     public void interpret() {
@@ -263,8 +218,9 @@ public class Interpreter implements Runnable, EditorTab {
 
         treeModel.setGrammar(parser);
         treeModel.setTree(t);
-        tree.updateUI();
-        TreeUtilities.expandAll(tree);
+
+        parseTreePanel.setRoot((TreeNode)treeModel.getRoot());
+
     }
 
     public void run() {
@@ -304,4 +260,5 @@ public class Interpreter implements Runnable, EditorTab {
     public Component getTabComponent() {
         return getContainer();
     }
+
 }

@@ -57,7 +57,7 @@ public class EditorGoToHistory {
         currentIndex = history.size();
     }
 
-    public boolean canGoBackward() {
+    public boolean canGoBack() {
         return !history.isEmpty() && currentIndex > 0;
     }
 
@@ -65,7 +65,7 @@ public class EditorGoToHistory {
         return !history.isEmpty() && currentIndex < history.size()-1;
     }
 
-    public int getBackwardPosition(int currentPosition) {
+    public int getBackPosition(int currentPosition) {
         if(currentIndex == history.size()) {
             // Add the current position if the currentIndex
             // is at the end of the history (so Forward is able

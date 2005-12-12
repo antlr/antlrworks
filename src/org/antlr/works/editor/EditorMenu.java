@@ -74,17 +74,18 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_GOTO_DECLARATION = 41;
     public static final int MI_GOTO_LINE = 42;
     public static final int MI_GOTO_CHARACTER = 43;
-    public static final int MI_GOTO_BACKWARD = 44;
+    public static final int MI_GOTO_BACK = 44;
     public static final int MI_GOTO_FORWARD = 45;
     public static final int MI_PREV_BREAKPOINT = 46;
     public static final int MI_NEXT_BREAKPOINT = 47;
 
     // Grammar
-    public static final int MI_SHOW_DECISION_DFA = 50;
-    public static final int MI_INSERT_TEMPLATE = 51;
-    public static final int MI_GROUP = 52;
-    public static final int MI_UNGROUP = 53;
-    public static final int MI_CHECK_GRAMMAR = 54;
+    public static final int MI_SHOW_TOKENS_SD = 50;
+    public static final int MI_SHOW_DECISION_DFA = 51;
+    public static final int MI_INSERT_TEMPLATE = 52;
+    public static final int MI_GROUP = 53;
+    public static final int MI_UNGROUP = 54;
+    public static final int MI_CHECK_GRAMMAR = 55;
 
     // Refactor
     public static final int MI_RENAME = 60;
@@ -264,7 +265,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.addItem(new XJMenuItem("Line...", 'g', KeyEvent.VK_G, MI_GOTO_LINE, this));
         menu.addItem(new XJMenuItem("Character...", MI_GOTO_CHARACTER, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Backward", 'b', KeyEvent.VK_LEFT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_BACKWARD, this));
+        menu.addItem(new XJMenuItem("Back", 'b', KeyEvent.VK_LEFT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_BACK, this));
         menu.addItem(new XJMenuItem("Forward", 'f', KeyEvent.VK_RIGHT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_FORWARD, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Previous Breakpoint", MI_PREV_BREAKPOINT, this));
@@ -302,6 +303,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle("Grammar");
+        menu.addItem(new XJMenuItem("Show Tokens Syntax Diagram", MI_SHOW_TOKENS_SD, this));
         menu.addItem(new XJMenuItem("Show Current Decision DFA", MI_SHOW_DECISION_DFA, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Insert Rule From Template", 't', KeyEvent.VK_T, Event.CTRL_MASK, MI_INSERT_TEMPLATE, this));
@@ -418,8 +420,8 @@ public class EditorMenu implements XJMenuItemDelegate {
                 item.setEnabled(!isDebuggerRunning());
                 break;
 
-            case MI_GOTO_BACKWARD:
-                item.setEnabled(editor.editorGoToHistory.canGoBackward());
+            case MI_GOTO_BACK:
+                item.setEnabled(editor.editorGoToHistory.canGoBack());
                 break;
             case MI_GOTO_FORWARD:
                 item.setEnabled(editor.editorGoToHistory.canGoForward());
@@ -560,6 +562,10 @@ public class EditorMenu implements XJMenuItemDelegate {
 
     public void handleMenuGrammar(int itemTag) {
         switch(itemTag) {
+            case MI_SHOW_TOKENS_SD:
+                editor.actionsGrammar.showTokensSD();
+                break;
+
             case MI_SHOW_DECISION_DFA:
                 editor.actionsGrammar.showDecisionDFA();
                 break;
@@ -640,7 +646,7 @@ public class EditorMenu implements XJMenuItemDelegate {
                 editor.actionsGoTo.goToCharacter();
                 break;
 
-            case MI_GOTO_BACKWARD:
+            case MI_GOTO_BACK:
                 editor.actionsGoTo.goToBackward();
                 break;
 

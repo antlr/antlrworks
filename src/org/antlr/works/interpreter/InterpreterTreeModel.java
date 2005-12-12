@@ -36,89 +36,68 @@ import org.antlr.runtime.NoViableAltException;
 import org.antlr.runtime.tree.ParseTree;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.tool.Grammar;
+import org.antlr.works.parsetree.ParseTreeNode;
 
-import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeNode;
+import java.util.Enumeration;
 
 public class InterpreterTreeModel extends DefaultTreeModel {
 
-    public Tree tree = null;
     protected Grammar grammar;
 
     public InterpreterTreeModel() {
         super(null);
     }
 
-    public void setTree(Tree tree) {
-        this.tree = tree;
-    }
-
     public void setGrammar(Grammar grammar) {
         this.grammar = grammar;
     }
 
-    public Object getRoot() {
-        if(tree == null)
-            return null;
-        else
-            return new NodeWrapper(tree);
+    public void setTree(Tree tree) {
+        setRoot(new InterpreterTreeNode(null, tree));
     }
 
-    public Object getChild(Object o, int index) {
-        NodeWrapper t = (NodeWrapper)o;
-        return new NodeWrapper(t.getChild(index));
-    }
+    public class InterpreterTreeNode extends ParseTreeNode {
 
-    public int getChildCount(Object o) {
-        NodeWrapper t = (NodeWrapper)o;
-        return t.getChildCount();
-    }
+        protected TreeNode parent;
+        protected Tree tree;
 
-    public boolean isLeaf(Object o) {
-        NodeWrapper t = (NodeWrapper)o;
-        return t.isLeaf();
-    }
-
-    public void valueForPathChanged(TreePath treePath, Object o) {
-    }
-
-    public int getIndexOfChild(Object o, Object child) {
-        NodeWrapper parent = (NodeWrapper)o;
-        return parent.getIndexOfChild(child);
-    }
-
-    public void addTreeModelListener(TreeModelListener treeModelListener) {
-    }
-
-    public void removeTreeModelListener(TreeModelListener treeModelListener) {
-    }
-
-    public class NodeWrapper {
-        protected Tree tree = null;
-
-        public NodeWrapper(Tree tree) {
+        public InterpreterTreeNode(TreeNode parent, Tree tree) {
+            this.parent = parent;
             this.tree = tree;
+        }
+
+        public TreeNode getChildAt(int childIndex) {
+            return new InterpreterTreeNode(this, tree.getChild(childIndex));
         }
 
         public int getChildCount() {
             return tree.getChildCount();
         }
 
+        public TreeNode getParent() {
+            return parent;
+        }
+
+        public int getIndex(TreeNode node) {
+            for(int i=0; i<tree.getChildCount(); i++) {
+                if(tree.getChild(i) == node)
+                    return i;
+            }
+            return -1;
+        }
+
+        public boolean getAllowsChildren() {
+            return true;
+        }
+
         public boolean isLeaf() {
             return getChildCount() == 0;
         }
 
-        public Tree getChild(int index) {
-            return tree.getChild(index);
-        }
-
-        public int getIndexOfChild(Object child) {
-            for(int i=0; i<tree.getChildCount(); i++) {
-                if(tree.getChild(i) == child)
-                    return i;
-            }
-            return -1;
+        public Enumeration children() {
+            return null;
         }
 
         public Object getPayload() {
@@ -133,21 +112,21 @@ public class InterpreterTreeModel extends DefaultTreeModel {
             Object payload = getPayload();
             if(payload instanceof CommonToken) {
                 CommonToken t = (CommonToken)payload;
-                info.append("Type: "+grammar.getTokenDisplayName(t.getType())+"\n");
-                info.append("Text: "+t.getText()+"\n");
-                info.append("Line: "+t.getLine()+"\n");
-                info.append("Char: "+t.getCharPositionInLine()+"\n");
-                info.append("Channel: "+t.getChannel()+"\n");
+                info.append("Type: ").append(grammar.getTokenDisplayName(t.getType())).append("\n");
+                info.append("Text: ").append(t.getText()).append("\n");
+                info.append("Line: ").append(t.getLine()).append("\n");
+                info.append("Char: ").append(t.getCharPositionInLine()).append("\n");
+                info.append("Channel: ").append(t.getChannel()).append("\n");
             } else if(payload instanceof NoViableAltException) {
                 NoViableAltException e = (NoViableAltException)payload;
-                info.append("Description: "+e.grammarDecisionDescription+"\n");
-                info.append("Descision: "+e.decisionNumber+"\n");
-                info.append("State: "+e.stateNumber+"\n");
+                info.append("Description: ").append(e.grammarDecisionDescription).append("\n");
+                info.append("Descision: ").append(e.decisionNumber).append("\n");
+                info.append("State: ").append(e.stateNumber).append("\n");
             } else {
                 if(isLeaf())
                     info.append(payload.toString());
                 else
-                    info.append("Rule: "+payload.toString());
+                    info.append("Rule: ").append(payload.toString());
             }
             return info.toString();
         }

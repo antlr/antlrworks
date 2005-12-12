@@ -1,5 +1,10 @@
 
 * Prio 1
+- export parse tree of interpreter/debugger as bitmap/eps 
+- Command-S doesn't always invoke save... see why
+- sort rules should keep current selected rule in tree
+- fix tree appearance between interpreter and debugger on Windows
+- create package for Mac OS X
 - tokenVocab (of course, its for me *.tokens)
 
 * Prio 2
@@ -12,11 +17,8 @@
 - prefs: customizable list of "Insert Rule From Template" - or read from a file ?
 
 * Prio 3:
-- check environment (see e-mail from Jim Idle)
 - jump into source when navigating grammar text (in generated code)
-- Windows/Linux: don't quit if last document closed ?
 - display current token in syntax diagram
-- shift-right, shift-left, comment/uncomment selection
 - display multiple rules together
 - (Terence will change) handle "header with package" option (see with Terence for line numbering between files)
 - use Grammar randomText to generate random valid input text

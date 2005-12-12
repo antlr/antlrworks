@@ -44,20 +44,20 @@ import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.swing.TextPane;
 import org.antlr.works.editor.swing.TextUtils;
-import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.parser.Line;
+import org.antlr.works.parsetree.ParseTreeNode;
+import org.antlr.works.parsetree.ParseTreePanel;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.util.ErrorListener;
 import org.antlr.works.util.IconManager;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
@@ -78,9 +78,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     protected TextPane inputTextPane;
     protected TextPane outputTextPane;
 
-    protected JScrollPane treeScrollPane;
-    protected JTree parseTree;
-    protected DefaultTreeModel parseTreeModel;
+    protected ParseTreePanel parseTreePanel;
 
     protected JList infoList;
     protected JRadioButton displayEventButton;
@@ -92,7 +90,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     protected JLabel infoLabel;
     protected JButton debugButton;
     protected JButton stopButton;
-    protected JButton backwardButton;
+    protected JButton backButton;
     protected JButton forwardButton;
     protected JButton goToStartButton;
     protected JButton goToEndButton;
@@ -214,45 +212,8 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     }
 
     public JComponent createTreePanel() {
-        parseTreeModel = new DefaultTreeModel(null);
-
-        parseTree = new JTree(parseTreeModel);
-        parseTree.setRootVisible(false);
-        parseTree.setShowsRootHandles(true);
-
-        DefaultTreeCellRenderer treeRenderer = new DefaultTreeCellRenderer();
-        treeRenderer.setClosedIcon(null);
-        treeRenderer.setLeafIcon(null);
-        treeRenderer.setOpenIcon(null);
-
-        parseTree.setCellRenderer(treeRenderer);
-
-        parseTree.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                int selRow = parseTree.getRowForLocation(e.getX(), e.getY());
-                TreePath selPath = parseTree.getPathForLocation(e.getX(), e.getY());
-                if(selRow != -1) {
-                    if(e.getClickCount() == 2) {
-                        displayNodeInfo(selPath.getLastPathComponent());
-                        e.consume();
-                    }
-                }
-            }
-        });
-
-        treeScrollPane = new JScrollPane(parseTree);
-        treeScrollPane.setWheelScrollingEnabled(true);
-
-        Box box = Box.createHorizontalBox();
-        box.add(Box.createHorizontalGlue());
-        box.add(createExpandAllButton());
-        box.add(createCollapseAllButton());
-
-        JPanel treePanel = new JPanel(new BorderLayout());
-        treePanel.add(treeScrollPane, BorderLayout.CENTER);
-        treePanel.add(box, BorderLayout.SOUTH);
-
-        return treePanel;
+        parseTreePanel = new ParseTreePanel(new DefaultTreeModel(null));
+        return parseTreePanel;
     }
 
     public JPanel createListInfoPanel() {
@@ -289,7 +250,6 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
 
         JScrollPane listScrollPane = new JScrollPane(infoList);
         listScrollPane.setWheelScrollingEnabled(true);
-        //listScrollPane.setPreferredSize(new Dimension(50, 0));
 
         JPanel infoListControlPanel = new JPanel();
         infoListControlPanel.add(displayStackButton);
@@ -309,12 +269,13 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         box.add(goToStartButton = createGoToStartButton());
         box.add(goToEndButton = createGoToEndButton());
         box.add(Box.createHorizontalStrut(20));
-        box.add(backwardButton = createStepBackwardButton());
+        box.add(backButton = createStepBackButton());
         box.add(forwardButton = createStepForwardButton());
         box.add(Box.createHorizontalStrut(20));
         box.add(createBreakComboBox());
         box.add(Box.createHorizontalStrut(20));
         box.add(createRevealTokensButton());
+        box.add(createToggleGraphButton());
         box.add(Box.createHorizontalGlue());
         box.add(createInfoPanel());
         return box;
@@ -338,9 +299,9 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         return button;
     }
 
-    public JButton createStepBackwardButton() {
+    public JButton createStepBackButton() {
         JButton button = new JButton(IconManager.shared().getIconStepBackward());
-        button.setToolTipText("Step Backward");
+        button.setToolTipText("Step Back");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 recorder.stepBackward(getBreakEvent());
@@ -421,25 +382,13 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         return tokenButton;
     }
 
-    public JButton createExpandAllButton() {
-        JButton button = new JButton(IconManager.shared().getIconExpandAll());
-        button.setToolTipText("Expand All");
+    public JButton createToggleGraphButton() {
+        JButton button = new JButton(IconManager.shared().getIconGraph());
+        button.setToolTipText("Toggle Graph");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                TreeUtilities.expandAll(parseTree);
-            }
-        });
-        return button;
-    }
-
-    public JButton createCollapseAllButton() {
-        JButton button = new JButton(IconManager.shared().getIconCollapseAll());
-        button.setToolTipText("Collapse All");
-        button.setFocusable(false);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                TreeUtilities.collapseAll(parseTree);
+                parseTreePanel.toggleGraph();
             }
         });
         return button;
@@ -466,7 +415,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         stopButton.setEnabled(recorder.getStatus() != DebuggerRecorder.STATUS_STOPPED);
 
         boolean enabled = recorder.isRunning();
-        backwardButton.setEnabled(enabled);
+        backButton.setEnabled(enabled);
         forwardButton.setEnabled(enabled);
         goToStartButton.setEnabled(enabled);
         goToEndButton.setEnabled(enabled);
@@ -496,17 +445,15 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     }
 
     public void selectTreeParserNode(Token token) {
-        ParseTreeNode root = (ParseTreeNode) parseTree.getModel().getRoot();
-        ParseTreeNode node = root.findNodeWithToken(token);
+        DebuggerParseTreeNode root = (DebuggerParseTreeNode) parseTreePanel.getRoot();
+        DebuggerParseTreeNode node = root.findNodeWithToken(token);
         if(node != null) {
-            TreePath path = new TreePath(parseTreeModel.getPathToRoot(node));
-            parseTree.scrollPathToVisible(path);
-            parseTree.setSelectionPath(path);
+            parseTreePanel.selectNode(node);
         }
     }
 
     public void displayNodeInfo(Object node) {
-        ParseTreeNode treeNode = (ParseTreeNode)node;
+        DebuggerParseTreeNode treeNode = (DebuggerParseTreeNode)node;
         XJAlert.display(editor.getWindowContainer(), "Node info", treeNode.getInfoString());
     }
 
@@ -608,27 +555,25 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
 
     public void resetGUI() {
         playCallStack = new Stack();
-        playCallStack.push(new Debugger.ParseTreeNode("root"));
+        playCallStack.push(new Debugger.DebuggerParseTreeNode("root"));
 
         stackListModel.removeAllElements();
         eventListModel.removeAllElements();
 
         TreeNode node = (TreeNode)playCallStack.peek();
-        parseTreeModel.setRoot(node);
+
+        parseTreePanel.setRoot(node);
         updateParseTree(node);
     }
 
     public void updateParseTree(TreeNode node) {
-        parseTreeModel.reload();
-        TreeUtilities.expandAll(parseTree);
-        parseTree.scrollPathToVisible(new TreePath(parseTreeModel.getPathToRoot(node)));
+        parseTreePanel.refresh();
+        parseTreePanel.scrollNodeToVisible(node);
     }
 
     public void storeGrammarAttributeSet(int index) {
-        // Note: getCharacterAttributes() only returns the attribute of the character
-        // at the caret position.
         previousGrammarPosition = index;
-        previousGrammarAttributeSet = editor.getTextPane().getCharacterAttributes().copyAttributes();
+        previousGrammarAttributeSet = editor.getTextPane().getStyledDocument().getCharacterElement(index+1).getAttributes();
     }
 
     public void restorePreviousGrammarAttributeSet() {
@@ -676,8 +621,8 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     }
 
     public void pushRule(String ruleName) {
-        Debugger.ParseTreeNode parentRuleNode = (Debugger.ParseTreeNode)playCallStack.peek();
-        Debugger.ParseTreeNode ruleNode = new Debugger.ParseTreeNode(ruleName);
+        Debugger.DebuggerParseTreeNode parentRuleNode = (Debugger.DebuggerParseTreeNode)playCallStack.peek();
+        Debugger.DebuggerParseTreeNode ruleNode = new Debugger.DebuggerParseTreeNode(ruleName);
         parentRuleNode.add(ruleNode);
         updateParseTree(ruleNode);
 
@@ -693,15 +638,15 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     }
 
     public void addToken(Token token) {
-        ParseTreeNode ruleNode = (ParseTreeNode)playCallStack.peek();
-        ParseTreeNode elementNode = new ParseTreeNode(token);
+        DebuggerParseTreeNode ruleNode = (DebuggerParseTreeNode)playCallStack.peek();
+        DebuggerParseTreeNode elementNode = new DebuggerParseTreeNode(token);
         ruleNode.add(elementNode);
         updateParseTree(elementNode);
     }
 
     public void addException(Exception e) {
-        ParseTreeNode ruleNode = (ParseTreeNode)playCallStack.peek();
-        ParseTreeNode errorNode = new ParseTreeNode(e);
+        DebuggerParseTreeNode ruleNode = (DebuggerParseTreeNode)playCallStack.peek();
+        DebuggerParseTreeNode errorNode = new DebuggerParseTreeNode(e);
         ruleNode.add(errorNode);
         updateParseTree(errorNode);
     }
@@ -719,6 +664,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
             public void run() {
                 restorePreviousGrammarAttributeSet();
                 editor.getTextPane().setEditable(true);
+                inputText.stop();
                 running = false;
                 XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STOPPED);
             }
@@ -749,22 +695,35 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); }
     }
 
-    protected class ParseTreeNode extends DefaultMutableTreeNode {
+    protected class DebuggerParseTreeNode extends ParseTreeNode {
 
         protected String s;
         protected Token token;
         protected Exception e;
 
-        public ParseTreeNode(String s) {
+        public DebuggerParseTreeNode(String s) {
             this.s = s;
         }
 
-        public ParseTreeNode(Token token) {
+        public DebuggerParseTreeNode(Token token) {
             this.token = token;
         }
 
-        public ParseTreeNode(Exception e) {
+        public DebuggerParseTreeNode(Exception e) {
             this.e = e;
+        }
+
+        public DebuggerParseTreeNode findNodeWithToken(Token t) {
+            if(token != null && t.getTokenIndex() == token.getTokenIndex())
+                return this;
+
+            for(Enumeration enum = this.children(); enum.hasMoreElements(); ) {
+                DebuggerParseTreeNode node = (DebuggerParseTreeNode) enum.nextElement();
+                DebuggerParseTreeNode candidate = node.findNodeWithToken(t);
+                if(candidate != null)
+                    return candidate;
+            }
+            return null;
         }
 
         public String toString() {
@@ -787,19 +746,6 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
                 return e.toString();
 
             return "?";
-        }
-
-        public ParseTreeNode findNodeWithToken(Token t) {
-            if(token != null && t.getTokenIndex() == token.getTokenIndex())
-                return this;
-
-            for(Enumeration enum = this.children(); enum.hasMoreElements(); ) {
-                ParseTreeNode node = (ParseTreeNode) enum.nextElement();
-                ParseTreeNode candidate = node.findNodeWithToken(t);
-                if(candidate != null)
-                    return candidate;
-            }
-            return null;
         }
     }
 }

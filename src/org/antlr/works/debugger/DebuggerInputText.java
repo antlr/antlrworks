@@ -59,7 +59,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
 
     protected Debugger debugger;
     protected TextPane textPane;
-    protected int mouseIndex;
+    protected int mouseIndex = -1;
 
     // Location where the next token will be inserted
     protected int cursorIndex;
@@ -137,6 +137,10 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
     public void doLT(Token token) {
         addText(token, attributeLookahead);
         addToken(token);
+    }
+
+    public void stop() {
+        inputBreakpoints.clear();
     }
 
     public void reset() {
@@ -373,33 +377,38 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
 
         public void mousePressed(MouseEvent e) {
             mouseIndex = textPane.getTextIndexAtLocation(e.getPoint());
-            if(mouseIndex != -1) {
-                TokenInfo info = getTokenInfoAtIndex(mouseIndex);
-                boolean controlKey = (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK;
-                if(e.getButton() == MouseEvent.BUTTON1 && !controlKey) {
-                    grammarIndex = debugger.computeAbsoluteGrammarIndex(info.line, info.charInLine);
-                    if(grammarIndex >= 0) {
-                        if(debugger.editor.getTextPane().hasFocus()) {
-                            // If the text pane will loose its focus,
-                            // delay the text selection otherwise
-                            // the selection will be hidden
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    debugger.editor.selectTextRange(grammarIndex, grammarIndex+1);
-                                }
-                            });
-                        } else
-                            debugger.editor.selectTextRange(grammarIndex, grammarIndex+1);
-                        debugger.selectTreeParserNode(info.token);
-                    }
-                } else {
-                    if(inputBreakpoints.contains(info))
-                        inputBreakpoints.remove(info);
-                    else
-                        inputBreakpoints.add(info);
+            if(mouseIndex == -1)
+                return;
+
+            TokenInfo info = getTokenInfoAtIndex(mouseIndex);
+            if(info == null)
+                return;
+
+            boolean controlKey = (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK;
+            if(e.getButton() == MouseEvent.BUTTON1 && !controlKey) {
+                grammarIndex = debugger.computeAbsoluteGrammarIndex(info.line, info.charInLine);
+                if(grammarIndex >= 0) {
+                    if(debugger.editor.getTextPane().hasFocus()) {
+                        // If the text pane will loose its focus,
+                        // delay the text selection otherwise
+                        // the selection will be hidden
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                debugger.editor.selectTextRange(grammarIndex, grammarIndex+1);
+                            }
+                        });
+                    } else
+                        debugger.editor.selectTextRange(grammarIndex, grammarIndex+1);
+
+                    debugger.selectTreeParserNode(info.token);
                 }
-                textPane.repaint();
+            } else {
+                if(inputBreakpoints.contains(info))
+                    inputBreakpoints.remove(info);
+                else
+                    inputBreakpoints.add(info);
             }
+            textPane.repaint();
         }
 
         public void mouseExited(MouseEvent e) {
