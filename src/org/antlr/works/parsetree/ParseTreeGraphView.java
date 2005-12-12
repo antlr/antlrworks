@@ -10,6 +10,8 @@ import org.antlr.runtime.tree.ParseTree;
 
 import javax.swing.tree.TreeNode;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -48,7 +50,12 @@ public class ParseTreeGraphView extends GView {
 
     public static final int MARGIN = 10;
 
-    public TreeNode root;
+    public static final Color HIGHLIGHTED_COLOR = new Color(0, 0.5f, 1, 0.4f);
+
+    protected TreeNode root;
+    protected GElementNode highlightedNode;
+    protected Map treeNodeToGElementMap = new HashMap();
+    protected Graphics2D g2d;
 
     public void setRoot(TreeNode root) {
         this.root = root;
@@ -57,19 +64,25 @@ public class ParseTreeGraphView extends GView {
 
     public void refresh() {
         setRootElement(null);
+        rebuild();
         repaint();
     }
 
-    public void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D)g;
+    public void rebuild() {
+        if(getRootElement() == null && root != null && g2d != null) {
+            treeNodeToGElementMap.clear();
 
-        if(getRootElement() == null && root != null) {
             GElement element = buildGraph(root, g2d);
+            treeNodeToGElementMap.put(root, element);
             element.move(MARGIN, MARGIN);
             setSizeMargin(MARGIN);
             setRootElement(element);
         }
+    }
 
+    public void paintComponent(Graphics g) {
+        g2d = (Graphics2D)g;
+        rebuild();
         super.paintComponent(g);
     }
 
@@ -90,12 +103,15 @@ public class ParseTreeGraphView extends GView {
         double width = fm.stringWidth(nodeLabel)+16;
         double height = fm.getHeight()+8;
 
-        GElementRect nodeElement = new GElementRect();
+        GElementNode nodeElement = new GElementNode();
+        nodeElement.setDraggable(true);
         nodeElement.setSize(width, height);
         // Must call setPositionOfUpperLeftCorner after
         // setting the size!!!!
         nodeElement.setPositionOfUpperLeftCorner(0, 0);
         nodeElement.setLabel(nodeLabel);
+
+        treeNodeToGElementMap.put(node, nodeElement);
 
         double x = 0;
         for(int index=0; index<node.getChildCount(); index++) {
@@ -110,6 +126,7 @@ public class ParseTreeGraphView extends GView {
             GLink link = new GLink(nodeElement, GLink.ANCHOR_BOTTOM,
                                     childElement, GLink.ANCHOR_TOP,
                                     GLink.SHAPE_ELBOW, "", 0);
+            link.setDraggable(true);
             nodeElement.addElement(link);
             nodeElement.addElement(childElement);
         }
@@ -124,5 +141,51 @@ public class ParseTreeGraphView extends GView {
         }
 
         return nodeElement;
+    }
+
+    public void highlightNode(TreeNode node) {
+        if(highlightedNode != null) {
+            highlightedNode.setHighlighted(false);
+            highlightedNode = null;
+        }
+
+        GElementNode element = (GElementNode)treeNodeToGElementMap.get(node);
+        if(element == null)
+            return;
+
+        element.setHighlighted(true);
+        highlightedNode = element;
+
+        scrollNodeToVisible(node);
+
+        repaint();
+    }
+
+    public void scrollNodeToVisible(TreeNode node) {
+        GElementNode element = (GElementNode)treeNodeToGElementMap.get(node);
+        if(element == null)
+            return;
+
+        scrollElementToVisible(element);
+    }
+
+    public class GElementNode extends GElementRect {
+
+        public boolean highlighted = false;
+
+        public void setHighlighted(boolean flag) {
+            this.highlighted = flag;
+        }
+
+        public void draw(Graphics2D g) {
+            if(highlighted) {
+                Rectangle r = getFrame().rectangle();
+                g.setColor(HIGHLIGHTED_COLOR);
+                g.fillRect(r.x, r.y, r.width, r.height);
+            }
+
+            super.draw(g);
+        }
+
     }
 }

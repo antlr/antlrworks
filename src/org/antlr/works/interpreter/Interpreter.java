@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.interpreter;
 
+import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.runtime.ANTLRStringStream;
@@ -115,6 +116,12 @@ public class Interpreter implements Runnable, EditorTab {
         panel.add(splitPane, BorderLayout.CENTER);
 
         editor.registerUndo(new Undo(editor, editor.console), textPane);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                splitPane.setDividerLocation(0.3);
+            }
+        });
     }
 
     public Box createControlPanel() {
@@ -122,7 +129,6 @@ public class Interpreter implements Runnable, EditorTab {
         box.add(createRunButton());
         box.add(createRulesPopUp());
         box.add(Box.createHorizontalGlue());
-        box.add(createToggleGraphButton());
         return box;
     }
 
@@ -150,20 +156,12 @@ public class Interpreter implements Runnable, EditorTab {
         return rulesCombo;
     }
 
-    public JButton createToggleGraphButton() {
-        JButton button = new JButton(IconManager.shared().getIconGraph());
-        button.setToolTipText("Toggle Graph");
-        button.setFocusable(false);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                parseTreePanel.toggleGraph();
-            }
-        });
-        return button;
-    }
-
     public Container getContainer() {
         return panel;
+    }
+
+    public GView getCurrentGView() {
+        return parseTreePanel.getGraphView();
     }
 
     public void setRules(List rules) {

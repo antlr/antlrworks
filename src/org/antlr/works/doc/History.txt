@@ -8,6 +8,7 @@ Version 1.0ea6 - 12/12/05
 - new: breakpoints in input text (right-click to toggle the breakpoint on any tokens)
 - new: breakpoints in grammar now works (click in the editor gutter to enable/disable them)
 - new: convert literal quote refactoring tools (to single, to double or c-style quote)
+- new: now available as a bundle for Mac OS X (can now drag a grammar file to its icon in the dock)
 
 - improved debugger: display the event where the debugger stopped at
 - improved decision DFA: vectorial representation where states can be moved using the mouse

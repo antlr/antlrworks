@@ -32,10 +32,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.menu.*;
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
 import org.antlr.works.editor.tool.TDecisionDFA;
 import org.antlr.works.editor.undo.Undo;
 import org.antlr.works.editor.visual.Visual;
+import org.antlr.works.interpreter.Interpreter;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -443,7 +445,9 @@ public class EditorMenu implements XJMenuItemDelegate {
             case MI_EXPORT_AS_EPS:
                 EditorTab tab = editor.getSelectedTab();
                 item.setEnabled(tab instanceof Visual
-                                || tab instanceof TDecisionDFA);
+                                || tab instanceof TDecisionDFA
+                                || tab instanceof Interpreter
+                                || tab instanceof Debugger);
                 break;
         }
     }

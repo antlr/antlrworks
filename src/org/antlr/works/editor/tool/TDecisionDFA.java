@@ -21,7 +21,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,12 +93,8 @@ public class TDecisionDFA implements Runnable, EditorTab {
         return EditorPreferences.getDOTToolPath();
     }
 
-    public String getEPS() {
-        return dfaView.getEPS();
-    }
-
-    public BufferedImage getImage() {
-        return dfaView.getImage();
+    public GView getCurrentGView() {
+        return dfaView;
     }
 
     public boolean launch() {

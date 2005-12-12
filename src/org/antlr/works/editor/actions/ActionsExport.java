@@ -31,13 +31,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.actions;
 
+import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.tool.TDecisionDFA;
 import org.antlr.works.editor.visual.Visual;
+import org.antlr.works.interpreter.Interpreter;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GEngine;
@@ -91,7 +94,11 @@ public class ActionsExport extends AbstractActions {
         if(tab instanceof Visual)
             exportRuleAsImage();
         else if(tab instanceof TDecisionDFA)
-            exportDecisionAsImage((TDecisionDFA)tab);
+            exportGViewAsImage(((TDecisionDFA)tab).getCurrentGView());
+        else if(tab instanceof Interpreter)
+            exportGViewAsImage(((Interpreter)tab).getCurrentGView());
+        else if(tab instanceof Debugger)
+            exportGViewAsImage(((Debugger)tab).getCurrentGView());
 
     }
 
@@ -106,8 +113,8 @@ public class ActionsExport extends AbstractActions {
         saveImageToDisk(editor.visual.getImage());
     }
 
-    public void exportDecisionAsImage(TDecisionDFA decision) {
-        saveImageToDisk(decision.getImage());
+    public void exportGViewAsImage(GView view) {
+        saveImageToDisk(view.getImage());
     }
 
     public void saveImageToDisk(BufferedImage image) {
@@ -133,7 +140,11 @@ public class ActionsExport extends AbstractActions {
         if(tab instanceof Visual)
             exportRuleAsEPS();
         else if(tab instanceof TDecisionDFA)
-            exportDecisionAsEPS((TDecisionDFA)tab);
+            exportGViewAsEPS(((TDecisionDFA)tab).getCurrentGView());
+        else if(tab instanceof Interpreter)
+            exportGViewAsEPS(((Interpreter)tab).getCurrentGView());
+        else if(tab instanceof Debugger)
+            exportGViewAsEPS(((Debugger)tab).getCurrentGView());
     }
 
     protected void exportRuleAsEPS() {
@@ -172,7 +183,7 @@ public class ActionsExport extends AbstractActions {
         }
     }
 
-    protected void exportDecisionAsEPS(TDecisionDFA decision) {
+    protected void exportGViewAsEPS(GView view) {
         if(!XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "eps", "EPS file", false))
             return;
 
@@ -181,7 +192,7 @@ public class ActionsExport extends AbstractActions {
             return;
 
         try {
-            XJUtils.writeStringToFile(decision.getEPS(), file);
+            XJUtils.writeStringToFile(view.getEPS(), file);
         } catch (Exception e) {
             editor.console.print(e);
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);

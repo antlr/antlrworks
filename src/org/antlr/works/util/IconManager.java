@@ -88,6 +88,10 @@ public class IconManager {
         return createImageIcon(path+"graph.png");
     }
 
+    public ImageIcon getIconListTree() {
+        return createImageIcon(path+"listtree.png");
+    }
+
     public ImageIcon getIconIdea() {
         return createImageIcon(path+"warning.png");
     }

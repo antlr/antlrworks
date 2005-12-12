@@ -57,6 +57,9 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
     public static final int TOKEN_HIDDEN = 2;
     public static final int TOKEN_DEAD = 3;
 
+    public static final Color HIGHLIGHTED_COLOR = new Color(0, 0.5f, 1, 0.4f);
+    public static final Color INPUT_BREAKPOINT_COLOR = new Color(1, 0.2f, 0, 0.5f);
+
     protected Debugger debugger;
     protected TextPane textPane;
     protected int mouseIndex = -1;
@@ -270,9 +273,9 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
                 drawToken(info, (Graphics2D)g, Color.red, false);
 
             if(inputBreakpoints.contains(info))
-                drawToken(info, (Graphics2D)g, new Color(1, 0.2f, 0, 0.5f), true);
+                drawToken(info, (Graphics2D)g, INPUT_BREAKPOINT_COLOR, true);
             else if(mouseIndex >= info.start && mouseIndex < info.end)
-                drawToken(info, (Graphics2D)g, new Color(0, 0.5f, 1, 0.4f), true);
+                drawToken(info, (Graphics2D)g, HIGHLIGHTED_COLOR, true);
         }
     }
 

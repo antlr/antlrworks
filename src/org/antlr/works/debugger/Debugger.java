@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.debugger;
 
 import edu.usfca.xj.appkit.frame.XJDialog;
+import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
@@ -264,6 +265,8 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
 
     public Box createControlPanel() {
         Box box = Box.createHorizontalBox();
+        box.add(createRevealTokensButton());
+        box.add(Box.createHorizontalStrut(20));
         box.add(stopButton = createDebuggerStopButton());
         box.add(Box.createHorizontalStrut(20));
         box.add(goToStartButton = createGoToStartButton());
@@ -273,9 +276,6 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         box.add(forwardButton = createStepForwardButton());
         box.add(Box.createHorizontalStrut(20));
         box.add(createBreakComboBox());
-        box.add(Box.createHorizontalStrut(20));
-        box.add(createRevealTokensButton());
-        box.add(createToggleGraphButton());
         box.add(Box.createHorizontalGlue());
         box.add(createInfoPanel());
         return box;
@@ -382,18 +382,6 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         return tokenButton;
     }
 
-    public JButton createToggleGraphButton() {
-        JButton button = new JButton(IconManager.shared().getIconGraph());
-        button.setToolTipText("Toggle Graph");
-        button.setFocusable(false);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                parseTreePanel.toggleGraph();
-            }
-        });
-        return button;
-    }
-
     public Container getContainer() {
         return panel;
     }
@@ -463,6 +451,10 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
 
     public List getEvents() {
         return recorder.getCurrentEvents();
+    }
+
+    public GView getCurrentGView() {
+        return parseTreePanel.getGraphView();
     }
 
     public void launchLocalDebugger(boolean buildAndDebug) {

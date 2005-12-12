@@ -1,5 +1,6 @@
 package org.antlr.works.parsetree;
 
+import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.editor.swing.TreeUtilities;
 import org.antlr.works.util.IconManager;
@@ -90,7 +91,7 @@ public class ParseTreePanel extends JPanel {
         listViewComponent = createListView();
         graphViewComponent = createGraphView();
 
-        add(listViewComponent, BorderLayout.CENTER);
+        add(graphViewComponent, BorderLayout.CENTER);
     }
 
     public Component createListView() {
@@ -100,14 +101,27 @@ public class ParseTreePanel extends JPanel {
         scrollPane.setWheelScrollingEnabled(true);
 
         Box box = Box.createHorizontalBox();
-        box.add(Box.createHorizontalGlue());
         box.add(createExpandAllButton());
         box.add(createCollapseAllButton());
+        box.add(Box.createHorizontalGlue());
+        box.add(createDisplayAsGraphButton());
 
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);
 
         return panel;
+    }
+
+    public JButton createDisplayAsGraphButton() {
+        JButton button = new JButton(IconManager.shared().getIconGraph());
+        button.setToolTipText("Display as Graph");
+        button.setFocusable(false);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                toggleGraph();
+            }
+        });
+        return button;
     }
 
     public JButton createExpandAllButton() {
@@ -139,7 +153,6 @@ public class ParseTreePanel extends JPanel {
 
         parseTreeGraphView = new ParseTreeGraphView();
         parseTreeGraphView.setAutoAdjustSize(true);
-        //graphView.setRootElement(graph);
         parseTreeGraphView.setBackground(Color.white);
         parseTreeGraphView.setDrawBorder(false);
 
@@ -149,6 +162,8 @@ public class ParseTreePanel extends JPanel {
         Box box = Box.createHorizontalBox();
         box.add(new JLabel("Zoom"));
         box.add(createZoomSlider());
+        box.add(Box.createHorizontalGlue());
+        box.add(createDisplayAsListButton());
 
         panel.add(graphScrollPane, BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);
@@ -156,7 +171,19 @@ public class ParseTreePanel extends JPanel {
         return panel;
     }
 
-    private JSlider createZoomSlider() {
+    public JButton createDisplayAsListButton() {
+        JButton button = new JButton(IconManager.shared().getIconListTree());
+        button.setToolTipText("Display as List");
+        button.setFocusable(false);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                toggleGraph();
+            }
+        });
+        return button;
+    }
+
+    public JSlider createZoomSlider() {
         JSlider slider = new JSlider();
         slider.setFocusable(false);
         slider.setMinimum(1);
@@ -185,6 +212,10 @@ public class ParseTreePanel extends JPanel {
         return treeModel.getRoot();
     }
 
+    public GView getGraphView() {
+        return parseTreeGraphView;
+    }
+
     public void refresh() {
         treeModel.reload();
         TreeUtilities.expandAll(tree);
@@ -207,10 +238,13 @@ public class ParseTreePanel extends JPanel {
         TreePath path = new TreePath(treeModel.getPathToRoot(node));
         tree.scrollPathToVisible(path);
         tree.setSelectionPath(path);
+
+        parseTreeGraphView.highlightNode(node);
     }
 
     public void scrollNodeToVisible(TreeNode node) {
         tree.scrollPathToVisible(new TreePath(treeModel.getPathToRoot(node)));
+        parseTreeGraphView.scrollNodeToVisible(node);
     }
 
     public void displayNodeInfo(Object node) {

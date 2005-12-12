@@ -1,11 +1,12 @@
 
 * Prio 1
-- export parse tree of interpreter/debugger as bitmap/eps 
-- Command-S doesn't always invoke save... see why
 - sort rules should keep current selected rule in tree
 - fix tree appearance between interpreter and debugger on Windows
-- create package for Mac OS X
 - tokenVocab (of course, its for me *.tokens)
+- XJAlert: insert auto new line if line too long
+- contextual menu to export to bitmap/eps
+- update the update manager settings for the new mac os x package
+- update web site with new information + videos
 
 * Prio 2
 - test on ANTLR v3 examples
@@ -40,6 +41,7 @@
 - optimize imports
 - check update.xml file
 
+- package for Mac OS X
 - upload antlrworks.pdf
 
 JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\javac
