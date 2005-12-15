@@ -1,23 +1,23 @@
 
 * Prio 1
-- sort rules should keep current selected rule in tree
 - fix tree appearance between interpreter and debugger on Windows
-- tokenVocab (of course, its for me *.tokens)
-- XJAlert: insert auto new line if line too long
-- contextual menu to export to bitmap/eps
-- update the update manager settings for the new mac os x package
+- fix the following v3 examples syntax problem:
+    Problem with examples:
+    - cminus (undefined references)
+    - simplecTreeParser/simple.g (undefined references)
+    - simplecTreeParser/simpleTP.g (undefined references)
+    - xmlLexer: no syntax diagram
+- ask for string literal for T104 (Tokens artificial SD)
 - update web site with new information + videos
 
 * Prio 2
 - test on ANTLR v3 examples
-- do example calculator ANTLR intro (tree): convert to 3.0 and use AW with it (try to figure out
-  the debugging part of all this)
 - DFA decision for lexer tokens (see with Terence) - position in lexer grammar
-
 - ideas: undefined rule: rename rule, delete token
 - prefs: customizable list of "Insert Rule From Template" - or read from a file ?
 
 * Prio 3:
+- contextual menu to export to bitmap/eps
 - jump into source when navigating grammar text (in generated code)
 - display current token in syntax diagram
 - display multiple rules together

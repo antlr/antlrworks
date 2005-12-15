@@ -192,7 +192,8 @@ public class Parser extends AbstractParser {
         if(start.type != Lexer.TOKEN_ID)
             return null;
 
-        if(blockIdentifiers.contains(start.getAttribute().toLowerCase())) {
+        String blockName = start.getAttribute().toLowerCase();
+        if(blockIdentifiers.contains(blockName)) {
             if(T(1) == null)
                 return null;
 
@@ -201,8 +202,13 @@ public class Parser extends AbstractParser {
 
             nextToken();
             ParserBlock block = new ParserBlock(start.getAttribute(), start, T(0));
-            if(start.getAttribute().toLowerCase().equals(TOKENS_BLOCK_NAME))
+            if(blockName.equals(TOKENS_BLOCK_NAME))
                 block.isTokenBlock = true;
+            else if(blockName.equals(OPTIONS_BLOCK_NAME)) {
+                block.isOptionsBlock = true;
+                block.parseOptionsBlock();
+            }
+
             return block;
         } else
             return null;
@@ -322,6 +328,31 @@ public class Parser extends AbstractParser {
                 return new ParserGroup(rules.size()-1, token);
         } else
             return null;
+    }
+
+    public static List parsePropertiesString(final String content) {
+
+        class ParseProperties extends AbstractParser {
+
+            public List parseTokens() {
+                List tokens = new ArrayList();
+                init(content.substring(1, content.length()));
+                while(nextToken()) {
+                    if(T(0).type == Lexer.TOKEN_ID && T(1) != null) {
+                        if(T(1).getAttribute().equals("=")) {
+                            tokens.add(T(0));
+                        } else if(T(1).getAttribute().equals("\n")) {
+                            tokens.add(T(0));
+                        }
+                    }
+                }
+                return tokens;
+            }
+
+        }
+
+        ParseProperties parser = new ParseProperties();
+        return parser.parseTokens();
     }
 
 }

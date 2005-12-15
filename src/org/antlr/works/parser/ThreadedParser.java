@@ -126,6 +126,15 @@ public class ThreadedParser extends EditorThread {
         return names;
     }
 
+    public synchronized String getTokenVocab() {
+        for(int index=0; index<blocks.size(); index++) {
+            ParserBlock block = (ParserBlock)blocks.get(index);
+            if(block.isOptionsBlock)
+                return block.getTokenVocab();
+        }
+        return null;
+    }
+
     public synchronized List getRuleNames() {
         List names = new ArrayList();
         if(rules != null) {
@@ -189,4 +198,5 @@ public class ThreadedParser extends EditorThread {
             }
         });
     }
+
 }

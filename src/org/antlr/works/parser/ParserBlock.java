@@ -40,8 +40,11 @@ public class ParserBlock {
     public Token start;
     public Token end;
 
-    public boolean isTokenBlock;
+    public boolean isTokenBlock = false;
+    public boolean isOptionsBlock = false;
+
     public List internalTokens;
+    public String tokenVocab;
 
     public ParserBlock(String name, Token start, Token end) {
         this.name = name;
@@ -54,6 +57,21 @@ public class ParserBlock {
             internalTokens = new ParseInternalTokens().parseTokens();
         }
         return internalTokens;
+    }
+
+    public void parseOptionsBlock() {
+        List tokens = getInternalTokens();
+        for(int index=0; index<tokens.size(); index++) {
+            Token t = (Token)tokens.get(index);
+            if(t.getAttribute().equals("tokenVocab") && index+1<tokens.size()) {
+                t = (Token) tokens.get(index+1);
+                tokenVocab = t.getAttribute();
+            }
+        }
+    }
+
+    public String getTokenVocab() {
+        return tokenVocab;
     }
 
     public class ParseInternalTokens extends AbstractParser {

@@ -33,6 +33,7 @@ package org.antlr.works.editor.rules;
 
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
+import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.ate.ATEFoldingEntity;
 import org.antlr.works.editor.helper.EditorKeyBindings;
@@ -56,6 +57,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -70,6 +72,9 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     protected List undefinedReferences;
     protected List hasLeftRecursionRules;
 
+    protected List tokenVocabNames;
+    protected String tokenVocabName;
+
     protected boolean programmaticallySelectingRule = false;
     protected boolean selectNextRule = false;
 
@@ -77,6 +82,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     protected DefaultMutableTreeNode rulesTreeRootNode;
     protected DefaultTreeModel rulesTreeModel;
     protected List rulesTreeExpandedNodes;
+    protected RuleTreeUserObject selectedObject;
 
     protected boolean sort;
 
@@ -88,6 +94,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
         duplicateRules = new ArrayList();
         undefinedReferences = new ArrayList();
         hasLeftRecursionRules = new ArrayList();
+        tokenVocabNames = new ArrayList();
 
         rulesTree.setDelegate(this);
         rulesTree.setEnableDragAndDrop();
@@ -153,7 +160,6 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     }
 
     public ATEFoldingEntity getEntityForKey(Object key) {
-        // @todo optimize later with a map
         if(parser.getRules() == null)
             return null;
 
@@ -426,7 +432,43 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     public List getReferences() {
         return parser.getReferences();
     }
-    
+
+    public List getTokenVocabNames() {
+        String tokenVocab = parser.getTokenVocab();
+        if(tokenVocab == null) {
+            tokenVocabNames.clear();
+            return tokenVocabNames;
+        }
+
+        if(tokenVocabName != null && tokenVocabName.equals(tokenVocab))
+            return tokenVocabNames;
+
+        tokenVocabName = tokenVocab;
+        tokenVocabNames.clear();
+
+        try {
+            String filePath = XJUtils.getPathByDeletingLastComponent(editor.getFilePath());
+            if(filePath == null)
+                // May be null if the file hasn't been saved
+                return tokenVocabNames;
+
+            filePath = XJUtils.concatPath(filePath, tokenVocabName +".tokens");
+            if(new File(filePath).exists()) {
+                // Read the tokens from the file if it exists
+                List tokens = Parser.parsePropertiesString(XJUtils.getStringFromFile(filePath));
+                // Add each token name to the list of tokenVocabNames
+                for(int index=0; index<tokens.size(); index++) {
+                    Token t = (Token)tokens.get(index);
+                    tokenVocabNames.add(t.getAttribute());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return tokenVocabNames;
+    }
+
     public void selectFirstRule() {
         if(parser.getRules() == null || parser.getRules().size() == 0)
             return;
@@ -501,6 +543,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
     public void rebuildUndefinedReferencesList() {
         List existingReferences = parser.getRuleNames();
         existingReferences.addAll(parser.getDeclaredTokenNames());
+        existingReferences.addAll(getTokenVocabNames());
 
         undefinedReferences.clear();
         List references = parser.getReferences();
@@ -513,6 +556,7 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
 
     public void rebuildTree() {
         saveExpandedNodes();
+        rememberSelectedTreeItem();
 
         rulesTreeRootNode.removeAllChildren();
 
@@ -549,8 +593,33 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
                 buildTree(parentNode, rules, ruleIndex, rules.size()-1);
             }
         }
+
         rulesTreeModel.reload();
+        
+        restoreSelectedTreeItem();
         restoreExpandedNodes();
+    }
+
+    public void rememberSelectedTreeItem() {
+        DefaultMutableTreeNode node = rulesTree.getSelectedNode();
+        selectedObject = null;
+        if(node != null)
+            selectedObject = (RuleTreeUserObject)node.getUserObject();
+    }
+
+    public void restoreSelectedTreeItem() {
+        if(selectedObject == null)
+            return;
+
+        DefaultMutableTreeNode node = findNodeWithRuleName(selectedObject.rule.name);
+        if(node == null)
+            return;
+
+        programmaticallySelectingRule = true;
+        TreePath path = new TreePath(node.getPath());
+        rulesTree.setSelectionPath(path);
+        rulesTree.scrollPathToVisible(path);
+        programmaticallySelectingRule = false;
     }
 
     public void saveExpandedNodes() {
@@ -581,6 +650,17 @@ public class Rules implements ThreadedParserObserver, XJTreeDelegate {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.nextElement();
             RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
             if(n.group != null && n.group.name.equalsIgnoreCase(groupName))
+                return node;
+        }
+        return null;
+    }
+
+    public DefaultMutableTreeNode findNodeWithRuleName(String ruleName) {
+        Enumeration e = rulesTreeRootNode.depthFirstEnumeration();
+        while(e.hasMoreElements()) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.nextElement();
+            RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
+            if(n.rule != null && n.rule.name.equalsIgnoreCase(ruleName))
                 return node;
         }
         return null;

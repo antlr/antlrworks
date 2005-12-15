@@ -3,6 +3,7 @@ package org.antlr.works.editor.helper;
 import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.editor.idea.IdeaAction;
 import org.antlr.works.editor.idea.IdeaActionDelegate;
+import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserReference;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
@@ -89,6 +90,21 @@ public class EditorInspector {
     }
 
     protected void discoverInvalidCharLiteralTokens(List items) {
+        List tokens = editor.getTokens();
+        if(tokens == null)
+            return;
+
+        for(int index=0; index<tokens.size(); index++) {
+            Token t = (Token)tokens.get(index);
+            if(t.type == Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
+                Item item = new Item();
+                item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
+                        t.startLineNumber, Color.red,
+                        "Character literal '"+t.getAttribute()+"' must use single quote");
+                items.add(item);
+            }
+        }
+
         // @todo re-introduce if needed
         /*List tokens = editor.getTokens();
         if(tokens == null)

@@ -57,6 +57,10 @@ public class ParseTreeGraphView extends GView {
     protected Map treeNodeToGElementMap = new HashMap();
     protected Graphics2D g2d;
 
+    public ParseTreeGraphView() {
+        setPreferredSize(new Dimension(0, 0));
+    }
+
     public void setRoot(TreeNode root) {
         this.root = root;
         setRootElement(null);

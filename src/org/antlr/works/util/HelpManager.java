@@ -79,9 +79,16 @@ public class HelpManager implements XJScheduledTimerDelegate {
     }
 
     public static void checkUpdates(Container parent, boolean automatic) {
+        String url;
+        if(XJSystem.isMacOS())
+            url = Localizable.getLocalizedString(Localizable.UPDATE_OSX_XML_URL);
+        else
+            url = Localizable.getLocalizedString(Localizable.UPDATE_XML_URL);
+
+
         XJUpdateManager um = new XJUpdateManager(parent, null);
         um.checkForUpdates(Localizable.getLocalizedString(Localizable.APP_VERSION_SHORT),
-                           Localizable.getLocalizedString(Localizable.UPDATE_XML_URL),
+                           url,
                            EditorPreferences.getDownloadPath(),
                            automatic);
     }

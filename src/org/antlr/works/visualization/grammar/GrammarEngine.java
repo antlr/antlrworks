@@ -110,6 +110,9 @@ public class GrammarEngine {
 
     public static Grammar createLexerGrammar(Console console, Grammar grammar) {
         String lexerGrammarStr = grammar.getLexerGrammar();
+        if(lexerGrammarStr == null)
+            return null;
+        
         StringReader sr = new StringReader(lexerGrammarStr);
         Grammar lexerGrammar = new Grammar();
         lexerGrammar.setFileName("<internally-generated-lexer>");

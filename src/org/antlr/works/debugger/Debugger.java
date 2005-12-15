@@ -435,9 +435,8 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     public void selectTreeParserNode(Token token) {
         DebuggerParseTreeNode root = (DebuggerParseTreeNode) parseTreePanel.getRoot();
         DebuggerParseTreeNode node = root.findNodeWithToken(token);
-        if(node != null) {
+        if(node != null)
             parseTreePanel.selectNode(node);
-        }
     }
 
     public void displayNodeInfo(Object node) {

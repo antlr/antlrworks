@@ -49,6 +49,7 @@ public class Localizable {
 
     public static final String DEFAULT_FONT = "DefaultFont";
     public static final String UPDATE_XML_URL = "UpdateXMLURL";
+    public static final String UPDATE_OSX_XML_URL = "UpdateOSXXMLURL";
     public static final String FEEDBACK_URL = "FeedbackURL";
     public static final String DOCUMENTATION_URL = "DocumentationURL";
 
