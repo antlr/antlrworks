@@ -39,6 +39,7 @@ import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.BrowserLauncher;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJSystem;
+import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.works.dialog.DialogAbout;
@@ -52,10 +53,7 @@ import org.antlr.works.util.Localizable;
 import org.antlr.works.util.Utils;
 
 import javax.swing.*;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 
 public class IDE extends XJApplicationDelegate {
 
@@ -154,18 +152,26 @@ public class IDE extends XJApplicationDelegate {
     }
 
     public void checkEnvironment() {
+        String tempFile = XJUtils.concatPath(XJSystem.getTempDir(), "redirect.err");
+
+        // Make sure the temporary directory exists
+        File f = new File(XJSystem.getTempDir());
+        if(!f.exists())
+            f.mkdirs();
+
         PrintStream originalErr = System.err;
-        final String tempFile = "/tmp/redirect.err";
+        PrintStream ps = null;
         try {
-            PrintStream ps = null;
             try {
                 ps = new PrintStream(new FileOutputStream(tempFile));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
+                // Give up if we cannot open the redirect file
+                System.err.println("Cannot check if ANTLR is correctly installed. Continue...");
+                return;
             }
             System.setErr(ps);
-            ErrorManager.setTool(new Tool() {
-            });
+            ErrorManager.setTool(new Tool());
             ErrorManager.setErrorListener(ErrorManager.getErrorListener());
         } catch(Error error) {
             String s = null;
@@ -178,7 +184,16 @@ public class IDE extends XJApplicationDelegate {
             XJAlert.display(null, "Fatal Error", "ANTLRWorks will quit now because ANTLR has the following problem:\n"+s);
             System.exit(0);
         }
+
+        // Restore the original output stream
         System.setErr(originalErr);
+
+        // Close the previous one
+        if(ps != null)
+            ps.close();
+
+        // Delete the redirect.err file
+        new File(tempFile).delete();
     }
 
     public void appShowHelp() {

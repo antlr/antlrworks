@@ -1,3 +1,7 @@
+Version 1.0ea7 - 12/15/05
+
+- fixed a bug which prevented ANTLRWorks to launch on Windows
+
 Version 1.0ea6 - 12/14/05
 
 - new: graphical representation of the parse tree (interpreter and debugger) that
