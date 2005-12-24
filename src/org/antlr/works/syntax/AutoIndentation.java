@@ -36,6 +36,8 @@ import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Segment;
+import java.text.CharacterIterator;
 
 public class AutoIndentation implements Runnable {
 
@@ -43,7 +45,7 @@ public class AutoIndentation implements Runnable {
     protected int length;
     protected boolean enabled = true;
 
-    private JTextPane textPane;
+    protected JTextPane textPane;
 
     public AutoIndentation(JTextPane textPane) {
         this.textPane = textPane;
@@ -118,6 +120,29 @@ public class AutoIndentation implements Runnable {
                 char c = t.charAt(0);
                 if(c == '\n' || c == '\r') {
                     // beginning of line reached
+                    // Little hack: go back to see if
+                    // we see a '{' indicating that we are in an action and should not
+                    // peform auto-indenting - this is not a perfect solution,
+                    // only a hack until I find a better solution later ;-)
+                    Segment seg = new Segment();
+                    textPane.getDocument().getText(0, offset, seg);
+                    c = seg.last();
+                    while(c != CharacterIterator.DONE) {
+                        // If we see a '}', pretend that we are after
+                        // the end of an action - so break here
+                        if(c == '}')
+                            break;
+
+                        // If we see a '{', pretend that we are in an action
+                        // and so don't auto-indent
+                        if(c == '{') {
+                            System.err.println("A");
+                            beginningOfRule = false;
+                            break;
+                        }
+                        
+                        c = seg.previous();
+                    }
                     break;
                 }
                 if(c != ' ' && c != '_' && !Character.isLetterOrDigit(c)) {

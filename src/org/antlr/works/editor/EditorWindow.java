@@ -540,10 +540,8 @@ public class EditorWindow
         visual.setEnable(!visual.isEnable());
         if(visual.isEnable()) {
             visual.setText(getText(), getFileName());
-            updateVisualization(false);
-        } else {
-            visual.setPlaceholder("Syntax Diagram Disabled");
         }
+        updateVisualization(false);
         Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_DIAGRAM);
     }
 
@@ -875,9 +873,15 @@ public class EditorWindow
     */
 
     public void updateVisualization(boolean immediate) {
-        ParserRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
-        if(r != null) {
-            visual.setRule(r, immediate);
+        if(visual.isEnable()) {
+            ParserRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
+            if(r == null) {
+                visual.setPlaceholder("Select a rule to display its syntax diagram");
+            } else {
+                visual.setRule(r, immediate);
+            }
+        } else {
+            visual.setPlaceholder("Syntax Diagram Disabled");
         }
     }
 
@@ -1108,7 +1112,7 @@ public class EditorWindow
 
         ParserRule rule = rules.selectRuleInTreeAtPosition(index);
         if(rule == null || rule.name == null) {
-            visual.setPlaceholder("Select a rule to display its syntax diagram");
+            updateVisualization(false);
             lastSelectedRule = null;
             return;
         }

@@ -1,8 +1,8 @@
-Version 1.0ea8 - 12/23/05
+Version 1.0ea8 - 12/24/05
 
-- improved ANTLR usage by having now only one grammar per project (run
-  ANTLR only when necessary)
+- improved ANTLR usage by running ANTLR only when necessary
 - disabling syntax diagram now display a message
+- new idea to convert invalid string literals to single quote literals
 
 Version 1.0ea7 - 12/15/05
 

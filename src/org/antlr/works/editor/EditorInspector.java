@@ -96,10 +96,10 @@ public class EditorInspector {
         for(int index=0; index<tokens.size(); index++) {
             Token t = (Token)tokens.get(index);
             if(t.type == Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
-                Item item = new Item();
+                Item item = new ItemInvalidCharLiteral();
                 item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
                         t.startLineNumber, Color.red,
-                        "Character literal '"+t.getAttribute()+"' must use single quote");
+                        "Invalid character literal '"+t.getAttribute()+"' - must use single quote");
                 items.add(item);
             }
         }
@@ -185,6 +185,7 @@ public class EditorInspector {
         public static final int IDEA_DELETE_RULE = 0;
         public static final int IDEA_CREATE_RULE = 1;
         public static final int IDEA_REMOVE_LEFT_RECURSION = 2;
+        public static final int IDEA_CONVERT_TO_SINGLE_QUOTE = 3;
 
         public Token token;
         public int startIndex;
@@ -258,6 +259,23 @@ public class EditorInspector {
             switch(actionID) {
                 case IDEA_REMOVE_LEFT_RECURSION:
                     editor.menuRefactor.removeLeftRecursion();
+                    break;
+            }
+        }
+    }
+
+    public class ItemInvalidCharLiteral extends Item {
+
+        public List getIdeaActions() {
+            List actions = new ArrayList();
+            actions.add(new IdeaAction("Convert literals to single quote", this, IDEA_CONVERT_TO_SINGLE_QUOTE, token));
+            return actions;
+        }
+
+        public void ideaActionFire(IdeaAction action, int actionID) {
+            switch(actionID) {
+                case IDEA_CONVERT_TO_SINGLE_QUOTE:
+                    editor.menuRefactor.convertLiteralsToSingleQuote();
                     break;
             }
         }
