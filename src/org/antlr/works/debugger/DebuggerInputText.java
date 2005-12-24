@@ -34,10 +34,10 @@ package org.antlr.works.debugger;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
-import org.antlr.works.dialog.DialogPrefs;
-import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.editor.swing.TextPane;
-import org.antlr.works.editor.swing.TextPaneDelegate;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.prefs.AWPrefsDialog;
+import org.antlr.works.utils.TextPane;
+import org.antlr.works.utils.TextPaneDelegate;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -100,7 +100,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
         reset();
         createTextAttributes();
 
-        XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
+        XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
     }
 
     public void close() {
@@ -108,7 +108,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
     }
 
     public void notificationFire(Object source, String name) {
-        if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
+        if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
             createTextAttributes();
         }
     }
@@ -249,19 +249,19 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
 
     private void createTextAttributes() {
         attributeNonConsumed = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeNonConsumed, EditorPreferences.getNonConsumedTokenColor());
+        StyleConstants.setForeground(attributeNonConsumed, AWPrefs.getNonConsumedTokenColor());
 
         attributeConsume = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeConsume, EditorPreferences.getConsumedTokenColor());
+        StyleConstants.setForeground(attributeConsume, AWPrefs.getConsumedTokenColor());
 
         attributeConsumeHidden = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeConsumeHidden, EditorPreferences.getHiddenTokenColor());
+        StyleConstants.setForeground(attributeConsumeHidden, AWPrefs.getHiddenTokenColor());
 
         attributeConsumeDead = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeConsumeDead, EditorPreferences.getDeadTokenColor());
+        StyleConstants.setForeground(attributeConsumeDead, AWPrefs.getDeadTokenColor());
 
         attributeLookahead = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeLookahead, EditorPreferences.getLookaheadTokenColor());
+        StyleConstants.setForeground(attributeLookahead, AWPrefs.getLookaheadTokenColor());
         StyleConstants.setItalic(attributeLookahead, true);
     }
 

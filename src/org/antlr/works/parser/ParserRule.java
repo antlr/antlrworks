@@ -1,9 +1,9 @@
 package org.antlr.works.parser;
 
-import org.antlr.works.editor.ate.ATEBreakpointEntity;
-import org.antlr.works.editor.ate.ATEFoldingEntity;
-import org.antlr.works.editor.helper.EditorPersistentObject;
-import org.antlr.works.visualization.grammar.GrammarEngineError;
+import org.antlr.works.ate.ATEBreakpointEntity;
+import org.antlr.works.ate.ATEFoldingEntity;
+import org.antlr.works.editor.EditorPersistentObject;
+import org.antlr.works.grammar.EditorGrammarError;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -245,7 +245,7 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
     }
 
     public String getErrorMessageString(int index) {
-        GrammarEngineError error = (GrammarEngineError) errors.get(index);
+        EditorGrammarError error = (EditorGrammarError) errors.get(index);
         return error.message;
     }
 
@@ -253,7 +253,7 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
         StringBuffer message = new StringBuffer();
         message.append("<html>");
         for (Iterator iterator = errors.iterator(); iterator.hasNext();) {
-            GrammarEngineError error = (GrammarEngineError) iterator.next();
+            EditorGrammarError error = (EditorGrammarError) iterator.next();
             message.append(error.message);
             if(iterator.hasNext())
                 message.append("<br>");

@@ -35,7 +35,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.util.IconManager;
+import org.antlr.works.utils.IconManager;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;

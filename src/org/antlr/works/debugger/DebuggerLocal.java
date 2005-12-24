@@ -38,10 +38,9 @@ import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
-import org.antlr.works.dialog.DialogDebugInput;
-import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.editor.code.CodeGenerate;
-import org.antlr.works.util.Utils;
+import org.antlr.works.generate.CodeGenerate;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import java.io.*;
@@ -98,10 +97,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
     public void setStartRule(String rule) {
         this.startRule = rule;
-    }
-
-    public void grammarChanged() {
-        codeGenerator.grammarChanged();
     }
 
     public void dialogDidCancel() {
@@ -187,7 +182,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 public void run() {
                     hideProgress();
 
-                    DialogDebugInput dialog = new DialogDebugInput(debugger, debugger.getWindowComponent());
+                    DebuggerInputDialog dialog = new DebuggerInputDialog(debugger, debugger.getWindowComponent());
                     dialog.setInputText(inputText);
                     if(dialog.runModal() == XJDialog.BUTTON_OK) {
                         inputText = dialog.getInputText();
@@ -243,8 +238,8 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     protected void prepare() {
-        setOutputPath(EditorPreferences.getOutputPath());
-        setStartRule(EditorPreferences.getStartSymbol());
+        setOutputPath(AWPrefs.getOutputPath());
+        setStartRule(AWPrefs.getStartSymbol());
 
         fileParser = codeGenerator.getGeneratedTextFileName(false);
         fileLexer = codeGenerator.getGeneratedTextFileName(true);
@@ -338,15 +333,15 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     protected void compileFiles(String[] files) {
         int result = 0;
         try {
-            String compiler = EditorPreferences.getCompiler();
+            String compiler = AWPrefs.getCompiler();
             String classPath = outputFileDir;
             classPath += File.pathSeparatorChar+getApplicationPath();
             classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
 
-            if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JAVAC)) {
+            if(compiler.equalsIgnoreCase(AWPrefs.COMPILER_JAVAC)) {
                 String[] args = new String[5+files.length];
-                if(EditorPreferences.getJavaCCustomPath())
-                    args[0] = XJUtils.concatPath(EditorPreferences.getJavaCPath(), "javac");
+                if(AWPrefs.getJavaCCustomPath())
+                    args[0] = XJUtils.concatPath(AWPrefs.getJavaCPath(), "javac");
                 else
                     args[0] = "javac";
                 args[1] = "-classpath";
@@ -361,8 +356,8 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 new StreamWatcher(p.getErrorStream(), "Compiler").start();
                 new StreamWatcher(p.getInputStream(), "Compiler").start();
                 result = p.waitFor();
-            } else if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_JIKES)) {
-                String jikesPath = XJUtils.concatPath(EditorPreferences.getJikesPath(), "jikes");
+            } else if(compiler.equalsIgnoreCase(AWPrefs.COMPILER_JIKES)) {
+                String jikesPath = XJUtils.concatPath(AWPrefs.getJikesPath(), "jikes");
 
                 String[] args = new String[5+files.length];
                 args[0] = jikesPath;
@@ -377,7 +372,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
                 new StreamWatcher(p.getErrorStream(), "Compiler").start();
                 new StreamWatcher(p.getInputStream(), "Compiler").start();
                 result = p.waitFor();
-            } else if(compiler.equalsIgnoreCase(EditorPreferences.COMPILER_INTEGRATED)) {
+            } else if(compiler.equalsIgnoreCase(AWPrefs.COMPILER_INTEGRATED)) {
                 String[] args = new String[2+files.length];
                 args[0] = "-d";
                 args[1] = outputFileDir;

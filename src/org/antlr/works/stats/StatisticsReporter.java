@@ -33,7 +33,7 @@ package org.antlr.works.stats;
 
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.dialog.DialogPersonalInfo;
-import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.prefs.AWPrefs;
 
 import java.awt.*;
 import java.io.BufferedInputStream;
@@ -67,7 +67,7 @@ public class StatisticsReporter {
     }
 
     public String fetchIDFromServer() {
-        Map info = EditorPreferences.getPersonalInfo();
+        Map info = AWPrefs.getPersonalInfo();
 
         StringBuffer s = new StringBuffer(URL_REGISTER);
         s.append("who=");
@@ -117,12 +117,12 @@ public class StatisticsReporter {
     }
 
     public String getID() {
-        String id = EditorPreferences.getServerID();
+        String id = AWPrefs.getServerID();
         if(id == null || id.length() == 0) {
             id = fetchIDFromServer();
             if(id == null || id.length() == 0)
                 return null;
-            EditorPreferences.setServerID(id);
+            AWPrefs.setServerID(id);
         }
         return id;
     }

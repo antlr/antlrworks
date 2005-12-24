@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.stats;
 
 import edu.usfca.xj.appkit.app.XJApplication;
-import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.prefs.AWPrefs;
 
 import java.util.Date;
 
@@ -155,11 +155,11 @@ public class Statistics {
     }
 
     public void setFromDate(String date) {
-        EditorPreferences.getPreferences().setString(PREF_KEY_FROM_DATE, date);
+        AWPrefs.getPreferences().setString(PREF_KEY_FROM_DATE, date);
     }
 
     public String getFromDate() {
-        return EditorPreferences.getPreferences().getString(PREF_KEY_FROM_DATE, null);
+        return AWPrefs.getPreferences().getString(PREF_KEY_FROM_DATE, null);
     }
 
     public int getCount() {
@@ -179,13 +179,13 @@ public class Statistics {
     }
 
     public void close() {
-        EditorPreferences.getPreferences().setObject(PREF_KEY, events);
+        AWPrefs.getPreferences().setObject(PREF_KEY, events);
     }
 
     protected int[] getEvents() {
         if(events == null) {
             try {
-                events = (int[])EditorPreferences.getPreferences().getObject(PREF_KEY, null);
+                events = (int[])AWPrefs.getPreferences().getObject(PREF_KEY, null);
             } catch(Exception e) {
                 events = null;
                 System.err.println("Statistics: "+e);

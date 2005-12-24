@@ -1,3 +1,9 @@
+Version 1.0ea8 - 12/23/05
+
+- improved ANTLR usage by having now only one grammar per project (run
+  ANTLR only when necessary)
+- disabling syntax diagram now display a message
+
 Version 1.0ea7 - 12/15/05
 
 - fixed a bug which prevented ANTLRWorks to launch on Windows

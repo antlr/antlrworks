@@ -32,6 +32,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ParserName {
 
+    public static final int COMBINED = 1;
+    public static final int PARSER = 2;
+    public static final int LEXER = 3;
+    public static final int TREEPARSER = 4;
+
     public String name;
     public Token start;
     public Token end;
@@ -42,5 +47,20 @@ public class ParserName {
         this.start = type==null?start:type;
         this.end = end;
         this.type = type;
+    }
+
+    public int getType() {
+        if(type != null) {
+            String typeString = type.getAttribute();
+            if(typeString.equals("combined"))
+                return COMBINED;
+            if(typeString.equals("parser"))
+                return PARSER;
+            if(typeString.equals("lexer"))
+                return LEXER;
+            if(typeString.equals("treeparser"))
+                return TREEPARSER;
+        }
+        return COMBINED;
     }
 }

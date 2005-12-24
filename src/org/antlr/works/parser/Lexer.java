@@ -47,6 +47,7 @@ public class Lexer {
     public static final int TOKEN_LPAREN = 9;
     public static final int TOKEN_RPAREN = 10;
     public static final int TOKEN_CHAR = 11;
+    public static final int TOKEN_OTHER = 12;
 
     protected String text;
     protected int position;

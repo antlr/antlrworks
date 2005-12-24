@@ -35,10 +35,10 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
-import org.antlr.works.editor.EditorPreferences;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsReporter;
-import org.antlr.works.util.IconManager;
-import org.antlr.works.util.Localizable;
+import org.antlr.works.utils.IconManager;
+import org.antlr.works.utils.Localizable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -90,7 +90,7 @@ public class DialogPersonalInfo extends XJDialog {
         info.put(INFO_YEARSPROG, languageExperienceSpinner.getValue());
         info.put(INFO_RESIDING, countryField.getText());
         info.put(INFO_CAFFEINE, funField.getText());
-        EditorPreferences.setPersonalInfo(info);
+        AWPrefs.setPersonalInfo(info);
 
         StatisticsReporter sr = new StatisticsReporter(jDialog);
         String id = sr.getID();

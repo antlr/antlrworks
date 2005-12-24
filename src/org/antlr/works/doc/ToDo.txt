@@ -1,5 +1,7 @@
 
 * Prio 1
+- reload tokenVocab when window is back to front
+- handle pure lexer/parser/tree grammar
 - fix tree appearance between interpreter and debugger on Windows
 - fix the following v3 examples syntax problem:
     Problem with examples:

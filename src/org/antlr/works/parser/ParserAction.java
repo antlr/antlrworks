@@ -1,7 +1,7 @@
 package org.antlr.works.parser;
 
-import org.antlr.works.editor.ate.ATEFoldingEntity;
-import org.antlr.works.editor.helper.EditorPersistentObject;
+import org.antlr.works.ate.ATEFoldingEntity;
+import org.antlr.works.editor.EditorPersistentObject;
 /*
 
 [The "BSD licence"]

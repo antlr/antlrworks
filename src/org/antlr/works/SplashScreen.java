@@ -34,8 +34,8 @@ package org.antlr.works;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.foundation.XJSystem;
-import org.antlr.works.util.IconManager;
-import org.antlr.works.util.Localizable;
+import org.antlr.works.utils.IconManager;
+import org.antlr.works.utils.Localizable;
 
 import javax.swing.*;
 import java.awt.*;

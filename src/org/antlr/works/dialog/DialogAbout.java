@@ -38,7 +38,7 @@ import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.foundation.XJLib;
 import org.antlr.Tool;
 import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.works.util.IconManager;
+import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
 import java.awt.*;

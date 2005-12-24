@@ -36,21 +36,18 @@ import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
-import org.antlr.tool.ErrorManager;
-import org.antlr.tool.Grammar;
-import org.antlr.works.dialog.DialogConnectDebugRemote;
-import org.antlr.works.dialog.DialogGenerate;
-import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.editor.swing.TextPane;
-import org.antlr.works.editor.swing.TextUtils;
+import org.antlr.works.generate.DialogGenerate;
+import org.antlr.works.grammar.EditorGrammar;
 import org.antlr.works.parser.Line;
 import org.antlr.works.parsetree.ParseTreeNode;
 import org.antlr.works.parsetree.ParseTreePanel;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.util.ErrorListener;
-import org.antlr.works.util.IconManager;
+import org.antlr.works.utils.IconManager;
+import org.antlr.works.utils.TextPane;
+import org.antlr.works.utils.TextUtils;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -109,8 +106,6 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     protected DebuggerPlayer player;
 
     protected Stack playCallStack;
-
-    protected Grammar grammar;
 
     protected boolean running;
     protected JSplitPane ioSplitPane;
@@ -183,7 +178,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         inputTextPane = new TextPane();
         inputTextPane.setBackground(Color.white);
         inputTextPane.setBorder(null);
-        inputTextPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
+        inputTextPane.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
         inputTextPane.setText("");
         inputTextPane.setEditable(false);
 
@@ -199,7 +194,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         outputTextPane = new TextPane();
         outputTextPane.setBackground(Color.white);
         outputTextPane.setBorder(null);
-        outputTextPane.setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
+        outputTextPane.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
         outputTextPane.setText("");
         outputTextPane.setEditable(false);
 
@@ -361,7 +356,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
             breakCombo.addItem(DebuggerEvent.getEventName(i));
         }
 
-        EditorPreferences.getPreferences().bindToPreferences(breakCombo, EditorPreferences.PREF_DEBUG_BREAK_EVENT, DebuggerEvent.CONSUME_TOKEN);
+        AWPrefs.getPreferences().bindToPreferences(breakCombo, AWPrefs.PREF_DEBUG_BREAK_EVENT, DebuggerEvent.CONSUME_TOKEN);
 
         box.add(breakCombo);
 
@@ -409,8 +404,8 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         goToEndButton.setEnabled(enabled);
     }
 
-    public void grammarChanged() {
-        debuggerLocal.grammarChanged();
+    public EditorGrammar getGrammar() {
+        return editor.getGrammar();
     }
 
     public void queryGrammarBreakpoints() {
@@ -478,7 +473,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     }
 
     public void launchRemoteDebugger() {
-        DialogConnectDebugRemote dialog = new DialogConnectDebugRemote(getWindowComponent());
+        DebuggerRemoteConnectDialog dialog = new DebuggerRemoteConnectDialog(getWindowComponent());
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
             Statistics.shared().recordEvent(Statistics.EVENT_REMOTE_DEBUGGER);
             debuggerLaunch(dialog.getAddress(), dialog.getPort());
@@ -522,13 +517,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     }
 
     public boolean debuggerLaunchGrammar() {
-        try {
-            ErrorManager.setErrorListener(ErrorListener.shared());
-            grammar = new Grammar(editor.getFileName(), editor.getText());
-        } catch (Exception e) {
-            editor.console.print(e);
-            return false;
-        }
+        getGrammar().createGrammars();
         return true;
     }
 
@@ -721,7 +710,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
             if(s != null)
                 return s;
             else if(token != null)
-                return token.getText()+" <"+grammar.getTokenDisplayName(token.getType())+">";
+                return token.getText()+" <"+getGrammar().getANTLRGrammar().getTokenDisplayName(token.getType())+">";
             else if(e != null)
                 return e.toString();
 
@@ -732,7 +721,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
             if(s != null)
                 return s;
             else if(token != null)
-                return token.getText()+" <"+grammar.getTokenDisplayName(token.getType())+">";
+                return token.getText()+" <"+getGrammar().getANTLRGrammar().getTokenDisplayName(token.getType())+">";
             else if(e != null)
                 return e.toString();
 

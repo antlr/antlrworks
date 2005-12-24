@@ -40,27 +40,33 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJSystem;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.ate.ATEPanelDelegate;
+import org.antlr.works.ate.ATETextPane;
+import org.antlr.works.completion.AutoCompletionMenu;
+import org.antlr.works.completion.AutoCompletionMenuDelegate;
+import org.antlr.works.completion.RuleTemplates;
 import org.antlr.works.debugger.Debugger;
-import org.antlr.works.dialog.DialogPrefs;
-import org.antlr.works.editor.actions.*;
-import org.antlr.works.editor.ate.ATEPanel;
-import org.antlr.works.editor.ate.ATEPanelDelegate;
-import org.antlr.works.editor.ate.ATETextPane;
-import org.antlr.works.editor.autocompletion.AutoCompletionMenu;
-import org.antlr.works.editor.autocompletion.AutoCompletionMenuDelegate;
-import org.antlr.works.editor.autocompletion.TemplateRules;
-import org.antlr.works.editor.find.FindAndReplace;
-import org.antlr.works.editor.helper.*;
-import org.antlr.works.editor.rules.Rules;
-import org.antlr.works.editor.rules.RulesDelegate;
-import org.antlr.works.editor.swing.TextUtils;
-import org.antlr.works.editor.tool.*;
-import org.antlr.works.editor.undo.Undo;
-import org.antlr.works.editor.undo.UndoDelegate;
-import org.antlr.works.editor.visual.Visual;
-import org.antlr.works.interpreter.Interpreter;
+import org.antlr.works.find.FindAndReplace;
+import org.antlr.works.goto_.GoToHistory;
+import org.antlr.works.goto_.GoToRule;
+import org.antlr.works.grammar.EditorGrammar;
+import org.antlr.works.interpreter.EditorInterpreter;
+import org.antlr.works.menu.*;
 import org.antlr.works.parser.*;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.prefs.AWPrefsDialog;
+import org.antlr.works.rules.Rules;
+import org.antlr.works.rules.RulesDelegate;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.syntax.AutoIndentation;
+import org.antlr.works.syntax.Coloring;
+import org.antlr.works.syntax.ImmediateColoring;
+import org.antlr.works.syntax.Syntax;
+import org.antlr.works.undo.Undo;
+import org.antlr.works.undo.UndoDelegate;
+import org.antlr.works.utils.TextUtils;
+import org.antlr.works.visualization.Visual;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -76,20 +82,20 @@ public class EditorWindow
         RulesDelegate, EditorProvider, UndoDelegate, ATEPanelDelegate,
         XJNotificationObserver
 {
-    /* Auto-completion */
+    /* Completion */
 
     public AutoCompletionMenu autoCompletionMenu;
-    public TemplateRules templateRules;
+    public RuleTemplates ruleTemplates;
 
     /* Tools */
 
     public FindAndReplace findAndReplace;
 
-    public TGoToRule goToRule;
-    public TColorize colorize;
-    public TGrammar grammar;
-    public TImmediateColorization immediateColorization;
-    public TAutoIndent autoIndent;
+    public GoToRule goToRule;
+    public GoToHistory goToHistory;
+    public Coloring colorize;
+    public ImmediateColoring immediateSyntaxColoring;
+    public AutoIndentation autoIndent;
 
     /* Managers */
 
@@ -103,35 +109,34 @@ public class EditorWindow
     public ThreadedParser parser;
     public Rules rules;
     public Visual visual;
-    public Interpreter interpreter;
+    public EditorInterpreter interpreter;
     public Debugger debugger;
 
-    /* Helpers */
+    /* Editor */
 
     public EditorConsole console;
-    public EditorGoToHistory editorGoToHistory;
     public EditorToolbar toolbar;
     public EditorCache editorCache;
     public EditorMenu editorMenu;
     public EditorIdeas editorIdeas;
     public EditorTips editorTips;
-    public EditorInspector inspector;
+    public EditorInspector editorInspector;
     public EditorPersistence persistence;
     public EditorKeyBindings keyBindings;
 
-    /* Actions */
+    /* Menu */
 
-    public ActionsEdit actionsEdit;
-    public ActionsView actionsView;
-    public ActionsFind actionsFind;
-    public ActionsGrammar actionsGrammar;
-    public ActionsRefactor actionsRefactor;
-    public ActionsGoTo actionsGoTo;
-    public ActionsGenerate actionsGenerate;
-    public ActionsRun actionsRun;
-    public ActionsSCM actionsSCM;
-    public ActionsExport actionsExport;
-    public ActionsHelp actionsHelp;
+    public MenuEdit menuEdit;
+    public MenuFolding menuFolding;
+    public MenuFind menuFind;
+    public MenuGrammar menuGrammar;
+    public MenuRefactor menuRefactor;
+    public MenuGoTo menuGoTo;
+    public MenuGenerate menuGenerate;
+    public MenuRun menuRun;
+    public MenuSCM menuSCM;
+    public MenuExport menuExport;
+    public MenuHelp menuHelp;
 
     public ATEPanel textEditor;
 
@@ -154,18 +159,23 @@ public class EditorWindow
     /* Other */
 
     protected Map undos = new HashMap();
-    public Undo lastUndo;
+    protected Undo lastUndo;
                                  
     protected boolean windowFirstDisplay = true;
     protected String lastSelectedRule;
 
     protected List tabs = new ArrayList();
 
+    /* Grammar */
+
+    protected EditorGrammar grammar;
+    protected Syntax syntax;
+
     public EditorWindow() {
         createInterface();
 
-        initHelpers();
-        initActions();
+        initCore();
+        initMenus();
 
         initManagers();
         initComponents();
@@ -186,29 +196,30 @@ public class EditorWindow
         rules = new Rules(this, parser, rulesTree);
         rules.setDelegate(this);
 
+        syntax = new Syntax(this, parser);
+
         visual = new Visual(this);
         visual.setParser(parser);
 
-        interpreter = new Interpreter(this);
+        interpreter = new EditorInterpreter(this);
         debugger = new Debugger(this);
     }
 
     protected void initTools() {
-        colorize = new TColorize(this);
-        goToRule = new TGoToRule(this, getJFrame(), getTextPane());
-        immediateColorization = new TImmediateColorization(textEditor.getTextPane());
-        autoIndent = new TAutoIndent(textEditor.getTextPane());
-        grammar = new TGrammar(this);
-
+        colorize = new Coloring(this);
+        goToRule = new GoToRule(this, getJFrame(), getTextPane());
+        goToHistory = new GoToHistory();
+        immediateSyntaxColoring = new ImmediateColoring(textEditor.getTextPane());
+        autoIndent = new AutoIndentation(textEditor.getTextPane());
         findAndReplace = new FindAndReplace(this);
     }
 
     protected void initAutoCompletion() {
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), getJFrame());
-        templateRules = new TemplateRules(this, getTextPane(), getJFrame());
+        ruleTemplates = new RuleTemplates(this, getTextPane(), getJFrame());
     }
 
-    protected void initHelpers() {
+    protected void initCore() {
         console = new EditorConsole(this);
         console.makeCurrent();
 
@@ -216,26 +227,27 @@ public class EditorWindow
         editorMenu = new EditorMenu(this);
         editorIdeas = new EditorIdeas(this);
         editorTips = new EditorTips(this);
-        inspector = new EditorInspector(this);
+        editorInspector = new EditorInspector(this);
 
-        editorGoToHistory = new EditorGoToHistory();
         keyBindings = new EditorKeyBindings(getTextPane());
 
         persistence = new EditorPersistence(this);
+
+        grammar = new EditorGrammar(this);
     }
 
-    protected void initActions() {
-        actionsEdit = new ActionsEdit(this);
-        actionsView = new ActionsView(this);
-        actionsFind = new ActionsFind(this);
-        actionsGrammar = new ActionsGrammar(this);
-        actionsRefactor = new ActionsRefactor(this);
-        actionsGoTo = new ActionsGoTo(this);
-        actionsGenerate = new ActionsGenerate(this);
-        actionsRun = new ActionsRun(this);
-        actionsSCM = new ActionsSCM(this);
-        actionsExport = new ActionsExport(this);
-        actionsHelp = new ActionsHelp(this);
+    protected void initMenus() {
+        menuEdit = new MenuEdit(this);
+        menuFolding = new MenuFolding(this);
+        menuFind = new MenuFind(this);
+        menuGrammar = new MenuGrammar(this);
+        menuRefactor = new MenuRefactor(this);
+        menuGoTo = new MenuGoTo(this);
+        menuGenerate = new MenuGenerate(this);
+        menuRun = new MenuRun(this);
+        menuSCM = new MenuSCM(this);
+        menuExport = new MenuExport(this);
+        menuHelp = new MenuHelp(this);
     }
 
     protected void initManagers() {
@@ -256,7 +268,7 @@ public class EditorWindow
         editorIdeas.awake();
         editorTips.awake();
 
-        actionsSCM.awake();
+        menuSCM.awake();
 
         interpreter.awake();
         debugger.awake();
@@ -272,8 +284,8 @@ public class EditorWindow
 
         textEditor = new ATEPanel(getJFrame());
         textEditor.setDelegate(this);
-        textEditor.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
-        textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
+        textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
+        textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
         applyFont();
 
         rulesTree = new XJTree() {
@@ -382,19 +394,17 @@ public class EditorWindow
     }
 
     protected void register() {
-        // First rules, then EditorWindow
-        parser.addObserver(rules);
         parser.addObserver(this);
 
         registerUndo(new Undo(this, console), getTextPane());
 
-        XJNotificationCenter.defaultCenter().addObserver(this, DialogPrefs.NOTIF_PREFS_APPLIED);
+        XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
         XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
         XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STOPPED);
     }
 
     public void applyFont() {
-        textEditor.getTextPane().setFont(new Font(EditorPreferences.getEditorFont(), Font.PLAIN, EditorPreferences.getEditorFontSize()));
+        textEditor.getTextPane().setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
         TextUtils.createTabs(textEditor.getTextPane());
     }
 
@@ -420,8 +430,8 @@ public class EditorWindow
     public void becomingVisibleForTheFirstTime() {
         updateInformation();
         updateCursorInfo();
-        actionsSCM.setSilent(true);
-        actionsSCM.queryFileStatus();
+        menuSCM.setSilent(true);
+        menuSCM.queryFileStatus();
     }
 
     public void selectVisualizationTab() {
@@ -491,6 +501,10 @@ public class EditorWindow
         updateUndoRedo(undo);
     }
 
+    public EditorGrammar getGrammar() {
+        return grammar;
+    }
+
     public EditorConsole getConsole() {
         return console;
     }
@@ -527,6 +541,8 @@ public class EditorWindow
         if(visual.isEnable()) {
             visual.setText(getText(), getFileName());
             updateVisualization(false);
+        } else {
+            visual.setPlaceholder("Syntax Diagram Disabled");
         }
         Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_DIAGRAM);
     }
@@ -772,7 +788,7 @@ public class EditorWindow
     }
 
     public void goToHistoryRememberCurrentPosition() {
-        editorGoToHistory.addPosition(getCaretPosition());
+        goToHistory.addPosition(getCaretPosition());
     }
 
     public ParserReference getCurrentReference() {
@@ -819,7 +835,7 @@ public class EditorWindow
     }
 
     public void setCaretPosition(int position) {
-        setCaretPosition(position, EditorPreferences.getSmoothScrolling());
+        setCaretPosition(position, AWPrefs.getSmoothScrolling());
     }
 
     public void setCaretPosition(int position, boolean animate) {
@@ -882,7 +898,7 @@ public class EditorWindow
                 break;
         }
 
-        int warnings = rules.getNumberOfRulesWithErrors();
+        int warnings = syntax.getNumberOfRulesWithErrors();
         if(warnings > 0)
             t += " ("+warnings+" warnings)";
 
@@ -894,7 +910,7 @@ public class EditorWindow
     }
 
     public void updateSCMStatus(String status) {
-        scmLabel.setVisible(EditorPreferences.getP4Enabled());
+        scmLabel.setVisible(AWPrefs.getP4Enabled());
         if(status != null)
             scmLabel.setText("SCM Status: "+status);
         else
@@ -935,6 +951,9 @@ public class EditorWindow
         colorize.colorize();
         interpreter.setRules(parser.getRules());
 
+        rules.parserDidParse();
+        syntax.parserDidParse();
+
         if(windowFirstDisplay) {
             windowFirstDisplay = false;
             SwingUtilities.invokeLater(new Runnable() {
@@ -963,15 +982,13 @@ public class EditorWindow
     }
 
     public void grammarChanged() {
-        interpreter.grammarChanged();
-        debugger.grammarChanged();
-        actionsGenerate.generateCode.grammarChanged();
+        grammar.makeDirty();
     }
 
     public void notificationFire(Object source, String name) {
-        if(name.equals(DialogPrefs.NOTIF_PREFS_APPLIED)) {
-            textEditor.setFoldingEnabled(EditorPreferences.getFoldingEnabled());
-            textEditor.setHighlightCursorLine(EditorPreferences.getHighlightCursorEnabled());
+        if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
+            textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
+            textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
             textEditor.refresh();
             applyFont();
             updateSCMStatus(null);
@@ -1013,7 +1030,7 @@ public class EditorWindow
         } else {
             // Not inside rule - show only undefined rules
 
-            List sortedUndefinedReferences = Collections.list(Collections.enumeration(rules.getUndefinedReferences()));
+            List sortedUndefinedReferences = Collections.list(Collections.enumeration(syntax.getUndefinedReferences()));
             Collections.sort(sortedUndefinedReferences);
 
             for(Iterator iterator = sortedUndefinedReferences.iterator(); iterator.hasNext(); ) {
@@ -1038,7 +1055,7 @@ public class EditorWindow
 
     public void ateChangeUpdate(int offset, int length, boolean insert) {
         if(insert) {
-            immediateColorization.colorize(offset, length);
+            immediateSyntaxColoring.colorize(offset, length);
             autoIndent.indent(offset, length);
         }
 
@@ -1135,12 +1152,12 @@ public class EditorWindow
     public boolean wasSaving = false;
 
     public boolean willSaveDocument() {
-        if(actionsSCM.isFileWritable())
+        if(menuSCM.isFileWritable())
             return true;
 
         if(XJAlert.displayAlertYESNO(getWindowContainer(), "Cannot Save", "This file is currently closed in the SCM depot.\nDo you want to open it for edit before saving its content ?") == XJAlert.YES) {
             // Open the file using the SCM
-            actionsSCM.editFile();
+            menuSCM.editFile();
             // Will save the file again once the SCM commands
             // is completed (see scmCommandsDidComplete)
             wasSaving = true;

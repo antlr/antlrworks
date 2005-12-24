@@ -34,10 +34,11 @@ package org.antlr.works.editor;
 import edu.usfca.xj.appkit.menu.*;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
-import org.antlr.works.editor.tool.TDecisionDFA;
-import org.antlr.works.editor.undo.Undo;
-import org.antlr.works.editor.visual.Visual;
-import org.antlr.works.interpreter.Interpreter;
+import org.antlr.works.grammar.DecisionDFA;
+import org.antlr.works.interpreter.EditorInterpreter;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.undo.Undo;
+import org.antlr.works.visualization.Visual;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -202,7 +203,7 @@ public class EditorMenu implements XJMenuItemDelegate {
 
     private void createPrivateMenu(XJMainMenuBar menubar) {
         XJMenu menu;
-        if(EditorPreferences.getPrivateMenu()) {
+        if(AWPrefs.getPrivateMenu()) {
             menu = new XJMenu();
             menu.setTitle("*");
             menu.addItem(new XJMenuItem("Statistics...", MI_PRIVATE_STATS, this));
@@ -423,10 +424,10 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_GOTO_BACK:
-                item.setEnabled(editor.editorGoToHistory.canGoBack());
+                item.setEnabled(editor.goToHistory.canGoBack());
                 break;
             case MI_GOTO_FORWARD:
-                item.setEnabled(editor.editorGoToHistory.canGoForward());
+                item.setEnabled(editor.goToHistory.canGoForward());
                 break;
 
             case MI_P4_EDIT:
@@ -438,15 +439,15 @@ public class EditorMenu implements XJMenuItemDelegate {
                 if(isDebuggerRunning())
                     item.setEnabled(false);
                 else
-                    item.setEnabled(EditorPreferences.getP4Enabled());
+                    item.setEnabled(AWPrefs.getP4Enabled());
                 break;
 
             case MI_EXPORT_AS_IMAGE:
             case MI_EXPORT_AS_EPS:
                 EditorTab tab = editor.getSelectedTab();
                 item.setEnabled(tab instanceof Visual
-                                || tab instanceof TDecisionDFA
-                                || tab instanceof Interpreter
+                                || tab instanceof DecisionDFA
+                                || tab instanceof EditorInterpreter
                                 || tab instanceof Debugger);
                 break;
         }
@@ -471,27 +472,27 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuEdit(int itemTag) {
         switch(itemTag) {
             case MI_EDIT_UNDO:
-                editor.actionsEdit.performUndo();
+                editor.menuEdit.performUndo();
                 break;
 
             case MI_EDIT_REDO:
-                editor.actionsEdit.performRedo();
+                editor.menuEdit.performRedo();
                 break;
 
             case MI_EDIT_CUT:
-                editor.actionsEdit.performCutToClipboard();
+                editor.menuEdit.performCutToClipboard();
                 break;
 
             case MI_EDIT_COPY:
-                editor.actionsEdit.performCopyToClipboard();
+                editor.menuEdit.performCopyToClipboard();
                 break;
 
             case MI_EDIT_PASTE:
-                editor.actionsEdit.performPasteFromClipboard();
+                editor.menuEdit.performPasteFromClipboard();
                 break;
 
             case MI_EDIT_SELECT_ALL:
-                editor.actionsEdit.performSelectAll();
+                editor.menuEdit.performSelectAll();
                 break;
 
             case MI_TOGGLE_AUTOINDENT:
@@ -515,27 +516,27 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuView(int itemTag) {
         switch(itemTag) {
             case MI_EXPAND_COLLAPSE_RULE:
-                editor.actionsView.expandCollapseRule();
+                editor.menuFolding.expandCollapseRule();
                 break;
 
             case MI_EXPAND_ALL_RULES:
-                editor.actionsView.expandAllRules();
+                editor.menuFolding.expandAllRules();
                 break;
 
             case MI_COLLAPSE_ALL_RULES:
-                editor.actionsView.collapseAllRules();
+                editor.menuFolding.collapseAllRules();
                 break;
 
             case MI_EXPAND_COLLAPSE_ACTION:
-                editor.actionsView.expandCollapseAction();
+                editor.menuFolding.expandCollapseAction();
                 break;
 
             case MI_EXPAND_ALL_ACTIONS:
-                editor.actionsView.expandAllActions();
+                editor.menuFolding.expandAllActions();
                 break;
 
             case MI_COLLAPSE_ALL_ACTIONS:
-                editor.actionsView.collapseAllActions();
+                editor.menuFolding.collapseAllActions();
                 break;
         }
     }
@@ -543,23 +544,23 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuFind(int itemTag) {
         switch(itemTag) {
             case MI_FIND:
-                editor.actionsFind.find();
+                editor.menuFind.find();
                 break;
 
             case MI_FIND_NEXT:
-                editor.actionsFind.findNext();
+                editor.menuFind.findNext();
                 break;
 
             case MI_FIND_PREV:
-                editor.actionsFind.findPrev();
+                editor.menuFind.findPrev();
                 break;
 
             case MI_FIND_TOKEN:
-                editor.actionsFind.findSelection();
+                editor.menuFind.findSelection();
                 break;
 
             case MI_FIND_USAGE:
-                editor.actionsFind.findUsage();
+                editor.menuFind.findUsage();
                 break;
         }
     }
@@ -567,27 +568,27 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuGrammar(int itemTag) {
         switch(itemTag) {
             case MI_SHOW_TOKENS_SD:
-                editor.actionsGrammar.showTokensSD();
+                editor.menuGrammar.showTokensSD();
                 break;
 
             case MI_SHOW_DECISION_DFA:
-                editor.actionsGrammar.showDecisionDFA();
+                editor.menuGrammar.showDecisionDFA();
                 break;
 
             case MI_INSERT_TEMPLATE:
-                editor.actionsGrammar.insertRuleFromTemplate();
+                editor.menuGrammar.insertRuleFromTemplate();
                 break;
 
             case MI_GROUP:
-                editor.actionsGrammar.group();
+                editor.menuGrammar.group();
                 break;
 
             case MI_UNGROUP:
-                editor.actionsGrammar.ungroup();
+                editor.menuGrammar.ungroup();
                 break;
 
             case MI_CHECK_GRAMMAR:
-                editor.actionsGrammar.checkGrammar();
+                editor.menuGrammar.checkGrammar();
                 break;
         }
     }
@@ -595,39 +596,39 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuRefactor(int itemTag) {
         switch(itemTag) {
             case MI_RENAME:
-                editor.actionsRefactor.rename();
+                editor.menuRefactor.rename();
                 break;
 
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
-                editor.actionsRefactor.replaceLiteralWithTokenLabel();
+                editor.menuRefactor.replaceLiteralWithTokenLabel();
                 break;
 
             case MI_LITERAL_TO_SINGLEQUOTE:
-                editor.actionsRefactor.convertLiteralsToSingleQuote();
+                editor.menuRefactor.convertLiteralsToSingleQuote();
                 break;
 
             case MI_LITERAL_TO_DOUBLEQUOTE:
-                editor.actionsRefactor.convertLiteralsToDoubleQuote();
+                editor.menuRefactor.convertLiteralsToDoubleQuote();
                 break;
 
             case MI_LITERAL_TO_CSTYLEQUOTE:
-                editor.actionsRefactor.convertLiteralsToCStyleQuote();
+                editor.menuRefactor.convertLiteralsToCStyleQuote();
                 break;
 
             case MI_REMOVE_LEFT_RECURSION:
-                editor.actionsRefactor.removeLeftRecursion();
+                editor.menuRefactor.removeLeftRecursion();
                 break;
 
             case MI_REMOVE_ALL_LEFT_RECURSION:
-                editor.actionsRefactor.removeAllLeftRecursion();
+                editor.menuRefactor.removeAllLeftRecursion();
                 break;
 
             case MI_EXTRACT_RULE:
-                editor.actionsRefactor.extractRule();
+                editor.menuRefactor.extractRule();
                 break;
 
             case MI_INLINE_RULE:
-                editor.actionsRefactor.inlineRule();
+                editor.menuRefactor.inlineRule();
                 break;
         }
     }
@@ -635,35 +636,35 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuGoTo(int itemTag) {
         switch(itemTag) {
             case MI_GOTO_RULE:
-                editor.actionsGoTo.goToRule();
+                editor.menuGoTo.goToRule();
                 break;
 
             case MI_GOTO_DECLARATION:
-                editor.actionsGoTo.goToDeclaration();
+                editor.menuGoTo.goToDeclaration();
                 break;
 
             case MI_GOTO_LINE:
-                editor.actionsGoTo.goToLine();
+                editor.menuGoTo.goToLine();
                 break;
 
             case MI_GOTO_CHARACTER:
-                editor.actionsGoTo.goToCharacter();
+                editor.menuGoTo.goToCharacter();
                 break;
 
             case MI_GOTO_BACK:
-                editor.actionsGoTo.goToBackward();
+                editor.menuGoTo.goToBackward();
                 break;
 
             case MI_GOTO_FORWARD:
-                editor.actionsGoTo.goToForward();
+                editor.menuGoTo.goToForward();
                 break;
 
             case MI_PREV_BREAKPOINT:
-                editor.actionsGoTo.goToBreakpoint(-1);
+                editor.menuGoTo.goToBreakpoint(-1);
                 break;
 
             case MI_NEXT_BREAKPOINT:
-                editor.actionsGoTo.goToBreakpoint(1);
+                editor.menuGoTo.goToBreakpoint(1);
                 break;
         }
     }
@@ -671,19 +672,19 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuGenerate(int itemTag) {
         switch(itemTag) {
             case MI_GENERATE_CODE:
-                editor.actionsGenerate.generateCode();
+                editor.menuGenerate.generateCode();
                 break;
 
             case MI_SHOW_GENERATED_LEXER_CODE:
-                editor.actionsGenerate.showGeneratedCode(true);
+                editor.menuGenerate.showGeneratedCode(true);
                 break;
 
             case MI_SHOW_GENERATED_PARSER_CODE:
-                editor.actionsGenerate.showGeneratedCode(false);
+                editor.menuGenerate.showGeneratedCode(false);
                 break;
 
             case MI_SHOW_RULE_GENCODE:
-                editor.actionsGenerate.showRuleGeneratedCode();
+                editor.menuGenerate.showRuleGeneratedCode();
                 break;
         }
     }
@@ -691,18 +692,18 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuRun(int itemTag) {
         switch(itemTag) {
             case MI_RUN_INTERPRETER:
-                editor.actionsRun.runInterpreter();
+                editor.menuRun.runInterpreter();
                 break;
             case MI_DEBUG:
-                editor.actionsRun.debug();
+                editor.menuRun.debug();
                 break;
 
             case MI_BUILD_AND_DEBUG:
-                editor.actionsRun.buildAndDebug();
+                editor.menuRun.buildAndDebug();
                 break;
 
             case MI_DEBUG_REMOTE:
-                editor.actionsRun.debugRemote();
+                editor.menuRun.debugRemote();
                 break;
         }
     }
@@ -710,22 +711,22 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuSCM(int itemTag) {
         switch(itemTag) {
             case MI_P4_EDIT:
-                editor.actionsSCM.editFile();
+                editor.menuSCM.editFile();
                 break;
             case MI_P4_ADD:
-                editor.actionsSCM.addFile();
+                editor.menuSCM.addFile();
                 break;
             case MI_P4_DELETE:
-                editor.actionsSCM.deleteFile();
+                editor.menuSCM.deleteFile();
                 break;
             case MI_P4_REVERT:
-                editor.actionsSCM.revertFile();
+                editor.menuSCM.revertFile();
                 break;
             case MI_P4_SUBMIT:
-                editor.actionsSCM.submitFile();
+                editor.menuSCM.submitFile();
                 break;
             case MI_P4_SYNC:
-                editor.actionsSCM.sync();
+                editor.menuSCM.sync();
                 break;
         }
     }
@@ -733,13 +734,13 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuHelp(int itemTag) {
         switch(itemTag) {
             case MI_SUBMIT_STATS:
-                editor.actionsHelp.submitStats();
+                editor.menuHelp.submitStats();
                 break;
             case MI_SEND_FEEDBACK:
-                editor.actionsHelp.sendFeedback();
+                editor.menuHelp.sendFeedback();
                 break;
             case MI_CHECK_UPDATES:
-                editor.actionsHelp.checkUpdates();
+                editor.menuHelp.checkUpdates();
                 break;
         }
     }
@@ -750,7 +751,7 @@ public class EditorMenu implements XJMenuItemDelegate {
                 new DialogStatistics(editor.getWindowContainer()).runModal();
                 break;
             case MI_PRIVATE_UNREGISTER:
-                EditorPreferences.removeUserRegistration();
+                AWPrefs.removeUserRegistration();
                 break;
         }
     }
@@ -758,11 +759,11 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuExport(int itemTag) {
         switch(itemTag) {
             case MI_EXPORT_AS_IMAGE:
-                editor.actionsExport.exportAsImage();
+                editor.menuExport.exportAsImage();
                 break;
 
             case MI_EXPORT_AS_EPS:
-                editor.actionsExport.exportAsEPS();
+                editor.menuExport.exportAsEPS();
                 break;
 
 /*            case MI_SAVE_ANTLR_NFA_DOT:
@@ -778,7 +779,7 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;*/
 
             case MI_EXPORT_EVENT:
-                editor.actionsExport.exportEventsAsTextFile();
+                editor.menuExport.exportEventsAsTextFile();
                 break;
         }
     }

@@ -3,7 +3,7 @@ package org.antlr.works.editor;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.debugger.Debugger;
-import org.antlr.works.util.IconManager;
+import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -117,13 +117,13 @@ public class EditorToolbar implements XJNotificationObserver {
     public void addActions() {
         backward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.actionsGoTo.goToBackward();
+                editor.menuGoTo.goToBackward();
             }
         });
 
         forward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.actionsGoTo.goToForward();
+                editor.menuGoTo.goToForward();
             }
         });
 
@@ -171,7 +171,7 @@ public class EditorToolbar implements XJNotificationObserver {
 
         find.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.actionsFind.find();
+                editor.menuFind.find();
             }
         });
     }

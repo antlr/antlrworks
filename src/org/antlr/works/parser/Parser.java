@@ -124,17 +124,9 @@ public class Parser extends AbstractParser {
 
         if(start.getAttribute().equals("grammar")) {
             Token type = T(-1);
-            if(type != null && type.type == Lexer.TOKEN_ID) {
-                type.type = Lexer.TOKEN_COMPLEX_COMMENT;
-                String typeString = type.getAttribute();
-                if(!typeString.equals("lexer")
-                        && !typeString.equals("parser")
-                        && !typeString.equals("combined")
-                        && !typeString.equals("treeparser"))
-                {
-                    type = null;
-                }
-            } else
+            if(type != null && type.type == Lexer.TOKEN_ID)
+                type.type = Lexer.TOKEN_OTHER;
+            else
                 type = null;
 
             while(nextToken()) {
@@ -285,9 +277,19 @@ public class Parser extends AbstractParser {
 
                 case Lexer.TOKEN_ID: {
                     // Match also all references inside the rule
-                    Token t = T(1);
-                    if(t != null && t.type == Lexer.TOKEN_CHAR && t.getAttribute().equals("=")) {
-                        // Skip label
+
+                    // First, skip any label
+                    boolean skipLabel = false;
+
+                    if(isTokenMatching(T(1), Lexer.TOKEN_CHAR, "=")) {
+                        skipLabel = true;
+                    }
+
+                    if(isTokenMatching(T(1), Lexer.TOKEN_CHAR, "+") && isTokenMatching(T(2), Lexer.TOKEN_CHAR, "=")) {
+                        skipLabel = true;
+                    }
+
+                    if(skipLabel) {
                         T(0).isLabel = true;
                         continue;
                     }
@@ -328,6 +330,10 @@ public class Parser extends AbstractParser {
                 return new ParserGroup(rules.size()-1, token);
         } else
             return null;
+    }
+
+    public static boolean isTokenMatching(Token t, int type, String attribute) {
+        return t != null && t.type == type && t.getAttribute().equals(attribute);
     }
 
     public static List parsePropertiesString(final String content) {

@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics;
 
-import org.antlr.works.util.Localizable;
+import org.antlr.works.utils.Localizable;
 import org.antlr.works.visualization.graphics.primitive.GLiteral;
 import org.antlr.works.visualization.graphics.shape.GLink;
 import org.antlr.works.visualization.graphics.shape.GNode;

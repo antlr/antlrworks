@@ -2,8 +2,8 @@ package org.antlr.works.parsetree;
 
 import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
-import org.antlr.works.editor.swing.TreeUtilities;
-import org.antlr.works.util.IconManager;
+import org.antlr.works.utils.IconManager;
+import org.antlr.works.utils.TreeUtilities;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

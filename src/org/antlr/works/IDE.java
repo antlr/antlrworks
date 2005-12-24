@@ -44,13 +44,13 @@ import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
-import org.antlr.works.dialog.DialogPrefs;
-import org.antlr.works.editor.EditorPreferences;
 import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.util.HelpManager;
-import org.antlr.works.util.Localizable;
-import org.antlr.works.util.Utils;
+import org.antlr.works.utils.HelpManager;
+import org.antlr.works.utils.Localizable;
+import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import java.io.*;
@@ -85,12 +85,12 @@ public class IDE extends XJApplicationDelegate {
 
     public void appDidLaunch(String[] args) {
 
-        XJLookAndFeel.applyLookAndFeel(EditorPreferences.getLookAndFeel());
+        XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel());
         XJApplication.addDocumentType(Document.class, EditorWindow.class, XJDataPlainText.class, "g", Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
 
         XJApplication.addScheduledTimer(new HelpManager(), 1, true);
 
-        DialogPrefs.applyCommonPrefs();
+        AWPrefsDialog.applyCommonPrefs();
 
         registerUser();
         checkLibraries();
@@ -99,11 +99,11 @@ public class IDE extends XJApplicationDelegate {
         if(args.length == 2 && args[0].equals("-f")) {
             XJApplication.shared().openDocument(args[1]);
         } else {
-            switch (EditorPreferences.getStartupAction()) {
-                case EditorPreferences.STARTUP_NEW_DOC:
+            switch (AWPrefs.getStartupAction()) {
+                case AWPrefs.STARTUP_NEW_DOC:
                     XJApplication.shared().newDocument();
                     break;
-                case EditorPreferences.STARTUP_OPEN_LAST_DOC:
+                case AWPrefs.STARTUP_OPEN_LAST_DOC:
                     if (XJApplication.shared().getDocuments().size() == 0) {
                         if (!XJApplication.shared().openLastUsedDocument()) {
                             XJApplication.shared().newDocument();
@@ -117,11 +117,11 @@ public class IDE extends XJApplicationDelegate {
     }
 
     public void registerUser() {
-        if(!EditorPreferences.isUserRegistered()) {
+        if(!AWPrefs.isUserRegistered()) {
             sc.setVisible(false);
-            EditorPreferences.setServerID("");
+            AWPrefs.setServerID("");
             new DialogPersonalInfo(null).runModal();
-            EditorPreferences.setUserRegistered(true);
+            AWPrefs.setUserRegistered(true);
         }
     }
 
@@ -211,7 +211,7 @@ public class IDE extends XJApplicationDelegate {
     }
 
     public Class appPreferencesPanelClass() {
-        return DialogPrefs.class;
+        return AWPrefsDialog.class;
     }
 
     public XJPanel appInstanciateAboutPanel() {

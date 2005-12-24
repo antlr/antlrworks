@@ -32,10 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.scm.p4;
 
-import org.antlr.works.editor.EditorPreferences;
-import org.antlr.works.interfaces.Console;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
+import org.antlr.works.utils.Console;
 
 import javax.swing.*;
 import java.io.*;
@@ -282,16 +282,16 @@ public class P4 implements SCM {
             String[] command = new String[10+params.length];
 
             int i = 0;
-            command[i++] = EditorPreferences.getP4ExecPath();
+            command[i++] = AWPrefs.getP4ExecPath();
             command[i++] = "-s";
             command[i++] = "-p";
-            command[i++] = EditorPreferences.getP4Port();
+            command[i++] = AWPrefs.getP4Port();
             command[i++] = "-u";
-            command[i++] = EditorPreferences.getP4User();
+            command[i++] = AWPrefs.getP4User();
             command[i++] = "-P";
-            command[i++] = EditorPreferences.getP4Password();
+            command[i++] = AWPrefs.getP4Password();
             command[i++] = "-c";
-            command[i++] = EditorPreferences.getP4Client();
+            command[i++] = AWPrefs.getP4Client();
 
             for(int j=0; j<params.length; j++)
                 command[i++] = params[j];
@@ -328,8 +328,8 @@ public class P4 implements SCM {
                 runCommand(CMD_SUBMIT,
                             commands,
                             new String[] { "Change: new",
-                                       "Client: "+EditorPreferences.getP4Client(),
-                                       "User: "+EditorPreferences.getP4User(),
+                                       "Client: "+AWPrefs.getP4Client(),
+                                       "User: "+ AWPrefs.getP4User(),
                                        "Description:\n\t"+description,
                                        "Files:\n\t"+depotFile},
                             delegate);
