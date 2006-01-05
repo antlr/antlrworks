@@ -462,7 +462,7 @@ public class EditorWindow
         tabbedPane.setSelectedComponent(c);
     }
 
-    protected void makeBottomComponentVisible() {
+    public void makeBottomComponentVisible() {
         if(upDownSplitPane.getBottomComponent().getHeight() == 0) {
             upDownSplitPane.setDividerLocation(upDownSplitPane.getLastDividerLocation());
         }
@@ -534,6 +534,7 @@ public class EditorWindow
 
     public void toggleRulesSorting() {
         rules.toggleSorting();
+        interpreter.setRules(getRules());
     }
 
     public void toggleSyntaxDiagram() {
@@ -658,7 +659,9 @@ public class EditorWindow
             getTextPane().moveCaretPosition(0);
             getTextPane().getCaret().setSelectionVisible(true);
             grammarChanged();
+            colorize.reset();
             parser.parse();
+            changeDone();
         } catch(Exception e) {
             e.printStackTrace();
         } finally {
@@ -668,8 +671,10 @@ public class EditorWindow
 
     public void setText(String text) {
         getTextPane().setText(text);
+        grammarChanged();
         colorize.reset();
         parser.parse();
+        changeDone();
     }
 
     public synchronized String getText() {
@@ -712,6 +717,13 @@ public class EditorWindow
 
     public Container getWindowContainer() {
         return jFrame;
+    }
+
+    public List getRules() {
+        if(rules.isSorted()) {
+            return rules.getSortedRules();
+        } else
+            return rules.getRules();
     }
 
     public List getActions() {
@@ -942,7 +954,6 @@ public class EditorWindow
 
     public void parserDidParse() {
         persistence.restore();
-        analysisManager.refresh();
 
         textEditor.setIsTyping(false);
         textEditor.refresh();
@@ -953,7 +964,7 @@ public class EditorWindow
         updateVisualization(false);
 
         colorize.colorize();
-        interpreter.setRules(parser.getRules());
+        interpreter.setRules(getRules());
 
         rules.parserDidParse();
         syntax.parserDidParse();
@@ -1000,6 +1011,13 @@ public class EditorWindow
             editorIdeas.hide();
         } else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED)) {
         }
+    }
+
+    public void windowActivated() {
+        super.windowActivated();
+        syntax.resetTokenVocab();
+        syntax.rebuildAll();
+        textEditor.refresh();        
     }
 
     public void windowDocumentPathDidChange() {

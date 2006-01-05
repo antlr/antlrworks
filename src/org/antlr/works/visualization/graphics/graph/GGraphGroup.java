@@ -195,8 +195,10 @@ public class GGraphGroup extends GGraphAbstract {
         for (Iterator iterator = graphs.iterator(); iterator.hasNext();) {
             GGraph graph = (GGraph) iterator.next();
             GNode node = graph.findNodeForStateNumber(stateNumber);
-            if(node != null)
+            if(node != null) {
+//                System.err.println(" "+stateNumber+" = "+graph.name);
                 return node;
+            }
         }
         return null;
     }

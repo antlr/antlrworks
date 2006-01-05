@@ -440,7 +440,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     }
 
     public List getRules() {
-        return editor.parser.getRuleNames();
+        return editor.getRules();
     }
 
     public List getEvents() {

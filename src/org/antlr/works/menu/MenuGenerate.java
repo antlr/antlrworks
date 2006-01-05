@@ -136,6 +136,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
         dc.setTitle(title);
 
         editor.addTab(dc);
+        editor.makeBottomComponentVisible();
     }
 
     public boolean codeGenerateDisplaySuccess() {

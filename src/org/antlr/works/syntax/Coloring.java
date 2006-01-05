@@ -201,16 +201,8 @@ public class Coloring extends EditorThread {
         doc.lock();
 
         try {
-            // Note: cannot remove the attribute because it may remove hidden
-            // action attribute (and the hidden action cannot be expaned anymore)
-            // So we simply apply a standard attribute that will reset the style without
-            // removing the hidden action (putting the second parameter to false)
-
-            Token ta = (Token)modifiedTokens.get(0);
-            Token tb = (Token)modifiedTokens.get(modifiedTokens.size()-1);
-
-            doc.setCharacterAttributes(ta.getStartIndex(), tb.getEndIndex()-ta.getStartIndex(), standardAttr, false);
-
+            // Walk the list of modified tokens and apply the corresponding color
+            // for each of them
             for(int t = 0; t<modifiedTokens.size(); t++) {
                 Token token = (Token) modifiedTokens.get(t);
                 AttributeSet attr = null;
@@ -223,16 +215,22 @@ public class Coloring extends EditorThread {
                     case Lexer.TOKEN_SINGLE_QUOTE_STRING:
                         attr = stringAttr;
                         break;
-                    case Lexer.TOKEN_ID:
-                        if(token.isReference || token.isRule) {
-                            if(token.lexer)
-                                attr = lexerRefAttr;
-                            else
-                                attr = parserRefAttr;
-                        } else if(token.isLabel)
-                            attr = labelAttr;
+                    case Lexer.TOKEN_REFERENCE:
+                    case Lexer.TOKEN_RULE:
+                        if(token.lexer)
+                            attr = lexerRefAttr;
+                        else
+                            attr = parserRefAttr;
+                        break;
+                    case Lexer.TOKEN_LABEL:
+                        attr = labelAttr;
                         break;
                 }
+
+                // Apply the standard attribute first
+                doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), standardAttr, false);
+
+                // Then any specific attribute if available
                 if(attr != null)
                     doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), attr, false);
             }

@@ -45,6 +45,7 @@ public class Parser extends AbstractParser {
     public static final List blockIdentifiers;
     public static final List ruleModifiers;
     public static final List keywords;
+    public static final List predefinedReferences;
 
     public List rules;
     public List groups;
@@ -69,6 +70,9 @@ public class Parser extends AbstractParser {
         keywords.addAll(ruleModifiers);
         keywords.add("returns");
         keywords.add("init");
+
+        predefinedReferences = new ArrayList();
+        predefinedReferences.add("EOF");
     }
 
     public Parser() {
@@ -103,7 +107,7 @@ public class Parser extends AbstractParser {
 
             if(T(0) == null)
                 continue;
-            
+
             if(T(0).type == Lexer.TOKEN_ID) {
                 ParserRule rule = matchRule(actions, references);
                 if(rule != null)
@@ -269,7 +273,7 @@ public class Parser extends AbstractParser {
             switch(T(0).type) {
                 case Lexer.TOKEN_SEMI:
                     rule.end = T(0);
-                    tokenName.isRule = true;                    
+                    tokenName.type = Lexer.TOKEN_RULE;
                     if(references.size() > refOldSize)
                         rule.setReferencesIndexes(refOldSize, references.size()-1);
                     rule.completed();
@@ -290,7 +294,7 @@ public class Parser extends AbstractParser {
                     }
 
                     if(skipLabel) {
-                        T(0).isLabel = true;
+                        T(0).type = Lexer.TOKEN_LABEL;
                         continue;
                     }
 
@@ -299,7 +303,7 @@ public class Parser extends AbstractParser {
                         continue;
 
                     // Set the token flags
-                    T(0).isReference = true;
+                    T(0).type = Lexer.TOKEN_REFERENCE;
 
                     // Add the new reference
                     references.add(new ParserReference(rule, T(0)));
@@ -315,9 +319,57 @@ public class Parser extends AbstractParser {
                     }
                     break;
                 }
+
+                case Lexer.TOKEN_CHAR: {
+                    if(T(0).getAttribute().equals("-")) {
+                        // Match any rewrite syntax:
+                        if(T(1) != null && T(1).getAttribute().equals(">")) {
+                            nextToken();
+                            matchRewriteSyntax();
+                        }
+                    } else if(T(0).getAttribute().equals("$")) {
+                        // Match any label reference
+                        nextToken();
+                    }
+                }
             }
         }
         return null;
+    }
+
+    public void matchRewriteSyntax() {
+        if(!nextToken())
+            return;
+
+        switch(T(0).type) {
+            case Lexer.TOKEN_ID:
+                // Example:
+                // -> foo(...) << template >>
+                nextToken();
+                matchBalancedToken("(", ")");
+                break;
+            case Lexer.TOKEN_BLOCK:
+                // Example:
+                // -> { new StringTemplate() }
+                break;
+        }
+    }
+
+    public void matchBalancedToken(String open, String close) {
+        // Try to match all tokens until the balanced token's attribute
+        // is equal to close
+
+        int balance = 0;
+        while(nextToken()) {
+            String attr = T(0).getAttribute();
+            if(attr.equals(open))
+                balance++;
+            else if(attr.equals(close)) {
+                if(balance == 0)
+                    break;
+                balance--;
+            }
+        }
     }
 
     public ParserGroup matchRuleGroup(List rules) {
@@ -342,7 +394,7 @@ public class Parser extends AbstractParser {
 
             public List parseTokens() {
                 List tokens = new ArrayList();
-                init(content.substring(1, content.length()));
+                init(content);
                 while(nextToken()) {
                     if(T(0).type == Lexer.TOKEN_ID && T(1) != null) {
                         if(T(1).getAttribute().equals("=")) {

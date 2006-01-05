@@ -1,6 +1,8 @@
 
 * Prio 1
-- reload tokenVocab when window is back to front
+- remove print in GGraphGroup/EditorGrammar once weird ambiguous path problem solved
+
+- contextual menu in editor
 - handle pure lexer/parser/tree grammar
 - fix tree appearance between interpreter and debugger on Windows
 - fix the following v3 examples syntax problem:
@@ -10,7 +12,6 @@
     - simplecTreeParser/simpleTP.g (undefined references)
     - xmlLexer: no syntax diagram
 - ask for string literal for T104 (Tokens artificial SD)
-- update web site with new information + videos
 
 * Prio 2
 - test on ANTLR v3 examples

@@ -113,20 +113,29 @@ public class ThreadedParser extends EditorThread {
 
     public synchronized List getDeclaredTokenNames() {
         List names = new ArrayList();
-        for(int index=0; index<blocks.size(); index++) {
-            ParserBlock block = (ParserBlock)blocks.get(index);
-            if(block.isTokenBlock) {
-                List internalTokens = block.getInternalTokens();
-                for(int t=0; t<internalTokens.size(); t++) {
-                    Token token = (Token)internalTokens.get(t);
-                    names.add(token.getAttribute());
+        if(blocks != null) {
+            for(int index=0; index<blocks.size(); index++) {
+                ParserBlock block = (ParserBlock)blocks.get(index);
+                if(block.isTokenBlock) {
+                    List internalTokens = block.getInternalTokens();
+                    for(int t=0; t<internalTokens.size(); t++) {
+                        Token token = (Token)internalTokens.get(t);
+                        names.add(token.getAttribute());
+                    }
                 }
             }
         }
         return names;
     }
 
+    public List getPredefinedReferences() {
+        return Parser.predefinedReferences;
+    }
+
     public synchronized String getTokenVocab() {
+        if(blocks == null)
+            return null;
+        
         for(int index=0; index<blocks.size(); index++) {
             ParserBlock block = (ParserBlock)blocks.get(index);
             if(block.isOptionsBlock)
@@ -172,23 +181,18 @@ public class ThreadedParser extends EditorThread {
     }
 
     protected synchronized void setParserAttribute(Parser parser) {
-        this.rules = copyArray(parser.rules);
-        this.groups = copyArray(parser.groups);
-        this.blocks = copyArray(parser.blocks);
-        this.actions = copyArray(parser.actions);
-        this.references = copyArray(parser.references);
-        this.tokens = copyArray(parser.tokens);
+        this.rules = new ArrayList(parser.rules);
+        this.groups = new ArrayList(parser.groups);
+        this.blocks = new ArrayList(parser.blocks);
+        this.actions = new ArrayList(parser.actions);
+        this.references = new ArrayList(parser.references);
+        this.tokens = new ArrayList(parser.tokens);
         this.name = parser.name;
-    }
-
-    protected List copyArray(List list) {
-        ArrayList array = (ArrayList)list;
-        return (List)array.clone();
     }
 
     public void threadRun() throws Exception {
         notifyWillParse();
-        
+
         parser.parse(provider.getText());
         setParserAttribute(parser);
 

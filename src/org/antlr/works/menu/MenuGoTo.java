@@ -96,7 +96,7 @@ public class MenuGoTo extends MenuAbstract {
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Character number:", "Go To Character",
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if(s != null) {
-            int character = Integer.parseInt(s)-1;
+            int character = Integer.parseInt(s);
             if(character < 0 || character > getTextPane().getDocument().getLength()-1)
                 return;
 

@@ -6,10 +6,7 @@ import org.antlr.works.parser.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 /*
 
 [The "BSD licence"]
@@ -113,6 +110,11 @@ public class Syntax {
         return parser.getReferences();
     }
 
+    public void resetTokenVocab() {
+        tokenVocabName = null;
+        tokenVocabNames.clear();
+    }
+
     public List getTokenVocabNames() {
         String tokenVocab = parser.getTokenVocab();
         if(tokenVocab == null) {
@@ -163,6 +165,9 @@ public class Syntax {
 
     public void rebuildDuplicateRulesList() {
         List rules = parser.getRules();
+        if(rules == null)
+            return;
+
         List sortedRules = Collections.list(Collections.enumeration(rules));
         Collections.sort(sortedRules);
         Iterator iter = sortedRules.iterator();
@@ -181,10 +186,14 @@ public class Syntax {
     public void rebuildUndefinedReferencesList() {
         List existingReferences = parser.getRuleNames();
         existingReferences.addAll(parser.getDeclaredTokenNames());
+        existingReferences.addAll(parser.getPredefinedReferences());
         existingReferences.addAll(getTokenVocabNames());
 
         undefinedReferences.clear();
         List references = parser.getReferences();
+        if(references == null)
+            return;
+
         for(int index=0; index<references.size(); index++) {
             ParserReference ref = (ParserReference)references.get(index);
             if(!existingReferences.contains(ref.token.getAttribute()))
@@ -192,10 +201,14 @@ public class Syntax {
         }
     }
 
-    public void parserDidParse() {
+    public void rebuildAll() {
         rebuildDuplicateRulesList();
         rebuildUndefinedReferencesList();
         rebuildHasLeftRecursionRulesList();
+    }
+
+    public void parserDidParse() {
+        rebuildAll();
     }
 
 }

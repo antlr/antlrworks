@@ -114,6 +114,10 @@ public class Rules implements XJTreeDelegate {
                 new RuleMoveDownAction());
     }
 
+    public boolean isSorted() {
+        return sort;
+    }
+
     public void toggleSorting() {
         sort = !sort;
         rebuildTree();
@@ -206,6 +210,27 @@ public class Rules implements XJTreeDelegate {
 
     public List getRules() {
         return parser.getRules();
+    }
+
+    public List getSortedRules() {
+        return getSortedRules(getRules());
+    }
+    
+    public List getSortedRules(List rules) {
+        List sortedRules = new ArrayList(rules);
+        Collections.sort(sortedRules);
+        ParserRule firstRule = (ParserRule)sortedRules.get(0);
+        if(firstRule.lexer) {
+            for(int index=0; index<sortedRules.size(); index++) {
+                ParserRule rule = (ParserRule)sortedRules.get(0);
+                if(!rule.lexer)
+                    break;
+
+                sortedRules.add(rule);
+                sortedRules.remove(0);
+            }
+        }
+        return sortedRules;
     }
 
     public ParserRule getLastRule() {
@@ -499,8 +524,9 @@ public class Rules implements XJTreeDelegate {
 
     protected void buildTree(DefaultMutableTreeNode parentNode, List rules, int from, int to) {
         // Sort the list of subrules
-        List subrules = new ArrayList(rules.subList(from, to+1));
+        List subrules = rules.subList(from, to+1);
         if(sort && !subrules.isEmpty()) {
+            subrules = getSortedRules(subrules);
             Collections.sort(subrules);
             ParserRule firstRule = (ParserRule)subrules.get(0);
             if(firstRule.lexer) {

@@ -47,7 +47,10 @@ public class Lexer {
     public static final int TOKEN_LPAREN = 9;
     public static final int TOKEN_RPAREN = 10;
     public static final int TOKEN_CHAR = 11;
-    public static final int TOKEN_OTHER = 12;
+    public static final int TOKEN_REFERENCE = 12;
+    public static final int TOKEN_RULE = 13;
+    public static final int TOKEN_LABEL = 14;
+    public static final int TOKEN_OTHER = 99;
 
     protected String text;
     protected int position;
@@ -140,8 +143,11 @@ public class Lexer {
     public Token matchComplexComment() {
         int sp = position;
         while(nextCharacter()) {
-            if(C(0) == '*' && C(1) == '/')
+            if(C(0) == '*' && C(1) == '/') {
+                // Don't forget to eat the next character ;-)
+                nextCharacter();
                 return createNewToken(TOKEN_COMPLEX_COMMENT, sp, position+2);
+            }
         }
         // Complex comment terminates also at the end of the text
         return createNewToken(TOKEN_COMPLEX_COMMENT, sp, position);

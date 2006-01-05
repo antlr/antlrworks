@@ -79,6 +79,8 @@ public class MenuFind extends MenuAbstract {
             }
         }
 
+        editor.makeBottomComponentVisible();
+
         Statistics.shared().recordEvent(Statistics.EVENT_FIND_USAGES);
     }
 

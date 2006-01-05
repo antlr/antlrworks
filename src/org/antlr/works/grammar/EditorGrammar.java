@@ -134,11 +134,19 @@ public class EditorGrammar {
     }
 
     public String getName() {
-        return editor.parser.getName().name;
+        ParserName name = editor.parser.getName();
+        if(name == null)
+            return null;
+        else
+            return name.name;
     }
 
     public int getType() {
-        return editor.parser.getName().getType();
+        ParserName name = editor.parser.getName();
+        if(name == null)
+            return ParserName.COMBINED;
+        else
+            return name.getType();
     }
 
     public void createGrammars() {
@@ -248,6 +256,9 @@ public class EditorGrammar {
         error.setMessage("Decision can match input such as \""+input+"\" using multiple alternatives");
 
         int firstAlt = 0;
+
+        //System.err.println("***"+error.message);
+
         for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
             Integer displayAltI = (Integer) iter.next();
             NFAState nfaStart = nondetMsg.probe.dfa.getNFADecisionStartState();
@@ -266,6 +277,7 @@ public class EditorGrammar {
             // Find all rules enclosing each state (because a path can extend over multiple rules)
             for (Iterator iterator = path.iterator(); iterator.hasNext();) {
                 NFAState state = (NFAState)iterator.next();
+                //System.err.println(state+"/"+state.getEnclosingRule());
                 error.addRule(state.getEnclosingRule());
             }
         }

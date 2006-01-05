@@ -56,6 +56,7 @@ public class MenuGrammar extends MenuAbstract implements DecisionDFA.TDecisionDF
 
     public void showTokensSD() {
         editor.visual.setRule(new ParserRule("Tokens"), true);
+        editor.makeBottomComponentVisible();
     }
 
     public void showDecisionDFA() {
@@ -71,6 +72,7 @@ public class MenuGrammar extends MenuAbstract implements DecisionDFA.TDecisionDF
             ParserRule rule = editor.getCurrentRule();
             decision.setRuleName(rule.name);
             editor.addTab(decision);
+            editor.makeBottomComponentVisible();
         } else {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the DFA because: "+error);
         }

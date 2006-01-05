@@ -1,8 +1,19 @@
-Version 1.0ea8 - 12/24/05
+
+Version 1.0ea8 - 01/01/06
 
 - improved ANTLR usage by running ANTLR only when necessary
+- improved selection of a identifier
+- rules are now sorted in interpreter and debugger if they are sorted in the editor
+- make the bottom tab visible when it is collapsed when an operation is displaying something in it
 - disabling syntax diagram now display a message
 - new idea to convert invalid string literals to single quote literals
+- now reload the tokenVocab file content when ANTLRWorks is back to front
+
+- fixed a bug where the file content was not properly parsed if modified outside ANTLRWorks
+- fixed a bug where the analysis indicator was colored improperly
+- fixed a bug in the coloring algorithm where some tokens would not be colored properly
+- fixed a bug where Go To Character would be off by one character
+- fixed a bug when reading the tokenVocab file (was missing the first character)
 
 Version 1.0ea7 - 12/15/05
 

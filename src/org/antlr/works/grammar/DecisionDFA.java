@@ -213,7 +213,7 @@ public class DecisionDFA implements Runnable, EditorTab {
     }
 
     private void generateDOTFile() throws Exception {
-        Grammar g = null;
+        Grammar g;
 
         ParserRule rule = editor.getCurrentRule();
         if(rule == null)

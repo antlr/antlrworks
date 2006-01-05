@@ -48,9 +48,6 @@ public class Token implements Comparable {
     protected String attribute;
 
     public int index;   // index inside the tokens list
-    public boolean isReference; // true if this token is a reference token
-    public boolean isRule;  // true if this token is the token containing the name of the rule
-    public boolean isLabel; // true if this token is a label
 
     public Token(int type, int start, int end,
                  int startLineNumber, int endLineNumber,
@@ -99,7 +96,9 @@ public class Token implements Comparable {
 
     public boolean equals(Object otherObject) {
         Token otherToken = (Token)otherObject;
-        return type == otherToken.type && start == otherToken.start && end == otherToken.end;
+        return type == otherToken.type &&
+                start == otherToken.start &&
+                end == otherToken.end;
     }
 
     public int compareTo(Object o) {

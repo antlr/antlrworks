@@ -34,6 +34,8 @@ package org.antlr.works.ate;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -219,6 +221,39 @@ public class ATETextPane extends JTextPane
             width = 2;
             height = r.height;
             repaint();
+        }
+
+        public void mouseClicked(MouseEvent e) {
+            if (!e.isConsumed()) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    // mouse 1 behavior
+                    if(e.getClickCount() == 2) {
+                        selectWord();
+                    } else if(e.getClickCount() == 3) {
+                        super.mouseClicked(e);
+                    }
+                } else
+                    super.mouseClicked(e);
+            }
+        }
+
+        public void selectWord() {
+            int p = getCaretPosition();
+            String s = getText();
+            int a = p-1;
+            while(a >= 0 && Character.isLetterOrDigit(s.charAt(a))) {
+                a--;
+            }
+            
+            a++;
+
+            int b = p;
+            while(b < s.length() && Character.isLetterOrDigit(s.charAt(b))) {
+                b++;
+            }
+
+            setCaretPosition(a);
+            moveCaretPosition(b);
         }
     }
 }

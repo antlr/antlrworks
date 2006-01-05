@@ -97,17 +97,13 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
         return sb.toString();
     }
 
-    public void refresh() {
-        numberOfErrors = getErrors().size();
-        numberOfWarnings = getWarnings().size();
-    }
-
     public List getErrors() {
         List errors = new ArrayList();
         for(Iterator iter = editor.editorInspector.getErrors().iterator(); iter.hasNext(); ) {
             EditorInspector.Item item = (EditorInspector.Item)iter.next();
             errors.add(new ATEAnalysisItem(ANALYSIS_ITEM_ERROR, item.color, item.startLineNumber, item.startIndex, item.description));
         }
+        numberOfErrors = errors.size();
         return errors;
     }
 
@@ -117,6 +113,7 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
             EditorInspector.Item item = (EditorInspector.Item)iter.next();
             warnings.add(new ATEAnalysisItem(ANALYSIS_ITEM_WARNING, item.color, item.startLineNumber, item.startIndex, item.description));
         }
+        numberOfWarnings = warnings.size();
         return warnings;
     }
 
