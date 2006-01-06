@@ -84,6 +84,14 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
     }
 
     public void showGeneratedCode(boolean lexer) {
+        if(lexer && !generateCode.supportsLexer()) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the lexer because there is no lexer in this grammar.");
+            return;
+        } else if(!lexer && !generateCode.supportsParser()) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the parser because there is no parser in this grammar.");
+            return;
+        }
+
         showGeneratedCode(null, lexer);
         Statistics.shared().recordEvent(lexer?Statistics.EVENT_SHOW_LEXER_GENERATED_CODE:Statistics.EVENT_SHOW_PARSER_GENERATED_CODE);
     }

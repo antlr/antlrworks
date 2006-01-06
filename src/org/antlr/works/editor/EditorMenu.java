@@ -309,7 +309,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.addItem(new XJMenuItem("Show Tokens Syntax Diagram", MI_SHOW_TOKENS_SD, this));
         menu.addItem(new XJMenuItem("Show Current Decision DFA", MI_SHOW_DECISION_DFA, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Insert Rule From Template", 't', KeyEvent.VK_T, Event.CTRL_MASK, MI_INSERT_TEMPLATE, this));
+        menu.addItem(new XJMenuItem("Insert Rule From Template", 't', KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
         menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));

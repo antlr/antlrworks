@@ -38,6 +38,7 @@ import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJSystem;
+import edu.usfca.xj.foundation.XJUtils;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.ate.ATEPanel;
@@ -705,6 +706,10 @@ public class EditorWindow
             return -1;
         else
             return t.getEndIndex();
+    }
+
+    public synchronized String getFileFolder() {
+        return XJUtils.getPathByDeletingLastComponent(getFilePath());
     }
 
     public synchronized String getFilePath() {

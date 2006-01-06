@@ -1,16 +1,8 @@
 
 * Prio 1
 - remove print in GGraphGroup/EditorGrammar once weird ambiguous path problem solved
-
 - contextual menu in editor
-- handle pure lexer/parser/tree grammar
 - fix tree appearance between interpreter and debugger on Windows
-- fix the following v3 examples syntax problem:
-    Problem with examples:
-    - cminus (undefined references)
-    - simplecTreeParser/simple.g (undefined references)
-    - simplecTreeParser/simpleTP.g (undefined references)
-    - xmlLexer: no syntax diagram
 - ask for string literal for T104 (Tokens artificial SD)
 
 * Prio 2
@@ -37,6 +29,8 @@
 - extract all strings into properties
 
 * Check-list *
+
+- check with all v3 grammars
 
 - version in about.properties
 - version in strings.properties

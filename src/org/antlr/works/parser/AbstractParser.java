@@ -36,6 +36,7 @@ public abstract class AbstractParser {
 
     protected List tokens;
     protected int position;
+    protected int mark;
 
     protected Lexer lexer;
 
@@ -43,6 +44,7 @@ public abstract class AbstractParser {
         lexer = new Lexer(text);
         tokens = lexer.parseTokens();
         position = -1;
+        mark = -1;
     }
 
     public List getLines() {
@@ -59,15 +61,70 @@ public abstract class AbstractParser {
             return lexer.lineNumber;
     }
 
+    public void mark() {
+        mark = position;
+    }
+
+    public void rewind() {
+        position = mark;
+    }
+
     public boolean nextToken() {
         position++;
         return position<tokens.size();
     }
 
+    public void skip(int count) {
+        for(int i=0; i<count; i++) {
+            nextToken();
+        }
+    }
+    
     public Token T(int index) {
         if(position+index >= 0 && position+index < tokens.size())
             return (Token)tokens.get(position+index);
         else
             return null;
     }
+
+    public boolean isChar(int index, String c) {
+        return isTokenType(index, Lexer.TOKEN_CHAR) && T(index).getAttribute().equals(c);
+    }
+
+    public boolean isLPAREN(int index) {
+        return isTokenType(index, Lexer.TOKEN_LPAREN);
+    }
+
+    public boolean isSEMI(int index) {
+        return isTokenType(index, Lexer.TOKEN_SEMI);
+    }
+
+    public boolean isCOLON(int index) {
+        return isTokenType(index, Lexer.TOKEN_COLON);
+    }
+
+    public boolean isSingleComment(int index) {
+        return isTokenType(index, Lexer.TOKEN_SINGLE_COMMENT);
+    }
+
+    public boolean isComplexComment(int index) {
+        return isTokenType(index, Lexer.TOKEN_SINGLE_COMMENT);
+    }
+
+    public boolean isID(int index) {
+        return isTokenType(index, Lexer.TOKEN_ID);
+    }
+
+    public boolean isID(int index, String attribute) {
+        return isTokenType(index, Lexer.TOKEN_ID) && T(index).getAttribute().equals(attribute);
+    }
+
+    public boolean isBLOCK(int index) {
+        return isTokenType(index, Lexer.TOKEN_BLOCK);
+    }
+
+    public boolean isTokenType(int index, int type) {
+        return T(index) != null && T(index).type == type;
+    }
+
 }

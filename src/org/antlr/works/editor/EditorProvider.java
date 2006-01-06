@@ -38,6 +38,7 @@ import java.awt.*;
 public interface EditorProvider {
     public void changeDone();
     public String getText();
+    public String getFileFolder();
     public String getFilePath();
     public String getFileName();
     public EditorGrammar getGrammar();

@@ -36,9 +36,9 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.TextUtils;
-import org.antlr.works.parser.ParserRule;
 
 import javax.swing.*;
 import java.awt.*;

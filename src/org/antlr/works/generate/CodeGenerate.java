@@ -37,6 +37,7 @@ import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.works.editor.EditorProvider;
+import org.antlr.works.parser.ParserName;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.ErrorListener;
 
@@ -95,9 +96,9 @@ public class CodeGenerate implements Runnable {
 
         String[] params;
         if(debug)
-            params = new String[] { "-debug", "-o", getOutputPath(), provider.getFilePath() };
+            params = new String[] { "-debug", "-o", getOutputPath(), "-lib", provider.getFileFolder(), provider.getFilePath() };
         else
-            params = new String[] { "-o", getOutputPath(), provider.getFilePath() };
+            params = new String[] { "-o", getOutputPath(), "-lib", provider.getFileFolder(), provider.getFilePath() };
 
         Tool antlr = new Tool(params);
         antlr.process();
@@ -120,6 +121,16 @@ public class CodeGenerate implements Runnable {
 
     public boolean isGeneratedTextFileExisting(boolean lexer) {
         return new File(getGeneratedTextFileName(lexer)).exists();
+    }
+
+    public boolean supportsLexer() {
+        int type = provider.getGrammar().getType();
+        return type == ParserName.COMBINED || type == ParserName.LEXER;
+    }
+
+    public boolean supportsParser() {
+        int type = provider.getGrammar().getType();
+        return type == ParserName.COMBINED || type == ParserName.PARSER || type == ParserName.TREEPARSER;
     }
 
     public String getGeneratedText(boolean lexer) {

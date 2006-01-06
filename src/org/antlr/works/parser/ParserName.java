@@ -1,4 +1,7 @@
 package org.antlr.works.parser;
+
+import java.util.ArrayList;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -32,15 +35,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ParserName {
 
-    public static final int COMBINED = 1;
-    public static final int PARSER = 2;
-    public static final int LEXER = 3;
-    public static final int TREEPARSER = 4;
+    public static final List types;
+
+    public static final int COMBINED = 0;
+    public static final int PARSER = 1;
+    public static final int LEXER = 2;
+    public static final int TREEPARSER = 3;
 
     public String name;
     public Token start;
     public Token end;
     public Token type;
+
+    static {
+        types = new ArrayList();
+        types.add("combined");
+        types.add("parser");
+        types.add("lexer");
+        types.add("tree");
+    }
 
     public ParserName(String name, Token start, Token end, Token type) {
         this.name = name;
@@ -50,17 +63,14 @@ public class ParserName {
     }
 
     public int getType() {
-        if(type != null) {
-            String typeString = type.getAttribute();
-            if(typeString.equals("combined"))
-                return COMBINED;
-            if(typeString.equals("parser"))
-                return PARSER;
-            if(typeString.equals("lexer"))
-                return LEXER;
-            if(typeString.equals("treeparser"))
-                return TREEPARSER;
-        }
-        return COMBINED;
+        if(type != null)
+            return types.indexOf(type.getAttribute());
+        else
+            return COMBINED;
     }
+
+    public static boolean isKnownType(String type) {
+        return types.indexOf(type) != -1;
+    }
+    
 }

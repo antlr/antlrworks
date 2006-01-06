@@ -34,6 +34,7 @@ package org.antlr.works.grammar;
 
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
+import org.antlr.Tool;
 import org.antlr.analysis.DecisionProbe;
 import org.antlr.analysis.NFAState;
 import org.antlr.tool.ErrorManager;
@@ -133,6 +134,10 @@ public class EditorGrammar {
         return null;
     }
 
+    public Tool getANTLRTool() {
+        return new Tool(new String[] { "-lib", editor.getFileFolder() } );
+    }
+
     public String getName() {
         ParserName name = editor.parser.getName();
         if(name == null)
@@ -178,8 +183,16 @@ public class EditorGrammar {
         return fileName==null?"<notsaved>":fileName;
     }
 
+    protected Grammar createNewGrammar(String filename, String content) throws TokenStreamException, RecognitionException {
+        Grammar g = new Grammar();
+        g.setTool(getANTLRTool());
+        g.setFileName(filename);
+        g.setGrammarContent(content);
+        return g;
+    }
+
     protected void createCombinedGrammar() throws TokenStreamException, RecognitionException {
-        parserGrammar = new Grammar(getFileName(), editor.getText());
+        parserGrammar = createNewGrammar(getFileName(), editor.getText());
         parserGrammar.createNFAs();
         lexerGrammar = createLexerGrammarFromCombinedGrammar(parserGrammar);
     }
@@ -190,6 +203,7 @@ public class EditorGrammar {
             return null;
 
         Grammar lexerGrammar = new Grammar();
+        lexerGrammar.setTool(getANTLRTool());
         lexerGrammar.setFileName("<internally-generated-lexer>");
         lexerGrammar.importTokenVocabulary(grammar);
         try {
@@ -203,12 +217,12 @@ public class EditorGrammar {
     }
 
     protected void createParserGrammar() throws TokenStreamException, RecognitionException {
-        parserGrammar = new Grammar(getFileName(), editor.getText());
+        parserGrammar = createNewGrammar(getFileName(), editor.getText());
         parserGrammar.createNFAs();
     }
 
     protected void createLexerGrammar() throws TokenStreamException, RecognitionException {
-        lexerGrammar = new Grammar(getFileName(), editor.getText());
+        lexerGrammar = createNewGrammar(getFileName(), editor.getText());
         lexerGrammar.createNFAs();
         lexerGrammar.addArtificialMatchTokensRule();
     }

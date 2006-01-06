@@ -68,11 +68,11 @@ public class RuleTemplates extends AutoCompletionMenu {
     }
 
     public KeyStroke overlayDisplayKeyStroke() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK);
+        return KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.META_MASK);
     }
 
     public String overlayDisplayKeyStrokeMappingName() {
-        return "CONTROL-T";
+        return "META-T";
     }
 
     public boolean overlayWillDisplay() {

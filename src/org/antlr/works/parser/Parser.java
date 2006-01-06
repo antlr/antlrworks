@@ -87,55 +87,98 @@ public class Parser extends AbstractParser {
 
         init(text);
         while(nextToken()) {
-            ParserName n = matchName();
-            if(n != null) {
-                name = n;
-                continue;
-            }
 
-            if(matchPlainAction() != null)
+            if(tryMatchName())
                 continue;
 
-            ParserBlock block = matchBlock();
-            if(block != null) {
-                blocks.add(block);
-                continue;
-            }
-
-            if(matchScope())
+            if(tryMatchPlainAction())
                 continue;
 
-            if(T(0) == null)
+            if(tryMatchBlock())
                 continue;
 
-            if(T(0).type == Lexer.TOKEN_ID) {
+            if(tryMatchScope())
+                continue;
+
+            if(isID(0)) {
                 ParserRule rule = matchRule(actions, references);
                 if(rule != null)
                     rules.add(rule);
-            } else if(T(0).type == Lexer.TOKEN_SINGLE_COMMENT) {
+            } else if(isSingleComment(0)) {
                 ParserGroup group = matchRuleGroup(rules);
                 if(group != null)
                     groups.add(group);
             }
         }
     }
+    
+    public boolean tryMatchName() {
+        mark();
+
+        ParserName n = matchName();
+        if(n != null) {
+            name = n;
+            return true;
+        } else {
+            rewind();
+            return false;
+        }
+    }
+
+    public boolean tryMatchPlainAction() {
+        mark();
+        if(matchPlainAction() != null)
+            return true;
+        else {
+            rewind();
+            return false;
+        }
+    }
+
+    public boolean tryMatchBlock() {
+        mark();
+        ParserBlock block = matchBlock();
+        if(block != null) {
+            blocks.add(block);
+            return true;
+        } else {
+            rewind();
+            return false;
+        }
+    }
+
+    public boolean tryMatchScope() {
+        mark();
+        if(matchScope())
+            return true;
+        else {
+            rewind();
+            return false;
+        }
+    }
 
     public ParserName matchName() {
         Token start = T(0);
 
-        if(start.type != Lexer.TOKEN_ID)
+        if(!isID(0))
             return null;
 
-        if(start.getAttribute().equals("grammar")) {
-            Token type = T(-1);
+        Token type = null;
+        if(ParserName.isKnownType(T(0).getAttribute())) {
+            // Skip the grammar specifier
+            type = T(0);
+            nextToken();
+        }
+
+        if(isID(0, "grammar")) {
             if(type != null && type.type == Lexer.TOKEN_ID)
                 type.type = Lexer.TOKEN_OTHER;
-            else
-                type = null;
+
+            Token name = T(1);
 
             while(nextToken()) {
-                if(T(0).type == Lexer.TOKEN_SEMI)
-                    return new ParserName(start.getAttribute(), start, T(0), type);
+                if(isSEMI(0))
+                    return new ParserName(name.getAttribute(), start, T(0), type);
             }
             return null;
         } else
@@ -143,38 +186,28 @@ public class Parser extends AbstractParser {
     }
 
     public boolean matchScope() {
-        Token start = T(0);
-        if(start == null)
-            return false;
-
-        if(start.type != Lexer.TOKEN_ID)
-            return false;
-
-        if(!start.getAttribute().equals("scope"))
+        if(!isID(0, "scope"))
             return false;
 
         while(nextToken()) {
-            if(T(0).type == Lexer.TOKEN_BLOCK)
-                return true;
-            if(T(0).type == Lexer.TOKEN_SEMI)
+            if(isBLOCK(0) || isSEMI(0))
                 return true;
         }
+
         return false;
     }
 
     public ParserPlainAction matchPlainAction() {
         Token start = T(0);
-        if(start == null)
-            return null;
 
-        if(start.type != Lexer.TOKEN_ID)
+        if(!isID(0))
             return null;
 
         if(!start.getAttribute().startsWith("@"))
             return null;
 
         while(nextToken()) {
-            if(T(0).type == Lexer.TOKEN_BLOCK)
+            if(isBLOCK(0))
                 return new ParserPlainAction(start.getAttribute(), start, T(0));
         }
         return null;
@@ -182,18 +215,13 @@ public class Parser extends AbstractParser {
 
     public ParserBlock matchBlock() {
         Token start = T(0);
-        if(start == null)
-            return null;
 
-        if(start.type != Lexer.TOKEN_ID)
+        if(!isID(0))
             return null;
 
         String blockName = start.getAttribute().toLowerCase();
         if(blockIdentifiers.contains(blockName)) {
-            if(T(1) == null)
-                return null;
-
-            if(T(1).type != Lexer.TOKEN_BLOCK)
+            if(!isBLOCK(1))
                 return null;
 
             nextToken();
@@ -236,7 +264,7 @@ public class Parser extends AbstractParser {
         }
 
         // Match any comments
-        while((T(0).type == Lexer.TOKEN_SINGLE_COMMENT || T(0).type == Lexer.TOKEN_COMPLEX_COMMENT)) {
+        while(isSingleComment(0) || isComplexComment(0)) {
             if(!nextToken())
                 return null;
         }
@@ -245,7 +273,7 @@ public class Parser extends AbstractParser {
         matchScope();
 
         // Loop until a COLON is found (defining the beginning of the body of the rule)
-        if(T(0).type != Lexer.TOKEN_COLON) {
+        if(!isCOLON(0)) {
             boolean colonFound = false;
             while(nextToken()) {
                 if(matchScope())
@@ -254,10 +282,10 @@ public class Parser extends AbstractParser {
                 if(matchPlainAction() != null)
                     continue;
 
-                if(T(0).type == Lexer.TOKEN_SEMI) {
+                if(isSEMI(0))
                     break;
-                }
-                if(T(0).type == Lexer.TOKEN_COLON) {
+
+                if(isCOLON(0)) {
                     colonFound = true;
                     break;
                 }
@@ -285,13 +313,11 @@ public class Parser extends AbstractParser {
                     // First, skip any label
                     boolean skipLabel = false;
 
-                    if(isTokenMatching(T(1), Lexer.TOKEN_CHAR, "=")) {
+                    if(isChar(1, "="))
                         skipLabel = true;
-                    }
 
-                    if(isTokenMatching(T(1), Lexer.TOKEN_CHAR, "+") && isTokenMatching(T(2), Lexer.TOKEN_CHAR, "=")) {
+                    if(isChar(1, "+") && isChar(2, "="))
                         skipLabel = true;
-                    }
 
                     if(skipLabel) {
                         T(0).type = Lexer.TOKEN_LABEL;
@@ -321,15 +347,11 @@ public class Parser extends AbstractParser {
                 }
 
                 case Lexer.TOKEN_CHAR: {
-                    if(T(0).getAttribute().equals("-")) {
-                        // Match any rewrite syntax:
-                        if(T(1) != null && T(1).getAttribute().equals(">")) {
-                            nextToken();
-                            matchRewriteSyntax();
-                        }
-                    } else if(T(0).getAttribute().equals("$")) {
-                        // Match any label reference
-                        nextToken();
+                    if(isChar(0, "-") && isChar(1, ">")) {
+                        skip(2);
+                        matchRewriteSyntax();
+                    } else if(isChar(0, "$")) {
+                        skip(1);
                     }
                 }
             }
@@ -338,20 +360,23 @@ public class Parser extends AbstractParser {
     }
 
     public void matchRewriteSyntax() {
-        if(!nextToken())
+        if(isBLOCK(0) && isChar(1, "?") && isID(2) && isLPAREN(3)) {
+            // -> { condition }? foo()
+            skip(3);
+            matchBalancedToken("(", ")");
             return;
+        }
 
-        switch(T(0).type) {
-            case Lexer.TOKEN_ID:
-                // Example:
-                // -> foo(...) << template >>
-                nextToken();
-                matchBalancedToken("(", ")");
-                break;
-            case Lexer.TOKEN_BLOCK:
-                // Example:
-                // -> { new StringTemplate() }
-                break;
+        if(isID(0) && isLPAREN(1)) {
+            // -> foo(...)
+            skip(1);
+            matchBalancedToken("(", ")");
+            return;
+        }
+
+        if(isBLOCK(0)) {
+            // -> { new StringTemplate() }
+            skip(0);
         }
     }
 
@@ -384,10 +409,6 @@ public class Parser extends AbstractParser {
             return null;
     }
 
-    public static boolean isTokenMatching(Token t, int type, String attribute) {
-        return t != null && t.type == type && t.getAttribute().equals(attribute);
-    }
-
     public static List parsePropertiesString(final String content) {
 
         class ParseProperties extends AbstractParser {
@@ -396,12 +417,9 @@ public class Parser extends AbstractParser {
                 List tokens = new ArrayList();
                 init(content);
                 while(nextToken()) {
-                    if(T(0).type == Lexer.TOKEN_ID && T(1) != null) {
-                        if(T(1).getAttribute().equals("=")) {
+                    if(T(0).type == Lexer.TOKEN_ID) {
+                        if(isChar(1, "=") || isChar(1, "\n"))
                             tokens.add(T(0));
-                        } else if(T(1).getAttribute().equals("\n")) {
-                            tokens.add(T(0));
-                        }
                     }
                 }
                 return tokens;

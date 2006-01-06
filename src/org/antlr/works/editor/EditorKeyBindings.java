@@ -39,6 +39,8 @@ import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -59,10 +61,11 @@ public class EditorKeyBindings {
         InputMap inputMap = textComponent.getInputMap();
 
         // HOME to move cursor to begin of line
-        addKeyBinding("HOME", KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), new GoToStartOfLine());
+        KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0);
+        inputMap.put(key, DefaultEditorKit.beginLineAction);
 
         // END to move cursor to end of line
-        KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_END, 0);
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_END, 0);
         inputMap.put(key, DefaultEditorKit.endLineAction);
     }
 
@@ -90,7 +93,8 @@ public class EditorKeyBindings {
         inputMap.put(key, DefaultEditorKit.deleteNextCharAction);
 
         // Ctrl-a to move cursor to begin of line
-        addKeyBinding("CONTROL_A", KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK), new GoToStartOfLine());
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK);
+        inputMap.put(key, DefaultEditorKit.beginLineAction);
 
         // Ctrl-e to move cursor to end of line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK);
@@ -102,9 +106,10 @@ public class EditorKeyBindings {
             public void actionPerformed(ActionEvent e) {
 
                 int start = textComponent.getCaretPosition();
+                Document doc = textComponent.getDocument();
                 String t;
                 try {
-                    t = textComponent.getText(start, textComponent.getDocument().getLength()-start);
+                    t = doc.getText(start, doc.getLength()-start);
                 } catch (BadLocationException e1) {
                     e1.printStackTrace();
                     return;
@@ -115,9 +120,37 @@ public class EditorKeyBindings {
                     end++;
                 }
 
-                Document doc = textComponent.getDocument();
                 try {
-                    doc.remove(start, Math.max(1, end));
+                    end = Math.max(1, end);
+
+                    String content = doc.getText(start, end);
+                    doc.remove(start, end);
+
+                    // Copy the deleted portion of text into the system clipboard
+                    Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    cb.setContents(new StringSelection(content), null);
+                } catch (BadLocationException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        // Ctrl-t swap the two characters before and after the current position
+        // Has to create a custom action to handle this one.
+        addKeyBinding("CONTROL_T", KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK), new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+
+                int p = textComponent.getCaretPosition();
+                Document doc = textComponent.getDocument();
+
+                if(p < 1 || p >= doc.getLength())
+                    return;
+                
+                try {
+                    String before = doc.getText(p-1, 1);
+                    doc.remove(p-1, 1);
+                    doc.insertString(p, before, null);
+                    textComponent.setCaretPosition(p);
                 } catch (BadLocationException e1) {
                     e1.printStackTrace();
                 }
@@ -130,20 +163,4 @@ public class EditorKeyBindings {
         textComponent.getInputMap().put(keystroke, name);
     }
 
-    public class GoToStartOfLine extends AbstractAction {
-
-        public void actionPerformed(ActionEvent e) {
-            int start = textComponent.getCaretPosition()-1;
-            String t = textComponent.getText();
-
-            while(start > 0 && t.charAt(start) != '\n' && t.charAt(start) != '\r') {
-                start--;
-            }
-
-            if(start != 0)
-                start++;
-
-            textComponent.setCaretPosition(start);
-        }
-    }
 }

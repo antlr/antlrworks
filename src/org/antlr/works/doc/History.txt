@@ -1,5 +1,5 @@
 
-Version 1.0ea8 - 01/01/06
+Version 1.0ea8 - 01/05/06
 
 - improved ANTLR usage by running ANTLR only when necessary
 - improved selection of a identifier
@@ -8,12 +8,16 @@ Version 1.0ea8 - 01/01/06
 - disabling syntax diagram now display a message
 - new idea to convert invalid string literals to single quote literals
 - now reload the tokenVocab file content when ANTLRWorks is back to front
+- ctrl-k: now copy the deleted end of line to the system clipboard
+- ctrl-t: now swap two characters (insert templates is now invoked using meta-k)
 
 - fixed a bug where the file content was not properly parsed if modified outside ANTLRWorks
 - fixed a bug where the analysis indicator was colored improperly
 - fixed a bug in the coloring algorithm where some tokens would not be colored properly
 - fixed a bug where Go To Character would be off by one character
 - fixed a bug when reading the tokenVocab file (was missing the first character)
+- fixed a bug where ANTLR would not be able to read the tokenVocab file (missing path)
+- fixed a bug in the code generation (problem with grammar name)
 
 Version 1.0ea7 - 12/15/05
 
