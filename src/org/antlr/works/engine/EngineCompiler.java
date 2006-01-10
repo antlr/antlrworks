@@ -3,6 +3,8 @@ package org.antlr.works.engine;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.IDE;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.utils.StreamWatcher;
+import org.antlr.works.utils.StreamWatcherDelegate;
 
 import java.io.File;
 import java.lang.reflect.Method;

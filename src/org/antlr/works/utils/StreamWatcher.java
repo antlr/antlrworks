@@ -1,5 +1,9 @@
-package org.antlr.works.engine;
+package org.antlr.works.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 /*
 
 [The "BSD licence"]
@@ -31,8 +35,34 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface StreamWatcherDelegate {
-    public void streamWatcherDidStarted();
-    public void streamWatcherDidReceiveString(String string);
-    public void streamWatcherException(Exception e);
+public class StreamWatcher extends Thread {
+
+    protected InputStream is;
+    protected String type;
+    protected StreamWatcherDelegate delegate;
+
+    public StreamWatcher(InputStream is, String type, StreamWatcherDelegate delegate) {
+        this.is = is;
+        this.type = type;
+        this.delegate = delegate;
+    }
+
+    public void run() {
+        try {
+            if(delegate != null)
+                delegate.streamWatcherDidStarted();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while ( (line = br.readLine()) != null) {
+                if(delegate != null)
+                    delegate.streamWatcherDidReceiveString(line+"\n");
+            }
+        } catch (IOException e) {
+            if(delegate != null)
+                delegate.streamWatcherException(e);
+            else
+                e.printStackTrace();
+        }
+    }
 }

@@ -10,6 +10,7 @@ import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.components.project.file.CContainerProjectFile;
 import org.antlr.works.project.ProjectBuilder;
+import org.antlr.works.project.ProjectConsole;
 import org.antlr.works.project.ProjectFileItem;
 import org.antlr.works.project.ProjectToolbar;
 
@@ -20,8 +21,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
@@ -69,13 +68,14 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     protected DefaultTreeModel filesTreeModel;
 
     protected ComponentContainer currentFileContainer;
-    protected JTextArea buildTextArea;
 
     protected ProjectBuilder builder;
+    protected ProjectConsole console;
 
     public CContainerProject() {
 
         builder = new ProjectBuilder(this);
+        console = new ProjectConsole();
 
         projectPanel = new JPanel(new BorderLayout());
 
@@ -95,7 +95,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
         splitPaneB.setBorder(null);
         splitPaneB.setOrientation(JSplitPane.VERTICAL_SPLIT);
         splitPaneB.setLeftComponent(splitPaneA);
-        splitPaneB.setRightComponent(createBuildPanel());
+        splitPaneB.setRightComponent(console.getContainer());
         splitPaneB.setContinuousLayout(true);
         splitPaneB.setOneTouchExpandable(true);
         splitPaneB.setDividerLocation(getRootPane().getPreferredSize().height);
@@ -165,36 +165,6 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
         JScrollPane scrollPane = new JScrollPane(filesTree);
         scrollPane.setWheelScrollingEnabled(true);
         return scrollPane;
-    }
-
-    public JPanel createBuildPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        Box box = Box.createHorizontalBox();
-
-        JButton clear = new JButton("Clear All");
-        clear.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                clearBuildPanel();
-            }
-        });
-        box.add(clear);
-        box.add(Box.createHorizontalGlue());
-
-        panel.add(createTextArea(), BorderLayout.CENTER);
-        panel.add(box, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    public Container createTextArea() {
-        buildTextArea = new JTextArea();
-        JScrollPane textAreaScrollPane = new JScrollPane(buildTextArea);
-        textAreaScrollPane.setWheelScrollingEnabled(true);
-        return textAreaScrollPane;
-    }
-
-    public void clearBuildPanel() {
-        buildTextArea.setText("");
     }
 
     public JPanel createInfoPanel(String info) {
@@ -304,18 +274,16 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     }
 
     public void buildReportError(String error) {
-        buildPrint(error);
+        printToConsole(error);
     }
 
-    public synchronized void buildPrint(String s) {
-        buildTextArea.setText(buildTextArea.getText()+s);
-        buildTextArea.setCaretPosition(buildTextArea.getText().length());
+    public void printToConsole(String s) {
+        console.print(s);
         makeBottomComponentVisible();
-        System.out.println(s);
     }
 
-    public synchronized void buildPrint(Exception e) {
-        buildPrint(XJUtils.stackTrace(e));
+    public void printToConsole(Exception e) {
+        printToConsole(XJUtils.stackTrace(e));
     }
 
     public void changeCurrentEditor() {
@@ -408,8 +376,9 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
 
     public void setPersistentData(Map data) {
         List files = (List)data.get("files");
-        if(files != null) {
+        if(files != null && !files.isEmpty()) {
             addFilePaths(files);
+            filesTree.setSelectionRow(0);
         }
     }
 

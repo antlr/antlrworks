@@ -1,8 +1,11 @@
 package org.antlr.works.project;
 
+import edu.usfca.xj.appkit.utils.XJDialogProgress;
+import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
+import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.project.CContainerProject;
 import org.antlr.works.engine.EngineCompiler;
-import org.antlr.works.engine.StreamWatcherDelegate;
+import org.antlr.works.utils.StreamWatcherDelegate;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,17 +43,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ProjectBuilder implements StreamWatcherDelegate {
+public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDelegate {
 
     protected CContainerProject project;
+    protected XJDialogProgress progress;
+
+    protected boolean cancel;
+    protected int buildingProgress;
 
     public ProjectBuilder(CContainerProject project) {
         this.project = project;
+        this.progress = new XJDialogProgress(project.getXJFrame(), true);
+        this.progress.setDelegate(this);
     }
 
     public List buildListOfGrammarItems(List items) {
         List itemsToBuild = new ArrayList();
-        for (Iterator iterator = items.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = items.iterator(); iterator.hasNext() && !cancel;) {
             ProjectFileItem item = (ProjectFileItem) iterator.next();
             if(item.getFileName().endsWith(ProjectFileItem.FILE_GRAMMAR_EXTENSION) && item.buildDirty()) {
                 itemsToBuild.add(item);
@@ -59,13 +68,31 @@ public class ProjectBuilder implements StreamWatcherDelegate {
         return itemsToBuild;
     }
 
+    public List buildListOfAllJavaFiles() {
+        List javaFiles = new ArrayList();
+
+        File[] files = new File(project.getProjectFolder()).listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            if(!file.getName().endsWith(ProjectFileItem.FILE_JAVA_EXTENSION))
+                continue;
+
+            javaFiles.add(file.getAbsolutePath());
+        }
+
+        return javaFiles;
+    }
+
     public boolean generateGrammarItems(List items) {
-        for (Iterator iterator = items.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = items.iterator(); iterator.hasNext() && !cancel;) {
             ProjectFileItem item = (ProjectFileItem) iterator.next();
 
             String file = item.getFilePath();
             String libPath = item.getFileFolder();
             String outputPath = item.getFileFolder();
+
+            setProgressStepInfo("Generating \""+ XJUtils.getLastPathComponent(file)+"\"...");
+
             String error = EngineCompiler.runANTLR(file, libPath, outputPath, this);
             if(error != null) {
                 project.buildReportError(error);
@@ -88,30 +115,53 @@ public class ProjectBuilder implements StreamWatcherDelegate {
         }
     }
 
-    public boolean compileAllJavaFiles() {
-        File[] files = new File(project.getProjectFolder()).listFiles();
-        for (int i = 0; i < files.length; i++) {
-            File file = files[i];
-            if(!file.getName().endsWith(ProjectFileItem.FILE_JAVA_EXTENSION))
-                continue;
-
-            if(!compileFile(file.getAbsolutePath())) {
+    public boolean compileJavaFiles(List files) {
+        for (Iterator iterator = files.iterator(); iterator.hasNext() && !cancel;) {
+            String file = (String) iterator.next();
+            setProgressStepInfo("Compiling \""+ XJUtils.getLastPathComponent(file)+"\"...");
+            if(!compileFile(file))
                 return false;
-            }
         }
         return true;
     }
 
-    public boolean build() {
-        List items = project.getFileEditorItems();
-        List grammars = buildListOfGrammarItems(items);
+    public void setProgressStepInfo(String info) {
+        progress.setInfo(info);
+        progress.setProgress(++buildingProgress);
+    }
 
-        if(!generateGrammarItems(grammars))
-            return false;
+    public void build() {
+        cancel = false;
+        buildingProgress = 0;
 
-        compileAllJavaFiles();
+        progress.setCancellable(true);
+        progress.setTitle("Building");
+        progress.setInfo("Preparing...");
+        progress.setIndeterminate(true);
 
-        return true;
+        new Thread(new Runnable() {
+            public void run() {
+                List items = project.getFileEditorItems();
+                List grammars = buildListOfGrammarItems(items);
+                List javas = buildListOfAllJavaFiles();
+
+                progress.setIndeterminate(false);
+                progress.setProgress(0);
+                progress.setProgressMax(grammars.size()+javas.size());
+
+                if(generateGrammarItems(grammars) && !cancel) {
+                    compileJavaFiles(javas);
+                }
+
+                progress.close();
+            }
+        }).start();
+
+        progress.runModal();
+    }
+
+    public void dialogDidCancel() {
+        cancel = true;
     }
 
     public void streamWatcherDidStarted() {
@@ -119,10 +169,11 @@ public class ProjectBuilder implements StreamWatcherDelegate {
     }
 
     public void streamWatcherDidReceiveString(String string) {
-        project.buildPrint(string);
+        project.printToConsole(string);
     }
 
     public void streamWatcherException(Exception e) {
-        project.buildPrint(e);
+        project.printToConsole(e);
     }
+
 }

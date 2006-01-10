@@ -38,7 +38,6 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.engine.StreamWatcherDelegate;
 import org.antlr.works.generate.DialogGenerate;
 import org.antlr.works.parser.Line;
 import org.antlr.works.parsetree.ParseTreeNode;
@@ -46,6 +45,7 @@ import org.antlr.works.parsetree.ParseTreePanel;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.utils.IconManager;
+import org.antlr.works.utils.StreamWatcherDelegate;
 import org.antlr.works.utils.TextPane;
 import org.antlr.works.utils.TextUtils;
 

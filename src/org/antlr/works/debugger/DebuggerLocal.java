@@ -40,9 +40,9 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.works.IDE;
 import org.antlr.works.engine.EngineCompiler;
-import org.antlr.works.engine.StreamWatcher;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.utils.StreamWatcher;
 
 import javax.swing.*;
 import java.io.File;
