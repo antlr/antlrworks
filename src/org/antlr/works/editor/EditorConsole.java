@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
+import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.utils.Console;
 
@@ -38,8 +39,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -108,12 +107,7 @@ public class EditorConsole implements EditorTab, Console {
     }
 
     public synchronized void print(Exception e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw, true);
-        e.printStackTrace(pw);
-        pw.flush();
-        sw.flush();
-        println(sw.toString());
+        println(XJUtils.stackTrace(e));
     }
 
     public String getTabName() {

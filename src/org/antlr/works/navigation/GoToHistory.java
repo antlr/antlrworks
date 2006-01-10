@@ -30,7 +30,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-package org.antlr.works.goto_;
+package org.antlr.works.navigation;
 
 import java.util.ArrayList;
 import java.util.List;

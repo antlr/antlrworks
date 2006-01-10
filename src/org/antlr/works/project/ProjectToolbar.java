@@ -47,6 +47,7 @@ public class ProjectToolbar {
     public JButton removeFile;
 
     public JButton build;
+    public JButton run;
 
     public CContainerProject project;
 
@@ -65,10 +66,11 @@ public class ProjectToolbar {
         toolbar = Box.createHorizontalBox();
         toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
         toolbar.add(Box.createHorizontalStrut(5));
-        toolbar.add(addFile = (JButton)createNewButton("+", "Add File", new Dimension(40, 32)));
-        toolbar.add(removeFile = (JButton)createNewButton("-", "Remove File", new Dimension(40, 32)));
+        toolbar.add(addFile = (JButton)createNewButton("+", "Add Files", new Dimension(40, 32)));
+        toolbar.add(removeFile = (JButton)createNewButton("-", "Remove Selected File", new Dimension(40, 32)));
         toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(build = (JButton)createNewButton("Build", "Build Project", new Dimension(80, 32)));
+        toolbar.add(run = (JButton)createNewButton("Run", "Run Project", new Dimension(80, 32)));
     }
 
     public void addActions() {

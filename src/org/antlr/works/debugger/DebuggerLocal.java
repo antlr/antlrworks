@@ -38,15 +38,16 @@ import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
+import org.antlr.works.IDE;
+import org.antlr.works.engine.EngineCompiler;
+import org.antlr.works.engine.StreamWatcher;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
-import java.io.*;
-import java.lang.reflect.Method;
+import java.io.File;
+import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.URL;
 
 public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
@@ -321,81 +322,18 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         compileFiles(new String[] { fileRemoteParser });
     }
 
+    protected void compileFiles(String[] files) {
+        String error = EngineCompiler.compileFiles(files, outputFileDir, debugger);
+        if(error != null)
+            reportError(error);
+    }
+
     protected void generateInputText() {
         try {
             XJUtils.writeStringToFile(getInputText(), fileRemoteParserInputText);
         } catch (IOException e) {
             debugger.editor.console.print(e);
             reportError("Error while generating the input text:\n"+e.getLocalizedMessage());
-        }
-    }
-
-    protected void compileFiles(String[] files) {
-        int result = 0;
-        try {
-            String compiler = AWPrefs.getCompiler();
-            String classPath = outputFileDir;
-            classPath += File.pathSeparatorChar+getApplicationPath();
-            classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
-
-            if(compiler.equalsIgnoreCase(AWPrefs.COMPILER_JAVAC)) {
-                String[] args = new String[5+files.length];
-                if(AWPrefs.getJavaCCustomPath())
-                    args[0] = XJUtils.concatPath(AWPrefs.getJavaCPath(), "javac");
-                else
-                    args[0] = "javac";
-                args[1] = "-classpath";
-                args[2] = classPath;
-                args[3] = "-d";
-                args[4] = outputFileDir;
-                for(int i=0; i<files.length; i++)
-                    args[5+i] = files[i];
-
-                debugger.editor.console.println("Compile:"+ Utils.toString(args));
-                Process p = Runtime.getRuntime().exec(args);
-                new StreamWatcher(p.getErrorStream(), "Compiler").start();
-                new StreamWatcher(p.getInputStream(), "Compiler").start();
-                result = p.waitFor();
-            } else if(compiler.equalsIgnoreCase(AWPrefs.COMPILER_JIKES)) {
-                String jikesPath = XJUtils.concatPath(AWPrefs.getJikesPath(), "jikes");
-
-                String[] args = new String[5+files.length];
-                args[0] = jikesPath;
-                args[1] = "-classpath";
-                args[2] = classPath;
-                args[3] = "-d";
-                args[4] = outputFileDir;
-                for(int i=0; i<files.length; i++)
-                    args[5+i] = files[i];
-
-                Process p = Runtime.getRuntime().exec(args);
-                new StreamWatcher(p.getErrorStream(), "Compiler").start();
-                new StreamWatcher(p.getInputStream(), "Compiler").start();
-                result = p.waitFor();
-            } else if(compiler.equalsIgnoreCase(AWPrefs.COMPILER_INTEGRATED)) {
-                String[] args = new String[2+files.length];
-                args[0] = "-d";
-                args[1] = outputFileDir;
-                for(int i=0; i<files.length; i++)
-                    args[2+i] = files[i];
-
-                Class javac = Class.forName("com.sun.tools.javac.Main");
-                Class[] p = new Class[] { String[].class };
-                Method m = javac.getMethod("compile", p);
-                Object[] a = new Object[] { args };
-                Object r = m.invoke(javac.newInstance(), a);
-                result = ((Integer)r).intValue();
-                //result = com.sun.tools.javac.Main.compile(args);
-            }
-
-        } catch(Error e) {
-            reportError("Compiler error:\n"+e.getLocalizedMessage());
-        } catch(Exception e) {
-            reportError("Compiler exception:\n"+e.getLocalizedMessage());
-        }
-
-        if(result != 0) {
-            reportError("Compiler failed result:\n"+result);
         }
     }
 
@@ -422,7 +360,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             return false;
 
         String classPath = outputFileDir;
-        classPath += File.pathSeparatorChar+getApplicationPath();
+        classPath += File.pathSeparatorChar+ IDE.getApplicationPath();
         classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
         classPath += File.pathSeparatorChar+".";
 
@@ -432,10 +370,8 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
             // Use an array rather than a single string because white-space
             // are not correctly handled in a single string (why?)
             remoteParserProcess = Runtime.getRuntime().exec(new String[] { "java", "-classpath", classPath, remoteParserClassName});
-            new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher").start();
-            StreamWatcher sw = new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher");
-            sw.setDelegate(debugger);
-            sw.start();
+            new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher", debugger).start();
+            new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher", debugger).start();
         } catch (IOException e) {
             reportError("Cannot launch the remote parser:\n"+e.getLocalizedMessage());
             return false;
@@ -451,23 +387,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         }
 
         return true;
-    }
-
-    protected String getApplicationPath() {
-        String classPath = "org/antlr/works/IDE.class";
-        URL url = getClass().getClassLoader().getResource(classPath);
-        if(url == null)
-            return null;
-
-        String p = url.getPath();
-        if(p.startsWith("file:"))
-            p = p.substring("file:".length());
-
-        p = p.substring(0, p.length()-classPath.length());
-        if(p.endsWith("jar!/"))
-            p = p.substring(0, p.length()-2);
-
-        return p;
     }
 
     protected class ErrorReporter {
@@ -493,42 +412,5 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         }
     }
 
-    public interface StreamWatcherDelegate {
-        public void streamWatcherDidStarted();
-        public void streamWatcherDidReceiveString(String string);
-    }
-
-    public class StreamWatcher extends Thread {
-
-        protected InputStream is;
-        protected String type;
-        protected StreamWatcherDelegate delegate;
-
-        public StreamWatcher(InputStream is, String type) {
-            this.is = is;
-            this.type = type;
-        }
-
-        public void setDelegate(StreamWatcherDelegate delegate) {
-            this.delegate = delegate;
-        }
-
-        public void run() {
-            try {
-                if(delegate != null)
-                    delegate.streamWatcherDidStarted();
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line;
-                while ( (line = br.readLine()) != null) {
-                    debugger.editor.console.println(type + ">" + line);
-                    if(delegate != null)
-                        delegate.streamWatcherDidReceiveString(line+"\n");
-                }
-            } catch (IOException e) {
-                debugger.editor.console.print(e);
-            }
-        }
-    }
 
 }

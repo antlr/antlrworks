@@ -30,7 +30,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-package org.antlr.works.goto_;
+package org.antlr.works.navigation;
 
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.parser.ParserRule;

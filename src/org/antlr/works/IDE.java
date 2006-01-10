@@ -58,6 +58,7 @@ import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import java.io.*;
+import java.net.URL;
 
 public class IDE extends XJApplicationDelegate {
 
@@ -201,6 +202,23 @@ public class IDE extends XJApplicationDelegate {
 
         // Delete the redirect.err file
         new File(tempFile).delete();
+    }
+
+    public static String getApplicationPath() {
+        String classPath = "org/antlr/works/IDE.class";
+        URL url = XJApplication.getAppDelegate().getClass().getClassLoader().getResource(classPath);
+        if(url == null)
+            return null;
+
+        String p = url.getPath();
+        if(p.startsWith("file:"))
+            p = p.substring("file:".length());
+
+        p = p.substring(0, p.length()-classPath.length());
+        if(p.endsWith("jar!/"))
+            p = p.substring(0, p.length()-2);
+
+        return p;
     }
 
     public void appShowHelp() {

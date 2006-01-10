@@ -38,6 +38,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.engine.StreamWatcherDelegate;
 import org.antlr.works.generate.DialogGenerate;
 import org.antlr.works.parser.Line;
 import org.antlr.works.parsetree.ParseTreeNode;
@@ -60,7 +61,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab {
+public class Debugger implements StreamWatcherDelegate, EditorTab {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
     public static final int DEFAULT_LOCAL_PORT = 0xC001;
@@ -656,6 +657,10 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
 
     public void streamWatcherDidReceiveString(String string) {
         outputTextPane.setText(outputTextPane.getText()+string);
+    }
+
+    public void streamWatcherException(Exception e) {
+        editor.getConsole().print(e);
     }
 
     public String getTabName() {
