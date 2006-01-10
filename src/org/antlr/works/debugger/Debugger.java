@@ -36,10 +36,9 @@ import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.generate.DialogGenerate;
-import org.antlr.works.grammar.EditorGrammar;
 import org.antlr.works.parser.Line;
 import org.antlr.works.parsetree.ParseTreeNode;
 import org.antlr.works.parsetree.ParseTreePanel;
@@ -94,7 +93,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     protected JButton goToEndButton;
     protected JComboBox breakCombo;
 
-    protected EditorWindow editor;
+    protected CEditorGrammar editor;
     protected AttributeSet previousGrammarAttributeSet;
     protected int previousGrammarPosition;
 
@@ -112,7 +111,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
     protected JSplitPane ioTreeSplitPane;
     protected JSplitPane treeStackSplitPane;
 
-    public Debugger(EditorWindow editor) {
+    public Debugger(CEditorGrammar editor) {
         this.editor = editor;
     }
 
@@ -404,7 +403,7 @@ public class Debugger implements DebuggerLocal.StreamWatcherDelegate, EditorTab 
         goToEndButton.setEnabled(enabled);
     }
 
-    public EditorGrammar getGrammar() {
+    public org.antlr.works.grammar.EditorGrammar getGrammar() {
         return editor.getGrammar();
     }
 

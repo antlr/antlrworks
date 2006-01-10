@@ -31,14 +31,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.undo.Undo;
 
 import javax.swing.text.DefaultEditorKit;
 
 public class MenuEdit extends MenuAbstract {
 
-    public MenuEdit(EditorWindow editor) {
+    public MenuEdit(CEditorGrammar editor) {
         super(editor);
     }
 

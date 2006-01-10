@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.generate;
 
-import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.foundation.XJUtils;
@@ -42,6 +41,7 @@ import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.ErrorListener;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -141,7 +141,7 @@ public class CodeGenerate implements Runnable {
         }
     }
 
-    public void generateInThread(XJFrame parent) {
+    public void generateInThread(Container parent) {
         progress = new XJDialogProgress(parent);
         progress.setInfo("Generating...");
         progress.setCancellable(false);

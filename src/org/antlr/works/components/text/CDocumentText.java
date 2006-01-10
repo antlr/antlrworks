@@ -1,3 +1,6 @@
+package org.antlr.works.components.text;
+
+import org.antlr.works.components.ComponentDocument;
 /*
 
 [The "BSD licence"]
@@ -29,36 +32,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works;
-
-import edu.usfca.xj.appkit.document.XJDataPlainText;
-import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.foundation.XJUtils;
-import org.antlr.works.editor.EditorWindow;
-
-public class Document extends XJDocument {
-
-    public boolean performSave(boolean saveAs) {
-        // Make sure the document can be saved (SCM opened, etc)
-        // before calling the super class method to do
-        // the actual job
-        EditorWindow w = (EditorWindow)getWindow();
-        if(w.willSaveDocument())
-            return super.performSave(saveAs);
-        else
-            return false;
-    }
-
-    public void documentWillWriteData() {
-        EditorWindow w = (EditorWindow)getWindow();
-        XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        data.setText(XJUtils.getLocalizedText(w.getText()));
-    }
-
-    public void documentDidReadData() {
-        EditorWindow w = (EditorWindow)getWindow();
-        XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        w.setLoadedText(XJUtils.getNormalizedText(data.getText()));
-    }
-
+public class CDocumentText extends ComponentDocument {
 }

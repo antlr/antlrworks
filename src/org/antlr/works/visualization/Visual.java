@@ -34,9 +34,8 @@ package org.antlr.works.visualization;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.tool.DOTGenerator;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.editor.EditorWindow;
-import org.antlr.works.grammar.EditorGrammar;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.stats.Statistics;
@@ -57,7 +56,7 @@ import java.io.IOException;
 
 public class Visual implements EditorTab {
 
-    protected EditorWindow editor;
+    protected CEditorGrammar editor;
 
     protected VisualDrawing drawing;
     protected VisualAnalysis analysis;
@@ -73,7 +72,7 @@ public class Visual implements EditorTab {
 
     protected boolean enable = true;
 
-    public Visual(EditorWindow editor) {
+    public Visual(CEditorGrammar editor) {
         this.editor = editor;
 
         skin = new SDSkin();
@@ -144,7 +143,7 @@ public class Visual implements EditorTab {
         drawing.skip();
     }
 
-    public EditorGrammar getGrammar() {
+    public org.antlr.works.grammar.EditorGrammar getGrammar() {
         return editor.getGrammar();
     }
 

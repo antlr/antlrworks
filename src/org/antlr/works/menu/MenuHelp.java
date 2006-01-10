@@ -31,12 +31,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.utils.HelpManager;
 
 public class MenuHelp extends MenuAbstract {
 
-    public MenuHelp(EditorWindow editor) {
+    public MenuHelp(CEditorGrammar editor) {
         super(editor);
     }
 

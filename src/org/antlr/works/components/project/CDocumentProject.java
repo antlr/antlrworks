@@ -1,10 +1,8 @@
-package org.antlr.works.editor;
+package org.antlr.works.components.project;
 
-import org.antlr.works.ate.ATEBreakpointManager;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import edu.usfca.xj.appkit.document.XJDocument;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -36,20 +34,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorBreakpointManager extends ATEBreakpointManager {
+public class CDocumentProject extends XJDocument {
 
-    protected CEditorGrammar editor;
-
-    public EditorBreakpointManager(CEditorGrammar editor) {
-        super(editor.textEditor);
-        this.editor = editor;
+    public void documentWillWriteData() {
+        CContainerProject project = (CContainerProject)getWindow();
+        project.documentWillSave();
+        getDocumentData().setDataForKey(null, "projectData", project.persistentData());
     }
 
-    public List getBreakpointEntities() {
-        List entities = new ArrayList();
-        List rules = editor.parser.getRules();
-        if(rules != null)
-            entities.addAll(rules);
-        return entities;
+    public void documentDidReadData() {
+        CContainerProject project = (CContainerProject)getWindow();
+        project.setPersistentData((Map)getDocumentData().getDataForKey("projectData"));
     }
+
+
 }

@@ -45,6 +45,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ParseTreeGraphView extends GView {
 
+    public static final boolean DRAGGABLE = false;
+    
     public static final int HORIZONTAL_GAP = 20;
     public static final int VERTICAL_GAP = 35;
 
@@ -108,7 +110,7 @@ public class ParseTreeGraphView extends GView {
         double height = fm.getHeight()+8;
 
         GElementNode nodeElement = new GElementNode();
-        nodeElement.setDraggable(true);
+        nodeElement.setDraggable(DRAGGABLE);
         nodeElement.setSize(width, height);
         // Must call setPositionOfUpperLeftCorner after
         // setting the size!!!!
@@ -130,7 +132,7 @@ public class ParseTreeGraphView extends GView {
             GLink link = new GLink(nodeElement, GLink.ANCHOR_BOTTOM,
                                     childElement, GLink.ANCHOR_TOP,
                                     GLink.SHAPE_ELBOW, "", 0);
-            link.setDraggable(true);
+            link.setDraggable(DRAGGABLE);
             nodeElement.addElement(link);
             nodeElement.addElement(childElement);
         }

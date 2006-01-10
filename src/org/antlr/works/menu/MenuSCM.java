@@ -34,7 +34,7 @@ package org.antlr.works.menu;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
@@ -47,7 +47,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     protected SCM scm;
     protected boolean silent;
 
-    public MenuSCM(EditorWindow editor) {
+    public MenuSCM(CEditorGrammar editor) {
         super(editor);
     }
 

@@ -33,7 +33,7 @@ package org.antlr.works.menu;
 
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJAlert;
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.generate.CodeDisplay;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
@@ -47,7 +47,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
     protected String actionShowCodeRule;
     protected boolean actionShowCodeLexer;
 
-    public MenuGenerate(EditorWindow editor) {
+    public MenuGenerate(CEditorGrammar editor) {
         super(editor);
         generateCode = new CodeGenerate(editor, this);
     }
@@ -65,7 +65,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
             generateCode.setDebug(dialog.generateDebugInformation());
             generateCode.setOutputPath(dialog.getOutputPath());
-            generateCode.generateInThread(editor);
+            generateCode.generateInThread(editor.getJavaContainer());
             Statistics.shared().recordEvent(Statistics.EVENT_GENERATE_CODE);
         }
     }

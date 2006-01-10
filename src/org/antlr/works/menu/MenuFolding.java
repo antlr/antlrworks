@@ -1,6 +1,6 @@
 package org.antlr.works.menu;
 
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.parser.ParserAction;
 import org.antlr.works.parser.ParserRule;
 
@@ -38,7 +38,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class MenuFolding extends MenuAbstract {
 
-    public MenuFolding(EditorWindow editor) {
+    public MenuFolding(CEditorGrammar editor) {
         super(editor);
     }
 

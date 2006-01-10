@@ -1,14 +1,14 @@
-package org.antlr.works.editor;
+package org.antlr.works.components.project.file;
 
-import org.antlr.works.ate.ATEBreakpointManager;
-import org.antlr.works.components.grammar.CEditorGrammar;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.antlr.works.components.ComponentDocument;
+import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.components.project.CContainerProject;
+import org.antlr.works.components.text.CDocumentText;
+import org.antlr.works.components.text.CEditorText;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,20 +36,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorBreakpointManager extends ATEBreakpointManager {
+public class CContainerProjectText extends CContainerProjectFile {
 
-    protected CEditorGrammar editor;
-
-    public EditorBreakpointManager(CEditorGrammar editor) {
-        super(editor.textEditor);
-        this.editor = editor;
+    public CContainerProjectText(CContainerProject project) {
+        super(project);
     }
 
-    public List getBreakpointEntities() {
-        List entities = new ArrayList();
-        List rules = editor.parser.getRules();
-        if(rules != null)
-            entities.addAll(rules);
-        return entities;
+    public ComponentDocument createDocument() {
+        return new CDocumentText();
     }
+
+    public ComponentEditor createEditor() {
+        return new CEditorText(this);
+    }
+
 }

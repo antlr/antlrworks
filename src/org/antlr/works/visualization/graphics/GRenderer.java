@@ -47,11 +47,11 @@ import java.util.Map;
 
 public class GRenderer {
 
-    private List graphicNodes = new ArrayList();
+    protected List graphicNodes = new ArrayList();
 
-    private FAAnalysis analysis = new FAAnalysis();
-    private Map nodes = new HashMap();
-    private Map endOfAlternativeInfoMap = new HashMap();
+    protected FAAnalysis analysis = new FAAnalysis();
+    protected Map nodes = new HashMap();
+    protected Map endOfAlternativeInfoMap = new HashMap();
 
     public GRenderer() {
     }
@@ -306,7 +306,7 @@ public class GRenderer {
         while(state != null) {
             FATransition transition = state.getFirstTransition();
             if(transition == null) {
-                System.out.println("No transition out of state "+state+" (alternative state "+alt+")");
+                System.err.println("No transition out of state "+state+" (alternative state "+alt+")");
                 break;
             } else
                 state = transition.target;

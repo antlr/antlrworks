@@ -167,12 +167,20 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         textPane.setCaretPosition(caretPosition);
     }
 
-    public void toggleAnalysis() {
-        analysisColumn.setVisible(!analysisColumn.isVisible());
-        if(analysisColumn.isVisible())
+    public void setAnalysisColumnVisible(boolean visible) {
+        analysisColumn.setVisible(visible);
+        if(visible)
             analysisColumn.setPreferredSize(new Dimension(ANALYSIS_COLUMN_WIDTH, 0));
         else
             analysisColumn.setPreferredSize(new Dimension(0, 0));
+    }
+
+    public boolean isAnalysisColumnVisible() {
+        return analysisColumn.isVisible();
+    }
+
+    public void toggleAnalysis() {
+        setAnalysisColumnVisible(!isAnalysisColumnVisible());
     }
 
     public void refresh() {
@@ -226,7 +234,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public void textPaneDidPaint(Graphics g) {
-        underlyingManager.paint(g);
+        if(underlyingManager != null)
+            underlyingManager.paint(g);
     }
 
     protected void createTextPane() {

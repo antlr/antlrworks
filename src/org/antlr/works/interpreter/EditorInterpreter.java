@@ -32,7 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.interpreter;
 
 import edu.usfca.xj.appkit.gview.GView;
-import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
@@ -41,8 +40,8 @@ import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
 import org.antlr.works.parsetree.ParseTreePanel;
@@ -75,14 +74,14 @@ public class EditorInterpreter implements Runnable, EditorTab {
 
     protected String startSymbol = null;
 
-    protected EditorWindow editor;
+    protected CEditorGrammar editor;
 
-    public EditorInterpreter(EditorWindow editor) {
+    public EditorInterpreter(CEditorGrammar editor) {
         this.editor = editor;
     }
 
     public void awake() {
-        progress = new XJDialogProgress(editor);
+        progress = new XJDialogProgress(editor.getJFrame());
 
         panel = new JPanel(new BorderLayout());
 
@@ -170,20 +169,38 @@ public class EditorInterpreter implements Runnable, EditorTab {
     public void interpret() {
         editor.console.makeCurrent();
 
-        ErrorManager.setErrorListener(ErrorListener.shared());
-
         if(editor.getGrammar().isDirty()) {
-            progress.setCancellable(false);
-            progress.setIndeterminate(true);
             progress.setInfo("Preparing...");
-            progress.display();
-            new Thread(this).start();
         } else {
-            run_();
+            progress.setInfo("Interpreting...");
         }
+
+        progress.setCancellable(false);
+        progress.setIndeterminate(true);
+        progress.display();
+
+        new Thread(this).start();
     }
 
-    protected void run_() {
+    public void run() {
+
+        ErrorManager.setErrorListener(ErrorListener.shared());
+
+        editor.getGrammar().createGrammars();
+        editor.getGrammar().analyze();
+
+        process();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                progress.close();
+            }
+        });
+    }
+
+    protected void process() {
+        progress.setInfo("Interpreting...");
+
         CharStream input = new ANTLRStringStream(textPane.getText());
 
         Grammar parser = editor.getGrammar().getParserGrammar();
@@ -206,7 +223,6 @@ public class EditorInterpreter implements Runnable, EditorTab {
             }
         } catch (Exception e) {
             editor.console.print(e);
-            XJAlert.display(editor.getWindowContainer(), "Error while interpreting", "The interpreter has generated the following exception:\n"+e);
         }
 
         if(parser != null && t != null) {
@@ -215,21 +231,6 @@ public class EditorInterpreter implements Runnable, EditorTab {
 
             parseTreePanel.setRoot((TreeNode)treeModel.getRoot());
         }
-    }
-
-    public void run() {
-        editor.getGrammar().createGrammars();
-        editor.getGrammar().analyze();
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    run_();
-                } finally {
-                    progress.close();
-                }
-            }
-        });
     }
 
     public String getTabName() {

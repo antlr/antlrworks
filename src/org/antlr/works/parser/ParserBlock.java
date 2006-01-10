@@ -85,7 +85,6 @@ public class ParserBlock {
             init(content.substring(1, content.length()));
             while(nextToken()) {
                 if(T(0).type == Lexer.TOKEN_ID) {
-                    System.out.println(T(1));
                     if(isChar(1, "=") || isSEMI(1))
                         tokens.add(T(0));
                 }

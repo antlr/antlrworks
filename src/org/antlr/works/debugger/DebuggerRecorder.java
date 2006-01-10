@@ -75,7 +75,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
     public DebuggerRecorder(Debugger debugger) {
         this.debugger = debugger;
-        this.progress = new XJDialogProgress(debugger.editor);
+        this.progress = new XJDialogProgress(debugger.editor.getJavaContainer());
         reset();
     }
 

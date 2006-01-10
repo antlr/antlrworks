@@ -1,3 +1,52 @@
+package org.antlr.works.components.grammar;
+
+import edu.usfca.xj.appkit.menu.XJMainMenuBar;
+import edu.usfca.xj.appkit.menu.XJMenu;
+import edu.usfca.xj.appkit.menu.XJMenuItem;
+import edu.usfca.xj.appkit.swing.XJTree;
+import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.foundation.XJSystem;
+import edu.usfca.xj.foundation.XJUtils;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.ate.ATEPanelDelegate;
+import org.antlr.works.ate.ATETextPane;
+import org.antlr.works.completion.AutoCompletionMenu;
+import org.antlr.works.completion.AutoCompletionMenuDelegate;
+import org.antlr.works.completion.RuleTemplates;
+import org.antlr.works.components.ComponentContainer;
+import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.editor.*;
+import org.antlr.works.find.FindAndReplace;
+import org.antlr.works.goto_.GoToHistory;
+import org.antlr.works.goto_.GoToRule;
+import org.antlr.works.grammar.EditorGrammar;
+import org.antlr.works.interpreter.EditorInterpreter;
+import org.antlr.works.menu.*;
+import org.antlr.works.parser.*;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.prefs.AWPrefsDialog;
+import org.antlr.works.rules.Rules;
+import org.antlr.works.rules.RulesDelegate;
+import org.antlr.works.stats.Statistics;
+import org.antlr.works.syntax.AutoIndentation;
+import org.antlr.works.syntax.Coloring;
+import org.antlr.works.syntax.ImmediateColoring;
+import org.antlr.works.syntax.Syntax;
+import org.antlr.works.undo.Undo;
+import org.antlr.works.undo.UndoDelegate;
+import org.antlr.works.utils.TextUtils;
+import org.antlr.works.visualization.Visual;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -29,61 +78,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor;
-
-import edu.usfca.xj.appkit.frame.XJWindow;
-import edu.usfca.xj.appkit.menu.XJMainMenuBar;
-import edu.usfca.xj.appkit.menu.XJMenu;
-import edu.usfca.xj.appkit.menu.XJMenuItem;
-import edu.usfca.xj.appkit.swing.XJTree;
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.foundation.XJSystem;
-import edu.usfca.xj.foundation.XJUtils;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import edu.usfca.xj.foundation.notification.XJNotificationObserver;
-import org.antlr.works.ate.ATEPanel;
-import org.antlr.works.ate.ATEPanelDelegate;
-import org.antlr.works.ate.ATETextPane;
-import org.antlr.works.completion.AutoCompletionMenu;
-import org.antlr.works.completion.AutoCompletionMenuDelegate;
-import org.antlr.works.completion.RuleTemplates;
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.find.FindAndReplace;
-import org.antlr.works.goto_.GoToHistory;
-import org.antlr.works.goto_.GoToRule;
-import org.antlr.works.grammar.EditorGrammar;
-import org.antlr.works.interpreter.EditorInterpreter;
-import org.antlr.works.menu.*;
-import org.antlr.works.parser.*;
-import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.prefs.AWPrefsDialog;
-import org.antlr.works.rules.Rules;
-import org.antlr.works.rules.RulesDelegate;
-import org.antlr.works.stats.Statistics;
-import org.antlr.works.syntax.AutoIndentation;
-import org.antlr.works.syntax.Coloring;
-import org.antlr.works.syntax.ImmediateColoring;
-import org.antlr.works.syntax.Syntax;
-import org.antlr.works.undo.Undo;
-import org.antlr.works.undo.UndoDelegate;
-import org.antlr.works.utils.TextUtils;
-import org.antlr.works.visualization.Visual;
-
-import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.util.List;
-
-public class EditorWindow
-        extends XJWindow
-        implements ThreadedParserObserver, AutoCompletionMenuDelegate,
+public class CEditorGrammar extends ComponentEditor implements ThreadedParserObserver, AutoCompletionMenuDelegate,
         RulesDelegate, EditorProvider, UndoDelegate, ATEPanelDelegate,
         XJNotificationObserver
 {
-    /* Completion */
+
+        /* Completion */
 
     public AutoCompletionMenu autoCompletionMenu;
     public RuleTemplates ruleTemplates;
@@ -147,7 +147,6 @@ public class EditorWindow
     protected XJTree rulesTree;
 
     protected JTabbedPane tabbedPane;
-    protected JPanel mainPanel;
 
     protected Box infoBox;
     protected JLabel infoLabel;
@@ -161,7 +160,7 @@ public class EditorWindow
 
     protected Map undos = new HashMap();
     protected Undo lastUndo;
-                                 
+
     protected boolean windowFirstDisplay = true;
     protected String lastSelectedRule;
 
@@ -172,7 +171,11 @@ public class EditorWindow
     protected EditorGrammar grammar;
     protected Syntax syntax;
 
-    public EditorWindow() {
+    public CEditorGrammar(ComponentContainer container) {
+        super(container);
+    }
+
+    public void create() {
         createInterface();
 
         initCore();
@@ -210,8 +213,8 @@ public class EditorWindow
         colorize = new Coloring(this);
         goToRule = new GoToRule(this, getJFrame(), getTextPane());
         goToHistory = new GoToHistory();
-        immediateSyntaxColoring = new ImmediateColoring(textEditor.getTextPane());
-        autoIndent = new AutoIndentation(textEditor.getTextPane());
+        immediateSyntaxColoring = new ImmediateColoring(getTextPane());
+        autoIndent = new AutoIndentation(getTextPane());
         findAndReplace = new FindAndReplace(this);
     }
 
@@ -278,11 +281,6 @@ public class EditorWindow
     }
 
     protected void createInterface() {
-        Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        r.width *= 0.75;
-        r.height *= 0.75;
-        getRootPane().setPreferredSize(r.getSize());
-
         textEditor = new ATEPanel(getJFrame());
         textEditor.setDelegate(this);
         textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
@@ -358,22 +356,17 @@ public class EditorWindow
 
         toolbar = new EditorToolbar(this);
 
-        mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(toolbar.getToolbar(), BorderLayout.NORTH);
         mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
         mainPanel.add(infoBox, BorderLayout.SOUTH);
-
-        getContentPane().add(mainPanel);
-        /*pack();
-
-        upDownSplitPane.setDividerLocation(0.5);
-        rulesTextSplitPane.setDividerLocation(0.3);*/
 
         if(!XJSystem.isMacOS()) {
             rulesTextSplitPane.setDividerSize(10);
             upDownSplitPane.setDividerSize(10);
         }
 
+        upDownSplitPane.setDividerLocation(300);
+        rulesTextSplitPane.setDividerLocation(150);
     }
 
     protected void awakeInterface() {
@@ -383,15 +376,6 @@ public class EditorWindow
         addTab(console);
 
         selectVisualizationTab();
-
-        pack();
-
-        // setDividerLocation() must be called after pack() 
-        upDownSplitPane.setDividerLocation(0.5);
-        rulesTextSplitPane.setDividerLocation(0.3);
-
-        // Request focus in the text pane
-        getTextPane().requestFocus();
     }
 
     protected void register() {
@@ -405,8 +389,8 @@ public class EditorWindow
     }
 
     public void applyFont() {
-        textEditor.getTextPane().setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        TextUtils.createTabs(textEditor.getTextPane());
+        getTextPane().setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
+        TextUtils.createTabs(getTextPane());
     }
 
     protected static JComponent createSeparator() {
@@ -425,14 +409,6 @@ public class EditorWindow
         editorMenu.close();
         debugger.close();
         visual.close();
-        super.close();
-    }
-
-    public void becomingVisibleForTheFirstTime() {
-        updateInformation();
-        updateCursorInfo();
-        menuSCM.setSilent(true);
-        menuSCM.queryFileStatus();
     }
 
     public void selectVisualizationTab() {
@@ -485,6 +461,10 @@ public class EditorWindow
         return (Undo)undos.get(object);
     }
 
+    public Undo getLastUndo() {
+        return lastUndo;
+    }
+
     public void updateUndoRedo(Object source) {
         Undo undo = getUndo(source);
         updateUndoRedo(undo);
@@ -516,6 +496,10 @@ public class EditorWindow
 
     public ATEPanel getTextEditor() {
         return textEditor;
+    }
+
+    public Syntax getSyntax() {
+        return syntax;
     }
 
     public void toggleAutoIndent() {
@@ -578,7 +562,7 @@ public class EditorWindow
 
         if(location == -1)
             return;
-        
+
         List tokens = getTokens();
         if(tokens == null)
             return;
@@ -652,7 +636,7 @@ public class EditorWindow
             undo.disableUndo();
     }
 
-    public void setLoadedText(String text) {
+    public void loadText(String text) {
         disableTextPane(true);
         try {
             getTextPane().setText(text);
@@ -662,7 +646,6 @@ public class EditorWindow
             grammarChanged();
             colorize.reset();
             parser.parse();
-            changeDone();
         } catch(Exception e) {
             e.printStackTrace();
         } finally {
@@ -721,7 +704,7 @@ public class EditorWindow
     }
 
     public Container getWindowContainer() {
-        return jFrame;
+        return getJFrame();
     }
 
     public List getRules() {
@@ -826,6 +809,9 @@ public class EditorWindow
 
     public Token getTokenAtPosition(int pos) {
         List tokens = getTokens();
+        if(tokens == null)
+            return null;
+
         for(int index=0; index<tokens.size(); index++) {
             Token token = (Token)tokens.get(index);
             if(token.containsIndex(pos))
@@ -869,10 +855,6 @@ public class EditorWindow
         editorMenu.customizeFileMenu(menu);
     }
 
-    public void customizeWindowMenu(XJMenu menu) {
-        //editorMenu.customizeWindowMenu(menu);
-    }
-
     public void customizeHelpMenu(XJMenu menu) {
         editorMenu.customizeHelpMenu(menu);
     }
@@ -882,7 +864,6 @@ public class EditorWindow
     }
 
     public void menuItemState(XJMenuItem item) {
-        super.menuItemState(item);
         editorMenu.menuItemState(item);
     }
 
@@ -1018,14 +999,27 @@ public class EditorWindow
         }
     }
 
-    public void windowActivated() {
-        super.windowActivated();
-        syntax.resetTokenVocab();
-        syntax.rebuildAll();
-        textEditor.refresh();        
+    public void componentDidAwake() {
+        updateInformation();
+        updateCursorInfo();
+        menuSCM.setSilent(true);
+        menuSCM.queryFileStatus();
+
+        // Request focus in the text pane
+        getTextPane().requestFocus();
     }
 
-    public void windowDocumentPathDidChange() {
+    public void componentActivated() {
+        syntax.resetTokenVocab();
+        syntax.rebuildAll();
+        textEditor.refresh();
+    }
+
+    public void componentIsSelected() {
+        getTextPane().requestFocus();
+    }
+    
+    public void componentDocumentContentChanged() {
         // Called when the document associated file has changed on the disk
         int oldCursorPosition = getCaretPosition();
         getDocument().reload();
@@ -1178,7 +1172,7 @@ public class EditorWindow
 
     public boolean wasSaving = false;
 
-    public boolean willSaveDocument() {
+    public boolean componentDocumentWillSave() {
         if(menuSCM.isFileWritable())
             return true;
 
@@ -1266,5 +1260,4 @@ public class EditorWindow
             g.drawLine(0, 1, r.width, 1);
         }
     }
-
 }

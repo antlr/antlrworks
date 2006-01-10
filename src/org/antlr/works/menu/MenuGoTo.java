@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.parser.Line;
 import org.antlr.works.parser.ParserReference;
 import org.antlr.works.parser.ParserRule;
@@ -42,7 +42,7 @@ import java.util.Set;
 
 public class MenuGoTo extends MenuAbstract {
 
-    public MenuGoTo(EditorWindow editor) {
+    public MenuGoTo(CEditorGrammar editor) {
         super(editor);
     }
 

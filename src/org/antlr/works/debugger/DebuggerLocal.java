@@ -88,7 +88,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     public DebuggerLocal(Debugger debugger) {
         this.debugger = debugger;
         this.codeGenerator = new CodeGenerate(debugger.editor, null);
-        this.progress = new XJDialogProgress(debugger.editor);
+        this.progress = new XJDialogProgress(debugger.editor.getJavaContainer());
     }
 
     public void setOutputPath(String path) {

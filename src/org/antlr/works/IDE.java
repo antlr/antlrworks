@@ -34,6 +34,7 @@ package org.antlr.works;
 import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
+import edu.usfca.xj.appkit.document.XJDataXML;
 import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.BrowserLauncher;
@@ -42,9 +43,12 @@ import edu.usfca.xj.foundation.XJSystem;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
+import org.antlr.works.components.grammar.CContainerGrammar;
+import org.antlr.works.components.grammar.CDocumentGrammar;
+import org.antlr.works.components.project.CContainerProject;
+import org.antlr.works.components.project.CDocumentProject;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.stats.Statistics;
@@ -86,7 +90,8 @@ public class IDE extends XJApplicationDelegate {
     public void appDidLaunch(String[] args) {
 
         XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel());
-        XJApplication.addDocumentType(Document.class, EditorWindow.class, XJDataPlainText.class, "g", Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
+        XJApplication.addDocumentType(CDocumentGrammar.class, CContainerGrammar.class, XJDataPlainText.class, "g", Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
+        XJApplication.addDocumentType(CDocumentProject.class, CContainerProject.class, XJDataXML.class, "awp", Localizable.getLocalizedString(Localizable.PROJECT_TYPE));
 
         XJApplication.addScheduledTimer(new HelpManager(), 1, true);
 
@@ -101,11 +106,13 @@ public class IDE extends XJApplicationDelegate {
         } else {
             switch (AWPrefs.getStartupAction()) {
                 case AWPrefs.STARTUP_NEW_DOC:
+                    sc.setVisible(false);
                     XJApplication.shared().newDocument();
                     break;
                 case AWPrefs.STARTUP_OPEN_LAST_DOC:
                     if (XJApplication.shared().getDocuments().size() == 0) {
                         if (!XJApplication.shared().openLastUsedDocument()) {
+                            sc.setVisible(false);
                             XJApplication.shared().newDocument();
                         }
                     }

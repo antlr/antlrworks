@@ -35,7 +35,7 @@ package org.antlr.works.find;
 import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.frame.XJFrameDelegate;
 import edu.usfca.xj.appkit.utils.XJAlert;
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,7 +45,7 @@ public class FindAndReplace implements XJFrameDelegate {
     public static final String BEGIN_QUOTE = "\\Q";
     public static final String END_QUOTE = "\\E";
 
-    public EditorWindow editor;
+    public CEditorGrammar editor;
     public String findString;
     public String replaceString;
     public int flags;
@@ -56,7 +56,7 @@ public class FindAndReplace implements XJFrameDelegate {
 
     public FindAndReplaceDialog dialog;
 
-    public FindAndReplace(EditorWindow editor) {
+    public FindAndReplace(CEditorGrammar editor) {
         this.editor = editor;
     }
 

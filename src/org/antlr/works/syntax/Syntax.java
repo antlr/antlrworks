@@ -1,7 +1,7 @@
 package org.antlr.works.syntax;
 
 import edu.usfca.xj.foundation.XJUtils;
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.parser.*;
 
 import java.io.File;
@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class Syntax {
 
-    protected EditorWindow editor;
+    protected CEditorGrammar editor;
     protected ThreadedParser parser;
 
     protected List duplicateRules;
@@ -53,7 +53,7 @@ public class Syntax {
     protected List tokenVocabNames;
     protected String tokenVocabName;
 
-    public Syntax(EditorWindow editor, ThreadedParser parser) {
+    public Syntax(CEditorGrammar editor, ThreadedParser parser) {
         this.editor = editor;
         this.parser = parser;
 

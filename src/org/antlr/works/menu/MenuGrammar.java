@@ -33,7 +33,7 @@ package org.antlr.works.menu;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.DecisionDFA;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ParserGroup;
@@ -49,7 +49,7 @@ public class MenuGrammar extends MenuAbstract implements DecisionDFA.TDecisionDF
 
     protected XJDialogProgress progress;
 
-    public MenuGrammar(EditorWindow editor) {
+    public MenuGrammar(CEditorGrammar editor) {
         super(editor);
         progress = new XJDialogProgress(editor.getWindowContainer());
     }

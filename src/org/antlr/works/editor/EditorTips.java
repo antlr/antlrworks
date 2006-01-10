@@ -1,5 +1,6 @@
 package org.antlr.works.editor;
 
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.parser.Token;
 import org.antlr.works.tips.TipsManager;
 import org.antlr.works.tips.TipsOverlay;
@@ -44,9 +45,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class EditorTips implements TipsProvider {
 
     public TipsManager tipsManager;
-    public EditorWindow editor;
+    public CEditorGrammar editor;
 
-    public EditorTips(EditorWindow editor) {
+    public EditorTips(CEditorGrammar editor) {
         this.editor = editor;
     }
 

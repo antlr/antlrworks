@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.menu.*;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
 import org.antlr.works.grammar.DecisionDFA;
@@ -137,13 +138,12 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_PRIVATE_STATS = 200;
     public static final int MI_PRIVATE_UNREGISTER = 201;
 
-    protected EditorWindow editor = null;
+    protected CEditorGrammar editor = null;
 
-    protected XJMenuItem menuItemUndo = null;
-    protected XJMenuItem menuItemRedo = null;
+    public XJMenuItem menuItemUndo = null;
+    public XJMenuItem menuItemRedo = null;
 
-
-    public EditorMenu(EditorWindow editor) {
+    public EditorMenu(CEditorGrammar editor) {
         this.editor = editor;
     }
 
@@ -367,7 +367,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void menuUndoRedoItemState() {
-        Undo undo = editor.lastUndo;
+        Undo undo = editor.getLastUndo();
 
         menuItemUndo.setTitle("Undo");
         menuItemRedo.setTitle("Redo");
@@ -454,7 +454,6 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
-        editor.handleMenuEvent(menu, item);
         handleMenuEdit(item.getTag());
         handleMenuView(item.getTag());
         handleMenuFind(item.getTag());

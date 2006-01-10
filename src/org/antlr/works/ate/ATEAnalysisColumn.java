@@ -81,12 +81,16 @@ public class ATEAnalysisColumn extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
 
-        lineCount = getAnalysisManager().getLinesCount();
+        ATEAnalysisManager manager = getAnalysisManager();
+        if(manager == null)
+            return;
+
+        lineCount = manager.getLinesCount();
 
         Graphics2D g2d = (Graphics2D)g;
-        int[] types = getAnalysisManager().getAvailableTypes();
+        int[] types = manager.getAvailableTypes();
         for(int type=0; type<types.length; type++) {
-            paintStrips(g2d, getAnalysisManager().getItemsForType(type));
+            paintStrips(g2d, manager.getItemsForType(type));
         }
 
         analysisBox.paint(g);
@@ -145,9 +149,13 @@ public class ATEAnalysisColumn extends JPanel {
 
     private class MyMouseMotionAdapter extends MouseMotionAdapter {
         public void mouseMoved(MouseEvent e) {
+            ATEAnalysisManager manager = getAnalysisManager();
+            if(manager == null)
+                return;
+
             StringBuffer sb = new StringBuffer();
             if(analysisBox.r.contains(e.getPoint())) {
-                sb.append(getAnalysisManager().getAnalysisDescription());
+                sb.append(manager.getAnalysisDescription());
             } else {
                 sb.append(getItemDescriptionsAtPoint(e.getPoint()));
             }
@@ -165,14 +173,17 @@ public class ATEAnalysisColumn extends JPanel {
 
         protected String getItemDescriptionsAtPoint(Point point) {
             StringBuffer sb = new StringBuffer();
-            int[] types = getAnalysisManager().getAvailableTypes();
-            for(int type=0; type<types.length; type++) {
-                List items = getAnalysisManager().getItemsForType(type);
-                for(int item=0; item<items.size(); item++) {
-                    ATEAnalysisItem ai = (ATEAnalysisItem)items.get(item);
-                    if(composeIndicatorRectangle(ai.line, 2).contains(point)) {
-                        sb.append(ai.description);
-                        sb.append("\n");
+            ATEAnalysisManager manager = getAnalysisManager();
+            if(manager != null) {
+                int[] types = manager.getAvailableTypes();
+                for(int type=0; type<types.length; type++) {
+                    List items = manager.getItemsForType(type);
+                    for(int item=0; item<items.size(); item++) {
+                        ATEAnalysisItem ai = (ATEAnalysisItem)items.get(item);
+                        if(composeIndicatorRectangle(ai.line, 2).contains(point)) {
+                            sb.append(ai.description);
+                            sb.append("\n");
+                        }
                     }
                 }
             }

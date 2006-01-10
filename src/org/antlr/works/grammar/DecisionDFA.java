@@ -9,8 +9,8 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.analysis.DFA;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
@@ -56,7 +56,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DecisionDFA implements Runnable, EditorTab {
 
-    protected EditorWindow editor;
+    protected CEditorGrammar editor;
     protected TDecisionDFADelegate delegate;
 
     protected JPanel panel;
@@ -75,7 +75,7 @@ public class DecisionDFA implements Runnable, EditorTab {
 
     protected String error;
 
-    public DecisionDFA(EditorWindow editor, TDecisionDFADelegate delegate) {
+    public DecisionDFA(CEditorGrammar editor, TDecisionDFADelegate delegate) {
         this.editor = editor;
         this.delegate = delegate;
     }

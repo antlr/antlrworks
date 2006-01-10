@@ -1,7 +1,7 @@
 package org.antlr.works.menu;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserReference;
 import org.antlr.works.parser.ParserRule;
@@ -48,7 +48,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class MenuRefactor extends MenuAbstract {
 
-    public MenuRefactor(EditorWindow editor) {
+    public MenuRefactor(CEditorGrammar editor) {
         super(editor);
     }
 

@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.find;
 
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
 
@@ -56,10 +56,10 @@ public class Usages implements EditorTab {
     protected DefaultMutableTreeNode node;
     protected String lastRule;
 
-    protected EditorWindow editor;
+    protected CEditorGrammar editor;
     protected Token token;
 
-    public Usages(EditorWindow editor, Token token) {
+    public Usages(CEditorGrammar editor, Token token) {
         this.editor = editor;
         this.token = token;
 

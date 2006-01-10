@@ -35,9 +35,9 @@ import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.grammar.DecisionDFA;
 import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.stats.Statistics;
@@ -57,7 +57,7 @@ import java.util.List;
 
 public class MenuExport extends MenuAbstract {
 
-    public MenuExport(EditorWindow editor) {
+    public MenuExport(CEditorGrammar editor) {
         super(editor);
     }
 

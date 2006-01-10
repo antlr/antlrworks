@@ -1,6 +1,7 @@
 package org.antlr.works.editor;
 
 import org.antlr.works.ate.ATEUnderlyingManager;
+import org.antlr.works.components.grammar.CEditorGrammar;
 
 import java.awt.*;
 import java.util.List;
@@ -37,9 +38,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorUnderlyingManager extends ATEUnderlyingManager {
 
-    protected EditorWindow editor;
+    protected CEditorGrammar editor;
 
-    public EditorUnderlyingManager(EditorWindow editor) {
+    public EditorUnderlyingManager(CEditorGrammar editor) {
         super(editor.textEditor);
         this.editor = editor;
     }

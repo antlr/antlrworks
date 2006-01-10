@@ -1,6 +1,6 @@
 package org.antlr.works.menu;
 
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.find.Usages;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
@@ -40,7 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class MenuFind extends MenuAbstract {
 
-    public MenuFind(EditorWindow editor) {
+    public MenuFind(CEditorGrammar editor) {
         super(editor);
     }
 

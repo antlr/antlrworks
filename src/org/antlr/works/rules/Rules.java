@@ -34,8 +34,8 @@ package org.antlr.works.rules;
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
 import org.antlr.works.ate.ATEFoldingEntity;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorKeyBindings;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.ParserGroup;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.ThreadedParser;
@@ -65,7 +65,7 @@ import java.util.List;
 
 public class Rules implements XJTreeDelegate {
 
-    protected EditorWindow editor;
+    protected CEditorGrammar editor;
     protected ThreadedParser parser;
     protected RulesDelegate delegate;
 
@@ -80,7 +80,7 @@ public class Rules implements XJTreeDelegate {
 
     protected boolean sort;
 
-    public Rules(EditorWindow editor, ThreadedParser parser, XJTree rulesTree) {
+    public Rules(CEditorGrammar editor, ThreadedParser parser, XJTree rulesTree) {
         this.editor = editor;
         this.parser = parser;
         this.rulesTree = rulesTree;

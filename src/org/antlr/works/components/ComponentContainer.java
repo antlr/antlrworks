@@ -1,10 +1,8 @@
-package org.antlr.works.editor;
+package org.antlr.works.components;
 
-import org.antlr.works.ate.ATEBreakpointManager;
-import org.antlr.works.components.grammar.CEditorGrammar;
-
-import java.util.ArrayList;
-import java.util.List;
+import edu.usfca.xj.appkit.document.XJDocument;
+import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 /*
 
 [The "BSD licence"]
@@ -36,20 +34,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorBreakpointManager extends ATEBreakpointManager {
+public interface ComponentContainer {
+    public ComponentEditor getEditor();
 
-    protected CEditorGrammar editor;
+    public XJDocument getDocument();
+    public XJFrame getXJFrame();
+    public XJMainMenuBar getMainMenuBar();
 
-    public EditorBreakpointManager(CEditorGrammar editor) {
-        super(editor.textEditor);
-        this.editor = editor;
-    }
+    public void loadText(String text);
+    public String getText();
 
-    public List getBreakpointEntities() {
-        List entities = new ArrayList();
-        List rules = editor.parser.getRules();
-        if(rules != null)
-            entities.addAll(rules);
-        return entities;
-    }
+    public boolean willSaveDocument();
+
+    public void close();
+
+    public void setDirty();
 }

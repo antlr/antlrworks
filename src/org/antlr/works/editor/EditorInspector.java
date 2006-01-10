@@ -1,5 +1,6 @@
 package org.antlr.works.editor;
 
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.idea.IdeaAction;
 import org.antlr.works.idea.IdeaActionDelegate;
 import org.antlr.works.parser.Lexer;
@@ -43,9 +44,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorInspector {
 
-    public EditorWindow editor;
+    public CEditorGrammar editor;
 
-    public EditorInspector(EditorWindow editor) {
+    public EditorInspector(CEditorGrammar editor) {
         this.editor = editor;
     }
 
@@ -133,7 +134,7 @@ public class EditorInspector {
     }
 
     protected void discoverUndefinedReferences(List items) {
-        List undefinedRefs = editor.syntax.getUndefinedReferences();
+        List undefinedRefs = editor.getSyntax().getUndefinedReferences();
         if(undefinedRefs == null)
             return;
 
@@ -148,7 +149,7 @@ public class EditorInspector {
     }
 
     protected void discoverDuplicateRules(List items) {
-        List rules = editor.syntax.getDuplicateRules();
+        List rules = editor.getSyntax().getDuplicateRules();
         if(rules == null)
             return;
 

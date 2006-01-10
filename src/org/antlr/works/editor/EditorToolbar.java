@@ -2,6 +2,7 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.utils.IconManager;
 
@@ -58,9 +59,9 @@ public class EditorToolbar implements XJNotificationObserver {
 
     public JButton find;
 
-    public EditorWindow editor;
+    public CEditorGrammar editor;
 
-    public EditorToolbar(EditorWindow editor) {
+    public EditorToolbar(CEditorGrammar editor) {
         this.editor = editor;
 
         createInterface();

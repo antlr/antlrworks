@@ -128,25 +128,29 @@ public class ATEGutter extends JComponent {
 
     public void updateInfo() {
         breakpoints.clear();
-        List entities = textEditor.breakpointManager.getBreakpointEntities();
-        for (int i=0; i<entities.size(); i++) {
-            ATEBreakpointEntity entity = (ATEBreakpointEntity)entities.get(i);
-            int y = getLineYPixelPosition(entity.breakpointEntityIndex());
-            Rectangle r = new Rectangle(0, y-BREAKPOINT_HEIGHT/2, BREAKPOINT_WIDTH, BREAKPOINT_HEIGHT);
-            breakpoints.add(new BreakpointInfo(entity, r));
+        if(textEditor.breakpointManager != null) {
+            List entities = textEditor.breakpointManager.getBreakpointEntities();
+            for (int i=0; i<entities.size(); i++) {
+                ATEBreakpointEntity entity = (ATEBreakpointEntity)entities.get(i);
+                int y = getLineYPixelPosition(entity.breakpointEntityIndex());
+                Rectangle r = new Rectangle(0, y-BREAKPOINT_HEIGHT/2, BREAKPOINT_WIDTH, BREAKPOINT_HEIGHT);
+                breakpoints.add(new BreakpointInfo(entity, r));
+            }
         }
 
         folding.clear();
-        entities = textEditor.foldingManager.getFoldingEntities();
-        for(int i=0; i<entities.size(); i++) {
-            ATEFoldingEntity entity = (ATEFoldingEntity)entities.get(i);
+        if(textEditor.foldingManager != null) {
+            List entities = textEditor.foldingManager.getFoldingEntities();
+            for(int i=0; i<entities.size(); i++) {
+                ATEFoldingEntity entity = (ATEFoldingEntity)entities.get(i);
 
-            int top_y = getLineYPixelPosition(entity.foldingEntityGetStartIndex());
-            int bottom_y = getLineYPixelPosition(entity.foldingEntityGetEndIndex());
+                int top_y = getLineYPixelPosition(entity.foldingEntityGetStartIndex());
+                int bottom_y = getLineYPixelPosition(entity.foldingEntityGetEndIndex());
 
-            Point top = new Point(getWidth()-getOffsetFromText(), top_y);
-            Point bottom = new Point(getWidth()-getOffsetFromText(), bottom_y);
-            folding.add(new FoldingInfo(entity, top, bottom));
+                Point top = new Point(getWidth()-getOffsetFromText(), top_y);
+                Point bottom = new Point(getWidth()-getOffsetFromText(), bottom_y);
+                folding.add(new FoldingInfo(entity, top, bottom));
+            }
         }
     }
 

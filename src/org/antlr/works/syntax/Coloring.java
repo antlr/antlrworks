@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.syntax;
 
 import org.antlr.works.ate.ATEStyledDocument;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorThread;
-import org.antlr.works.editor.EditorWindow;
 import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.Token;
 
@@ -47,7 +47,7 @@ import java.util.List;
 
 public class Coloring extends EditorThread {
 
-    private EditorWindow editor;
+    private CEditorGrammar editor;
 
     private int colorizeOffset = -1;
     private int colorizeLength = -1;
@@ -66,7 +66,7 @@ public class Coloring extends EditorThread {
 
     private boolean enable = true;
 
-    public Coloring(EditorWindow editor) {
+    public Coloring(CEditorGrammar editor) {
         super(editor.console);
 
         this.editor = editor;

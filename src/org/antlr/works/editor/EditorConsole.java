@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.utils.Console;
 
 import javax.swing.*;
@@ -44,7 +45,7 @@ import java.util.Date;
 
 public class EditorConsole implements EditorTab, Console {
 
-    protected EditorWindow editor;
+    protected CEditorGrammar editor;
 
     protected JPanel panel;
     protected JTextArea textArea;
@@ -61,7 +62,7 @@ public class EditorConsole implements EditorTab, Console {
         return current;
     }
 
-    public EditorConsole(EditorWindow editor) {
+    public EditorConsole(CEditorGrammar editor) {
         this.editor = editor;
 
         panel = new JPanel(new BorderLayout());

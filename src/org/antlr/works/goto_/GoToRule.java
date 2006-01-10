@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.goto_;
 
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.utils.OverlayObject;
 
@@ -52,11 +52,11 @@ public class GoToRule extends OverlayObject {
     public JList matchingRuleList;
     public DefaultListModel matchingRuleListModel;
     public JScrollPane matchingRuleScrollPane;
-    public EditorWindow editor;
+    public CEditorGrammar editor;
 
     public static final int VISIBLE_MATCHING_RULES = 15;
 
-    public GoToRule(EditorWindow editor, JFrame parentFrame, JComponent parentComponent) {
+    public GoToRule(CEditorGrammar editor, JFrame parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
         this.editor = editor;
     }

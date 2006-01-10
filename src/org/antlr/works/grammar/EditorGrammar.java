@@ -40,7 +40,7 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarNonDeterminismMessage;
-import org.antlr.works.editor.EditorWindow;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.parser.ParserName;
 import org.antlr.works.parser.Token;
 import org.antlr.works.utils.ErrorListener;
@@ -59,9 +59,9 @@ public class EditorGrammar {
     protected boolean grammarDirty;
     protected boolean grammarAnalyzeDirty;
 
-    protected EditorWindow editor;
+    protected CEditorGrammar editor;
 
-    public EditorGrammar(EditorWindow editor) {
+    public EditorGrammar(CEditorGrammar editor) {
         this.editor = editor;
         errors = new ArrayList();
         makeDirty();
@@ -135,7 +135,10 @@ public class EditorGrammar {
     }
 
     public Tool getANTLRTool() {
-        return new Tool(new String[] { "-lib", editor.getFileFolder() } );
+        if(editor.getFileFolder() != null)
+            return new Tool(new String[] { "-lib", editor.getFileFolder() } );
+        else
+            return new Tool();
     }
 
     public String getName() {
@@ -159,6 +162,7 @@ public class EditorGrammar {
             return;
 
         ErrorManager.setErrorListener(ErrorListener.shared());
+
         try {
             switch(getType()) {
                 case ParserName.COMBINED:
@@ -278,7 +282,7 @@ public class EditorGrammar {
             NFAState nfaStart = nondetMsg.probe.dfa.getNFADecisionStartState();
 
             int tracePathAlt =
-                nfaStart.translateDisplayAltToWalkAlt(displayAltI.intValue());
+                nfaStart.translateDisplayAltToWalkAlt(nondetMsg.probe.dfa, displayAltI.intValue());
             if ( firstAlt == 0 ) {
                 firstAlt = tracePathAlt;
             }

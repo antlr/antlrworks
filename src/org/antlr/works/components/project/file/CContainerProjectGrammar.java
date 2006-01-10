@@ -1,14 +1,17 @@
-package org.antlr.works.editor;
+package org.antlr.works.components.project.file;
 
-import org.antlr.works.ate.ATEBreakpointManager;
+import org.antlr.works.components.ComponentDocument;
+import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.components.grammar.CDocumentGrammar;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.project.CContainerProject;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.*;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,20 +39,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorBreakpointManager extends ATEBreakpointManager {
+public class CContainerProjectGrammar extends CContainerProjectFile {
 
-    protected CEditorGrammar editor;
-
-    public EditorBreakpointManager(CEditorGrammar editor) {
-        super(editor.textEditor);
-        this.editor = editor;
+    public CContainerProjectGrammar(CContainerProject project) {
+        super(project);
     }
 
-    public List getBreakpointEntities() {
-        List entities = new ArrayList();
-        List rules = editor.parser.getRules();
-        if(rules != null)
-            entities.addAll(rules);
-        return entities;
+    public void awake() {
+        // We need to set a border for the grammar panel because it doesn't
+        // have one by default when used alone in a window
+        editor.getPanel().setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.lightGray));
+    }
+
+    public ComponentDocument createDocument() {
+        return new CDocumentGrammar();
+    }
+
+    public ComponentEditor createEditor() {
+        return new CEditorGrammar(this);
     }
 }

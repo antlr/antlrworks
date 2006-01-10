@@ -1,10 +1,8 @@
-package org.antlr.works.editor;
+package org.antlr.works.components;
 
-import org.antlr.works.ate.ATEBreakpointManager;
-import org.antlr.works.components.grammar.CEditorGrammar;
-
-import java.util.ArrayList;
-import java.util.List;
+import edu.usfca.xj.appkit.document.XJDataPlainText;
+import edu.usfca.xj.appkit.document.XJDocument;
+import edu.usfca.xj.foundation.XJUtils;
 /*
 
 [The "BSD licence"]
@@ -36,20 +34,38 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorBreakpointManager extends ATEBreakpointManager {
+public class ComponentDocument extends XJDocument {
 
-    protected CEditorGrammar editor;
+    ComponentContainer container;
 
-    public EditorBreakpointManager(CEditorGrammar editor) {
-        super(editor.textEditor);
-        this.editor = editor;
+    public void setComponentContainer(ComponentContainer container) {
+        this.container = container;
     }
 
-    public List getBreakpointEntities() {
-        List entities = new ArrayList();
-        List rules = editor.parser.getRules();
-        if(rules != null)
-            entities.addAll(rules);
-        return entities;
+    public ComponentContainer getContainer() {
+        if(container != null)
+            return container;
+        else
+            return (ComponentContainer)getWindow();
     }
+
+    public void changeDone() {
+        super.changeDone();
+
+        if(container != null)
+            container.setDirty();
+    }
+
+    public void documentWillWriteData() {
+        ComponentContainer w = getContainer();
+        XJDataPlainText data = (XJDataPlainText)getDocumentData();
+        data.setText(XJUtils.getLocalizedText(w.getText()));
+    }
+
+    public void documentDidReadData() {
+        ComponentContainer w = getContainer();
+        XJDataPlainText data = (XJDataPlainText)getDocumentData();
+        w.loadText(XJUtils.getNormalizedText(data.getText()));
+    }
+
 }
