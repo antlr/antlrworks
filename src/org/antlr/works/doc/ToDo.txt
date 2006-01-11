@@ -1,5 +1,11 @@
 
 * Prio 1
+- build list for java file on disk (project)
+- don't disable the open recent file if a panel is in front (like the about or prefs)
+- setDividerLocation when preferedSize() or size() is known (see when I can catch that)
+- cannot debug fuzzy.g
+- cannot stop debugger on mantra.g
+
 - auto-indent in prefs
 - remove print in GGraphGroup/EditorGrammar once weird ambiguous path problem solved
 - contextual menu in editor

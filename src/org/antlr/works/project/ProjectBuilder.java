@@ -153,6 +153,30 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
                     compileJavaFiles(javas);
                 }
 
+                if(grammars.size() > 0 && javas.size() > 0) {
+                    project.changeDone();
+                }
+
+                progress.close();
+            }
+        }).start();
+
+        progress.runModal();
+    }
+
+    public void run() {
+        progress.setCancellable(true);
+        progress.setTitle("Run");
+        progress.setInfo("Running...");
+        progress.setIndeterminate(true);
+
+        new Thread(new Runnable() {
+            public void run() {
+                project.clearConsole();
+                String error = EngineCompiler.runJava(project.getProjectFolder(), project.getRunParameters(), ProjectBuilder.this);
+                if(error != null) {
+                    project.buildReportError(error);
+                }
                 progress.close();
             }
         }).start();

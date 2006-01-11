@@ -1,5 +1,6 @@
 package org.antlr.works.components.project;
 
+import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.frame.XJWindow;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
@@ -9,10 +10,7 @@ import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.components.project.file.CContainerProjectFile;
-import org.antlr.works.project.ProjectBuilder;
-import org.antlr.works.project.ProjectConsole;
-import org.antlr.works.project.ProjectFileItem;
-import org.antlr.works.project.ProjectToolbar;
+import org.antlr.works.project.*;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -72,10 +70,13 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     protected ProjectBuilder builder;
     protected ProjectConsole console;
 
+    protected ProjectData data;
+
     public CContainerProject() {
 
         builder = new ProjectBuilder(this);
         console = new ProjectConsole();
+        data = new ProjectData();
 
         projectPanel = new JPanel(new BorderLayout());
 
@@ -202,7 +203,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
 
     public void makeBottomComponentVisible() {
         if(splitPaneB.getBottomComponent().getHeight() == 0) {
-            splitPaneB.setDividerLocation(getContentPane().getSize().height-200);
+            splitPaneB.setDividerLocation(0.5);
         }
     }
 
@@ -229,6 +230,10 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     /** Project handling methods
      *
      */
+
+    public void changeDone() {
+        getDocument().changeDone();
+    }
 
     public void setCurrentFileEditor(ProjectFileItem item) {
         if(item == null) {
@@ -269,12 +274,51 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
         return items;
     }
 
+    public String[] getRunParameters() {
+        String s = data.getRunParametersString();
+        if(s == null)
+            return null;
+        else
+            return s.split(" ");
+    }
+
+    public void settings(boolean runAfterSettings) {
+        ProjectRunSettingsDialog dialog = new ProjectRunSettingsDialog(getJavaContainer());
+        dialog.setRunParametersString(data.getRunParametersString());
+        dialog.setShowBeforeRunning(data.getShowBeforeRunning());
+        if(dialog.runModal() == XJDialog.BUTTON_OK) {
+            changeDone();
+            data.setRunParametersString(dialog.getRunParametersString());
+            data.setShowBeforeRunning(dialog.isShowBeforeRunning());
+            if(runAfterSettings) {
+                buildAndRun();
+            }
+        }
+    }
+
+    public void run() {
+        String[] params = getRunParameters();
+        if(params == null || params.length == 0 || data.getShowBeforeRunning())
+            settings(true);
+        else
+            buildAndRun();
+    }
+
     public void build() {
         builder.build();
     }
 
+    public void buildAndRun() {
+        builder.build();
+        builder.run();
+    }
+
     public void buildReportError(String error) {
         printToConsole(error);
+    }
+
+    public void clearConsole() {
+        console.clear();
     }
 
     public void printToConsole(String s) {
@@ -314,7 +358,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
             addFilePath(filePath);
         }
         filesTreeModel.reload();
-        getDocument().changeDone();
+        changeDone();
     }
 
     public void removeSelectedFile() {
@@ -347,7 +391,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
             currentFileContainer = null;
 
             filesTreeModel.reload();
-            getDocument().changeDone();
+            changeDone();
         }
     }
 
@@ -361,7 +405,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     }
 
     public void fileDidBecomeDirty(CContainerProjectFile file) {
-        getDocument().changeDone();
+        changeDone();
     }
 
     public void documentWillSave() {
@@ -374,7 +418,10 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
         });
     }
 
-    public void setPersistentData(Map data) {
+    public void setPersistentData(Map inData) {
+        if(inData != null)
+            data.putAll(inData);
+
         List files = (List)data.get("files");
         if(files != null && !files.isEmpty()) {
             addFilePaths(files);
@@ -383,7 +430,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     }
 
     public Map persistentData() {
-        Map data = new HashMap();
+        Map outData = new HashMap();
 
         List files = new ArrayList();
 
@@ -392,9 +439,10 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
             files.add(item.filePath);
         }
 
-        data.put("files", files);
+        outData.put("files", files);
+        outData.putAll(data);
 
-        return data;
+        return outData;
     }
 
     public interface FileEditorItemClosure {
@@ -426,6 +474,33 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     public ComponentEditor getEditor() {
         // There is no specific editor for the project
         return null;
+    }
+
+    protected class ProjectData extends HashMap {
+
+        public ProjectData() {
+            setShowBeforeRunning(true);
+        }
+
+        public void setRunParametersString(String s) {
+            put("runParametersString", s);
+        }
+
+        public String getRunParametersString() {
+            return (String)get("runParametersString");
+        }
+
+        public void setShowBeforeRunning(boolean flag) {
+            put("showBeforeRunning", Boolean.valueOf(flag));
+        }
+
+        public boolean getShowBeforeRunning() {
+            Boolean b = (Boolean) get("showBeforeRunning");
+            if(b != null)
+                return b.booleanValue();
+            else
+                return false;
+        }
     }
 
     protected class RuleTreeSelectionListener implements TreeSelectionListener {

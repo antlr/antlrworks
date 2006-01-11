@@ -87,6 +87,5 @@ public class ProjectConsole {
     public synchronized void print(String s) {
         textArea.setText(textArea.getText()+s);
         textArea.setCaretPosition(textArea.getText().length());
-        System.out.println(s);
     }
 }

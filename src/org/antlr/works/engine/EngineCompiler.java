@@ -68,11 +68,37 @@ public class EngineCompiler {
             new StreamWatcher(p.getInputStream(), "ANTLR[stdout]", delegate).start();
             result = p.waitFor();
         } catch(Exception e) {
-            error = "ANTLR exception:\n"+e.getLocalizedMessage();
+            error = "Failed to run ANTLR with exception:\n"+e.getLocalizedMessage();
         }
 
         if(result != 0) {
-            error = "Compiler failed result:\n"+result;
+            error = "Failed to run ANTLR with result:\n"+result;
+        }
+
+        return error;
+    }
+
+    public static String runJava(String currentPath, String[] params, StreamWatcherDelegate delegate) {
+        String error = null;
+        int result = 0;
+        try {
+            String[] args = new String[3+params.length];
+            args[0] = "java";
+            args[1] = "-cp";
+            args[2] = getClassPath(currentPath);
+            for(int i=0; i<params.length; i++)
+                args[3+i] = params[i];
+
+            Process p = Runtime.getRuntime().exec(args, null, new File(currentPath));            
+            new StreamWatcher(p.getErrorStream(), "Java[error]", delegate).start();
+            new StreamWatcher(p.getInputStream(), "Java[stdout]", delegate).start();
+            result = p.waitFor();
+        } catch(Exception e) {
+            error = "Failed to run Java with exception:\n"+e.getLocalizedMessage();
+        }
+
+        if(result != 0) {
+            error = "Failed to run Java with result:\n"+result;
         }
 
         return error;

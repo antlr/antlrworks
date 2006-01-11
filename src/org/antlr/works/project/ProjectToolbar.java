@@ -46,6 +46,7 @@ public class ProjectToolbar {
     public JButton addFile;
     public JButton removeFile;
 
+    public JButton settings;
     public JButton build;
     public JButton run;
 
@@ -68,6 +69,8 @@ public class ProjectToolbar {
         toolbar.add(Box.createHorizontalStrut(5));
         toolbar.add(addFile = (JButton)createNewButton("+", "Add Files", new Dimension(40, 32)));
         toolbar.add(removeFile = (JButton)createNewButton("-", "Remove Selected File", new Dimension(40, 32)));
+        toolbar.add(Box.createHorizontalGlue());
+        toolbar.add(settings = (JButton)createNewButton("Settings", "Project Settings", new Dimension(80, 32)));
         toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(build = (JButton)createNewButton("Build", "Build Project", new Dimension(80, 32)));
         toolbar.add(run = (JButton)createNewButton("Run", "Run Project", new Dimension(80, 32)));
@@ -89,9 +92,21 @@ public class ProjectToolbar {
             }
         });
 
+        settings.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                project.settings(false);
+            }
+        });
+
         build.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 project.build();
+            }
+        });
+
+        run.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                project.run();
             }
         });
 
