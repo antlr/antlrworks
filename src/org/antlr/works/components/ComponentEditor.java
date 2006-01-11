@@ -5,6 +5,7 @@ import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
+import edu.usfca.xj.appkit.undo.XJUndo;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,6 +49,15 @@ public abstract class ComponentEditor {
     public ComponentEditor(ComponentContainer container) {
         this.container = container;
         mainPanel = new JPanel(new BorderLayout());
+    }
+
+    public void refreshMainMenuBar() {
+        if(getXJFrame().getMainMenuBar() != null)
+            getXJFrame().getMainMenuBar().refreshState();
+    }
+
+    public XJUndo getCurrentUndo() {
+        return getXJFrame().getCurrentUndo();
     }
 
     public XJDocument getDocument() {
@@ -94,6 +104,9 @@ public abstract class ComponentEditor {
     public void customizeFileMenu(XJMenu menu) {
     }
 
+    public void customizeEditMenu(XJMenu menu) {
+    }
+
     public void customizeWindowMenu(XJMenu menu) {
     }
 
@@ -111,4 +124,5 @@ public abstract class ComponentEditor {
 
     public void componentIsSelected() {
     }
+
 }

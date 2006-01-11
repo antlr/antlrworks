@@ -4,6 +4,8 @@ import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.swing.XJTree;
+import edu.usfca.xj.appkit.undo.XJUndo;
+import edu.usfca.xj.appkit.undo.XJUndoDelegate;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJSystem;
 import edu.usfca.xj.foundation.XJUtils;
@@ -35,17 +37,22 @@ import org.antlr.works.syntax.AutoIndentation;
 import org.antlr.works.syntax.Coloring;
 import org.antlr.works.syntax.ImmediateColoring;
 import org.antlr.works.syntax.Syntax;
-import org.antlr.works.undo.Undo;
-import org.antlr.works.undo.UndoDelegate;
 import org.antlr.works.utils.TextUtils;
 import org.antlr.works.visualization.Visual;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 /*
 
@@ -79,8 +86,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public class CEditorGrammar extends ComponentEditor implements ThreadedParserObserver, AutoCompletionMenuDelegate,
-        RulesDelegate, EditorProvider, UndoDelegate, ATEPanelDelegate,
-        XJNotificationObserver
+        RulesDelegate, EditorProvider, ATEPanelDelegate,
+        XJUndoDelegate, XJNotificationObserver
 {
 
         /* Completion */
@@ -127,7 +134,6 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
 
     /* Menu */
 
-    public MenuEdit menuEdit;
     public MenuFolding menuFolding;
     public MenuFind menuFind;
     public MenuGrammar menuGrammar;
@@ -157,9 +163,6 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     protected JSplitPane upDownSplitPane;
 
     /* Other */
-
-    protected Map undos = new HashMap();
-    protected Undo lastUndo;
 
     protected boolean windowFirstDisplay = true;
     protected String lastSelectedRule;
@@ -241,7 +244,6 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     }
 
     protected void initMenus() {
-        menuEdit = new MenuEdit(this);
         menuFolding = new MenuFolding(this);
         menuFind = new MenuFind(this);
         menuGrammar = new MenuGrammar(this);
@@ -319,6 +321,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
         tabbedPane = new JTabbedPane();
         tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
         tabbedPane.addMouseListener(new TabbedPaneMouseListener());
+        tabbedPane.addChangeListener(new TabbedPaneChangeListener());
 
         rulesTextSplitPane = new JSplitPane();
         rulesTextSplitPane.setBorder(null);
@@ -381,7 +384,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     protected void register() {
         parser.addObserver(this);
 
-        registerUndo(new Undo(this, console), getTextPane());
+        getXJFrame().registerUndo(this, getTextPane());
 
         XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
         XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
@@ -437,49 +440,13 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
 
     public void selectTab(Component c) {
         tabbedPane.setSelectedComponent(c);
+        refreshMainMenuBar();
     }
 
     public void makeBottomComponentVisible() {
         if(upDownSplitPane.getBottomComponent().getHeight() == 0) {
             upDownSplitPane.setDividerLocation(upDownSplitPane.getLastDividerLocation());
         }
-    }
-
-    public void registerUndo(Undo undo, JTextPane component) {
-        undo.bindTo(component);
-        component.addFocusListener(new EditorFocusListener());
-        undos.put(component, undo);
-    }
-
-    public Undo getCurrentUndo() {
-        // Use the permanent focus owner because on Windows/Linux, an opened menu become
-        // the current focus owner (non-permanent).
-        return (Undo)undos.get(KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner());
-    }
-
-    public Undo getUndo(Object object) {
-        return (Undo)undos.get(object);
-    }
-
-    public Undo getLastUndo() {
-        return lastUndo;
-    }
-
-    public void updateUndoRedo(Object source) {
-        Undo undo = getUndo(source);
-        updateUndoRedo(undo);
-    }
-
-    public void updateUndoRedo(Undo undo) {
-        if(editorMenu == null || editorMenu.menuItemUndo == null
-                || editorMenu.menuItemRedo == null)
-            return;
-
-        lastUndo = undo;
-    }
-
-    public void undoStateDidChange(Undo undo) {
-        updateUndoRedo(undo);
     }
 
     public EditorGrammar getGrammar() {
@@ -613,27 +580,36 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     }
 
     public void beginTextPaneUndoGroup(String name) {
-        Undo undo = getUndo(getTextPane());
+        XJUndo undo = getXJFrame().getUndo(getTextPane());
         if(undo != null)
             undo.beginUndoGroup(name);
     }
 
     public void endTextPaneUndoGroup() {
-        Undo undo = getUndo(getTextPane());
+        XJUndo undo = getXJFrame().getUndo(getTextPane());
         if(undo != null)
             undo.endUndoGroup();
     }
 
     public void enableTextPaneUndo() {
-        Undo undo = getUndo(getTextPane());
+        XJUndo undo = getXJFrame().getUndo(getTextPane());
         if(undo != null)
             undo.enableUndo();
     }
 
     public void disableTextPaneUndo() {
-        Undo undo = getUndo(getTextPane());
+        XJUndo undo = getXJFrame().getUndo(getTextPane());
         if(undo != null)
             undo.disableUndo();
+    }
+
+    public void undoManagerWillUndo(boolean redo) {
+        disableTextPane(false);
+    }
+
+    public void undoManagerDidUndo(boolean redo) {
+        enableTextPane(false);
+        changeUpdate();
     }
 
     public void loadText(String text) {
@@ -787,6 +763,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
 
     public void goToHistoryRememberCurrentPosition() {
         goToHistory.addPosition(getCaretPosition());
+        refreshMainMenuBar();
     }
 
     public ParserReference getCurrentReference() {
@@ -1228,17 +1205,9 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
         }
     }
 
-    protected class EditorFocusListener implements FocusListener {
-
-        public void focusGained(FocusEvent event) {
-            updateUndoRedo(event.getSource());
-        }
-
-        public void focusLost(FocusEvent event) {
-            // Update the menu only if the event is not temporary. Temporary
-            // focus lost can be, for example, when opening a menu on Windows/Linux.
-            if(!event.isTemporary())
-                updateUndoRedo(null);
+    protected class TabbedPaneChangeListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            refreshMainMenuBar();
         }
     }
 

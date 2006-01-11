@@ -31,14 +31,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import edu.usfca.xj.appkit.menu.*;
+import edu.usfca.xj.appkit.menu.XJMainMenuBar;
+import edu.usfca.xj.appkit.menu.XJMenu;
+import edu.usfca.xj.appkit.menu.XJMenuItem;
+import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
 import org.antlr.works.grammar.DecisionDFA;
 import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.undo.Undo;
 import org.antlr.works.visualization.Visual;
 
 import java.awt.*;
@@ -47,12 +49,6 @@ import java.awt.event.KeyEvent;
 public class EditorMenu implements XJMenuItemDelegate {
 
     // Edit
-    public static final int MI_EDIT_UNDO = 0;
-    public static final int MI_EDIT_REDO = 1;
-    public static final int MI_EDIT_CUT = 2;
-    public static final int MI_EDIT_COPY = 3;
-    public static final int MI_EDIT_PASTE = 4;
-    public static final int MI_EDIT_SELECT_ALL = 5;
     public static final int MI_TOGGLE_SYNTAX_COLORING = 6;
     public static final int MI_TOGGLE_SYNTAX_DIAGRAM = 7;
     public static final int MI_TOGGLE_NFA_OPTIMIZATION = 9;
@@ -140,9 +136,6 @@ public class EditorMenu implements XJMenuItemDelegate {
 
     protected CEditorGrammar editor = null;
 
-    public XJMenuItem menuItemUndo = null;
-    public XJMenuItem menuItemRedo = null;
-
     public EditorMenu(CEditorGrammar editor) {
         this.editor = editor;
     }
@@ -175,13 +168,6 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.insertSeparatorAfter(XJMainMenuBar.MI_SAVEAS);
     }
 
-/*
-    public void customizeWindowMenu(XJMenu menu) {
-        menu.insertItemBefore(new XJMenuItem("Show Console", '=', KeyEvent.VK_EQUALS, MI_SHOW_CONSOLE, this), XJMainMenuBar.MI_WINDOW);
-        menu.insertSeparatorBefore(XJMainMenuBar.MI_WINDOW);
-    }
-*/
-
     public void customizeHelpMenu(XJMenu menu) {
         menu.insertItemAfter(new XJMenuItem("Check for Updates", MI_CHECK_UPDATES, this), XJMainMenuBar.MI_HELP);
         menu.insertItemAfter(new XJMenuItem("Send Feedback", MI_SEND_FEEDBACK, this), XJMainMenuBar.MI_HELP);
@@ -190,7 +176,6 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void customizeMenuBar(XJMainMenuBar menubar) {
-        createEditMenu(menubar);
         createFindMenu(menubar);
         createGoToMenu(menubar);
         createGrammarMenu(menubar);
@@ -233,12 +218,12 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle("Run");
-        menu.addItem(new XJMenuItem("Run Interpreter", 'i', KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
+        menu.addItem(new XJMenuItem("Run Interpreter", KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Debug...", 'd', KeyEvent.VK_F9, MI_DEBUG, this));
-        menu.addItem(new XJMenuItem("Build and Debug...", 'b', KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
+        menu.addItem(new XJMenuItem("Debug...", KeyEvent.VK_F9, MI_DEBUG, this));
+        menu.addItem(new XJMenuItem("Build and Debug...", KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Debug Remote...", 'g', KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
+        menu.addItem(new XJMenuItem("Debug Remote...", KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -262,14 +247,14 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu = new XJMenu();
         menu.setTitle("Go To");
 
-        menu.addItem(new XJMenuItem("Rule...", 'u', KeyEvent.VK_B, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_GOTO_RULE, this));
-        menu.addItem(new XJMenuItem("Declaration", 'b', KeyEvent.VK_B, MI_GOTO_DECLARATION, this));
+        menu.addItem(new XJMenuItem("Rule...", KeyEvent.VK_B, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_GOTO_RULE, this));
+        menu.addItem(new XJMenuItem("Declaration", KeyEvent.VK_B, MI_GOTO_DECLARATION, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Line...", 'g', KeyEvent.VK_G, MI_GOTO_LINE, this));
+        menu.addItem(new XJMenuItem("Line...", KeyEvent.VK_G, MI_GOTO_LINE, this));
         menu.addItem(new XJMenuItem("Character...", MI_GOTO_CHARACTER, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Back", 'b', KeyEvent.VK_LEFT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_BACK, this));
-        menu.addItem(new XJMenuItem("Forward", 'f', KeyEvent.VK_RIGHT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_FORWARD, this));
+        menu.addItem(new XJMenuItem("Back", KeyEvent.VK_LEFT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_BACK, this));
+        menu.addItem(new XJMenuItem("Forward", KeyEvent.VK_RIGHT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_FORWARD, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Previous Breakpoint", MI_PREV_BREAKPOINT, this));
         menu.addItem(new XJMenuItem("Next Breakpoint", MI_NEXT_BREAKPOINT, this));
@@ -281,7 +266,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle("Refactor");
-        menu.addItem(new XJMenuItem("Rename...", 'f', KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
+        menu.addItem(new XJMenuItem("Rename...", KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
         menu.addItem(new XJMenuItem("Replace Literals With Token Label...", MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Remove Left Recursion", MI_REMOVE_LEFT_RECURSION, this));
@@ -309,25 +294,25 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.addItem(new XJMenuItem("Show Tokens Syntax Diagram", MI_SHOW_TOKENS_SD, this));
         menu.addItem(new XJMenuItem("Show Current Decision DFA", MI_SHOW_DECISION_DFA, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Insert Rule From Template", 't', KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
+        menu.addItem(new XJMenuItem("Insert Rule From Template", KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
         menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
 
         XJMenu folding = new XJMenu();
         folding.setTitle("Folding");
-        folding.addItem(new XJMenuItem("Toggle Rule", 't', KeyEvent.VK_PERIOD, MI_EXPAND_COLLAPSE_RULE, this));
-        folding.addItem(new XJMenuItem("Expand All Rules", 'e', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EXPAND_ALL_RULES, this));
-        folding.addItem(new XJMenuItem("Collapse All Rules", 'c', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_COLLAPSE_ALL_RULES, this));
+        folding.addItem(new XJMenuItem("Toggle Rule", KeyEvent.VK_PERIOD, MI_EXPAND_COLLAPSE_RULE, this));
+        folding.addItem(new XJMenuItem("Expand All Rules", KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EXPAND_ALL_RULES, this));
+        folding.addItem(new XJMenuItem("Collapse All Rules", KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_COLLAPSE_ALL_RULES, this));
         folding.addSeparator();
-        folding.addItem(new XJMenuItem("Toggle Action", 'a', KeyEvent.VK_MINUS, MI_EXPAND_COLLAPSE_ACTION, this));
-        folding.addItem(new XJMenuItem("Expand All Actions", 'x', KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_EXPAND_ALL_ACTIONS, this));
-        folding.addItem(new XJMenuItem("Collapse All Actions", 'o', KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_COLLAPSE_ALL_ACTIONS, this));
+        folding.addItem(new XJMenuItem("Toggle Action", KeyEvent.VK_MINUS, MI_EXPAND_COLLAPSE_ACTION, this));
+        folding.addItem(new XJMenuItem("Expand All Actions", KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_EXPAND_ALL_ACTIONS, this));
+        folding.addItem(new XJMenuItem("Collapse All Actions", KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_COLLAPSE_ALL_ACTIONS, this));
         
         menu.addSeparator();
         menu.addItem(folding);
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Check Grammar", 'r', KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
+        menu.addItem(new XJMenuItem("Check Grammar", KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -336,66 +321,27 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle("Find");
-        menu.addItem(new XJMenuItem("Find...", 'f', KeyEvent.VK_F, MI_FIND, this));
-        menu.addItem(new XJMenuItem("Find Next", 'n', KeyEvent.VK_F3, 0, MI_FIND_NEXT, this));
-        menu.addItem(new XJMenuItem("Find Previous", 'p', KeyEvent.VK_F3, Event.SHIFT_MASK, MI_FIND_PREV, this));
-        menu.addItem(new XJMenuItem("Find Text at Caret", 't', KeyEvent.VK_F3, MI_FIND_TOKEN, this));
+        menu.addItem(new XJMenuItem("Find...", KeyEvent.VK_F, MI_FIND, this));
+        menu.addItem(new XJMenuItem("Find Next", KeyEvent.VK_F3, 0, MI_FIND_NEXT, this));
+        menu.addItem(new XJMenuItem("Find Previous", KeyEvent.VK_F3, Event.SHIFT_MASK, MI_FIND_PREV, this));
+        menu.addItem(new XJMenuItem("Find Text at Caret", KeyEvent.VK_F3, MI_FIND_TOKEN, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Find Usages", 'f', KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
+        menu.addItem(new XJMenuItem("Find Usages", KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
 
         menubar.addCustomMenu(menu);
-    }
-
-    private void createEditMenu(XJMainMenuBar menubar) {
-        XJMenu menu = new XJMenu();
-        menu.setTitle("Edit");
-        menu.addItem(menuItemUndo = new XJMenuItem("Undo", 'z', KeyEvent.VK_Z, MI_EDIT_UNDO, this));
-        menu.addItem(menuItemRedo = new XJMenuItem("Redo", 'z', KeyEvent.VK_Z, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EDIT_REDO, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Cut", 'x', KeyEvent.VK_X, MI_EDIT_CUT, this));
-        menu.addItem(new XJMenuItem("Copy", 'c', KeyEvent.VK_C, MI_EDIT_COPY, this));
-        menu.addItem(new XJMenuItem("Paste", 'v', KeyEvent.VK_V, MI_EDIT_PASTE, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Select All", 'a', KeyEvent.VK_A, MI_EDIT_SELECT_ALL, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItemCheck("Auto-Indentation", MI_TOGGLE_AUTOINDENT, this, true));
-        //menu.addItem(new XJMenuItemCheck("Syntax Coloring", MI_TOGGLE_SYNTAX_COLORING, this, true));
-        //menu.addItem(new XJMenuItemCheck("Syntax Diagram", MI_TOGGLE_SYNTAX_DIAGRAM, this, true));
-        menu.addItem(new XJMenuItemCheck("Optimize Syntax Diagram", MI_TOGGLE_NFA_OPTIMIZATION, this, true));
-
-        menubar.addCustomMenu(menu);
-    }
-
-    public void menuUndoRedoItemState() {
-        Undo undo = editor.getLastUndo();
-
-        menuItemUndo.setTitle("Undo");
-        menuItemRedo.setTitle("Redo");
-
-        if(undo == null) {
-            menuItemUndo.setEnabled(false);
-            menuItemRedo.setEnabled(false);
-        } else {
-            menuItemUndo.setEnabled(undo.canUndo());
-            menuItemRedo.setEnabled(undo.canRedo());
-
-            if(undo.canUndo())
-                menuItemUndo.setTitle(undo.undoManager.getUndoPresentationName());
-            if(undo.canRedo())
-                menuItemRedo.setTitle(undo.undoManager.getRedoPresentationName());
-        }
     }
 
     public void menuItemState(XJMenuItem item) {
         switch(item.getTag()) {
-            case MI_EDIT_UNDO:
-            case MI_EDIT_REDO:
-                menuUndoRedoItemState();
-                // continue to enable/disable depending on
-                // the debugging state
+            case XJMainMenuBar.MI_UNDO:
+            case XJMainMenuBar.MI_REDO:
+                if(isDebuggerRunning())
+                    item.setEnabled(false);
+                break;
 
-            case MI_EDIT_CUT:
-            case MI_EDIT_PASTE:
+            case XJMainMenuBar.MI_CUT:
+            case XJMainMenuBar.MI_PASTE:
+
             case MI_RENAME:
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
             case MI_LITERAL_TO_SINGLEQUOTE:
@@ -454,7 +400,6 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
-        handleMenuEdit(item.getTag());
         handleMenuView(item.getTag());
         handleMenuFind(item.getTag());
         handleMenuGrammar(item.getTag());
@@ -466,50 +411,6 @@ public class EditorMenu implements XJMenuItemDelegate {
         handleMenuPrivate(item.getTag());
         handleMenuHelp(item.getTag());
         handleMenuExport(item.getTag());
-    }
-
-    public void handleMenuEdit(int itemTag) {
-        switch(itemTag) {
-            case MI_EDIT_UNDO:
-                editor.menuEdit.performUndo();
-                break;
-
-            case MI_EDIT_REDO:
-                editor.menuEdit.performRedo();
-                break;
-
-            case MI_EDIT_CUT:
-                editor.menuEdit.performCutToClipboard();
-                break;
-
-            case MI_EDIT_COPY:
-                editor.menuEdit.performCopyToClipboard();
-                break;
-
-            case MI_EDIT_PASTE:
-                editor.menuEdit.performPasteFromClipboard();
-                break;
-
-            case MI_EDIT_SELECT_ALL:
-                editor.menuEdit.performSelectAll();
-                break;
-
-            case MI_TOGGLE_AUTOINDENT:
-                editor.toggleAutoIndent();
-                break;
-
-            case MI_TOGGLE_SYNTAX_COLORING:
-                editor.toggleSyntaxColoring();
-                break;
-
-            case MI_TOGGLE_SYNTAX_DIAGRAM:
-                editor.toggleSyntaxDiagram();
-                break;
-
-            case MI_TOGGLE_NFA_OPTIMIZATION:
-                editor.toggleNFAOptimization();
-                break;
-        }
     }
 
     public void handleMenuView(int itemTag) {

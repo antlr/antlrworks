@@ -137,6 +137,11 @@ public abstract class CContainerProjectFile implements ComponentContainer, XJMen
         editor.customizeFileMenu(menu);
     }
 
+    public void customizeEditMenu(XJMenu menu) {
+        project.customizeEditMenu(menu);
+        editor.customizeEditMenu(menu);
+    }
+
     public void customizeWindowMenu(XJMenu menu) {
         project.customizeWindowMenu(menu);
         editor.customizeWindowMenu(menu);

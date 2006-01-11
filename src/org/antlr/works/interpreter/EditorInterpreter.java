@@ -47,7 +47,6 @@ import org.antlr.works.parser.Token;
 import org.antlr.works.parsetree.ParseTreePanel;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.undo.Undo;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TextUtils;
@@ -106,17 +105,12 @@ public class EditorInterpreter implements Runnable, EditorTab {
         splitPane.setRightComponent(parseTreePanel);
         splitPane.setContinuousLayout(true);
         splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(200);
 
         panel.add(createControlPanel(), BorderLayout.NORTH);
         panel.add(splitPane, BorderLayout.CENTER);
 
-        editor.registerUndo(new Undo(editor, editor.console), textPane);
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                splitPane.setDividerLocation(0.3);
-            }
-        });
+        editor.getXJFrame().registerUndo(null, textPane);
     }
 
     public Box createControlPanel() {

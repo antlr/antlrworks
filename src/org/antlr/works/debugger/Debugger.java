@@ -126,6 +126,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         treeStackSplitPane.setRightComponent(createListInfoPanel());
         treeStackSplitPane.setContinuousLayout(true);
         treeStackSplitPane.setOneTouchExpandable(true);
+        treeStackSplitPane.setDividerLocation(200);
 
         ioSplitPane = new JSplitPane();
         ioSplitPane.setBorder(null);
@@ -134,6 +135,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         ioSplitPane.setRightComponent(createOutputPanel());
         ioSplitPane.setContinuousLayout(true);
         ioSplitPane.setOneTouchExpandable(true);
+        ioSplitPane.setDividerLocation(100);
 
         ioTreeSplitPane = new JSplitPane();
         ioTreeSplitPane.setBorder(null);
@@ -142,6 +144,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         ioTreeSplitPane.setRightComponent(treeStackSplitPane);
         ioTreeSplitPane.setContinuousLayout(true);
         ioTreeSplitPane.setOneTouchExpandable(true);
+        ioTreeSplitPane.setDividerLocation(200);
 
         panel.add(createControlPanel(), BorderLayout.NORTH);
         panel.add(ioTreeSplitPane, BorderLayout.CENTER);
@@ -152,17 +155,6 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         player = new DebuggerPlayer(this, inputText);
 
         updateStatusInfo();
-
-        // Invoke the setDividerLocation() later - otherwise
-        // they don't resize correctly. If someone knows the reason,
-        // please let me know.
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                ioSplitPane.setDividerLocation(0.7);
-                treeStackSplitPane.setDividerLocation(0.5);
-                ioTreeSplitPane.setDividerLocation(0.2);
-            }
-        });
     }
 
     public Container getWindowComponent() {
@@ -497,7 +489,6 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         running = true;
 
         XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STARTED);
-
         editor.selectDebuggerTab();
 
         editor.console.makeCurrent();
@@ -646,6 +637,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
                 editor.getTextPane().setEditable(true);
                 inputText.stop();
                 running = false;
+                editor.refreshMainMenuBar();
                 XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STOPPED);
             }
         });

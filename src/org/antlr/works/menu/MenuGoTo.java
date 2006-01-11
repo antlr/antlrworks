@@ -110,12 +110,14 @@ public class MenuGoTo extends MenuAbstract {
     public void goToBackward() {
         if(editor.goToHistory.canGoBack()) {
             setCaretPosition(editor.goToHistory.getBackPosition(getCaretPosition()));
+            editor.refreshMainMenuBar();
         }
     }
 
     public void goToForward() {
         if(editor.goToHistory.canGoForward()) {
             setCaretPosition(editor.goToHistory.getForwardPosition());
+            editor.refreshMainMenuBar();
         }
     }
 

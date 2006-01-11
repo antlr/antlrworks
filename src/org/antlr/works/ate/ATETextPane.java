@@ -70,7 +70,11 @@ public class ATETextPane extends JTextPane
         return highlightCursorLine;
     }
 
-    public List getAttributeFromElement(Element e, String key) {
+    /** The method isViewVisible used the same code but inlined
+     * for speed improvement (modify it if this one gets modified)
+     */
+
+    public List getAttributesFromElement(Element e, String key) {
         List attributes = new ArrayList();
         Object o;
         for(int level=0; level<=1; level++) {
@@ -82,7 +86,7 @@ public class ATETextPane extends JTextPane
     }
 
     public ATEFoldingEntityProxy getTopLevelEntityProxy(Element e) {
-        List attributes = getAttributeFromElement(e, ATTRIBUTE_CHARACTER_FOLDING_PROXY);
+        List attributes = getAttributesFromElement(e, ATTRIBUTE_CHARACTER_FOLDING_PROXY);
         if(attributes.isEmpty())
             return null;
         else
@@ -98,7 +102,7 @@ public class ATETextPane extends JTextPane
     }
 
     public ATEFoldingEntity getEntity(View v) {
-        List attributes = getAttributeFromElement(v.getElement(), getKeyForView(v));
+        List attributes = getAttributesFromElement(v.getElement(), getKeyForView(v));
         if(!attributes.isEmpty()) {
             ATEFoldingEntityProxy proxy = (ATEFoldingEntityProxy)attributes.get(attributes.size()-1);
             return proxy.getEntity();
@@ -107,7 +111,7 @@ public class ATETextPane extends JTextPane
     }
 
     public boolean isTopMostInvisible(View v) {
-        List attributes = getAttributeFromElement(v.getElement(), getKeyForView(v));
+        List attributes = getAttributesFromElement(v.getElement(), getKeyForView(v));
         boolean hidden = false;
         for(int index=0; index<attributes.size(); index++) {
             ATEFoldingEntityProxy proxy = (ATEFoldingEntityProxy)attributes.get(index);
@@ -123,16 +127,26 @@ public class ATETextPane extends JTextPane
         return false;
     }
 
-    public boolean isViewVisible(View v) {
-        List attributes = getAttributeFromElement(v.getElement(), getKeyForView(v));
-        for(int index=0; index<attributes.size(); index++) {
-            ATEFoldingEntityProxy proxy =  (ATEFoldingEntityProxy)attributes.get(index);
-            if(proxy.getEntity() == null)
-                continue;
+    /** This methods is called *very* frequently so the code is duplicated
+     * from getAttributesFromElement to speed up
+     */
 
-            if(!proxy.getEntity().foldingEntityIsExpanded())
-                return false;
+    public boolean isViewVisible(View v) {
+        Element e = v.getElement();
+        String key = getKeyForView(v);
+
+        for(int level=0; level<=1; level++) {
+            Object o = e.getAttributes().getAttribute(key+level);
+            if(o instanceof ATEFoldingEntityProxy) {
+                ATEFoldingEntityProxy proxy =  (ATEFoldingEntityProxy)o;
+                if(proxy.getEntity() == null)
+                    continue;
+
+                if(!proxy.getEntity().foldingEntityIsExpanded())
+                    return false;
+            }
         }
+
         return true;
     }
 

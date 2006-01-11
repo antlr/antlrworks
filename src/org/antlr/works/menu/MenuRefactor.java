@@ -1,5 +1,6 @@
 package org.antlr.works.menu;
 
+import edu.usfca.xj.appkit.undo.XJUndo;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.parser.Lexer;
@@ -8,7 +9,6 @@ import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parser.Token;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.undo.Undo;
 import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
@@ -331,7 +331,7 @@ public class MenuRefactor extends MenuAbstract {
 
         replaceEditorTextAndAdjustCaretPosition(s.toString());
 
-        Undo undo = editor.getUndo(getTextPane());
+        XJUndo undo = editor.getXJFrame().getUndo(getTextPane());
         undo.addEditEvent(new UndoableInlineRuleEdit(oldContent, rule.name));
     }
 
