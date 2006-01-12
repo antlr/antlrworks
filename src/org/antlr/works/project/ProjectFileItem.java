@@ -3,10 +3,9 @@ package org.antlr.works.project;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.project.CContainerProject;
-import org.antlr.works.components.project.file.CContainerProjectGrammar;
-import org.antlr.works.components.project.file.CContainerProjectText;
 
-import javax.swing.*;
+import java.util.HashMap;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -40,19 +39,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ProjectFileItem {
 
-    public static final String FILE_GRAMMAR_EXTENSION = ".g";
-    public static final String FILE_JAVA_EXTENSION = ".java";
-    
-    public String filePath;
-    public ComponentContainer container;
-    public boolean buildDirty;
-    private CContainerProject project;
+    protected static final String KEY_FILE_PATH = "KEY_FILE_PATH";
+
+    protected CContainerProject project;
+    protected ComponentContainer container;
+    protected String filePath;
+    protected String fileType;
+
+    public ProjectFileItem(CContainerProject project) {
+        this.project = project;
+    }
 
     public ProjectFileItem(CContainerProject project, String filePath) {
+        setFilePath(filePath);
         this.project = project;
-        this.filePath = filePath;
-        this.container = null; // lazy initialization
-        this.buildDirty = true;
+    }
+
+    public void changeDone() {
+        if(container != null)
+            container.getDocument().changeDone();
     }
 
     public boolean isDirty() {
@@ -72,21 +77,17 @@ public class ProjectFileItem {
             container.close();
     }
 
-    public ComponentContainer createEditor() {
-        if(filePath.endsWith(FILE_GRAMMAR_EXTENSION)) {
-            container = new CContainerProjectGrammar(project);
-        } else {
-            container = new CContainerProjectText(project);
-        }
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                container.getDocument().performLoad(filePath);
-                project.fileEditorItemDidLoad(ProjectFileItem.this);
-            }
-        });
-
+    public void setComponentContainer(ComponentContainer container) {
+        this.container = container;
+    }
+    
+    public ComponentContainer getComponentContainer() {
         return container;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+        this.fileType = CContainerProject.getFileType(filePath);
     }
 
     public String getFilePath() {
@@ -101,31 +102,35 @@ public class ProjectFileItem {
         return XJUtils.getPathByDeletingLastComponent(getFilePath());
     }
 
-    public ComponentContainer getComponentContainer() {
-        return container;
+    public String getFileType() {
+        return fileType;
     }
-
+    
     public void windowActivated() {
         if(container != null)
             container.getEditor().componentActivated();
     }
 
-    public void handleExternalModification() {
+    public boolean handleExternalModification() {
         if(container == null)
-            return;
+            return false;
 
         if(container.getDocument().isModifiedOnDisk()) {
             container.getEditor().componentDocumentContentChanged();
             container.getDocument().synchronizeLastModifiedDate();
-        }
+            return true;
+        } else
+            return false;
     }
 
-    public void setBuildDirty(boolean flag) {
-        this.buildDirty = flag;
+    public void setPersistentData(Map data) {
+        setFilePath((String)data.get(KEY_FILE_PATH));
     }
 
-    public boolean buildDirty() {
-        return buildDirty;
+    public Map getPersistentData() {
+        Map data = new HashMap();
+        data.put(KEY_FILE_PATH, filePath);
+        return data;
     }
 
     /** Called by the XJTree to display the cell content. Use only the last path component

@@ -36,6 +36,10 @@ import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
 import edu.usfca.xj.appkit.document.XJDataXML;
 import edu.usfca.xj.appkit.frame.XJPanel;
+import edu.usfca.xj.appkit.menu.XJMainMenuBar;
+import edu.usfca.xj.appkit.menu.XJMenu;
+import edu.usfca.xj.appkit.menu.XJMenuItem;
+import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.BrowserLauncher;
 import edu.usfca.xj.appkit.utils.XJAlert;
@@ -49,6 +53,7 @@ import org.antlr.works.components.project.CContainerProject;
 import org.antlr.works.components.project.CDocumentProject;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
+import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.stats.Statistics;
@@ -60,7 +65,7 @@ import javax.swing.*;
 import java.io.*;
 import java.net.URL;
 
-public class IDE extends XJApplicationDelegate {
+public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
     public static SplashScreen sc;
 
@@ -221,6 +226,27 @@ public class IDE extends XJApplicationDelegate {
         return p;
     }
 
+    public void customizeHelpMenu(XJMenu menu) {
+        menu.insertItemAfter(new XJMenuItem("Check for Updates", EditorMenu.MI_CHECK_UPDATES, this), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Send Feedback", EditorMenu.MI_SEND_FEEDBACK, this), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", EditorMenu.MI_SUBMIT_STATS, this), XJMainMenuBar.MI_HELP);
+        menu.insertSeparatorAfter(XJMainMenuBar.MI_HELP);
+    }
+
+    public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
+        switch(item.getTag()) {
+            case EditorMenu.MI_SUBMIT_STATS:
+                HelpManager.submitStats(XJApplication.shared().getActiveWindow().getJavaContainer());
+                break;
+            case EditorMenu.MI_SEND_FEEDBACK:
+                HelpManager.sendFeedback(XJApplication.shared().getActiveWindow().getJavaContainer());
+                break;
+            case EditorMenu.MI_CHECK_UPDATES:
+                HelpManager.checkUpdates(XJApplication.shared().getActiveWindow().getJavaContainer(), false);
+                break;
+        }
+    }
+
     public void appShowHelp() {
         String url = Localizable.getLocalizedString(Localizable.DOCUMENTATION_URL);
         try {
@@ -262,4 +288,5 @@ public class IDE extends XJApplicationDelegate {
     public String appVersionLong() {
         return Localizable.getLocalizedString(Localizable.APP_VERSION_LONG);
     }
+
 }

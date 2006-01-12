@@ -112,7 +112,6 @@ public class VisualDrawing extends EditorThread {
             return;
 
         try {
-            //visual.getGrammar().setGrammarText(threadText, filename);
             visual.getGrammar().createGrammars();
         } catch (Exception e) {
             // Ignore

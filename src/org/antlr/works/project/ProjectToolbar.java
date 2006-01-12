@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 /*
 
@@ -47,6 +48,7 @@ public class ProjectToolbar {
     public JButton removeFile;
 
     public JButton settings;
+    public JButton clean;
     public JButton build;
     public JButton run;
 
@@ -72,6 +74,7 @@ public class ProjectToolbar {
         toolbar.add(Box.createHorizontalGlue());
         toolbar.add(settings = (JButton)createNewButton("Settings", "Project Settings", new Dimension(80, 32)));
         toolbar.add(Box.createHorizontalStrut(15));
+        toolbar.add(clean = (JButton)createNewButton("Clean", "Clean Project Directory", new Dimension(80, 32)));
         toolbar.add(build = (JButton)createNewButton("Build", "Build Project", new Dimension(80, 32)));
         toolbar.add(run = (JButton)createNewButton("Run", "Run Project", new Dimension(80, 32)));
     }
@@ -80,7 +83,9 @@ public class ProjectToolbar {
         addFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 XJFileChooser chooser = XJFileChooser.shared();
-                if(chooser.displayOpenDialog(project.getJavaContainer(), (List)null, (List)null, true)) {
+                List extensions = new ArrayList() { { add(".g"); add(".stg"); add(".st"); add(".java"); } };
+                List description = new ArrayList() { { add("ANTLR grammar (*.g)"); add("StringTemplate group (*.stg)"); add("StringTemplate (*.st)"); add("Java source file (*.java)"); } };
+                if(chooser.displayOpenDialog(project.getJavaContainer(), extensions, description, true)) {
                     project.addFilePaths(chooser.getSelectedFilePaths());
                 }
             }
@@ -88,13 +93,19 @@ public class ProjectToolbar {
 
         removeFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                project.removeSelectedFile();
+                project.removeSelectedFiles();
             }
         });
 
         settings.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 project.settings(false);
+            }
+        });
+
+        clean.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                project.clean();
             }
         });
 

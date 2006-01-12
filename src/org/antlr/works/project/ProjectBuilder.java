@@ -7,8 +7,8 @@ import org.antlr.works.components.project.CContainerProject;
 import org.antlr.works.engine.EngineCompiler;
 import org.antlr.works.utils.StreamWatcherDelegate;
 
+import javax.swing.*;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,39 +57,61 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         this.progress.setDelegate(this);
     }
 
-    public List buildListOfGrammarItems(List items) {
-        List itemsToBuild = new ArrayList();
-        for (Iterator iterator = items.iterator(); iterator.hasNext() && !cancel;) {
-            ProjectFileItem item = (ProjectFileItem) iterator.next();
-            if(item.getFileName().endsWith(ProjectFileItem.FILE_GRAMMAR_EXTENSION) && item.buildDirty()) {
-                itemsToBuild.add(item);
-            }
-        }
-        return itemsToBuild;
+    public List getListOfDirtyBuildFiles(String type) {
+        return project.getBuildList().getDirtyBuildFilesOfType(type);
     }
 
-    public List buildListOfAllJavaFiles() {
-        List javaFiles = new ArrayList();
+    public List buildListOfGrammarBuildFiles() {
+        return getListOfDirtyBuildFiles(CContainerProject.FILE_TYPE_GRAMMAR);
+    }
+
+    public List buildListOfJavaBuildFiles() {
+        ProjectBuildList buildList = project.getBuildList();
+
+        // Update the build list with list of files on the disk
 
         File[] files = new File(project.getProjectFolder()).listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if(!file.getName().endsWith(ProjectFileItem.FILE_JAVA_EXTENSION))
+            String filePath = file.getAbsolutePath();
+            if(!CContainerProject.getFileType(filePath).equals(CContainerProject.FILE_TYPE_JAVA))
                 continue;
 
-            javaFiles.add(file.getAbsolutePath());
+            if(buildList.isFileExisting(filePath, CContainerProject.FILE_TYPE_JAVA))
+                buildList.handleExternalModification(filePath, CContainerProject.FILE_TYPE_JAVA);
+            else
+                buildList.addFile(filePath, CContainerProject.FILE_TYPE_JAVA);
         }
 
-        return javaFiles;
+        // Remove all non-existent file on disk that are still in the the build list.
+        // Note: only files that are in the project folder are removed because some
+        // java file, located outside the project folder, may still be referenced
+        // by the project.
+
+        String projectFolder = project.getProjectFolder();
+        for (Iterator iterator = buildList.getBuildFilesOfType(CContainerProject.FILE_TYPE_JAVA).iterator(); iterator.hasNext();)
+        {
+            ProjectBuildList.BuildFile buildFile = (ProjectBuildList.BuildFile) iterator.next();
+            if(buildFile.getFileFolder().equals(projectFolder)) {
+                // The build file is located inside the project folder.
+                // Verify that this file still exists.
+                if(!new File(buildFile.getFilePath()).exists()) {
+                    // The file doesn't exist anymore. Remove it from the build list.
+                    buildList.removeFile(buildFile.getFilePath(), CContainerProject.FILE_TYPE_JAVA);
+                }
+            }
+        }
+
+        return getListOfDirtyBuildFiles(CContainerProject.FILE_TYPE_JAVA);
     }
 
-    public boolean generateGrammarItems(List items) {
-        for (Iterator iterator = items.iterator(); iterator.hasNext() && !cancel;) {
-            ProjectFileItem item = (ProjectFileItem) iterator.next();
+    public boolean generateGrammarBuildFiles(List buildFiles) {
+        for (Iterator iterator = buildFiles.iterator(); iterator.hasNext() && !cancel;) {
+            ProjectBuildList.BuildFile buildFile = (ProjectBuildList.BuildFile) iterator.next();
 
-            String file = item.getFilePath();
-            String libPath = item.getFileFolder();
-            String outputPath = item.getFileFolder();
+            String file = buildFile.getFilePath();
+            String libPath = buildFile.getFileFolder();
+            String outputPath = buildFile.getFileFolder();
 
             setProgressStepInfo("Generating \""+ XJUtils.getLastPathComponent(file)+"\"...");
 
@@ -98,7 +120,8 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
                 project.buildReportError(error);
                 return false;
             } else {
-                item.setBuildDirty(false);
+                buildFile.setDirty(false);
+                project.changeDone();
             }
         }
         return true;
@@ -115,12 +138,17 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         }
     }
 
-    public boolean compileJavaFiles(List files) {
-        for (Iterator iterator = files.iterator(); iterator.hasNext() && !cancel;) {
-            String file = (String) iterator.next();
+    public boolean compileJavaBuildFiles(List buildFiles) {
+        for (Iterator iterator = buildFiles.iterator(); iterator.hasNext() && !cancel;) {
+            ProjectBuildList.BuildFile buildFile = (ProjectBuildList.BuildFile) iterator.next();
+            String file = buildFile.getFilePath();
             setProgressStepInfo("Compiling \""+ XJUtils.getLastPathComponent(file)+"\"...");
             if(!compileFile(file))
                 return false;
+            else {
+                buildFile.setDirty(false);
+                project.changeDone();
+            }
         }
         return true;
     }
@@ -130,58 +158,96 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         progress.setProgress(++buildingProgress);
     }
 
+    public void performBuild() {
+        List grammars = buildListOfGrammarBuildFiles();
+        List javas = buildListOfJavaBuildFiles();
+
+        int total = grammars.size()+javas.size();
+        if(total > 0) {
+            progress.setIndeterminate(false);
+            progress.setProgress(0);
+            progress.setProgressMax(total);
+
+            if(generateGrammarBuildFiles(grammars) && !cancel) {
+                if(grammars.size() > 0) {
+                    // Rebuild the list of Java files because ANTLR may have
+                    // generated some ;-)
+                                        
+                    javas = buildListOfJavaBuildFiles();
+                    total = grammars.size()+javas.size();
+                    progress.setProgressMax(total);
+                }
+                compileJavaBuildFiles(javas);
+            }
+        }
+    }
+
     public void build() {
         cancel = false;
         buildingProgress = 0;
 
         progress.setCancellable(true);
-        progress.setTitle("Building");
+        progress.setTitle("Build");
         progress.setInfo("Preparing...");
         progress.setIndeterminate(true);
 
-        new Thread(new Runnable() {
+        new ThreadExecution(new Runnable() {
             public void run() {
-                List items = project.getFileEditorItems();
-                List grammars = buildListOfGrammarItems(items);
-                List javas = buildListOfAllJavaFiles();
-
-                progress.setIndeterminate(false);
-                progress.setProgress(0);
-                progress.setProgressMax(grammars.size()+javas.size());
-
-                if(generateGrammarItems(grammars) && !cancel) {
-                    compileJavaFiles(javas);
-                }
-
-                if(grammars.size() > 0 && javas.size() > 0) {
-                    project.changeDone();
-                }
-
+                performBuild();
                 progress.close();
             }
-        }).start();
+        }).launch();
 
         progress.runModal();
+    }
+
+    public void performRun() {
+        project.clearConsole();
+        String error = EngineCompiler.runJava(project.getProjectFolder(), project.getRunParameters(), ProjectBuilder.this);
+        if(error != null) {
+            project.buildReportError(error);
+        }
     }
 
     public void run() {
         progress.setCancellable(true);
         progress.setTitle("Run");
-        progress.setInfo("Running...");
+        progress.setInfo("Preparing...");
         progress.setIndeterminate(true);
 
-        new Thread(new Runnable() {
+        new ThreadExecution(new Runnable() {
             public void run() {
-                project.clearConsole();
-                String error = EngineCompiler.runJava(project.getProjectFolder(), project.getRunParameters(), ProjectBuilder.this);
-                if(error != null) {
-                    project.buildReportError(error);
-                }
+                performBuild();
+                progress.setInfo("Running...");
+                progress.setIndeterminate(true);
+                performRun();
                 progress.close();
             }
-        }).start();
+        }).launch();
+
 
         progress.runModal();
+    }
+
+    /** This method cleans the project directory by removing the following files:
+     * - *.class
+     */
+
+    public void clean() {
+        File[] files = new File(project.getProjectFolder()).listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            String filePath = file.getAbsolutePath();
+            if(filePath.endsWith(".class")) {
+                file.delete();
+            }
+        }
+
+        // Mark all files as dirty
+        project.getBuildList().setAllFilesToDirty(true);
+
+        // Mark the project as dirty
+        project.changeDone();
     }
 
     public void dialogDidCancel() {
@@ -200,4 +266,20 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         project.printToConsole(e);
     }
 
+    protected class ThreadExecution {
+
+        protected Runnable r;
+
+        public ThreadExecution(Runnable r) {
+            this.r = r;
+        }
+
+        public void launch() {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    new Thread(r).start();
+                }
+            });
+        }
+    }
 }

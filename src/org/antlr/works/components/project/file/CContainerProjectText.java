@@ -5,6 +5,7 @@ import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.components.project.CContainerProject;
 import org.antlr.works.components.text.CDocumentText;
 import org.antlr.works.components.text.CEditorText;
+import org.antlr.works.project.ProjectFileItem;
 /*
 
 [The "BSD licence"]
@@ -38,8 +39,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class CContainerProjectText extends CContainerProjectFile {
 
-    public CContainerProjectText(CContainerProject project) {
-        super(project);
+    public CContainerProjectText(CContainerProject project, ProjectFileItem item) {
+        super(project, item);
     }
 
     public ComponentDocument createDocument() {

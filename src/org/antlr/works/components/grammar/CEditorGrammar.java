@@ -143,7 +143,6 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     public MenuRun menuRun;
     public MenuSCM menuSCM;
     public MenuExport menuExport;
-    public MenuHelp menuHelp;
 
     public ATEPanel textEditor;
 
@@ -253,7 +252,6 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
         menuRun = new MenuRun(this);
         menuSCM = new MenuSCM(this);
         menuExport = new MenuExport(this);
-        menuHelp = new MenuHelp(this);
     }
 
     protected void initManagers() {
@@ -830,10 +828,6 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
 
     public void customizeFileMenu(XJMenu menu) {
         editorMenu.customizeFileMenu(menu);
-    }
-
-    public void customizeHelpMenu(XJMenu menu) {
-        editorMenu.customizeHelpMenu(menu);
     }
 
     public void customizeMenuBar(XJMainMenuBar menubar) {

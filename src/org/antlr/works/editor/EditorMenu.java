@@ -168,13 +168,6 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.insertSeparatorAfter(XJMainMenuBar.MI_SAVEAS);
     }
 
-    public void customizeHelpMenu(XJMenu menu) {
-        menu.insertItemAfter(new XJMenuItem("Check for Updates", MI_CHECK_UPDATES, this), XJMainMenuBar.MI_HELP);
-        menu.insertItemAfter(new XJMenuItem("Send Feedback", MI_SEND_FEEDBACK, this), XJMainMenuBar.MI_HELP);
-        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", MI_SUBMIT_STATS, this), XJMainMenuBar.MI_HELP);
-        menu.insertSeparatorAfter(XJMainMenuBar.MI_HELP);
-    }
-
     public void customizeMenuBar(XJMainMenuBar menubar) {
         createFindMenu(menubar);
         createGoToMenu(menubar);
@@ -409,7 +402,6 @@ public class EditorMenu implements XJMenuItemDelegate {
         handleMenuRun(item.getTag());
         handleMenuSCM(item.getTag());
         handleMenuPrivate(item.getTag());
-        handleMenuHelp(item.getTag());
         handleMenuExport(item.getTag());
     }
 
@@ -627,20 +619,6 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
             case MI_P4_SYNC:
                 editor.menuSCM.sync();
-                break;
-        }
-    }
-
-    public void handleMenuHelp(int itemTag) {
-        switch(itemTag) {
-            case MI_SUBMIT_STATS:
-                editor.menuHelp.submitStats();
-                break;
-            case MI_SEND_FEEDBACK:
-                editor.menuHelp.sendFeedback();
-                break;
-            case MI_CHECK_UPDATES:
-                editor.menuHelp.checkUpdates();
                 break;
         }
     }

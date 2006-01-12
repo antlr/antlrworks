@@ -92,8 +92,6 @@ public abstract class EditorThread implements Runnable {
     /** Interrupt the thread if it is sleeping. If threshold > 0, the thread will sleep an
      * additionnal 'threshold' ms until no other awakeThread() is called
      * before trying to compute something.
-     *
-     * @param threshold
      */
 
     public synchronized void awakeThread(int threshold) {

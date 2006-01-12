@@ -8,6 +8,7 @@ import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentDocument;
 import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.components.project.CContainerProject;
+import org.antlr.works.project.ProjectFileItem;
 /*
 
 [The "BSD licence"]
@@ -42,14 +43,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public abstract class CContainerProjectFile implements ComponentContainer, XJMenuBarCustomizer, XJMenuBarDelegate {
 
     public CContainerProject project;
+    public ProjectFileItem item;
 
     public ComponentEditor editor;
     public ComponentDocument document;
 
     public XJMainMenuBar mainMenuBar;
 
-    public CContainerProjectFile(CContainerProject project) {
+    public CContainerProjectFile(CContainerProject project, ProjectFileItem item) {
         this.project = project;
+        this.item = item;
+
+        item.setComponentContainer(this);
 
         document = createDocument();
         document.setJavaContainer(project.getJavaContainer());
@@ -122,7 +127,7 @@ public abstract class CContainerProjectFile implements ComponentContainer, XJMen
     }
 
     public void setDirty() {
-        project.fileDidBecomeDirty(this);
+        project.fileDidBecomeDirty(this, item);
     }
 
     /** Menu delegate and customizer

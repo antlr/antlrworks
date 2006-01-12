@@ -48,6 +48,7 @@ import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.panel.GPanel;
 import org.antlr.works.visualization.skin.Skin;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
+import org.antlr.works.grammar.EditorGrammar;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -143,7 +144,7 @@ public class Visual implements EditorTab {
         drawing.skip();
     }
 
-    public org.antlr.works.grammar.EditorGrammar getGrammar() {
+    public EditorGrammar getGrammar() {
         return editor.getGrammar();
     }
 

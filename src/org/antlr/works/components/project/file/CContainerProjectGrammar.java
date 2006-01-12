@@ -5,6 +5,7 @@ import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.components.grammar.CDocumentGrammar;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.components.project.CContainerProject;
+import org.antlr.works.project.ProjectFileItem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,8 +42,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class CContainerProjectGrammar extends CContainerProjectFile {
 
-    public CContainerProjectGrammar(CContainerProject project) {
-        super(project);
+    public CContainerProjectGrammar(CContainerProject project, ProjectFileItem item) {
+        super(project, item);
     }
 
     public void awake() {

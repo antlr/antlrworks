@@ -1,8 +1,10 @@
 package org.antlr.works.components.project;
 
 import edu.usfca.xj.appkit.document.XJDocument;
+import org.antlr.works.project.ProjectData;
 
 import java.util.Map;
+
 /*
 
 [The "BSD licence"]
@@ -36,15 +38,26 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class CDocumentProject extends XJDocument {
 
+    protected ProjectData data;
+
+    public CDocumentProject() {
+        data = new ProjectData();
+    }
+
+    public ProjectData getData() {
+        return data;
+    }
+
     public void documentWillWriteData() {
         CContainerProject project = (CContainerProject)getWindow();
         project.documentWillSave();
-        getDocumentData().setDataForKey(null, "projectData", project.persistentData());
+        getDocumentData().setDataForKey(null, "projectData", data.getPersistentData());
     }
 
     public void documentDidReadData() {
+        data.setPersistentData((Map)getDocumentData().getDataForKey("projectData"));
         CContainerProject project = (CContainerProject)getWindow();
-        project.setPersistentData((Map)getDocumentData().getDataForKey("projectData"));
+        project.documentDidLoad();
     }
 
 
