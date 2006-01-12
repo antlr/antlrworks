@@ -1,6 +1,8 @@
 package org.antlr.works.ate;
 
 import edu.usfca.xj.appkit.utils.XJSmoothScrolling;
+import org.antlr.works.ate.syntax.ATEColoring;
+import org.antlr.works.components.grammar.CEditorGrammar;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -59,6 +61,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected ATEUnderlyingManager underlyingManager;
     protected ATEAnalysisManager analysisManager;
 
+    public ATEColoring colorize;
+
     protected TextPaneListener textPaneListener;
 
     protected boolean isTyping = false;
@@ -67,9 +71,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected static final String unixEndOfLine = "\n";
     protected static int ANALYSIS_COLUMN_WIDTH = 18;
 
-    public ATEPanel(JFrame parentFrame) {
+    public ATEPanel(JFrame parentFrame, CEditorGrammar editor) {
         super(new BorderLayout());
         this.parentFrame = parentFrame;
+        colorize = new ATEColoring(editor);
         createTextPane();
     }
 
@@ -183,6 +188,27 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         setAnalysisColumnVisible(!isAnalysisColumnVisible());
     }
 
+    public void resetColoring() {
+        colorize.reset();
+    }
+
+    public void setSyntaxColoring(boolean flag) {
+        colorize.setEnable(flag);
+    }
+
+    public boolean isSyntaxColoring() {
+        return colorize.isEnable();
+    }
+
+    public void toggleSyntaxColoring() {
+        setSyntaxColoring(!isSyntaxColoring());
+        if(colorize.isEnable()) {
+            colorize.reset();
+            colorize.colorize();
+        } else
+            colorize.removeColorization();
+    }
+
     public void refresh() {
         underlyingManager.reset();
         gutter.markDirty();
@@ -278,6 +304,17 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         return textPane;
     }
 
+    public void ateParserEngineWillParse() {
+        if(delegate != null)
+            delegate.ateParserWillParse();
+    }
+
+    public void ateParserEngineDidParse() {
+        colorize.colorize();
+        if(delegate != null)
+            delegate.ateParserDidParse();
+    }
+
     protected class TextPaneCaretListener implements CaretListener {
 
         public void caretUpdate(CaretEvent e) {
@@ -308,8 +345,11 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         }
 
         public void changeUpdate(int offset, int length, boolean insert) {
-            if(isEnable() && delegate != null)
-                delegate.ateChangeUpdate(offset, length, insert);
+            if(isEnable()) {
+                if(delegate != null)
+                    delegate.ateChangeUpdate(offset, length, insert);
+                colorize.setColorizeLocation(offset, length);
+            }
         }
 
         public void insertUpdate(DocumentEvent e) {
@@ -324,6 +364,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
         public void changedUpdate(DocumentEvent e) {
         }
+
     }
 
     protected class TextPaneMouseAdapter extends MouseAdapter {

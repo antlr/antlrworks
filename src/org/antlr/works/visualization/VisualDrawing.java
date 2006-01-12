@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization;
 
 import org.antlr.analysis.NFAState;
-import org.antlr.works.editor.EditorThread;
+import org.antlr.works.ate.syntax.ATEThread;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.visualization.graphics.GFactory;
 
@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VisualDrawing extends EditorThread {
+public class VisualDrawing extends ATEThread {
 
     protected Visual visual;
 

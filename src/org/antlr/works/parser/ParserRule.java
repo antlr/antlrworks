@@ -2,6 +2,8 @@ package org.antlr.works.parser;
 
 import org.antlr.works.ate.ATEBreakpointEntity;
 import org.antlr.works.ate.ATEFoldingEntity;
+import org.antlr.works.ate.syntax.ATEGenericLexer;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.editor.EditorPersistentObject;
 import org.antlr.works.grammar.EditorGrammarError;
 
@@ -42,9 +44,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldingEntity, ATEBreakpointEntity {
 
     public String name;
-    public Token start;
-    public Token colon;
-    public Token end;
+    public ATEToken start;
+    public ATEToken colon;
+    public ATEToken end;
 
     public boolean expanded = true;
     public boolean breakpoint;
@@ -60,16 +62,16 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
 
     public ParserRule(String name) {
         this.name = name;
-        this.lexer = Token.isLexerName(name);
+        this.lexer = ATEToken.isLexerName(name);
     }
 
-    public ParserRule(Parser parser, String name, Token start, Token colon, Token end) {
+    public ParserRule(Parser parser, String name, ATEToken start, ATEToken colon, ATEToken end) {
         this.parser = parser;
         this.name = name;
         this.start = start;
         this.colon = colon;
         this.end = end;
-        this.lexer = Token.isLexerName(name);
+        this.lexer = ATEToken.isLexerName(name);
     }
 
     public void completed() {
@@ -103,9 +105,9 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
 
     public int getInternalTokensStartIndex() {
         for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
-            Token token = (Token)iter.next();
+            ATEToken token = (ATEToken)iter.next();
             if(token.getAttribute().equals(":")) {
-                token = (Token)iter.next();
+                token = (ATEToken)iter.next();
                 return token.getStartIndex();
             }
         }
@@ -113,17 +115,17 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
     }
 
     public int getInternalTokensEndIndex() {
-        Token token = (Token)parser.tokens.get(end.index-1);
+        ATEToken token = (ATEToken)parser.getTokens().get(end.index-1);
         return token.getEndIndex();
     }
 
     public List getBlocks() {
         List blocks = new ArrayList();
-        Token lastToken = null;
+        ATEToken lastToken = null;
         for(int index=start.index; index<end.index; index++) {
-            Token token = (Token)parser.tokens.get(index);
-            if(token.type == Lexer.TOKEN_BLOCK) {
-                if(lastToken != null && lastToken.type == Lexer.TOKEN_ID && lastToken.getAttribute().equals("options"))
+            ATEToken token = (ATEToken)parser.getTokens().get(index);
+            if(token.type == ATEGenericLexer.TOKEN_BLOCK) {
+                if(lastToken != null && lastToken.type == ATEGenericLexer.TOKEN_ID && lastToken.getAttribute().equals("options"))
                     continue;
 
                 blocks.add(token);
@@ -136,7 +138,7 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
     public List getTokens() {
         List t = new ArrayList();
         for(int index=start.index; index<end.index; index++) {
-            t.add(parser.tokens.get(index));
+            t.add(parser.getTokens().get(index));
         }
         return t;
     }
@@ -147,7 +149,7 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
         boolean findColon = true;
         int level = 0;
         for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
-            Token token = (Token)iter.next();
+            ATEToken token = (ATEToken)iter.next();
             if(findColon) {
                 if(token.getAttribute().equals(":")) {
                     findColon = false;
@@ -158,7 +160,7 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
                     level++;
                 else if(token.getAttribute().equals(")"))
                     level--;
-                else if(token.type != Lexer.TOKEN_BLOCK && level == 0) {
+                else if(token.type != ATEGenericLexer.TOKEN_BLOCK && level == 0) {
                     if(token.getAttribute().equals("|")) {
                         alts.add(alt);
                         alt = new ArrayList();
@@ -195,7 +197,7 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
             if(alts.isEmpty())
                 continue;
 
-            Token firstTokenInAlt = (Token)alts.get(0);
+            ATEToken firstTokenInAlt = (ATEToken)alts.get(0);
             if(firstTokenInAlt.getAttribute().equals(name))
                 return true;
         }
@@ -208,20 +210,20 @@ public class ParserRule implements Comparable, EditorPersistentObject, ATEFoldin
 
         for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
             List alts = (List)iter.next();
-            Token firstTokenInAlt = (Token)alts.get(0);
+            ATEToken firstTokenInAlt = (ATEToken)alts.get(0);
             if(firstTokenInAlt.getAttribute().equals(name)) {
                 if(alts.size() > 1) {
                     if(star.length() > 0)
                         star.append(" | ");
-                    int start = ((Token)alts.get(1)).getStartIndex();
-                    int end = ((Token)alts.get(alts.size()-1)).getEndIndex();
+                    int start = ((ATEToken)alts.get(1)).getStartIndex();
+                    int end = ((ATEToken)alts.get(alts.size()-1)).getEndIndex();
                     star.append(firstTokenInAlt.text.substring(start, end));
                 }
             } else {
                 if(head.length() > 0)
                     head.append(" | ");
                 int start = firstTokenInAlt.getStartIndex();
-                int end = ((Token)alts.get(alts.size()-1)).getEndIndex();
+                int end = ((ATEToken)alts.get(alts.size()-1)).getEndIndex();
                 head.append(firstTokenInAlt.text.substring(start, end));
             }
         }

@@ -29,11 +29,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor;
+package org.antlr.works.ate.syntax;
 
 import org.antlr.works.utils.Console;
 
-public abstract class EditorThread implements Runnable {
+public abstract class ATEThread implements Runnable {
 
     protected int threadSleep = 100;
     protected int threshold = 0;
@@ -44,7 +44,7 @@ public abstract class EditorThread implements Runnable {
     protected boolean skip = false;
     protected Console console;
 
-    public EditorThread(Console console) {
+    public ATEThread(Console console) {
         this.console = console;
     }
 
@@ -143,7 +143,9 @@ public abstract class EditorThread implements Runnable {
             try {
                 threadRun();
             } catch(Exception e) {
-                console.print(e);
+                e.printStackTrace();
+                // @todo to replace
+                //console.print(e);
             }
         }
         setRunning(false);

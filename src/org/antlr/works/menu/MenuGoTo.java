@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
+import org.antlr.works.ate.syntax.ATELine;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.parser.Line;
 import org.antlr.works.parser.ParserReference;
 import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
@@ -73,7 +73,7 @@ public class MenuGoTo extends MenuAbstract {
 
         while(true) {
             line += direction;
-            if(line < 0 || line > editor.parser.getMaxLines()-1)
+            if(line < 0 || line > editor.parserEngine.getMaxLines()-1)
                 break;
 
             if(breakpoints.contains(new Integer(line))) {
@@ -125,7 +125,7 @@ public class MenuGoTo extends MenuAbstract {
         if(lineIndex < 0 || lineIndex > editor.getLines().size()-1)
             return;
 
-        Line line = (Line)editor.getLines().get(lineIndex);
+        ATELine line = (ATELine)editor.getLines().get(lineIndex);
         editor.goToHistoryRememberCurrentPosition();
         setCaretPosition(line.position);
     }

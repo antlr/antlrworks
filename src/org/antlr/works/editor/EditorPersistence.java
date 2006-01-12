@@ -50,13 +50,13 @@ public class EditorPersistence {
     }
 
     public void store() {
-        store(editor.parser.getRules(), KEY_RULES);
-        store(editor.parser.getActions(), KEY_ACTIONS);
+        store(editor.parserEngine.getRules(), KEY_RULES);
+        store(editor.parserEngine.getActions(), KEY_ACTIONS);
     }
 
     public void restore() {
-        restore(editor.parser.getRules(), KEY_RULES);
-        restore(editor.parser.getActions(), KEY_ACTIONS);
+        restore(editor.parserEngine.getRules(), KEY_RULES);
+        restore(editor.parserEngine.getActions(), KEY_ACTIONS);
     }
     
     public void store(List objects, String key) {

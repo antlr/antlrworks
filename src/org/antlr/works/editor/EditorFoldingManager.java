@@ -77,7 +77,7 @@ public class EditorFoldingManager extends ATEFoldingManager {
     }
 
     public void provideFoldingEntities() {
-        List rules = editor.parser.getRules();
+        List rules = editor.parserEngine.getRules();
         if(rules != null) {
             for(int index=0; index<rules.size(); index++) {
                 ParserRule rule = (ParserRule)rules.get(index);
@@ -87,7 +87,7 @@ public class EditorFoldingManager extends ATEFoldingManager {
 
         // Add only actions that are in expanded rules
         if(AWPrefs.getFoldingEnabled() && AWPrefs.getDisplayActionsAnchorsFolding()) {
-            List actions = editor.parser.getActions();
+            List actions = editor.parserEngine.getActions();
             if(actions != null) {
                 for(int index=0; index<actions.size(); index++) {
                     ParserAction action = (ParserAction)actions.get(index);
@@ -112,9 +112,9 @@ public class EditorFoldingManager extends ATEFoldingManager {
 
     public ATEFoldingEntity getEntityForKey(Object key, int tag) {
         if(tag == TAG_ACTIONS)
-            return getEntityForIdentifier(editor.parser.getActions(), (String)key);
+            return getEntityForIdentifier(editor.parserEngine.getActions(), (String)key);
         else if(tag == TAG_RULES)
-            return getEntityForIdentifier(editor.parser.getRules(), (String)key);
+            return getEntityForIdentifier(editor.parserEngine.getRules(), (String)key);
         else
             return null;
     }

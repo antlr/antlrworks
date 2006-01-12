@@ -29,9 +29,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.parser;
 
-public interface ThreadedParserObserver {
-    public void parserWillParse();
-    public void parserDidParse();
+package org.antlr.works.ate.syntax;
+
+public class ATELine {
+
+    public int position;
+
+    public ATELine(int position) {
+        this.position = position;
+    }
 }

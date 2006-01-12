@@ -29,21 +29,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.parser;
+package org.antlr.works.ate.syntax;
 
+import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.editor.EditorProvider;
-import org.antlr.works.editor.EditorThread;
+import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserBlock;
+import org.antlr.works.parser.ParserName;
+import org.antlr.works.parser.ParserRule;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThreadedParser extends EditorThread {
+public class ATEParserEngine extends ATEThread {
 
     protected EditorProvider provider = null;
+    protected ATEPanel textEditor;
 
     protected Parser parser = null;
-    protected List observers = null;
 
     protected List rules;
     protected List groups;
@@ -56,11 +60,11 @@ public class ThreadedParser extends EditorThread {
 
     protected static int delay = 250;
 
-    public ThreadedParser(EditorProvider provider) {
+    public ATEParserEngine(EditorProvider provider, ATEPanel textEditor) {
         super(provider.getConsole());
         this.provider = provider;
+        this.textEditor = textEditor;
         parser = new Parser();
-        observers = new ArrayList();
     }
 
     public void awake() {
@@ -68,11 +72,7 @@ public class ThreadedParser extends EditorThread {
     }
 
     public static void setDelay(int delay) {
-        ThreadedParser.delay = delay;
-    }
-
-    public void addObserver(ThreadedParserObserver observer) {
-        observers.add(observer);
+        ATEParserEngine.delay = delay;
     }
 
     public synchronized List getRules() {
@@ -119,7 +119,7 @@ public class ThreadedParser extends EditorThread {
                 if(block.isTokenBlock) {
                     List internalTokens = block.getInternalTokens();
                     for(int t=0; t<internalTokens.size(); t++) {
-                        Token token = (Token)internalTokens.get(t);
+                        ATEToken token = (ATEToken)internalTokens.get(t);
                         names.add(token.getAttribute());
                     }
                 }
@@ -166,20 +166,6 @@ public class ThreadedParser extends EditorThread {
         awakeThread(delay);
     }
 
-    protected void notifyWillParse() {
-        for(int i=0; i<observers.size(); i++) {
-            ThreadedParserObserver obs = (ThreadedParserObserver)observers.get(i);
-            obs.parserWillParse();
-        }
-    }
-
-    protected void notifyDidParse() {
-        for(int i=0; i<observers.size(); i++) {
-            ThreadedParserObserver obs = (ThreadedParserObserver)observers.get(i);
-            obs.parserDidParse();
-        }
-    }
-
     protected synchronized void setParserAttribute(Parser parser) {
         this.rules = new ArrayList(parser.rules);
         this.groups = new ArrayList(parser.groups);
@@ -191,14 +177,14 @@ public class ThreadedParser extends EditorThread {
     }
 
     public void threadRun() throws Exception {
-        notifyWillParse();
+        textEditor.ateParserEngineWillParse();
 
         parser.parse(provider.getText());
         setParserAttribute(parser);
 
         SwingUtilities.invokeAndWait(new Runnable() {
             public void run() {
-                notifyDidParse();
+                textEditor.ateParserEngineDidParse();
             }
         });
     }

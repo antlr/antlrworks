@@ -38,4 +38,6 @@ public interface ATEPanelDelegate {
     public void ateMousePressed(Point point);
     public void ateMouseExited();
     public void ateMouseMoved(Point relativePoint);
+    public void ateParserWillParse();
+    public void ateParserDidParse();
 }

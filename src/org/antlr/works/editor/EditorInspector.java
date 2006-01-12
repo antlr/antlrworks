@@ -1,12 +1,12 @@
 package org.antlr.works.editor;
 
+import org.antlr.works.ate.syntax.ATEGenericLexer;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.idea.IdeaAction;
 import org.antlr.works.idea.IdeaActionDelegate;
-import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserReference;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -95,8 +95,8 @@ public class EditorInspector {
             return;
 
         for(int index=0; index<tokens.size(); index++) {
-            Token t = (Token)tokens.get(index);
-            if(t.type == Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
+            ATEToken t = (ATEToken)tokens.get(index);
+            if(t.type == ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING) {
                 Item item = new ItemInvalidCharLiteral();
                 item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
                         t.startLineNumber, Color.red,
@@ -188,14 +188,14 @@ public class EditorInspector {
         public static final int IDEA_REMOVE_LEFT_RECURSION = 2;
         public static final int IDEA_CONVERT_TO_SINGLE_QUOTE = 3;
 
-        public Token token;
+        public ATEToken token;
         public int startIndex;
         public int endIndex;
         public int startLineNumber;
         public Color color;
         public String description;
 
-        public void setAttributes(Token token, int startIndex, int endIndex, int startLineNumber, Color color, String description) {
+        public void setAttributes(ATEToken token, int startIndex, int endIndex, int startLineNumber, Color color, String description) {
             this.token = token;
             this.startIndex = startIndex;
             this.endIndex = endIndex;

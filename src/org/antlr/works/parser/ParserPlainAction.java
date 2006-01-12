@@ -1,4 +1,6 @@
 package org.antlr.works.parser;
+
+import org.antlr.works.ate.syntax.ATEToken;
 /*
 
 [The "BSD licence"]
@@ -33,10 +35,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ParserPlainAction {
 
     public String name;
-    public Token start;
-    public Token end;
+    public ATEToken start;
+    public ATEToken end;
     
-    public ParserPlainAction(String name, Token start, Token end) {
+    public ParserPlainAction(String name, ATEToken start, ATEToken end) {
         this.name = name;
         this.start = start;
         this.end = end;

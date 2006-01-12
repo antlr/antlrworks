@@ -34,12 +34,12 @@ package org.antlr.works.rules;
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
 import org.antlr.works.ate.ATEFoldingEntity;
+import org.antlr.works.ate.syntax.ATEParserEngine;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorKeyBindings;
 import org.antlr.works.parser.ParserGroup;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.ThreadedParser;
-import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.utils.IconManager;
 
@@ -66,7 +66,7 @@ import java.util.List;
 public class Rules implements XJTreeDelegate {
 
     protected CEditorGrammar editor;
-    protected ThreadedParser parser;
+    protected ATEParserEngine parserEngine;
     protected RulesDelegate delegate;
 
     protected boolean programmaticallySelectingRule = false;
@@ -80,9 +80,9 @@ public class Rules implements XJTreeDelegate {
 
     protected boolean sort;
 
-    public Rules(CEditorGrammar editor, ThreadedParser parser, XJTree rulesTree) {
+    public Rules(CEditorGrammar editor, ATEParserEngine parserEngine, XJTree rulesTree) {
         this.editor = editor;
-        this.parser = parser;
+        this.parserEngine = parserEngine;
         this.rulesTree = rulesTree;
 
         rulesTree.setDelegate(this);
@@ -126,9 +126,9 @@ public class Rules implements XJTreeDelegate {
     public class RuleMoveUpAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
             ParserRule sourceRule = getEnclosingRuleAtPosition(editor.getCaretPosition());
-            int previousRuleIndex = parser.getRules().indexOf(sourceRule)-1;
+            int previousRuleIndex = parserEngine.getRules().indexOf(sourceRule)-1;
             if(previousRuleIndex>=0) {
-                ParserRule targetRule = parser.getRuleAtIndex(previousRuleIndex);
+                ParserRule targetRule = parserEngine.getRuleAtIndex(previousRuleIndex);
                 moveRule(sourceRule, targetRule, true);
             }
         }
@@ -137,8 +137,8 @@ public class Rules implements XJTreeDelegate {
     public class RuleMoveDownAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
             ParserRule targetRule = getEnclosingRuleAtPosition(editor.getCaretPosition());
-            int nextRuleIndex = parser.getRules().indexOf(targetRule)+1;
-            ParserRule sourceRule = parser.getRuleAtIndex(nextRuleIndex);
+            int nextRuleIndex = parserEngine.getRules().indexOf(targetRule)+1;
+            ParserRule sourceRule = parserEngine.getRuleAtIndex(nextRuleIndex);
             if(sourceRule != null) {
                 moveRule(sourceRule, targetRule, true);
                 selectNextRule = true;
@@ -166,7 +166,7 @@ public class Rules implements XJTreeDelegate {
 
     public ParserGroup findOpenGroupClosestToLocation(int location) {
         // Look backward into the list of groups
-        List groups = parser.getGroups();
+        List groups = parserEngine.getGroups();
         if(groups == null || groups.isEmpty())
             return null;
 
@@ -176,7 +176,7 @@ public class Rules implements XJTreeDelegate {
             if(!group.openGroup)
                 continue;
 
-            Token t = group.token;
+            ATEToken t = group.token;
             if(t.getStartIndex() > location)
                 break;
 
@@ -186,7 +186,7 @@ public class Rules implements XJTreeDelegate {
     }
 
     public ParserGroup findClosingGroupForGroup(ParserGroup group) {
-        List groups = parser.getGroups();
+        List groups = parserEngine.getGroups();
         if(groups == null || groups.isEmpty())
             return null;
 
@@ -209,7 +209,7 @@ public class Rules implements XJTreeDelegate {
     }
 
     public List getRules() {
-        return parser.getRules();
+        return parserEngine.getRules();
     }
 
     public List getSortedRules() {
@@ -234,7 +234,7 @@ public class Rules implements XJTreeDelegate {
     }
 
     public ParserRule getLastRule() {
-        List rules = parser.getRules();
+        List rules = parserEngine.getRules();
         if(rules != null && !rules.isEmpty())
             return (ParserRule)rules.get(rules.size()-1);
         else
@@ -242,7 +242,7 @@ public class Rules implements XJTreeDelegate {
     }
 
     public ParserRule getLastParserRule() {
-        List rules = parser.getRules();
+        List rules = parserEngine.getRules();
         for(int index = rules.size()-1; index>0; index--) {
             ParserRule rule = (ParserRule)rules.get(index);
             if(!rule.lexer)
@@ -252,7 +252,7 @@ public class Rules implements XJTreeDelegate {
     }
 
     public ParserRule getLastLexerRule() {
-        List rules = parser.getRules();
+        List rules = parserEngine.getRules();
         for(int index = rules.size()-1; index>0; index--) {
             ParserRule rule = (ParserRule)rules.get(index);
             if(rule.lexer)
@@ -262,7 +262,7 @@ public class Rules implements XJTreeDelegate {
     }
 
     public ParserRule getRuleWithName(String name) {
-        List rules = parser.getRules();
+        List rules = parserEngine.getRules();
         for(int index=0; index<rules.size(); index++) {
             ParserRule r = (ParserRule)rules.get(index);
             if(r.name.equals(name))
@@ -273,10 +273,10 @@ public class Rules implements XJTreeDelegate {
 
     public List getRulesStartingWith(String match) {
         List matches = new ArrayList();
-        if(parser.getRules() == null)
+        if(parserEngine.getRules() == null)
             return matches;
 
-        List rules = parser.getRules();
+        List rules = parserEngine.getRules();
         for(int index=0; index<rules.size(); index++) {
             ParserRule r = (ParserRule)rules.get(index);
             String rname = r.name.toLowerCase();
@@ -287,10 +287,10 @@ public class Rules implements XJTreeDelegate {
     }
 
     public ParserRule getEnclosingRuleAtPosition(int pos) {
-        if(parser.getRules() == null)
+        if(parserEngine.getRules() == null)
             return null;
 
-        Iterator iterator = parser.getRules().iterator();
+        Iterator iterator = parserEngine.getRules().iterator();
         while(iterator.hasNext()) {
             ParserRule r = (ParserRule)iterator.next();
             if(r.containsIndex(pos))
@@ -300,7 +300,7 @@ public class Rules implements XJTreeDelegate {
     }
 
     public ParserRule selectRuleInTreeAtPosition(int pos) {
-        if(programmaticallySelectingRule || parser.getRules() == null)
+        if(programmaticallySelectingRule || parserEngine.getRules() == null)
             return null;
 
         programmaticallySelectingRule = true;
@@ -311,12 +311,12 @@ public class Rules implements XJTreeDelegate {
     }
 
     public ParserRule selectRuleNameInTree(String name) {
-        if(programmaticallySelectingRule || parser.getRules() == null)
+        if(programmaticallySelectingRule || parserEngine.getRules() == null)
             return null;
 
         ParserRule rule = null;
         programmaticallySelectingRule = true;
-        Iterator iterator = parser.getRules().iterator();
+        Iterator iterator = parserEngine.getRules().iterator();
         while(iterator.hasNext()) {
             ParserRule r = (ParserRule)iterator.next();
             if(r.name.equals(name)) {
@@ -330,7 +330,7 @@ public class Rules implements XJTreeDelegate {
     }
 
     public boolean isRuleName(String name) {
-        Iterator iterator = parser.getRules().iterator();
+        Iterator iterator = parserEngine.getRules().iterator();
         while(iterator.hasNext()) {
             ParserRule r = (ParserRule)iterator.next();
             if(r.name.equals(name))
@@ -340,10 +340,10 @@ public class Rules implements XJTreeDelegate {
     }
 
     public ParserRule getRuleAtIndex(int index) {
-        if(parser.getRules() == null)
+        if(parserEngine.getRules() == null)
             return null;
 
-        Iterator iterator = parser.getRules().iterator();
+        Iterator iterator = parserEngine.getRules().iterator();
         while(iterator.hasNext()) {
             ParserRule r = (ParserRule)iterator.next();
             if(index >= r.getStartIndex() && index <= r.getEndIndex())
@@ -352,11 +352,11 @@ public class Rules implements XJTreeDelegate {
         return null;
     }
 
-    public ParserRule getRuleStartingWithToken(Token startToken) {
-        if(parser.getRules() == null)
+    public ParserRule getRuleStartingWithToken(ATEToken startToken) {
+        if(parserEngine.getRules() == null)
             return null;
 
-        for(Iterator iterator = parser.getRules().iterator(); iterator.hasNext(); ) {
+        for(Iterator iterator = parserEngine.getRules().iterator(); iterator.hasNext(); ) {
             ParserRule r = (ParserRule)iterator.next();
             if(r.start == startToken)
                 return r;
@@ -369,11 +369,11 @@ public class Rules implements XJTreeDelegate {
     }
 
     public void selectFirstRule() {
-        if(parser.getRules() == null || parser.getRules().size() == 0)
+        if(parserEngine.getRules() == null || parserEngine.getRules().size() == 0)
             return;
 
         programmaticallySelectingRule = true;
-        ParserRule r = (ParserRule)parser.getRules().get(0);
+        ParserRule r = (ParserRule)parserEngine.getRules().get(0);
         selectRuleInTree(r);
         goToRule(r);
         programmaticallySelectingRule = false;
@@ -381,8 +381,8 @@ public class Rules implements XJTreeDelegate {
 
     public void selectNextRule() {
         ParserRule rule = getEnclosingRuleAtPosition(editor.getCaretPosition());
-        int index = parser.getRules().indexOf(rule)+1;
-        rule = parser.getRuleAtIndex(index);
+        int index = parserEngine.getRules().indexOf(rule)+1;
+        rule = parserEngine.getRuleAtIndex(index);
         if(rule != null) {
             editor.setCaretPosition(rule.getStartIndex());
             delegate.rulesCaretPositionDidChange();
@@ -416,8 +416,8 @@ public class Rules implements XJTreeDelegate {
 
         rulesTreeRootNode.removeAllChildren();
 
-        List rules = parser.getRules();
-        List groups = parser.getGroups();
+        List rules = parserEngine.getRules();
+        List groups = parserEngine.getGroups();
         if(groups.isEmpty()) {
             buildTree(rulesTreeRootNode, rules, 0, rules.size()-1);
         } else {
@@ -637,10 +637,10 @@ public class Rules implements XJTreeDelegate {
     }
 
     public ATEFoldingEntity getEntityForKey(Object key) {
-        if(parser.getRules() == null)
+        if(parserEngine.getRules() == null)
             return null;
 
-        for(Iterator iterator = parser.getRules().iterator(); iterator.hasNext(); ) {
+        for(Iterator iterator = parserEngine.getRules().iterator(); iterator.hasNext(); ) {
             ParserRule rule = (ParserRule)iterator.next();
             if(rule.name.equals(key))
                 return rule;

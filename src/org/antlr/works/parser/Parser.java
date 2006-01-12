@@ -31,10 +31,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.parser;
 
+import org.antlr.works.ate.syntax.ATEGenericLexer;
+import org.antlr.works.ate.syntax.ATEGenericParser;
+import org.antlr.works.ate.syntax.ATEToken;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parser extends AbstractParser {
+public class Parser extends ATEGenericParser {
 
     public static final String BEGIN_GROUP = "// $<";
     public static final String END_GROUP = "// $>";
@@ -158,12 +162,12 @@ public class Parser extends AbstractParser {
     }
 
     public ParserName matchName() {
-        Token start = T(0);
+        ATEToken start = T(0);
 
         if(!isID(0))
             return null;
 
-        Token type = null;
+        ATEToken type = null;
         if(ParserName.isKnownType(T(0).getAttribute())) {
             // Skip the grammar specifier
             type = T(0);
@@ -171,10 +175,10 @@ public class Parser extends AbstractParser {
         }
 
         if(isID(0, "grammar")) {
-            if(type != null && type.type == Lexer.TOKEN_ID)
-                type.type = Lexer.TOKEN_OTHER;
+            if(type != null && type.type == ATEGenericLexer.TOKEN_ID)
+                type.type = ATEGenericLexer.TOKEN_OTHER;
 
-            Token name = T(1);
+            ATEToken name = T(1);
 
             while(nextToken()) {
                 if(isSEMI(0))
@@ -198,7 +202,7 @@ public class Parser extends AbstractParser {
     }
 
     public ParserPlainAction matchPlainAction() {
-        Token start = T(0);
+        ATEToken start = T(0);
 
         if(!isID(0))
             return null;
@@ -214,7 +218,7 @@ public class Parser extends AbstractParser {
     }
 
     public ParserBlock matchBlock() {
-        Token start = T(0);
+        ATEToken start = T(0);
 
         if(!isID(0))
             return null;
@@ -243,7 +247,7 @@ public class Parser extends AbstractParser {
         // ARG_ACTION? ("returns" ARG_ACTION)? throwsSpec? optionsSpec? ruleScopeSpec?
         // ("@init" ACTION)? ":" ... ";"
 
-        Token start = T(0);
+        ATEToken start = T(0);
 
         // Match any modifiers
         if(ruleModifiers.contains(T(0).getAttribute())) {
@@ -252,7 +256,7 @@ public class Parser extends AbstractParser {
         }
 
         // Match the name
-        Token tokenName = T(0);
+        ATEToken tokenName = T(0);
         String name = T(0).getAttribute();
         if(!nextToken())
             return null;
@@ -294,20 +298,20 @@ public class Parser extends AbstractParser {
                 return null;
         }
 
-        Token colonToken = T(0);
+        ATEToken colonToken = T(0);
         ParserRule rule = new ParserRule(this, name, start, colonToken, null);
         int refOldSize = references.size();
         while(nextToken()) {
             switch(T(0).type) {
-                case Lexer.TOKEN_SEMI:
+                case ATEGenericLexer.TOKEN_SEMI:
                     rule.end = T(0);
-                    tokenName.type = Lexer.TOKEN_RULE;
+                    tokenName.type = ATEGenericLexer.TOKEN_RULE;
                     if(references.size() > refOldSize)
                         rule.setReferencesIndexes(refOldSize, references.size()-1);
                     rule.completed();
                     return rule;
 
-                case Lexer.TOKEN_ID: {
+                case ATEGenericLexer.TOKEN_ID: {
                     // Match also all references inside the rule
 
                     // First, skip any label
@@ -320,7 +324,7 @@ public class Parser extends AbstractParser {
                         skipLabel = true;
 
                     if(skipLabel) {
-                        T(0).type = Lexer.TOKEN_LABEL;
+                        T(0).type = ATEGenericLexer.TOKEN_LABEL;
                         continue;
                     }
 
@@ -329,16 +333,16 @@ public class Parser extends AbstractParser {
                         continue;
 
                     // Set the token flags
-                    T(0).type = Lexer.TOKEN_REFERENCE;
+                    T(0).type = ATEGenericLexer.TOKEN_REFERENCE;
 
                     // Add the new reference
                     references.add(new ParserReference(rule, T(0)));
                     break;
                 }
 
-                case Lexer.TOKEN_BLOCK: {
+                case ATEGenericLexer.TOKEN_BLOCK: {
                     // Match also all actions inside the rule
-                    Token t = T(-1);
+                    ATEToken t = T(-1);
                     if(t == null || !blockIdentifiers.contains(t.getAttribute().toLowerCase())) {
                         // An action is a block not preceeded by a block identifier
                         actions.add(new ParserAction(rule, T(0), actions.size()));
@@ -346,7 +350,7 @@ public class Parser extends AbstractParser {
                     break;
                 }
 
-                case Lexer.TOKEN_CHAR: {
+                case ATEGenericLexer.TOKEN_CHAR: {
                     if(isChar(0, "-") && isChar(1, ">")) {
                         skip(2);
                         matchRewriteSyntax();
@@ -398,7 +402,7 @@ public class Parser extends AbstractParser {
     }
 
     public ParserGroup matchRuleGroup(List rules) {
-        Token token = T(0);
+        ATEToken token = T(0);
         String comment = token.getAttribute();
 
         if(comment.startsWith(BEGIN_GROUP)) {
@@ -411,13 +415,13 @@ public class Parser extends AbstractParser {
 
     public static List parsePropertiesString(final String content) {
 
-        class ParseProperties extends AbstractParser {
+        class ParseProperties extends ATEGenericParser {
 
             public List parseTokens() {
                 List tokens = new ArrayList();
                 init(content);
                 while(nextToken()) {
-                    if(T(0).type == Lexer.TOKEN_ID) {
+                    if(T(0).type == ATEGenericLexer.TOKEN_ID) {
                         if(isChar(1, "=") || isChar(1, "\n"))
                             tokens.add(T(0));
                     }

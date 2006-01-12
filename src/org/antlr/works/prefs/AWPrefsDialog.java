@@ -40,7 +40,7 @@ import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import org.antlr.works.parser.ThreadedParser;
+import org.antlr.works.ate.syntax.ATEParserEngine;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.utils.HelpManager;
 
@@ -220,7 +220,7 @@ public class AWPrefsDialog extends XJPanel {
     public static void applyCommonPrefs() {
         // * WARNING *
         // This function is called at startup and when applying preferences
-        ThreadedParser.setDelay(AWPrefs.getParserDelay());
+        ATEParserEngine.setDelay(AWPrefs.getParserDelay());
         XJApplication.setAutoSave(AWPrefs.getAutoSaveEnabled(), AWPrefs.getAutoSaveDelay());
     }
 

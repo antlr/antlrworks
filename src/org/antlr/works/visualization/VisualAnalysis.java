@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization;
 
-import org.antlr.works.editor.EditorThread;
+import org.antlr.works.ate.syntax.ATEThread;
 import org.antlr.works.grammar.EditorGrammarError;
 import org.antlr.works.parser.ParserRule;
 
@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class VisualAnalysis extends EditorThread {
+public class VisualAnalysis extends ATEThread {
 
     protected Visual visual;
     private boolean analyze = false;
@@ -83,7 +83,7 @@ public class VisualAnalysis extends EditorThread {
         // Clear graphic cache because we have to redraw each rule again
         visual.drawing.clearCacheGraphs();
 
-        for (Iterator iterator = visual.parser.getRules().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = visual.parserEngine.getRules().iterator(); iterator.hasNext();) {
             ParserRule rule = (ParserRule)iterator.next();
             updateRuleWithErrors(rule, threadFetchErrorsForRule(rule));
         }

@@ -1,4 +1,4 @@
-package org.antlr.works.parser;
+package org.antlr.works.ate.syntax;
 
 import java.util.List;
 /*
@@ -32,33 +32,37 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class AbstractParser {
+public abstract class ATEGenericParser {
 
     protected List tokens;
     protected int position;
     protected int mark;
 
-    protected Lexer lexer;
+    protected ATEGenericLexer lexer;
 
     public void init(String text) {
-        lexer = new Lexer(text);
+        lexer = new ATEGenericLexer(text);
         tokens = lexer.parseTokens();
         position = -1;
         mark = -1;
+    }
+
+    public List getTokens() {
+        return tokens;
     }
 
     public List getLines() {
         if(lexer == null)
             return null;
         else
-            return lexer.lines;
+            return lexer.getLines();
     }
 
     public int getMaxLines() {
         if(lexer == null)
             return 0;
         else
-            return lexer.lineNumber;
+            return lexer.getLineNumber();
     }
 
     public void mark() {
@@ -80,47 +84,47 @@ public abstract class AbstractParser {
         }
     }
     
-    public Token T(int index) {
+    public ATEToken T(int index) {
         if(position+index >= 0 && position+index < tokens.size())
-            return (Token)tokens.get(position+index);
+            return (ATEToken)tokens.get(position+index);
         else
             return null;
     }
 
     public boolean isChar(int index, String c) {
-        return isTokenType(index, Lexer.TOKEN_CHAR) && T(index).getAttribute().equals(c);
+        return isTokenType(index, ATEGenericLexer.TOKEN_CHAR) && T(index).getAttribute().equals(c);
     }
 
     public boolean isLPAREN(int index) {
-        return isTokenType(index, Lexer.TOKEN_LPAREN);
+        return isTokenType(index, ATEGenericLexer.TOKEN_LPAREN);
     }
 
     public boolean isSEMI(int index) {
-        return isTokenType(index, Lexer.TOKEN_SEMI);
+        return isTokenType(index, ATEGenericLexer.TOKEN_SEMI);
     }
 
     public boolean isCOLON(int index) {
-        return isTokenType(index, Lexer.TOKEN_COLON);
+        return isTokenType(index, ATEGenericLexer.TOKEN_COLON);
     }
 
     public boolean isSingleComment(int index) {
-        return isTokenType(index, Lexer.TOKEN_SINGLE_COMMENT);
+        return isTokenType(index, ATEGenericLexer.TOKEN_SINGLE_COMMENT);
     }
 
     public boolean isComplexComment(int index) {
-        return isTokenType(index, Lexer.TOKEN_SINGLE_COMMENT);
+        return isTokenType(index, ATEGenericLexer.TOKEN_SINGLE_COMMENT);
     }
 
     public boolean isID(int index) {
-        return isTokenType(index, Lexer.TOKEN_ID);
+        return isTokenType(index, ATEGenericLexer.TOKEN_ID);
     }
 
     public boolean isID(int index, String attribute) {
-        return isTokenType(index, Lexer.TOKEN_ID) && T(index).getAttribute().equals(attribute);
+        return isTokenType(index, ATEGenericLexer.TOKEN_ID) && T(index).getAttribute().equals(attribute);
     }
 
     public boolean isBLOCK(int index) {
-        return isTokenType(index, Lexer.TOKEN_BLOCK);
+        return isTokenType(index, ATEGenericLexer.TOKEN_BLOCK);
     }
 
     public boolean isTokenType(int index, int type) {

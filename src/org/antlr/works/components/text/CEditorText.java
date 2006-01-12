@@ -49,7 +49,7 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
     }
 
     public void create() {
-        textEditor = new ATEPanel(getJFrame());
+        textEditor = new ATEPanel(getJFrame(), null);
         textEditor.setAnalysisColumnVisible(false);
 
         textEditor.setDelegate(this);
@@ -109,5 +109,11 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
     }
 
     public void ateMouseMoved(Point relativePoint) {
+    }
+
+    public void ateParserWillParse() {
+    }
+
+    public void ateParserDidParse() {
     }
 }

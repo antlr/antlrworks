@@ -70,6 +70,15 @@ public class ATETextPane extends JTextPane
         return highlightCursorLine;
     }
 
+    /** Override setText() in order to reset the colorization
+     *
+     */
+    
+    public void setText(String text) {
+        super.setText(text);
+        textEditor.resetColoring();
+    }
+
     /** The method isViewVisible used the same code but inlined
      * for speed improvement (modify it if this one gets modified)
      */

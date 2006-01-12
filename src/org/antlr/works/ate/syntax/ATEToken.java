@@ -29,9 +29,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.parser;
+package org.antlr.works.ate.syntax;
 
-public class Token implements Comparable {
+public class ATEToken implements Comparable {
 
     public int type;
 
@@ -49,10 +49,10 @@ public class Token implements Comparable {
 
     public int index;   // index inside the tokens list
 
-    public Token(int type, int start, int end,
-                 int startLineNumber, int endLineNumber,
-                 int startLineIndex, int endLineIndex,
-                 String text) {
+    public ATEToken(int type, int start, int end,
+                    int startLineNumber, int endLineNumber,
+                    int startLineIndex, int endLineIndex,
+                    String text) {
         this.type = type;
 
         this.start = start;
@@ -95,14 +95,14 @@ public class Token implements Comparable {
     }
 
     public boolean equals(Object otherObject) {
-        Token otherToken = (Token)otherObject;
+        ATEToken otherToken = (ATEToken)otherObject;
         return type == otherToken.type &&
                 start == otherToken.start &&
                 end == otherToken.end;
     }
 
     public int compareTo(Object o) {
-        Token otherToken = (Token)o;
+        ATEToken otherToken = (ATEToken)o;
         return this.getAttribute().compareTo(otherToken.getAttribute());
     }
 

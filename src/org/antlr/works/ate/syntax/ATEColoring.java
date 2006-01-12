@@ -29,13 +29,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.syntax;
+package org.antlr.works.ate.syntax;
 
 import org.antlr.works.ate.ATEStyledDocument;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.editor.EditorThread;
-import org.antlr.works.parser.Lexer;
-import org.antlr.works.parser.Token;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
@@ -45,7 +42,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Coloring extends EditorThread {
+public class ATEColoring extends ATEThread {
 
     private CEditorGrammar editor;
 
@@ -64,9 +61,9 @@ public class Coloring extends EditorThread {
     private List offsets;
     private final Object offsetLock = new Object();
 
-    private boolean enable = true;
+    private boolean enable = false;
 
-    public Coloring(CEditorGrammar editor) {
+    public ATEColoring(CEditorGrammar editor) {
         super(editor.console);
 
         this.editor = editor;
@@ -124,7 +121,7 @@ public class Coloring extends EditorThread {
         adjustTokens();
         // skip any job in the thread to be executed
         // because colorize() has been called probably a while ago
-        // in the parserDidParse() method of EditorWindow
+        // in the ateParserDidParse() method of EditorWindow
         skip();
     }
 
@@ -153,9 +150,9 @@ public class Coloring extends EditorThread {
         }
     }
 
-    private Token threadFindOldToken(int offset, Token newToken) {
+    private ATEToken threadFindOldToken(int offset, ATEToken newToken) {
         for(int t = offset; t<tokens.size(); t++) {
-            Token oldToken = (Token)tokens.get(t);
+            ATEToken oldToken = (ATEToken)tokens.get(t);
             if(oldToken.equals(newToken))
                 return oldToken;
             else if(oldToken.getStartIndex()>newToken.getStartIndex())
@@ -171,9 +168,9 @@ public class Coloring extends EditorThread {
         int nt = 0;
         int ot = 0;
         for(; nt<newTokens.size(); nt++) {
-            Token newToken = (Token)newTokens.get(nt);
+            ATEToken newToken = (ATEToken)newTokens.get(nt);
             if(tokens != null && ot < tokens.size()) {
-                Token oldToken = (Token)tokens.get(ot);
+                ATEToken oldToken = (ATEToken)tokens.get(ot);
                 if(oldToken.equals(newToken)) {
                     ot++;
                 } else {
@@ -204,25 +201,25 @@ public class Coloring extends EditorThread {
             // Walk the list of modified tokens and apply the corresponding color
             // for each of them
             for(int t = 0; t<modifiedTokens.size(); t++) {
-                Token token = (Token) modifiedTokens.get(t);
+                ATEToken token = (ATEToken) modifiedTokens.get(t);
                 AttributeSet attr = null;
                 switch(token.type) {
-                    case Lexer.TOKEN_COMPLEX_COMMENT:
-                    case Lexer.TOKEN_SINGLE_COMMENT:
+                    case ATEGenericLexer.TOKEN_COMPLEX_COMMENT:
+                    case ATEGenericLexer.TOKEN_SINGLE_COMMENT:
                         attr = commentAttr;
                         break;
-                    case Lexer.TOKEN_DOUBLE_QUOTE_STRING:
-                    case Lexer.TOKEN_SINGLE_QUOTE_STRING:
+                    case ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING:
+                    case ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING:
                         attr = stringAttr;
                         break;
-                    case Lexer.TOKEN_REFERENCE:
-                    case Lexer.TOKEN_RULE:
+                    case ATEGenericLexer.TOKEN_REFERENCE:
+                    case ATEGenericLexer.TOKEN_RULE:
                         if(token.lexer)
                             attr = lexerRefAttr;
                         else
                             attr = parserRefAttr;
                         break;
-                    case Lexer.TOKEN_LABEL:
+                    case ATEGenericLexer.TOKEN_LABEL:
                         attr = labelAttr;
                         break;
                 }

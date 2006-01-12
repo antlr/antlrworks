@@ -40,10 +40,10 @@ import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
 import org.antlr.works.parsetree.ParseTreePanel;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
@@ -210,7 +210,7 @@ public class EditorInterpreter implements Runnable, EditorTab {
 
         ParseTree t = null;
         try {
-            if(Token.isLexerName(startSymbol)) {
+            if(ATEToken.isLexerName(startSymbol)) {
                 t = lexEngine.parse(startSymbol);
             } else {
                 t = parseEngine.parse(startSymbol);

@@ -2,11 +2,11 @@ package org.antlr.works.menu;
 
 import edu.usfca.xj.appkit.undo.XJUndo;
 import edu.usfca.xj.appkit.utils.XJAlert;
+import org.antlr.works.ate.syntax.ATEGenericLexer;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserReference;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.utils.Utils;
@@ -53,7 +53,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void rename() {
-        Token token = editor.getCurrentToken();
+        ATEToken token = editor.getCurrentToken();
         if(token == null)
             return;
 
@@ -67,11 +67,11 @@ public class MenuRefactor extends MenuAbstract {
         }
     }
 
-    protected void renameToken(Token t, String name) {
+    protected void renameToken(ATEToken t, String name) {
         List tokens = editor.getTokens();
         String attr = t.getAttribute();
         for(int index = tokens.size()-1; index>0; index--) {
-            Token token = (Token) tokens.get(index);
+            ATEToken token = (ATEToken) tokens.get(index);
             if(token.type == t.type && token.getAttribute().equals(attr)) {
                 editor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
             }
@@ -79,11 +79,11 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void replaceLiteralWithTokenLabel() {
-        Token token = editor.getCurrentToken();
+        ATEToken token = editor.getCurrentToken();
         if(token == null)
             return;
 
-        if(token.type != Lexer.TOKEN_SINGLE_QUOTE_STRING && token.type != Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
+        if(token.type != ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING && token.type != ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING) {
             XJAlert.display(editor.getJavaContainer(), "Cannot Replace Literal With Token Label", "The current token is not a literal.");
             return;
         }
@@ -98,7 +98,7 @@ public class MenuRefactor extends MenuAbstract {
         }
     }
 
-    public void replaceLiteralTokenWithTokenLabel(Token t, String name) {
+    public void replaceLiteralTokenWithTokenLabel(ATEToken t, String name) {
         // First insert the rule at the end of the grammar
         int insertionIndex = editor.getText().length();
         editor.textEditor.insertText(insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
@@ -107,8 +107,8 @@ public class MenuRefactor extends MenuAbstract {
         List tokens = editor.getTokens();
         String attr = t.getAttribute();
         for(int index = tokens.size()-1; index>0; index--) {
-            Token token = (Token) tokens.get(index);
-            if(token.type != Lexer.TOKEN_SINGLE_QUOTE_STRING && token.type != Lexer.TOKEN_DOUBLE_QUOTE_STRING)
+            ATEToken token = (ATEToken) tokens.get(index);
+            if(token.type != ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING && token.type != ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING)
                 continue;
 
             if(!token.getAttribute().equals(attr))
@@ -120,13 +120,13 @@ public class MenuRefactor extends MenuAbstract {
 
     public void convertLiteralsToSingleQuote() {
         editor.beginGroupChange("Convert Literals To Single Quote Literals");
-        convertLiteralsToSpecifiedQuote(Lexer.TOKEN_DOUBLE_QUOTE_STRING, '\'', '"');
+        convertLiteralsToSpecifiedQuote(ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING, '\'', '"');
         editor.endGroupChange();
     }
 
     public void convertLiteralsToDoubleQuote() {
         editor.beginGroupChange("Convert Literals To Double Quote Literals");
-        convertLiteralsToSpecifiedQuote(Lexer.TOKEN_SINGLE_QUOTE_STRING, '"', '\'');
+        convertLiteralsToSpecifiedQuote(ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING, '"', '\'');
         editor.endGroupChange();
     }
 
@@ -135,19 +135,19 @@ public class MenuRefactor extends MenuAbstract {
 
         List tokens = editor.getTokens();
         for(int index = tokens.size()-1; index>0; index--) {
-            Token token = (Token) tokens.get(index);
+            ATEToken token = (ATEToken) tokens.get(index);
 
             String attribute;
             String stripped;
             String replaced = null;
 
-            if(token.type == Lexer.TOKEN_SINGLE_QUOTE_STRING || token.type == Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
+            if(token.type == ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING || token.type == ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING) {
                 attribute = token.getAttribute();
                 stripped = attribute.substring(1, attribute.length()-1);
             } else
                 continue;
 
-            if(token.type == Lexer.TOKEN_SINGLE_QUOTE_STRING) {
+            if(token.type == ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING) {
                 // Only one character allowed
                 if(stripped.length() == 1)
                     continue;
@@ -158,7 +158,7 @@ public class MenuRefactor extends MenuAbstract {
                     stripped = escapeStringQuote(stripped, '"', '\'');
 
                 replaced = '"'+stripped+'"';
-            } else if(token.type == Lexer.TOKEN_DOUBLE_QUOTE_STRING) {
+            } else if(token.type == ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING) {
                 // String with one character should be converted to single-quote
 
                 if(stripped.length() > 1 && stripped.charAt(0) != '\\')
@@ -179,7 +179,7 @@ public class MenuRefactor extends MenuAbstract {
     protected void convertLiteralsToSpecifiedQuote(int tokenType, char quote, char unescapeQuote) {
         List tokens = editor.getTokens();
         for(int index = tokens.size()-1; index>0; index--) {
-            Token token = (Token) tokens.get(index);
+            ATEToken token = (ATEToken) tokens.get(index);
             if(token.type != tokenType)
                 continue;
 
@@ -265,7 +265,7 @@ public class MenuRefactor extends MenuAbstract {
                             JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(ruleName != null && ruleName.length() > 0) {
             editor.beginGroupChange("Extract Rule");
-            boolean lexer = Token.isLexerName(ruleName);
+            boolean lexer = ATEToken.isLexerName(ruleName);
             int index = insertionIndexForRule(lexer);
             String ruleContent = editor.getText().substring(leftIndex, rightIndex);
             if(index > editor.getCaretPosition()) {

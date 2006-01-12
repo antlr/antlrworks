@@ -29,12 +29,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.parser;
+package org.antlr.works.ate.syntax;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Lexer {
+public class ATEGenericLexer {
 
     public static final int TOKEN_SINGLE_QUOTE_STRING = 1;
     public static final int TOKEN_DOUBLE_QUOTE_STRING = 2;
@@ -59,19 +59,27 @@ public class Lexer {
     protected int lineIndex;    // position of the line in characters
     protected List lines;
 
-    public Lexer(String text) {
+    public ATEGenericLexer(String text) {
         this.text = text;
         lines = new ArrayList();
+    }
+
+    public List getLines() {
+        return lines;
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
     }
 
     public List parseTokens() {
         List tokens = new ArrayList();
         position = -1;
         lineNumber = 0;
-        lines.add(new Line(0));
+        lines.add(new ATELine(0));
 
         while(nextCharacter()) {
-            Token token = null;
+            ATEToken token = null;
 
             if(C(0) == '\'')
                 token = matchSingleQuoteString();
@@ -106,14 +114,14 @@ public class Lexer {
         return tokens;
     }
 
-    public Token matchID() {
+    public ATEToken matchID() {
         int sp = position;
         while(isID(C(1)) && nextCharacter()) {
         }
         return createNewToken(TOKEN_ID, sp);
     }
 
-    public Token matchSingleQuoteString() {
+    public ATEToken matchSingleQuoteString() {
         int sp = position;
         while(nextCharacter()) {
             if(C(0) == '\'' || matchNewLine())
@@ -122,7 +130,7 @@ public class Lexer {
         return null;
     }
 
-    public Token matchDoubleQuoteString() {
+    public ATEToken matchDoubleQuoteString() {
         int sp = position;
         while(nextCharacter()) {
             if(C(0) == '\"' || matchNewLine())
@@ -131,7 +139,7 @@ public class Lexer {
         return null;
     }
 
-    public Token matchSingleComment() {
+    public ATEToken matchSingleComment() {
         int sp = position;
         while(nextCharacter()) {
             if(matchNewLine())
@@ -140,7 +148,7 @@ public class Lexer {
         return createNewToken(TOKEN_SINGLE_COMMENT, sp, position);
     }
 
-    public Token matchComplexComment() {
+    public ATEToken matchComplexComment() {
         int sp = position;
         while(nextCharacter()) {
             if(C(0) == '*' && C(1) == '/') {
@@ -153,7 +161,7 @@ public class Lexer {
         return createNewToken(TOKEN_COMPLEX_COMMENT, sp, position);
     }
 
-    public Token matchBlock(char start, char end) {
+    public ATEToken matchBlock(char start, char end) {
         // Skip all strings, comments and embedded blocks
         int sp = position;
         int embedded = 0;
@@ -190,7 +198,7 @@ public class Lexer {
             if(matchNewLine()) {
                 lineNumber++;
                 lineIndex = position+1;
-                lines.add(new Line(lineIndex));
+                lines.add(new ATELine(lineIndex));
             }
             return position<text.length();
         } else
@@ -235,22 +243,22 @@ public class Lexer {
         return c == '_' || c == '$';
     }
 
-    public Token createNewToken(int type) {
+    public ATEToken createNewToken(int type) {
         return createNewToken(type, position);
     }
 
-    public Token createNewToken(int type, int start) {
+    public ATEToken createNewToken(int type, int start) {
         return createNewToken(type, start, position+1);
     }
 
-    public Token createNewToken(int type, int start, int end) {
+    public ATEToken createNewToken(int type, int start, int end) {
         return createNewToken(type, start, end, lineNumber, lineNumber, lineIndex, lineIndex);
     }
 
-    public Token createNewToken(int type, int start, int end,
+    public ATEToken createNewToken(int type, int start, int end,
                                 int startLineNumber, int endLineNumber,
                                 int startLineIndex, int endLineIndex) {
-        return new Token(type, start, end, startLineNumber, endLineNumber, startLineIndex, endLineIndex, text);
+        return new ATEToken(type, start, end, startLineNumber, endLineNumber, startLineIndex, endLineIndex, text);
     }
 
 }

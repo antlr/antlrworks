@@ -1,6 +1,7 @@
 package org.antlr.works.parser;
 
 import org.antlr.works.ate.ATEFoldingEntity;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.editor.EditorPersistentObject;
 /*
 
@@ -36,11 +37,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ParserAction implements EditorPersistentObject, ATEFoldingEntity {
 
     public ParserRule rule;
-    public Token token;
+    public ATEToken token;
     public int actionNum;
     public boolean expanded = true;
 
-    public ParserAction(ParserRule rule, Token token, int actionNum) {
+    public ParserAction(ParserRule rule, ATEToken token, int actionNum) {
         this.rule = rule;
         this.token = token;
         this.actionNum = actionNum;
@@ -71,15 +72,15 @@ public class ParserAction implements EditorPersistentObject, ATEFoldingEntity {
     }
 
     public int foldingEntityGetStartParagraphIndex() {
-        return token.start;
+        return token.getStartIndex();
     }
 
     public int foldingEntityGetStartIndex() {
-        return token.start;
+        return token.getStartIndex();
     }
 
     public int foldingEntityGetEndIndex() {
-        return token.end;
+        return token.getEndIndex();
     }
 
     public int foldingEntityGetStartLine() {

@@ -14,6 +14,10 @@ import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
+import org.antlr.works.ate.syntax.ATEGenericLexer;
+import org.antlr.works.ate.syntax.ATELine;
+import org.antlr.works.ate.syntax.ATEParserEngine;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.completion.AutoCompletionMenu;
 import org.antlr.works.completion.AutoCompletionMenuDelegate;
 import org.antlr.works.completion.RuleTemplates;
@@ -27,14 +31,15 @@ import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.menu.*;
 import org.antlr.works.navigation.GoToHistory;
 import org.antlr.works.navigation.GoToRule;
-import org.antlr.works.parser.*;
+import org.antlr.works.parser.ParserAction;
+import org.antlr.works.parser.ParserReference;
+import org.antlr.works.parser.ParserRule;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.rules.Rules;
 import org.antlr.works.rules.RulesDelegate;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.AutoIndentation;
-import org.antlr.works.syntax.Coloring;
 import org.antlr.works.syntax.ImmediateColoring;
 import org.antlr.works.syntax.Syntax;
 import org.antlr.works.utils.TextUtils;
@@ -85,7 +90,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class CEditorGrammar extends ComponentEditor implements ThreadedParserObserver, AutoCompletionMenuDelegate,
+public class CEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
         RulesDelegate, EditorProvider, ATEPanelDelegate,
         XJUndoDelegate, XJNotificationObserver
 {
@@ -101,7 +106,6 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
 
     public GoToRule goToRule;
     public GoToHistory goToHistory;
-    public Coloring colorize;
     public ImmediateColoring immediateSyntaxColoring;
     public AutoIndentation autoIndent;
 
@@ -114,7 +118,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
 
     /* Components */
 
-    public ThreadedParser parser;
+    public ATEParserEngine parserEngine;
     public Rules rules;
     public Visual visual;
     public EditorInterpreter interpreter;
@@ -196,23 +200,22 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     }
 
     protected void initComponents() {
-        parser = new ThreadedParser(this);
-        parser.awake();
+        parserEngine = new ATEParserEngine(this, textEditor);
+        parserEngine.awake();
 
-        rules = new Rules(this, parser, rulesTree);
+        rules = new Rules(this, parserEngine, rulesTree);
         rules.setDelegate(this);
 
-        syntax = new Syntax(this, parser);
+        syntax = new Syntax(this, parserEngine);
 
         visual = new Visual(this);
-        visual.setParser(parser);
+        visual.setParser(parserEngine);
 
         interpreter = new EditorInterpreter(this);
         debugger = new Debugger(this);
     }
 
     protected void initTools() {
-        colorize = new Coloring(this);
         goToRule = new GoToRule(this, getJFrame(), getTextPane());
         goToHistory = new GoToHistory();
         immediateSyntaxColoring = new ImmediateColoring(getTextPane());
@@ -281,7 +284,8 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     }
 
     protected void createInterface() {
-        textEditor = new ATEPanel(getJFrame());
+        textEditor = new ATEPanel(getJFrame(), this);
+        textEditor.setSyntaxColoring(true);
         textEditor.setDelegate(this);
         textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
         textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
@@ -380,8 +384,6 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     }
 
     protected void register() {
-        parser.addObserver(this);
-
         getXJFrame().registerUndo(this, getTextPane());
 
         XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
@@ -472,14 +474,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     }
 
     public void toggleSyntaxColoring() {
-        colorize.setEnable(!colorize.isEnable());
-        if(colorize.isEnable()) {
-            colorize.reset();
-            colorize.colorize();
-        } else
-            colorize.removeColorization();
-
-        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_COLORING);
+        textEditor.toggleSyntaxColoring();
     }
 
     public void toggleRulesSorting() {
@@ -533,7 +528,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
             return;
 
         for(int t=0; t<tokens.size(); t++) {
-            Token token = (Token) tokens.get(t);
+            ATEToken token = (ATEToken) tokens.get(t);
             if(token.getStartIndex() > location) {
                 token.offsetPositionBy(length);
             }
@@ -560,8 +555,8 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     public void endGroupChange() {
         endTextPaneUndoGroup();
         enableTextPane(false);
-        colorize.reset();
-        parser.parse();
+        textEditor.resetColoring();
+        parserEngine.parse();
         changeDone();
     }
 
@@ -618,8 +613,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
             getTextPane().moveCaretPosition(0);
             getTextPane().getCaret().setSelectionVisible(true);
             grammarChanged();
-            colorize.reset();
-            parser.parse();
+            parserEngine.parse();
         } catch(Exception e) {
             e.printStackTrace();
         } finally {
@@ -630,8 +624,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     public void setText(String text) {
         getTextPane().setText(text);
         grammarChanged();
-        colorize.reset();
-        parser.parse();
+        parserEngine.parse();
         changeDone();
     }
 
@@ -650,7 +643,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     }
 
     public int getSelectionLeftIndexOnTokenBoundary() {
-        Token t = getTokenAtPosition(getTextPane().getSelectionStart());
+        ATEToken t = getTokenAtPosition(getTextPane().getSelectionStart());
         if(t == null)
             return -1;
         else
@@ -658,7 +651,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     }
 
     public int getSelectionRightIndexOnTokenBoundary() {
-        Token t = getTokenAtPosition(getTextPane().getSelectionEnd());
+        ATEToken t = getTokenAtPosition(getTextPane().getSelectionEnd());
         if(t == null)
             return -1;
         else
@@ -689,19 +682,19 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     }
 
     public List getActions() {
-        return parser.getActions();
+        return parserEngine.getActions();
     }
 
     public List getReferences() {
-        return parser.getReferences();
+        return parserEngine.getReferences();
     }
 
     public List getTokens() {
-        return parser.getTokens();
+        return parserEngine.getTokens();
     }
 
     public List getLines() {
-        return parser.getLines();
+        return parserEngine.getLines();
     }
 
     public int getCurrentLinePosition() {
@@ -731,7 +724,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
             return -1;
 
         for(int i=0; i<lines.size(); i++) {
-            Line line = (Line)lines.get(i);
+            ATELine line = (ATELine)lines.get(i);
             if(line.position > pos) {
                 return i-1;
             }
@@ -748,12 +741,12 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
         if(lineIndex == -1 || lines == null)
             return null;
 
-        Line startLine = (Line)lines.get(lineIndex);
+        ATELine startLine = (ATELine)lines.get(lineIndex);
         int start = startLine.position;
         if(lineIndex+1 >= lines.size()) {
             return new Point(start, getTextPane().getDocument().getLength()-1);
         } else {
-            Line endLine = (Line)lines.get(lineIndex+1);
+            ATELine endLine = (ATELine)lines.get(lineIndex+1);
             int end = endLine.position;
             return new Point(start, end-1);
         }
@@ -778,17 +771,17 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
         return null;
     }
 
-    public Token getCurrentToken() {
+    public ATEToken getCurrentToken() {
         return getTokenAtPosition(getCaretPosition());
     }
 
-    public Token getTokenAtPosition(int pos) {
+    public ATEToken getTokenAtPosition(int pos) {
         List tokens = getTokens();
         if(tokens == null)
             return null;
 
         for(int index=0; index<tokens.size(); index++) {
-            Token token = (Token)tokens.get(index);
+            ATEToken token = (ATEToken)tokens.get(index);
             if(token.containsIndex(pos))
                 return token;
         }
@@ -800,7 +793,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     }
 
     public ParserAction getCurrentAction() {
-        List actions = parser.getActions();
+        List actions = parserEngine.getActions();
         int position = getCaretPosition();
         for(int index=0; index<actions.size(); index++) {
             ParserAction action = (ParserAction)actions.get(index);
@@ -857,8 +850,8 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     public void updateInformation() {
         String t;
         int size = 0;
-        if(parser.getRules() != null)
-            size = parser.getRules().size();
+        if(parserEngine.getRules() != null)
+            size = parserEngine.getRules().size();
         switch(size) {
             case 0:
                 t = "No rules";
@@ -905,11 +898,11 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
     /** Parser delegate methods
      */
 
-    public void parserWillParse() {
+    public void ateParserWillParse() {
         persistence.store();
     }
 
-    public void parserDidParse() {
+    public void ateParserDidParse() {
         persistence.restore();
 
         textEditor.setIsTyping(false);
@@ -920,31 +913,27 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
         visual.setText(getText(), getFileName());
         updateVisualization(false);
 
-        colorize.colorize();
         interpreter.setRules(getRules());
 
         rules.parserDidParse();
         syntax.parserDidParse();
 
+        // Make sure to invoke the ideas after Rules
+        // has completely updated its list (which should
+        // be done inside rules.parserDidParse()
+        editorIdeas.display(getCaretPosition());
+
         if(windowFirstDisplay) {
             windowFirstDisplay = false;
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    rules.selectFirstRule();
+                    // Don't select the first rule for now ;-)
+                    //rules.selectFirstRule();
                     updateVisualization(true);
                     executeFirstOpeningOperations();
                 }
             });
         }
-
-        // Invoke the idea dectection later because rules didn't updated
-        // yet its rule list (parserDidParse first run here and then
-        // on Rules - the order can change in the future).
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                editorIdeas.display(getCaretPosition());
-            }
-        });
     }
 
     public void changeDone() {
@@ -1002,7 +991,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
      */
 
     public List autoCompletionMenuGetMatchingWordsForPartialWord(String partialWord) {
-        if(parser == null || parser.getRules() == null)
+        if(parserEngine == null || parserEngine.getRules() == null)
             return null;
 
         partialWord = partialWord.toLowerCase();
@@ -1011,7 +1000,7 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
         if(rules.isRuleAtIndex(getCaretPosition())) {
             // Inside a rule - show all rules in alphabetical order
 
-            List sortedRules = Collections.list(Collections.enumeration(parser.getRules()));
+            List sortedRules = Collections.list(Collections.enumeration(parserEngine.getRules()));
             Collections.sort(sortedRules);
 
             for(Iterator iterator = sortedRules.iterator(); iterator.hasNext(); ) {
@@ -1056,10 +1045,8 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
         adjustTokens(offset, length);
         textEditor.changeOccurred();
 
-        parser.parse();
+        parserEngine.parse();
         visual.cancelDrawingProcess();
-
-        colorize.setColorizeLocation(offset, length);
     }
 
     public void ateMousePressed(Point point) {
@@ -1121,13 +1108,13 @@ public class CEditorGrammar extends ComponentEditor implements ThreadedParserObs
         // means that the grammar is probably an ANTLR version 2 grammar.
 
         boolean version2 = false;
-        List tokens = parser.getTokens();
+        List tokens = parserEngine.getTokens();
         for(int index=0; index<tokens.size(); index++) {
-            Token t = (Token)tokens.get(index);
-            if(t.type == Lexer.TOKEN_ID && t.getAttribute().equals("class")) {
+            ATEToken t = (ATEToken)tokens.get(index);
+            if(t.type == ATEGenericLexer.TOKEN_ID && t.getAttribute().equals("class")) {
                 if(index+2<tokens.size()) {
-                    Token t2 = (Token)tokens.get(index+2);
-                    if(t2.type == Lexer.TOKEN_ID && t2.getAttribute().equals("extends")) {
+                    ATEToken t2 = (ATEToken)tokens.get(index+2);
+                    if(t2.type == ATEGenericLexer.TOKEN_ID && t2.getAttribute().equals("extends")) {
                         version2 = true;
                         break;
                     }

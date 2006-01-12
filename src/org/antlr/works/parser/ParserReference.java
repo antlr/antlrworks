@@ -1,4 +1,6 @@
 package org.antlr.works.parser;
+
+import org.antlr.works.ate.syntax.ATEToken;
 /*
 
 [The "BSD licence"]
@@ -33,9 +35,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ParserReference implements Comparable {
 
     public ParserRule rule;
-    public Token token;
+    public ATEToken token;
 
-    public ParserReference(ParserRule rule, Token token) {
+    public ParserReference(ParserRule rule, ATEToken token) {
         this.rule = rule;
         this.token = token;
     }

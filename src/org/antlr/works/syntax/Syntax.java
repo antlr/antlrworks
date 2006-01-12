@@ -1,8 +1,12 @@
 package org.antlr.works.syntax;
 
 import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.works.ate.syntax.ATEParserEngine;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.parser.*;
+import org.antlr.works.parser.Parser;
+import org.antlr.works.parser.ParserReference;
+import org.antlr.works.parser.ParserRule;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +48,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class Syntax {
 
     protected CEditorGrammar editor;
-    protected ThreadedParser parser;
+    protected ATEParserEngine parserEngine;
 
     protected List duplicateRules;
     protected List undefinedReferences;
@@ -53,9 +57,9 @@ public class Syntax {
     protected List tokenVocabNames;
     protected String tokenVocabName;
 
-    public Syntax(CEditorGrammar editor, ThreadedParser parser) {
+    public Syntax(CEditorGrammar editor, ATEParserEngine parserEngine) {
         this.editor = editor;
-        this.parser = parser;
+        this.parserEngine = parserEngine;
 
         duplicateRules = new ArrayList();
         undefinedReferences = new ArrayList();
@@ -65,8 +69,8 @@ public class Syntax {
 
     public int getNumberOfRulesWithErrors() {
         int count = 0;
-        if(parser.getRules() != null) {
-            for (Iterator iterator = parser.getRules().iterator(); iterator.hasNext();) {
+        if(parserEngine.getRules() != null) {
+            for (Iterator iterator = parserEngine.getRules().iterator(); iterator.hasNext();) {
                 ParserRule rule = (ParserRule) iterator.next();
                 if(rule.hasErrors())
                     count++;
@@ -96,7 +100,7 @@ public class Syntax {
         return duplicateRules;
     }
 
-    public boolean isUndefinedReference(Token t) {
+    public boolean isUndefinedReference(ATEToken t) {
         for(int index=0; index<undefinedReferences.size(); index++) {
             ParserReference ref = (ParserReference)undefinedReferences.get(index);
             if(ref.token.equals(t))
@@ -110,7 +114,7 @@ public class Syntax {
     }
 
     public List getReferences() {
-        return parser.getReferences();
+        return parserEngine.getReferences();
     }
 
     public void resetTokenVocab() {
@@ -119,7 +123,7 @@ public class Syntax {
     }
 
     public List getTokenVocabNames() {
-        String tokenVocab = parser.getTokenVocab();
+        String tokenVocab = parserEngine.getTokenVocab();
         if(tokenVocab == null) {
             tokenVocabNames.clear();
             return tokenVocabNames;
@@ -143,7 +147,7 @@ public class Syntax {
                 List tokens = Parser.parsePropertiesString(XJUtils.getStringFromFile(filePath));
                 // Add each token name to the list of tokenVocabNames
                 for(int index=0; index<tokens.size(); index++) {
-                    Token t = (Token)tokens.get(index);
+                    ATEToken t = (ATEToken)tokens.get(index);
                     tokenVocabNames.add(t.getAttribute());
                 }
             }
@@ -155,11 +159,11 @@ public class Syntax {
     }
 
     public void rebuildHasLeftRecursionRulesList() {
-        if(parser.getRules() == null)
+        if(parserEngine.getRules() == null)
             return;
 
         hasLeftRecursionRules.clear();
-        for(Iterator iter = parser.getRules().iterator(); iter.hasNext();) {
+        for(Iterator iter = parserEngine.getRules().iterator(); iter.hasNext();) {
             ParserRule r = (ParserRule)iter.next();
             if(r.hasLeftRecursion())
                 hasLeftRecursionRules.add(r);
@@ -167,7 +171,7 @@ public class Syntax {
     }
 
     public void rebuildDuplicateRulesList() {
-        List rules = parser.getRules();
+        List rules = parserEngine.getRules();
         if(rules == null)
             return;
 
@@ -187,13 +191,13 @@ public class Syntax {
     }
 
     public void rebuildUndefinedReferencesList() {
-        List existingReferences = parser.getRuleNames();
-        existingReferences.addAll(parser.getDeclaredTokenNames());
-        existingReferences.addAll(parser.getPredefinedReferences());
+        List existingReferences = parserEngine.getRuleNames();
+        existingReferences.addAll(parserEngine.getDeclaredTokenNames());
+        existingReferences.addAll(parserEngine.getPredefinedReferences());
         existingReferences.addAll(getTokenVocabNames());
 
         undefinedReferences.clear();
-        List references = parser.getReferences();
+        List references = parserEngine.getReferences();
         if(references == null)
             return;
 

@@ -1,4 +1,6 @@
 package org.antlr.works.parser;
+
+import org.antlr.works.ate.syntax.ATEToken;
 /*
 
 [The "BSD licence"]
@@ -35,16 +37,16 @@ public class ParserGroup {
     public String name = null;
     public int ruleIndex = -1;
     public boolean openGroup = false;
-    public Token token = null;
+    public ATEToken token = null;
 
-    public ParserGroup(String name, int ruleIndex, Token token) {
+    public ParserGroup(String name, int ruleIndex, ATEToken token) {
         this.name = name;
         this.ruleIndex = ruleIndex;
         this.token = token;
         this.openGroup = true;
     }
 
-    public ParserGroup(int ruleIndex, Token token) {
+    public ParserGroup(int ruleIndex, ATEToken token) {
         this.ruleIndex = ruleIndex;
         this.token = token;
         this.openGroup = false;

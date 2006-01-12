@@ -34,10 +34,11 @@ package org.antlr.works.visualization;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.tool.DOTGenerator;
+import org.antlr.works.ate.syntax.ATEParserEngine;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.grammar.EditorGrammar;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.ThreadedParser;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.utils.DotGenerator;
 import org.antlr.works.visualization.fa.FAFactory;
@@ -48,7 +49,6 @@ import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.panel.GPanel;
 import org.antlr.works.visualization.skin.Skin;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
-import org.antlr.works.grammar.EditorGrammar;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -64,7 +64,7 @@ public class Visual implements EditorTab {
 
     protected VisualDelegate delegate;
 
-    protected ThreadedParser parser;
+    protected ATEParserEngine parserEngine;
 
     protected GContext context;
     protected Skin skin;
@@ -117,8 +117,8 @@ public class Visual implements EditorTab {
         this.delegate = delegate;
     }
 
-    public void setParser(ThreadedParser parser) {
-        this.parser = parser;
+    public void setParser(ATEParserEngine parserEngine) {
+        this.parserEngine = parserEngine;
     }
 
     public void setText(String text, String filename) {

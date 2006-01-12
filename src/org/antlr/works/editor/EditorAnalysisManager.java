@@ -70,7 +70,7 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
     }
 
     public int getLinesCount() {
-        return editor.parser.getMaxLines();
+        return editor.parserEngine.getMaxLines();
     }
 
     public Color getAnalysisColor() {

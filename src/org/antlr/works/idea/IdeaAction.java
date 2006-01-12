@@ -1,6 +1,6 @@
 package org.antlr.works.idea;
 
-import org.antlr.works.parser.Token;
+import org.antlr.works.ate.syntax.ATEToken;
 /*
 
 [The "BSD licence"]
@@ -37,9 +37,9 @@ public class IdeaAction {
     public String name;
     public IdeaActionDelegate delegate;
     public int actionID;
-    public Token token;
+    public ATEToken token;
 
-    public IdeaAction(String name, IdeaActionDelegate delegate, int actionID, Token token) {
+    public IdeaAction(String name, IdeaActionDelegate delegate, int actionID, ATEToken token) {
         this.name = name;
         this.delegate = delegate;
         this.actionID = actionID;

@@ -40,9 +40,9 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarNonDeterminismMessage;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.parser.ParserName;
-import org.antlr.works.parser.Token;
 import org.antlr.works.utils.ErrorListener;
 
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public class EditorGrammar {
     public NFAState getRuleStartState(String name) {
         Grammar g;
 
-        if(Token.isLexerName(name))
+        if(ATEToken.isLexerName(name))
             g = getLexerGrammar();
         else
             g = getParserGrammar();
@@ -98,7 +98,7 @@ public class EditorGrammar {
     }
 
     public Grammar getGrammarForRule(String name) {
-        if(Token.isLexerName(name))
+        if(ATEToken.isLexerName(name))
             return getLexerGrammar();
         else
             return getParserGrammar();
@@ -142,7 +142,7 @@ public class EditorGrammar {
     }
 
     public String getName() {
-        ParserName name = editor.parser.getName();
+        ParserName name = editor.parserEngine.getName();
         if(name == null)
             return null;
         else
@@ -150,7 +150,7 @@ public class EditorGrammar {
     }
 
     public int getType() {
-        ParserName name = editor.parser.getName();
+        ParserName name = editor.parserEngine.getName();
         if(name == null)
             return ParserName.COMBINED;
         else

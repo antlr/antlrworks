@@ -36,10 +36,10 @@ import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
+import org.antlr.works.ate.syntax.ATELine;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.generate.DialogGenerate;
-import org.antlr.works.parser.Line;
 import org.antlr.works.parsetree.ParseTreeNode;
 import org.antlr.works.parsetree.ParseTreePanel;
 import org.antlr.works.prefs.AWPrefs;
@@ -566,7 +566,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         if(lineIndex-1<0 || lineIndex-1 >= lines.size())
             return -1;
 
-        Line line = (Line)lines.get(lineIndex-1);
+        ATELine line = (ATELine)lines.get(lineIndex-1);
         String t = editor.getText();
 
         // ANTLR gives a position using a tab size of 8. I have to

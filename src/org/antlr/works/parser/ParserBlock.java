@@ -1,5 +1,9 @@
 package org.antlr.works.parser;
 
+import org.antlr.works.ate.syntax.ATEGenericLexer;
+import org.antlr.works.ate.syntax.ATEGenericParser;
+import org.antlr.works.ate.syntax.ATEToken;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +41,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ParserBlock {
 
     public String name;
-    public Token start;
-    public Token end;
+    public ATEToken start;
+    public ATEToken end;
 
     public boolean isTokenBlock = false;
     public boolean isOptionsBlock = false;
@@ -46,7 +50,7 @@ public class ParserBlock {
     public List internalTokens;
     public String tokenVocab;
 
-    public ParserBlock(String name, Token start, Token end) {
+    public ParserBlock(String name, ATEToken start, ATEToken end) {
         this.name = name;
         this.start = start;
         this.end = end;
@@ -62,9 +66,9 @@ public class ParserBlock {
     public void parseOptionsBlock() {
         List tokens = getInternalTokens();
         for(int index=0; index<tokens.size(); index++) {
-            Token t = (Token)tokens.get(index);
+            ATEToken t = (ATEToken)tokens.get(index);
             if(t.getAttribute().equals("tokenVocab") && index+1<tokens.size()) {
-                t = (Token) tokens.get(index+1);
+                t = (ATEToken) tokens.get(index+1);
                 tokenVocab = t.getAttribute();
             }
         }
@@ -74,7 +78,7 @@ public class ParserBlock {
         return tokenVocab;
     }
 
-    public class ParseInternalTokens extends AbstractParser {
+    public class ParseInternalTokens extends ATEGenericParser {
 
         public ParseInternalTokens() {
         }
@@ -84,7 +88,7 @@ public class ParserBlock {
             String content = end.getAttribute();
             init(content.substring(1, content.length()));
             while(nextToken()) {
-                if(T(0).type == Lexer.TOKEN_ID) {
+                if(T(0).type == ATEGenericLexer.TOKEN_ID) {
                     if(isChar(1, "=") || isSEMI(1))
                         tokens.add(T(0));
                 }

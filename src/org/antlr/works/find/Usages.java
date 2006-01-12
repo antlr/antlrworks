@@ -31,10 +31,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.find;
 
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -57,9 +57,9 @@ public class Usages implements EditorTab {
     protected String lastRule;
 
     protected CEditorGrammar editor;
-    protected Token token;
+    protected ATEToken token;
 
-    public Usages(CEditorGrammar editor, Token token) {
+    public Usages(CEditorGrammar editor, ATEToken token) {
         this.editor = editor;
         this.token = token;
 
@@ -108,7 +108,7 @@ public class Usages implements EditorTab {
         return panel;
     }
 
-    public void addMatch(ParserRule rule, Token token) {
+    public void addMatch(ParserRule rule, ATEToken token) {
         if(lastRule == null || !lastRule.equals(rule.name)) {
             node = new DefaultMutableTreeNode();
             node.setUserObject(rule.name);
@@ -138,10 +138,10 @@ public class Usages implements EditorTab {
 
     public class UsageMatch {
         public ParserRule rule;
-        public Token token;
+        public ATEToken token;
         public String contextualText;
 
-        public UsageMatch(ParserRule rule, Token token) {
+        public UsageMatch(ParserRule rule, ATEToken token) {
             this.rule = rule;
             this.token = token;
             createContextString();

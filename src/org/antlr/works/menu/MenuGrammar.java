@@ -33,12 +33,12 @@ package org.antlr.works.menu;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.DecisionDFA;
 import org.antlr.works.parser.Parser;
 import org.antlr.works.parser.ParserGroup;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.visualization.Visual;
 import org.antlr.works.visualization.VisualDelegate;
@@ -118,11 +118,11 @@ public class MenuGrammar extends MenuAbstract implements DecisionDFA.TDecisionDF
         if(closingGroup != null) {
             // End of file is considered as a closing group but no group really exists
             // for that purpose
-            Token t = closingGroup.token;
+            ATEToken t = closingGroup.token;
             editor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
         }
 
-        Token t = openGroup.token;
+        ATEToken t = openGroup.token;
         editor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
 
         editor.endGroupChange();

@@ -1,7 +1,7 @@
 package org.antlr.works.editor;
 
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.parser.Token;
 import org.antlr.works.tips.TipsManager;
 import org.antlr.works.tips.TipsOverlay;
 import org.antlr.works.tips.TipsProvider;
@@ -73,7 +73,7 @@ public class EditorTips implements TipsProvider {
 
         Point p = null;
         try {
-            Token token = editor.getTokenAtPosition(position);
+            ATEToken token = editor.getTokenAtPosition(position);
             if(token != null) {
                 // Make sure the mouse is over the token because
                 // Swing will return a valid position even if the mouse

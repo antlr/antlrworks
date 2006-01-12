@@ -1,5 +1,7 @@
 package org.antlr.works.parser;
 
+import org.antlr.works.ate.syntax.ATEToken;
+
 import java.util.ArrayList;
 import java.util.List;
 /*
@@ -43,9 +45,9 @@ public class ParserName {
     public static final int TREEPARSER = 3;
 
     public String name;
-    public Token start;
-    public Token end;
-    public Token type;
+    public ATEToken start;
+    public ATEToken end;
+    public ATEToken type;
 
     static {
         types = new ArrayList();
@@ -55,7 +57,7 @@ public class ParserName {
         types.add("tree");
     }
 
-    public ParserName(String name, Token start, Token end, Token type) {
+    public ParserName(String name, ATEToken start, ATEToken end, ATEToken type) {
         this.name = name;
         this.start = type==null?start:type;
         this.end = end;

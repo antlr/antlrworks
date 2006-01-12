@@ -9,11 +9,11 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.analysis.DFA;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
+import org.antlr.works.ate.syntax.ATEGenericLexer;
+import org.antlr.works.ate.syntax.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.parser.Lexer;
 import org.antlr.works.parser.ParserRule;
-import org.antlr.works.parser.Token;
 import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.*;
@@ -112,17 +112,17 @@ public class DecisionDFA implements Runnable, EditorTab {
         return true;
     }
 
-    public Token findClosestDecisionToken() {
-        Token ct = editor.getCurrentToken();
+    public ATEToken findClosestDecisionToken() {
+        ATEToken ct = editor.getCurrentToken();
         List tokens = editor.getTokens();
         int nestedParen = 0;
         for(int index=tokens.indexOf(ct); index >= 0; index--) {
-            Token t = (Token)tokens.get(index);
-            if(t.type == Lexer.TOKEN_COLON)
+            ATEToken t = (ATEToken)tokens.get(index);
+            if(t.type == ATEGenericLexer.TOKEN_COLON)
                 return t;
-            else if(t.type == Lexer.TOKEN_RPAREN)
+            else if(t.type == ATEGenericLexer.TOKEN_RPAREN)
                 nestedParen++;
-            else if(t.type == Lexer.TOKEN_LPAREN) {
+            else if(t.type == ATEGenericLexer.TOKEN_LPAREN) {
                 if(nestedParen == 0)
                     return t;
                 else
@@ -135,7 +135,7 @@ public class DecisionDFA implements Runnable, EditorTab {
     public void run() {
         text = editor.getText();
 
-        Token t = findClosestDecisionToken();
+        ATEToken t = findClosestDecisionToken();
         if(t == null) {
             line = editor.getCurrentLinePosition();
             column = editor.getCurrentColumnPosition();
