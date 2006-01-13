@@ -3,6 +3,7 @@ package org.antlr.works.components.text;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
+import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.prefs.AWPrefs;
@@ -43,21 +44,29 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
 
     protected ATEPanel textEditor;
+    protected ATELanguageSyntaxEngine syntaxEngine;
 
     public CEditorText(ComponentContainer container) {
         super(container);
     }
 
     public void create() {
-        textEditor = new ATEPanel(getJFrame(), null);
-        textEditor.setAnalysisColumnVisible(false);
+        syntaxEngine = createLanguageEngine();
 
+        textEditor = new ATEPanel(getXJFrame());
+        textEditor.setParserEngine(syntaxEngine);
+        textEditor.setSyntaxColoring(true);
+        textEditor.setAnalysisColumnVisible(false);
         textEditor.setDelegate(this);
         textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
         textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
         applyFont();
 
         mainPanel.add(textEditor, BorderLayout.CENTER);
+    }
+
+    public ATELanguageSyntaxEngine createLanguageEngine() {
+        return new ATELanguageSyntaxEngine();
     }
 
     public void applyFont() {
@@ -71,6 +80,7 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
         getTextPane().setCaretPosition(0);
         getTextPane().moveCaretPosition(0);
         getTextPane().getCaret().setSelectionVisible(true);
+        textEditor.parse();
         textEditor.setEnableRecordChange(true);
     }
 

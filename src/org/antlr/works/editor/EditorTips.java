@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.ate.syntax.ATEToken;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.tips.TipsManager;
 import org.antlr.works.tips.TipsOverlay;

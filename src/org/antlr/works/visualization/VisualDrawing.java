@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization;
 
 import org.antlr.analysis.NFAState;
-import org.antlr.works.ate.syntax.ATEThread;
-import org.antlr.works.parser.ParserRule;
+import org.antlr.works.ate.syntax.misc.ATEThread;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.visualization.graphics.GFactory;
 
 import java.util.HashMap;
@@ -48,19 +48,18 @@ public class VisualDrawing extends ATEThread {
 
     protected String text;
     protected String filename;
-    protected ParserRule rule;
+    protected GrammarSyntaxRule rule;
 
     protected boolean latchSilent = false;
 
     protected String threadText;
-    protected ParserRule threadRule;
+    protected GrammarSyntaxRule threadRule;
 
-    protected ParserRule threadLastProcessedRule;
+    protected GrammarSyntaxRule threadLastProcessedRule;
 
     protected Map cacheGraphs = new HashMap();
 
     public VisualDrawing(Visual visual) {
-        super(visual.editor.console);
         this.visual = visual;
         start();
     }
@@ -76,7 +75,7 @@ public class VisualDrawing extends ATEThread {
         awakeThread(500);
     }
 
-    public synchronized void setRule(ParserRule rule, boolean immediate) {
+    public synchronized void setRule(GrammarSyntaxRule rule, boolean immediate) {
         this.rule = rule;
         awakeThread(immediate?0:500);
     }
@@ -138,7 +137,7 @@ public class VisualDrawing extends ATEThread {
 
         if(error != null) {
             visual.setPlaceholder(error);
-            console.println(error);
+            visual.getConsole().println(error);
             return;
         }
 
@@ -151,13 +150,17 @@ public class VisualDrawing extends ATEThread {
         refresh();
     }
 
-    protected synchronized void createGraphsForRule(ParserRule rule) {
+    protected synchronized void createGraphsForRule(GrammarSyntaxRule rule) {
         List graphs = (List)cacheGraphs.get(rule);
         if(graphs == null) {
             graphs = factory.buildGraphsForRule(visual.getGrammar(), rule.name, rule.errors);
             if(graphs != null)
                 cacheGraphs.put(rule, graphs);
         }
+    }
+
+    public void threadReportException(Exception e) {
+        visual.getConsole().print(e);
     }
 
     public void threadRun() {

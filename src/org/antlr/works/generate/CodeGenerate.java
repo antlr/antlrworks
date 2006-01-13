@@ -36,8 +36,8 @@ import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.works.editor.EditorProvider;
-import org.antlr.works.parser.ParserName;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.GrammarSyntaxName;
 import org.antlr.works.utils.ErrorListener;
 
 import javax.swing.*;
@@ -125,12 +125,12 @@ public class CodeGenerate implements Runnable {
 
     public boolean supportsLexer() {
         int type = provider.getGrammar().getType();
-        return type == ParserName.COMBINED || type == ParserName.LEXER;
+        return type == GrammarSyntaxName.COMBINED || type == GrammarSyntaxName.LEXER;
     }
 
     public boolean supportsParser() {
         int type = provider.getGrammar().getType();
-        return type == ParserName.COMBINED || type == ParserName.PARSER || type == ParserName.TREEPARSER;
+        return type == GrammarSyntaxName.COMBINED || type == GrammarSyntaxName.PARSER || type == GrammarSyntaxName.TREEPARSER;
     }
 
     public String getGeneratedText(boolean lexer) {

@@ -118,7 +118,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
             return;
         }
 
-        CodeDisplay dc = new CodeDisplay();
+        CodeDisplay dc = new CodeDisplay(editor.getXJFrame());
         String name = generateCode.getGrammarName();
         if(lexer)
             name += "Lexer";

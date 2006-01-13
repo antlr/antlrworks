@@ -40,9 +40,9 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarNonDeterminismMessage;
-import org.antlr.works.ate.syntax.ATEToken;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.parser.ParserName;
+import org.antlr.works.syntax.GrammarSyntaxName;
 import org.antlr.works.utils.ErrorListener;
 
 import java.util.ArrayList;
@@ -110,12 +110,12 @@ public class EditorGrammar {
 
     public boolean hasGrammar() {
         switch(getType()) {
-            case ParserName.COMBINED:
+            case GrammarSyntaxName.COMBINED:
                 return parserGrammar != null;
-            case ParserName.TREEPARSER:
-            case ParserName.PARSER:
+            case GrammarSyntaxName.TREEPARSER:
+            case GrammarSyntaxName.PARSER:
                 return parserGrammar != null;
-            case ParserName.LEXER:
+            case GrammarSyntaxName.LEXER:
                 return lexerGrammar != null;
         }
         return false;
@@ -123,12 +123,12 @@ public class EditorGrammar {
 
     public Grammar getANTLRGrammar() {
         switch(getType()) {
-            case ParserName.COMBINED:
+            case GrammarSyntaxName.COMBINED:
                 return parserGrammar;
-            case ParserName.TREEPARSER:
-            case ParserName.PARSER:
+            case GrammarSyntaxName.TREEPARSER:
+            case GrammarSyntaxName.PARSER:
                 return parserGrammar;
-            case ParserName.LEXER:
+            case GrammarSyntaxName.LEXER:
                 return lexerGrammar;
         }
         return null;
@@ -142,7 +142,7 @@ public class EditorGrammar {
     }
 
     public String getName() {
-        ParserName name = editor.parserEngine.getName();
+        GrammarSyntaxName name = editor.parserEngine.getName();
         if(name == null)
             return null;
         else
@@ -150,9 +150,9 @@ public class EditorGrammar {
     }
 
     public int getType() {
-        ParserName name = editor.parserEngine.getName();
+        GrammarSyntaxName name = editor.parserEngine.getName();
         if(name == null)
-            return ParserName.COMBINED;
+            return GrammarSyntaxName.COMBINED;
         else
             return name.getType();
     }
@@ -165,14 +165,14 @@ public class EditorGrammar {
 
         try {
             switch(getType()) {
-                case ParserName.COMBINED:
+                case GrammarSyntaxName.COMBINED:
                     createCombinedGrammar();
                     break;
-                case ParserName.TREEPARSER:
-                case ParserName.PARSER:
+                case GrammarSyntaxName.TREEPARSER:
+                case GrammarSyntaxName.PARSER:
                     createParserGrammar();
                     break;
-                case ParserName.LEXER:
+                case GrammarSyntaxName.LEXER:
                     createLexerGrammar();
                     break;
             }
@@ -212,7 +212,6 @@ public class EditorGrammar {
         lexerGrammar.importTokenVocabulary(grammar);
         try {
             lexerGrammar.setGrammarContent(lexerGrammarStr);
-            //lexerGrammar.addArtificialMatchTokensRule();
             lexerGrammar.createNFAs();
         } catch (Exception e) {
             editor.console.print(e);
@@ -227,8 +226,8 @@ public class EditorGrammar {
 
     protected void createLexerGrammar() throws TokenStreamException, RecognitionException {
         lexerGrammar = createNewGrammar(getFileName(), editor.getText());
-        lexerGrammar.createNFAs();
         lexerGrammar.addArtificialMatchTokensRule();
+        lexerGrammar.createNFAs();
     }
 
     public void analyze() {

@@ -33,7 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.navigation;
 
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.parser.ParserRule;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.OverlayObject;
 
 import javax.swing.*;
@@ -155,7 +155,7 @@ public class GoToRule extends OverlayObject {
 
         int index = matchingRuleList.getSelectedIndex();
         if(index >= 0) {
-            ParserRule rule = editor.rules.selectRuleNameInTree((String)matchingRuleListModel.get(index));
+            GrammarSyntaxRule rule = editor.rules.selectRuleNameInTree((String)matchingRuleListModel.get(index));
             if(rule != null) {
                 editor.goToHistoryRememberCurrentPosition();
                 editor.rules.goToRule(rule);

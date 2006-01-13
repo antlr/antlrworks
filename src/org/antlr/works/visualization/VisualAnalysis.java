@@ -31,9 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization;
 
-import org.antlr.works.ate.syntax.ATEThread;
+import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.grammar.EditorGrammarError;
-import org.antlr.works.parser.ParserRule;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -45,7 +45,6 @@ public class VisualAnalysis extends ATEThread {
     private boolean analyze = false;
 
     public VisualAnalysis(Visual visual) {
-        super(visual.editor.console);
         this.visual = visual;
         start(500);
     }
@@ -83,19 +82,19 @@ public class VisualAnalysis extends ATEThread {
         // Clear graphic cache because we have to redraw each rule again
         visual.drawing.clearCacheGraphs();
 
-        for (Iterator iterator = visual.parserEngine.getRules().iterator(); iterator.hasNext();) {
-            ParserRule rule = (ParserRule)iterator.next();
+        for (Iterator iterator = visual.getParserEngine().getRules().iterator(); iterator.hasNext();) {
+            GrammarSyntaxRule rule = (GrammarSyntaxRule)iterator.next();
             updateRuleWithErrors(rule, threadFetchErrorsForRule(rule));
         }
         visual.delegate.visualizationDidMarkRules(visual);
     }
 
-    private void updateRuleWithErrors(ParserRule rule, List errors) {
+    private void updateRuleWithErrors(GrammarSyntaxRule rule, List errors) {
         rule.setErrors(errors);
         visual.drawing.createGraphsForRule(rule);
     }
 
-    private List threadFetchErrorsForRule(ParserRule rule) {
+    private List threadFetchErrorsForRule(GrammarSyntaxRule rule) {
         List errors = new ArrayList();
         for (Iterator iterator = visual.getGrammar().getErrors().iterator(); iterator.hasNext();) {
             EditorGrammarError error = (EditorGrammarError) iterator.next();
@@ -103,6 +102,10 @@ public class VisualAnalysis extends ATEThread {
                 errors.add(error);
         }
         return errors;
+    }
+
+    public void threadReportException(Exception e) {
+        visual.getConsole().print(e);
     }
 
     public void threadRun() {

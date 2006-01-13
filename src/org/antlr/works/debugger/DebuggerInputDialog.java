@@ -36,8 +36,8 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.foundation.XJSystem;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.TextUtils;
 
 import javax.swing.*;
@@ -63,7 +63,7 @@ public class DebuggerInputDialog extends XJDialog {
 
         rulesCombo.removeAllItems();
         for (Iterator iterator = debugger.getRules().iterator(); iterator.hasNext();) {
-            ParserRule rule = (ParserRule)iterator.next();
+            GrammarSyntaxRule rule = (GrammarSyntaxRule)iterator.next();
             rulesCombo.addItem(rule.name);
         }
         rulesCombo.setSelectedItem(AWPrefs.getStartSymbol());

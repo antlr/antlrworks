@@ -40,13 +40,13 @@ import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
-import org.antlr.works.ate.syntax.ATEToken;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.parsetree.ParseTreePanel;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TextUtils;
@@ -137,7 +137,7 @@ public class EditorInterpreter implements Runnable, EditorTab {
         rulesCombo = new JComboBox();
         rulesCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                ParserRule rule = (ParserRule)rulesCombo.getSelectedItem();
+                GrammarSyntaxRule rule = (GrammarSyntaxRule)rulesCombo.getSelectedItem();
                 if(rule != null)
                     startSymbol = rule.name;
             }

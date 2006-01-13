@@ -1,8 +1,8 @@
 package org.antlr.works.menu;
 
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.parser.ParserAction;
-import org.antlr.works.parser.ParserRule;
+import org.antlr.works.syntax.GrammarSyntaxAction;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import java.util.List;
 /*
@@ -64,7 +64,7 @@ public class MenuFolding extends MenuAbstract {
             return;
 
         for(int i = 0; i<rules.size(); i++) {
-            ParserRule rule = (ParserRule)rules.get(i);
+            GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(i);
             if(rule.foldingEntityIsExpanded() != expand) {
                 editor.foldingManager.toggleFolding(rule);
             }
@@ -85,7 +85,7 @@ public class MenuFolding extends MenuAbstract {
             return;
 
         for(int i = 0; i<actions.size(); i++) {
-            ParserAction action = (ParserAction)actions.get(i);
+            GrammarSyntaxAction action = (GrammarSyntaxAction)actions.get(i);
             if(action.foldingEntityIsExpanded() != expand) {
                 editor.foldingManager.toggleFolding(action);
             }

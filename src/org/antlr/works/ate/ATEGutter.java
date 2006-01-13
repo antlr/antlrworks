@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate;
 
+import org.antlr.works.ate.breakpoint.ATEBreakpointEntity;
+import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;

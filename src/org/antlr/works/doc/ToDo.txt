@@ -1,6 +1,6 @@
 
 * Prio 1
-- build list for java file on disk (project)
+- doesn't read the tokenVocab anymore in grammar file
 - don't disable the open recent file if a panel is in front (like the about or prefs)
 - setDividerLocation when preferedSize() or size() is known (see when I can catch that)
 - cannot debug fuzzy.g

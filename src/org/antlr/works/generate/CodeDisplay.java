@@ -31,36 +31,38 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.generate;
 
+import edu.usfca.xj.appkit.frame.XJFrame;
+import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.utils.Localizable;
-import org.antlr.works.utils.TextPane;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.utils.TextUtils;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class CodeDisplay implements EditorTab {
 
-    protected JPanel panel;
-    protected TextPane textPane;
+    protected ATEPanel textEditor;
     protected String title;
 
-    public CodeDisplay() {
+    public CodeDisplay(XJFrame parentFrame) {
+        textEditor = new ATEPanel(parentFrame);
+        textEditor.setParserEngine(new ATEJavaSyntaxEngine());
+        textEditor.setSyntaxColoring(true);
+        textEditor.setAnalysisColumnVisible(false);
+        textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
+        textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
+        applyFont();
+    }
 
-        panel = new JPanel(new BorderLayout());
-
-        textPane = new TextPane();
-        textPane.setFont(new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.PLAIN, 12));
-        textPane.setWordWrap(false);
-
-        JScrollPane scrollPane = new JScrollPane(textPane);
-        scrollPane.setWheelScrollingEnabled(true);
-
-        panel.add(scrollPane, BorderLayout.CENTER);
+    public void applyFont() {
+        textEditor.getTextPane().setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
+        TextUtils.createTabs(textEditor.getTextPane());
     }
 
     public void setText(String text) {
-        textPane.setText(text);
-        textPane.setCaretPosition(0);
+        textEditor.getTextPane().setText(text);
+        textEditor.setCaretPosition(0);
     }
 
     public void setTitle(String title) {
@@ -68,7 +70,7 @@ public class CodeDisplay implements EditorTab {
     }
 
     public Container getContainer() {
-        return panel;
+        return textEditor;
     }
 
     public String getTabName() {

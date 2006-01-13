@@ -5,7 +5,7 @@ import org.antlr.works.idea.IdeaManager;
 import org.antlr.works.idea.IdeaManagerDelegate;
 import org.antlr.works.idea.IdeaOverlay;
 import org.antlr.works.idea.IdeaProvider;
-import org.antlr.works.parser.ParserRule;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
     }
 
     public void display(int position) {
-        ParserRule enclosingRule = editor.rules.getEnclosingRuleAtPosition(position);
+        GrammarSyntaxRule enclosingRule = editor.rules.getEnclosingRuleAtPosition(position);
         if(enclosingRule == null || enclosingRule.isExpanded())
             ideaManager.displayAnyIdeasAvailable(position);
     }

@@ -1,12 +1,12 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.ate.ATEFoldingEntity;
-import org.antlr.works.ate.ATEFoldingEntityProxy;
-import org.antlr.works.ate.ATEFoldingManager;
+import org.antlr.works.ate.folding.ATEFoldingEntity;
+import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
+import org.antlr.works.ate.folding.ATEFoldingManager;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.parser.ParserAction;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.GrammarSyntaxAction;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import java.util.List;
 /*
@@ -66,9 +66,9 @@ public class EditorFoldingManager extends ATEFoldingManager {
 
     public ATEFoldingEntityProxy createEntityProxy(ATEFoldingEntity entity) {
         int tag;
-        if(entity instanceof ParserRule)
+        if(entity instanceof GrammarSyntaxRule)
             tag = TAG_RULES;
-        else if(entity instanceof ParserAction)
+        else if(entity instanceof GrammarSyntaxAction)
             tag = TAG_ACTIONS;
         else
             return null;
@@ -80,7 +80,7 @@ public class EditorFoldingManager extends ATEFoldingManager {
         List rules = editor.parserEngine.getRules();
         if(rules != null) {
             for(int index=0; index<rules.size(); index++) {
-                ParserRule rule = (ParserRule)rules.get(index);
+                GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
                 addEntity(rule);
             }
         }
@@ -90,7 +90,7 @@ public class EditorFoldingManager extends ATEFoldingManager {
             List actions = editor.parserEngine.getActions();
             if(actions != null) {
                 for(int index=0; index<actions.size(); index++) {
-                    ParserAction action = (ParserAction)actions.get(index);
+                    GrammarSyntaxAction action = (GrammarSyntaxAction)actions.get(index);
                     if(action.rule.isExpanded())
                         addEntity(action);
                 }

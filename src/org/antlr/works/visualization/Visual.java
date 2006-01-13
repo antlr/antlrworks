@@ -34,12 +34,13 @@ package org.antlr.works.visualization;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.tool.DOTGenerator;
-import org.antlr.works.ate.syntax.ATEParserEngine;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.EditorGrammar;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.syntax.GrammarSyntaxEngine;
+import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.utils.Console;
 import org.antlr.works.utils.DotGenerator;
 import org.antlr.works.visualization.fa.FAFactory;
 import org.antlr.works.visualization.fa.FAState;
@@ -64,8 +65,6 @@ public class Visual implements EditorTab {
 
     protected VisualDelegate delegate;
 
-    protected ATEParserEngine parserEngine;
-
     protected GContext context;
     protected Skin skin;
 
@@ -86,6 +85,14 @@ public class Visual implements EditorTab {
 
         drawing = new VisualDrawing(this);
         analysis = new VisualAnalysis(this);
+    }
+
+    public GrammarSyntaxEngine getParserEngine() {
+        return editor.getParserEngine();
+    }
+
+    public Console getConsole() {
+        return editor.getConsole();
     }
 
     public void close() {
@@ -117,16 +124,12 @@ public class Visual implements EditorTab {
         this.delegate = delegate;
     }
 
-    public void setParser(ATEParserEngine parserEngine) {
-        this.parserEngine = parserEngine;
-    }
-
     public void setText(String text, String filename) {
         if(isEnable())
             drawing.setText(text, filename);
     }
 
-    public void setRule(ParserRule rule, boolean immediate) {
+    public void setRule(GrammarSyntaxRule rule, boolean immediate) {
         if(isEnable())
             drawing.setRule(rule, immediate);
     }
@@ -163,7 +166,7 @@ public class Visual implements EditorTab {
         return XJFileChooser.shared().getSelectedFilePath();
     }
 
-    public void saveANTLRNFA2DOT(ParserRule rule) {
+    public void saveANTLRNFA2DOT(GrammarSyntaxRule rule) {
         String dotFile = chooseDOTFile();
         if(dotFile == null)
             return;
@@ -181,7 +184,7 @@ public class Visual implements EditorTab {
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_ANTLRNFA_DOT);
     }
 
-    public void saveOptimizedNFA2DOT(ParserRule rule) {
+    public void saveOptimizedNFA2DOT(GrammarSyntaxRule rule) {
         String dotFile = chooseDOTFile();
         if(dotFile == null)
             return;
@@ -200,7 +203,7 @@ public class Visual implements EditorTab {
         Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_OPTIMIZEDNFA_DOT);
     }
 
-    public void saveRawNFA2DOT(ParserRule rule) {
+    public void saveRawNFA2DOT(GrammarSyntaxRule rule) {
         String dotFile = chooseDOTFile();
         if(dotFile == null)
             return;

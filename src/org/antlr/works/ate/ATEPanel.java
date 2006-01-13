@@ -1,8 +1,16 @@
 package org.antlr.works.ate;
 
+import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.undo.XJUndo;
 import edu.usfca.xj.appkit.utils.XJSmoothScrolling;
-import org.antlr.works.ate.syntax.ATEColoring;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.ate.analysis.ATEAnalysisColumn;
+import org.antlr.works.ate.analysis.ATEAnalysisManager;
+import org.antlr.works.ate.breakpoint.ATEBreakpointManager;
+import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
+import org.antlr.works.ate.folding.ATEFoldingManager;
+import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
+import org.antlr.works.ate.syntax.misc.ATEColoring;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -16,6 +24,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -49,7 +58,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDelegate {
 
-    protected JFrame parentFrame;
+    protected XJFrame parentFrame;
 
     protected ATEPanelDelegate delegate;
     protected ATETextPane textPane;
@@ -61,7 +70,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected ATEUnderlyingManager underlyingManager;
     protected ATEAnalysisManager analysisManager;
 
-    public ATEColoring colorize;
+    protected ATEColoring colorize;
+    protected ATESyntaxEngine engine;
 
     protected TextPaneListener textPaneListener;
 
@@ -71,15 +81,25 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected static final String unixEndOfLine = "\n";
     protected static int ANALYSIS_COLUMN_WIDTH = 18;
 
-    public ATEPanel(JFrame parentFrame, CEditorGrammar editor) {
+    public ATEPanel(XJFrame parentFrame) {
         super(new BorderLayout());
         this.parentFrame = parentFrame;
-        colorize = new ATEColoring(editor);
+        colorize = new ATEColoring(this);
         createTextPane();
     }
 
     public JFrame getParentFrame() {
-        return parentFrame;
+        return parentFrame.getJFrame();
+    }
+
+    public void setParserEngine(ATESyntaxEngine engine) {
+        this.engine = engine;
+        this.engine.setTextEditor(this);
+        this.colorize.setSyntaxEngine(engine);
+    }
+
+    public ATESyntaxEngine getParserEngine() {
+        return engine;
     }
 
     public void setDelegate(ATEPanelDelegate delegate) {
@@ -100,6 +120,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public void setAnalysisManager(ATEAnalysisManager manager) {
         this.analysisManager = manager;
+    }
+
+    public ATEAnalysisManager getAnalysisManager() {
+        return analysisManager;
     }
 
     public void setIsTyping(boolean flag) {
@@ -220,6 +244,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         // which needs an immediate effect (in this case, the gutter
         // has to be repainted)
         gutter.markDirty();
+        parse();
     }
 
     public int getSelectionStart() {
@@ -304,15 +329,49 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         return textPane;
     }
 
-    public void ateParserEngineWillParse() {
+    public ATEGutter getGutter() {
+        return gutter;
+    }
+
+    public void parse() {
+        engine.parse();
+    }
+
+    public void ateEngineWillParse() {
         if(delegate != null)
             delegate.ateParserWillParse();
     }
 
-    public void ateParserEngineDidParse() {
+    public void ateEngineDidParse() {
         colorize.colorize();
         if(delegate != null)
             delegate.ateParserDidParse();
+    }
+
+    public void ateColoringWillColorize() {
+        setEnableRecordChange(false);
+        disableUndo();
+    }
+
+    public void ateColoringDidColorize() {
+        setEnableRecordChange(true);
+        enableUndo();
+    }
+
+    public XJUndo getTextPaneUndo() {
+        return parentFrame.getUndo(getTextPane());
+    }
+
+    public void disableUndo() {
+        XJUndo undo = getTextPaneUndo();
+        if(undo != null)
+            undo.disableUndo();
+    }
+
+    public void enableUndo() {
+        XJUndo undo = getTextPaneUndo();
+        if(undo != null)
+            undo.enableUndo();
     }
 
     protected class TextPaneCaretListener implements CaretListener {
@@ -344,11 +403,37 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             return enable == 0;
         }
 
+        /** This method shifts every offset past the location in order
+         *  for collapsed view to be correctly rendered (the rule has to be
+         *  immediately at the right position and cannot wait for the
+         *  parser to finish)
+         *
+         */
+
+        protected void adjustTokens(int location, int length) {
+            if(location == -1)
+                return;
+
+            List tokens = engine.getTokens();
+            if(tokens == null)
+                return;
+
+            for(int t=0; t<tokens.size(); t++) {
+                ATEToken token = (ATEToken) tokens.get(t);
+                if(token.getStartIndex() > location) {
+                    token.offsetPositionBy(length);
+                }
+            }
+        }
+
         public void changeUpdate(int offset, int length, boolean insert) {
             if(isEnable()) {
                 if(delegate != null)
                     delegate.ateChangeUpdate(offset, length, insert);
+
+                adjustTokens(offset, length);
                 colorize.setColorizeLocation(offset, length);
+                changeOccurred();
             }
         }
 

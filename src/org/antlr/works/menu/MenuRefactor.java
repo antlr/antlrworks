@@ -2,13 +2,13 @@ package org.antlr.works.menu;
 
 import edu.usfca.xj.appkit.undo.XJUndo;
 import edu.usfca.xj.appkit.utils.XJAlert;
-import org.antlr.works.ate.syntax.ATEGenericLexer;
-import org.antlr.works.ate.syntax.ATEToken;
+import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.parser.ParserReference;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.syntax.GrammarSyntaxReference;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
@@ -83,7 +83,7 @@ public class MenuRefactor extends MenuAbstract {
         if(token == null)
             return;
 
-        if(token.type != ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING && token.type != ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING) {
+        if(token.type != ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING && token.type != ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
             XJAlert.display(editor.getJavaContainer(), "Cannot Replace Literal With Token Label", "The current token is not a literal.");
             return;
         }
@@ -108,7 +108,7 @@ public class MenuRefactor extends MenuAbstract {
         String attr = t.getAttribute();
         for(int index = tokens.size()-1; index>0; index--) {
             ATEToken token = (ATEToken) tokens.get(index);
-            if(token.type != ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING && token.type != ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING)
+            if(token.type != ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING && token.type != ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING)
                 continue;
 
             if(!token.getAttribute().equals(attr))
@@ -120,13 +120,13 @@ public class MenuRefactor extends MenuAbstract {
 
     public void convertLiteralsToSingleQuote() {
         editor.beginGroupChange("Convert Literals To Single Quote Literals");
-        convertLiteralsToSpecifiedQuote(ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING, '\'', '"');
+        convertLiteralsToSpecifiedQuote(ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING, '\'', '"');
         editor.endGroupChange();
     }
 
     public void convertLiteralsToDoubleQuote() {
         editor.beginGroupChange("Convert Literals To Double Quote Literals");
-        convertLiteralsToSpecifiedQuote(ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING, '"', '\'');
+        convertLiteralsToSpecifiedQuote(ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING, '"', '\'');
         editor.endGroupChange();
     }
 
@@ -141,13 +141,13 @@ public class MenuRefactor extends MenuAbstract {
             String stripped;
             String replaced = null;
 
-            if(token.type == ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING || token.type == ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING) {
+            if(token.type == ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING || token.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
                 attribute = token.getAttribute();
                 stripped = attribute.substring(1, attribute.length()-1);
             } else
                 continue;
 
-            if(token.type == ATEGenericLexer.TOKEN_SINGLE_QUOTE_STRING) {
+            if(token.type == ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING) {
                 // Only one character allowed
                 if(stripped.length() == 1)
                     continue;
@@ -158,7 +158,7 @@ public class MenuRefactor extends MenuAbstract {
                     stripped = escapeStringQuote(stripped, '"', '\'');
 
                 replaced = '"'+stripped+'"';
-            } else if(token.type == ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING) {
+            } else if(token.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
                 // String with one character should be converted to single-quote
 
                 if(stripped.length() > 1 && stripped.charAt(0) != '\\')
@@ -221,7 +221,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void removeLeftRecursion() {
-        ParserRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
+        GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {
             XJAlert.display(editor.getWindowContainer(), "Remove Left Recursion", "There is no rule at cursor position.");
             return;
@@ -242,7 +242,7 @@ public class MenuRefactor extends MenuAbstract {
         editor.beginGroupChange("Remove All Left Recursion");
         List rules = editor.rules.getRules();
         for(int index = rules.size()-1; index >= 0; index--) {
-            ParserRule rule = (ParserRule)rules.get(index);
+            GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
             if(rule.hasLeftRecursion()) {
                 String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
                 editor.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
@@ -280,7 +280,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void inlineRule() {
-        ParserRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
+        GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {
             XJAlert.display(editor.getWindowContainer(), "Inline Rule", "There is no rule at cursor position.");
             return;
@@ -290,7 +290,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     protected void inlineRule(String ruleName) {
-        ParserRule rule = editor.rules.getRuleWithName(ruleName);
+        GrammarSyntaxRule rule = editor.rules.getRuleWithName(ruleName);
         if(rule == null) {
             XJAlert.display(editor.getWindowContainer(), "Inline Rule", "Rule \""+ruleName+"\" doesn't exist.");
             return;
@@ -298,7 +298,7 @@ public class MenuRefactor extends MenuAbstract {
         inlineRule(rule);
     }
 
-    protected void inlineRule(ParserRule rule) {
+    protected void inlineRule(GrammarSyntaxRule rule) {
         String oldContent = editor.getText();
         StringBuffer s = new StringBuffer(oldContent);
 
@@ -312,7 +312,7 @@ public class MenuRefactor extends MenuAbstract {
         }
 
         for(int r=rules.size()-1; r>=0; r--) {
-            ParserRule candidate = (ParserRule)rules.get(r);
+            GrammarSyntaxRule candidate = (GrammarSyntaxRule)rules.get(r);
             if(candidate == rule) {
                 s.delete(rule.getStartIndex(), rule.getEndIndex()+1);
             } else {
@@ -321,7 +321,7 @@ public class MenuRefactor extends MenuAbstract {
                     continue;
 
                 for(int index=references.size()-1; index>=0; index--) {
-                    ParserReference ref = (ParserReference)references.get(index);
+                    GrammarSyntaxReference ref = (GrammarSyntaxReference)references.get(index);
                     if(ref.token.getAttribute().equals(ruleName)) {
                         s.replace(ref.token.getStartIndex(), ref.token.getEndIndex(), ruleContent);
                     }
@@ -358,7 +358,7 @@ public class MenuRefactor extends MenuAbstract {
         Point p = editor.getLineTextPositionsAtTextPosition(getCaretPosition());
         int insertionIndex = p.y;
 
-        ParserRule rule = editor.rules.getEnclosingRuleAtPosition(getCaretPosition());
+        GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(getCaretPosition());
         if(rule != null) {
             if(rule.lexer) {
                 if(lexer) {
@@ -366,13 +366,13 @@ public class MenuRefactor extends MenuAbstract {
                     insertionIndex = rule.getEndIndex();
                 } else {
                     // Add new rule after the last parser rule
-                    ParserRule last = editor.rules.getLastParserRule();
+                    GrammarSyntaxRule last = editor.rules.getLastParserRule();
                     if(last != null) insertionIndex = last.getEndIndex();
                 }
             } else {
                 if(lexer) {
                     // Add new rule after the last lexer rule
-                    ParserRule last = editor.rules.getLastLexerRule();
+                    GrammarSyntaxRule last = editor.rules.getLastLexerRule();
                     if(last != null) {
                         insertionIndex = last.getEndIndex();
                     } else {
@@ -414,7 +414,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void deleteRuleAtIndex(int index) {
-        ParserRule r = editor.rules.getEnclosingRuleAtPosition(index);
+        GrammarSyntaxRule r = editor.rules.getEnclosingRuleAtPosition(index);
         if(r != null)
             editor.replaceText(r.getStartIndex(), r.getEndIndex(), "");
     }

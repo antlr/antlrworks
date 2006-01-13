@@ -1,6 +1,6 @@
 package org.antlr.works.idea;
 
-import org.antlr.works.ate.syntax.ATEToken;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 /*
 
 [The "BSD licence"]

@@ -11,6 +11,7 @@ import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.components.project.file.CContainerProjectFile;
 import org.antlr.works.components.project.file.CContainerProjectGrammar;
+import org.antlr.works.components.project.file.CContainerProjectJava;
 import org.antlr.works.components.project.file.CContainerProjectText;
 import org.antlr.works.project.*;
 
@@ -447,7 +448,6 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
      */
 
     public void fileDidBecomeDirty(CContainerProjectFile file, ProjectFileItem item) {
-        item.changeDone();
         getBuildList().setFileDirty(item.getFilePath(), item.getFileType(), true);
         changeDone();
     }
@@ -512,8 +512,11 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
 
         public ComponentContainer create() {
 
-            if(getFileType(item.getFilePath()).equals(FILE_TYPE_GRAMMAR))
+            String type = getFileType(item.getFilePath());
+            if(type.equals(FILE_TYPE_GRAMMAR))
                 new CContainerProjectGrammar(CContainerProject.this, item);
+            else if(type.equals(FILE_TYPE_JAVA))
+                new CContainerProjectJava(CContainerProject.this, item);
             else
                 new CContainerProjectText(CContainerProject.this, item);
 

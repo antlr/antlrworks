@@ -31,6 +31,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate;
 
+import org.antlr.works.ate.folding.ATEFoldingEntity;
+import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
+import org.antlr.works.ate.swing.ATECustomEditorKit;
+import org.antlr.works.ate.swing.ATELabelView;
+import org.antlr.works.ate.swing.ATEParagraphView;
+import org.antlr.works.ate.swing.ATEStyledDocument;
+
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;

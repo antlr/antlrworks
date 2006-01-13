@@ -33,13 +33,13 @@ package org.antlr.works.menu;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import org.antlr.works.ate.syntax.ATEToken;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.DecisionDFA;
-import org.antlr.works.parser.Parser;
-import org.antlr.works.parser.ParserGroup;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.syntax.GrammarSyntaxGroup;
+import org.antlr.works.syntax.GrammarSyntaxParser;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.visualization.Visual;
 import org.antlr.works.visualization.VisualDelegate;
 
@@ -55,7 +55,7 @@ public class MenuGrammar extends MenuAbstract implements DecisionDFA.TDecisionDF
     }
 
     public void showTokensSD() {
-        editor.visual.setRule(new ParserRule("Tokens"), true);
+        editor.visual.setRule(new GrammarSyntaxRule("Tokens"), true);
         editor.makeBottomComponentVisible();
     }
 
@@ -69,7 +69,7 @@ public class MenuGrammar extends MenuAbstract implements DecisionDFA.TDecisionDF
     public void decisionDFADidCompleted(DecisionDFA decision, String error) {
         progress.close();
         if(error == null) {
-            ParserRule rule = editor.getCurrentRule();
+            GrammarSyntaxRule rule = editor.getCurrentRule();
             decision.setRuleName(rule.name);
             editor.addTab(decision);
             editor.makeBottomComponentVisible();
@@ -89,17 +89,17 @@ public class MenuGrammar extends MenuAbstract implements DecisionDFA.TDecisionDF
             editor.beginGroupChange("Group");
 
             int end = editor.getTextPane().getSelectionEnd();
-            editor.textEditor.insertText(end+1, "\n"+Parser.END_GROUP+"\n");
+            editor.textEditor.insertText(end+1, "\n"+GrammarSyntaxParser.END_GROUP+"\n");
 
             int start = editor.getTextPane().getSelectionStart();
-            editor.textEditor.insertText(start-1, "\n"+Parser.BEGIN_GROUP+s+"\n");
+            editor.textEditor.insertText(start-1, "\n"+ GrammarSyntaxParser.BEGIN_GROUP+s+"\n");
 
             editor.endGroupChange();
         }
     }
 
     public void ungroup() {
-        ParserGroup openGroup = editor.rules.getSelectedGroup();
+        GrammarSyntaxGroup openGroup = editor.rules.getSelectedGroup();
         if(openGroup == null) {
             // No open group selected in the tree. Try to find the closest open group
             // by moving backward
@@ -111,7 +111,7 @@ public class MenuGrammar extends MenuAbstract implements DecisionDFA.TDecisionDF
             }
         }
 
-        ParserGroup closingGroup = editor.rules.findClosingGroupForGroup(openGroup);
+        GrammarSyntaxGroup closingGroup = editor.rules.findClosingGroupForGroup(openGroup);
 
         editor.beginGroupChange("Ungroup");
 

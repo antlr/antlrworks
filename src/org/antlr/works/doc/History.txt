@@ -3,6 +3,7 @@ Version 1.0ea8 - 01/09/06
 
 - new project document: edit multiple grammar, Java and any other text files and build
   them automatically within ANTLRWorks
+- syntax coloring for generated Java code
 
 - improved ANTLR usage by running ANTLR only when necessary
 - improved selection of a identifier

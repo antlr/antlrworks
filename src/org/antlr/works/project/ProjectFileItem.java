@@ -55,11 +55,6 @@ public class ProjectFileItem {
         this.project = project;
     }
 
-    public void changeDone() {
-        if(container != null)
-            container.getDocument().changeDone();
-    }
-
     public boolean isDirty() {
         if(container != null)
             return container.getDocument().isDirty();

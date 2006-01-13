@@ -9,12 +9,12 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.analysis.DFA;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
-import org.antlr.works.ate.syntax.ATEGenericLexer;
-import org.antlr.works.ate.syntax.ATEToken;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.GrammarSyntaxLexer;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -118,11 +118,11 @@ public class DecisionDFA implements Runnable, EditorTab {
         int nestedParen = 0;
         for(int index=tokens.indexOf(ct); index >= 0; index--) {
             ATEToken t = (ATEToken)tokens.get(index);
-            if(t.type == ATEGenericLexer.TOKEN_COLON)
+            if(t.type == GrammarSyntaxLexer.TOKEN_COLON)
                 return t;
-            else if(t.type == ATEGenericLexer.TOKEN_RPAREN)
+            else if(t.type == GrammarSyntaxLexer.TOKEN_RPAREN)
                 nestedParen++;
-            else if(t.type == ATEGenericLexer.TOKEN_LPAREN) {
+            else if(t.type == GrammarSyntaxLexer.TOKEN_LPAREN) {
                 if(nestedParen == 0)
                     return t;
                 else
@@ -215,7 +215,7 @@ public class DecisionDFA implements Runnable, EditorTab {
     private void generateDOTFile() throws Exception {
         Grammar g;
 
-        ParserRule rule = editor.getCurrentRule();
+        GrammarSyntaxRule rule = editor.getCurrentRule();
         if(rule == null)
             throw new Exception("No rule is selected");
 

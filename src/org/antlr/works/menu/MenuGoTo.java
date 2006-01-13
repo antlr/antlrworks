@@ -31,11 +31,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.ate.syntax.ATELine;
+import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.parser.ParserReference;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.syntax.GrammarSyntaxReference;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import javax.swing.*;
 import java.util.Set;
@@ -51,11 +51,11 @@ public class MenuGoTo extends MenuAbstract {
     }
 
     public void goToDeclaration() {
-        ParserReference ref = editor.getCurrentReference();
+        GrammarSyntaxReference ref = editor.getCurrentReference();
         if(ref == null)
             return;
 
-        ParserRule rule = editor.rules.selectRuleNameInTree(ref.token.getAttribute());
+        GrammarSyntaxRule rule = editor.rules.selectRuleNameInTree(ref.token.getAttribute());
         if(rule == null)
             return;
 

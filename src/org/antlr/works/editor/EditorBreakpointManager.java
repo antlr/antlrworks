@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.ate.ATEBreakpointManager;
+import org.antlr.works.ate.breakpoint.ATEBreakpointManager;
 import org.antlr.works.components.grammar.CEditorGrammar;
 
 import java.util.ArrayList;

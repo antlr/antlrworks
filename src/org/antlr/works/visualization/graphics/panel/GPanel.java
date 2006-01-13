@@ -33,8 +33,8 @@ package org.antlr.works.visualization.graphics.panel;
 
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
@@ -63,7 +63,7 @@ public class GPanel implements XJNotificationObserver {
     protected GView view;
     protected JScrollPane viewScrollPane;
 
-    protected ParserRule rule;
+    protected GrammarSyntaxRule rule;
 
     public GPanel(GContext context) {
         this.context = context;
@@ -83,7 +83,7 @@ public class GPanel implements XJNotificationObserver {
         updateCurrentAlternative();
     }
 
-    public void setRule(ParserRule rule) {
+    public void setRule(GrammarSyntaxRule rule) {
         if(view != null)
             view.setEnable(false);
 

@@ -1,12 +1,12 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.ate.syntax.ATEGenericLexer;
-import org.antlr.works.ate.syntax.ATEToken;
+import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.idea.IdeaAction;
 import org.antlr.works.idea.IdeaActionDelegate;
-import org.antlr.works.parser.ParserReference;
-import org.antlr.works.parser.ParserRule;
+import org.antlr.works.syntax.GrammarSyntaxReference;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class EditorInspector {
 
         for(int index=0; index<tokens.size(); index++) {
             ATEToken t = (ATEToken)tokens.get(index);
-            if(t.type == ATEGenericLexer.TOKEN_DOUBLE_QUOTE_STRING) {
+            if(t.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
                 Item item = new ItemInvalidCharLiteral();
                 item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
                         t.startLineNumber, Color.red,
@@ -139,7 +139,7 @@ public class EditorInspector {
             return;
 
         for(int index=0; index<undefinedRefs.size(); index++) {
-            ParserReference ref = (ParserReference)undefinedRefs.get(index);
+            GrammarSyntaxReference ref = (GrammarSyntaxReference)undefinedRefs.get(index);
             Item item = new ItemUndefinedReference();
             item.setAttributes(ref.token, ref.token.getStartIndex(), ref.token.getEndIndex(),
                     ref.token.startLineNumber, Color.red,
@@ -154,7 +154,7 @@ public class EditorInspector {
             return;
 
         for(int index=0; index<rules.size(); index++) {
-            ParserRule rule = (ParserRule)rules.get(index);
+            GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
             Item item = new ItemDuplicateRule();
             item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
                     rule.start.startLineNumber, Color.red,
@@ -169,7 +169,7 @@ public class EditorInspector {
             return;
 
         for(int index=0; index<rules.size(); index++) {
-            ParserRule rule = (ParserRule)rules.get(index);
+            GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
             if(!rule.hasLeftRecursion())
                 continue;
 

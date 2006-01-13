@@ -14,10 +14,9 @@ import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
-import org.antlr.works.ate.syntax.ATEGenericLexer;
-import org.antlr.works.ate.syntax.ATELine;
-import org.antlr.works.ate.syntax.ATEParserEngine;
-import org.antlr.works.ate.syntax.ATEToken;
+import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
+import org.antlr.works.ate.syntax.misc.ATELine;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.completion.AutoCompletionMenu;
 import org.antlr.works.completion.AutoCompletionMenuDelegate;
 import org.antlr.works.completion.RuleTemplates;
@@ -31,17 +30,14 @@ import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.menu.*;
 import org.antlr.works.navigation.GoToHistory;
 import org.antlr.works.navigation.GoToRule;
-import org.antlr.works.parser.ParserAction;
-import org.antlr.works.parser.ParserReference;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.rules.Rules;
 import org.antlr.works.rules.RulesDelegate;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.syntax.AutoIndentation;
-import org.antlr.works.syntax.ImmediateColoring;
-import org.antlr.works.syntax.Syntax;
+import org.antlr.works.syntax.*;
+import org.antlr.works.syntax.misc.AutoIndentation;
+import org.antlr.works.syntax.misc.ImmediateColoring;
 import org.antlr.works.utils.TextUtils;
 import org.antlr.works.visualization.Visual;
 
@@ -118,7 +114,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     /* Components */
 
-    public ATEParserEngine parserEngine;
+    public GrammarSyntaxEngine parserEngine;
     public Rules rules;
     public Visual visual;
     public EditorInterpreter interpreter;
@@ -175,7 +171,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     /* Grammar */
 
     protected EditorGrammar grammar;
-    protected Syntax syntax;
+    protected GrammarSyntax grammarSyntax;
 
     public CEditorGrammar(ComponentContainer container) {
         super(container);
@@ -200,16 +196,13 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     protected void initComponents() {
-        parserEngine = new ATEParserEngine(this, textEditor);
-        parserEngine.awake();
+        parserEngine = new GrammarSyntaxEngine();
 
-        rules = new Rules(this, parserEngine, rulesTree);
+        rules = new Rules(this, rulesTree);
         rules.setDelegate(this);
 
-        syntax = new Syntax(this, parserEngine);
-
+        grammarSyntax = new GrammarSyntax(this);
         visual = new Visual(this);
-        visual.setParser(parserEngine);
 
         interpreter = new EditorInterpreter(this);
         debugger = new Debugger(this);
@@ -281,10 +274,12 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         debugger.awake();
 
         rules.setKeyBindings(keyBindings);
+
+        textEditor.setParserEngine(parserEngine);
     }
 
     protected void createInterface() {
-        textEditor = new ATEPanel(getJFrame(), this);
+        textEditor = new ATEPanel(getXJFrame());
         textEditor.setSyntaxColoring(true);
         textEditor.setDelegate(this);
         textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
@@ -302,7 +297,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
                 if(n == null)
                     return "";
 
-                ParserRule r = n.rule;
+                GrammarSyntaxRule r = n.rule;
                 if(r == null || !r.hasErrors())
                     return "";
                 else
@@ -465,8 +460,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return textEditor;
     }
 
-    public Syntax getSyntax() {
-        return syntax;
+    public GrammarSyntax getSyntax() {
+        return grammarSyntax;
     }
 
     public void toggleAutoIndent() {
@@ -514,27 +509,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         textEditor.toggleAnalysis();
     }
 
-    protected void adjustTokens(int location, int length) {
-        // We have to shift every offset past the location in order
-        // for collapsed view to be correctly rendered (the rule has to be
-        // immediately at the right position and cannot wait for the
-        // parser to finish)
-
-        if(location == -1)
-            return;
-
-        List tokens = getTokens();
-        if(tokens == null)
-            return;
-
-        for(int t=0; t<tokens.size(); t++) {
-            ATEToken token = (ATEToken) tokens.get(t);
-            if(token.getStartIndex() > location) {
-                token.offsetPositionBy(length);
-            }
-        }
-    }
-
     public void changeUpdate() {
         ateChangeUpdate(-1, -1, false);
     }
@@ -556,7 +530,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         endTextPaneUndoGroup();
         enableTextPane(false);
         textEditor.resetColoring();
-        parserEngine.parse();
+        textEditor.parse();
         changeDone();
     }
 
@@ -613,7 +587,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             getTextPane().moveCaretPosition(0);
             getTextPane().getCaret().setSelectionVisible(true);
             grammarChanged();
-            parserEngine.parse();
+            textEditor.parse();
         } catch(Exception e) {
             e.printStackTrace();
         } finally {
@@ -624,7 +598,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public void setText(String text) {
         getTextPane().setText(text);
         grammarChanged();
-        parserEngine.parse();
+        textEditor.parse();
         changeDone();
     }
 
@@ -672,6 +646,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public Container getWindowContainer() {
         return getJFrame();
+    }
+
+    public GrammarSyntaxEngine getParserEngine() {
+        return parserEngine;
     }
 
     public List getRules() {
@@ -757,14 +735,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         refreshMainMenuBar();
     }
 
-    public ParserReference getCurrentReference() {
+    public GrammarSyntaxReference getCurrentReference() {
         return getReferenceAtPosition(getCaretPosition());
     }
 
-    public ParserReference getReferenceAtPosition(int pos) {
+    public GrammarSyntaxReference getReferenceAtPosition(int pos) {
         List refs = getReferences();
         for(int index=0; index<refs.size(); index++) {
-            ParserReference ref = (ParserReference)refs.get(index);
+            GrammarSyntaxReference ref = (GrammarSyntaxReference)refs.get(index);
             if(ref.containsIndex(pos))
                 return ref;
         }
@@ -788,15 +766,15 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return null;
     }
 
-    public ParserRule getCurrentRule() {
+    public GrammarSyntaxRule getCurrentRule() {
         return rules.getEnclosingRuleAtPosition(getCaretPosition());
     }
 
-    public ParserAction getCurrentAction() {
+    public GrammarSyntaxAction getCurrentAction() {
         List actions = parserEngine.getActions();
         int position = getCaretPosition();
         for(int index=0; index<actions.size(); index++) {
-            ParserAction action = (ParserAction)actions.get(index);
+            GrammarSyntaxAction action = (GrammarSyntaxAction)actions.get(index);
             if(action.containsIndex(position))
                 return action;
         }
@@ -808,7 +786,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void setCaretPosition(int position, boolean animate) {
-        ParserRule rule = rules.getEnclosingRuleAtPosition(position);
+        GrammarSyntaxRule rule = rules.getEnclosingRuleAtPosition(position);
         if(rule != null && !rule.isExpanded()) {
             foldingManager.toggleFolding(rule);
         }
@@ -836,7 +814,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public void updateVisualization(boolean immediate) {
         if(visual.isEnable()) {
-            ParserRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
+            GrammarSyntaxRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
             if(r == null) {
                 visual.setPlaceholder("Select a rule to display its syntax diagram");
             } else {
@@ -864,7 +842,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
                 break;
         }
 
-        int warnings = syntax.getNumberOfRulesWithErrors();
+        int warnings = grammarSyntax.getNumberOfRulesWithErrors();
         if(warnings > 0)
             t += " ("+warnings+" warnings)";
 
@@ -916,7 +894,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         interpreter.setRules(getRules());
 
         rules.parserDidParse();
-        syntax.parserDidParse();
+        grammarSyntax.parserDidParse();
 
         // Make sure to invoke the ideas after Rules
         // has completely updated its list (which should
@@ -970,8 +948,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void componentActivated() {
-        syntax.resetTokenVocab();
-        syntax.rebuildAll();
+        grammarSyntax.resetTokenVocab();
+        grammarSyntax.rebuildAll();
         textEditor.refresh();
     }
 
@@ -1004,18 +982,18 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             Collections.sort(sortedRules);
 
             for(Iterator iterator = sortedRules.iterator(); iterator.hasNext(); ) {
-                ParserRule rule = (ParserRule)iterator.next();
+                GrammarSyntaxRule rule = (GrammarSyntaxRule)iterator.next();
                 if(rule.name.toLowerCase().startsWith(partialWord) && !matchingRules.contains(rule.name))
                     matchingRules.add(rule.name);
             }
         } else {
             // Not inside rule - show only undefined rules
 
-            List sortedUndefinedReferences = Collections.list(Collections.enumeration(syntax.getUndefinedReferences()));
+            List sortedUndefinedReferences = Collections.list(Collections.enumeration(grammarSyntax.getUndefinedReferences()));
             Collections.sort(sortedUndefinedReferences);
 
             for(Iterator iterator = sortedUndefinedReferences.iterator(); iterator.hasNext(); ) {
-                ParserReference ref = (ParserReference)iterator.next();
+                GrammarSyntaxReference ref = (GrammarSyntaxReference)iterator.next();
                 String attr = ref.token.getAttribute();
                 if(attr.toLowerCase().startsWith(partialWord)
                         && !attr.equals(partialWord)
@@ -1042,10 +1020,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
         changeDone();
 
-        adjustTokens(offset, length);
-        textEditor.changeOccurred();
-
-        parserEngine.parse();
         visual.cancelDrawingProcess();
     }
 
@@ -1085,7 +1059,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         // the parser was able to complete
         // display(e.getDot());
 
-        ParserRule rule = rules.selectRuleInTreeAtPosition(index);
+        GrammarSyntaxRule rule = rules.selectRuleInTreeAtPosition(index);
         if(rule == null || rule.name == null) {
             updateVisualization(false);
             lastSelectedRule = null;
@@ -1111,10 +1085,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         List tokens = parserEngine.getTokens();
         for(int index=0; index<tokens.size(); index++) {
             ATEToken t = (ATEToken)tokens.get(index);
-            if(t.type == ATEGenericLexer.TOKEN_ID && t.getAttribute().equals("class")) {
+            if(t.type == ATESyntaxLexer.TOKEN_ID && t.getAttribute().equals("class")) {
                 if(index+2<tokens.size()) {
                     ATEToken t2 = (ATEToken)tokens.get(index+2);
-                    if(t2.type == ATEGenericLexer.TOKEN_ID && t2.getAttribute().equals("extends")) {
+                    if(t2.type == ATESyntaxLexer.TOKEN_ID && t2.getAttribute().equals("extends")) {
                         version2 = true;
                         break;
                     }

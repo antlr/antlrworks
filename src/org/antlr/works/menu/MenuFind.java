@@ -1,10 +1,10 @@
 package org.antlr.works.menu;
 
-import org.antlr.works.ate.syntax.ATEToken;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.find.Usages;
-import org.antlr.works.parser.ParserRule;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import java.util.Iterator;
 /*
@@ -73,7 +73,7 @@ public class MenuFind extends MenuAbstract {
         while(iterator.hasNext()) {
             ATEToken candidate = (ATEToken)iterator.next();
             if(candidate.getAttribute().equals(token.getAttribute())) {
-                ParserRule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStartIndex());
+                GrammarSyntaxRule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStartIndex());
                 if(matchedRule != null)
                     usage.addMatch(matchedRule, candidate);
             }

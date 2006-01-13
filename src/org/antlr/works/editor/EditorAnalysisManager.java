@@ -1,7 +1,7 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.ate.ATEAnalysisItem;
-import org.antlr.works.ate.ATEAnalysisManager;
+import org.antlr.works.ate.analysis.ATEAnalysisItem;
+import org.antlr.works.ate.analysis.ATEAnalysisManager;
 import org.antlr.works.components.grammar.CEditorGrammar;
 
 import java.awt.*;
