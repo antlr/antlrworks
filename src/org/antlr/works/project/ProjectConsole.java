@@ -1,5 +1,7 @@
 package org.antlr.works.project;
 
+import org.antlr.works.prefs.AWPrefs;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -77,7 +79,12 @@ public class ProjectConsole {
         textArea = new JTextArea();
         JScrollPane textAreaScrollPane = new JScrollPane(textArea);
         textAreaScrollPane.setWheelScrollingEnabled(true);
+        applyFont();
         return textAreaScrollPane;
+    }
+
+    public void applyFont() {
+        textArea.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
     }
 
     public void clear() {

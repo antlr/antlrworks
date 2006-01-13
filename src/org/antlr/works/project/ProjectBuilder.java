@@ -62,7 +62,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     }
 
     public List buildListOfGrammarBuildFiles() {
-        return getListOfDirtyBuildFiles(CContainerProject.FILE_TYPE_GRAMMAR);
+        return getListOfDirtyBuildFiles(ProjectFileItem.FILE_TYPE_GRAMMAR);
     }
 
     public List buildListOfJavaBuildFiles() {
@@ -74,13 +74,13 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
             String filePath = file.getAbsolutePath();
-            if(!CContainerProject.getFileType(filePath).equals(CContainerProject.FILE_TYPE_JAVA))
+            if(!ProjectFileItem.getFileType(filePath).equals(ProjectFileItem.FILE_TYPE_JAVA))
                 continue;
 
-            if(buildList.isFileExisting(filePath, CContainerProject.FILE_TYPE_JAVA))
-                buildList.handleExternalModification(filePath, CContainerProject.FILE_TYPE_JAVA);
+            if(buildList.isFileExisting(filePath, ProjectFileItem.FILE_TYPE_JAVA))
+                buildList.handleExternalModification(filePath, ProjectFileItem.FILE_TYPE_JAVA);
             else
-                buildList.addFile(filePath, CContainerProject.FILE_TYPE_JAVA);
+                buildList.addFile(filePath, ProjectFileItem.FILE_TYPE_JAVA);
         }
 
         // Remove all non-existent file on disk that are still in the the build list.
@@ -89,7 +89,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         // by the project.
 
         String projectFolder = project.getProjectFolder();
-        for (Iterator iterator = buildList.getBuildFilesOfType(CContainerProject.FILE_TYPE_JAVA).iterator(); iterator.hasNext();)
+        for (Iterator iterator = buildList.getBuildFilesOfType(ProjectFileItem.FILE_TYPE_JAVA).iterator(); iterator.hasNext();)
         {
             ProjectBuildList.BuildFile buildFile = (ProjectBuildList.BuildFile) iterator.next();
             if(buildFile.getFileFolder().equals(projectFolder)) {
@@ -97,12 +97,12 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
                 // Verify that this file still exists.
                 if(!new File(buildFile.getFilePath()).exists()) {
                     // The file doesn't exist anymore. Remove it from the build list.
-                    buildList.removeFile(buildFile.getFilePath(), CContainerProject.FILE_TYPE_JAVA);
+                    buildList.removeFile(buildFile.getFilePath(), ProjectFileItem.FILE_TYPE_JAVA);
                 }
             }
         }
 
-        return getListOfDirtyBuildFiles(CContainerProject.FILE_TYPE_JAVA);
+        return getListOfDirtyBuildFiles(ProjectFileItem.FILE_TYPE_JAVA);
     }
 
     public boolean generateGrammarBuildFiles(List buildFiles) {
@@ -202,7 +202,6 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     }
 
     public void performRun() {
-        project.clearConsole();
         String error = EngineCompiler.runJava(project.getProjectFolder(), project.getRunParameters(), ProjectBuilder.this);
         if(error != null) {
             project.buildReportError(error);

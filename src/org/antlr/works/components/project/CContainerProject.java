@@ -10,9 +10,6 @@ import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.components.project.file.CContainerProjectFile;
-import org.antlr.works.components.project.file.CContainerProjectGrammar;
-import org.antlr.works.components.project.file.CContainerProjectJava;
-import org.antlr.works.components.project.file.CContainerProjectText;
 import org.antlr.works.project.*;
 
 import javax.swing.*;
@@ -22,6 +19,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -61,6 +59,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
 
     protected XJMainMenuBar projectDefaultMainMenuBar;
     protected ProjectToolbar toolbar;
+    protected ProjectEditorZone editorZone;
     protected JSplitPane splitPaneA;
     protected JSplitPane splitPaneB;
 
@@ -69,26 +68,8 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     protected DefaultMutableTreeNode filesTreeRootNode;
     protected DefaultTreeModel filesTreeModel;
 
-    protected ComponentContainer currentFileContainer;
-
     protected ProjectBuilder builder;
     protected ProjectConsole console;
-
-    public static final String FILE_GRAMMAR_EXTENSION = ".g";
-    public static final String FILE_JAVA_EXTENSION = ".java";
-
-    public static final String FILE_TYPE_GRAMMAR = "FILE_TYPE_GRAMMAR";
-    public static final String FILE_TYPE_JAVA = "FILE_TYPE_JAVA";
-    public static final String FILE_TYPE_TEXT = "FILE_TYPE_TEXT";
-
-    public static String getFileType(String filePath) {
-        if(filePath.endsWith(FILE_GRAMMAR_EXTENSION))
-            return FILE_TYPE_GRAMMAR;
-        if(filePath.endsWith(FILE_JAVA_EXTENSION))
-            return FILE_TYPE_JAVA;
-
-        return FILE_TYPE_TEXT;
-    }
 
     public CContainerProject() {
         builder = new ProjectBuilder(this);
@@ -99,11 +80,13 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
         toolbar = new ProjectToolbar(this);
         projectPanel.add(toolbar.getToolbar(), BorderLayout.NORTH);
 
+        editorZone = new ProjectEditorZone(this);
+
         splitPaneA = new JSplitPane();
         splitPaneA.setBorder(null);
         splitPaneA.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         splitPaneA.setLeftComponent(createFilesTree());
-        splitPaneA.setRightComponent(currentEditorPanel());
+        splitPaneA.setRightComponent(editorZone.getPanel());
         splitPaneA.setContinuousLayout(true);
         splitPaneA.setOneTouchExpandable(true);
         splitPaneA.setDividerLocation(150);
@@ -138,7 +121,8 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     }
 
     public void setDefaultMainMenuBar() {
-        setMainMenuBar(projectDefaultMainMenuBar);
+        if(getMainMenuBar() != projectDefaultMainMenuBar)
+            setMainMenuBar(projectDefaultMainMenuBar);
     }
 
     public void setTitle(String title) {
@@ -186,44 +170,12 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
         filesTreeModel = new DefaultTreeModel(filesTreeRootNode);
 
         filesTree.setModel(filesTreeModel);
-        filesTree.addTreeSelectionListener(new RuleTreeSelectionListener());
+        filesTree.addTreeSelectionListener(new FilesTreeSelectionListener());
+        filesTree.addMouseListener(new FilesTreeMouseListener());
 
         JScrollPane scrollPane = new JScrollPane(filesTree);
         scrollPane.setWheelScrollingEnabled(true);
         return scrollPane;
-    }
-
-    public JPanel createInfoPanel(String info) {
-        JPanel p = new JPanel(new BorderLayout());
-        JLabel l = new JLabel(info);
-        l.setHorizontalAlignment(JLabel.CENTER);
-        l.setFont(new Font("dialog", Font.PLAIN, 36));
-        l.setForeground(Color.gray);
-        p.add(l, BorderLayout.CENTER);
-        p.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.lightGray));
-        return p;
-    }
-
-    public JPanel loadingEditorPanel() {
-        return createInfoPanel("Loading...");
-    }
-
-    public JPanel noEditorPanel() {
-        return createInfoPanel("No Selected File");
-    }
-
-    public JPanel currentEditorPanel() {
-        if(currentFileContainer == null)
-            return noEditorPanel();
-        else
-            return currentFileContainer.getEditor().getPanel();
-    }
-
-    public void setEditorZonePanel(JPanel panel) {
-        int loc = splitPaneA.getDividerLocation();
-        splitPaneA.setRightComponent(panel);
-        splitPaneA.setDividerLocation(loc);
-        splitPaneA.repaint();
     }
 
     public void makeBottomComponentVisible() {
@@ -262,34 +214,6 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
 
     public void changeDone() {
         getDocument().changeDone();
-    }
-
-    public void setCurrentFileEditor(ProjectFileItem item) {
-        if(item == null) {
-            currentFileContainer = null;
-            setMainMenuBar(projectDefaultMainMenuBar);
-            setEditorZonePanel(currentEditorPanel());
-        } else {
-            currentFileContainer = item.getComponentContainer();
-            if(currentFileContainer == null) {
-                setEditorZonePanel(loadingEditorPanel());
-
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        currentFileContainer = new ProjectFileItemFactory(getSelectedFileEditorItem()).create();
-                    }
-                });
-            } else {
-                fileEditorItemDidLoad(item);
-            }
-        }
-    }
-
-    public void fileEditorItemDidLoad(ProjectFileItem item) {
-        setMainMenuBar(item.getComponentContainer().getMainMenuBar());
-        setEditorZonePanel(currentEditorPanel());
-        if(currentFileContainer != null)
-            currentFileContainer.getEditor().componentIsSelected();
     }
 
     public List getFileEditorItems() {
@@ -339,10 +263,14 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     }
 
     public void build() {
+        saveAll();
+        clearConsole();
         builder.build();
     }
 
     public void buildAndRun() {
+        saveAll();
+        clearConsole();
         builder.run();
     }
 
@@ -363,8 +291,15 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
         printToConsole(XJUtils.stackTrace(e));
     }
 
-    public void changeCurrentEditor() {
-        setCurrentFileEditor(getSelectedFileEditorItem());
+    public void saveAll() {
+        runClosureOnFileEditorItems(new FileEditorItemClosure() {
+            public void process(ProjectFileItem item) {
+                if(item.save()) {
+                    // Reset modification date in the build list
+                    getBuildList().handleExternalModification(item.getFilePath(), item.getFileType());
+                }
+            }
+        });
     }
 
     public void close() {
@@ -428,20 +363,19 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
         }
 
         if(removed) {
-            currentFileContainer = null;
             filesTreeModel.reload();
             changeDone();
         }
     }
 
-    public ProjectFileItem getSelectedFileEditorItem() {
+   /* public ProjectFileItem getSelectedFileEditorItem() {
         TreePath selPath[] = filesTree.getSelectionPaths();
         if(selPath == null || selPath.length < 1)
             return null;
 
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)selPath[0].getLastPathComponent();
         return (ProjectFileItem)node.getUserObject();
-    }
+    }*/
 
     /** This method is called *very* frequently so it has to be really efficient
      *
@@ -462,13 +396,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
     }
 
     public void documentWillSave() {
-        runClosureOnFileEditorItems(new FileEditorItemClosure() {
-            public void process(ProjectFileItem item) {
-                ComponentContainer container = item.getComponentContainer();
-                if(container != null)
-                    container.getDocument().performSave(false);
-            }
-        });
+        saveAll();
     }
 
     public interface FileEditorItemClosure {
@@ -502,40 +430,23 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
         return null;
     }
 
-    protected class ProjectFileItemFactory {
-
-        public ProjectFileItem item;
-
-        public ProjectFileItemFactory(ProjectFileItem item) {
-            this.item = item;
+    protected class FilesTreeSelectionListener implements TreeSelectionListener {
+        public void valueChanged(TreeSelectionEvent e) {
         }
-
-        public ComponentContainer create() {
-
-            String type = getFileType(item.getFilePath());
-            if(type.equals(FILE_TYPE_GRAMMAR))
-                new CContainerProjectGrammar(CContainerProject.this, item);
-            else if(type.equals(FILE_TYPE_JAVA))
-                new CContainerProjectJava(CContainerProject.this, item);
-            else
-                new CContainerProjectText(CContainerProject.this, item);
-
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    item.getComponentContainer().getDocument().performLoad(item.getFilePath());
-                    fileEditorItemDidLoad(item);
-                }
-            });
-
-            return item.getComponentContainer();
-        }
-
     }
 
-    protected class RuleTreeSelectionListener implements TreeSelectionListener {
-        public void valueChanged(TreeSelectionEvent e) {
-            changeCurrentEditor();
+    protected class FilesTreeMouseListener extends MouseAdapter {
+
+        public void mouseClicked(MouseEvent e) {
+            if(e.getClickCount() == 2) {
+                if(filesTree.getRowForLocation(e.getX(), e.getY()) != -1) {
+                    TreePath p = filesTree.getPathForLocation(e.getX(), e.getY());
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode)p.getLastPathComponent();
+                    editorZone.openFileItem((ProjectFileItem)node.getUserObject());
+                }
+            }
         }
+
     }
 
 }

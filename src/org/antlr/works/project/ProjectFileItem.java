@@ -4,6 +4,7 @@ import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.project.CContainerProject;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 /*
@@ -39,6 +40,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ProjectFileItem {
 
+    public static final String FILE_GRAMMAR_EXTENSION = ".g";
+    public static final String FILE_JAVA_EXTENSION = ".java";
+
+    public static final String FILE_TYPE_GRAMMAR = "FILE_TYPE_GRAMMAR";
+    public static final String FILE_TYPE_JAVA = "FILE_TYPE_JAVA";
+    public static final String FILE_TYPE_TEXT = "FILE_TYPE_TEXT";
+
     protected static final String KEY_FILE_PATH = "KEY_FILE_PATH";
 
     protected CContainerProject project;
@@ -55,6 +63,15 @@ public class ProjectFileItem {
         this.project = project;
     }
 
+    public static String getFileType(String filePath) {
+        if(filePath.endsWith(FILE_GRAMMAR_EXTENSION))
+            return FILE_TYPE_GRAMMAR;
+        if(filePath.endsWith(FILE_JAVA_EXTENSION))
+            return FILE_TYPE_JAVA;
+
+        return FILE_TYPE_TEXT;
+    }
+
     public boolean isDirty() {
         if(container != null)
             return container.getDocument().isDirty();
@@ -62,9 +79,11 @@ public class ProjectFileItem {
             return false;
     }
 
-    public void save() {
+    public boolean save() {
         if(container != null)
-            container.getDocument().performSave(false);
+            return container.getDocument().performSave(false);
+        else
+            return false;
     }
 
     public void close() {
@@ -80,9 +99,16 @@ public class ProjectFileItem {
         return container;
     }
 
+    public JPanel getEditorPanel() {
+        if(container == null)
+            return null;
+        else
+            return container.getEditor().getPanel();
+    }
+
     public void setFilePath(String filePath) {
         this.filePath = filePath;
-        this.fileType = CContainerProject.getFileType(filePath);
+        this.fileType = getFileType(filePath);
     }
 
     public String getFilePath() {
