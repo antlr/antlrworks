@@ -39,17 +39,23 @@ import edu.usfca.xj.appkit.menu.XJMenuItem;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class CContainerGrammar extends XJWindow implements ComponentContainer {
 
-    ComponentEditor editor;
+    protected ComponentEditor editor;
 
     public CContainerGrammar() {
         editor = new CEditorGrammar(this);
         editor.create();
 
-        getContentPane().add(editor.getPanel());
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(editor.getToolbar(), BorderLayout.NORTH);
+        panel.add(editor.getPanel(), BorderLayout.CENTER);
+        panel.add(editor.getStatusBar(), BorderLayout.SOUTH);
+
+        getContentPane().add(panel);
 
         getJFrame().pack();
     }

@@ -87,7 +87,7 @@ public class ProjectEditorZone {
     }
 
     public JPanel createEmptyEditorPanel() {
-        return createInfoPanel("No Selected File");
+        return createInfoPanel("No Editor");
     }
 
     public void setEditorZoneToEmpty() {
@@ -106,9 +106,13 @@ public class ProjectEditorZone {
         panel.repaint();
     }
 
-    public void setMainMenuBar(ProjectFileItem item) {
-        if(item != null)
-            project.setMainMenuBar(item.getComponentContainer().getMainMenuBar());
+    public void setProjectFileItem(ProjectFileItem item) {
+        if(item == null)
+            return;
+                
+        project.setMainMenuBar(item.getComponentContainer().getMainMenuBar());
+        project.setToolBar(item.getComponentContainer().getEditor().getToolbar());
+        project.setStatusBar(item.getComponentContainer().getEditor().getStatusBar());
     }
 
     public void openFileItem(ProjectFileItem item) {
@@ -137,6 +141,7 @@ public class ProjectEditorZone {
         } else {
             tabbedPane.addTab(item.getFileName(), item.getEditorPanel());
             index = tabbedPane.getComponentCount()-1;
+            tabbedPane.setToolTipTextAt(index, item.getFilePath());
         }
         tabbedPane.setSelectedIndex(index);
     }
@@ -151,7 +156,7 @@ public class ProjectEditorZone {
                 index--;
 
             if(tabbedPane.getSelectedIndex() == index)
-                setMainMenuBar(getSelectedFileItem());
+                setProjectFileItem(getSelectedFileItem());
             else
                 tabbedPane.setSelectedIndex(index);
         }
@@ -184,7 +189,7 @@ public class ProjectEditorZone {
 
     protected class TabbedPaneChangeListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
-            setMainMenuBar(getSelectedFileItem());
+            setProjectFileItem(getSelectedFileItem());
         }
     }
 

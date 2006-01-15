@@ -1,10 +1,11 @@
-package org.antlr.works.ate;
+package org.antlr.works.components;
 
+import javax.swing.*;
 import java.awt.*;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,13 +33,21 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface ATEPanelDelegate {
-    public void ateCaretUpdate(int index);
-    public void ateChangeUpdate(int offset, int length, boolean insert);
-    public void ateAutoIndent(int offset, int length);
-    public void ateMousePressed(Point point);
-    public void ateMouseExited();
-    public void ateMouseMoved(Point relativePoint);
-    public void ateParserWillParse();
-    public void ateParserDidParse();
+public class ComponentStatusBar extends Box {
+
+    public ComponentStatusBar() {
+        super(BoxLayout.X_AXIS);
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        Rectangle r = getBounds();
+
+        g.setColor(Color.darkGray);
+        g.drawLine(0, 0, r.width, 0);
+
+        g.setColor(Color.lightGray);
+        g.drawLine(0, 1, r.width, 1);
+    }
 }

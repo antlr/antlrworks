@@ -29,7 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor;
+package org.antlr.works.ate.swing;
 
 import edu.usfca.xj.foundation.XJSystem;
 
@@ -44,11 +44,11 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-public class EditorKeyBindings {
+public class ATEKeyBindings {
 
     private JTextComponent textComponent = null;
 
-    public EditorKeyBindings(JTextComponent textComponent) {
+    public ATEKeyBindings(JTextComponent textComponent) {
         this.textComponent = textComponent;
         // @todo currently only on Mac OS
         if(XJSystem.isMacOS())

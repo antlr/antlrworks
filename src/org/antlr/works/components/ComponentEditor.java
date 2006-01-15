@@ -45,10 +45,15 @@ public abstract class ComponentEditor {
 
     protected ComponentContainer container;
     protected JPanel mainPanel;
+    protected Box statusBar;
 
     public ComponentEditor(ComponentContainer container) {
         this.container = container;
+
         mainPanel = new JPanel(new BorderLayout());
+
+        statusBar = new ComponentStatusBar();
+        statusBar.setPreferredSize(new Dimension(0, 30));
     }
 
     public void refreshMainMenuBar() {
@@ -56,8 +61,12 @@ public abstract class ComponentEditor {
             getXJFrame().getMainMenuBar().refreshState();
     }
 
-    public XJUndo getCurrentUndo() {
-        return getXJFrame().getCurrentUndo();
+    public JComponent getToolbar() {
+        return null;
+    }
+
+    public JComponent getStatusBar() {
+        return statusBar;
     }
 
     public XJDocument getDocument() {
@@ -79,6 +88,11 @@ public abstract class ComponentEditor {
     public JPanel getPanel() {
         return mainPanel;
     }
+
+    public XJUndo getCurrentUndo() {
+        return getXJFrame().getCurrentUndo();
+    }
+
 
     /** For subclass only
      *

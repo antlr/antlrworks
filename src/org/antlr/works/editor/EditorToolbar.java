@@ -87,15 +87,6 @@ public class EditorToolbar implements XJNotificationObserver {
         }
     }
 
-    /*public void applyPrefs() {
-        sd.setSelected(true);
-        coloring.setSelected(true);
-        analysis.setSelected(true);
-        ideas.setSelected(true);
-        underlying.setSelected(true);
-        tips.setSelected(true);
-    } */
-
     public void createInterface() {
         toolbar = Box.createHorizontalBox();
         toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));

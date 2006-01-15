@@ -112,6 +112,9 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
         container.setDirty();
     }
 
+    public void ateAutoIndent(int offset, int length) {        
+    }
+
     public void ateMousePressed(Point point) {
     }
 

@@ -8,6 +8,9 @@ import org.antlr.works.ate.analysis.ATEAnalysisManager;
 import org.antlr.works.ate.breakpoint.ATEBreakpointManager;
 import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
 import org.antlr.works.ate.folding.ATEFoldingManager;
+import org.antlr.works.ate.swing.ATEAutoIndentation;
+import org.antlr.works.ate.swing.ATEImmediateColoring;
+import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEColoring;
 import org.antlr.works.ate.syntax.misc.ATEToken;
@@ -62,6 +65,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     protected ATEPanelDelegate delegate;
     protected ATETextPane textPane;
+    protected ATEKeyBindings keyBindings;
     protected ATEGutter gutter;
     protected ATEAnalysisColumn analysisColumn;
 
@@ -72,6 +76,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     protected ATEColoring colorize;
     protected ATESyntaxEngine engine;
+    protected ATEAutoIndentation autoIndent;
+    protected ATEImmediateColoring immediateSyntaxColoring;
 
     protected TextPaneListener textPaneListener;
 
@@ -85,6 +91,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         super(new BorderLayout());
         this.parentFrame = parentFrame;
         colorize = new ATEColoring(this);
+        autoIndent = new ATEAutoIndentation(this);
+        immediateSyntaxColoring = new ATEImmediateColoring(this);
         createTextPane();
     }
 
@@ -124,6 +132,14 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public ATEAnalysisManager getAnalysisManager() {
         return analysisManager;
+    }
+
+    public void setAutoIndent(boolean flag) {
+        autoIndent.setEnabled(flag);
+    }
+
+    public boolean autoIndent() {
+        return autoIndent.enabled();
     }
 
     public void setIsTyping(boolean flag) {
@@ -224,6 +240,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         return colorize.isEnable();
     }
 
+    public ATEKeyBindings getKeyBindings() {
+        return keyBindings;
+    }
+
     public void toggleSyntaxColoring() {
         setSyntaxColoring(!isSyntaxColoring());
         if(colorize.isEnable()) {
@@ -307,6 +327,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         // Gutter
         gutter = new ATEGutter(this);
 
+        // Key bindings
+        keyBindings = new ATEKeyBindings(getTextPane());
+
+
         // Scroll pane
         JScrollPane textScrollPane = new JScrollPane(textPane);
         textScrollPane.setWheelScrollingEnabled(true);
@@ -346,6 +370,11 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         colorize.colorize();
         if(delegate != null)
             delegate.ateParserDidParse();
+    }
+
+    public void ateAutoIndent(int offset, int length) {
+        if(delegate != null)
+            delegate.ateAutoIndent(offset, length);
     }
 
     public void ateColoringWillColorize() {
@@ -430,6 +459,11 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             if(isEnable()) {
                 if(delegate != null)
                     delegate.ateChangeUpdate(offset, length, insert);
+
+                if(insert) {
+                    autoIndent.indent(offset, length);
+                    immediateSyntaxColoring.colorize(offset, length);
+                }
 
                 adjustTokens(offset, length);
                 colorize.setColorizeLocation(offset, length);

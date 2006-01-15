@@ -36,14 +36,13 @@ import org.antlr.works.rules.Rules;
 import org.antlr.works.rules.RulesDelegate;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.*;
-import org.antlr.works.syntax.misc.AutoIndentation;
-import org.antlr.works.syntax.misc.ImmediateColoring;
 import org.antlr.works.utils.TextUtils;
 import org.antlr.works.visualization.Visual;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -102,8 +101,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public GoToRule goToRule;
     public GoToHistory goToHistory;
-    public ImmediateColoring immediateSyntaxColoring;
-    public AutoIndentation autoIndent;
 
     /* Managers */
 
@@ -130,7 +127,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public EditorTips editorTips;
     public EditorInspector editorInspector;
     public EditorPersistence persistence;
-    public EditorKeyBindings keyBindings;
 
     /* Menu */
 
@@ -153,7 +149,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     protected JTabbedPane tabbedPane;
 
-    protected Box infoBox;
     protected JLabel infoLabel;
     protected JLabel cursorLabel;
     protected JLabel scmLabel;
@@ -211,8 +206,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     protected void initTools() {
         goToRule = new GoToRule(this, getJFrame(), getTextPane());
         goToHistory = new GoToHistory();
-        immediateSyntaxColoring = new ImmediateColoring(getTextPane());
-        autoIndent = new AutoIndentation(getTextPane());
         findAndReplace = new FindAndReplace(this);
     }
 
@@ -230,8 +223,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         editorIdeas = new EditorIdeas(this);
         editorTips = new EditorTips(this);
         editorInspector = new EditorInspector(this);
-
-        keyBindings = new EditorKeyBindings(getTextPane());
 
         persistence = new EditorPersistence(this);
 
@@ -273,7 +264,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         interpreter.awake();
         debugger.awake();
 
-        rules.setKeyBindings(keyBindings);
+        rules.setKeyBindings(textEditor.getKeyBindings());
 
         textEditor.setParserEngine(parserEngine);
     }
@@ -340,25 +331,20 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         cursorLabel = new JLabel();
         scmLabel = new JLabel();
 
-        infoBox = new InfoPanel();
-        infoBox.setPreferredSize(new Dimension(0, 30));
-
-        infoBox.add(Box.createHorizontalStrut(5));
-        infoBox.add(infoLabel);
-        infoBox.add(Box.createHorizontalStrut(5));
-        infoBox.add(createSeparator());
-        infoBox.add(Box.createHorizontalStrut(5));
-        infoBox.add(cursorLabel);
-        infoBox.add(Box.createHorizontalStrut(5));
-        infoBox.add(createSeparator());
-        infoBox.add(Box.createHorizontalStrut(5));
-        infoBox.add(scmLabel);
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(infoLabel);
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(createSeparator());
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(cursorLabel);
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(createSeparator());
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(scmLabel);
 
         toolbar = new EditorToolbar(this);
 
-        mainPanel.add(toolbar.getToolbar(), BorderLayout.NORTH);
         mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
-        mainPanel.add(infoBox, BorderLayout.SOUTH);
 
         if(!XJSystem.isMacOS()) {
             rulesTextSplitPane.setDividerSize(10);
@@ -444,6 +430,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         }
     }
 
+    public JComponent getToolbar() {
+        return toolbar.getToolbar();
+    }
+
     public EditorGrammar getGrammar() {
         return grammar;
     }
@@ -465,7 +455,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void toggleAutoIndent() {
-        setAutoIndent(!autoIndent());
+        textEditor.setAutoIndent(!textEditor.autoIndent());
     }
 
     public void toggleSyntaxColoring() {
@@ -511,14 +501,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public void changeUpdate() {
         ateChangeUpdate(-1, -1, false);
-    }
-
-    public void setAutoIndent(boolean flag) {
-        autoIndent.setEnabled(flag);
-    }
-
-    public boolean autoIndent() {
-        return autoIndent.enabled();
     }
 
     public void beginGroupChange(String name) {
@@ -1013,14 +995,16 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void ateChangeUpdate(int offset, int length, boolean insert) {
-        if(insert) {
-            immediateSyntaxColoring.colorize(offset, length);
-            autoIndent.indent(offset, length);
-        }
-
         changeDone();
-
         visual.cancelDrawingProcess();
+    }
+
+    public void ateAutoIndent(int offset, int length) {
+        try {
+            GrammarAutoIndent.autoIndentOnSpecificKeys(getTextPane().getDocument(), offset, length);
+        } catch (BadLocationException e) {
+            // ignore
+        }
     }
 
     public void ateMousePressed(Point point) {
@@ -1166,22 +1150,4 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         }
     }
 
-    protected class InfoPanel extends Box {
-
-        public InfoPanel() {
-            super(BoxLayout.X_AXIS);
-        }
-
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-
-            Rectangle r = getBounds();
-
-            g.setColor(Color.darkGray);
-            g.drawLine(0, 0, r.width, 0);
-
-            g.setColor(Color.lightGray);
-            g.drawLine(0, 1, r.width, 1);
-        }
-    }
 }

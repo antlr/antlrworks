@@ -113,6 +113,12 @@ public class ProjectBuildList {
         return f.handleExternalModification();
     }
 
+    public void resetModificationDate(String filePath, String type) {
+        BuildFile f = getBuildFile(filePath, type);
+        if(f != null)
+            f.resetModificationDate();
+    }
+
     public boolean handleExternalModification() {
         boolean modified = false;
         for (Iterator typeIterator = files.values().iterator(); typeIterator.hasNext();) {

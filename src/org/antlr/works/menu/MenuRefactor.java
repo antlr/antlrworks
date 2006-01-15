@@ -7,6 +7,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.syntax.GrammarSyntaxLexer;
 import org.antlr.works.syntax.GrammarSyntaxReference;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.Utils;
@@ -70,10 +71,18 @@ public class MenuRefactor extends MenuAbstract {
     protected void renameToken(ATEToken t, String name) {
         List tokens = editor.getTokens();
         String attr = t.getAttribute();
+
+        boolean renameRefRule = t.type == GrammarSyntaxLexer.TOKEN_REFERENCE || t.type == GrammarSyntaxLexer.TOKEN_RULE;
+
         for(int index = tokens.size()-1; index>0; index--) {
             ATEToken token = (ATEToken) tokens.get(index);
-            if(token.type == t.type && token.getAttribute().equals(attr)) {
-                editor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
+
+            if(token.getAttribute().equals(attr)) {
+                if(token.type == t.type || renameRefRule &&
+                        (token.type == GrammarSyntaxLexer.TOKEN_REFERENCE || token.type == GrammarSyntaxLexer.TOKEN_RULE))
+                {
+                    editor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
+                }
             }
         }
     }

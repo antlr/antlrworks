@@ -42,6 +42,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ProjectToolbar {
 
+    public static final int CUSTOM_TOOLBAR_INDEX = 4;
+
     public Box toolbar;
 
     public JButton addFile;
@@ -51,6 +53,8 @@ public class ProjectToolbar {
     public JButton clean;
     public JButton build;
     public JButton run;
+
+    public JPanel customToolbar;
 
     public CContainerProject project;
 
@@ -66,17 +70,37 @@ public class ProjectToolbar {
     }
 
     public void createInterface() {
+        customToolbar = new JPanel();
+
         toolbar = Box.createHorizontalBox();
         toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
         toolbar.add(Box.createHorizontalStrut(5));
         toolbar.add(addFile = (JButton)createNewButton("+", "Add Files", new Dimension(40, 32)));
         toolbar.add(removeFile = (JButton)createNewButton("-", "Remove Selected File", new Dimension(40, 32)));
+        toolbar.add(Box.createHorizontalStrut(15));
+        toolbar.add(customToolbar);
         toolbar.add(Box.createHorizontalGlue());
         toolbar.add(settings = (JButton)createNewButton("Settings", "Project Settings", new Dimension(80, 32)));
         toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(clean = (JButton)createNewButton("Clean", "Clean Project Directory", new Dimension(80, 32)));
         toolbar.add(build = (JButton)createNewButton("Build", "Build Project", new Dimension(80, 32)));
         toolbar.add(run = (JButton)createNewButton("Run", "Run Project", new Dimension(80, 32)));
+    }
+
+    public void setCustomToolbar(JComponent tb) {
+        if(tb != null) {
+            if(tb.getBorder() != null)
+                tb.setBorder(null);
+
+            toolbar.remove(CUSTOM_TOOLBAR_INDEX);
+            toolbar.add(tb, CUSTOM_TOOLBAR_INDEX);
+        } else {
+            toolbar.remove(CUSTOM_TOOLBAR_INDEX);
+            toolbar.add(customToolbar, CUSTOM_TOOLBAR_INDEX);
+        }
+
+        toolbar.revalidate();
+        toolbar.repaint();
     }
 
     public void addActions() {
@@ -148,4 +172,5 @@ public class ProjectToolbar {
         button.setFocusable(false);
         return button;
     }
+
 }

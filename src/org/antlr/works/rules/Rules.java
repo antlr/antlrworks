@@ -34,9 +34,9 @@ package org.antlr.works.rules;
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
+import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.editor.EditorKeyBindings;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.syntax.GrammarSyntaxGroup;
@@ -105,7 +105,7 @@ public class Rules implements XJTreeDelegate {
         this.delegate = delegate;
     }
 
-    public void setKeyBindings(EditorKeyBindings keyBindings) {
+    public void setKeyBindings(ATEKeyBindings keyBindings) {
         keyBindings.addKeyBinding("RULE_MOVE_UP", KeyStroke.getKeyStroke(KeyEvent.VK_UP, Event.CTRL_MASK),
                 new RuleMoveUpAction());
         keyBindings.addKeyBinding("RULE_MOVE_DOWN", KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Event.CTRL_MASK),

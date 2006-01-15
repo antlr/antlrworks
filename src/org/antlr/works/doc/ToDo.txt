@@ -1,10 +1,11 @@
 
 * Prio 1
-- doesn't read the tokenVocab anymore in grammar file
+- make sure that CEditorText and all other text component listen to editor change font notification and then call applyFont()
 - don't disable the open recent file if a panel is in front (like the about or prefs)
 - setDividerLocation when preferedSize() or size() is known (see when I can catch that)
 - cannot debug fuzzy.g
 - cannot stop debugger on mantra.g
+- run profiler to see why parsing generated java code is so long
 
 - auto-indent in prefs
 - remove print in GGraphGroup/EditorGrammar once weird ambiguous path problem solved

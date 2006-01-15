@@ -30,7 +30,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-package org.antlr.works.syntax.misc;
+package org.antlr.works.ate.swing;
+
+import org.antlr.works.ate.ATEPanel;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -38,15 +40,15 @@ import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
 
-public class ImmediateColoring implements Runnable {
+public class ATEImmediateColoring implements Runnable {
 
     protected int offset;
     protected int length;
     protected int comment = 0;
-    protected JTextPane textPane;
+    protected ATEPanel textEditor;
 
-    public ImmediateColoring(JTextPane textPane) {
-        this.textPane = textPane;
+    public ATEImmediateColoring(ATEPanel textEditor) {
+        this.textEditor = textEditor;
     }
 
     public void colorize(int offset, int length) {
@@ -57,10 +59,10 @@ public class ImmediateColoring implements Runnable {
 
     public void run() {
         try {
-            String s = textPane.getDocument().getText(offset, length);
+            String s = textEditor.getTextPane().getDocument().getText(offset, length);
             char c = s.charAt(0);
             if(c == '\n' || c == '\r') {
-                MutableAttributeSet attr = textPane.getInputAttributes();
+                MutableAttributeSet attr = textEditor.getTextPane().getInputAttributes();
                 StyleConstants.setForeground(attr, Color.black);
                 StyleConstants.setBold(attr, false);
                 StyleConstants.setItalic(attr, false);
@@ -74,16 +76,17 @@ public class ImmediateColoring implements Runnable {
             }
 
             if(comment == 2) {
-                MutableAttributeSet attr = textPane.getInputAttributes();
+                MutableAttributeSet attr = textEditor.getTextPane().getInputAttributes();
                 StyleConstants.setForeground(attr, Color.lightGray);
                 StyleConstants.setBold(attr, false);
                 StyleConstants.setItalic(attr, true);
-                textPane.getStyledDocument().setCharacterAttributes(offset-1, 2, attr, true);
+                textEditor.getTextPane().getStyledDocument().setCharacterAttributes(offset-1, 2, attr, true);
                 comment = 0;
             }
 
         } catch (BadLocationException e1) {
             // ignore exception
         }
+
     }
 }

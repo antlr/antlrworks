@@ -9,6 +9,7 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.components.ComponentStatusBar;
 import org.antlr.works.components.project.file.CContainerProjectFile;
 import org.antlr.works.project.*;
 
@@ -58,12 +59,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class CContainerProject extends XJWindow implements ComponentContainer {
 
     protected XJMainMenuBar projectDefaultMainMenuBar;
-    protected ProjectToolbar toolbar;
+    protected ProjectToolbar projectToolbar;
     protected ProjectEditorZone editorZone;
     protected JSplitPane splitPaneA;
     protected JSplitPane splitPaneB;
 
     protected JPanel projectPanel;
+    protected Box projectStatusBar;
+
     protected XJTree filesTree;
     protected DefaultMutableTreeNode filesTreeRootNode;
     protected DefaultTreeModel filesTreeModel;
@@ -77,8 +80,13 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
 
         projectPanel = new JPanel(new BorderLayout());
 
-        toolbar = new ProjectToolbar(this);
-        projectPanel.add(toolbar.getToolbar(), BorderLayout.NORTH);
+        projectToolbar = new ProjectToolbar(this);
+        projectPanel.add(projectToolbar.getToolbar(), BorderLayout.NORTH);
+
+        projectStatusBar = new ComponentStatusBar();
+        projectStatusBar.setPreferredSize(new Dimension(0, 30));
+
+        projectPanel.add(projectStatusBar, BorderLayout.SOUTH);
 
         editorZone = new ProjectEditorZone(this);
 
@@ -120,6 +128,21 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
         getRootPane().setPreferredSize(r.getSize());
     }
 
+    public void setToolBar(JComponent toolbar) {
+        projectToolbar.setCustomToolbar(toolbar);
+    }
+
+    public void setStatusBar(JComponent statusbar) {
+        if(projectStatusBar.getComponentCount() > 0)
+            projectStatusBar.remove(0);
+
+        if(statusbar != null)
+            projectStatusBar.add(statusbar, BorderLayout.CENTER);
+
+        projectStatusBar.revalidate();
+        projectStatusBar.repaint();
+    }
+
     public void setDefaultMainMenuBar() {
         if(getMainMenuBar() != projectDefaultMainMenuBar)
             setMainMenuBar(projectDefaultMainMenuBar);
@@ -143,7 +166,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
 
     public JComponent createFilesTree() {
 
-        filesTree = new XJTree() {
+        filesTree = new XJTree(); /*{
             public String getToolTipText(MouseEvent e) {
                 TreePath path = getPathForLocation(e.getX(), e.getY());
                 if(path == null)
@@ -156,7 +179,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
 
                 return item.getFilePath();
             }
-        };
+        };                          */
 
         filesTree.setBorder(null);
         // Apparently, if I don't set the tooltip here, nothing is displayed (weird)
@@ -296,7 +319,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer {
             public void process(ProjectFileItem item) {
                 if(item.save()) {
                     // Reset modification date in the build list
-                    getBuildList().handleExternalModification(item.getFilePath(), item.getFileType());
+                    getBuildList().resetModificationDate(item.getFilePath(), item.getFileType());
                 }
             }
         });
