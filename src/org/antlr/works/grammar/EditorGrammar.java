@@ -243,7 +243,7 @@ public class EditorGrammar {
 
         try {
             ErrorListener.shared().clear();
-            parserGrammar.createLookaheadDFAs();
+            getANTLRGrammar().createLookaheadDFAs();
             buildNonDeterministicErrors();
         } catch(Exception e) {
             editor.console.print(e);
