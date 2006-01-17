@@ -1,7 +1,8 @@
 
 * Prio 1
-- make sure that CEditorText and all other text component listen to editor change font notification and then call applyFont()
-- don't disable the open recent file if a panel is in front (like the about or prefs)
+- remember order of project opened files
+- should be able to ignore some file for the build phase
+
 - setDividerLocation when preferedSize() or size() is known (see when I can catch that)
 - cannot stop debugger on mantra.g
 - run profiler to see why parsing generated java code is so long

@@ -42,34 +42,72 @@ public class ProjectFileItem {
 
     public static final String FILE_GRAMMAR_EXTENSION = ".g";
     public static final String FILE_JAVA_EXTENSION = ".java";
+    public static final String FILE_STG_EXTENSION = ".stg";
+    public static final String FILE_ST_EXTENSION = ".st";
+    public static final String FILE_TEXT_EXTENSION = ".txt";
 
     public static final String FILE_TYPE_GRAMMAR = "FILE_TYPE_GRAMMAR";
     public static final String FILE_TYPE_JAVA = "FILE_TYPE_JAVA";
+    public static final String FILE_TYPE_STG = "FILE_TYPE_STG";
+    public static final String FILE_TYPE_ST = "FILE_TYPE_ST";
     public static final String FILE_TYPE_TEXT = "FILE_TYPE_TEXT";
+    public static final String FILE_TYPE_UNKNOWN = "FILE_TYPE_UNKNOWN";
 
-    protected static final String KEY_FILE_PATH = "KEY_FILE_PATH";
+    protected static final String KEY_FILE_NAME = "KEY_FILE_NAME";
+    protected static final String KEY_FILE_OPENED = "KEY_FILE_OPENED";
 
     protected CContainerProject project;
     protected ComponentContainer container;
-    protected String filePath;
+
+    protected String fileName;
     protected String fileType;
+    protected boolean opened;
 
     public ProjectFileItem(CContainerProject project) {
         this.project = project;
     }
 
-    public ProjectFileItem(CContainerProject project, String filePath) {
-        setFilePath(filePath);
+    public ProjectFileItem(CContainerProject project, String name) {
+        setFileName(name);
         this.project = project;
     }
 
     public static String getFileType(String filePath) {
         if(filePath.endsWith(FILE_GRAMMAR_EXTENSION))
             return FILE_TYPE_GRAMMAR;
+        if(filePath.endsWith(FILE_STG_EXTENSION))
+            return FILE_TYPE_STG;
+        if(filePath.endsWith(FILE_ST_EXTENSION))
+            return FILE_TYPE_ST;
         if(filePath.endsWith(FILE_JAVA_EXTENSION))
             return FILE_TYPE_JAVA;
+        if(filePath.endsWith(FILE_TEXT_EXTENSION))
+            return FILE_TYPE_TEXT;
 
-        return FILE_TYPE_TEXT;
+        return FILE_TYPE_UNKNOWN;
+    }
+
+    public static String getFileTypeName(String type) {
+        if(type.equals(FILE_TYPE_GRAMMAR))
+            return "Grammar";
+        if(type.equals(FILE_TYPE_STG))
+            return "ST Group";
+        if(type.equals(FILE_TYPE_ST))
+            return "ST";
+        if(type.equals(FILE_TYPE_JAVA))
+            return "Java";
+        if(type.equals(FILE_TYPE_TEXT))
+            return "Text";
+
+        return "Unkown";
+    }
+
+    public void setOpened(boolean flag) {
+        opened = flag;
+    }
+
+    public boolean isOpened() {
+        return opened;
     }
 
     public boolean isDirty() {
@@ -80,7 +118,7 @@ public class ProjectFileItem {
     }
 
     public boolean save() {
-        if(container != null)
+        if(container != null && container.getDocument().isDirty())
             return container.getDocument().performSave(false);
         else
             return false;
@@ -106,21 +144,17 @@ public class ProjectFileItem {
             return container.getEditor().getPanel();
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-        this.fileType = getFileType(filePath);
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+        this.fileType = getFileType(fileName);
     }
 
     public String getFilePath() {
-        return filePath;
+        return XJUtils.concatPath(project.getSourcePath(), fileName);
     }
 
     public String getFileName() {
-        return XJUtils.getLastPathComponent(getFilePath());
-    }
-
-    public String getFileFolder() {
-        return XJUtils.getPathByDeletingLastComponent(getFilePath());
+        return fileName;
     }
 
     public String getFileType() {
@@ -145,12 +179,14 @@ public class ProjectFileItem {
     }
 
     public void setPersistentData(Map data) {
-        setFilePath((String)data.get(KEY_FILE_PATH));
+        setFileName((String)data.get(KEY_FILE_NAME));
+        setOpened(((Boolean)data.get(KEY_FILE_OPENED)).booleanValue());
     }
 
     public Map getPersistentData() {
         Map data = new HashMap();
-        data.put(KEY_FILE_PATH, filePath);
+        data.put(KEY_FILE_NAME, fileName);
+        data.put(KEY_FILE_OPENED, Boolean.valueOf(opened));
         return data;
     }
 

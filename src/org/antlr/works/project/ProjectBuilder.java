@@ -9,6 +9,8 @@ import org.antlr.works.utils.StreamWatcherDelegate;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,6 +53,8 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     protected boolean cancel;
     protected int buildingProgress;
 
+    protected ProjectFileItem fileToBuild;
+
     public ProjectBuilder(CContainerProject project) {
         this.project = project;
         this.progress = new XJDialogProgress(project.getXJFrame(), true);
@@ -61,48 +65,55 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         return project.getBuildList().getDirtyBuildFilesOfType(type);
     }
 
-    public List buildListOfGrammarBuildFiles() {
-        return getListOfDirtyBuildFiles(ProjectFileItem.FILE_TYPE_GRAMMAR);
-    }
-
-    public List buildListOfJavaBuildFiles() {
+    public List buildListOfBuildFilesOfType(List filesOnDisk, String fileType) {
         ProjectBuildList buildList = project.getBuildList();
 
         // Update the build list with list of files on the disk
 
-        File[] files = new File(project.getProjectFolder()).listFiles();
+        File[] files = new File(project.getSourcePath()).listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
             String filePath = file.getAbsolutePath();
-            if(!ProjectFileItem.getFileType(filePath).equals(ProjectFileItem.FILE_TYPE_JAVA))
+            if(!ProjectFileItem.getFileType(filePath).equals(fileType))
                 continue;
 
-            if(buildList.isFileExisting(filePath, ProjectFileItem.FILE_TYPE_JAVA))
-                buildList.handleExternalModification(filePath, ProjectFileItem.FILE_TYPE_JAVA);
+            if(buildList.isFileExisting(filePath, fileType))
+                buildList.handleExternalModification(filePath, fileType);
             else
-                buildList.addFile(filePath, ProjectFileItem.FILE_TYPE_JAVA);
+                buildList.addFile(filePath, fileType);
         }
 
         // Remove all non-existent file on disk that are still in the the build list.
-        // Note: only files that are in the project folder are removed because some
-        // java file, located outside the project folder, may still be referenced
-        // by the project.
 
-        String projectFolder = project.getProjectFolder();
-        for (Iterator iterator = buildList.getBuildFilesOfType(ProjectFileItem.FILE_TYPE_JAVA).iterator(); iterator.hasNext();)
+        for (Iterator iterator = buildList.getBuildFilesOfType(fileType).iterator(); iterator.hasNext();)
         {
             ProjectBuildList.BuildFile buildFile = (ProjectBuildList.BuildFile) iterator.next();
-            if(buildFile.getFileFolder().equals(projectFolder)) {
-                // The build file is located inside the project folder.
-                // Verify that this file still exists.
-                if(!new File(buildFile.getFilePath()).exists()) {
-                    // The file doesn't exist anymore. Remove it from the build list.
-                    buildList.removeFile(buildFile.getFilePath(), ProjectFileItem.FILE_TYPE_JAVA);
-                }
+            if(!new File(buildFile.getFilePath()).exists()) {
+                // The file doesn't exist anymore. Remove it from the build list.
+                buildList.removeFile(buildFile.getFilePath(), fileType);
             }
         }
 
-        return getListOfDirtyBuildFiles(ProjectFileItem.FILE_TYPE_JAVA);
+        return getListOfDirtyBuildFiles(fileType);
+    }
+
+    public List buildListOfGrammarBuildFiles() {
+        List filesOnDisk = new ArrayList();
+        for (Iterator iterator = project.getFileEditorItems().iterator(); iterator.hasNext();) {
+            ProjectFileItem item = (ProjectFileItem) iterator.next();
+            filesOnDisk.add(item.getFilePath());
+        }
+        return buildListOfBuildFilesOfType(filesOnDisk, ProjectFileItem.FILE_TYPE_GRAMMAR);
+    }
+
+    public List buildListOfJavaBuildFiles() {
+        List filesOnDisk = new ArrayList();
+        File[] files = new File(project.getSourcePath()).listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            filesOnDisk.add(file.getAbsolutePath());
+        }
+        return buildListOfBuildFilesOfType(filesOnDisk, ProjectFileItem.FILE_TYPE_JAVA);
     }
 
     public boolean generateGrammarBuildFiles(List buildFiles) {
@@ -128,7 +139,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     }
 
     public boolean compileFile(String file) {
-        String outputPath = project.getProjectFolder();
+        String outputPath = project.getSourcePath();
         String error = EngineCompiler.compileFiles(new String[] { file }, outputPath, this);
         if(error != null) {
             project.buildReportError(error);
@@ -182,7 +193,51 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         }
     }
 
-    public void build() {
+    public void performBuildFile() {
+        String type = fileToBuild.getFileType();
+        List files;
+
+        if(type.equals(ProjectFileItem.FILE_TYPE_GRAMMAR))
+            files = buildListOfGrammarBuildFiles();
+        else if(type.equals(ProjectFileItem.FILE_TYPE_JAVA))
+            files = buildListOfJavaBuildFiles();
+        else
+            return;
+
+        for (Iterator iterator = files.iterator(); iterator.hasNext();) {
+            ProjectBuildList.BuildFile buildFile = (ProjectBuildList.BuildFile) iterator.next();
+            if(buildFile.getFilePath().equals(fileToBuild.getFilePath())) {
+                List f = Collections.singletonList(buildFile);
+                if(type.equals(ProjectFileItem.FILE_TYPE_GRAMMAR))
+                    generateGrammarBuildFiles(f);
+                else if(type.equals(ProjectFileItem.FILE_TYPE_JAVA))
+                    compileJavaBuildFiles(f);
+            }
+        }
+    }
+
+    public void buildFile(ProjectFileItem fileItem) {
+        fileToBuild = fileItem;
+
+        cancel = false;
+        buildingProgress = 0;
+
+        progress.setCancellable(false);
+        progress.setTitle("Build");
+        progress.setInfo("Building...");
+        progress.setIndeterminate(true);
+
+        new ThreadExecution(new Runnable() {
+            public void run() {
+                performBuildFile();
+                progress.close();
+            }
+        }).launch();
+
+        progress.runModal();
+    }
+
+    public void buildAll() {
         cancel = false;
         buildingProgress = 0;
 
@@ -202,7 +257,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     }
 
     public void performRun() {
-        String error = EngineCompiler.runJava(project.getProjectFolder(), project.getRunParameters(), ProjectBuilder.this);
+        String error = EngineCompiler.runJava(project.getSourcePath(), project.getRunParameters(), ProjectBuilder.this);
         if(error != null) {
             project.buildReportError(error);
         }
@@ -233,7 +288,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
      */
 
     public void clean() {
-        File[] files = new File(project.getProjectFolder()).listFiles();
+        File[] files = new File(project.getSourcePath()).listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
             String filePath = file.getAbsolutePath();

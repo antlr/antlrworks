@@ -48,6 +48,17 @@ public class CDocumentProject extends XJDocument {
         return data;
     }
 
+    /** Override this method to automatically save the project
+     * if it is dirty without asking the user
+     */
+
+    protected boolean performClose_() {
+        if(isDirty() && getDocumentPath() != null) {
+            return performSave(false);
+        } else
+            return super.performClose_();
+    }
+
     public void documentWillWriteData() {
         CContainerProject project = (CContainerProject)getWindow();
         project.documentWillSave();

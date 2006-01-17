@@ -13,7 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -144,6 +146,7 @@ public class ProjectEditorZone {
             tabbedPane.setToolTipTextAt(index, item.getFilePath());
         }
         tabbedPane.setSelectedIndex(index);
+        item.setOpened(true);
     }
 
     public void removeFileItemFromTab(ProjectFileItem item) {
@@ -160,6 +163,7 @@ public class ProjectEditorZone {
             else
                 tabbedPane.setSelectedIndex(index);
         }
+        item.setOpened(false);
     }
 
     public boolean isTabbedPaneContainFileItem(ProjectFileItem item) {
@@ -174,8 +178,7 @@ public class ProjectEditorZone {
         return -1;
     }
 
-    public ProjectFileItem getSelectedFileItem() {
-        Component component = tabbedPane.getSelectedComponent();
+    public ProjectFileItem getFileItemForTabComponent(Component component) {
         if(component == null)
             return null;
 
@@ -184,7 +187,40 @@ public class ProjectEditorZone {
             if(item.getEditorPanel() == component)
                 return item;
         }
+
         return null;
+    }
+
+    public ProjectFileItem getSelectedFileItem() {
+        return getFileItemForTabComponent(tabbedPane.getSelectedComponent());
+    }
+
+    public static final String KEY_SELECTED_FILE_NAME = "KEY_SELECTED_FILE_NAME";
+
+    public void setPersistentData(Map data) {
+        if(data == null)
+            return;
+
+        String fileName = (String) data.get(KEY_SELECTED_FILE_NAME);
+        if(fileName != null) {
+            for(int index=0; index<tabbedPane.getComponentCount(); index++) {
+                ProjectFileItem item = getFileItemForTabComponent(tabbedPane.getComponentAt(index));
+                if(item == null)
+                    continue;
+
+                if(item.getFileName().equals(fileName)) {
+                    tabbedPane.setSelectedIndex(index);
+                    break;
+                }
+            }
+        }
+    }
+
+    public Map getPersistentData() {
+        Map data = new HashMap();
+        if(getSelectedFileItem() != null)
+            data.put(KEY_SELECTED_FILE_NAME, getSelectedFileItem().getFileName());
+        return data;
     }
 
     protected class TabbedPaneChangeListener implements ChangeListener {

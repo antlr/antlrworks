@@ -254,8 +254,12 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public void refresh() {
-        underlyingManager.reset();
-        gutter.markDirty();
+        if(underlyingManager != null)
+            underlyingManager.reset();
+        
+        if(gutter != null)
+            gutter.markDirty();
+
         repaint();
     }
 

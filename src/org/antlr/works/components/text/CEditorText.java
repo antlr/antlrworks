@@ -58,15 +58,20 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
         textEditor.setSyntaxColoring(true);
         textEditor.setAnalysisColumnVisible(false);
         textEditor.setDelegate(this);
-        textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
-        textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
-        applyFont();
+        applyPrefs();
 
         mainPanel.add(textEditor, BorderLayout.CENTER);
     }
 
     public ATELanguageSyntaxEngine createLanguageEngine() {
         return new ATELanguageSyntaxEngine();
+    }
+
+    public void applyPrefs() {
+        textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
+        textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
+        textEditor.refresh();
+        applyFont();
     }
 
     public void applyFont() {
@@ -89,6 +94,11 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
     }
 
     public void close() {
+        super.close();
+    }
+
+    public void notificationPrefsChanged() {
+        applyPrefs();
     }
 
     public void componentDocumentContentChanged() {

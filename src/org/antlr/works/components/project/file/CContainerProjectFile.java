@@ -127,6 +127,7 @@ public abstract class CContainerProjectFile implements ComponentContainer, XJMen
     }
 
     public void setDirty() {
+        getDocument().setDirty(true);
         project.fileDidBecomeDirty(this, item);
     }
 

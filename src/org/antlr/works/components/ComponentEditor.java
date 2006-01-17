@@ -6,6 +6,10 @@ import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.undo.XJUndo;
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.prefs.AWPrefsDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class ComponentEditor {
+public abstract class ComponentEditor implements XJNotificationObserver {
 
     protected ComponentContainer container;
     protected JPanel mainPanel;
@@ -54,6 +58,10 @@ public abstract class ComponentEditor {
 
         statusBar = new ComponentStatusBar();
         statusBar.setPreferredSize(new Dimension(0, 30));
+
+        XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
+        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
+        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STOPPED);
     }
 
     public void refreshMainMenuBar() {
@@ -93,6 +101,16 @@ public abstract class ComponentEditor {
         return getXJFrame().getCurrentUndo();
     }
 
+    public void notificationFire(Object source, String name) {
+        if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
+            notificationPrefsChanged();
+        } else if(name.equals(Debugger.NOTIF_DEBUG_STARTED)) {
+            notificationDebuggerStarted();
+        } else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED)) {
+            notificationDebuggerStopped();
+        }
+    }
+
 
     /** For subclass only
      *
@@ -104,7 +122,9 @@ public abstract class ComponentEditor {
 
     public abstract String getText();
 
-    public abstract void close();
+    public void close() {
+        XJNotificationCenter.defaultCenter().removeObserver(this);
+    }
 
     public abstract void componentDocumentContentChanged();
 
@@ -137,6 +157,15 @@ public abstract class ComponentEditor {
     }
 
     public void componentIsSelected() {
+    }
+
+    public void notificationPrefsChanged() {
+    }
+
+    public void notificationDebuggerStarted() {
+    }
+
+    public void notificationDebuggerStopped() {
     }
 
 }

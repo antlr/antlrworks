@@ -8,6 +8,7 @@ import org.antlr.works.utils.StreamWatcherDelegate;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.Iterator;
 /*
 
 [The "BSD licence"]
@@ -50,6 +51,7 @@ public class EngineCompiler {
 
     public static String runANTLR(String file, String libPath, String outputPath, StreamWatcherDelegate delegate) {
         String error = null;
+        StreamWatcher esw = null;
         int result = 0;
         try {
             String[] args = new String[9];
@@ -64,7 +66,8 @@ public class EngineCompiler {
             args[8] = file;
 
             Process p = Runtime.getRuntime().exec(args);
-            new StreamWatcher(p.getErrorStream(), "ANTLR[error]", delegate).start();
+            esw = new StreamWatcher(p.getErrorStream(), "ANTLR[error]", delegate);
+            esw.start();
             new StreamWatcher(p.getInputStream(), "ANTLR[stdout]", delegate).start();
             result = p.waitFor();
         } catch(Exception e) {
@@ -75,6 +78,24 @@ public class EngineCompiler {
             error = "Failed to run ANTLR with result:\n"+result;
         }
 
+        /** Make sure ANTLR didn't return an error in the error string
+         *
+         */
+
+        if(error == null && esw != null) {
+            for (Iterator iterator = esw.getLines().iterator(); iterator.hasNext();) {
+                String line = (String) iterator.next();
+
+                if(line.startsWith("ANTLR Parser Generator"))
+                    continue;
+
+                if(line.startsWith("no such locale file"))
+                    continue;
+
+                error = line;
+                break;
+            }
+        }
         return error;
     }
 
@@ -126,8 +147,8 @@ public class EngineCompiler {
                     args[5+i] = files[i];
 
                 Process p = Runtime.getRuntime().exec(args);
-                new StreamWatcher(p.getErrorStream(), "Compiler", delegate).start();
-                new StreamWatcher(p.getInputStream(), "Compiler", delegate).start();
+                new StreamWatcher(p.getErrorStream(), "Compiler[error]", delegate).start();
+                new StreamWatcher(p.getInputStream(), "Compiler[stdout]", delegate).start();
                 result = p.waitFor();
             } else if(compiler.equalsIgnoreCase(AWPrefs.COMPILER_JIKES)) {
                 String jikesPath = XJUtils.concatPath(AWPrefs.getJikesPath(), "jikes");
@@ -142,8 +163,8 @@ public class EngineCompiler {
                     args[5+i] = files[i];
 
                 Process p = Runtime.getRuntime().exec(args);
-                new StreamWatcher(p.getErrorStream(), "Compiler", delegate).start();
-                new StreamWatcher(p.getInputStream(), "Compiler", delegate).start();
+                new StreamWatcher(p.getErrorStream(), "Compiler[error]", delegate).start();
+                new StreamWatcher(p.getInputStream(), "Compiler[stdout]", delegate).start();
                 result = p.waitFor();
             } else if(compiler.equalsIgnoreCase(AWPrefs.COMPILER_INTEGRATED)) {
                 String[] args = new String[2+files.length];

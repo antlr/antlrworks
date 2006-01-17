@@ -1,14 +1,11 @@
 package org.antlr.works.project;
 
-import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.works.components.project.CContainerProject;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -42,16 +39,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ProjectToolbar {
 
-    public static final int CUSTOM_TOOLBAR_INDEX = 4;
+    public static final int CUSTOM_TOOLBAR_INDEX = 1;
 
     public Box toolbar;
 
-    public JButton addFile;
-    public JButton removeFile;
-
-    public JButton settings;
     public JButton clean;
-    public JButton build;
+    public JButton buildFile;
+    public JButton buildAll;
     public JButton run;
 
     public JPanel customToolbar;
@@ -75,16 +69,12 @@ public class ProjectToolbar {
         toolbar = Box.createHorizontalBox();
         toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
         toolbar.add(Box.createHorizontalStrut(5));
-        toolbar.add(addFile = (JButton)createNewButton("+", "Add Files", new Dimension(40, 32)));
-        toolbar.add(removeFile = (JButton)createNewButton("-", "Remove Selected File", new Dimension(40, 32)));
-        toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(customToolbar);
         toolbar.add(Box.createHorizontalGlue());
-        toolbar.add(settings = (JButton)createNewButton("Settings", "Project Settings", new Dimension(80, 32)));
-        toolbar.add(Box.createHorizontalStrut(15));
-        toolbar.add(clean = (JButton)createNewButton("Clean", "Clean Project Directory", new Dimension(80, 32)));
-        toolbar.add(build = (JButton)createNewButton("Build", "Build Project", new Dimension(80, 32)));
-        toolbar.add(run = (JButton)createNewButton("Run", "Run Project", new Dimension(80, 32)));
+        toolbar.add(clean = (JButton)createNewButton("Clean", "Clean Project Directory"));
+        toolbar.add(buildFile = (JButton)createNewButton("Build File", "Build Current File"));
+        toolbar.add(buildAll = (JButton)createNewButton("Build All", "Build Project"));
+        toolbar.add(run = (JButton)createNewButton("Run", "Run Project"));
     }
 
     public void setCustomToolbar(JComponent tb) {
@@ -104,38 +94,21 @@ public class ProjectToolbar {
     }
 
     public void addActions() {
-        addFile.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                XJFileChooser chooser = XJFileChooser.shared();
-                List extensions = new ArrayList() { { add(".g"); add(".stg"); add(".st"); add(".java"); } };
-                List description = new ArrayList() { { add("ANTLR grammar (*.g)"); add("StringTemplate group (*.stg)"); add("StringTemplate (*.st)"); add("Java source file (*.java)"); } };
-                if(chooser.displayOpenDialog(project.getJavaContainer(), extensions, description, true)) {
-                    project.addFilePaths(chooser.getSelectedFilePaths());
-                }
-            }
-        });
-
-        removeFile.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                project.removeSelectedFiles();
-            }
-        });
-
-        settings.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                project.settings(false);
-            }
-        });
-
         clean.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 project.clean();
             }
         });
 
-        build.addActionListener(new ActionListener() {
+        buildFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                project.build();
+                project.buildFile();
+            }
+        });
+
+        buildAll.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                project.buildAll();
             }
         });
 
@@ -147,13 +120,10 @@ public class ProjectToolbar {
 
     }
 
-    public AbstractButton createNewButton(String title, String tooltip, Dimension d) {
+    public AbstractButton createNewButton(String title, String tooltip) {
         AbstractButton button;
         button = new JButton(title);
         button.setToolTipText(tooltip);
-        button.setMinimumSize(d);
-        button.setMaximumSize(d);
-        button.setPreferredSize(d);
         button.setFocusable(false);
         return button;
     }

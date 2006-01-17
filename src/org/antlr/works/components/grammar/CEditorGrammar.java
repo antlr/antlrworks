@@ -9,8 +9,6 @@ import edu.usfca.xj.appkit.undo.XJUndoDelegate;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJSystem;
 import edu.usfca.xj.foundation.XJUtils;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
@@ -31,7 +29,6 @@ import org.antlr.works.menu.*;
 import org.antlr.works.navigation.GoToHistory;
 import org.antlr.works.navigation.GoToRule;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.rules.Rules;
 import org.antlr.works.rules.RulesDelegate;
 import org.antlr.works.stats.Statistics;
@@ -87,7 +84,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class CEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
         RulesDelegate, EditorProvider, ATEPanelDelegate,
-        XJUndoDelegate, XJNotificationObserver
+        XJUndoDelegate
 {
 
         /* Completion */
@@ -273,9 +270,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         textEditor = new ATEPanel(getXJFrame());
         textEditor.setSyntaxColoring(true);
         textEditor.setDelegate(this);
-        textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
-        textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
-        applyFont();
+        applyPrefs();
 
         rulesTree = new XJTree() {
             public String getToolTipText(MouseEvent e) {
@@ -366,10 +361,13 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     protected void register() {
         getXJFrame().registerUndo(this, getTextPane());
+    }
 
-        XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
-        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
-        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STOPPED);
+    public void applyPrefs() {
+        textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
+        textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
+        textEditor.refresh();
+        applyFont();
     }
 
     public void applyFont() {
@@ -386,13 +384,12 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void close() {
-        XJNotificationCenter.defaultCenter().removeObserver(this);
-
         toolbar.close();
         editorIdeas.close();
         editorMenu.close();
         debugger.close();
         visual.close();
+        super.close();
     }
 
     public void selectVisualizationTab() {
@@ -906,17 +903,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         grammar.makeDirty();
     }
 
-    public void notificationFire(Object source, String name) {
-        if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
-            textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
-            textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
-            textEditor.refresh();
-            applyFont();
-            updateSCMStatus(null);
-        } else if(name.equals(Debugger.NOTIF_DEBUG_STARTED)) {
-            editorIdeas.hide();
-        } else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED)) {
-        }
+    public void notificationPrefsChanged() {
+        applyPrefs();
+        applyFont();
+        updateSCMStatus(null);
+    }
+
+    public void notificationDebuggerStarted() {
+        editorIdeas.hide();
     }
 
     public void componentDidAwake() {

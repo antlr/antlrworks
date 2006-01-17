@@ -2,7 +2,8 @@ package org.antlr.works.project;
 
 import org.antlr.works.components.project.CContainerProject;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -36,17 +37,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ProjectData {
 
+    protected static final String KEY_SOURCE_PATH = "KEY_SOURCE_PATH";
     protected static final String KEY_RUN_PARAMETERS = "KEY_RUN_PARAMETERS";
     protected static final String KEY_SHOW_BEFORE_RUNNING = "KEY_SHOW_BEFORE_RUNNING";
 
-    protected static final String KEY_PROJECT_FILES = "KEY_PROJECT_FILES";
+    protected static final String KEY_EDITORZONE_DATA = "KEY_EDITORZONE_DATA";
+    protected static final String KEY_EXPLORER_DATA = "KEY_EXPLORER_DATA";
     protected static final String KEY_BUILD_LIST = "KEY_BUILD_LIST";
 
     protected CContainerProject project;
 
     protected Map data = new HashMap();
-    protected List projectFiles = new ArrayList();
-    protected ProjectBuildList buildList = new ProjectBuildList();
 
     public ProjectData() {
         setShowBeforeRunning(true);
@@ -56,8 +57,12 @@ public class ProjectData {
         this.project = project;
     }
 
-    public ProjectBuildList getBuildList() {
-        return buildList;
+    public void setSourcePath(String path) {
+        data.put(KEY_SOURCE_PATH, path);
+    }
+
+    public String getSourcePath() {
+        return (String)data.get(KEY_SOURCE_PATH);
     }
 
     public void setRunParametersString(String s) {
@@ -80,40 +85,28 @@ public class ProjectData {
             return false;
     }
 
-    public ProjectFileItem addProjectFile(String filePath) {
-        ProjectFileItem item = new ProjectFileItem(project, filePath);
-        addProjectFile(item);
-        return item;
+    public void setBuildListData(Object inData) {
+        data.put(KEY_BUILD_LIST, inData);
     }
 
-    public void addProjectFile(ProjectFileItem item) {
-        projectFiles.add(item);
+    public Object getBuildListData() {
+        return data.get(KEY_BUILD_LIST);
     }
 
-    public void removeProjectFile(ProjectFileItem item) {
-        projectFiles.remove(item);
+    public void setExplorerData(Object inData) {
+        data.put(KEY_EXPLORER_DATA, inData);
     }
 
-    public List getProjectFiles() {
-        return projectFiles;
+    public Object getExplorerData() {
+        return data.get(KEY_EXPLORER_DATA);
     }
 
-    public void setProjectFilesData(List files) {
-        for (Iterator iterator = files.iterator(); iterator.hasNext();) {
-            Map data = (Map)iterator.next();
-            ProjectFileItem item = new ProjectFileItem(project);
-            item.setPersistentData(data);
-            addProjectFile(item);
-        }
+    public void setEditorZoneData(Object inData) {
+        data.put(KEY_EDITORZONE_DATA, inData);
     }
 
-    public List getProjectFilesPersistentData() {
-        List files = new ArrayList();
-        for (Iterator iterator = getProjectFiles().iterator(); iterator.hasNext();) {
-            ProjectFileItem item = (ProjectFileItem) iterator.next();
-            files.add(item.getPersistentData());
-        }
-        return files;
+    public Object getEditorZoneData() {
+        return data.get(KEY_EDITORZONE_DATA);
     }
 
     /** Set the data stored on disk to our new class
@@ -123,9 +116,6 @@ public class ProjectData {
     public void setPersistentData(Map inData) {
         data.clear();
         data.putAll(inData);
-
-        setProjectFilesData((List)inData.get(KEY_PROJECT_FILES));
-        buildList.setPersistentData((Map)inData.get(KEY_BUILD_LIST));
     }
 
     /** Returns the data that will be saved on the disk. Make
@@ -134,8 +124,6 @@ public class ProjectData {
      */
 
     public Map getPersistentData() {
-        data.put(KEY_PROJECT_FILES, getProjectFilesPersistentData());
-        data.put(KEY_BUILD_LIST, buildList.getPersistentData());
         return data;
     }
 
