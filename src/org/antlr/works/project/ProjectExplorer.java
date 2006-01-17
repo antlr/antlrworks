@@ -7,9 +7,12 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -75,6 +78,7 @@ public class ProjectExplorer {
         filesTree.setRootVisible(false);
         filesTree.setShowsRootHandles(true);
 //        filesTree.setEnableDragAndDrop();
+        filesTree.setCellRenderer(new CustomTableRenderer());
 
         filesTreeRootNode = new DefaultMutableTreeNode();
         filesTreeModel = new DefaultTreeModel(filesTreeRootNode);
@@ -133,23 +137,28 @@ public class ProjectExplorer {
         filesTreeModel.reload();
     }
 
+    public void saveAll() {
+        runClosureOnFileEditorItems(new FileEditorItemClosure() {
+            public void process(ProjectFileItem item) {
+                if(item.save()) {
+                    // Reset modification date in the build list
+                    project.getBuildList().resetModificationDate(item);
+                }
+            }
+        });
+    }
+
+    public void setIgnoreFromBuild(ProjectFileItem item, boolean ignore) {
+        project.getBuildList().setIgnoreBuild(item, !ignore);
+        filesTree.repaint();
+    }
+
     public void windowActivated() {
         runClosureOnFileEditorItems(new FileEditorItemClosure() {
             public void process(ProjectFileItem item) {
                 if(item.handleExternalModification())
                     project.changeDone();
                 item.windowActivated();
-            }
-        });
-    }
-
-    public void saveAll() {
-        runClosureOnFileEditorItems(new FileEditorItemClosure() {
-            public void process(ProjectFileItem item) {
-                if(item.save()) {
-                    // Reset modification date in the build list
-                    project.getBuildList().resetModificationDate(item.getFilePath(), item.getFileType());
-                }
             }
         });
     }
@@ -200,17 +209,94 @@ public class ProjectExplorer {
 
         public void mouseClicked(MouseEvent e) {
             if(e.getClickCount() == 2) {
-                if(filesTree.getRowForLocation(e.getX(), e.getY()) != -1) {
-                    TreePath p = filesTree.getPathForLocation(e.getX(), e.getY());
-                    DefaultMutableTreeNode node = (DefaultMutableTreeNode)p.getLastPathComponent();
-                    Object userObject = node.getUserObject();
-                    if(userObject instanceof ProjectFileItem) {
-                        project.openFileItem((ProjectFileItem)userObject);
-                    }
-                }
+                project.openFileItem(getFileItemAtLocation(e.getX(), e.getY()));
             }
         }
 
+        public void displayPopUp(MouseEvent me) {
+            if(!me.isPopupTrigger())
+                return;
+
+            ProjectFileItem fileItem = getFileItemAtLocation(me.getX(), me.getY());
+            if(fileItem == null)
+                return;
+
+            modifySelectionIfNecessary(me);
+
+            String title;
+            boolean ignore = project.getBuildList().isIgnoreBuild(fileItem);
+            if(ignore)
+                title = "Add to build list";
+            else
+                title = "Remove from build list";
+
+            JMenuItem item = new JMenuItem(title);
+            item.addActionListener(new FileContextualMenu(ignore));
+
+            JPopupMenu popup = new JPopupMenu();
+            popup.add(item);
+            popup.show(me.getComponent(), me.getX(), me.getY());
+        }
+
+        public void mousePressed(MouseEvent event) {
+            displayPopUp(event);
+        }
+
+        public void mouseReleased(MouseEvent event) {
+            displayPopUp(event);
+        }
+
+        public ProjectFileItem getFileItemAtLocation(int x, int y) {
+            if(filesTree.getRowForLocation(x, y) == -1)
+                return null;
+
+            TreePath p = filesTree.getPathForLocation(x, y);
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)p.getLastPathComponent();
+            Object userObject = node.getUserObject();
+            if(userObject instanceof ProjectFileItem)
+                return (ProjectFileItem)userObject;
+            else
+                return null;
+        }
+
+        /** This method deselects the current selection of the item
+         * under the mouse location is not part of the current selection
+         */
+
+        public void modifySelectionIfNecessary(MouseEvent me) {
+            boolean partOfSelection = false;
+            int row = filesTree.getRowForLocation(me.getX(), me.getY());
+            if(filesTree.getSelectionRows() != null) {
+                for (int i = 0; i < filesTree.getSelectionRows().length; i++) {
+                    int selRow = filesTree.getSelectionRows()[i];
+                    if(selRow == row)
+                        partOfSelection = true;
+                }
+            }
+
+            if(!partOfSelection)
+                filesTree.setSelectionRow(row);
+        }
+
+    }
+
+    protected class FileContextualMenu implements ActionListener {
+
+        public boolean ignore;
+
+        public FileContextualMenu(boolean ignore) {
+            this.ignore = ignore;
+        }
+
+        public void actionPerformed(ActionEvent event) {
+            for (int i = 0; i < filesTree.getSelectionPaths().length; i++) {
+                TreePath treePath = filesTree.getSelectionPaths()[i];
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+                if(node.getUserObject() instanceof ProjectFileItem) {
+                    setIgnoreFromBuild((ProjectFileItem)node.getUserObject(), ignore);
+                }
+            }
+        }
     }
 
     protected class ExplorerLoader {
@@ -290,4 +376,41 @@ public class ProjectExplorer {
         }
 
     }
+
+    public class CustomTableRenderer extends DefaultTreeCellRenderer {
+
+        public Component getTreeCellRendererComponent(
+                            JTree tree,
+                            Object value,
+                            boolean sel,
+                            boolean expanded,
+                            boolean leaf,
+                            int row,
+                            boolean hasFocus)
+        {
+            Component r = super.getTreeCellRendererComponent(
+                            tree, value, sel,
+                            expanded, leaf, row,
+                            hasFocus);
+
+            setToolTipText("");
+
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+            if(node.getUserObject() instanceof ProjectFileItem) {
+                ProjectFileItem item = (ProjectFileItem)node.getUserObject();
+                ProjectBuildList.BuildFile f = project.getBuildList().getBuildFile(item);
+                if(f != null && f.isIgnore())
+                    setForeground(Color.gray);
+                else
+                    setForeground(Color.black);
+            } else {
+                // Do not display the default folder for group because
+                // they are not folders ;-)
+                setIcon(null);
+            }
+
+            return r;
+        }
+    }
+
 }

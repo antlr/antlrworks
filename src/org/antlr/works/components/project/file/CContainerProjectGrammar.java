@@ -50,6 +50,17 @@ public class CContainerProjectGrammar extends CContainerProjectFile {
         // We need to set a border for the grammar panel because it doesn't
         // have one by default when used alone in a window
         editor.getPanel().setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.lightGray));
+
+        if(!item.isEditorGrammarBottomVisible_()) {
+            /** We need to make the component visible later because it is not yet
+             * on screen.
+             */
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    ((CEditorGrammar)editor).setBottomComponentVisible(false);
+                }
+            });
+        }
     }
 
     public ComponentDocument createDocument() {

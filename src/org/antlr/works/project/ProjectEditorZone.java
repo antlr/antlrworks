@@ -129,6 +129,10 @@ public class ProjectEditorZone {
         }
     }
 
+    public void closeActiveEditor() {
+        removeFileItemFromTab(getSelectedFileItem());
+    }
+    
     public void fileEditorItemDidLoad(ProjectFileItem item) {
         addFileItemToTab(item);
         setEditorZoneToTab();
@@ -239,7 +243,7 @@ public class ProjectEditorZone {
             JMenuItem item = new JMenuItem("Close");
             item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
-                    removeFileItemFromTab(getSelectedFileItem());
+                    closeActiveEditor();
                 }
             });
             popup.add(item);

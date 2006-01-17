@@ -2,6 +2,8 @@ package org.antlr.works.project;
 
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.ComponentContainer;
+import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.components.project.CContainerProject;
 
 import javax.swing.*;
@@ -53,15 +55,13 @@ public class ProjectFileItem {
     public static final String FILE_TYPE_TEXT = "FILE_TYPE_TEXT";
     public static final String FILE_TYPE_UNKNOWN = "FILE_TYPE_UNKNOWN";
 
-    protected static final String KEY_FILE_NAME = "KEY_FILE_NAME";
-    protected static final String KEY_FILE_OPENED = "KEY_FILE_OPENED";
-
     protected CContainerProject project;
     protected ComponentContainer container;
 
     protected String fileName;
     protected String fileType;
     protected boolean opened;
+    protected boolean editorGrammarBottomComponentVisible;
 
     public ProjectFileItem(CContainerProject project) {
         this.project = project;
@@ -137,6 +137,27 @@ public class ProjectFileItem {
         return container;
     }
 
+    // @todo replace that by EditorGrammarPersistentStateData...
+    public void setEditorGrammarBottomVisible(boolean visible) {
+        editorGrammarBottomComponentVisible = visible;
+    }
+
+    public boolean isEditorGrammarBottomVisible_() {
+        return editorGrammarBottomComponentVisible;
+    }
+
+    public boolean isEditorGrammarBottomVisible() {
+        if(container == null)
+            return false;
+
+        ComponentEditor editor = container.getEditor();
+        if(editor instanceof CEditorGrammar) {
+            CEditorGrammar eg = (CEditorGrammar)editor;
+            return eg.isBottomComponentVisible();
+        } else
+            return false;
+    }
+
     public JPanel getEditorPanel() {
         if(container == null)
             return null;
@@ -178,15 +199,21 @@ public class ProjectFileItem {
             return false;
     }
 
+    protected static final String KEY_FILE_NAME = "KEY_FILE_NAME";
+    protected static final String KEY_FILE_OPENED = "KEY_FILE_OPENED";
+    protected static final String KEY_EDITOR_GRAMMAR_BOTTOM_VISIBLE = "KEY_EDITOR_GRAMMAR_BOTTOM_VISIBLE";
+
     public void setPersistentData(Map data) {
         setFileName((String)data.get(KEY_FILE_NAME));
         setOpened(((Boolean)data.get(KEY_FILE_OPENED)).booleanValue());
+        setEditorGrammarBottomVisible(((Boolean)data.get(KEY_EDITOR_GRAMMAR_BOTTOM_VISIBLE)).booleanValue());
     }
 
     public Map getPersistentData() {
         Map data = new HashMap();
         data.put(KEY_FILE_NAME, fileName);
         data.put(KEY_FILE_OPENED, Boolean.valueOf(opened));
+        data.put(KEY_EDITOR_GRAMMAR_BOTTOM_VISIBLE, Boolean.valueOf(isEditorGrammarBottomVisible()));
         return data;
     }
 

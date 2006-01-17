@@ -422,9 +422,21 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void makeBottomComponentVisible() {
-        if(upDownSplitPane.getBottomComponent().getHeight() == 0) {
-            upDownSplitPane.setDividerLocation(upDownSplitPane.getLastDividerLocation());
+        if(!isBottomComponentVisible()) {
+            setBottomComponentVisible(true);
         }
+    }
+
+    public void setBottomComponentVisible(boolean visible) {
+        if(visible)
+            upDownSplitPane.setDividerLocation(upDownSplitPane.getLastDividerLocation());
+        else {
+            upDownSplitPane.setDividerLocation(1.0f);
+        }
+    }
+
+    public boolean isBottomComponentVisible() {
+        return upDownSplitPane.getBottomComponent().getHeight() != 0;
     }
 
     public JComponent getToolbar() {

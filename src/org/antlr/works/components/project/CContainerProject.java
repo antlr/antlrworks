@@ -16,6 +16,7 @@ import org.antlr.works.project.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Map;
 /*
@@ -160,7 +161,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
 
     public void makeBottomComponentVisible() {
         if(splitPaneB.getBottomComponent().getHeight() == 0) {
-            splitPaneB.setDividerLocation(0.5);
+            splitPaneB.setDividerLocation(0.6);
         }
     }
 
@@ -206,8 +207,10 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
     }
 
     public void openFileItem(ProjectFileItem item) {
-        editorZone.openFileItem(item);
-        changeDone();
+        if(item != null) {
+            editorZone.openFileItem(item);
+            changeDone();
+        }
     }
 
     public List getFileEditorItems() {
@@ -312,7 +315,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
      */
 
     public void fileDidBecomeDirty(CContainerProjectFile file, ProjectFileItem item) {
-        getBuildList().setFileDirty(item.getFilePath(), item.getFileType(), true);
+        getBuildList().setFileDirty(item, true);
         changeDone();
     }
 
@@ -335,6 +338,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
     public static final int MI_RUN = 503;
     public static final int MI_RUN_SETTINGS = 504;
     public static final int MI_SETTINGS = 505;
+    public static final int MI_CLOSE_EDITOR = 506;
 
     public void createProjectMenu(XJMainMenuBar menubar) {
         XJMenu menu;
@@ -353,18 +357,12 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
         menubar.addCustomMenu(menu);
     }
 
-    public void customizeMenuBar(XJMainMenuBar menubar) {
-        createProjectMenu(menubar);
+    public void customizeFileMenu(XJMenu menu) {
+        menu.insertItemAfter(new XJMenuItem("Close Active Editor", KeyEvent.VK_F4, MI_CLOSE_EDITOR, this), XJMainMenuBar.MI_CLOSE);
     }
 
-    public void menuItemState(XJMenuItem item) {
-        super.menuItemState(item);
-
-        if(item.getTag() == XJMainMenuBar.MI_SAVE) {
-            // The project is automatically saved when closed
-            // but it can also be saved manually at any time (no dirty flag)
-            item.setEnabled(true);
-        }
+    public void customizeMenuBar(XJMainMenuBar menubar) {
+        createProjectMenu(menubar);
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
@@ -393,6 +391,10 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
 
             case MI_SETTINGS:
                 projectSettings();
+                break;
+
+            case MI_CLOSE_EDITOR:
+                editorZone.closeActiveEditor();
                 break;
         }
     }

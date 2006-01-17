@@ -44,6 +44,7 @@ public class ATEJavaSyntaxEngine extends ATELanguageSyntaxEngine {
         s.add("synchronized");
         s.add("instanceof");
         s.add("static");
+        s.add("final");
         s.add("public");
         s.add("protected");
         s.add("private");
