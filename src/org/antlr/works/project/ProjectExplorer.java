@@ -1,6 +1,7 @@
 package org.antlr.works.project;
 
 import edu.usfca.xj.appkit.swing.XJTree;
+import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.project.CContainerProject;
 
 import javax.swing.*;
@@ -163,16 +164,35 @@ public class ProjectExplorer {
         });
     }
 
+    public static final String KEY_FILE_ITEMS = "KEY_FILE_ITEMS";
+    public static final String KEY_EXPANDED_ITEMS = "KEY_EXPANDED_ITEMS";
+
     public void setPersistentData(Map data) {
         reload();
 
         if(data != null) {
-            for (Iterator iterator = data.keySet().iterator(); iterator.hasNext();) {
-                String fileName = (String)iterator.next();
-                ProjectFileItem item = loader.getFileItemForFileName(fileName);
-                if(item != null) {
-                    // Only apply data to existing files
-                    item.setPersistentData((Map) data.get(fileName));
+            List expanded = (List) data.get(KEY_EXPANDED_ITEMS);
+            if(expanded != null) {
+                for (Iterator iterator = expanded.iterator(); iterator.hasNext();) {
+                    String name = (String) iterator.next();
+                    for (int i = 0; i < filesTreeRootNode.getChildCount(); i++) {
+                        DefaultMutableTreeNode child = (DefaultMutableTreeNode)filesTreeRootNode.getChildAt(i);
+                        if(child.getUserObject().equals(name)) {
+                            filesTree.expandPath(new TreePath(child.getPath()));
+                        }
+                    }
+                }
+            }
+
+            Map fileItems = (Map) data.get(KEY_FILE_ITEMS);
+            if(fileItems != null) {
+                for (Iterator iterator = fileItems.keySet().iterator(); iterator.hasNext();) {
+                    String fileName = (String)iterator.next();
+                    ProjectFileItem item = loader.getFileItemForFileName(fileName);
+                    if(item != null) {
+                        // Only apply data to existing files
+                        item.setPersistentData((Map) fileItems.get(fileName));
+                    }
                 }
             }
         }
@@ -182,10 +202,23 @@ public class ProjectExplorer {
 
     public Map getPersistentData() {
         Map data = new HashMap();
+
+        List expanded = new ArrayList();
+        for (int i = 0; i < filesTreeRootNode.getChildCount(); i++) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode)filesTreeRootNode.getChildAt(i);
+            if(filesTree.isExpanded(new TreePath(child.getPath()))) {
+                expanded.add(child.getUserObject());
+            }
+        }
+        data.put(KEY_EXPANDED_ITEMS, expanded);
+
+        Map fileItems = new HashMap();
         for (Iterator iterator = getFileEditorItems().iterator(); iterator.hasNext();) {
             ProjectFileItem item = (ProjectFileItem) iterator.next();
-            data.put(item.getFileName(), item.getPersistentData());
+            fileItems.put(item.getFileName(), item.getPersistentData());
         }
+        data.put(KEY_FILE_ITEMS, fileItems);
+
         return data;
     }
 
@@ -316,10 +349,9 @@ public class ProjectExplorer {
             if(sourcePath == null)
                 return reset;
 
-            File[] files = new File(sourcePath).listFiles();
-            for (int i = 0; i < files.length; i++) {
-                File file = files[i];
-                String name = file.getName();
+            for (Iterator iterator = XJUtils.sortedFilesInPath(sourcePath).iterator(); iterator.hasNext();) {
+                File f = (File) iterator.next();
+                String name = f.getName();
 
                 String type = ProjectFileItem.getFileType(name);
                 if(type.equals(ProjectFileItem.FILE_TYPE_UNKNOWN))
@@ -380,18 +412,18 @@ public class ProjectExplorer {
     public class CustomTableRenderer extends DefaultTreeCellRenderer {
 
         public Component getTreeCellRendererComponent(
-                            JTree tree,
-                            Object value,
-                            boolean sel,
-                            boolean expanded,
-                            boolean leaf,
-                            int row,
-                            boolean hasFocus)
+                JTree tree,
+                Object value,
+                boolean sel,
+                boolean expanded,
+                boolean leaf,
+                int row,
+                boolean hasFocus)
         {
             Component r = super.getTreeCellRendererComponent(
-                            tree, value, sel,
-                            expanded, leaf, row,
-                            hasFocus);
+                    tree, value, sel,
+                    expanded, leaf, row,
+                    hasFocus);
 
             setToolTipText("");
 

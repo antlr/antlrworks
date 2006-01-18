@@ -17,6 +17,7 @@ import org.antlr.works.project.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 /*
@@ -310,6 +311,41 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
         super.close();
     }
 
+    public static final String KEY_WINDOW_LOC = "KEY_WINDOW_LOC";
+    public static final String KEY_WINDOW_SIZE = "KEY_WINDOW_SIZE";
+    public static final String KEY_SPLITPANE_A = "KEY_SPLITPANE_A";
+    public static final String KEY_SPLITPANE_B = "KEY_SPLITPANE_B";
+
+    public void setPersistentData(Map data) {
+        if(data == null)
+            return;
+
+        Point loc = (Point) data.get(KEY_WINDOW_LOC);
+        if(loc != null)
+            setLocation(loc);
+
+        Dimension size = (Dimension) data.get(KEY_WINDOW_SIZE);
+        if(size != null)
+            setSize(size);
+
+        Integer i = (Integer) data.get(KEY_SPLITPANE_A);
+        if(i != null)
+            splitPaneA.setDividerLocation(i.intValue());
+
+        i = (Integer) data.get(KEY_SPLITPANE_B);
+        if(i != null)
+            splitPaneB.setDividerLocation(i.intValue());
+    }
+
+    public Map getPersistentData() {
+        Map data = new HashMap();
+        data.put(KEY_WINDOW_LOC, getLocation());
+        data.put(KEY_WINDOW_SIZE, getSize());
+        data.put(KEY_SPLITPANE_A, new Integer(splitPaneA.getDividerLocation()));
+        data.put(KEY_SPLITPANE_B, new Integer(splitPaneB.getDividerLocation()));
+        return data;
+    }
+
     /** This method is called *very* frequently so it has to be really efficient
      *
      */
@@ -323,12 +359,14 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
         buildList.setPersistentData((Map) getData().getBuildListData());
         explorer.setPersistentData((Map) getData().getExplorerData());
         editorZone.setPersistentData((Map) getData().getEditorZoneData());
+        setPersistentData((Map) getData().getContainerData());
     }
 
     public void documentWillSave() {
         getData().setBuildListData(buildList.getPersistentData());
         getData().setExplorerData(explorer.getPersistentData());
         getData().setEditorZoneData(editorZone.getPersistentData());
+        getData().setContainerData(getPersistentData());
         explorer.saveAll();
     }
 

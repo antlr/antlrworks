@@ -64,6 +64,11 @@ public abstract class ATESyntaxParser {
         position = mark;
     }
 
+    public boolean previousToken() {
+        position--;
+        return position >= 0;
+    }
+
     public boolean nextToken() {
         position++;
         return position<tokens.size();

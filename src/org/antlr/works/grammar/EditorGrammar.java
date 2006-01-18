@@ -226,7 +226,6 @@ public class EditorGrammar {
 
     protected void createLexerGrammar() throws TokenStreamException, RecognitionException {
         lexerGrammar = createNewGrammar(getFileName(), editor.getText());
-        lexerGrammar.addArtificialMatchTokensRule();
         lexerGrammar.createNFAs();
     }
 

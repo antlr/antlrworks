@@ -124,7 +124,7 @@ public class IdeaOverlay extends OverlayObject {
     }
 
     public Point overlayCustomPosition() {
-        Point lp = editor.getLineTextPositionsAtTextPosition(editor.getCaretPosition());
+        Point lp = editor.getTextEditor().getLineTextPositionsAtTextPosition(editor.getCaretPosition());
 
         int cx = 0;
         int y = 0;

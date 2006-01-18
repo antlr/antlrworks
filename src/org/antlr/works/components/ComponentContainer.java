@@ -3,6 +3,8 @@ package org.antlr.works.components;
 import edu.usfca.xj.appkit.document.XJDocument;
 import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
+
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -49,4 +51,7 @@ public interface ComponentContainer {
     public void close();
 
     public void setDirty();
+
+    public void setPersistentData(Map data);
+    public Map getPersistentData();
 }

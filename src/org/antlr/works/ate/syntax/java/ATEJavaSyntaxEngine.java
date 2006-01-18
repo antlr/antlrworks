@@ -53,6 +53,7 @@ public class ATEJavaSyntaxEngine extends ATELanguageSyntaxEngine {
         s.add("implements");
         s.add("abstract");
         s.add("interface");
+        s.add("super");
         s.add("void");
         s.add("int");
         s.add("boolean");

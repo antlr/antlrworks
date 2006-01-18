@@ -13,6 +13,7 @@ import org.antlr.works.ate.swing.ATEImmediateColoring;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEColoring;
+import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
 import javax.swing.*;
@@ -277,6 +278,69 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public int getSelectionEnd() {
         return textPane.getSelectionEnd();
+    }
+
+    public List getTokens() {
+        return engine.getTokens();
+    }
+
+    public List getLines() {
+        return engine.getLines();
+    }
+
+    public int getCurrentLinePosition() {
+        return getLinePositionAtIndex(getCaretPosition());
+    }
+
+    public int getLinePositionAtIndex(int index) {
+        return getLineIndexAtTextPosition(index) + 1;
+    }
+
+    public int getCurrentColumnPosition() {
+        return getColumnPositionAtIndex(getCaretPosition());
+    }
+
+    public int getColumnPositionAtIndex(int index) {
+        int lineIndex = getLineIndexAtTextPosition(index);
+        Point linePosition = getLineTextPositionsAtLineIndex(lineIndex);
+        if(linePosition == null)
+            return 1;
+        else
+            return getCaretPosition() - linePosition.x + 1;
+    }
+
+    public int getLineIndexAtTextPosition(int pos) {
+        List lines = getLines();
+        if(lines == null)
+            return -1;
+
+        for(int i=0; i<lines.size(); i++) {
+            ATELine line = (ATELine)lines.get(i);
+            if(line.position > pos) {
+                return i-1;
+            }
+        }
+        return lines.size()-1;
+    }
+
+    public Point getLineTextPositionsAtTextPosition(int pos) {
+        return getLineTextPositionsAtLineIndex(getLineIndexAtTextPosition(pos));
+    }
+
+    public Point getLineTextPositionsAtLineIndex(int lineIndex) {
+        List lines = getLines();
+        if(lineIndex == -1 || lines == null)
+            return null;
+
+        ATELine startLine = (ATELine)lines.get(lineIndex);
+        int start = startLine.position;
+        if(lineIndex+1 >= lines.size()) {
+            return new Point(start, getTextPane().getDocument().getLength()-1);
+        } else {
+            ATELine endLine = (ATELine)lines.get(lineIndex+1);
+            int end = endLine.position;
+            return new Point(start, end-1);
+        }
     }
 
     public void insertText(int index, String text) {

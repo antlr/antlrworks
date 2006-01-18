@@ -115,6 +115,16 @@ public class ProjectEditorZone {
         project.setMainMenuBar(item.getComponentContainer().getMainMenuBar());
         project.setToolBar(item.getComponentContainer().getEditor().getToolbar());
         project.setStatusBar(item.getComponentContainer().getEditor().getStatusBar());
+
+        /** Tell the editor that is has been select. Do that later in order to avoid
+         * another component to request the focus after the editor.
+         */
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                getSelectedFileItem().getComponentContainer().getEditor().componentIsSelected();
+            }
+        });
     }
 
     public void openFileItem(ProjectFileItem item) {
@@ -136,7 +146,6 @@ public class ProjectEditorZone {
     public void fileEditorItemDidLoad(ProjectFileItem item) {
         addFileItemToTab(item);
         setEditorZoneToTab();
-        item.getComponentContainer().getEditor().componentIsSelected();
     }
 
     public void addFileItemToTab(ProjectFileItem item) {

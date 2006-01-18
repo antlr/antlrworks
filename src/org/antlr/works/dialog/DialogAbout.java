@@ -151,7 +151,7 @@ public class DialogAbout extends XJPanel {
         contentPane.add(versionLabel, cc.xy(5, 5));
 
         //---- copyrightLabel ----
-        copyrightLabel.setText("Copyright (c) 2005 Jean Bovet & Terence Parr");
+        copyrightLabel.setText("Copyright (c) 2005-2006 Jean Bovet & Terence Parr");
         contentPane.add(copyrightLabel, cc.xy(5, 9));
 
         //======== tabbedPane1 ========
@@ -186,11 +186,11 @@ public class DialogAbout extends XJPanel {
                     }));
 
                 //---- label13 ----
-                label13.setText("ANTLR and StringTemplate are (c) 1989-2005 Terence Parr");
+                label13.setText("ANTLR and StringTemplate are (c) 1989-2006 Terence Parr");
                 panel2.add(label13, cc.xy(3, 3));
 
                 //---- label14 ----
-                label14.setText("XJLibrary is (c) 2004-2005 Jean Bovet");
+                label14.setText("XJLibrary is (c) 2004-2006 Jean Bovet");
                 panel2.add(label14, cc.xy(3, 5));
 
                 //---- label1 ----

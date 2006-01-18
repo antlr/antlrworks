@@ -41,6 +41,7 @@ import org.antlr.works.components.ComponentEditor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 public class CContainerGrammar extends XJWindow implements ComponentContainer {
 
@@ -82,6 +83,13 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
     public void close() {
         editor.close();
         super.close();
+    }
+
+    public void setPersistentData(Map data) {
+    }
+
+    public Map getPersistentData() {
+        return null;
     }
 
     public void becomingVisibleForTheFirstTime() {

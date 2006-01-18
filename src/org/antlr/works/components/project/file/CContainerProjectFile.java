@@ -9,6 +9,9 @@ import org.antlr.works.components.ComponentDocument;
 import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.components.project.CContainerProject;
 import org.antlr.works.project.ProjectFileItem;
+
+import java.util.HashMap;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -54,8 +57,6 @@ public abstract class CContainerProjectFile implements ComponentContainer, XJMen
         this.project = project;
         this.item = item;
 
-        item.setComponentContainer(this);
-
         document = createDocument();
         document.setJavaContainer(project.getJavaContainer());
         document.setDocumentData(new XJDataPlainText());
@@ -64,6 +65,8 @@ public abstract class CContainerProjectFile implements ComponentContainer, XJMen
         editor = createEditor();
         editor.create();
         editor.componentDidAwake();
+
+        item.setComponentContainer(this);
 
         awake();
     }
@@ -129,6 +132,21 @@ public abstract class CContainerProjectFile implements ComponentContainer, XJMen
     public void setDirty() {
         getDocument().setDirty(true);
         project.fileDidBecomeDirty(this, item);
+    }
+
+    public static final String KEY_EDITOR_DATA = "KEY_EDITOR_DATA";
+
+    public void setPersistentData(Map data) {
+        if(data == null)
+            return;
+
+        getEditor().setPersistentData((Map)data.get(KEY_EDITOR_DATA));
+    }
+
+    public Map getPersistentData() {
+        Map data = new HashMap();
+        data.put(KEY_EDITOR_DATA, getEditor().getPersistentData());
+        return data;
     }
 
     /** Menu delegate and customizer

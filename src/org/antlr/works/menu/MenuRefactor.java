@@ -364,7 +364,7 @@ public class MenuRefactor extends MenuAbstract {
 
     public int insertionIndexForRule(boolean lexer) {
         // Add the rule in the next line by default
-        Point p = editor.getLineTextPositionsAtTextPosition(getCaretPosition());
+        Point p = editor.getTextEditor().getLineTextPositionsAtTextPosition(getCaretPosition());
         int insertionIndex = p.y;
 
         GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(getCaretPosition());

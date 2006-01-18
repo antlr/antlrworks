@@ -2,8 +2,6 @@ package org.antlr.works.project;
 
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.ComponentContainer;
-import org.antlr.works.components.ComponentEditor;
-import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.components.project.CContainerProject;
 
 import javax.swing.*;
@@ -46,12 +44,14 @@ public class ProjectFileItem {
     public static final String FILE_JAVA_EXTENSION = ".java";
     public static final String FILE_STG_EXTENSION = ".stg";
     public static final String FILE_ST_EXTENSION = ".st";
+    public static final String FILE_MANTRA_EXTENSION = ".m";
     public static final String FILE_TEXT_EXTENSION = ".txt";
 
     public static final String FILE_TYPE_GRAMMAR = "FILE_TYPE_GRAMMAR";
     public static final String FILE_TYPE_JAVA = "FILE_TYPE_JAVA";
     public static final String FILE_TYPE_STG = "FILE_TYPE_STG";
     public static final String FILE_TYPE_ST = "FILE_TYPE_ST";
+    public static final String FILE_TYPE_MANTRA = "FILE_TYPE_MANTRA";
     public static final String FILE_TYPE_TEXT = "FILE_TYPE_TEXT";
     public static final String FILE_TYPE_UNKNOWN = "FILE_TYPE_UNKNOWN";
 
@@ -61,7 +61,7 @@ public class ProjectFileItem {
     protected String fileName;
     protected String fileType;
     protected boolean opened;
-    protected boolean editorGrammarBottomComponentVisible;
+    protected Map containerData;
 
     public ProjectFileItem(CContainerProject project) {
         this.project = project;
@@ -81,6 +81,8 @@ public class ProjectFileItem {
             return FILE_TYPE_ST;
         if(filePath.endsWith(FILE_JAVA_EXTENSION))
             return FILE_TYPE_JAVA;
+        if(filePath.endsWith(FILE_MANTRA_EXTENSION))
+            return FILE_TYPE_MANTRA;
         if(filePath.endsWith(FILE_TEXT_EXTENSION))
             return FILE_TYPE_TEXT;
 
@@ -96,6 +98,8 @@ public class ProjectFileItem {
             return "ST";
         if(type.equals(FILE_TYPE_JAVA))
             return "Java";
+        if(type.equals(FILE_TYPE_MANTRA))
+            return "Mantra";
         if(type.equals(FILE_TYPE_TEXT))
             return "Text";
 
@@ -131,31 +135,22 @@ public class ProjectFileItem {
 
     public void setComponentContainer(ComponentContainer container) {
         this.container = container;
+        this.container.setPersistentData(containerData);
     }
     
     public ComponentContainer getComponentContainer() {
         return container;
     }
 
-    // @todo replace that by EditorGrammarPersistentStateData...
-    public void setEditorGrammarBottomVisible(boolean visible) {
-        editorGrammarBottomComponentVisible = visible;
+    public void setContainerPersistentData(Map data) {
+        this.containerData = data;
     }
 
-    public boolean isEditorGrammarBottomVisible_() {
-        return editorGrammarBottomComponentVisible;
-    }
-
-    public boolean isEditorGrammarBottomVisible() {
+    public Map getContainerPersistentData() {
         if(container == null)
-            return false;
-
-        ComponentEditor editor = container.getEditor();
-        if(editor instanceof CEditorGrammar) {
-            CEditorGrammar eg = (CEditorGrammar)editor;
-            return eg.isBottomComponentVisible();
-        } else
-            return false;
+            return null;
+        else
+            return container.getPersistentData();
     }
 
     public JPanel getEditorPanel() {
@@ -201,19 +196,23 @@ public class ProjectFileItem {
 
     protected static final String KEY_FILE_NAME = "KEY_FILE_NAME";
     protected static final String KEY_FILE_OPENED = "KEY_FILE_OPENED";
-    protected static final String KEY_EDITOR_GRAMMAR_BOTTOM_VISIBLE = "KEY_EDITOR_GRAMMAR_BOTTOM_VISIBLE";
+    protected static final String KEY_CONTAINER_DATA = "KEY_CONTAINER_DATA";
 
     public void setPersistentData(Map data) {
         setFileName((String)data.get(KEY_FILE_NAME));
         setOpened(((Boolean)data.get(KEY_FILE_OPENED)).booleanValue());
-        setEditorGrammarBottomVisible(((Boolean)data.get(KEY_EDITOR_GRAMMAR_BOTTOM_VISIBLE)).booleanValue());
+        setContainerPersistentData((Map)data.get(KEY_CONTAINER_DATA));
     }
 
     public Map getPersistentData() {
         Map data = new HashMap();
         data.put(KEY_FILE_NAME, fileName);
         data.put(KEY_FILE_OPENED, Boolean.valueOf(opened));
-        data.put(KEY_EDITOR_GRAMMAR_BOTTOM_VISIBLE, Boolean.valueOf(isEditorGrammarBottomVisible()));
+
+        Map d = getContainerPersistentData();
+        if(d != null)
+            data.put(KEY_CONTAINER_DATA, d);
+
         return data;
     }
 

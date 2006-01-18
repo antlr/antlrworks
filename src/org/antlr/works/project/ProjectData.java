@@ -44,6 +44,7 @@ public class ProjectData {
     protected static final String KEY_EDITORZONE_DATA = "KEY_EDITORZONE_DATA";
     protected static final String KEY_EXPLORER_DATA = "KEY_EXPLORER_DATA";
     protected static final String KEY_BUILD_LIST = "KEY_BUILD_LIST";
+    protected static final String KEY_CONTAINER_DATA = "KEY_CONTAINER_DATA";
 
     protected CContainerProject project;
 
@@ -107,6 +108,14 @@ public class ProjectData {
 
     public Object getEditorZoneData() {
         return data.get(KEY_EDITORZONE_DATA);
+    }
+
+    public void setContainerData(Map inData) {
+        data.put(KEY_CONTAINER_DATA, inData);
+    }
+
+    public Object getContainerData() {
+        return data.get(KEY_CONTAINER_DATA);                    
     }
 
     /** Set the data stored on disk to our new class

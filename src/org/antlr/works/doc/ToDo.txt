@@ -1,9 +1,8 @@
 
 * Prio 1
-- remember order of project opened files
-- should be able to ignore some file for the build phase
+- remove file from project is not anymore on disk (external modification)
+- should be able to kill a process when running in project
 
-- setDividerLocation when preferedSize() or size() is known (see when I can catch that)
 - cannot stop debugger on mantra.g
 - run profiler to see why parsing generated java code is so long
 

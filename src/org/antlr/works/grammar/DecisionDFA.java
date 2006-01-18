@@ -137,11 +137,11 @@ public class DecisionDFA implements Runnable, EditorTab {
 
         ATEToken t = findClosestDecisionToken();
         if(t == null) {
-            line = editor.getCurrentLinePosition();
-            column = editor.getCurrentColumnPosition();
+            line = editor.getTextEditor().getCurrentLinePosition();
+            column = editor.getTextEditor().getCurrentColumnPosition();
         } else {
-            line = editor.getLinePositionAtIndex(t.getStartIndex());
-            column = editor.getColumnPositionAtIndex(t.getStartIndex());
+            line = editor.getTextEditor().getLinePositionAtIndex(t.getStartIndex());
+            column = editor.getTextEditor().getColumnPositionAtIndex(t.getStartIndex());
             editor.setCaretPosition(t.getStartIndex());
         }
         error = null;

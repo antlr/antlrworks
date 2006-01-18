@@ -9,6 +9,7 @@ import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.TextUtils;
 
+import javax.swing.*;
 import java.awt.*;
 /*
 
@@ -46,6 +47,8 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
     protected ATEPanel textEditor;
     protected ATELanguageSyntaxEngine syntaxEngine;
 
+    protected JLabel cursorLabel;
+
     public CEditorText(ComponentContainer container) {
         super(container);
     }
@@ -59,6 +62,13 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
         textEditor.setAnalysisColumnVisible(false);
         textEditor.setDelegate(this);
         applyPrefs();
+
+        cursorLabel = new JLabel();
+
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(cursorLabel);
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(createSeparator());
 
         mainPanel.add(textEditor, BorderLayout.CENTER);
     }
@@ -116,6 +126,7 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
     }
 
     public void ateCaretUpdate(int index) {
+        cursorLabel.setText(textEditor.getCurrentLinePosition()+":"+textEditor.getCurrentColumnPosition());
     }
 
     public void ateChangeUpdate(int offset, int length, boolean insert) {

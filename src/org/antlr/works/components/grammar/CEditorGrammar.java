@@ -13,7 +13,6 @@ import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
-import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.completion.AutoCompletionMenu;
 import org.antlr.works.completion.AutoCompletionMenuDelegate;
@@ -47,9 +46,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
 /*
 
@@ -375,14 +372,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         TextUtils.createTabs(getTextPane());
     }
 
-    protected static JComponent createSeparator() {
-        JSeparator s = new JSeparator(SwingConstants.VERTICAL);
-        Dimension d = s.getMaximumSize();
-        d.width = 2;
-        s.setMaximumSize(d);
-        return s;
-    }
-
     public void close() {
         toolbar.close();
         editorIdeas.close();
@@ -659,66 +648,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public List getTokens() {
-        return parserEngine.getTokens();
+        return textEditor.getTokens();
     }
 
     public List getLines() {
-        return parserEngine.getLines();
-    }
-
-    public int getCurrentLinePosition() {
-        return getLinePositionAtIndex(getCaretPosition());
-    }
-
-    public int getLinePositionAtIndex(int index) {
-        return getLineIndexAtTextPosition(index) + 1;
-    }
-
-    public int getCurrentColumnPosition() {
-        return getColumnPositionAtIndex(getCaretPosition());
-    }
-
-    public int getColumnPositionAtIndex(int index) {
-        int lineIndex = getLineIndexAtTextPosition(index);
-        Point linePosition = getLineTextPositionsAtLineIndex(lineIndex);
-        if(linePosition == null)
-            return 1;
-        else
-            return getCaretPosition() - linePosition.x + 1;
-    }
-
-    public int getLineIndexAtTextPosition(int pos) {
-        List lines = getLines();
-        if(lines == null)
-            return -1;
-
-        for(int i=0; i<lines.size(); i++) {
-            ATELine line = (ATELine)lines.get(i);
-            if(line.position > pos) {
-                return i-1;
-            }
-        }
-        return lines.size()-1;
-    }
-
-    public Point getLineTextPositionsAtTextPosition(int pos) {
-        return getLineTextPositionsAtLineIndex(getLineIndexAtTextPosition(pos));
-    }
-
-    public Point getLineTextPositionsAtLineIndex(int lineIndex) {
-        List lines = getLines();
-        if(lineIndex == -1 || lines == null)
-            return null;
-
-        ATELine startLine = (ATELine)lines.get(lineIndex);
-        int start = startLine.position;
-        if(lineIndex+1 >= lines.size()) {
-            return new Point(start, getTextPane().getDocument().getLength()-1);
-        } else {
-            ATELine endLine = (ATELine)lines.get(lineIndex+1);
-            int end = endLine.position;
-            return new Point(start, end-1);
-        }
+        return textEditor.getLines();
     }
 
     public void goToHistoryRememberCurrentPosition() {
@@ -841,7 +775,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void updateCursorInfo() {
-        cursorLabel.setText(getCurrentLinePosition()+":"+getCurrentColumnPosition());
+        cursorLabel.setText(textEditor.getCurrentLinePosition()+":"+textEditor.getCurrentColumnPosition());
     }
 
     public void updateSCMStatus(String status) {
@@ -1113,6 +1047,29 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             wasSaving = false;
             getDocument().performSave(false);
         }
+    }
+
+    public static final String KEY_SPLITPANE_A = "KEY_SPLITPANE_A";
+    public static final String KEY_SPLITPANE_B = "KEY_SPLITPANE_B";
+
+    public void setPersistentData(Map data) {
+        if(data == null)
+            return;
+
+        Integer i = (Integer)data.get(KEY_SPLITPANE_A);
+        if(i != null)
+            rulesTextSplitPane.setDividerLocation(i.intValue());
+
+        i = (Integer)data.get(KEY_SPLITPANE_B);
+        if(i != null)
+            upDownSplitPane.setDividerLocation(i.intValue());
+    }
+
+    public Map getPersistentData() {
+        Map data = new HashMap();
+        data.put(KEY_SPLITPANE_A, new Integer(rulesTextSplitPane.getDividerLocation()));
+        data.put(KEY_SPLITPANE_B, new Integer(upDownSplitPane.getDividerLocation()));
+        return data;
     }
 
     protected class TabbedPaneMouseListener extends MouseAdapter {

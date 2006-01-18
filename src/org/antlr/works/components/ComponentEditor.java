@@ -13,6 +13,7 @@ import org.antlr.works.prefs.AWPrefsDialog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 /*
 
@@ -111,7 +112,14 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         }
     }
 
-
+    protected static JComponent createSeparator() {
+        JSeparator s = new JSeparator(SwingConstants.VERTICAL);
+        Dimension d = s.getMaximumSize();
+        d.width = 2;
+        s.setMaximumSize(d);
+        return s;
+    }
+                 
     /** For subclass only
      *
      */
@@ -130,6 +138,14 @@ public abstract class ComponentEditor implements XJNotificationObserver {
 
     public boolean componentDocumentWillSave() {
         return true;
+    }
+
+    public void setPersistentData(Map data) {
+
+    }
+
+    public Map getPersistentData() {
+        return null;
     }
 
     public void componentDidAwake() {

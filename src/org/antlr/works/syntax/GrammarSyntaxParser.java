@@ -381,6 +381,13 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             // -> { new StringTemplate() }
             skip(0);
         }
+
+        if(isID(0)) {
+            // -> ASSIGN
+            // Rewind one token because the next ID should not be skipped
+            // otherwise it is not being colored
+            previousToken();
+        }
     }
 
     public void matchBalancedToken(String open, String close) {

@@ -67,7 +67,7 @@ public class MenuGoTo extends MenuAbstract {
 
     public void goToBreakpoint(int direction) {
         Set breakpoints = editor.breakpointManager.getBreakpoints();
-        int line = editor.getLineIndexAtTextPosition(getCaretPosition());
+        int line = editor.getTextEditor().getLineIndexAtTextPosition(getCaretPosition());
         if(line == -1)
             return;
 

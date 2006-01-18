@@ -169,28 +169,31 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         progress.setProgress(++buildingProgress);
     }
 
-    public void performBuild() {
+    public boolean performBuild() {
         List grammars = buildListOfGrammarBuildFiles();
         List javas = buildListOfJavaBuildFiles();
 
         int total = grammars.size()+javas.size();
-        if(total > 0) {
-            progress.setIndeterminate(false);
-            progress.setProgress(0);
-            progress.setProgressMax(total);
+        if(total == 0)
+            return true;
 
-            if(generateGrammarBuildFiles(grammars) && !cancel) {
-                if(grammars.size() > 0) {
-                    // Rebuild the list of Java files because ANTLR may have
-                    // generated some ;-)
-                                        
-                    javas = buildListOfJavaBuildFiles();
-                    total = grammars.size()+javas.size();
-                    progress.setProgressMax(total);
-                }
-                compileJavaBuildFiles(javas);
+        progress.setIndeterminate(false);
+        progress.setProgress(0);
+        progress.setProgressMax(total);
+
+        if(generateGrammarBuildFiles(grammars) && !cancel) {
+            if(grammars.size() > 0) {
+                // Rebuild the list of Java files because ANTLR may have
+                // generated some ;-)
+
+                javas = buildListOfJavaBuildFiles();
+                total = grammars.size()+javas.size();
+                progress.setProgressMax(total);
             }
+            if(compileJavaBuildFiles(javas))
+                return true;
         }
+        return false;
     }
 
     public void performBuildFile() {
@@ -216,16 +219,20 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         }
     }
 
-    public void buildFile(ProjectFileItem fileItem) {
-        fileToBuild = fileItem;
-
+    public void prepare() {
         cancel = false;
         buildingProgress = 0;
+    }
+
+    public void buildFile(ProjectFileItem fileItem) {
+        fileToBuild = fileItem;
 
         progress.setCancellable(false);
         progress.setTitle("Build");
         progress.setInfo("Building...");
         progress.setIndeterminate(true);
+
+        prepare();
 
         new ThreadExecution(new Runnable() {
             public void run() {
@@ -238,13 +245,12 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     }
 
     public void buildAll() {
-        cancel = false;
-        buildingProgress = 0;
-
         progress.setCancellable(true);
         progress.setTitle("Build");
         progress.setInfo("Preparing...");
         progress.setIndeterminate(true);
+
+        prepare();
 
         new ThreadExecution(new Runnable() {
             public void run() {
@@ -269,16 +275,18 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         progress.setInfo("Preparing...");
         progress.setIndeterminate(true);
 
+        prepare();
+
         new ThreadExecution(new Runnable() {
             public void run() {
-                performBuild();
-                progress.setInfo("Running...");
-                progress.setIndeterminate(true);
-                performRun();
+                if(performBuild()) {
+                    progress.setInfo("Running...");
+                    progress.setIndeterminate(true);
+                    performRun();
+                }
                 progress.close();
             }
         }).launch();
-
 
         progress.runModal();
     }
