@@ -1,7 +1,6 @@
 package org.antlr.works.project;
 
 import edu.usfca.xj.appkit.swing.XJTree;
-import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.project.CContainerProject;
 
 import javax.swing.*;
@@ -16,7 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.*;
 import java.util.List;
 /*
@@ -55,7 +53,7 @@ public class ProjectExplorer {
     protected CContainerProject project;
     protected JComponent container;
 
-    protected ExplorerLoader loader;
+    protected ProjectExplorerLoader loader;
 
     protected XJTree filesTree;
     protected DefaultMutableTreeNode filesTreeRootNode;
@@ -63,7 +61,7 @@ public class ProjectExplorer {
 
     public ProjectExplorer(CContainerProject project) {
         this.project = project;
-        loader = new ExplorerLoader();
+        loader = new ProjectExplorerLoader(this);
 
         create();
     }
@@ -121,6 +119,10 @@ public class ProjectExplorer {
 
     public void reload() {
         loader.reload();
+
+        List expanded = getExpandedItems();
+        int rows[] = filesTree.getSelectionRows();
+
         filesTreeRootNode.removeAllChildren();
 
         for (Iterator groupIterator = loader.getGroups().iterator(); groupIterator.hasNext();) {
@@ -136,6 +138,9 @@ public class ProjectExplorer {
         }
 
         filesTreeModel.reload();
+
+        expandItems(expanded);
+        filesTree.setSelectionRows(rows);
     }
 
     public void saveAll() {
@@ -155,6 +160,8 @@ public class ProjectExplorer {
     }
 
     public void windowActivated() {
+        reload();
+
         runClosureOnFileEditorItems(new FileEditorItemClosure() {
             public void process(ProjectFileItem item) {
                 if(item.handleExternalModification())
@@ -164,6 +171,32 @@ public class ProjectExplorer {
         });
     }
 
+    public void expandItems(List items) {
+        if(items == null || items.isEmpty())
+            return;
+
+        for (Iterator iterator = items.iterator(); iterator.hasNext();) {
+            String name = (String) iterator.next();
+            for (int i = 0; i < filesTreeRootNode.getChildCount(); i++) {
+                DefaultMutableTreeNode child = (DefaultMutableTreeNode)filesTreeRootNode.getChildAt(i);
+                if(child.getUserObject().equals(name)) {
+                    filesTree.expandPath(new TreePath(child.getPath()));
+                }
+            }
+        }
+    }
+
+    public List getExpandedItems() {
+        List expanded = new ArrayList();
+        for (int i = 0; i < filesTreeRootNode.getChildCount(); i++) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode)filesTreeRootNode.getChildAt(i);
+            if(filesTree.isExpanded(new TreePath(child.getPath()))) {
+                expanded.add(child.getUserObject());
+            }
+        }
+        return expanded;
+    }
+
     public static final String KEY_FILE_ITEMS = "KEY_FILE_ITEMS";
     public static final String KEY_EXPANDED_ITEMS = "KEY_EXPANDED_ITEMS";
 
@@ -171,18 +204,7 @@ public class ProjectExplorer {
         reload();
 
         if(data != null) {
-            List expanded = (List) data.get(KEY_EXPANDED_ITEMS);
-            if(expanded != null) {
-                for (Iterator iterator = expanded.iterator(); iterator.hasNext();) {
-                    String name = (String) iterator.next();
-                    for (int i = 0; i < filesTreeRootNode.getChildCount(); i++) {
-                        DefaultMutableTreeNode child = (DefaultMutableTreeNode)filesTreeRootNode.getChildAt(i);
-                        if(child.getUserObject().equals(name)) {
-                            filesTree.expandPath(new TreePath(child.getPath()));
-                        }
-                    }
-                }
-            }
+            expandItems((List) data.get(KEY_EXPANDED_ITEMS));
 
             Map fileItems = (Map) data.get(KEY_FILE_ITEMS);
             if(fileItems != null) {
@@ -203,14 +225,7 @@ public class ProjectExplorer {
     public Map getPersistentData() {
         Map data = new HashMap();
 
-        List expanded = new ArrayList();
-        for (int i = 0; i < filesTreeRootNode.getChildCount(); i++) {
-            DefaultMutableTreeNode child = (DefaultMutableTreeNode)filesTreeRootNode.getChildAt(i);
-            if(filesTree.isExpanded(new TreePath(child.getPath()))) {
-                expanded.add(child.getUserObject());
-            }
-        }
-        data.put(KEY_EXPANDED_ITEMS, expanded);
+        data.put(KEY_EXPANDED_ITEMS, getExpandedItems());
 
         Map fileItems = new HashMap();
         for (Iterator iterator = getFileEditorItems().iterator(); iterator.hasNext();) {
@@ -332,83 +347,6 @@ public class ProjectExplorer {
         }
     }
 
-    protected class ExplorerLoader {
-
-        protected Map groups = new HashMap();
-        protected String sourcePath;
-
-        public boolean reload() {
-            boolean reset = false;
-
-            if(sourcePath == null || !sourcePath.equals(project.getSourcePath())) {
-                groups.clear();
-                sourcePath = project.getSourcePath();
-                reset = true;
-            }
-
-            if(sourcePath == null)
-                return reset;
-
-            for (Iterator iterator = XJUtils.sortedFilesInPath(sourcePath).iterator(); iterator.hasNext();) {
-                File f = (File) iterator.next();
-                String name = f.getName();
-
-                String type = ProjectFileItem.getFileType(name);
-                if(type.equals(ProjectFileItem.FILE_TYPE_UNKNOWN))
-                    continue;
-
-                addFileOfType(name, ProjectFileItem.getFileTypeName(type));
-            }
-
-            return reset;
-        }
-
-        public void addFileOfType(String name, String type) {
-            List files = getFiles(type);
-            for (Iterator iterator = files.iterator(); iterator.hasNext();) {
-                ProjectFileItem fileItem = (ProjectFileItem) iterator.next();
-                if(fileItem.getFileName().equals(name))
-                    return;
-            }
-            files.add(new ProjectFileItem(project, name));
-        }
-
-        public List getGroups() {
-            return new ArrayList(groups.keySet());
-        }
-
-        public List getAllFiles() {
-            List allFiles = new ArrayList();
-            for (Iterator iterator = groups.values().iterator(); iterator.hasNext();) {
-                List files = (List) iterator.next();
-                allFiles.addAll(files);
-            }
-            return allFiles;
-        }
-
-        public ProjectFileItem getFileItemForFileName(String filename) {
-            for (Iterator groupIterator = groups.values().iterator(); groupIterator.hasNext();) {
-                List files = (List) groupIterator.next();
-                for (Iterator fileIterator = files.iterator(); fileIterator.hasNext();) {
-                    ProjectFileItem item = (ProjectFileItem) fileIterator.next();
-                    if(item.getFileName().equals(filename))
-                        return item;
-                }
-            }
-            return null;
-        }
-
-        public List getFiles(String name) {
-            List files = (List) groups.get(name);
-            if(files == null) {
-                files = new ArrayList();
-                groups.put(name, files);
-            }
-            return files;
-        }
-
-    }
-
     public class CustomTableRenderer extends DefaultTreeCellRenderer {
 
         public Component getTreeCellRendererComponent(
@@ -435,9 +373,10 @@ public class ProjectExplorer {
                     setForeground(Color.gray);
                 else
                     setForeground(Color.black);
-            } else {
+            } else if(node.getUserObject() instanceof String) {
                 // Do not display the default folder for group because
                 // they are not folders ;-)
+                setText(ProjectFileItem.getFileTypeName(node.getUserObject().toString()));
                 setIcon(null);
             }
 

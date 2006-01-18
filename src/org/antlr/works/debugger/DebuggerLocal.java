@@ -39,7 +39,7 @@ import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.works.IDE;
-import org.antlr.works.engine.EngineCompiler;
+import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.StreamWatcher;
@@ -323,7 +323,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     protected void compileFiles(String[] files) {
-        String error = EngineCompiler.compileFiles(files, outputFileDir, debugger);
+        String error = EngineRuntime.compileFiles(files, outputFileDir, debugger);
         if(error != null)
             reportError(error);
     }

@@ -4,7 +4,7 @@ import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.project.CContainerProject;
-import org.antlr.works.engine.EngineCompiler;
+import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.utils.StreamWatcherDelegate;
 
 import javax.swing.*;
@@ -54,6 +54,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     protected int buildingProgress;
 
     protected ProjectFileItem fileToBuild;
+    protected ThreadExecution currentThread;
 
     public ProjectBuilder(CContainerProject project) {
         this.project = project;
@@ -126,7 +127,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
 
             setProgressStepInfo("Generating \""+ XJUtils.getLastPathComponent(file)+"\"...");
 
-            String error = EngineCompiler.runANTLR(file, libPath, outputPath, this);
+            String error = EngineRuntime.runANTLR(file, libPath, outputPath, this);
             if(error != null) {
                 project.buildReportError(error);
                 return false;
@@ -140,7 +141,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
 
     public boolean compileFile(String file) {
         String outputPath = project.getSourcePath();
-        String error = EngineCompiler.compileFiles(new String[] { file }, outputPath, this);
+        String error = EngineRuntime.compileFiles(new String[] { file }, outputPath, this);
         if(error != null) {
             project.buildReportError(error);
             return false;
@@ -222,6 +223,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     public void prepare() {
         cancel = false;
         buildingProgress = 0;
+        currentThread = null;
     }
 
     public void buildFile(ProjectFileItem fileItem) {
@@ -234,12 +236,12 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
 
         prepare();
 
-        new ThreadExecution(new Runnable() {
+        currentThread = new ThreadExecution(new Runnable() {
             public void run() {
                 performBuildFile();
                 progress.close();
             }
-        }).launch();
+        });
 
         progress.runModal();
     }
@@ -252,18 +254,18 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
 
         prepare();
 
-        new ThreadExecution(new Runnable() {
+        currentThread = new ThreadExecution(new Runnable() {
             public void run() {
                 performBuild();
                 progress.close();
             }
-        }).launch();
+        });
 
         progress.runModal();
     }
 
     public void performRun() {
-        String error = EngineCompiler.runJava(project.getSourcePath(), project.getRunParameters(), ProjectBuilder.this);
+        String error = EngineRuntime.runJava(project.getSourcePath(), project.getRunParameters(), ProjectBuilder.this);
         if(error != null) {
             project.buildReportError(error);
         }
@@ -277,16 +279,16 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
 
         prepare();
 
-        new ThreadExecution(new Runnable() {
+        currentThread = new ThreadExecution(new Runnable() {
             public void run() {
-                if(performBuild()) {
+                if(performBuild() && !cancel) {
                     progress.setInfo("Running...");
                     progress.setIndeterminate(true);
                     performRun();
                 }
                 progress.close();
             }
-        }).launch();
+        });
 
         progress.runModal();
     }
@@ -313,6 +315,12 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     }
 
     public void dialogDidCancel() {
+        if(cancel) {
+            // The process may be blocked. Try to kill it.
+            Process p = EngineRuntime.getProcess(currentThread.t);
+            if(p != null)
+                p.destroy();
+        }
         cancel = true;
     }
 
@@ -331,15 +339,18 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     protected class ThreadExecution {
 
         protected Runnable r;
+        protected Thread t;
 
         public ThreadExecution(Runnable r) {
             this.r = r;
+            launch();
         }
 
         public void launch() {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    new Thread(r).start();
+                    t = new Thread(r);
+                    t.start();
                 }
             });
         }

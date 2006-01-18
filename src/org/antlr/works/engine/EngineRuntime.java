@@ -8,7 +8,9 @@ import org.antlr.works.utils.StreamWatcherDelegate;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -40,7 +42,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EngineCompiler {
+public class EngineRuntime {
+
+    public static Map processPerThread = new HashMap();
+
+    public static void setProcess(Process p) {
+        processPerThread.put(Thread.currentThread(), p);
+    }
+
+    public static void removeProcess() {
+        processPerThread.remove(Thread.currentThread());
+    }
+
+    public static Process getProcess(Thread t) {
+        return (Process) processPerThread.get(t);
+    }
+
+    public static Process getProcess() {
+        return (Process) processPerThread.get(Thread.currentThread());
+    }
 
     public static String getClassPath(String outputPath) {
         String classPath = outputPath;
@@ -66,12 +86,15 @@ public class EngineCompiler {
             args[8] = file;
 
             Process p = Runtime.getRuntime().exec(args);
+            setProcess(p);
             esw = new StreamWatcher(p.getErrorStream(), "ANTLR[error]", delegate);
             esw.start();
             new StreamWatcher(p.getInputStream(), "ANTLR[stdout]", delegate).start();
             result = p.waitFor();
         } catch(Exception e) {
             error = "Failed to run ANTLR with exception:\n"+e.getLocalizedMessage();
+        } finally {
+            removeProcess();
         }
 
         if(result != 0) {
@@ -110,12 +133,15 @@ public class EngineCompiler {
             for(int i=0; i<params.length; i++)
                 args[3+i] = params[i];
 
-            Process p = Runtime.getRuntime().exec(args, null, new File(currentPath));            
+            Process p = Runtime.getRuntime().exec(args, null, new File(currentPath));
+            setProcess(p);
             new StreamWatcher(p.getErrorStream(), "Java[error]", delegate).start();
             new StreamWatcher(p.getInputStream(), "Java[stdout]", delegate).start();
             result = p.waitFor();
         } catch(Exception e) {
             error = "Failed to run Java with exception:\n"+e.getLocalizedMessage();
+        } finally {
+            removeProcess();
         }
 
         if(result != 0) {
@@ -147,6 +173,7 @@ public class EngineCompiler {
                     args[5+i] = files[i];
 
                 Process p = Runtime.getRuntime().exec(args);
+                setProcess(p);
                 new StreamWatcher(p.getErrorStream(), "Compiler[error]", delegate).start();
                 new StreamWatcher(p.getInputStream(), "Compiler[stdout]", delegate).start();
                 result = p.waitFor();
@@ -163,6 +190,7 @@ public class EngineCompiler {
                     args[5+i] = files[i];
 
                 Process p = Runtime.getRuntime().exec(args);
+                setProcess(p);
                 new StreamWatcher(p.getErrorStream(), "Compiler[error]", delegate).start();
                 new StreamWatcher(p.getInputStream(), "Compiler[stdout]", delegate).start();
                 result = p.waitFor();
@@ -186,6 +214,8 @@ public class EngineCompiler {
             error = "Compiler error:\n"+e.getLocalizedMessage();
         } catch(Exception e) {
             error = "Compiler exception:\n"+e.getLocalizedMessage();
+        } finally {
+            removeProcess();
         }
 
         if(result != 0) {

@@ -38,7 +38,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ProjectFileItem {
+public class ProjectFileItem implements Comparable {
 
     public static final String FILE_GRAMMAR_EXTENSION = ".g";
     public static final String FILE_JAVA_EXTENSION = ".java";
@@ -216,6 +216,20 @@ public class ProjectFileItem {
         return data;
     }
 
+    public int hashCode() {
+        return fileName.hashCode();
+    }
+
+    public boolean equals(Object o) {
+        ProjectFileItem otherItem = (ProjectFileItem)o;
+        return fileName.equals(otherItem.fileName);
+    }
+
+    public int compareTo(Object o) {
+        ProjectFileItem otherItem = (ProjectFileItem)o;
+        return fileName.compareTo(otherItem.fileName);
+    }
+    
     /** Called by the XJTree to display the cell content. Use only the last path component
      * (that is the name of file) only.
      */

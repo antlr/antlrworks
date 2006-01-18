@@ -214,6 +214,11 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
         }
     }
 
+    public void closeFileItem(ProjectFileItem fileItem) {
+        editorZone.removeFileItemFromTab(fileItem);
+        fileItem.close();
+    }
+    
     public List getFileEditorItems() {
         return explorer.getFileEditorItems();
     }

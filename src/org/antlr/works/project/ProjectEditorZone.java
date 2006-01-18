@@ -164,6 +164,9 @@ public class ProjectEditorZone {
 
     public void removeFileItemFromTab(ProjectFileItem item) {
         int index = getIndexOfFileItemInTab(item);
+        if(index == -1)
+            return;
+        
         tabbedPane.removeTabAt(index);
         if(tabbedPane.getComponentCount() == 0) {
             setEditorZoneToEmpty();
