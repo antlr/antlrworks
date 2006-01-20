@@ -55,7 +55,6 @@ public class ATEColoring extends ATEThread {
 
     protected List tokens;
 
-    protected List offsets;
     protected final Object offsetLock = new Object();
 
     protected boolean enable = false;
@@ -69,7 +68,6 @@ public class ATEColoring extends ATEThread {
         StyleConstants.setItalic(standardAttr, false);
 
         tokens = null;
-        offsets = new ArrayList();
         colorizeOffset = -1;
         colorizeLength = -1;
 
@@ -97,7 +95,6 @@ public class ATEColoring extends ATEThread {
     public synchronized void setColorizeLocation(int offset, int length) {
         colorizeOffset = offset;
         colorizeLength = length;
-        adjustTokens();
         // skip any job in the thread to be executed
         // because colorize() has been called probably a while ago
         // in the ateParserDidParse() method of EditorWindow
@@ -114,19 +111,6 @@ public class ATEColoring extends ATEThread {
         StyledDocument doc = (StyledDocument) textEditor.getTextPane().getDocument();
         doc.setCharacterAttributes(0, doc.getLength(), standardAttr, false);
         textEditor.ateColoringDidColorize();
-    }
-
-    private void adjustTokens() {
-        if(tokens == null)
-            return;
-
-        if(colorizeOffset == -1)
-            return;
-
-        int startLocation = colorizeLength<0?colorizeOffset-colorizeLength:colorizeOffset;
-        synchronized(offsetLock) {
-            offsets.add(new Offset(startLocation, colorizeLength));
-        }
     }
 
     private ATEToken threadFindOldToken(int offset, ATEToken newToken) {
@@ -149,14 +133,20 @@ public class ATEColoring extends ATEThread {
         for(; nt<newTokens.size(); nt++) {
             ATEToken newToken = (ATEToken)newTokens.get(nt);
             if(tokens != null && ot < tokens.size()) {
+                /** The modified attribute of the token indicates that
+                 * the token has been modified. It may happen that it is
+                 * still the same after modification (i.e. you past the same
+                 * token over itself) but in the Swing text area, the attribute
+                 * may have been lost so we *must* redraw this token.
+                 */
                 ATEToken oldToken = (ATEToken)tokens.get(ot);
-                if(oldToken.equals(newToken)) {
+                if(oldToken.equals(newToken) && !oldToken.modified) {
                     ot++;
                 } else {
                     oldToken = threadFindOldToken(ot, newToken);
-                    if(oldToken == null)
+                    if(oldToken == null || oldToken.modified) {
                         modifiedTokens.add(newToken);
-                    else {
+                    } else {
                         ot = tokens.indexOf(oldToken)+1;
                     }
                 }
@@ -180,8 +170,7 @@ public class ATEColoring extends ATEThread {
         doc.lock();
 
         try {
-            // Walk the list of modified tokens and apply the corresponding color
-            // for each of them
+            // Walk the list of modified tokens and apply the corresponding color to each of them
             for(int t = 0; t<modifiedTokens.size(); t++) {
                 ATEToken token = (ATEToken) modifiedTokens.get(t);
 
@@ -204,13 +193,4 @@ public class ATEColoring extends ATEThread {
         threadColorize();
     }
 
-    private class Offset {
-        public int location;
-        public int length;
-
-        public Offset(int location, int length) {
-            this.location = location;
-            this.length = length;
-        }
-    }
 }

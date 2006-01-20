@@ -229,7 +229,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     public void buildFile(ProjectFileItem fileItem) {
         fileToBuild = fileItem;
 
-        progress.setCancellable(false);
+        progress.setCancellable(true);
         progress.setTitle("Build");
         progress.setInfo("Building...");
         progress.setIndeterminate(true);

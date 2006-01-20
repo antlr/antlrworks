@@ -517,9 +517,15 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
             for(int t=0; t<tokens.size(); t++) {
                 ATEToken token = (ATEToken) tokens.get(t);
-                if(token.getStartIndex() > location) {
+
+                /** Mark as modified the token at the current modification location. See comments
+                 * in ATEColoring about this modified field.
+                 */
+                if(location >= token.getStartIndex() && location <= token.getEndIndex())
+                    token.modified = true;
+
+                if(token.getStartIndex() > location)
                     token.offsetPositionBy(length);
-                }
             }
         }
 

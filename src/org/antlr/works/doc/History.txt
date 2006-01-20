@@ -1,12 +1,11 @@
 
-Version 1.0ea8 - 01/09/06
+Version 1.0ea8 - 01/20/06
 
 - new project document: edit multiple grammar, Java and any other text files and build
   them automatically within ANTLRWorks
 - syntax coloring for generated Java code
 
 - improved ANTLR usage by running ANTLR only when necessary
-- improved selection of a identifier
 - rules are now sorted in interpreter and debugger if they are sorted in the editor
 - make the bottom tab visible when it is collapsed when an operation is displaying something in it
 - disabling syntax diagram now display a message
@@ -14,7 +13,11 @@ Version 1.0ea8 - 01/09/06
 - now reload the tokenVocab file content when ANTLRWorks is back to front
 - ctrl-k: now copy the deleted end of line to the system clipboard
 - ctrl-t: now swap two characters (insert templates is now invoked using meta-k)
+- improved selection of a identifier
+- improved word selection using the mouse: dragging the mouse without releasing the button
+  now extends the selection word by word (as expected on Mac OS X)
 
+- fixed a bug where some tokens were not properly colorized (cut and past the same token over itself)
 - fixed a bug where the file content was not properly parsed if modified outside ANTLRWorks
 - fixed a bug where the analysis indicator was colored improperly
 - fixed a bug in the coloring algorithm where some tokens would not be colored properly

@@ -222,6 +222,10 @@ public class ATETextPane extends JTextPane
 
     protected class ATECaret extends DefaultCaret {
 
+        public boolean selectingWord = false;
+        public int selectingWordStart;
+        public int selectingWordEnd;
+
         public ATECaret() {
             setBlinkRate(500);
         }
@@ -253,36 +257,78 @@ public class ATETextPane extends JTextPane
         }
 
         public void mouseClicked(MouseEvent e) {
-            if (!e.isConsumed()) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    // mouse 1 behavior
-                    if(e.getClickCount() == 2) {
-                        selectWord();
-                    } else if(e.getClickCount() == 3) {
-                        super.mouseClicked(e);
-                    }
-                } else
-                    super.mouseClicked(e);
+            // Do not call super if more than one click
+            // because it causes the word selection to deselect
+            if(e.getClickCount() < 2)
+                super.mouseClicked(e);
+        }
+
+        public void mousePressed(MouseEvent e) {
+            super.mousePressed(e);
+
+            selectingWord = false;
+
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                if(e.getClickCount() == 2) {
+                    selectWord();
+                    selectingWord = true;
+                    selectingWordStart = getSelectionStart();
+                    selectingWordEnd = getSelectionEnd();
+                    e.consume();
+                }
             }
+        }
+
+        public void mouseDragged(MouseEvent e) {
+            if(selectingWord) {
+                extendSelectionWord(e);
+            } else {
+                super.mouseDragged(e);
+            }
+        }
+
+        public void extendSelectionWord(MouseEvent e) {
+            int mouseCharIndex = viewToModel(e.getPoint());
+
+            if(mouseCharIndex > selectingWordEnd) {
+                int npos = findNextWordBoundary(mouseCharIndex);
+                if(npos > selectingWordEnd)
+                    select(selectingWordStart, npos);
+            } else if(mouseCharIndex < selectingWordStart) {
+                int npos = findPrevWordBoundary(mouseCharIndex);
+                if(npos < selectingWordStart)
+                    select(Math.max(0, npos), selectingWordEnd);
+            } else
+                select(selectingWordStart, selectingWordEnd);
         }
 
         public void selectWord() {
             int p = getCaretPosition();
+
+            setCaretPosition(findPrevWordBoundary(p));
+            moveCaretPosition(findNextWordBoundary(p));
+        }
+
+        public int findPrevWordBoundary(int pos) {
+            int index = pos-1;
             String s = getText();
-            int a = p-1;
-            while(a >= 0 && Character.isLetterOrDigit(s.charAt(a))) {
-                a--;
+            while(index >= 0 && isWordChar(s.charAt(index))) {
+                index--;
             }
-            
-            a++;
+            return index +1;
+        }
 
-            int b = p;
-            while(b < s.length() && Character.isLetterOrDigit(s.charAt(b))) {
-                b++;
+        public int findNextWordBoundary(int pos) {
+            int index = pos;
+            String s = getText();
+            while(index < s.length() && isWordChar(s.charAt(index))) {
+                index++;
             }
+            return index;
+        }
 
-            setCaretPosition(a);
-            moveCaretPosition(b);
+        public boolean isWordChar(char c) {
+            return Character.isLetterOrDigit(c) || c == '_';
         }
     }
 }

@@ -1,5 +1,7 @@
 
 * Prio 1
+- hide ideas when switching the tab in the AW project
+
 - maintain order of opened tab
 - cannot stop debugger on mantra.g
 - run profiler to see why parsing generated java code is so long

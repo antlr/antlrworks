@@ -48,6 +48,7 @@ public class ATEToken implements Comparable {
     protected String attribute;
 
     public int index;   // index inside the tokens list
+    public boolean modified;    // true if the token has been modified in the text editor
 
     public ATEToken(int type, int start, int end,
                     int startLineNumber, int endLineNumber,
