@@ -41,24 +41,34 @@ public class ATELabelView extends LabelView {
 
     public static final Color foldedColor = new Color(0.8f, 0.8f, 0.8f, 0.4f);
 
-    public ATELabelView(Element elem) {
-        super(elem);
-    }
+    public ATETextPane textPane;
+    public boolean visible = true;
 
-    public ATETextPane getEditorPane() {
-        return (ATETextPane)getContainer();
+    public ATELabelView(Element elem, ATETextPane textPane) {
+        super(elem);
+        this.textPane = textPane;
     }
 
     public ATEFoldingEntity getEntity() {
-        return getEditorPane().getEntity(this);
+        return textPane.getEntity(this);
     }
 
+    /** This method is called *very* frequently so it must be really
+     * efficient. Currently cache the visibility information.
+     */
+
     public boolean isVisible() {
-        return getEditorPane().isViewVisible(this);
+        if(textPane.visibilityChangedEndIndex-textPane.visibilityChangedStartIndex <= 0)
+            return visible;
+
+        if(textPane.isViewVisibilityDirty(this))
+            visible = textPane.isViewVisible(this);
+
+        return visible;
     }
 
     public boolean isTopMostInvisible() {
-        return getEditorPane().isTopMostInvisible(this);
+        return textPane.isTopMostInvisible(this);
     }
 
     public float getInvisibleSpan(int axis) {
@@ -76,7 +86,7 @@ public class ATELabelView extends LabelView {
             if(axis == X_AXIS)
                 return 0;
             else
-            // @todo 0 always except last view only if it is followed by a return
+                // @todo 0 always except last view only if it is followed by a return
                 return 0; //super.getPreferredSpan(axis);
         }
     }

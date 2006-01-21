@@ -33,8 +33,8 @@ package org.antlr.works.visualization.graphics;
 
 import org.antlr.analysis.NFAState;
 import org.antlr.tool.Grammar;
-import org.antlr.works.grammar.AWGrammar;
-import org.antlr.works.grammar.AWGrammarError;
+import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.grammar.EngineGrammarError;
 import org.antlr.works.visualization.fa.FAFactory;
 import org.antlr.works.visualization.fa.FAState;
 import org.antlr.works.visualization.graphics.graph.GGraph;
@@ -57,14 +57,14 @@ public class GFactory {
         optimize = !optimize;
     }
 
-    public List buildGraphsForRule(AWGrammar grammar, String rule, List errors) {
+    public List buildGraphsForRule(EngineGrammar grammar, String rule, List errors) {
         if(errors == null || errors.size() == 0)
             return buildGraphsForRule(grammar, rule);
         else
             return buildGraphsForErrors(grammar, rule, errors);
     }
 
-    public List buildGraphsForRule(AWGrammar grammar, String rule) {
+    public List buildGraphsForRule(EngineGrammar grammar, String rule) {
         NFAState startState = grammar.getRuleStartState(rule);
         if(startState == null)
             return null;
@@ -75,22 +75,22 @@ public class GFactory {
         return Collections.singletonList(graph);
     }
 
-    public List buildGraphsForErrors(AWGrammar grammar, String rule) {
+    public List buildGraphsForErrors(EngineGrammar grammar, String rule) {
         return buildGraphsForErrors(grammar, rule, grammar.getErrors());
     }
 
-    public List buildGraphsForErrors(AWGrammar grammar, String rule, List errors) {
+    public List buildGraphsForErrors(EngineGrammar grammar, String rule, List errors) {
         List graphs = new ArrayList();
 
         Iterator iterator = errors.iterator();
         while(iterator.hasNext()) {
-            graphs.add(buildGraphGroup(grammar.getGrammarForRule(rule), (AWGrammarError)iterator.next()));
+            graphs.add(buildGraphGroup(grammar.getGrammarForRule(rule), (EngineGrammarError)iterator.next()));
         }
 
         return graphs;
     }
 
-    private GGraphGroup buildGraphGroup(Grammar grammar, AWGrammarError error) {
+    private GGraphGroup buildGraphGroup(Grammar grammar, EngineGrammarError error) {
         // Create one GGraph for each error rules
 
         List graphs = new ArrayList();

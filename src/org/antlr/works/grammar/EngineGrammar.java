@@ -50,7 +50,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class AWGrammar {
+public class EngineGrammar {
 
     protected Grammar parserGrammar;
     protected Grammar lexerGrammar;
@@ -61,7 +61,7 @@ public class AWGrammar {
 
     protected CEditorGrammar editor;
 
-    public AWGrammar(CEditorGrammar editor) {
+    public EngineGrammar(CEditorGrammar editor) {
         this.editor = editor;
         errors = new ArrayList();
         makeDirty();
@@ -260,8 +260,8 @@ public class AWGrammar {
         }
     }
 
-    protected AWGrammarError buildNonDeterministicError(GrammarNonDeterminismMessage nondetMsg) {
-        AWGrammarError error = new AWGrammarError();
+    protected EngineGrammarError buildNonDeterministicError(GrammarNonDeterminismMessage nondetMsg) {
+        EngineGrammarError error = new EngineGrammarError();
 
         List nonDetAlts = nondetMsg.probe.getNonDeterministicAltsForState(nondetMsg.problemState);
         error.setLine(nondetMsg.probe.dfa.getDecisionASTNode().getLine()-1);

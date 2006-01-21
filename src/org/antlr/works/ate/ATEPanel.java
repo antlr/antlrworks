@@ -502,9 +502,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
         /** This method shifts every offset past the location in order
          *  for collapsed view to be correctly rendered (the rule has to be
-         *  immediately at the right position and cannot wait for the
+         *  immediately at the correct position and cannot wait for the
          *  parser to finish)
-         *
+         *  We are also accessing the Token start and end field directly in
+         *  order to avoid the overhead of method calling.
          */
 
         protected void adjustTokens(int location, int length) {
@@ -515,17 +516,21 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             if(tokens == null)
                 return;
 
-            for(int t=0; t<tokens.size(); t++) {
+            int max = tokens.size();
+            for(int t=0; t<max; t++) {
                 ATEToken token = (ATEToken) tokens.get(t);
 
                 /** Mark as modified the token at the current modification location. See comments
                  * in ATEColoring about this modified field.
                  */
-                if(location >= token.getStartIndex() && location <= token.getEndIndex())
+
+                if(location >= token.start && location <= token.end)
                     token.modified = true;
 
-                if(token.getStartIndex() > location)
-                    token.offsetPositionBy(length);
+                if(token.start > location) {
+                    token.start += length;
+                    token.end += length;
+                }
             }
         }
 

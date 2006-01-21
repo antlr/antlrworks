@@ -40,22 +40,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ATEParagraphView extends ParagraphView {
 
     public static final Color highlightColor = new Color(1.0f, 1.0f, 0.5f, 0.3f);
+
+    public ATETextPane textPane;
     public Rectangle tempRect = new Rectangle();
 
-    public ATEParagraphView(Element elem) {
+    public ATEParagraphView(Element elem, ATETextPane textPane) {
         super(elem);
-    }
-
-    public ATETextPane getEditorPane() {
-        return (ATETextPane)getContainer();
+        this.textPane = textPane;
     }
 
     public ATEFoldingEntity getEntity() {
-        return getEditorPane().getEntity(this);
+        return textPane.getEntity(this);
     }
 
+    /** This method is called *very* frequently so it must be really
+     * efficient. Currently cache the visibility information.
+     */
+
     public boolean isVisible() {
-        return getEditorPane().isViewVisible(this);
+        return textPane.isViewVisible(this);
     }
 
     public int getNextVisualPositionFrom(int pos,
@@ -83,10 +86,7 @@ public class ATEParagraphView extends ParagraphView {
     }
 
     public void paint(Graphics g, Shape allocation) {
-
-        // Paragraph visible, see if we should paint the
-        // underlying cursor line highlighting
-        if(getEditorPane().highlightCursorLine()) {
+        if(textPane.highlightCursorLine()) {
             Rectangle alloc = (allocation instanceof Rectangle) ?
                     (Rectangle)allocation :
                     allocation.getBounds();
@@ -95,7 +95,7 @@ public class ATEParagraphView extends ParagraphView {
             int y = alloc.y + getTopInset();
 
             Rectangle clip = g.getClipBounds();
-            int cursorPosition = getEditorPane().getCaretPosition()+1;
+            int cursorPosition = textPane.getCaretPosition()+1;
             for (int i = 0; i < n; i++) {
                 tempRect.x = x + getOffset(X_AXIS, i);
                 tempRect.y = y + getOffset(Y_AXIS, i);

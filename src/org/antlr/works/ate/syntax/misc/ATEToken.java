@@ -41,8 +41,13 @@ public class ATEToken implements Comparable {
     protected int endLineIndex; // ending line character index
     public String text;
 
-    protected int start;
-    protected int end;
+    /** These two fiels are public because ATEPanel needs to access them
+     * really quickly without using accessors. If anything needs to be changed,
+     * modify the adjustTokens() method of ATEPanel.
+     */
+    
+    public int start;
+    public int end;
 
     public boolean lexer;
     protected String attribute;
@@ -84,11 +89,6 @@ public class ATEToken implements Comparable {
 
     public int getEndIndex() {
         return end;
-    }
-
-    public void offsetPositionBy(int value) {
-        start += value;
-        end += value;
     }
 
     public boolean containsIndex(int index) {

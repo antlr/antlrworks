@@ -22,7 +22,7 @@ import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.*;
 import org.antlr.works.find.FindAndReplace;
-import org.antlr.works.grammar.AWGrammar;
+import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.menu.*;
 import org.antlr.works.navigation.GoToHistory;
@@ -159,7 +159,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     /* Grammar */
 
-    protected AWGrammar grammar;
+    protected EngineGrammar grammar;
     protected GrammarSyntax grammarSyntax;
 
     public CEditorGrammar(ComponentContainer container) {
@@ -220,7 +220,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
         persistence = new EditorPersistence(this);
 
-        grammar = new AWGrammar(this);
+        grammar = new EngineGrammar(this);
     }
 
     protected void initMenus() {
@@ -432,7 +432,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return toolbar.getToolbar();
     }
 
-    public AWGrammar getGrammar() {
+    public EngineGrammar getGrammar() {
         return grammar;
     }
 

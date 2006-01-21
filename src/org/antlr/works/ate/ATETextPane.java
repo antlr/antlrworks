@@ -47,8 +47,8 @@ import java.util.List;
 
 public class ATETextPane extends JTextPane
 {
-    private static final String ATTRIBUTE_CHARACTER_FOLDING_PROXY = "char_folding_proxy";
-    private static final String ATTRIBUTE_PARAGRAPH_FOLDING_PROXY = "para_folding_proxy";
+    public static final String ATTRIBUTE_CHARACTER_FOLDING_PROXY = "char_folding_proxy";
+    public static final String ATTRIBUTE_PARAGRAPH_FOLDING_PROXY = "para_folding_proxy";
 
     protected ATEPanel textEditor;
     protected boolean wrap = false;
@@ -57,7 +57,7 @@ public class ATETextPane extends JTextPane
     public ATETextPane(ATEPanel textEditor) {
         super(new ATEStyledDocument());
         setCaret(new ATECaret());
-        setEditorKit(new ATECustomEditorKit());
+        setEditorKit(new ATECustomEditorKit(this));
         this.textEditor = textEditor;
     }
 
@@ -148,6 +148,8 @@ public class ATETextPane extends JTextPane
      */
 
     public boolean isViewVisible(View v) {
+        // @todo OPTIMIZATION
+
         Element e = v.getElement();
         String key = getKeyForView(v);
 
@@ -190,6 +192,39 @@ public class ATETextPane extends JTextPane
         textEditor.textPaneDidPaint(g);
     }
 
+    /** This method returns true if the view visibility has changed. This is currently
+     * working only for ATELabelView. ATEParagraphView doesn't slow too much the typing
+     * so it was not worth optimizing its visibility state. Also, ATEParagraphView is much
+     * harder to deal with because it doesn't call this method in increasing order, like
+     * ATELabelView, but in any order. We would have to maintain an interval-set to keep
+     * track of which interval remain to be asked - use Terence ANTLR interval set in the future?
+     */
+
+    public int visibilityChangedStartIndex = -1;
+    public int visibilityChangedEndIndex = -1;
+
+    public boolean isViewVisibilityDirty(View view) {
+        /** WARNING: for performance reason, ATELabelView is computing the following test
+         * inline. Any modification here should be reflected in ATELabelView.isVisible().
+         */
+        if(visibilityChangedEndIndex-visibilityChangedStartIndex <= 0)
+            return false;
+
+        int viewStartOffset = view.getStartOffset();
+        int viewEndOffset = view.getEndOffset();
+
+        if(viewStartOffset >= visibilityChangedEndIndex)
+            return false;
+        if(viewEndOffset <= visibilityChangedStartIndex)
+            return false;
+
+        // Reduce the interval of dirty visibility index. We assume
+        // that the view are calling this method in order (which is the case now).
+        visibilityChangedStartIndex = viewEndOffset;
+
+        return true;
+    }
+
     public void toggleFolding(ATEFoldingEntityProxy proxy) {
         if(proxy == null)
             return;
@@ -208,6 +243,9 @@ public class ATETextPane extends JTextPane
         charAttr.addAttribute(ATTRIBUTE_CHARACTER_FOLDING_PROXY+level, proxy);
 
         textEditor.foldingManager.textPaneWillFold();
+
+        visibilityChangedStartIndex = Math.min(start, startPara);
+        visibilityChangedEndIndex = end;
 
         ((ATEStyledDocument)getDocument()).setParagraphAttributes(startPara, end-startPara, paraAttr, false);
         ((ATEStyledDocument)getDocument()).setCharacterAttributes(start, end-start, charAttr, false);

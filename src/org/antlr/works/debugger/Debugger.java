@@ -396,7 +396,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         goToEndButton.setEnabled(enabled);
     }
 
-    public org.antlr.works.grammar.AWGrammar getGrammar() {
+    public org.antlr.works.grammar.EngineGrammar getGrammar() {
         return editor.getGrammar();
     }
 

@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization;
 
 import org.antlr.works.ate.syntax.misc.ATEThread;
-import org.antlr.works.grammar.AWGrammarError;
+import org.antlr.works.grammar.EngineGrammarError;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import java.util.ArrayList;
@@ -97,7 +97,7 @@ public class VisualAnalysis extends ATEThread {
     private List threadFetchErrorsForRule(GrammarSyntaxRule rule) {
         List errors = new ArrayList();
         for (Iterator iterator = visual.getGrammar().getErrors().iterator(); iterator.hasNext();) {
-            AWGrammarError error = (AWGrammarError) iterator.next();
+            EngineGrammarError error = (EngineGrammarError) iterator.next();
             if(error.line>=rule.start.startLineNumber && error.line<=rule.end.startLineNumber)
                 errors.add(error);
         }

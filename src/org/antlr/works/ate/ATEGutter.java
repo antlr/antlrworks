@@ -61,7 +61,7 @@ public class ATEGutter extends JComponent {
 
     protected List breakpoints = new ArrayList();
 
-    protected List folding = new ArrayList();
+    protected List foldingInfos = new ArrayList();
     protected boolean foldingEnabled = false;
 
     protected Image collapseDown;
@@ -128,30 +128,45 @@ public class ATEGutter extends JComponent {
         }
     }
 
-    public void updateInfo() {
+    public void updateInfo(Rectangle clip) {
+
+        /** Make sure we are only updating objects in the current visible range
+         *
+         */
+
+        int startIndex = textEditor.textPane.viewToModel(new Point(clip.x, clip.y));
+        int endIndex = textEditor.textPane.viewToModel(new Point(clip.x+clip.width, clip.y+clip.height));
+
         breakpoints.clear();
         if(textEditor.breakpointManager != null) {
             List entities = textEditor.breakpointManager.getBreakpointEntities();
             for (int i=0; i<entities.size(); i++) {
                 ATEBreakpointEntity entity = (ATEBreakpointEntity)entities.get(i);
-                int y = getLineYPixelPosition(entity.breakpointEntityIndex());
-                Rectangle r = new Rectangle(0, y-BREAKPOINT_HEIGHT/2, BREAKPOINT_WIDTH, BREAKPOINT_HEIGHT);
-                breakpoints.add(new BreakpointInfo(entity, r));
+                int index = entity.breakpointEntityIndex();
+                if(index >= startIndex && index <= endIndex) {
+                    int y = getLineYPixelPosition(entity.breakpointEntityIndex());
+                    Rectangle r = new Rectangle(0, y-BREAKPOINT_HEIGHT/2, BREAKPOINT_WIDTH, BREAKPOINT_HEIGHT);
+                    breakpoints.add(new BreakpointInfo(entity, r));
+                }
             }
         }
 
-        folding.clear();
+        foldingInfos.clear();
         if(textEditor.foldingManager != null) {
             List entities = textEditor.foldingManager.getFoldingEntities();
             for(int i=0; i<entities.size(); i++) {
                 ATEFoldingEntity entity = (ATEFoldingEntity)entities.get(i);
 
-                int top_y = getLineYPixelPosition(entity.foldingEntityGetStartIndex());
-                int bottom_y = getLineYPixelPosition(entity.foldingEntityGetEndIndex());
+                int entityStartIndex = entity.foldingEntityGetStartIndex();
+                int entityEndIndex = entity.foldingEntityGetEndIndex();
+                if(!(entityStartIndex > endIndex || entityEndIndex < startIndex)) {
+                    int top_y = getLineYPixelPosition(entity.foldingEntityGetStartIndex());
+                    int bottom_y = getLineYPixelPosition(entity.foldingEntityGetEndIndex());
 
-                Point top = new Point(getWidth()-getOffsetFromText(), top_y);
-                Point bottom = new Point(getWidth()-getOffsetFromText(), bottom_y);
-                folding.add(new FoldingInfo(entity, top, bottom));
+                    Point top = new Point(getWidth()-getOffsetFromText(), top_y);
+                    Point bottom = new Point(getWidth()-getOffsetFromText(), bottom_y);
+                    foldingInfos.add(new FoldingInfo(entity, top, bottom));
+                }
             }
         }
     }
@@ -166,8 +181,8 @@ public class ATEGutter extends JComponent {
     }
 
     public FoldingInfo getFoldingInfoAtPoint(Point p) {
-        for(int i=0; i<folding.size(); i++) {
-            FoldingInfo info = (FoldingInfo)folding.get(i);
+        for(int i=0; i<foldingInfos.size(); i++) {
+            FoldingInfo info = (FoldingInfo)foldingInfos.get(i);
             if(info.contains(p))
                 return info;
         }
@@ -184,8 +199,8 @@ public class ATEGutter extends JComponent {
         paintGutter(g, r);
 
         if(dirty) {
-            updateInfo();
-            dirty = false;
+            updateInfo(r);
+            //dirty = false;
         }
 
         paintFolding((Graphics2D)g, r);
@@ -221,8 +236,8 @@ public class ATEGutter extends JComponent {
         // Do not alias otherwise the dotted line between collapsed icon doesn't show up really well
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 
-        for (int index = 0; index < folding.size(); index++) {
-            FoldingInfo info = (FoldingInfo) folding.get(index);
+        for (int index = 0; index < foldingInfos.size(); index++) {
+            FoldingInfo info = (FoldingInfo) foldingInfos.get(index);
 
             if(!clip.intersects(info.top_r) && !clip.intersects(info.bottom_r))
                 continue;
