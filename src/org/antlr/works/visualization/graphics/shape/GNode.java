@@ -54,6 +54,9 @@ public class GNode extends GObject {
     public GDimension linkDimension = new GDimension();
     public GDimension globalDimension;
 
+    // This field is true if this node is the last one of the rule
+    public boolean lastNodeOfRule = false;
+
     public GNode() {
 
     }

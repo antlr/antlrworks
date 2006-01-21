@@ -66,6 +66,13 @@ public class GRenderer {
         GGraph graph = new GGraph();
         graph.setDimension(renderSize(state));
         renderPosition(state);
+
+        /** Mark the last node in order to draw an arrow at the end of the syntax diagram
+         */
+        GNode lastNode = (GNode) graphicNodes.get(graphicNodes.size()-1);
+        if(lastNode != null)
+            lastNode.lastNodeOfRule = true;
+
         graph.setNodes((ArrayList)((ArrayList)graphicNodes).clone());
         return graph;
     }
@@ -192,7 +199,7 @@ public class GRenderer {
                 state = transition.target;
                 GNode n2 = createNode(state);
 
-                // ... and create the SDLink between these two states
+                // ... and create the link between these two states
                 GLink link = new GLink();
                 link.transition = transition;
                 link.target = n2;

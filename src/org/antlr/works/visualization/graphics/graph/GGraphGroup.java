@@ -86,6 +86,10 @@ public class GGraphGroup extends GGraphAbstract {
         graphs.add(graph);
     }
 
+    public float getHeight() {
+        return getDimension().getPixelHeight(context);
+    }
+
     public float getWidth() {
         return getDimension().getPixelWidth(context)+TITLE_OFFSET;
     }
@@ -196,7 +200,6 @@ public class GGraphGroup extends GGraphAbstract {
             GGraph graph = (GGraph) iterator.next();
             GNode node = graph.findNodeForStateNumber(stateNumber);
             if(node != null) {
-//                System.err.println(" "+stateNumber+" = "+graph.name);
                 return node;
             }
         }
@@ -213,7 +216,7 @@ public class GGraphGroup extends GGraphAbstract {
             GGraph graph = (GGraph)graphs.get(i);
             graph.render(ox, oy);
             if(i<graphs.size()-1)
-                oy += graph.getDimension().getPixelHeight(context)+context.getPixelLineSpace();
+                oy += graph.getHeight()+context.getPixelLineSpace();
         }
 
         setRendered(true);

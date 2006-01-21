@@ -273,8 +273,6 @@ public class EngineGrammar {
 
         int firstAlt = 0;
 
-        //System.err.println("***"+error.message);
-
         for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
             Integer displayAltI = (Integer) iter.next();
             NFAState nfaStart = nondetMsg.probe.dfa.getNFADecisionStartState();
@@ -293,7 +291,6 @@ public class EngineGrammar {
             // Find all rules enclosing each state (because a path can extend over multiple rules)
             for (Iterator iterator = path.iterator(); iterator.hasNext();) {
                 NFAState state = (NFAState)iterator.next();
-                //System.err.println(state+"/"+state.getEnclosingRule());
                 error.addRule(state.getEnclosingRule());
             }
         }

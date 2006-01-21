@@ -78,6 +78,14 @@ public class GGraph extends GGraphAbstract {
         return dimension;
     }
 
+    public float getHeight() {
+        /** Make sure that the height is at least the one of a single arrow because
+         * for an empty rule, there is at least one horizontal link with an arrow at
+         * the end.
+         */
+        return Math.max(getDimension().getPixelHeight(context), context.getPixelArrowHeight());
+    }
+
     public float getWidth() {
         return getDimension().getPixelWidth(context);
     }

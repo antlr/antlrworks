@@ -13,6 +13,8 @@ import org.antlr.works.prefs.AWPrefsDialog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Map;
 
 /*
@@ -56,6 +58,7 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         this.container = container;
 
         mainPanel = new JPanel(new BorderLayout());
+        mainPanel.addComponentListener(new MainPanelComponentListener());
 
         statusBar = new ComponentStatusBar();
         statusBar.setPreferredSize(new Dimension(0, 30));
@@ -172,6 +175,10 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     public void componentActivated() {
     }
 
+    public void componentDidHide() {
+
+    }
+
     public void componentIsSelected() {
     }
 
@@ -182,6 +189,12 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     }
 
     public void notificationDebuggerStopped() {
+    }
+
+    protected class MainPanelComponentListener extends ComponentAdapter {
+        public void componentHidden(ComponentEvent e) {
+            componentDidHide();
+        }
     }
 
 }

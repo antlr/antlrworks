@@ -237,7 +237,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         if(getCurrentGraph().getDimension() == null)
             return 200;
         else
-            return (int)(getCurrentGraph().getDimension().getPixelHeight(context));
+            return (int)(getCurrentGraph().getHeight());
     }
 
     public void addMenuItem(JPopupMenu menu, String title, int tag, Object object) {

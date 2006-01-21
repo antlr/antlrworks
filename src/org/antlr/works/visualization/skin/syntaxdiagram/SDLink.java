@@ -79,6 +79,10 @@ public class SDLink {
             } else {
                 // Single horizontal link
                 context.drawLine(sx, sy, tx, ty);
+
+                // Draw an arrow if the link's target is the last node of the rule
+                if(link.target != null && link.target.lastNodeOfRule)
+                    context.drawRightArrow(tx, ty, context.getPixelArrowWidth(), context.getPixelArrowHeight());
             }
 
         } else {

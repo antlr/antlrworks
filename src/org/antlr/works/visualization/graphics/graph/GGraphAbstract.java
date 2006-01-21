@@ -42,6 +42,7 @@ public abstract class GGraphAbstract extends GObject {
 
     public abstract GDimension getDimension();
     public abstract float getWidth();
+    public abstract float getHeight();
     public abstract void render(float ox, float oy);
     public abstract void draw();
 

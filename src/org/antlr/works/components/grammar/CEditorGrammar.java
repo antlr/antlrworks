@@ -875,6 +875,13 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         textEditor.refresh();
     }
 
+    public void componentDidHide() {
+        // Hide the ideas if the component is hidden. For example, in the project
+        // window, if a component is hidden, the ideas have to be also hidden otherwise
+        // they are floating above the new visible component which is weird.
+        editorIdeas.hide();
+    }
+
     public void componentIsSelected() {
         getTextPane().requestFocus();
     }

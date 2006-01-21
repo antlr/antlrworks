@@ -1,17 +1,16 @@
 
 * Prio 1
-- hide ideas when switching the tab in the AW project
-- colorize the $foo in action
 - pop-up the console after check for grammar if errors
 - check for grammars should also run the lexer grammar
 - GUI to ignore some tokens in the interpreter
+- colorize the $foo in action
+- test on Windows/Linux
 
 - maintain order of opened tab
 - cannot stop debugger on mantra.g
 - run profiler to see why parsing generated java code is so long
 
 - auto-indent in prefs
-- remove print in GGraphGroup/EditorGrammar once weird ambiguous path problem solved
 - contextual menu in editor
 - fix tree appearance between interpreter and debugger on Windows
 - ask for string literal for T104 (Tokens artificial SD)
