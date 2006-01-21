@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import org.antlr.works.grammar.EditorGrammar;
+import org.antlr.works.grammar.AWGrammar;
 
 import java.awt.*;
 
@@ -41,7 +41,7 @@ public interface EditorProvider {
     public String getFileFolder();
     public String getFilePath();
     public String getFileName();
-    public EditorGrammar getGrammar();
+    public AWGrammar getGrammar();
     public EditorConsole getConsole();
     public Container getWindowContainer();
 }

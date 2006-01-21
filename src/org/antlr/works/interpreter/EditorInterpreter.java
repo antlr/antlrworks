@@ -149,10 +149,6 @@ public class EditorInterpreter implements Runnable, EditorTab {
         return panel;
     }
 
-    public GView getCurrentGView() {
-        return parseTreePanel.getGraphView();
-    }
-
     public void setRules(List rules) {
         rulesCombo.removeAllItems();
         for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
@@ -202,6 +198,7 @@ public class EditorInterpreter implements Runnable, EditorTab {
 
         Interpreter lexEngine = new Interpreter(lexer, input);
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
+        // @todo GUI for that
         tokens.setTokenTypeChannel(lexer.getTokenType("WS"), 99);
         tokens.setTokenTypeChannel(lexer.getTokenType("SL_COMMENT"), 99);
         tokens.setTokenTypeChannel(lexer.getTokenType("ML_COMMENT"), 99);
@@ -225,6 +222,14 @@ public class EditorInterpreter implements Runnable, EditorTab {
 
             parseTreePanel.setRoot((TreeNode)treeModel.getRoot());
         }
+    }
+
+    public boolean hasExportableGView() {
+        return true;
+    }
+
+    public GView getExportableGView() {
+        return parseTreePanel.getGraphView();
     }
 
     public String getTabName() {

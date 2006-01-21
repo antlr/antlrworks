@@ -36,10 +36,7 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.grammar.DecisionDFA;
-import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.visualization.Visual;
 import org.antlr.works.visualization.graphics.GContext;
@@ -91,15 +88,13 @@ public class MenuExport extends MenuAbstract {
 
     public void exportAsImage() {
         EditorTab tab = editor.getSelectedTab();
+        if(!tab.hasExportableGView())
+            return;
+
         if(tab instanceof Visual)
             exportRuleAsImage();
-        else if(tab instanceof DecisionDFA)
-            exportGViewAsImage(((DecisionDFA)tab).getCurrentGView());
-        else if(tab instanceof EditorInterpreter)
-            exportGViewAsImage(((EditorInterpreter)tab).getCurrentGView());
-        else if(tab instanceof Debugger)
-            exportGViewAsImage(((Debugger)tab).getCurrentGView());
-
+        else
+            exportGViewAsImage(tab.getExportableGView());
     }
 
     public void exportRuleAsImage() {
@@ -137,14 +132,13 @@ public class MenuExport extends MenuAbstract {
 
     public void exportAsEPS() {
         EditorTab tab = editor.getSelectedTab();
+        if(!tab.hasExportableGView())
+            return;
+
         if(tab instanceof Visual)
             exportRuleAsEPS();
-        else if(tab instanceof DecisionDFA)
-            exportGViewAsEPS(((DecisionDFA)tab).getCurrentGView());
-        else if(tab instanceof EditorInterpreter)
-            exportGViewAsEPS(((EditorInterpreter)tab).getCurrentGView());
-        else if(tab instanceof Debugger)
-            exportGViewAsEPS(((Debugger)tab).getCurrentGView());
+        else
+            exportGViewAsEPS(tab.getExportableGView());
     }
 
     protected void exportRuleAsEPS() {

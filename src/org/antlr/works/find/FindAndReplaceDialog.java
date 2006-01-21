@@ -45,7 +45,9 @@ public class FindAndReplaceDialog extends XJPanel {
 
     protected FindAndReplace delegate;
 
-    public FindAndReplaceDialog() {
+    public FindAndReplaceDialog(FindAndReplace delegate) {
+        this.delegate = delegate;
+
         initComponents();
 
         setSize(550, 180);
@@ -55,6 +57,19 @@ public class FindAndReplaceDialog extends XJPanel {
 
         getRootPane().setDefaultButton(nextButton);
 
+        createActions();
+
+        // Default values
+        ignoreCaseButton.setSelected(true);
+        delegate.setIgnoreCase(true);
+
+        // @todo can do that now
+        // Currently not implemented. Have to think about the fact
+        // that actions may be collapsed
+        replaceAllButton.setVisible(false);
+    }
+
+    public void createActions() {
         nextButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 delegate.setFindString(findField.getText());
@@ -109,14 +124,6 @@ public class FindAndReplaceDialog extends XJPanel {
                 delegate.setOptions(optionsCombo.getSelectedIndex());
             }
         });
-
-        // Currently not implemented. Have to think about the fact
-        // that actions may be collapsed
-        replaceAllButton.setVisible(false);
-    }
-
-    public void setDelegate(FindAndReplace delegate) {
-        this.delegate = delegate;
     }
 
     private void initComponents() {

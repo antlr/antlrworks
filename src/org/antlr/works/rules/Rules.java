@@ -40,6 +40,7 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.syntax.GrammarSyntaxGroup;
+import org.antlr.works.syntax.GrammarSyntaxReference;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.IconManager;
 
@@ -286,6 +287,19 @@ public class Rules implements XJTreeDelegate {
                 matches.add(r.name);
         }
         return matches;
+    }
+
+    public List getReferencesInRule(GrammarSyntaxRule rule) {
+        if(getParserEngine().getRules() == null)
+            return null;
+
+        List refs = new ArrayList();
+        for(Iterator iterator = getParserEngine().getReferences().iterator(); iterator.hasNext(); ) {
+            GrammarSyntaxReference r = (GrammarSyntaxReference)iterator.next();
+            if(r.rule == rule)
+                refs.add(r);
+        }
+        return refs;
     }
 
     public GrammarSyntaxRule getEnclosingRuleAtPosition(int pos) {

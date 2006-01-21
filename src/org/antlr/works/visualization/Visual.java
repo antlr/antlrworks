@@ -31,12 +31,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization;
 
+import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.grammar.EditorGrammar;
+import org.antlr.works.grammar.AWGrammar;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.syntax.GrammarSyntaxRule;
@@ -147,7 +148,7 @@ public class Visual implements EditorTab {
         drawing.skip();
     }
 
-    public EditorGrammar getGrammar() {
+    public AWGrammar getGrammar() {
         return editor.getGrammar();
     }
 
@@ -228,6 +229,14 @@ public class Visual implements EditorTab {
 
     public BufferedImage getImage() {
         return panel.getImageOfView();
+    }
+
+    public boolean hasExportableGView() {
+        return true;
+    }
+
+    public GView getExportableGView() {
+        return null;
     }
 
     public String getTabName() {

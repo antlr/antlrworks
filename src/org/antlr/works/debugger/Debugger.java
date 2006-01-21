@@ -396,7 +396,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         goToEndButton.setEnabled(enabled);
     }
 
-    public org.antlr.works.grammar.EditorGrammar getGrammar() {
+    public org.antlr.works.grammar.AWGrammar getGrammar() {
         return editor.getGrammar();
     }
 
@@ -437,10 +437,6 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
 
     public List getEvents() {
         return recorder.getCurrentEvents();
-    }
-
-    public GView getCurrentGView() {
-        return parseTreePanel.getGraphView();
     }
 
     public void launchLocalDebugger(boolean buildAndDebug) {
@@ -653,6 +649,14 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
 
     public void streamWatcherException(Exception e) {
         editor.getConsole().print(e);
+    }
+
+    public boolean hasExportableGView() {
+        return true;
+    }
+
+    public GView getExportableGView() {
+        return parseTreePanel.getGraphView();
     }
 
     public String getTabName() {

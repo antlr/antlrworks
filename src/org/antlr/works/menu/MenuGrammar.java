@@ -36,6 +36,8 @@ import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.DecisionDFA;
+import org.antlr.works.grammar.GrammarDOTTab;
+import org.antlr.works.grammar.RulesHierarchy;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxGroup;
 import org.antlr.works.syntax.GrammarSyntaxParser;
@@ -45,7 +47,7 @@ import org.antlr.works.visualization.VisualDelegate;
 
 import javax.swing.*;
 
-public class MenuGrammar extends MenuAbstract implements DecisionDFA.TDecisionDFADelegate, VisualDelegate {
+public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDOTTabDelegate, VisualDelegate {
 
     protected XJDialogProgress progress;
 
@@ -66,15 +68,23 @@ public class MenuGrammar extends MenuAbstract implements DecisionDFA.TDecisionDF
             hideProgress();
     }
 
-    public void decisionDFADidCompleted(DecisionDFA decision, String error) {
+    public void showHierarchy() {
+        showProgress("Generating...");
+        RulesHierarchy hierarchy = new RulesHierarchy(editor, this);
+        if(!hierarchy.launch())
+            hideProgress();
+    }
+
+    public void grammarDOTTabDidComplete(GrammarDOTTab tab, String error) {
         progress.close();
         if(error == null) {
-            GrammarSyntaxRule rule = editor.getCurrentRule();
-            decision.setRuleName(rule.name);
-            editor.addTab(decision);
+            editor.addTab(tab);
             editor.makeBottomComponentVisible();
         } else {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the DFA because: "+error);
+            if(tab instanceof DecisionDFA)
+                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the DFA:\n"+error);
+            if(tab instanceof RulesHierarchy)
+                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the rule hierarchy:\n"+error);
         }
     }
 

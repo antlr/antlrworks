@@ -129,8 +129,7 @@ public class FindAndReplace implements XJFrameDelegate {
 
     public void display() {
         if(dialog == null) {
-            dialog = new FindAndReplaceDialog();
-            dialog.setDelegate((XJFrameDelegate)this);
+            dialog = new FindAndReplaceDialog(this);
         }
         dialog.setDelegate(this);
         dialog.show();

@@ -36,12 +36,8 @@ import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogStatistics;
-import org.antlr.works.grammar.DecisionDFA;
-import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.visualization.Visual;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -82,10 +78,11 @@ public class EditorMenu implements XJMenuItemDelegate {
     // Grammar
     public static final int MI_SHOW_TOKENS_SD = 50;
     public static final int MI_SHOW_DECISION_DFA = 51;
-    public static final int MI_INSERT_TEMPLATE = 52;
-    public static final int MI_GROUP = 53;
-    public static final int MI_UNGROUP = 54;
-    public static final int MI_CHECK_GRAMMAR = 55;
+    public static final int MI_SHOW_HIERARCHY = 52;
+    public static final int MI_INSERT_TEMPLATE = 53;
+    public static final int MI_GROUP = 54;
+    public static final int MI_UNGROUP = 55;
+    public static final int MI_CHECK_GRAMMAR = 56;
 
     // Refactor
     public static final int MI_RENAME = 60;
@@ -285,7 +282,8 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu = new XJMenu();
         menu.setTitle("Grammar");
         menu.addItem(new XJMenuItem("Show Tokens Syntax Diagram", MI_SHOW_TOKENS_SD, this));
-        menu.addItem(new XJMenuItem("Show Current Decision DFA", MI_SHOW_DECISION_DFA, this));
+        menu.addItem(new XJMenuItem("Show Decision DFA", MI_SHOW_DECISION_DFA, this));
+        menu.addItem(new XJMenuItem("Show Rule Hierarchy", MI_SHOW_HIERARCHY, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Insert Rule From Template", KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
         menu.addSeparator();
@@ -301,7 +299,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         folding.addItem(new XJMenuItem("Toggle Action", KeyEvent.VK_MINUS, MI_EXPAND_COLLAPSE_ACTION, this));
         folding.addItem(new XJMenuItem("Expand All Actions", KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_EXPAND_ALL_ACTIONS, this));
         folding.addItem(new XJMenuItem("Collapse All Actions", KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_COLLAPSE_ALL_ACTIONS, this));
-        
+
         menu.addSeparator();
         menu.addItem(folding);
         menu.addSeparator();
@@ -384,10 +382,7 @@ public class EditorMenu implements XJMenuItemDelegate {
             case MI_EXPORT_AS_IMAGE:
             case MI_EXPORT_AS_EPS:
                 EditorTab tab = editor.getSelectedTab();
-                item.setEnabled(tab instanceof Visual
-                                || tab instanceof DecisionDFA
-                                || tab instanceof EditorInterpreter
-                                || tab instanceof Debugger);
+                item.setEnabled(tab.hasExportableGView());
                 break;
         }
     }
@@ -465,6 +460,10 @@ public class EditorMenu implements XJMenuItemDelegate {
 
             case MI_SHOW_DECISION_DFA:
                 editor.menuGrammar.showDecisionDFA();
+                break;
+
+            case MI_SHOW_HIERARCHY:
+                editor.menuGrammar.showHierarchy();
                 break;
 
             case MI_INSERT_TEMPLATE:

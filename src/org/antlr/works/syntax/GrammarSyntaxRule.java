@@ -5,7 +5,7 @@ import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.EditorPersistentObject;
-import org.antlr.works.grammar.EditorGrammarError;
+import org.antlr.works.grammar.AWGrammarError;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -247,7 +247,7 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
     }
 
     public String getErrorMessageString(int index) {
-        EditorGrammarError error = (EditorGrammarError) errors.get(index);
+        AWGrammarError error = (AWGrammarError) errors.get(index);
         return error.message;
     }
 
@@ -255,7 +255,7 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
         StringBuffer message = new StringBuffer();
         message.append("<html>");
         for (Iterator iterator = errors.iterator(); iterator.hasNext();) {
-            EditorGrammarError error = (EditorGrammarError) iterator.next();
+            AWGrammarError error = (AWGrammarError) iterator.next();
             message.append(error.message);
             if(iterator.hasNext())
                 message.append("<br>");

@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
+import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.utils.Console;
@@ -108,6 +109,14 @@ public class EditorConsole implements EditorTab, Console {
 
     public synchronized void print(Exception e) {
         println(XJUtils.stackTrace(e));
+    }
+
+    public boolean hasExportableGView() {
+        return false;
+    }
+
+    public GView getExportableGView() {
+        return null;
     }
 
     public String getTabName() {

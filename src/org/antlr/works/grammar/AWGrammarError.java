@@ -34,7 +34,7 @@ package org.antlr.works.grammar;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditorGrammarError {
+public class AWGrammarError {
 
     public List paths = new ArrayList();
     public List pathsDisabled = new ArrayList();
@@ -42,7 +42,7 @@ public class EditorGrammarError {
     public int line;
     public String message;
 
-    public EditorGrammarError() {
+    public AWGrammarError() {
     }
 
     public void addPath(List path, boolean disabled) {

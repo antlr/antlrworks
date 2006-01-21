@@ -4,6 +4,7 @@ Version 1.0ea8 - 01/20/06
 - new project document: edit multiple grammar, Java and any other text files and build
   them automatically within ANTLRWorks
 - syntax coloring for generated Java code
+- rule hierarchy diagram (can be exported to EPS or bitmap file)
 
 - improved ANTLR usage by running ANTLR only when necessary
 - rules are now sorted in interpreter and debugger if they are sorted in the editor
@@ -16,11 +17,11 @@ Version 1.0ea8 - 01/20/06
 - improved selection of a identifier
 - improved word selection using the mouse: dragging the mouse without releasing the button
   now extends the selection word by word (as expected on Mac OS X)
+- improved decision DFA diagram using more precise B-splines
 
 - fixed a bug where some tokens were not properly colorized (cut and past the same token over itself)
 - fixed a bug where the file content was not properly parsed if modified outside ANTLRWorks
 - fixed a bug where the analysis indicator was colored improperly
-- fixed a bug in the coloring algorithm where some tokens would not be colored properly
 - fixed a bug where Go To Character would be off by one character
 - fixed a bug when reading the tokenVocab file (was missing the first character)
 - fixed a bug where ANTLR would not be able to read the tokenVocab file (missing path)

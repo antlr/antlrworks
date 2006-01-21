@@ -1,5 +1,7 @@
 package org.antlr.works.editor;
 
+import edu.usfca.xj.appkit.gview.GView;
+
 import java.awt.*;
 /*
 
@@ -33,6 +35,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface EditorTab {
+    public boolean hasExportableGView();
+    public GView getExportableGView();
     public String getTabName();
     public Component getTabComponent();
 }
