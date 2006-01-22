@@ -395,6 +395,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         makeBottomComponentVisible();
     }
 
+    public void selectConsoleTab() {
+        selectTab(console.getTabComponent());
+        makeBottomComponentVisible();
+    }
+
     public void addTab(EditorTab tab) {
         tabs.add(tab);
         tabbedPane.add(tab.getTabName(), tab.getTabComponent());
@@ -406,8 +411,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void selectTab(Component c) {
-        tabbedPane.setSelectedComponent(c);
-        refreshMainMenuBar();
+        if(tabbedPane.getSelectedComponent() != c) {
+            tabbedPane.setSelectedComponent(c);
+            refreshMainMenuBar();
+        }
     }
 
     public void makeBottomComponentVisible() {
@@ -417,9 +424,13 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void setBottomComponentVisible(boolean visible) {
-        if(visible)
+        if(visible) {
             upDownSplitPane.setDividerLocation(upDownSplitPane.getLastDividerLocation());
-        else {
+            // It may happen that the last divider location is already collapsed!
+            // In this case, we use the relative divider location.
+            if(!isBottomComponentVisible())
+                upDownSplitPane.setDividerLocation(0.6f);
+        } else {
             upDownSplitPane.setDividerLocation(1.0f);
         }
     }

@@ -243,6 +243,10 @@ public class EngineGrammar {
         try {
             ErrorListener.shared().clear();
             getANTLRGrammar().createLookaheadDFAs();
+            if(getType() == GrammarSyntaxName.COMBINED) {
+                // If the grammar is combined, analyze also the lexer                
+                getLexerGrammar().createLookaheadDFAs();
+            }
             buildNonDeterministicErrors();
         } catch(Exception e) {
             editor.console.print(e);

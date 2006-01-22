@@ -1,7 +1,6 @@
 
 * Prio 1
-- pop-up the console after check for grammar if errors
-- check for grammars should also run the lexer grammar
+- build and debug: errors in compiler shows up in the output text zone
 - GUI to ignore some tokens in the interpreter
 - colorize the $foo in action
 - test on Windows/Linux

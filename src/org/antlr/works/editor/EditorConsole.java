@@ -105,6 +105,8 @@ public class EditorConsole implements EditorTab, Console {
         textArea.setText(textArea.getText()+t+"\n");
         textArea.setCaretPosition(textArea.getText().length());
         System.out.println(s);
+
+        editor.selectConsoleTab();
     }
 
     public synchronized void print(Exception e) {

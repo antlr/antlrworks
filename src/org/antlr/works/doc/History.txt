@@ -19,7 +19,9 @@ Version 1.0ea8 - 01/20/06
   now extends the selection word by word (as expected on Mac OS X)
 - improved decision DFA diagram using more precise B-splines
 - added an arrow at the end of each syntax diagram
-
+- check grammar command now also analyze the lexer part of a combined grammar
+- popup the console tab if anything is reported in the console
+ 
 - fixed a bug where some tokens were not properly colorized (cut and past the same token over itself)
 - fixed a bug where the file content was not properly parsed if modified outside ANTLRWorks
 - fixed a bug where the analysis indicator was colored improperly
