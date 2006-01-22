@@ -176,11 +176,20 @@ public class EditorInterpreter implements Runnable, EditorTab {
 
         ErrorManager.setErrorListener(ErrorListener.shared());
 
-        editor.getGrammar().createGrammars();
-        editor.getGrammar().analyze();
+        try {
+            editor.getGrammar().createGrammars();
+            editor.getGrammar().analyze();
+        } catch(Exception e) {
+            editor.console.print(e);
+            runEnded();
+            return;
+        }
 
         process();
+        runEnded();
+    }
 
+    public void runEnded() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 progress.close();
@@ -193,8 +202,15 @@ public class EditorInterpreter implements Runnable, EditorTab {
 
         CharStream input = new ANTLRStringStream(textPane.getText());
 
-        Grammar parser = editor.getGrammar().getParserGrammar();
-        Grammar lexer = editor.getGrammar().getLexerGrammar();
+        Grammar parser;
+        Grammar lexer;
+        try {
+            parser = editor.getGrammar().getParserGrammar();
+            lexer = editor.getGrammar().getLexerGrammar();
+        } catch (Exception e) {
+            editor.console.print(e);
+            return;
+        }
 
         Interpreter lexEngine = new Interpreter(lexer, input);
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);

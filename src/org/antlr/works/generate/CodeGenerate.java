@@ -43,7 +43,6 @@ import org.antlr.works.utils.ErrorListener;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 
 public class CodeGenerate implements Runnable {
 
@@ -77,7 +76,12 @@ public class CodeGenerate implements Runnable {
     }
 
     public String getGrammarLanguage() {
-        return (String)provider.getGrammar().getParserGrammar().getOption("language");
+        try {
+            return (String)provider.getGrammar().getParserGrammar().getOption("language");
+        } catch (Exception e) {
+            provider.getConsole().print(e);
+        }
+        return null;
     }
 
     public String getGrammarName() {
@@ -106,7 +110,7 @@ public class CodeGenerate implements Runnable {
         return !errorListener.hasErrors();
     }
 
-    public String getGeneratedClassName(boolean lexer) {
+    public String getGeneratedClassName(boolean lexer) throws Exception {
         String name;
         if(lexer)
             name = provider.getGrammar().getParserGrammar().name+"Lexer";
@@ -115,12 +119,17 @@ public class CodeGenerate implements Runnable {
         return name;
     }
 
-    public String getGeneratedTextFileName(boolean lexer) {
+    public String getGeneratedTextFileName(boolean lexer) throws Exception {
         return XJUtils.concatPath(getOutputPath(), getGeneratedClassName(lexer)+".java");
     }
 
     public boolean isGeneratedTextFileExisting(boolean lexer) {
-        return new File(getGeneratedTextFileName(lexer)).exists();
+        try {
+            return new File(getGeneratedTextFileName(lexer)).exists();
+        } catch (Exception e) {
+            provider.getConsole().print(e);
+        }
+        return false;
     }
 
     public boolean supportsLexer() {
@@ -136,7 +145,7 @@ public class CodeGenerate implements Runnable {
     public String getGeneratedText(boolean lexer) {
         try {
             return XJUtils.getStringFromFile(getGeneratedTextFileName(lexer));
-        } catch (IOException e) {
+        } catch (Exception e) {
             return null;
         }
     }

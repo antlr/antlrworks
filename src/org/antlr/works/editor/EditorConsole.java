@@ -101,16 +101,25 @@ public class EditorConsole implements EditorTab, Console {
     }
 
     public synchronized void println(String s) {
+        println(s, true);
+    }
+
+    public synchronized void println(String s, boolean notifyUser) {
         String t = "["+dateFormat.format(new Date())+"] "+s;
         textArea.setText(textArea.getText()+t+"\n");
         textArea.setCaretPosition(textArea.getText().length());
         System.out.println(s);
 
-        editor.selectConsoleTab();
+        if(notifyUser)
+            editor.selectConsoleTab();
     }
 
     public synchronized void print(Exception e) {
-        println(XJUtils.stackTrace(e));
+        print(e, true);
+    }
+
+    public void print(Exception e, boolean notifyUser) {
+        println(XJUtils.stackTrace(e), notifyUser);
     }
 
     public boolean hasExportableGView() {

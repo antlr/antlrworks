@@ -152,22 +152,22 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     public void run() {
         resetErrors();
 
-        prepare();
+        if(prepare()) {
+            if(buildAndDebug)
+                generateAndCompileGrammar();
 
-        if(buildAndDebug)
-            generateAndCompileGrammar();
+            if(!cancelled())
+                askUserForInputText();
 
-        if(!cancelled())
-            askUserForInputText();
+            if(!cancelled())
+                generateAndCompileGlueCode();
 
-        if(!cancelled())
-            generateAndCompileGlueCode();
+            if(!cancelled())
+                generateInputText();
 
-        if(!cancelled())
-            generateInputText();
-
-        if(!cancelled())
-            launchRemoteParser();
+            if(!cancelled())
+                launchRemoteParser();
+        }
 
         if(hasErrors())
             notifyErrors();
@@ -238,18 +238,26 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         });
     }
 
-    protected void prepare() {
-        setOutputPath(AWPrefs.getOutputPath());
-        setStartRule(AWPrefs.getStartSymbol());
+    protected boolean prepare() {
+        try {
 
-        fileParser = codeGenerator.getGeneratedTextFileName(false);
-        fileLexer = codeGenerator.getGeneratedTextFileName(true);
+            setOutputPath(AWPrefs.getOutputPath());
+            setStartRule(AWPrefs.getStartSymbol());
 
-        fileRemoteParser = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+".java");
-        fileRemoteParserInputText = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
+            fileParser = codeGenerator.getGeneratedTextFileName(false);
+            fileLexer = codeGenerator.getGeneratedTextFileName(true);
 
-        outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
-        new File(outputFileDir).mkdirs();
+            fileRemoteParser = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+".java");
+            fileRemoteParserInputText = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
+
+            outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
+            new File(outputFileDir).mkdirs();
+        } catch(Exception e) {
+            debugger.editor.console.print(e);
+            reportError("Error while preparing the grammar:\n"+e.toString());
+            return false;
+        }
+        return true;
     }
 
     protected void generateAndCompileGrammar() {
@@ -338,8 +346,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     public boolean isRequiredFilesExisting() {
-        prepare();
-        return new File(fileParser).exists() && new File(fileLexer).exists() && new File(fileRemoteParser).exists()
+        return prepare() && new File(fileParser).exists() && new File(fileLexer).exists() && new File(fileRemoteParser).exists()
                 && new File(fileRemoteParserInputText).exists();
     }
 

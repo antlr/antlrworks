@@ -254,6 +254,7 @@ public class GPanel implements XJNotificationObserver {
                 JCheckBox button = (JCheckBox)event.getSource();
                 GGraphGroup gg = (GGraphGroup)view.getCurrentGraph();
                 gg.pathGroup.setPathVisible(Integer.parseInt(button.getName()), button.isSelected());
+                gg.pathGroup.makeSureCurrentPathIsVisible();
                 view.cacheRerender();
                 view.repaint();
             }

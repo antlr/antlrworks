@@ -76,17 +76,17 @@ public class EngineGrammar {
         return grammarDirty || grammarAnalyzeDirty;
     }
 
-    public Grammar getParserGrammar() {
+    public Grammar getParserGrammar() throws Exception {
         createGrammars();
         return parserGrammar;
     }
 
-    public Grammar getLexerGrammar() {
+    public Grammar getLexerGrammar() throws Exception {
         createGrammars();
         return lexerGrammar;
     }
 
-    public NFAState getRuleStartState(String name) {
+    public NFAState getRuleStartState(String name) throws Exception {
         Grammar g;
 
         if(ATEToken.isLexerName(name))
@@ -97,7 +97,7 @@ public class EngineGrammar {
         return g == null ? null:g.getRuleStartState(name);
     }
 
-    public Grammar getGrammarForRule(String name) {
+    public Grammar getGrammarForRule(String name) throws Exception {
         if(ATEToken.isLexerName(name))
             return getLexerGrammar();
         else
@@ -157,28 +157,25 @@ public class EngineGrammar {
             return name.getType();
     }
 
-    public void createGrammars() {
+    public void createGrammars() throws Exception {
         if(!grammarDirty)
             return;
 
         ErrorManager.setErrorListener(ErrorListener.shared());
 
-        try {
-            switch(getType()) {
-                case GrammarSyntaxName.COMBINED:
-                    createCombinedGrammar();
-                    break;
-                case GrammarSyntaxName.TREEPARSER:
-                case GrammarSyntaxName.PARSER:
-                    createParserGrammar();
-                    break;
-                case GrammarSyntaxName.LEXER:
-                    createLexerGrammar();
-                    break;
-            }
-        } catch(Exception e) {
-            editor.console.print(e);
+        switch(getType()) {
+            case GrammarSyntaxName.COMBINED:
+                createCombinedGrammar();
+                break;
+            case GrammarSyntaxName.TREEPARSER:
+            case GrammarSyntaxName.PARSER:
+                createParserGrammar();
+                break;
+            case GrammarSyntaxName.LEXER:
+                createLexerGrammar();
+                break;
         }
+
         grammarDirty = false;
     }
 
@@ -195,13 +192,13 @@ public class EngineGrammar {
         return g;
     }
 
-    protected void createCombinedGrammar() throws TokenStreamException, RecognitionException {
+    protected void createCombinedGrammar() throws Exception {
         parserGrammar = createNewGrammar(getFileName(), editor.getText());
         parserGrammar.createNFAs();
         lexerGrammar = createLexerGrammarFromCombinedGrammar(parserGrammar);
     }
 
-    protected Grammar createLexerGrammarFromCombinedGrammar(Grammar grammar) {
+    protected Grammar createLexerGrammarFromCombinedGrammar(Grammar grammar) throws Exception {
         String lexerGrammarStr = grammar.getLexerGrammar();
         if(lexerGrammarStr == null)
             return null;
@@ -210,12 +207,10 @@ public class EngineGrammar {
         lexerGrammar.setTool(getANTLRTool());
         lexerGrammar.setFileName("<internally-generated-lexer>");
         lexerGrammar.importTokenVocabulary(grammar);
-        try {
-            lexerGrammar.setGrammarContent(lexerGrammarStr);
-            lexerGrammar.createNFAs();
-        } catch (Exception e) {
-            editor.console.print(e);
-        }
+
+        lexerGrammar.setGrammarContent(lexerGrammarStr);
+        lexerGrammar.createNFAs();
+
         return lexerGrammar;
     }
 
@@ -229,7 +224,7 @@ public class EngineGrammar {
         lexerGrammar.createNFAs();
     }
 
-    public void analyze() {
+    public void analyze() throws Exception {
         createGrammars();
 
         if(!grammarAnalyzeDirty)
@@ -244,14 +239,13 @@ public class EngineGrammar {
             ErrorListener.shared().clear();
             getANTLRGrammar().createLookaheadDFAs();
             if(getType() == GrammarSyntaxName.COMBINED) {
-                // If the grammar is combined, analyze also the lexer                
+                // If the grammar is combined, analyze also the lexer
                 getLexerGrammar().createLookaheadDFAs();
             }
             buildNonDeterministicErrors();
-        } catch(Exception e) {
-            editor.console.print(e);
+        } finally {
+            DecisionProbe.verbose = oldVerbose;
         }
-        DecisionProbe.verbose = oldVerbose;
         grammarAnalyzeDirty = false;
     }
 

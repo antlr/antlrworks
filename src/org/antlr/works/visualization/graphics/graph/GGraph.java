@@ -129,8 +129,9 @@ public class GGraph extends GGraphAbstract {
     public GNode findNodeForStateNumber(int stateNumber) {
         for (Iterator iterator = nodes.iterator(); iterator.hasNext();) {
             GNode node = (GNode) iterator.next();
-            if(node.state.containsStateNumber(stateNumber))
+            if(node.state.containsStateNumber(stateNumber)) {
                 return node;
+            }
         }
         return null;
     }

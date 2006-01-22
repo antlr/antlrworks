@@ -177,16 +177,26 @@ public class GGraphGroup extends GGraphAbstract {
                     element.setRuleLink(true);
                     elements.add(element);
                 } else {
-                    elements.add(new GPathElement(node.getLink(node.state.getFirstTransition())));
+                    FATransition tr = node.state.getTransitionToExternalStateRule(nextState.getEnclosingRule());
+                    if(tr == null) {
+                        System.err.println("[GGraphGroup] No transition to external state "+nextState.stateNumber+"["+nextState.getEnclosingRule()+"] - using first transition by default");
+                        tr = node.state.getFirstTransition();
+                    }
+                    GLink test = node.getLink(tr);
 
-                    GNode nextNode = findNodeForStateNumber(node.state.getFirstTransition().target.stateNumber);
+                    elements.add(new GPathElement(node.getLink(tr)));
+
+                    GNode nextNode = findNodeForStateNumber(tr.target.stateNumber);
                     elements.add(new GPathElement(nextNode));
 
-                    GLink link = nextNode.getLink(nextNode.state.getFirstTransition());
-                    elements.add(new GPathElement(link));
+                    // 1.0ea8: remove this link so the external node is not highlighted
+                    //GLink link = nextNode.getLink(nextNode.state.getFirstTransition());
+                    //elements.add(new GPathElement(link));
 
                     // Create the link to the other rule
-                    GPathElement element = new GPathElement(link, findNodeForStateNumber(nextState.stateNumber));
+                    // 1.0ea8: make the external link start *before* the external node
+                    //GPathElement element = new GPathElement(link, findNodeForStateNumber(nextState.stateNumber));
+                    GPathElement element = new GPathElement(test, findNodeForStateNumber(nextState.stateNumber));
                     element.setRuleLink(true);
                     elements.add(element);
                 }

@@ -1,5 +1,11 @@
 
 * Prio 1
+- fix the bug where the second path needs to be select twice (ambiguities)
+- syntax diagram are cropped at the bottom
+
+- do not popup console for syntax diagram exception
+- ask to show lexer tokens in hierarchy if from parser
+
 - build and debug: errors in compiler shows up in the output text zone
 - GUI to ignore some tokens in the interpreter
 - colorize the $foo in action

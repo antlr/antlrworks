@@ -130,6 +130,27 @@ public class FAState {
         return null;
     }
 
+    /** Find the transition whose target contains a transition with a label
+     * containing the name of the external rule
+     */
+
+    public FATransition getTransitionToExternalStateRule(String externalRule) {
+        for (Iterator iterator = transitions.iterator(); iterator.hasNext();) {
+            FATransition tr = (FATransition) iterator.next();
+            if(tr.target == null)
+                continue;
+
+            // Lookup the target's transitions label to see if one of them match the name
+            // of the external rule
+            for (Iterator iterator1 = tr.target.transitions.iterator(); iterator1.hasNext();) {
+                FATransition targetTr = (FATransition) iterator1.next();
+                if(targetTr.label != null && targetTr.label.equals(externalRule))
+                    return tr;
+            }
+        }
+        return null;
+    }
+
     /** This method returns true if the state is an alternative. "loop" transitions are skipped.
      *
      */

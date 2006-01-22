@@ -402,10 +402,8 @@ public class GView extends JPanel implements XJMenuItemDelegate {
     public class DefaultMouseListener extends MouseAdapter {
 
         public void mousePressed(MouseEvent e) {
-            if(!isFocusOwner()) {
+            if(!isFocusOwner())
                 requestFocus();
-                return;
-            }
 
             setCacheEnabled(false);
             prev_offset_x = offset_x;

@@ -32,5 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public interface Console {
     public void println(String s);
+    public void println(String s, boolean notifyUser);    
+
     public void print(Exception e);
+    public void print(Exception e, boolean notifyUser);
 }

@@ -114,21 +114,26 @@ public class VisualDrawing extends ATEThread {
             visual.getGrammar().createGrammars();
         } catch (Exception e) {
             // Ignore
-            visual.editor.console.print(e);
+            visual.editor.console.print(e, false);
         } finally {
             // Flush all caches in cache because the grammar has changed
             clearCacheGraphs();
         }
     }
 
-    private void threadProcessRule() {
+    private void threadProcessRule() throws Exception {
         if(threadRule == null)
             return;
 
         String error = null;
 
         if(visual.getGrammar().hasGrammar()) {
-            NFAState startState = visual.getGrammar().getRuleStartState(threadRule.name);
+            NFAState startState = null;
+            try {
+                startState = visual.getGrammar().getRuleStartState(threadRule.name);
+            } catch (Exception e) {
+                visual.editor.console.print(e, false);
+            }
             if(startState == null)
                 error = "Cannot display rule \"" + threadRule + "\" because start state not found";
         } else {
@@ -137,7 +142,7 @@ public class VisualDrawing extends ATEThread {
 
         if(error != null) {
             visual.setPlaceholder(error);
-            visual.getConsole().println(error);
+            visual.getConsole().println(error, false);
             return;
         }
 
@@ -150,7 +155,7 @@ public class VisualDrawing extends ATEThread {
         refresh();
     }
 
-    protected synchronized void createGraphsForRule(GrammarSyntaxRule rule) {
+    protected synchronized void createGraphsForRule(GrammarSyntaxRule rule) throws Exception {
         List graphs = (List)cacheGraphs.get(rule);
         if(graphs == null) {
             graphs = factory.buildGraphsForRule(visual.getGrammar(), rule.name, rule.errors);
@@ -160,10 +165,10 @@ public class VisualDrawing extends ATEThread {
     }
 
     public void threadReportException(Exception e) {
-        visual.getConsole().print(e);
+        visual.getConsole().print(e, false);
     }
 
-    public void threadRun() {
+    public void threadRun() throws Exception {
         if(threadShouldProcess()) {
             threadPrepareProcess();
             threadProcessText();

@@ -97,6 +97,19 @@ public class GPathGroup extends GObject implements GTimerDelegate {
         return getPath(index).isVisible();
     }
 
+    public void makeSureCurrentPathIsVisible() {
+        if(currentPath().isVisible())
+            return;
+
+        for (Iterator iterator = graphicPaths.iterator(); iterator.hasNext();) {
+            GPath path = (GPath) iterator.next();
+            if(path.isVisible()) {
+                setSelectedPath(graphicPaths.indexOf(path));
+                break;
+            }
+        }
+    }
+
     public void selectPreviousPath() {
         setSelectedPath(selectedPathIndex-1);
     }
@@ -153,6 +166,7 @@ public class GPathGroup extends GObject implements GTimerDelegate {
             }
         }
 
+        System.out.println(selectPath);
         setSelectedPath(graphicPaths.indexOf(selectPath));
         context.repaint();
     }

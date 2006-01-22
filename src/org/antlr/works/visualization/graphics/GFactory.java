@@ -57,14 +57,14 @@ public class GFactory {
         optimize = !optimize;
     }
 
-    public List buildGraphsForRule(EngineGrammar grammar, String rule, List errors) {
+    public List buildGraphsForRule(EngineGrammar grammar, String rule, List errors) throws Exception {
         if(errors == null || errors.size() == 0)
             return buildGraphsForRule(grammar, rule);
         else
             return buildGraphsForErrors(grammar, rule, errors);
     }
 
-    public List buildGraphsForRule(EngineGrammar grammar, String rule) {
+    public List buildGraphsForRule(EngineGrammar grammar, String rule) throws Exception {
         NFAState startState = grammar.getRuleStartState(rule);
         if(startState == null)
             return null;
@@ -75,11 +75,11 @@ public class GFactory {
         return Collections.singletonList(graph);
     }
 
-    public List buildGraphsForErrors(EngineGrammar grammar, String rule) {
+    public List buildGraphsForErrors(EngineGrammar grammar, String rule) throws Exception {
         return buildGraphsForErrors(grammar, rule, grammar.getErrors());
     }
 
-    public List buildGraphsForErrors(EngineGrammar grammar, String rule, List errors) {
+    public List buildGraphsForErrors(EngineGrammar grammar, String rule, List errors) throws Exception {
         List graphs = new ArrayList();
 
         Iterator iterator = errors.iterator();
@@ -106,8 +106,8 @@ public class GFactory {
         }
 
         // Add only graphs that are referenced by at least one error path.
-        // For example, for the statement rule of the java.g grammar produces
-        // states that are not existing in the graphs (they are after the accepted state
+        // For example, the statement rule of the java.g grammar produces
+        // states that do not exist in the graph (they are after the accepted state
         // and are ignored by the FAFactory)
 
         GGraphGroup gg = new GGraphGroup();
@@ -136,7 +136,7 @@ public class GFactory {
 
         if(error.paths.size()>0)
             gg.pathGroup.setPathVisible(0, true);
-        
+
         return gg;
     }
 

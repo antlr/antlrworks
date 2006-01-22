@@ -55,7 +55,6 @@ import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileWriter;
-import java.io.IOException;
 
 public class Visual implements EditorTab {
 
@@ -172,13 +171,13 @@ public class Visual implements EditorTab {
         if(dotFile == null)
             return;
 
-        DOTGenerator dotgen = new DOTGenerator(getGrammar().getGrammarForRule(rule.name));
-        String dot = dotgen.getDOT(getGrammar().getRuleStartState(rule.name));
         try {
+            DOTGenerator dotgen = new DOTGenerator(getGrammar().getGrammarForRule(rule.name));
+            String dot = dotgen.getDOT(getGrammar().getRuleStartState(rule.name));
             FileWriter writer = new FileWriter(dotFile);
             writer.write(dot);
             writer.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             XJAlert.display(editor.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
         }
 
@@ -190,12 +189,12 @@ public class Visual implements EditorTab {
         if(dotFile == null)
             return;
 
-        FAState state = new FAFactory(getGrammar().getGrammarForRule(rule.name)).buildNFA(getGrammar().getRuleStartState(rule.name), true);
-        if(state == null)
-            return;
-
-        DotGenerator jdot = new DotGenerator(state);
         try {
+            FAState state = new FAFactory(getGrammar().getGrammarForRule(rule.name)).buildNFA(getGrammar().getRuleStartState(rule.name), true);
+            if(state == null)
+                return;
+
+            DotGenerator jdot = new DotGenerator(state);
             jdot.writeToFile(dotFile);
         } catch (Exception e) {
             XJAlert.display(editor.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
@@ -209,12 +208,12 @@ public class Visual implements EditorTab {
         if(dotFile == null)
             return;
 
-        FAState state = new FAFactory(getGrammar().getGrammarForRule(rule.name)).buildNFA(getGrammar().getRuleStartState(rule.name), false);
-        if(state == null)
-            return;
-
-        DotGenerator jdot = new DotGenerator(state);
         try {
+            FAState state = new FAFactory(getGrammar().getGrammarForRule(rule.name)).buildNFA(getGrammar().getRuleStartState(rule.name), false);
+            if(state == null)
+                return;
+
+            DotGenerator jdot = new DotGenerator(state);
             jdot.writeToFile(dotFile);
         } catch (Exception e) {
             XJAlert.display(editor.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);

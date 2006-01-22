@@ -504,7 +504,12 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
     }
 
     public boolean debuggerLaunchGrammar() {
-        getGrammar().createGrammars();
+        try {
+            getGrammar().createGrammars();
+        } catch (Exception e) {
+            editor.getConsole().print(e);
+            return false;
+        }
         return true;
     }
 

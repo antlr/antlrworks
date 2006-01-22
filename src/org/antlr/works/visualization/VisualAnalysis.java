@@ -68,7 +68,7 @@ public class VisualAnalysis extends ATEThread {
             if(!cancel())
                 threadMarkRulesWithWarningsOrErrors();
         } catch(Exception e) {
-            visual.editor.console.print(e);
+            visual.editor.console.print(e, false);
         } finally {
             if(!cancel()) {
                 visual.panel.createPanel();
@@ -78,10 +78,9 @@ public class VisualAnalysis extends ATEThread {
         }
     }
 
-    private void threadMarkRulesWithWarningsOrErrors() {
+    private void threadMarkRulesWithWarningsOrErrors() throws Exception {
         // Clear graphic cache because we have to redraw each rule again
         visual.drawing.clearCacheGraphs();
-
         for (Iterator iterator = visual.getParserEngine().getRules().iterator(); iterator.hasNext();) {
             GrammarSyntaxRule rule = (GrammarSyntaxRule)iterator.next();
             updateRuleWithErrors(rule, threadFetchErrorsForRule(rule));
@@ -89,7 +88,7 @@ public class VisualAnalysis extends ATEThread {
         visual.delegate.visualizationDidMarkRules(visual);
     }
 
-    private void updateRuleWithErrors(GrammarSyntaxRule rule, List errors) {
+    private void updateRuleWithErrors(GrammarSyntaxRule rule, List errors) throws Exception {
         rule.setErrors(errors);
         visual.drawing.createGraphsForRule(rule);
     }
@@ -105,7 +104,7 @@ public class VisualAnalysis extends ATEThread {
     }
 
     public void threadReportException(Exception e) {
-        visual.getConsole().print(e);
+        visual.getConsole().print(e, false);
     }
 
     public void threadRun() {
