@@ -53,6 +53,10 @@ public class DecisionDFA extends GrammarDOTTab {
         super(editor, delegate);
     }
 
+    protected boolean willLaunch() {
+        return checkForCurrentRule();
+    }
+
     public void willRun() {
         ATEToken t = findClosestDecisionToken();
         if(t == null) {
@@ -89,9 +93,6 @@ public class DecisionDFA extends GrammarDOTTab {
         Grammar g;
 
         GrammarSyntaxRule rule = editor.getCurrentRule();
-        if(rule == null)
-            throw new Exception("No rule is selected");
-
         if(rule.lexer)
             g = editor.getGrammar().getLexerGrammar();
         else

@@ -62,17 +62,15 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     public void showDecisionDFA() {
-        showProgress("Generating...");
         DecisionDFA decision = new DecisionDFA(editor, this);
-        if(!decision.launch())
-            hideProgress();
+        if(decision.launch())
+            showProgress("Generating...");
     }
 
     public void showHierarchy() {
-        showProgress("Generating...");
         RulesHierarchy hierarchy = new RulesHierarchy(editor, this);
-        if(!hierarchy.launch())
-            hideProgress();
+        if(hierarchy.launch())
+            showProgress("Generating...");
     }
 
     public void grammarDOTTabDidComplete(GrammarDOTTab tab, String error) {

@@ -1,6 +1,9 @@
 package org.antlr.works.grammar;
 
+import edu.usfca.xj.appkit.utils.XJAlert;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.syntax.GrammarSyntaxName;
 import org.antlr.works.syntax.GrammarSyntaxReference;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 
@@ -49,8 +52,30 @@ public class RulesHierarchy extends GrammarDOTTab {
     protected List visitedRefs = new ArrayList();
     protected StringBuffer hierarchy;
 
+    protected boolean includeLexerRefs;
+
     public RulesHierarchy(CEditorGrammar editor, GrammarDOTTabDelegate delegate) {
         super(editor, delegate);
+    }
+
+    protected boolean willLaunch() {
+
+        if(!checkForCurrentRule())
+            return false;
+
+        GrammarSyntaxRule rule = editor.getCurrentRule();
+        List refs = editor.rules.getReferencesInRule(rule);
+        if(refs == null || refs.isEmpty()) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "The selected rule doesn't contain any references");
+            return false;
+        }
+
+        includeLexerRefs = true;
+        if(!rule.lexer && editor.getGrammar().getType() == GrammarSyntaxName.COMBINED) {
+            includeLexerRefs = XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Rule Hierarchy", "Do you want to include lexer references ?") == XJAlert.YES;
+        }
+
+        return true;
     }
 
     public void willRun() {
@@ -58,12 +83,6 @@ public class RulesHierarchy extends GrammarDOTTab {
 
     protected void generateDOTFile() throws Exception {
         GrammarSyntaxRule rule = editor.getCurrentRule();
-        if(rule == null)
-            throw new Exception("No rule is selected");
-
-        List refs = editor.rules.getReferencesInRule(rule);
-        if(refs == null || refs.isEmpty())
-            throw new Exception("The selected rule doesn't contain any references");
 
         visitedRules.clear();
         visitedRefs.clear();
@@ -94,6 +113,9 @@ public class RulesHierarchy extends GrammarDOTTab {
             String visitedRef = rule.name+" -> "+refRuleName;
 
             if(visitedRefs.contains(visitedRef))
+                continue;
+
+            if(ATEToken.isLexerName(reference.token.getAttribute()) && !includeLexerRefs)
                 continue;
 
             visitedRefs.add(visitedRef);

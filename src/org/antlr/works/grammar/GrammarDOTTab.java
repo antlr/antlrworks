@@ -86,11 +86,27 @@ public abstract class GrammarDOTTab implements Runnable, EditorTab {
             return false;
         }
 
-        new Thread(this).start();
+        if(willLaunch()) {
+            new Thread(this).start();
+            return true;
+        } else
+            return false;
+    }
+
+    protected boolean willLaunch() {
         return true;
     }
 
-    private void createInterface(GElement graph) {
+    protected boolean checkForCurrentRule() {
+        GrammarSyntaxRule rule = editor.getCurrentRule();
+        if(rule == null) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "The cursor must be inside a rule");
+            return false;
+        }
+        return true;
+    }
+    
+    protected void createInterface(GElement graph) {
         panel = new JPanel(new BorderLayout());
 
         view = new GView();
@@ -107,7 +123,7 @@ public abstract class GrammarDOTTab implements Runnable, EditorTab {
         panel.add(new JScrollPane(view), BorderLayout.CENTER);
     }
 
-    private JSlider createZoomSlider() {
+    protected JSlider createZoomSlider() {
         JSlider slider = new JSlider();
         slider.setFocusable(false);
         slider.setMinimum(1);
