@@ -4,6 +4,7 @@ import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.swing.XJTree;
+import edu.usfca.xj.appkit.text.XJURLLabel;
 import edu.usfca.xj.appkit.undo.XJUndo;
 import edu.usfca.xj.appkit.undo.XJUndoDelegate;
 import edu.usfca.xj.appkit.utils.XJAlert;
@@ -84,7 +85,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         XJUndoDelegate
 {
 
-        /* Completion */
+    /* Completion */
 
     public AutoCompletionMenu autoCompletionMenu;
     public RuleTemplates ruleTemplates;
@@ -146,6 +147,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     protected JLabel infoLabel;
     protected JLabel cursorLabel;
     protected JLabel scmLabel;
+    protected ErrorStatus errorStatus;
 
     protected JSplitPane rulesTextSplitPane;
     protected JSplitPane upDownSplitPane;
@@ -322,6 +324,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         infoLabel = new JLabel();
         cursorLabel = new JLabel();
         scmLabel = new JLabel();
+        errorStatus = new ErrorStatus();
 
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(infoLabel);
@@ -329,6 +332,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         statusBar.add(createSeparator());
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(cursorLabel);
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(createSeparator());
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(errorStatus.getPanel());
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(createSeparator());
         statusBar.add(Box.createHorizontalStrut(5));
@@ -573,12 +580,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public void loadText(String text) {
         disableTextPane(true);
         try {
-            getTextPane().setText(text);
-            getTextPane().setCaretPosition(0);
-            getTextPane().moveCaretPosition(0);
-            getTextPane().getCaret().setSelectionVisible(true);
+            textEditor.loadText(text);
             grammarChanged();
-            textEditor.parse();
         } catch(Exception e) {
             e.printStackTrace();
         } finally {
@@ -746,7 +749,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     /** Update methods
-    */
+     */
 
     public void updateVisualization(boolean immediate) {
         if(visual.isEnable()) {
@@ -860,6 +863,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         grammar.makeDirty();
     }
 
+    public void consolePrint(String s) {
+        errorStatus.showError();
+    }
+
     public void notificationPrefsChanged() {
         applyPrefs();
         applyFont();
@@ -896,7 +903,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public void componentIsSelected() {
         getTextPane().requestFocus();
     }
-    
+
     public void componentDocumentContentChanged() {
         // Called when the document associated file has changed on the disk
         int oldCursorPosition = getCaretPosition();
@@ -1088,6 +1095,46 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         data.put(KEY_SPLITPANE_A, new Integer(rulesTextSplitPane.getDividerLocation()));
         data.put(KEY_SPLITPANE_B, new Integer(upDownSplitPane.getDividerLocation()));
         return data;
+    }
+
+    protected class ErrorStatus {
+
+        public Box box;
+        public XJURLLabel label;
+
+        public ErrorStatus() {
+            box = Box.createHorizontalBox();
+
+            label = new XJURLLabel(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    selectConsoleTab();
+                    clearError();
+                }
+            });
+            label.setUnvisitedURLColor(Color.red);
+            label.setVisitedURLColor(Color.red);
+
+            clearError();
+        }
+
+        public void showError() {
+            if(label.getText().length() == 0) {
+                label.setText("Errors reported in console");
+                box.removeAll();
+                box.add(label);
+                box.revalidate();
+            }
+        }
+
+        public void clearError() {
+            label.setText("");
+            box.removeAll();
+            box.add(Box.createHorizontalStrut(20));
+        }
+
+        public JComponent getPanel() {
+            return box;
+        }
     }
 
     protected class TabbedPaneMouseListener extends MouseAdapter {

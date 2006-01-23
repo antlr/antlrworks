@@ -42,6 +42,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EditorConsole implements EditorTab, Console {
 
@@ -51,6 +53,7 @@ public class EditorConsole implements EditorTab, Console {
     protected JTextArea textArea;
 
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+    protected Map modeByThread = new HashMap();
 
     protected static EditorConsole current = null;
 
@@ -81,6 +84,18 @@ public class EditorConsole implements EditorTab, Console {
         panel.add(box, BorderLayout.SOUTH);
     }
 
+    public void setMode(int mode) {
+        modeByThread.put(Thread.currentThread(), new Integer(mode));
+    }
+
+    public int getMode() {
+        Integer mode = (Integer)modeByThread.get(Thread.currentThread());
+        if(mode == null)
+            return Console.MODE_VERBOSE;
+        else
+            return mode.intValue();
+    }
+
     public void makeCurrent() {
         EditorConsole.setCurrent(this);
     }
@@ -101,25 +116,17 @@ public class EditorConsole implements EditorTab, Console {
     }
 
     public synchronized void println(String s) {
-        println(s, true);
-    }
-
-    public synchronized void println(String s, boolean notifyUser) {
         String t = "["+dateFormat.format(new Date())+"] "+s;
         textArea.setText(textArea.getText()+t+"\n");
         textArea.setCaretPosition(textArea.getText().length());
         System.out.println(s);
 
-        if(notifyUser)
-            editor.selectConsoleTab();
+        if(getMode() == Console.MODE_VERBOSE)
+            editor.consolePrint(s);
     }
 
     public synchronized void print(Exception e) {
-        print(e, true);
-    }
-
-    public void print(Exception e, boolean notifyUser) {
-        println(XJUtils.stackTrace(e), notifyUser);
+        println(XJUtils.stackTrace(e));
     }
 
     public boolean hasExportableGView() {

@@ -115,7 +115,6 @@ public class ErrorListener implements ANTLRErrorListener {
     }
 
     public void print(Message msg) {
-        // @todo do something for that later
         boolean previousVerbose = DecisionProbe.verbose;
         DecisionProbe.verbose = false;
         try {

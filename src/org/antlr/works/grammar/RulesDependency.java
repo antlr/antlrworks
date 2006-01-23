@@ -43,18 +43,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class RulesHierarchy extends GrammarDOTTab {
+public class RulesDependency extends GrammarDOTTab {
 
     protected int line;
     protected int column;
 
     protected List visitedRules = new ArrayList();
     protected List visitedRefs = new ArrayList();
-    protected StringBuffer hierarchy;
+    protected StringBuffer dependency;
 
     protected boolean includeLexerRefs;
 
-    public RulesHierarchy(CEditorGrammar editor, GrammarDOTTabDelegate delegate) {
+    public RulesDependency(CEditorGrammar editor, GrammarDOTTabDelegate delegate) {
         super(editor, delegate);
     }
 
@@ -72,7 +72,7 @@ public class RulesHierarchy extends GrammarDOTTab {
 
         includeLexerRefs = true;
         if(!rule.lexer && editor.getGrammar().getType() == GrammarSyntaxName.COMBINED) {
-            includeLexerRefs = XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Rule Hierarchy", "Do you want to include lexer references ?") == XJAlert.YES;
+            includeLexerRefs = XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Rule Dependency Graph", "Do you want to include lexer references ?") == XJAlert.YES;
         }
 
         return true;
@@ -87,13 +87,13 @@ public class RulesHierarchy extends GrammarDOTTab {
         visitedRules.clear();
         visitedRefs.clear();
 
-        hierarchy = new StringBuffer();
-        hierarchy.append("digraph {\n");
+        dependency = new StringBuffer();
+        dependency.append("digraph {\n");
         buildGraph(rule);
-        hierarchy.append("}");
+        dependency.append("}");
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(tempInputFile));
-        bw.write(hierarchy.toString());
+        bw.write(dependency.toString());
         bw.close();
     }
 
@@ -120,8 +120,8 @@ public class RulesHierarchy extends GrammarDOTTab {
 
             visitedRefs.add(visitedRef);
 
-            hierarchy.append(visitedRef);
-            hierarchy.append(";\n");
+            dependency.append(visitedRef);
+            dependency.append(";\n");
 
             if(!visitedRules.contains(refRuleName))
                 buildGraph(editor.rules.getRuleWithName(refRuleName));
@@ -129,7 +129,7 @@ public class RulesHierarchy extends GrammarDOTTab {
     }
 
     public String getTabName() {
-        return "Hierarchy of \""+rule.name+"\"";
+        return "Dependency of \""+rule.name+"\"";
     }
 
 }

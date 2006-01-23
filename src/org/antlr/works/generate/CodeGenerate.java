@@ -35,9 +35,11 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
+import org.antlr.tool.ErrorManager;
 import org.antlr.works.editor.EditorProvider;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.GrammarSyntaxName;
+import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 
 import javax.swing.*;
@@ -97,6 +99,7 @@ public class CodeGenerate implements Runnable {
 
     public boolean generate() throws Exception {
         errorListener.clear();
+        ErrorManager.setErrorListener(errorListener);
 
         String[] params;
         if(debug)
@@ -177,6 +180,8 @@ public class CodeGenerate implements Runnable {
 
     public void run() {
         generateError = null;
+
+        provider.getConsole().setMode(Console.MODE_VERBOSE);
 
         try {
             if(!generate()) {

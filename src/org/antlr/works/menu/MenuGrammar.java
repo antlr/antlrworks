@@ -37,7 +37,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.DecisionDFA;
 import org.antlr.works.grammar.GrammarDOTTab;
-import org.antlr.works.grammar.RulesHierarchy;
+import org.antlr.works.grammar.RulesDependency;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxGroup;
 import org.antlr.works.syntax.GrammarSyntaxParser;
@@ -67,9 +67,9 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
             showProgress("Generating...");
     }
 
-    public void showHierarchy() {
-        RulesHierarchy hierarchy = new RulesHierarchy(editor, this);
-        if(hierarchy.launch())
+    public void showDependency() {
+        RulesDependency dependency = new RulesDependency(editor, this);
+        if(dependency.launch())
             showProgress("Generating...");
     }
 
@@ -81,8 +81,8 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
         } else {
             if(tab instanceof DecisionDFA)
                 XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the DFA:\n"+error);
-            if(tab instanceof RulesHierarchy)
-                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the rule hierarchy:\n"+error);
+            if(tab instanceof RulesDependency)
+                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the rule dependency graph:\n"+error);
         }
     }
 

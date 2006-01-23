@@ -34,6 +34,7 @@ package org.antlr.works.visualization;
 import org.antlr.analysis.NFAState;
 import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.utils.Console;
 import org.antlr.works.visualization.graphics.GFactory;
 
 import java.util.HashMap;
@@ -113,8 +114,7 @@ public class VisualDrawing extends ATEThread {
         try {
             visual.getGrammar().createGrammars();
         } catch (Exception e) {
-            // Ignore
-            visual.editor.console.print(e, false);
+            visual.editor.console.print(e);
         } finally {
             // Flush all caches in cache because the grammar has changed
             clearCacheGraphs();
@@ -132,7 +132,7 @@ public class VisualDrawing extends ATEThread {
             try {
                 startState = visual.getGrammar().getRuleStartState(threadRule.name);
             } catch (Exception e) {
-                visual.editor.console.print(e, false);
+                visual.editor.console.print(e);
             }
             if(startState == null)
                 error = "Cannot display rule \"" + threadRule + "\" because start state not found";
@@ -142,7 +142,7 @@ public class VisualDrawing extends ATEThread {
 
         if(error != null) {
             visual.setPlaceholder(error);
-            visual.getConsole().println(error, false);
+            visual.getConsole().println(error);
             return;
         }
 
@@ -165,10 +165,12 @@ public class VisualDrawing extends ATEThread {
     }
 
     public void threadReportException(Exception e) {
-        visual.getConsole().print(e, false);
+        visual.getConsole().print(e);
     }
 
     public void threadRun() throws Exception {
+        visual.getConsole().setMode(Console.MODE_QUIET);
+
         if(threadShouldProcess()) {
             threadPrepareProcess();
             threadProcessText();

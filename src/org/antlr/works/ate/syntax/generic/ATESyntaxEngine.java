@@ -92,9 +92,7 @@ public abstract class ATESyntaxEngine extends ATEThread {
     public abstract ATESyntaxParser createParser();
     public abstract AttributeSet getAttributeForToken(ATEToken token);
 
-    public void threadRun() throws Exception {
-        textEditor.ateEngineWillParse();
-
+    public void processSyntax() {
         // First run the lexer
         lexer.tokenize(textEditor.getTextPane().getText());
         tokens = new ArrayList(lexer.getTokens());
@@ -105,7 +103,13 @@ public abstract class ATESyntaxEngine extends ATEThread {
             parser.parse(tokens);
             parserDidRun(parser);
         }
+    }
 
+    public void threadRun() throws Exception {
+        textEditor.ateEngineWillParse();
+
+        processSyntax();
+        
         SwingUtilities.invokeAndWait(new Runnable() {
             public void run() {
                 textEditor.ateEngineDidParse();

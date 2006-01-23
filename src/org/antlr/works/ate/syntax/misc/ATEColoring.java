@@ -35,10 +35,7 @@ import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.swing.ATEStyledDocument;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 
-import javax.swing.text.AttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,12 +105,12 @@ public class ATEColoring extends ATEThread {
 
     public void removeColorization() {
         textEditor.ateColoringWillColorize();
-        StyledDocument doc = (StyledDocument) textEditor.getTextPane().getDocument();
+        StyledDocument doc = textEditor.getTextPane().getStyledDocument();
         doc.setCharacterAttributes(0, doc.getLength(), standardAttr, false);
         textEditor.ateColoringDidColorize();
     }
 
-    private ATEToken threadFindOldToken(int offset, ATEToken newToken) {
+    private ATEToken findOldToken(int offset, ATEToken newToken) {
         for(int t = offset; t<tokens.size(); t++) {
             ATEToken oldToken = (ATEToken)tokens.get(t);
             if(oldToken.equals(newToken))
@@ -124,7 +121,7 @@ public class ATEColoring extends ATEThread {
         return null;
     }
 
-    private List threadFetchModifiedTokens() {
+    private List fetchModifiedTokens() {
         List modifiedTokens = new ArrayList();
         List newTokens = textEditor.getParserEngine().getTokens();
 
@@ -143,7 +140,7 @@ public class ATEColoring extends ATEThread {
                 if(oldToken.equals(newToken) && !oldToken.modified) {
                     ot++;
                 } else {
-                    oldToken = threadFindOldToken(ot, newToken);
+                    oldToken = findOldToken(ot, newToken);
                     if(oldToken == null || oldToken.modified) {
                         modifiedTokens.add(newToken);
                     } else {
@@ -157,8 +154,16 @@ public class ATEColoring extends ATEThread {
         return modifiedTokens;
     }
 
-    private void threadColorize() {
-        List modifiedTokens = threadFetchModifiedTokens();
+    /** This method colorize the text by applying the attribute for each
+     * token. If 'optimize' is true, the method will remove temporarily
+     * the document from the text pane to speed up the process (no event fired
+     * at each attribute change). Warning: use 'optimize' only when running
+     * in the event thread otherwise the text pane can be updated while
+     * having the empty document.
+     */
+
+    public void processColorize(boolean optimize) {
+        List modifiedTokens = fetchModifiedTokens();
         if(modifiedTokens.size() == 0)
             return;
 
@@ -166,7 +171,9 @@ public class ATEColoring extends ATEThread {
             return;
 
         textEditor.ateColoringWillColorize();
-        ATEStyledDocument doc = (ATEStyledDocument) textEditor.getTextPane().getDocument();
+        ATEStyledDocument doc = (ATEStyledDocument)textEditor.getTextPane().getDocument();
+        if(optimize)
+            textEditor.getTextPane().setDocument(new DefaultStyledDocument());
 
         doc.lock();
 
@@ -188,11 +195,14 @@ public class ATEColoring extends ATEThread {
         }
         doc.unlock();
 
+        if(optimize)
+            textEditor.getTextPane().setDocument(doc);
+
         textEditor.ateColoringDidColorize();
     }
 
     public void threadRun() {
-        threadColorize();
+        processColorize(false);
     }
 
 }

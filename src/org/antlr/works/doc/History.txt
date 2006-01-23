@@ -4,11 +4,11 @@ Version 1.0ea8 - 01/20/06
 - new project document: edit multiple grammar, Java and any other text files and build
   them automatically within ANTLRWorks
 - syntax coloring for generated Java code
-- rule hierarchy diagram (can be exported to EPS or bitmap file)
+- rule dependency graph (can be exported to EPS or bitmap file)
 
 - improved ANTLR usage by running ANTLR only when necessary
 - rules are now sorted in interpreter and debugger if they are sorted in the editor
-- make the bottom tab visible when it is collapsed when an operation is displaying something in it
+- new message in status bar if an error is reported in the console
 - disabling syntax diagram now display a message
 - new idea to convert invalid string literals to single quote literals
 - now reload the tokenVocab file content when ANTLRWorks is back to front

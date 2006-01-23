@@ -78,7 +78,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     // Grammar
     public static final int MI_SHOW_TOKENS_SD = 50;
     public static final int MI_SHOW_DECISION_DFA = 51;
-    public static final int MI_SHOW_HIERARCHY = 52;
+    public static final int MI_SHOW_DEPENDENCY = 52;
     public static final int MI_INSERT_TEMPLATE = 53;
     public static final int MI_GROUP = 54;
     public static final int MI_UNGROUP = 55;
@@ -283,7 +283,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.setTitle("Grammar");
         menu.addItem(new XJMenuItem("Show Tokens Syntax Diagram", MI_SHOW_TOKENS_SD, this));
         menu.addItem(new XJMenuItem("Show Decision DFA", MI_SHOW_DECISION_DFA, this));
-        menu.addItem(new XJMenuItem("Show Rule Hierarchy", MI_SHOW_HIERARCHY, this));
+        menu.addItem(new XJMenuItem("Show Rule Dependency Graph", MI_SHOW_DEPENDENCY, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Insert Rule From Template", KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
         menu.addSeparator();
@@ -462,8 +462,8 @@ public class EditorMenu implements XJMenuItemDelegate {
                 editor.menuGrammar.showDecisionDFA();
                 break;
 
-            case MI_SHOW_HIERARCHY:
-                editor.menuGrammar.showHierarchy();
+            case MI_SHOW_DEPENDENCY:
+                editor.menuGrammar.showDependency();
                 break;
 
             case MI_INSERT_TEMPLATE:

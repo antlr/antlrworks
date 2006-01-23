@@ -35,6 +35,7 @@ import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.tool.DOTGenerator;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.EngineGrammar;
@@ -46,6 +47,7 @@ import org.antlr.works.utils.DotGenerator;
 import org.antlr.works.visualization.fa.FAFactory;
 import org.antlr.works.visualization.fa.FAState;
 import org.antlr.works.visualization.graphics.GContext;
+import org.antlr.works.visualization.graphics.GContextProvider;
 import org.antlr.works.visualization.graphics.GEngineGraphics;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.panel.GPanel;
@@ -56,7 +58,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileWriter;
 
-public class Visual implements EditorTab {
+public class Visual implements EditorTab, GContextProvider {
 
     protected CEditorGrammar editor;
 
@@ -80,6 +82,7 @@ public class Visual implements EditorTab {
         context = new GContext();
         context.setEngine(new GEngineGraphics());
         context.setSkin(skin);
+        context.setProvider(this);
 
         panel = new GPanel(context);
 
@@ -118,6 +121,17 @@ public class Visual implements EditorTab {
 
     public void toggleNFAOptimization() {
         drawing.toggleNFAOptimization();
+    }
+
+    public Color contextGetColorForLabel(String label) {
+        if(label.charAt(0) == '\'' || label.charAt(0) == '"')
+            return GrammarSyntaxEngine.COLOR_STRING;
+        else {
+            if(ATEToken.isLexerName(label))
+                return GrammarSyntaxEngine.COLOR_LEXER;
+            else
+                return GrammarSyntaxEngine.COLOR_PARSER;
+        }
     }
 
     public void setDelegate(VisualDelegate delegate) {
@@ -245,4 +259,5 @@ public class Visual implements EditorTab {
     public Component getTabComponent() {
         return getContainer();
     }
+
 }

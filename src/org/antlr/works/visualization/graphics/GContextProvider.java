@@ -1,8 +1,10 @@
-package org.antlr.works.utils;
+package org.antlr.works.visualization.graphics;
+
+import java.awt.*;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -30,13 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface Console {
-
-    public static final int MODE_VERBOSE = 1;
-    public static final int MODE_QUIET = 2;
-
-    public void setMode(int mode);
-
-    public void println(String s);
-    public void print(Exception e);
+public interface GContextProvider {
+    public Color contextGetColorForLabel(String label);
 }

@@ -31,9 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics;
 
-import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.syntax.GrammarSyntaxEngine;
-import org.antlr.works.utils.Localizable;
 import org.antlr.works.visualization.graphics.primitive.GLiteral;
 import org.antlr.works.visualization.graphics.shape.GLink;
 import org.antlr.works.visualization.graphics.shape.GNode;
@@ -66,6 +63,7 @@ public class GContext {
     public static final int ALIGN_RIGHT = 2;
 
     public Container container;
+    public GContextProvider provider;
 
     public GEngine engine;
     public Skin skin;
@@ -87,6 +85,14 @@ public class GContext {
 
     public Graphics2D g2d = null;
     public Set ignoreObjects = new HashSet();
+
+    public GContext() {
+
+    }
+
+    public void setProvider(GContextProvider provider) {
+        this.provider = provider;
+    }
 
     public void setIgnoreObjects(Set objects) {
         ignoreObjects.addAll(objects);
@@ -185,13 +191,13 @@ public class GContext {
 
     public Font getBoxFont() {
         if(boxFont == null)
-            boxFont = new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.BOLD, (int)(4*value_factor));
+            boxFont = new Font("Monospaced", Font.BOLD, (int)(4*value_factor));
         return boxFont;
     }
 
     public Font getRuleFont() {
         if(titleFont == null)
-            titleFont = new Font(Localizable.getLocalizedString(Localizable.DEFAULT_FONT), Font.BOLD, (int)(4*value_factor));
+            titleFont = new Font("Monospaced", Font.BOLD, (int)(4*value_factor));
         return titleFont;
     }
 
@@ -224,14 +230,10 @@ public class GContext {
     }
 
     public Color getColorForLabel(String label) {
-        if(label.charAt(0) == '\'' || label.charAt(0) == '"')
-            return GrammarSyntaxEngine.COLOR_STRING;
-        else {
-            if(ATEToken.isLexerName(label))
-                return GrammarSyntaxEngine.COLOR_LEXER;
-            else
-                return GrammarSyntaxEngine.COLOR_PARSER;
-        }
+        if(provider == null)
+            return Color.black;
+        else
+            return provider.contextGetColorForLabel(label);
     }
 
     public void setLineWidth(float width) {
@@ -351,4 +353,5 @@ public class GContext {
 
         return skin.objectContainsPoint(object, new Point(p.x-offsetX, p.y-offsetY));
     }
+
 }

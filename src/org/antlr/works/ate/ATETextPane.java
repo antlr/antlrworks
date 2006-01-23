@@ -58,6 +58,7 @@ public class ATETextPane extends JTextPane
         super(new ATEStyledDocument());
         setCaret(new ATECaret());
         setEditorKit(new ATECustomEditorKit(this));
+
         this.textEditor = textEditor;
     }
 
@@ -80,7 +81,7 @@ public class ATETextPane extends JTextPane
     /** Override setText() in order to reset the colorization
      *
      */
-    
+
     public void setText(String text) {
         super.setText(text);
         textEditor.resetColoring();
@@ -267,7 +268,7 @@ public class ATETextPane extends JTextPane
         public ATECaret() {
             setBlinkRate(500);
         }
-        
+
         public void paint(Graphics g) {
             if (!isVisible())
                 return;

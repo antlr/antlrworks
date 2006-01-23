@@ -90,13 +90,7 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
     }
 
     public void loadText(String text) {
-        textEditor.setEnableRecordChange(false);
-        getTextPane().setText(text);
-        getTextPane().setCaretPosition(0);
-        getTextPane().moveCaretPosition(0);
-        getTextPane().getCaret().setSelectionVisible(true);
-        textEditor.parse();
-        textEditor.setEnableRecordChange(true);
+        textEditor.loadText(text);
     }
 
     public String getText() {

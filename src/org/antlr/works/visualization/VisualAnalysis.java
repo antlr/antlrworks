@@ -34,6 +34,7 @@ package org.antlr.works.visualization;
 import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.grammar.EngineGrammarError;
 import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.utils.Console;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -68,7 +69,7 @@ public class VisualAnalysis extends ATEThread {
             if(!cancel())
                 threadMarkRulesWithWarningsOrErrors();
         } catch(Exception e) {
-            visual.editor.console.print(e, false);
+            visual.editor.console.print(e);
         } finally {
             if(!cancel()) {
                 visual.panel.createPanel();
@@ -104,10 +105,12 @@ public class VisualAnalysis extends ATEThread {
     }
 
     public void threadReportException(Exception e) {
-        visual.getConsole().print(e, false);
+        visual.getConsole().print(e);
     }
 
     public void threadRun() {
+        visual.getConsole().setMode(Console.MODE_VERBOSE);
+
         if(shouldAnalyzeAndReset())
             threadAnalyze();
     }

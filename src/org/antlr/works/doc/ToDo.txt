@@ -1,10 +1,6 @@
 
 * Prio 1
-- provide GContext color using a delegate
-- optimize java syntax coloring of generated code and init document using:
-    http://javatechniques.com/public/java/docs/gui/jtextpane-speed-part1.html
-
-- generate error message are not redirected in the console
+- put name of bezier guy in about box
 - build and debug: errors in compiler shows up in the output text zone
 - GUI to ignore some tokens in the interpreter
 - colorize the $foo in action

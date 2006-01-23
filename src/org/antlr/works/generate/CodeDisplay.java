@@ -62,8 +62,7 @@ public class CodeDisplay implements EditorTab {
     }
 
     public void setText(String text) {
-        textEditor.getTextPane().setText(text);
-        textEditor.setCaretPosition(0);
+        textEditor.loadText(text);
     }
 
     public void setTitle(String title) {
