@@ -83,6 +83,10 @@ public class GEngineGraphics extends GEngine {
         getG2D().drawRect((int)x, (int)y, (int)dx, (int)dy);
     }
 
+    public void drawRoundRect(float x, float y, float dx, float dy, float arc_dx, float arc_dy) {
+        getG2D().drawRoundRect((int)x, (int)y, (int)dx, (int)dy, (int)arc_dx, (int)arc_dy);
+    }
+
     public void drawOval(float x, float y, float dx, float dy) {
         getG2D().drawOval((int)x, (int)y, (int)dx, (int)dy);
     }
@@ -125,7 +129,7 @@ public class GEngineGraphics extends GEngine {
 
     public void drawString(Font font, String s, float x, float y, int align) {
         getG2D().setFont(font);
-        TextLayout layout = new TextLayout(s, getG2D().getFont(), getG2D().getFontRenderContext());
+        TextLayout layout = new TextLayout(s, font, getG2D().getFontRenderContext());
         float tx = Float.MIN_VALUE;
         float ty = Float.MIN_VALUE;
         switch(align) {
@@ -142,7 +146,7 @@ public class GEngineGraphics extends GEngine {
                 ty = (float)(y+layout.getBounds().getHeight()*0.5);
                 break;
         }
-        layout.draw(getG2D(), tx, ty);
+        layout.draw(getG2D(), tx, ty-1);
     }
 
     public void drawSpline(float x0, float y0, float x1, float y1, float startOffset, float endOffset, float flateness, boolean arrow) {

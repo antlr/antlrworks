@@ -45,6 +45,9 @@ import java.util.List;
 
 public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
+    public static final Color COLOR_PARSER = new Color(0.42f, 0, 0.42f);
+    public static final Color COLOR_LEXER = new Color(0, 0, 0.5f);
+
     protected List rules;
     protected List groups;
     protected List blocks;
@@ -59,11 +62,11 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
     public GrammarSyntaxEngine() {
         parserRefAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(parserRefAttr, new Color(0.42f, 0, 0.42f));
+        StyleConstants.setForeground(parserRefAttr, COLOR_PARSER);
         StyleConstants.setBold(parserRefAttr, true);
 
         lexerRefAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(lexerRefAttr, new Color(0, 0, 0.5f));
+        StyleConstants.setForeground(lexerRefAttr, COLOR_LEXER);
         StyleConstants.setBold(lexerRefAttr, true);
 
         labelAttr = new SimpleAttributeSet();

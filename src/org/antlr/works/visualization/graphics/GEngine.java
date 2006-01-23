@@ -52,6 +52,7 @@ public abstract class GEngine {
     public abstract void drawArc(float x, float y, float w, float h, int a0, int a1);
     public abstract void drawCircle(float x, float y, float r);
     public abstract void drawRect(float x, float y, float dx, float dy);
+    public abstract void drawRoundRect(float x, float y, float dx, float dy, float arc_dx, float arc_dy);
     public abstract void drawOval(float x, float y, float dx, float dy);
 
     public abstract void fillRect(float x, float y, float dx, float dy);

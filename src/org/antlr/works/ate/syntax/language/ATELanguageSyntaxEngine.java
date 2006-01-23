@@ -44,6 +44,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ATELanguageSyntaxEngine extends ATESyntaxEngine {
 
+    public static final Color COLOR_STRING = new Color(0, 0.5f, 0);
+
     protected SimpleAttributeSet commentAttr;
     protected SimpleAttributeSet stringAttr;
     protected SimpleAttributeSet keywordAttr;
@@ -54,7 +56,7 @@ public class ATELanguageSyntaxEngine extends ATESyntaxEngine {
         StyleConstants.setItalic(commentAttr, true);
 
         stringAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(stringAttr, new Color(0, 0.5f, 0));
+        StyleConstants.setForeground(stringAttr, COLOR_STRING);
         StyleConstants.setBold(stringAttr, true);
 
         keywordAttr = new SimpleAttributeSet();

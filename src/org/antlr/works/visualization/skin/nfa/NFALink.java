@@ -78,6 +78,7 @@ public class NFALink {
             else
                 font = context.getBoxFont();
 
+            context.setColor(context.getColorForLabel(link.transition.label));            
             context.drawString(font, link.transition.label, sx+(tx-sx)/2, sy-2, GContext.ALIGN_CENTER_UP);
         }
     }

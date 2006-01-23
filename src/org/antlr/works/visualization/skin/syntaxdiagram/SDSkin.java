@@ -41,15 +41,15 @@ import java.awt.*;
 public class SDSkin extends Skin {
 
     public SDSkin() {
-        value_epsilon_width = 10;
+        value_epsilon_width = 5;
         value_epsilon_up = 0;
         value_epsilon_down = 0;
 
-        value_box_width = 30;
-        value_box_up = 5;
-        value_box_down = 5;
+        value_box_width = 20;
+        value_box_up = 3;
+        value_box_down = 3;
 
-        value_char_width = 3.5f;
+        value_char_width = 3f;
         value_line_space = 4;
     }
 

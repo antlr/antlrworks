@@ -1,11 +1,10 @@
 
 * Prio 1
-- fix the bug where the second path needs to be select twice (ambiguities)
-- syntax diagram are cropped at the bottom
+- provide GContext color using a delegate
+- optimize java syntax coloring of generated code and init document using:
+    http://javatechniques.com/public/java/docs/gui/jtextpane-speed-part1.html
 
-- do not popup console for syntax diagram exception
-- ask to show lexer tokens in hierarchy if from parser
-
+- generate error message are not redirected in the console
 - build and debug: errors in compiler shows up in the output text zone
 - GUI to ignore some tokens in the interpreter
 - colorize the $foo in action
@@ -13,7 +12,6 @@
 
 - maintain order of opened tab
 - cannot stop debugger on mantra.g
-- run profiler to see why parsing generated java code is so long
 
 - auto-indent in prefs
 - contextual menu in editor

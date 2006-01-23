@@ -22,6 +22,7 @@ Version 1.0ea8 - 01/20/06
 - check grammar command now also analyze the lexer part of a combined grammar
 - popup the console tab if anything is reported in the console
 - improved current select path in syntax diagram when switching path visiblity
+- improved syntax diagram display (colored label and smaller size)
 
 - fixed a bug where some tokens were not properly colorized (cut and past the same token over itself)
 - fixed a bug where the file content was not properly parsed if modified outside ANTLRWorks
@@ -31,7 +32,7 @@ Version 1.0ea8 - 01/20/06
 - fixed a bug where ANTLR would not be able to read the tokenVocab file (missing path)
 - fixed a bug in the code generation (problem with grammar name)
 - fixed a bug in the syntax diagram engine where a link from a rule to another rule would start at the wrong state
-  
+
 Version 1.0ea7 - 12/15/05
 
 - fixed a bug which prevented ANTLRWorks to launch on Windows

@@ -167,6 +167,7 @@ public class ATEColoring extends ATEThread {
 
         textEditor.ateColoringWillColorize();
         ATEStyledDocument doc = (ATEStyledDocument) textEditor.getTextPane().getDocument();
+
         doc.lock();
 
         try {
@@ -186,6 +187,7 @@ public class ATEColoring extends ATEThread {
             e.printStackTrace();
         }
         doc.unlock();
+
         textEditor.ateColoringDidColorize();
     }
 

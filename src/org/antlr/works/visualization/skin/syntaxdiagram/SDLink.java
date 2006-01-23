@@ -147,17 +147,20 @@ public class SDLink {
         Font font;
         if(link.transition.externalRuleRef) {
             font = context.getRuleFont();
-            context.drawOval(ox+context.getPixelBoxEdge(), oy-context.getPixelBoxDown(),
-                        width-2*context.getPixelBoxEdge(), context.getPixelBoxDown()+context.getPixelBoxUp(), true);
+//            context.drawOval(ox+context.getPixelBoxEdge(), oy-context.getPixelBoxDown(),
+//                        width-2*context.getPixelBoxEdge(), context.getPixelBoxDown()+context.getPixelBoxUp(), true);
+            context.drawRoundRect(ox+context.getPixelBoxEdge(), oy-context.getPixelBoxDown(),
+                        width-2*context.getPixelBoxEdge(), context.getPixelBoxDown()+context.getPixelBoxUp(),
+                        8, 8, true);
         } else {
             font = context.getBoxFont();
             context.drawRect(ox+context.getPixelBoxEdge(), oy-context.getPixelBoxDown(),
                         width-2*context.getPixelBoxEdge(), context.getPixelBoxDown()+context.getPixelBoxUp(), true);
         }
 
-        context.drawLine(ox+width-context.getPixelBoxEdge(), oy,
-                    ox+width, oy);
+        context.drawLine(ox+width-context.getPixelBoxEdge(), oy, ox+width, oy);
 
+        context.setColor(context.getColorForLabel(link.transition.label));
         context.drawString(font, link.transition.label, ox+width/2, oy, GContext.ALIGN_CENTER);
     }
 
