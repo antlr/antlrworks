@@ -4,7 +4,6 @@
 - update rule state if antlr is ran in the shared object (not only check grammar)
 - put name of bezier guy in about box
 - GUI to ignore some tokens in the interpreter
-- colorize the $foo in action
 - test on Windows/Linux
 
 - auto-indent in prefs

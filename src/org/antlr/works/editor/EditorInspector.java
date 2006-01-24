@@ -7,6 +7,7 @@ import org.antlr.works.idea.IdeaAction;
 import org.antlr.works.idea.IdeaActionDelegate;
 import org.antlr.works.syntax.GrammarSyntaxReference;
 import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.GrammarSyntaxToken;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -224,7 +225,7 @@ public class EditorInspector {
         public void ideaActionFire(IdeaAction action, int actionID) {
             switch(actionID) {
                 case IDEA_CREATE_RULE:
-                    editor.menuRefactor.createRuleAtIndex(action.token.lexer, action.token.getAttribute(), null);
+                    editor.menuRefactor.createRuleAtIndex(((GrammarSyntaxToken)action.token).lexer, action.token.getAttribute(), null);
                     break;
             }
         }

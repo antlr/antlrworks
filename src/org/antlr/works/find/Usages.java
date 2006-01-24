@@ -157,16 +157,17 @@ public class Usages implements EditorTab {
         }
 
         public void createContextString() {
+            String text = token.getText();
             int s = token.getStartIndex();
-            while(s > 0 && token.text.charAt(s) != '\n' && token.text.charAt(s) != '\r') {
+            while(s > 0 && text.charAt(s) != '\n' && text.charAt(s) != '\r') {
                 s--;
             }
 
             int e = token.getEndIndex();
-            while(s < token.text.length() && token.text.charAt(e) != '\n' && token.text.charAt(e) != '\r') {
+            while(s < text.length() && text.charAt(e) != '\n' && text.charAt(e) != '\r') {
                 e++;
             }
-            contextualText = token.text.substring(s, e);
+            contextualText = text.substring(s, e);
         }
 
         public String toString() {

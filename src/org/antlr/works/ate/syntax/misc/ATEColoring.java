@@ -35,7 +35,10 @@ import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.swing.ATEStyledDocument;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 
-import javax.swing.text.*;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -186,9 +189,7 @@ public class ATEColoring extends ATEThread {
                 doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), standardAttr, false);
 
                 // Then any specific attribute if available
-                AttributeSet attr = engine.getAttributeForToken(token);
-                if(attr != null)
-                    doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), attr, false);
+                engine.colorizeToken(token, doc);
             }
         } catch(Exception e) {
             e.printStackTrace();

@@ -39,7 +39,7 @@ public class ATEToken implements Comparable {
     public int endLineNumber; // ending line number
     protected int startLineIndex; // starting line character index
     protected int endLineIndex; // ending line character index
-    public String text;
+    protected String text; // the text containing this token
 
     /** These two fiels are public because ATEPanel needs to access them
      * really quickly without using accessors. If anything needs to be changed,
@@ -49,8 +49,7 @@ public class ATEToken implements Comparable {
     public int start;
     public int end;
 
-    public boolean lexer;
-    protected String attribute;
+    protected String attribute; // the portion of text covered by this token (subset of text)
 
     public int index;   // index inside the tokens list
     public boolean modified;    // true if the token has been modified in the text editor
@@ -58,7 +57,8 @@ public class ATEToken implements Comparable {
     public ATEToken(int type, int start, int end,
                     int startLineNumber, int endLineNumber,
                     int startLineIndex, int endLineIndex,
-                    String text) {
+                    String text)
+    {
         this.type = type;
 
         this.start = start;
@@ -70,9 +70,11 @@ public class ATEToken implements Comparable {
         this.endLineIndex = endLineIndex;
 
         this.text = text;
-
         this.attribute = text.substring(start, end);
-        this.lexer = isLexerName(attribute);
+    }
+
+    public String getText() {
+        return text;
     }
 
     public String getAttribute() {

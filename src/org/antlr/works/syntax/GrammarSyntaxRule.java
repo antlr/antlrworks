@@ -217,14 +217,14 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
                         star.append(" | ");
                     int start = ((ATEToken)alts.get(1)).getStartIndex();
                     int end = ((ATEToken)alts.get(alts.size()-1)).getEndIndex();
-                    star.append(firstTokenInAlt.text.substring(start, end));
+                    star.append(firstTokenInAlt.getText().substring(start, end));
                 }
             } else {
                 if(head.length() > 0)
                     head.append(" | ");
                 int start = firstTokenInAlt.getStartIndex();
                 int end = ((ATEToken)alts.get(alts.size()-1)).getEndIndex();
-                head.append(firstTokenInAlt.text.substring(start, end));
+                head.append(firstTokenInAlt.getText().substring(start, end));
             }
         }
 

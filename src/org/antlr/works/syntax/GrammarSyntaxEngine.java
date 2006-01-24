@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.syntax;
 
+import org.antlr.works.ate.swing.ATEStyledDocument;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
@@ -47,6 +48,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
     public static final Color COLOR_PARSER = new Color(0.42f, 0, 0.42f);
     public static final Color COLOR_LEXER = new Color(0, 0, 0.5f);
+    public static final Color COLOR_ACTION_REF = new Color(1.0f, 0.0f, 0.0f);
 
     protected List rules;
     protected List groups;
@@ -59,6 +61,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     protected SimpleAttributeSet parserRefAttr;
     protected SimpleAttributeSet lexerRefAttr;
     protected SimpleAttributeSet labelAttr;
+    protected SimpleAttributeSet actionRefAttr;
 
     public GrammarSyntaxEngine() {
         parserRefAttr = new SimpleAttributeSet();
@@ -72,6 +75,10 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         labelAttr = new SimpleAttributeSet();
         StyleConstants.setForeground(labelAttr, Color.black);
         StyleConstants.setItalic(labelAttr, true);
+
+        actionRefAttr = new SimpleAttributeSet();
+        StyleConstants.setForeground(actionRefAttr, COLOR_ACTION_REF);
+        StyleConstants.setItalic(actionRefAttr, true);
     }
 
     public ATESyntaxLexer createLexer() {
@@ -87,16 +94,50 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         switch(token.type) {
             case GrammarSyntaxLexer.TOKEN_REFERENCE:
             case GrammarSyntaxLexer.TOKEN_RULE:
-                if(token.lexer)
+                if(((GrammarSyntaxToken)token).lexer)
                     attr = lexerRefAttr;
                 else
                     attr = parserRefAttr;
                 break;
+
             case GrammarSyntaxLexer.TOKEN_LABEL:
                 attr = labelAttr;
                 break;
         }
         return attr;
+    }
+
+    public void colorizeToken(ATEToken token, ATEStyledDocument doc) {
+        super.colorizeToken(token, doc);
+
+        /** Colorize now all internal tokens. We have to do
+         * the colorization here by hand because they are internal tokens
+         * not included in the global stream of tokens.
+         */
+
+        if(token.type != GrammarSyntaxLexer.TOKEN_BLOCK)
+            return;
+
+        GrammarSyntaxToken t = (GrammarSyntaxToken)token;
+        List internalTokens = t.internalTokens;
+        if(internalTokens == null || internalTokens.isEmpty())
+            return;
+
+        for(int i=0; i<internalTokens.size(); i++) {
+            ATEToken it = (ATEToken)internalTokens.get(i);
+
+            AttributeSet attr;
+            if(it.getAttribute().startsWith("$"))
+                attr = actionRefAttr;
+            else
+                attr = getAttributeForToken(it);
+
+            if(attr != null)
+                doc.setCharacterAttributes(it.getStartIndex(),
+                                            it.getEndIndex()-it.getStartIndex(),
+                                            attr, false);
+        }
+
     }
 
     public static void setDelay(int delay) {

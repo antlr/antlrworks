@@ -3,6 +3,9 @@ package org.antlr.works.syntax;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
 
 [The "BSD licence"]
@@ -84,25 +87,46 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
         int embedded = 0;
         int startLineNumber = lineNumber;
         int startLineIndex = lineIndex;
+
+        List internalTokens = new ArrayList();
+
         while(nextCharacter()) {
+            ATEToken token = null;
+
             if(C(0) == '\'') {
-                matchSingleQuoteString();
+                token = matchSingleQuoteString();
             } else if(C(0) == '\"') {
-                matchDoubleQuoteString();
+                token = matchDoubleQuoteString();
             } else if(C(0) == '/' && C(1) == '/') {
-                matchSingleComment();
+                token = matchSingleComment();
             } else if(C(0) == '/' && C(1) == '*') {
-                matchComplexComment();
+                token = matchComplexComment();
             } else if(C(0) == start) {
                 embedded++;
             } else if(C(0) == end) {
-                if(embedded == 0)
-                    return createNewToken(GrammarSyntaxLexer.TOKEN_BLOCK, sp, position+1, startLineNumber, lineNumber, startLineIndex, lineIndex);
+                if(embedded == 0) {
+                    GrammarSyntaxToken t = (GrammarSyntaxToken)createNewToken(GrammarSyntaxLexer.TOKEN_BLOCK, sp, position+1, startLineNumber, lineNumber, startLineIndex, lineIndex);
+                    t.setInternalTokens(internalTokens);
+                    return t;
+                }
                 else
                     embedded--;
+            } else if(C(0) == '$') {
+                /** Parse also all internal action references */
+                token = matchID();
             }
+
+            if(token != null)
+                internalTokens.add(token);
         }
         return null;
+    }
+
+    public ATEToken createNewToken(int type, int start, int end,
+                                int startLineNumber, int endLineNumber,
+                                int startLineIndex, int endLineIndex)
+    {
+        return new GrammarSyntaxToken(type, start, end, startLineNumber, endLineNumber, startLineIndex, endLineIndex, text);
     }
 
 
