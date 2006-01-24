@@ -141,6 +141,7 @@ public class ProjectEditorZone {
 
     public void closeActiveEditor() {
         removeFileItemFromTab(getSelectedFileItem());
+        project.refreshMainMenuBar();
     }
     
     public void fileEditorItemDidLoad(ProjectFileItem item) {
@@ -154,12 +155,20 @@ public class ProjectEditorZone {
             // The item is already in a tab. Just select the tab.
             index = getIndexOfFileItemInTab(item);
         } else {
-            tabbedPane.addTab(item.getFileName(), item.getEditorPanel());
-            index = tabbedPane.getComponentCount()-1;
+            index = tabbedPane.getSelectedIndex();
+            if(index == -1) {
+                tabbedPane.addTab(item.getFileName(), item.getEditorPanel());
+                index = tabbedPane.getComponentCount()-1;
+            } else {
+                index++;
+                tabbedPane.insertTab(item.getFileName(), null, item.getEditorPanel(), null, index);
+            }
+
             tabbedPane.setToolTipTextAt(index, item.getFilePath());
         }
         tabbedPane.setSelectedIndex(index);
         item.setOpened(true);
+        item.setTabIndex(index);
     }
 
     public void removeFileItemFromTab(ProjectFileItem item) {
@@ -237,6 +246,35 @@ public class ProjectEditorZone {
         if(getSelectedFileItem() != null)
             data.put(KEY_SELECTED_FILE_NAME, getSelectedFileItem().getFileName());
         return data;
+    }
+
+    public static final int DIRECTION_LEFT = -1;
+    public static final int DIRECTION_RIGHT = 1;
+
+    public void moveActiveEditor(int direction) {
+        int index = tabbedPane.getSelectedIndex();
+        if(index == -1)
+            return;
+
+        if(direction == DIRECTION_LEFT && index <= 0)
+            return;
+
+        if(direction == DIRECTION_RIGHT && index >= tabbedPane.getTabCount()-1)
+            return;
+
+        swapTab(index, index+direction);
+    }
+
+    public void swapTab(int a, int b) {
+        String title = tabbedPane.getTitleAt(a);
+        Component c = tabbedPane.getComponentAt(a);
+        tabbedPane.removeTabAt(a);
+        tabbedPane.insertTab(title, null, c, null, b);
+        tabbedPane.setSelectedIndex(b);
+
+        // Update also each ProjectFileItem's tab index
+        getFileItemForTabComponent(tabbedPane.getComponentAt(a)).setTabIndex(a);
+        getFileItemForTabComponent(tabbedPane.getComponentAt(b)).setTabIndex(b);
     }
 
     protected class TabbedPaneChangeListener implements ChangeListener {

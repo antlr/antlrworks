@@ -108,13 +108,32 @@ public class ProjectExplorer {
         });
     }
 
+    public List openedFiles = new ArrayList();
+
     public void reopen() {
+        openedFiles.clear();
+
         runClosureOnFileEditorItems(new FileEditorItemClosure() {
             public void process(ProjectFileItem item) {
                 if(item.isOpened())
-                    project.openFileItem(item);
+                    ProjectExplorer.this.openedFiles.add(item);
             }
         });
+
+        if(openedFiles.isEmpty())
+            return;
+        
+        // Sort the project file item by tab index
+        ProjectFileItem items[] = new ProjectFileItem[openedFiles.size()];
+        for (Iterator iterator = openedFiles.iterator(); iterator.hasNext();) {
+            ProjectFileItem item = (ProjectFileItem) iterator.next();
+            items[item.getTabIndex()] = item;
+        }
+
+        // Open them
+        for (int i = 0; i < items.length; i++) {
+            project.openFileItem(items[i]);
+        }
     }
 
     public void reload() {

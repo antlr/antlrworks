@@ -1,13 +1,11 @@
 
 * Prio 1
+- cannot stop debugger on mantra.g
+- update rule state if antlr is ran in the shared object (not only check grammar)
 - put name of bezier guy in about box
-- build and debug: errors in compiler shows up in the output text zone
 - GUI to ignore some tokens in the interpreter
 - colorize the $foo in action
 - test on Windows/Linux
-
-- maintain order of opened tab
-- cannot stop debugger on mantra.g
 
 - auto-indent in prefs
 - contextual menu in editor
@@ -15,7 +13,6 @@
 - ask for string literal for T104 (Tokens artificial SD)
 
 * Prio 2
-- test on ANTLR v3 examples
 - DFA decision for lexer tokens (see with Terence) - position in lexer grammar
 - ideas: undefined rule: rename rule, delete token
 - prefs: customizable list of "Insert Rule From Template" - or read from a file ?
@@ -24,12 +21,10 @@
 - contextual menu to export to bitmap/eps
 - jump into source when navigating grammar text (in generated code)
 - display current token in syntax diagram
-- display multiple rules together
 - (Terence will change) handle "header with package" option (see with Terence for line numbering between files)
 - use Grammar randomText to generate random valid input text
 - lexical ambiguities (ask Terence)
 - if emacs is set (in preferences), disable all conflicting menu in Linux/Windows
-- optimize state arround external ref (negative state should be removed - see if it is always possible)
 - jump to a definition by double-click in the syntax diagram
 - problem when more than one same LT between mark/rewind
 

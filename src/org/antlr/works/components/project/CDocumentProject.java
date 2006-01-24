@@ -53,10 +53,10 @@ public class CDocumentProject extends XJDocument {
      */
 
     protected boolean performClose_() {
-        if(isDirty() && getDocumentPath() != null) {
-            return performSave(false);
-        } else
+        if(getDocumentPath() == null)
             return super.performClose_();
+        else
+            return true;
     }
 
     public void documentWillWriteData() {

@@ -126,7 +126,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         treeStackSplitPane.setRightComponent(createListInfoPanel());
         treeStackSplitPane.setContinuousLayout(true);
         treeStackSplitPane.setOneTouchExpandable(true);
-        treeStackSplitPane.setDividerLocation(200);
+        treeStackSplitPane.setDividerLocation(300);
 
         ioSplitPane = new JSplitPane();
         ioSplitPane.setBorder(null);

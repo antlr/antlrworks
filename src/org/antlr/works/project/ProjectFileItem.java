@@ -61,6 +61,7 @@ public class ProjectFileItem implements Comparable {
     protected String fileName;
     protected String fileType;
     protected boolean opened;
+    protected int tabIndex;
     protected Map containerData;
 
     public ProjectFileItem(CContainerProject project) {
@@ -112,6 +113,14 @@ public class ProjectFileItem implements Comparable {
 
     public boolean isOpened() {
         return opened;
+    }
+
+    public void setTabIndex(int index) {
+        this.tabIndex = index;
+    }
+
+    public int getTabIndex() {
+        return tabIndex;
     }
 
     public boolean isDirty() {
@@ -196,11 +205,13 @@ public class ProjectFileItem implements Comparable {
 
     protected static final String KEY_FILE_NAME = "KEY_FILE_NAME";
     protected static final String KEY_FILE_OPENED = "KEY_FILE_OPENED";
+    protected static final String KEY_TAB_INDEX = "KEY_TAB_INDEX";
     protected static final String KEY_CONTAINER_DATA = "KEY_CONTAINER_DATA";
 
     public void setPersistentData(Map data) {
         setFileName((String)data.get(KEY_FILE_NAME));
         setOpened(((Boolean)data.get(KEY_FILE_OPENED)).booleanValue());
+        setTabIndex(((Integer)data.get(KEY_TAB_INDEX)).intValue());
         setContainerPersistentData((Map)data.get(KEY_CONTAINER_DATA));
     }
 
@@ -208,6 +219,7 @@ public class ProjectFileItem implements Comparable {
         Map data = new HashMap();
         data.put(KEY_FILE_NAME, fileName);
         data.put(KEY_FILE_OPENED, Boolean.valueOf(opened));
+        data.put(KEY_TAB_INDEX, new Integer(tabIndex));
 
         Map d = getContainerPersistentData();
         if(d != null)

@@ -144,6 +144,11 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
             setMainMenuBar(projectDefaultMainMenuBar);
     }
 
+    public void refreshMainMenuBar() {
+        if(getXJFrame().getMainMenuBar() != null)
+            getXJFrame().getMainMenuBar().refreshState();
+    }
+    
     public void setTitle(String title) {
         super.setTitle(title+" - [Project]");
     }
@@ -382,6 +387,8 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
     public static final int MI_RUN_SETTINGS = 504;
     public static final int MI_SETTINGS = 505;
     public static final int MI_CLOSE_EDITOR = 506;
+    public static final int MI_MOVE_EDITOR_LEFT = 507;
+    public static final int MI_MOVE_EDITOR_RIGHT = 508;
 
     public void createProjectMenu(XJMainMenuBar menubar) {
         XJMenu menu;
@@ -395,7 +402,10 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Clean", MI_CLEAN, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Settings...", MI_SETTINGS, this));
+        menu.addItem(new XJMenuItem("Move Active Editor Left", KeyEvent.VK_LEFT, XJMenuItem.getKeyModifier() | Event.CTRL_MASK, MI_MOVE_EDITOR_LEFT, this));
+        menu.addItem(new XJMenuItem("Move Active Editor Right", KeyEvent.VK_RIGHT, XJMenuItem.getKeyModifier() | Event.CTRL_MASK, MI_MOVE_EDITOR_RIGHT, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Settings...", KeyEvent.VK_SEMICOLON, MI_SETTINGS, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -406,6 +416,17 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
 
     public void customizeMenuBar(XJMainMenuBar menubar) {
         createProjectMenu(menubar);
+    }
+
+    public void menuItemState(XJMenuItem item) {
+        super.menuItemState(item);
+        switch(item.getTag()) {
+            case MI_CLOSE_EDITOR:
+            case MI_MOVE_EDITOR_LEFT:
+            case MI_MOVE_EDITOR_RIGHT:
+                item.setEnabled(editorZone.getSelectedFileItem() != null);
+                break;
+        }
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
@@ -438,6 +459,14 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
 
             case MI_CLOSE_EDITOR:
                 editorZone.closeActiveEditor();
+                break;
+
+            case MI_MOVE_EDITOR_LEFT:
+                editorZone.moveActiveEditor(ProjectEditorZone.DIRECTION_LEFT);
+                break;
+
+            case MI_MOVE_EDITOR_RIGHT:
+                editorZone.moveActiveEditor(ProjectEditorZone.DIRECTION_RIGHT);
                 break;
         }
     }

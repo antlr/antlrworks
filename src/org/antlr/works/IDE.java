@@ -70,7 +70,6 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     public static SplashScreen sc;
 
     public static void main(String[] args) {
-
         // Needs to specify the Mac OS X property here (starting from Tiger)
         // before any other line of code (the usual XJApplication won't work
         // because we are instanciating a SplashScreen before it)
