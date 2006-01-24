@@ -224,8 +224,8 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.setTitle("Generate");
         menu.addItem(new XJMenuItem("Generate Code...", MI_GENERATE_CODE, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show Lexer Code", MI_SHOW_GENERATED_LEXER_CODE, this));
         menu.addItem(new XJMenuItem("Show Parser Code", MI_SHOW_GENERATED_PARSER_CODE, this));
+        menu.addItem(new XJMenuItem("Show Lexer Code", MI_SHOW_GENERATED_LEXER_CODE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Show Rule Code", MI_SHOW_RULE_GENCODE, this));
 

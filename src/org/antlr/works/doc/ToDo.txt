@@ -1,12 +1,9 @@
 
 * Prio 1
-- cannot stop debugger on mantra.g
+- correctly resize splitter in debugger
 - update rule state if antlr is ran in the shared object (not only check grammar)
-- put name of bezier guy in about box
 - GUI to ignore some tokens in the interpreter
-- test on Windows/Linux
 
-- auto-indent in prefs
 - contextual menu in editor
 - fix tree appearance between interpreter and debugger on Windows
 - ask for string literal for T104 (Tokens artificial SD)

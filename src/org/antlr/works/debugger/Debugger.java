@@ -292,6 +292,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 recorder.stepBackward(getBreakEvent());
+                updateInterfaceLater();
                 Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_BACKWARD);
             }
         });
@@ -304,6 +305,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 recorder.stepForward(getBreakEvent());
+                updateInterfaceLater();
                 Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_FORWARD);
             }
         });
@@ -318,6 +320,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
             public void actionPerformed(ActionEvent event) {
                 restorePreviousGrammarAttributeSet();
                 recorder.goToStart();
+                updateInterfaceLater();
                 Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_START);
             }
         });
@@ -331,6 +334,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 recorder.goToEnd();
+                updateInterfaceLater();
                 Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_END);
             }
         });
@@ -386,14 +390,25 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
         updateInterface();
     }
 
+    public void updateInterfaceLater() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                updateInterface();
+            }
+        });
+    }
+    
     public void updateInterface() {
         stopButton.setEnabled(recorder.getStatus() != DebuggerRecorder.STATUS_STOPPED);
 
         boolean enabled = recorder.isRunning();
-        backButton.setEnabled(enabled);
-        forwardButton.setEnabled(enabled);
-        goToStartButton.setEnabled(enabled);
-        goToEndButton.setEnabled(enabled);
+        boolean atBeginning = recorder.isAtBeginning();
+        boolean atEnd = recorder.isAtEnd();
+
+        backButton.setEnabled(enabled && !atBeginning);
+        forwardButton.setEnabled(enabled && !atEnd);
+        goToStartButton.setEnabled(enabled && !atBeginning);
+        goToEndButton.setEnabled(enabled && !atEnd);
     }
 
     public org.antlr.works.grammar.EngineGrammar getGrammar() {
@@ -515,8 +530,10 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
 
     public void debuggerStop(boolean force) {
         if(recorder.getStatus() == DebuggerRecorder.STATUS_STOPPING) {
-            if(force || XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES)
+            if(force || XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES) {
+                debuggerLocal.remoteParserProcess.destroy();
                 recorder.forceStop();
+            }
         } else
             recorder.stop();
     }

@@ -204,6 +204,18 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         return status;
     }
 
+    public boolean isAtBeginning() {
+        return position == 0;
+    }
+
+    public boolean isAtEnd() {
+        DebuggerEvent e = getEvent();
+        if(e == null)
+            return true;
+        else
+            return e.type == DebuggerEvent.TERMINATE;
+    }
+
     public void stepBackward(int breakEvent) {
         stepContinue(breakEvent);
         if(stepMove(-1))

@@ -966,7 +966,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public void ateAutoIndent(int offset, int length) {
         try {
-            GrammarAutoIndent.autoIndentOnSpecificKeys(getTextPane().getDocument(), offset, length);
+            GrammarAutoIndent.autoIndentOnSpecificKeys(this, getTextPane().getDocument(), offset, length);
         } catch (BadLocationException e) {
             // ignore
         }

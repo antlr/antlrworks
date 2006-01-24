@@ -55,9 +55,26 @@ public class DialogAbout extends XJPanel {
         stringTemplateVersionLabel.setText(StringTemplate.VERSION);
         xjVersionLabel.setText(XJLib.stringVersion());
 
+        resetAcknowledge();
+        addAcknowledge("ANTLR and StringTemplate are (c) 1989-2006 Terence Parr");
+        addAcknowledge("XJLibrary is (c) 2004-2006 Jean Bovet");
+        addAcknowledge("Portion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch");
+        addAcknowledge("Portion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber");
+        addAcknowledge("B-spline algorithm is (c) Leen Ammeraal <http://home.wxs.nl/~ammeraal/grjava.html>");
+        addAcknowledge("BrowserLauncher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>");
+        addAcknowledge("Application icon is (c) Matthew McClintock <matthew@mc.clintock.com>");
+
         setResizable(false);
         setSize(800, 430);
         center();
+    }
+
+    public void resetAcknowledge() {
+        acknowledgeTextArea.setText("");
+    }
+
+    public void addAcknowledge(String ack) {
+        acknowledgeTextArea.setText(acknowledgeTextArea.getText()+"\n"+ack);
     }
 
     public boolean isAuxiliaryWindow() {
@@ -73,12 +90,7 @@ public class DialogAbout extends XJPanel {
         copyrightLabel = new JLabel();
         tabbedPane1 = new JTabbedPane();
         panel2 = new JPanel();
-        label13 = new JLabel();
-        label14 = new JLabel();
-        label1 = new JLabel();
-        label4 = new JLabel();
-        label3 = new JLabel();
-        label2 = new JLabel();
+        acknowledgeTextArea = new JTextArea();
         panel1 = new JPanel();
         label5 = new JLabel();
         guiVersionLabel = new JLabel();
@@ -151,7 +163,7 @@ public class DialogAbout extends XJPanel {
         contentPane.add(versionLabel, cc.xy(5, 5));
 
         //---- copyrightLabel ----
-        copyrightLabel.setText("Copyright (c) 2005-2006 Jean Bovet & Terence Parr");
+        copyrightLabel.setText("Copyright (c) 2005 Jean Bovet & Terence Parr");
         contentPane.add(copyrightLabel, cc.xy(5, 9));
 
         //======== tabbedPane1 ========
@@ -170,44 +182,16 @@ public class DialogAbout extends XJPanel {
                     new RowSpec[] {
                         new RowSpec(Sizes.dluY(10)),
                         FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
+                        new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.NO_GROW),
                         FormFactory.LINE_GAP_ROWSPEC,
                         new RowSpec(Sizes.dluY(10))
                     }));
 
-                //---- label13 ----
-                label13.setText("ANTLR and StringTemplate are (c) 1989-2006 Terence Parr");
-                panel2.add(label13, cc.xy(3, 3));
-
-                //---- label14 ----
-                label14.setText("XJLibrary is (c) 2004-2006 Jean Bovet");
-                panel2.add(label14, cc.xy(3, 5));
-
-                //---- label1 ----
-                label1.setText("Portion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch");
-                panel2.add(label1, cc.xy(3, 7));
-
-                //---- label4 ----
-                label4.setText("Portion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber");
-                panel2.add(label4, cc.xy(3, 9));
-
-                //---- label3 ----
-                label3.setText("BrowserLauncher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>");
-                panel2.add(label3, cc.xy(3, 11));
-
-                //---- label2 ----
-                label2.setText("Application icon is (c) Matthew McClintock <matthew@mc.clintock.com>");
-                panel2.add(label2, cc.xy(3, 13));
+                //---- acknowledgeTextArea ----
+                acknowledgeTextArea.setBackground(SystemColor.window);
+                acknowledgeTextArea.setEditable(false);
+                acknowledgeTextArea.setText("ANTLR and StringTemplate are (c) 1989-2005 Terence Parr\nXJLibrary is (c) 2004-2005 Jean Bovet\nPortion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch\nPortion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber\nBrowserLauncher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>\nApplication icon is (c) Matthew McClintock <matthew@mc.clintock.com>\n");
+                panel2.add(acknowledgeTextArea, cc.xy(3, 3));
             }
             tabbedPane1.addTab("Acknowledgment", panel2);
 
@@ -224,7 +208,7 @@ public class DialogAbout extends XJPanel {
                         FormFactory.GLUE_COLSPEC
                     },
                     new RowSpec[] {
-                        FormFactory.GLUE_ROWSPEC,
+                        new RowSpec("max(default;15dlu)"),
                         FormFactory.LINE_GAP_ROWSPEC,
                         FormFactory.DEFAULT_ROWSPEC,
                         FormFactory.LINE_GAP_ROWSPEC,
@@ -234,7 +218,7 @@ public class DialogAbout extends XJPanel {
                         FormFactory.LINE_GAP_ROWSPEC,
                         new RowSpec(Sizes.dluY(10)),
                         FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.GLUE_ROWSPEC
+                        FormFactory.DEFAULT_ROWSPEC
                     }));
 
                 //---- label5 ----
@@ -287,12 +271,7 @@ public class DialogAbout extends XJPanel {
     private JLabel copyrightLabel;
     private JTabbedPane tabbedPane1;
     private JPanel panel2;
-    private JLabel label13;
-    private JLabel label14;
-    private JLabel label1;
-    private JLabel label4;
-    private JLabel label3;
-    private JLabel label2;
+    private JTextArea acknowledgeTextArea;
     private JPanel panel1;
     private JLabel label5;
     private JLabel guiVersionLabel;

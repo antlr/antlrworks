@@ -7,6 +7,7 @@ Version 1.0ea8 - 01/20/06
 - new: project document to edit multiple grammars, Java and any other text files and build
   them automatically within ANTLRWorks
 
+- kill the remote parser if the debugger cannot stop it (not applicable to remote parser)
 - improved ANTLR usage by running ANTLR only when necessary
 - rules are now sorted in interpreter and debugger if they are sorted in the editor
 - new message in status bar if an error is reported in the console
@@ -25,6 +26,7 @@ Version 1.0ea8 - 01/20/06
 - improved current select path in syntax diagram when switching path visiblity
 - improved syntax diagram display (colored label and smaller size)
 
+- fixed a bug where auto-indentation would be applied for a ':' even inside an action block
 - fixed a bug where some tokens were not properly colorized (cut and past the same token over itself)
 - fixed a bug where the file content was not properly parsed if modified outside ANTLRWorks
 - fixed a bug where the analysis indicator was colored improperly
