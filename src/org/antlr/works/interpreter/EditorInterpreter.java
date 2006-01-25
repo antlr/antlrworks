@@ -40,6 +40,7 @@ import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
+import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
@@ -61,6 +62,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDelegate {
 
@@ -71,6 +73,7 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
     protected EditorInterpreterTreeModel treeModel;
     protected ParseTreePanel parseTreePanel;
     protected JComboBox rulesCombo;
+    protected JTextField tokensToIgnoreField;
 
     protected XJDialogProgress progress;
 
@@ -121,6 +124,8 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
         Box box = Box.createHorizontalBox();
         box.add(createRunButton());
         box.add(createRulesPopUp());
+        box.add(Box.createHorizontalStrut(20));
+        box.add(createTokensToIgnoreField());
         box.add(Box.createHorizontalGlue());
         return box;
     }
@@ -141,12 +146,33 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
         rulesCombo = new JComboBox();
         rulesCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                GrammarSyntaxRule rule = (GrammarSyntaxRule)rulesCombo.getSelectedItem();
+                String rule = (String)rulesCombo.getSelectedItem();
                 if(rule != null)
-                    startSymbol = rule.name;
+                    startSymbol = rule;
             }
         });
         return rulesCombo;
+    }
+
+    public Box createTokensToIgnoreField() {
+        Box box = Box.createHorizontalBox();
+        box.add(new JLabel("Ignore tokens:"));
+
+        tokensToIgnoreField = new JTextField();
+        tokensToIgnoreField.setText("WS COMMENT");
+        box.add(tokensToIgnoreField);
+
+        JButton button = new JButton("Fetch");
+        button.setToolTipText("Fetch the names of all rules containing an action with channel=99");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                fetchTokensToIgnore();
+            }
+        });
+
+        box.add(button);
+
+        return box;
     }
 
     public Container getContainer() {
@@ -154,10 +180,65 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
     }
 
     public void setRules(List rules) {
+        Object selectedItem =  rulesCombo.getSelectedItem();
+
         rulesCombo.removeAllItems();
         for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-            rulesCombo.addItem(iterator.next());
+            rulesCombo.addItem(iterator.next().toString());
         }
+
+        if(selectedItem != null)
+            rulesCombo.setSelectedItem(selectedItem);
+    }
+
+    /** This method iterates over all rules and all blocks inside each rule to
+     * find a sequence of token equals to "channel=99".
+     */
+
+    public void fetchTokensToIgnore() {
+        List rules = editor.getRules();
+        if(rules == null || rules.isEmpty())
+            return;
+
+        StringBuffer tokensToIgnore = new StringBuffer();
+
+        ATESyntaxLexer lexer = new ATESyntaxLexer();
+        for (Iterator ruleIter = rules.iterator(); ruleIter.hasNext();) {
+            GrammarSyntaxRule rule = (GrammarSyntaxRule) ruleIter.next();
+            List blocks = rule.getBlocks();
+            if(blocks == null || blocks.isEmpty())
+                continue;
+
+            for (Iterator blockIter = blocks.iterator(); blockIter.hasNext();) {
+                ATEToken block = (ATEToken) blockIter.next();
+                lexer.tokenize(block.getAttribute());
+
+                List tokens = lexer.getTokens();
+                for(int t=0; t<tokens.size(); t++) {
+                    ATEToken token = (ATEToken)tokens.get(t);
+                    if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("channel") && t+3 < tokens.size()) {
+                        ATEToken t1 = (ATEToken)tokens.get(t+1);
+                        ATEToken t2 = (ATEToken)tokens.get(t+2);
+                        ATEToken t3 = (ATEToken)tokens.get(t+3);
+                        if(t1.type != ATESyntaxLexer.TOKEN_CHAR || !t1.getAttribute().equals("="))
+                            continue;
+
+                        if(t2.type != ATESyntaxLexer.TOKEN_CHAR || !t2.getAttribute().equals("9"))
+                            continue;
+
+                        if(t3.type != ATESyntaxLexer.TOKEN_CHAR || !t3.getAttribute().equals("9"))
+                            continue;
+
+                        if(tokensToIgnore.length() > 0)
+                            tokensToIgnore.append(" ");
+                        tokensToIgnore.append(rule.name);
+                        break;
+                    }
+                }
+            }
+        }
+
+        tokensToIgnoreField.setText(tokensToIgnore.toString());
     }
 
     public void interpret() {
@@ -217,10 +298,12 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
 
         Interpreter lexEngine = new Interpreter(lexer, input);
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
-        // @todo GUI for that
-        tokens.setTokenTypeChannel(lexer.getTokenType("WS"), 99);
-        tokens.setTokenTypeChannel(lexer.getTokenType("SL_COMMENT"), 99);
-        tokens.setTokenTypeChannel(lexer.getTokenType("ML_COMMENT"), 99);
+
+        StringTokenizer tk = new StringTokenizer(tokensToIgnoreField.getText(), " ");
+        while ( tk.hasMoreTokens() ) {
+            String tokenName = tk.nextToken();
+            tokens.setTokenTypeChannel(lexer.getTokenType(tokenName), 99);
+        }
 
         Interpreter parseEngine = new Interpreter(parser, tokens);
 

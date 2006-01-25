@@ -629,9 +629,9 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
                 int index = textPane.viewToModel(e.getPoint());
                 if(textPane.getSelectionStart() != textPane.getSelectionEnd()) {
                     if(index < textPane.getSelectionStart() || index > textPane.getSelectionEnd())
-                        setCaretPosition(index);
+                        setCaretPosition(index, false, false);
                 } else if(index != getCaretPosition())
-                    setCaretPosition(index);
+                    setCaretPosition(index, false, false);
 
                 textPaneInvokePopUp(e.getComponent(), e.getX(), e.getY());
             }

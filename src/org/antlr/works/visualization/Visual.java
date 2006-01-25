@@ -154,7 +154,7 @@ public class Visual implements EditorTab, GContextProvider {
         drawing.refresh();
     }
     
-    public EngineGrammar getGrammar() {
+    public EngineGrammar getEngineGrammar() {
         return editor.getEngineGrammar();
     }
 

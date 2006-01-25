@@ -112,7 +112,7 @@ public class VisualDrawing extends ATEThread {
             return;
 
         try {
-            visual.getGrammar().createGrammars();
+            visual.getEngineGrammar().createGrammars();
         } catch (Exception e) {
             visual.editor.console.print(e);
         } finally {
@@ -127,10 +127,14 @@ public class VisualDrawing extends ATEThread {
 
         String error = null;
 
-        if(visual.getGrammar().hasGrammar()) {
+        if(visual.getEngineGrammar().hasGrammar()) {
             NFAState startState = null;
             try {
-                startState = visual.getGrammar().getRuleStartState(threadRule.name);
+                startState = visual.getEngineGrammar().getRuleStartState(threadRule.name);
+                /*Grammar g = visual.getEngineGrammar().getLexerGrammar();
+                for(int i=104; i<152; i++) {
+                   // System.out.println(g.getTokenDisplayName(g.getTokenType("T"+i)));
+                } */
             } catch (Exception e) {
                 visual.editor.console.print(e);
             }
@@ -158,7 +162,7 @@ public class VisualDrawing extends ATEThread {
     protected synchronized void createGraphsForRule(GrammarSyntaxRule rule) throws Exception {
         List graphs = (List)cacheGraphs.get(rule);
         if(graphs == null) {
-            graphs = factory.buildGraphsForRule(visual.getGrammar(), rule.name, rule.errors);
+            graphs = factory.buildGraphsForRule(visual.getEngineGrammar(), rule.name, rule.errors);
             if(graphs != null)
                 cacheGraphs.put(rule, graphs);
         }
