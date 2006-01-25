@@ -1,9 +1,6 @@
 
 * Prio 1
-- correctly resize splitter in debugger
-- update rule state if antlr is ran in the shared object (not only check grammar)
 - GUI to ignore some tokens in the interpreter
-
 - contextual menu in editor
 - fix tree appearance between interpreter and debugger on Windows
 - ask for string literal for T104 (Tokens artificial SD)
@@ -23,13 +20,10 @@
 - if emacs is set (in preferences), disable all conflicting menu in Linux/Windows
 - jump to a definition by double-click in the syntax diagram
 - problem when more than one same LT between mark/rewind
-
 - traduire en francais en_US.stg dans /tool/templates/messages
 - extract all strings into properties
 
 * Check-list *
-
-- check with all v3 grammars
 
 - version in about.properties
 - version in strings.properties

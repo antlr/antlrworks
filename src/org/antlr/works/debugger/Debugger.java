@@ -412,7 +412,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
     }
 
     public org.antlr.works.grammar.EngineGrammar getGrammar() {
-        return editor.getGrammar();
+        return editor.getEngineGrammar();
     }
 
     public void queryGrammarBreakpoints() {
@@ -455,6 +455,10 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
     }
 
     public void launchLocalDebugger(boolean buildAndDebug) {
+        // If the grammar is dirty, build it anyway
+        if(!buildAndDebug && editor.getEngineGrammar().isDirty())
+            buildAndDebug = true;
+
         if(buildAndDebug || !debuggerLocal.isRequiredFilesExisting()) {
             DialogGenerate dialog = new DialogGenerate(getWindowComponent());
             dialog.setDebugOnly();
@@ -520,7 +524,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
 
     public boolean debuggerLaunchGrammar() {
         try {
-            getGrammar().createGrammars();
+            getGrammar().analyze();
         } catch (Exception e) {
             editor.getConsole().print(e);
             return false;

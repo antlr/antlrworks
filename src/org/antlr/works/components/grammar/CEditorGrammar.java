@@ -161,7 +161,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     /* Grammar */
 
-    protected EngineGrammar grammar;
+    protected EngineGrammar engineGrammar;
     protected GrammarSyntax grammarSyntax;
 
     public CEditorGrammar(ComponentContainer container) {
@@ -222,7 +222,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
         persistence = new EditorPersistence(this);
 
-        grammar = new EngineGrammar(this);
+        engineGrammar = new EngineGrammar(this);
     }
 
     protected void initMenus() {
@@ -450,8 +450,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return toolbar.getToolbar();
     }
 
-    public EngineGrammar getGrammar() {
-        return grammar;
+    public EngineGrammar getEngineGrammar() {
+        return engineGrammar;
     }
 
     public EditorConsole getConsole() {
@@ -764,6 +764,15 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         }
     }
 
+    /** This method gets called by EngineGrammar once the grammar has been analyzed. It has
+     * to update the syntax diagram and the rule information to reflect any error detected.
+     */
+
+    public void engineGrammarDidAnalyze() {
+        visual.update();
+        updateInformation();
+    }
+
     public void updateInformation() {
         String t;
         int size = 0;
@@ -860,7 +869,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void grammarChanged() {
-        grammar.makeDirty();
+        engineGrammar.makeDirty();
     }
 
     public void consolePrint(String s) {

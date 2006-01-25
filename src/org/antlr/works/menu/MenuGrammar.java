@@ -35,25 +35,23 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.grammar.DecisionDFA;
-import org.antlr.works.grammar.GrammarDOTTab;
-import org.antlr.works.grammar.RulesDependency;
+import org.antlr.works.grammar.*;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxGroup;
 import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.syntax.GrammarSyntaxRule;
-import org.antlr.works.visualization.Visual;
-import org.antlr.works.visualization.VisualDelegate;
 
 import javax.swing.*;
 
-public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDOTTabDelegate, VisualDelegate {
+public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDOTTabDelegate, CheckGrammarDelegate {
 
     protected XJDialogProgress progress;
+    protected CheckGrammar checkGrammar;
 
     public MenuGrammar(CEditorGrammar editor) {
         super(editor);
         progress = new XJDialogProgress(editor.getWindowContainer());
+        checkGrammar = new CheckGrammar(editor, this);
     }
 
     public void showTokensSD() {
@@ -140,22 +138,16 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
         showProgress("Checking Grammar...");
 
         editor.console.makeCurrent();
-        editor.visual.setDelegate(this);
-        editor.visual.checkGrammar();
+        checkGrammar.check();
 
         Statistics.shared().recordEvent(Statistics.EVENT_CHECK_GRAMMAR);
     }
 
-    public void visualizationProcessDidBegin(Visual visual) {
+    public void checkGrammarDidBegin() {
     }
 
-    public void visualizationProcessDidEnd(Visual visual) {
-        editor.updateInformation();
+    public void checkGrammarDidEnd() {
         hideProgress();
-    }
-
-    public void visualizationDidMarkRules(Visual visual) {
-        editor.rules.refreshRules();
     }
 
     protected void showProgress(String title) {

@@ -43,8 +43,10 @@ import org.antlr.tool.GrammarNonDeterminismMessage;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.GrammarSyntaxName;
+import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.ErrorListener;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -242,10 +244,23 @@ public class EngineGrammar {
                 // If the grammar is combined, analyze also the lexer
                 getLexerGrammar().createLookaheadDFAs();
             }
+
             buildNonDeterministicErrors();
+            markRulesWithWarningsOrErrors();
         } finally {
             DecisionProbe.verbose = oldVerbose;
         }
+
+        if(SwingUtilities.isEventDispatchThread()) {
+            editor.engineGrammarDidAnalyze();
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    editor.engineGrammarDidAnalyze();
+                }
+            });
+        }
+
         grammarAnalyzeDirty = false;
     }
 
@@ -275,11 +290,10 @@ public class EngineGrammar {
             Integer displayAltI = (Integer) iter.next();
             NFAState nfaStart = nondetMsg.probe.dfa.getNFADecisionStartState();
 
-            int tracePathAlt =
-                nfaStart.translateDisplayAltToWalkAlt(nondetMsg.probe.dfa, displayAltI.intValue());
-            if ( firstAlt == 0 ) {
+            int tracePathAlt = nfaStart.translateDisplayAltToWalkAlt(nondetMsg.probe.dfa, displayAltI.intValue());
+            if ( firstAlt == 0 )
                 firstAlt = tracePathAlt;
-            }
+
             List path =
                 nondetMsg.probe.getNFAPathStatesForAlt(firstAlt,
                                                        tracePathAlt,
@@ -294,6 +308,32 @@ public class EngineGrammar {
         }
 
         return error;
+    }
+
+    protected void markRulesWithWarningsOrErrors() throws Exception {
+        // Clear graphic cache because we have to redraw each rule again
+        editor.visual.clearCacheGraphs();
+        for (Iterator iterator = editor.getParserEngine().getRules().iterator(); iterator.hasNext();) {
+            GrammarSyntaxRule rule = (GrammarSyntaxRule)iterator.next();
+            updateRuleWithErrors(rule, fetchErrorsForRule(rule));
+        }
+
+        editor.rules.refreshRules();
+    }
+
+    protected void updateRuleWithErrors(GrammarSyntaxRule rule, List errors) throws Exception {
+        rule.setErrors(errors);
+        editor.visual.createGraphsForRule(rule);
+    }
+
+    protected List fetchErrorsForRule(GrammarSyntaxRule rule) {
+        List errors = new ArrayList();
+        for (Iterator iterator = getErrors().iterator(); iterator.hasNext();) {
+            EngineGrammarError error = (EngineGrammarError) iterator.next();
+            if(error.line>=rule.start.startLineNumber && error.line<=rule.end.startLineNumber)
+                errors.add(error);
+        }
+        return errors;
     }
 
 }

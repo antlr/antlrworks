@@ -29,19 +29,35 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor;
+package org.antlr.works.grammar;
 
-import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.utils.Console;
 
-import java.awt.*;
+public class CheckGrammar implements Runnable {
 
-public interface EditorProvider {
-    public void changeDone();
-    public String getText();
-    public String getFileFolder();
-    public String getFilePath();
-    public String getFileName();
-    public EngineGrammar getEngineGrammar();
-    public EditorConsole getConsole();
-    public Container getWindowContainer();
+    protected CheckGrammarDelegate delegate;
+    protected CEditorGrammar editor;
+    protected boolean analyze = false;
+
+    public CheckGrammar(CEditorGrammar editor, CheckGrammarDelegate delegate) {
+        this.editor = editor;
+        this.delegate = delegate;
+    }
+
+    public void check() {
+        new Thread(this).start();
+    }
+
+    public void run() {
+        editor.getConsole().setMode(Console.MODE_VERBOSE);
+        delegate.checkGrammarDidBegin();
+        try {
+            editor.getEngineGrammar().analyze();
+        } catch (Exception e) {
+            editor.getConsole().print(e);
+        }
+        delegate.checkGrammarDidEnd();
+    }
+
 }

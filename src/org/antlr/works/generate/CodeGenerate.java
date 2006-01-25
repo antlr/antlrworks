@@ -79,7 +79,7 @@ public class CodeGenerate implements Runnable {
 
     public String getGrammarLanguage() {
         try {
-            return (String)provider.getGrammar().getParserGrammar().getOption("language");
+            return (String)provider.getEngineGrammar().getParserGrammar().getOption("language");
         } catch (Exception e) {
             provider.getConsole().print(e);
         }
@@ -87,7 +87,7 @@ public class CodeGenerate implements Runnable {
     }
 
     public String getGrammarName() {
-        return provider.getGrammar().getName();
+        return provider.getEngineGrammar().getName();
     }
 
     public String getLastError() {
@@ -116,9 +116,9 @@ public class CodeGenerate implements Runnable {
     public String getGeneratedClassName(boolean lexer) throws Exception {
         String name;
         if(lexer)
-            name = provider.getGrammar().getParserGrammar().name+"Lexer";
+            name = provider.getEngineGrammar().getParserGrammar().name+"Lexer";
         else
-            name = provider.getGrammar().getParserGrammar().name;
+            name = provider.getEngineGrammar().getParserGrammar().name;
         return name;
     }
 
@@ -136,12 +136,12 @@ public class CodeGenerate implements Runnable {
     }
 
     public boolean supportsLexer() {
-        int type = provider.getGrammar().getType();
+        int type = provider.getEngineGrammar().getType();
         return type == GrammarSyntaxName.COMBINED || type == GrammarSyntaxName.LEXER;
     }
 
     public boolean supportsParser() {
-        int type = provider.getGrammar().getType();
+        int type = provider.getEngineGrammar().getType();
         return type == GrammarSyntaxName.COMBINED || type == GrammarSyntaxName.PARSER || type == GrammarSyntaxName.TREEPARSER;
     }
 

@@ -29,10 +29,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.visualization;
+package org.antlr.works.grammar;
 
-public interface VisualDelegate {
-    public void visualizationProcessDidBegin(Visual visual);
-    public void visualizationProcessDidEnd(Visual visual);
-    public void visualizationDidMarkRules(Visual visual);
+public interface CheckGrammarDelegate {
+    public void checkGrammarDidBegin();
+    public void checkGrammarDidEnd();
 }

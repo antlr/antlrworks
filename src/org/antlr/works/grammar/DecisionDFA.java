@@ -94,11 +94,11 @@ public class DecisionDFA extends GrammarDOTTab {
 
         GrammarSyntaxRule rule = editor.getCurrentRule();
         if(rule.lexer)
-            g = editor.getGrammar().getLexerGrammar();
+            g = editor.getEngineGrammar().getLexerGrammar();
         else
-            g = editor.getGrammar().getParserGrammar();
+            g = editor.getEngineGrammar().getParserGrammar();
 
-        editor.getGrammar().analyze();
+        editor.getEngineGrammar().analyze();
 
         List columns = g.getLookaheadDFAColumnsForLineInFile(line);
         int adjustedColumn = -1;

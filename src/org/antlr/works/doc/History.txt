@@ -1,5 +1,5 @@
 
-Version 1.0ea8 - 01/20/06
+Version 1.0ea8 - 01/24/06
 
 - new: rule dependency graph (can be exported to EPS or bitmap file)
 - new: syntax coloring for generated Java code
@@ -7,6 +7,7 @@ Version 1.0ea8 - 01/20/06
 - new: project document to edit multiple grammars, Java and any other text files and build
   them automatically within ANTLRWorks
 
+- update the rules status and syntax diagram each time the grammar is analyzed (not only when using the Check Grammar command)
 - kill the remote parser if the debugger cannot stop it (not applicable to remote parser)
 - improved ANTLR usage by running ANTLR only when necessary
 - rules are now sorted in interpreter and debugger if they are sorted in the editor

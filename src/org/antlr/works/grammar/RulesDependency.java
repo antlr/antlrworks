@@ -71,7 +71,7 @@ public class RulesDependency extends GrammarDOTTab {
         }
 
         includeLexerRefs = true;
-        if(!rule.lexer && editor.getGrammar().getType() == GrammarSyntaxName.COMBINED) {
+        if(!rule.lexer && editor.getEngineGrammar().getType() == GrammarSyntaxName.COMBINED) {
             includeLexerRefs = XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Rule Dependency Graph", "Do you want to include lexer references ?") == XJAlert.YES;
         }
 

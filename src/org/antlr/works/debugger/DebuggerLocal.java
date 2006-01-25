@@ -120,7 +120,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         progress.setInfo("Preparing...");
         progress.setIndeterminate(false);
         progress.setProgress(0);
-        progress.setProgressMax(2);
+        progress.setProgressMax(3);
         progress.setDelegate(this);
         progress.display();
     }
@@ -261,16 +261,36 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     protected void generateAndCompileGrammar() {
-        progress.setInfo("Generating...");
+        progress.setInfo("Analyzing...");
         progress.setProgress(1);
+        analyzeGrammar();
+
+        if(cancelled())
+            return;
+
+        progress.setInfo("Generating...");
+        progress.setProgress(2);
         generateGrammar();
 
         if(cancelled())
             return;
 
         progress.setInfo("Compiling...");
-        progress.setProgress(2);
+        progress.setProgress(3);
         compileGrammar();
+    }
+
+    protected void analyzeGrammar() {
+        String errorMessage = null;
+        try {
+            debugger.getGrammar().analyze();
+        } catch (Exception e) {
+            debugger.editor.console.print(e);
+            errorMessage = e.getLocalizedMessage();
+        }
+        if(errorMessage != null) {
+            reportError("Error while analyzing the grammar:\n"+errorMessage);
+        }
     }
 
     protected void generateGrammar() {

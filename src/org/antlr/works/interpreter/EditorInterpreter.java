@@ -159,7 +159,7 @@ public class EditorInterpreter implements Runnable, EditorTab {
     public void interpret() {
         editor.console.makeCurrent();
 
-        if(editor.getGrammar().isDirty()) {
+        if(editor.getEngineGrammar().isDirty()) {
             progress.setInfo("Preparing...");
         } else {
             progress.setInfo("Interpreting...");
@@ -177,8 +177,7 @@ public class EditorInterpreter implements Runnable, EditorTab {
         ErrorManager.setErrorListener(ErrorListener.shared());
 
         try {
-            editor.getGrammar().createGrammars();
-            editor.getGrammar().analyze();
+            editor.getEngineGrammar().analyze();
         } catch(Exception e) {
             editor.console.print(e);
             runEnded();
@@ -205,8 +204,8 @@ public class EditorInterpreter implements Runnable, EditorTab {
         Grammar parser;
         Grammar lexer;
         try {
-            parser = editor.getGrammar().getParserGrammar();
-            lexer = editor.getGrammar().getLexerGrammar();
+            parser = editor.getEngineGrammar().getParserGrammar();
+            lexer = editor.getEngineGrammar().getLexerGrammar();
         } catch (Exception e) {
             editor.console.print(e);
             return;

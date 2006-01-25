@@ -63,9 +63,6 @@ public class Visual implements EditorTab, GContextProvider {
     protected CEditorGrammar editor;
 
     protected VisualDrawing drawing;
-    protected VisualAnalysis analysis;
-
-    protected VisualDelegate delegate;
 
     protected GContext context;
     protected Skin skin;
@@ -87,7 +84,6 @@ public class Visual implements EditorTab, GContextProvider {
         panel = new GPanel(context);
 
         drawing = new VisualDrawing(this);
-        analysis = new VisualAnalysis(this);
     }
 
     public GrammarSyntaxEngine getParserEngine() {
@@ -101,8 +97,7 @@ public class Visual implements EditorTab, GContextProvider {
     public void close() {
         panel.close();
         drawing.stop();
-        analysis.stop();
-        while(drawing.isRunning() || analysis.isRunning()) {
+        while(drawing.isRunning()) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -134,10 +129,6 @@ public class Visual implements EditorTab, GContextProvider {
         }
     }
 
-    public void setDelegate(VisualDelegate delegate) {
-        this.delegate = delegate;
-    }
-
     public void setText(String text, String filename) {
         if(isEnable())
             drawing.setText(text, filename);
@@ -153,16 +144,25 @@ public class Visual implements EditorTab, GContextProvider {
         panel.setGraphs(null);
     }
 
-    public void checkGrammar() {
-        analysis.startAnalysis();
-    }
-
     public void cancelDrawingProcess() {
         drawing.skip();
     }
 
+    public void clearCacheGraphs() {
+        drawing.clearCacheGraphs();
+    }
+
+    public void createGraphsForRule(GrammarSyntaxRule rule) throws Exception {
+        drawing.createGraphsForRule(rule);
+    }
+
+    public void update() {
+        panel.createPanel();
+        drawing.refresh();
+    }
+    
     public EngineGrammar getGrammar() {
-        return editor.getGrammar();
+        return editor.getEngineGrammar();
     }
 
     public Container getContainer() {
