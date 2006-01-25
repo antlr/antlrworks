@@ -63,7 +63,8 @@ public class GView extends JPanel implements XJMenuItemDelegate {
     protected int currentGraphIndex = 0;
     protected GPanel panel;
     protected GContext context;
-
+    protected XJSmoothScrolling smoothScrolling;
+                              
     protected Point lastMouse;
 
     protected static final Font DEFAULT_FONT = new Font("Courier", Font.BOLD, 18);
@@ -78,6 +79,8 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         this.panel = panel;
         this.context = context;
         this.context.setContainer(this);
+
+        smoothScrolling = new XJSmoothScrolling(this, null);
 
         setFocusable(true);
 
@@ -276,7 +279,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
             rect.y -= 50;
             rect.width += 100;
             rect.height += 100;
-            new XJSmoothScrolling(this, rect, null);
+            smoothScrolling.scrollTo(rect);
         }
     }
 

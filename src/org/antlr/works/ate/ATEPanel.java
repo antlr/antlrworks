@@ -63,6 +63,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDelegate {
 
     protected XJFrame parentFrame;
+    protected XJSmoothScrolling smoothScrolling;
 
     protected ATEPanelDelegate delegate;
     protected ATETextPane textPane;
@@ -200,7 +201,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
                     // Will move the caret after the scrolling
                     // has completed (see smoothScrollingDidComplete()) 
                     caretPosition = position;
-                    new XJSmoothScrolling(textPane, r, this);
+                    smoothScrolling.scrollTo(r);
                 } else
                     textPane.scrollRectToVisible(r);
             }
@@ -418,6 +419,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         textPane.addMouseListener(new TextPaneMouseAdapter());
         textPane.addMouseMotionListener(new TextPaneMouseMotionAdapter());
 
+        smoothScrolling = new XJSmoothScrolling(textPane, this);
+        
         // Gutter
         gutter = new ATEGutter(this);
 

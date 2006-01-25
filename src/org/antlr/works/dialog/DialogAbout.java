@@ -49,6 +49,8 @@ public class DialogAbout extends XJPanel {
         initComponents();
 
         appIconButton.setIcon(IconManager.shared().getIconApplication());
+        copyrightLabel.setText("Copyright (c) 2005-2006 Jean Bovet & Terence Parr");
+
         versionLabel.setText("Version "+XJApplication.getAppVersionLong());
         guiVersionLabel.setText(XJApplication.getAppVersionShort());
         antlrVersionLabel.setText(Tool.VERSION);
