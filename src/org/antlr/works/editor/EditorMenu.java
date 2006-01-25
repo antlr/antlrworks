@@ -37,8 +37,10 @@ import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.dialog.DialogStatistics;
+import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -123,9 +125,6 @@ public class EditorMenu implements XJMenuItemDelegate {
     // File Export
     public static final int MI_EXPORT_AS_IMAGE = 110;
     public static final int MI_EXPORT_AS_EPS = 111;
-    //public static final int MI_SAVE_ANTLR_NFA_DOT = 112;
-    //public static final int MI_SAVE_RAW_NFA_DOT = 113;
-    //public static final int MI_SAVE_OPTIMIZED_NFA_DOT = 114;
     public static final int MI_EXPORT_EVENT = 115;
 
     public static final int MI_PRIVATE_STATS = 200;
@@ -155,10 +154,6 @@ public class EditorMenu implements XJMenuItemDelegate {
         exportMenu.setTitle("Export");
         exportMenu.addItem(new XJMenuItem("As Bitmap Image...", MI_EXPORT_AS_IMAGE, this));
         exportMenu.addItem(new XJMenuItem("As EPS...", MI_EXPORT_AS_EPS, this));
-        //exportMenu.addSeparator();
-        //exportMenu.addItem(new XJMenuItem("ANTLR NFA as DOT...", MI_SAVE_ANTLR_NFA_DOT, this));
-        //exportMenu.addItem(new XJMenuItem("Raw NFA as DOT...", MI_SAVE_RAW_NFA_DOT, this));
-        //exportMenu.addItem(new XJMenuItem("Optimized NFA as DOT...", MI_SAVE_OPTIMIZED_NFA_DOT, this));
 
         menu.insertItemAfter(exportMenu, XJMainMenuBar.MI_SAVEAS);
 
@@ -227,7 +222,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.addItem(new XJMenuItem("Show Parser Code", MI_SHOW_GENERATED_PARSER_CODE, this));
         menu.addItem(new XJMenuItem("Show Lexer Code", MI_SHOW_GENERATED_LEXER_CODE, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show Rule Code", MI_SHOW_RULE_GENCODE, this));
+        menu.addItem(createMenuItem(MI_SHOW_RULE_GENCODE));
 
         menubar.addCustomMenu(menu);
     }
@@ -237,8 +232,8 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu = new XJMenu();
         menu.setTitle("Go To");
 
-        menu.addItem(new XJMenuItem("Rule...", KeyEvent.VK_B, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_GOTO_RULE, this));
-        menu.addItem(new XJMenuItem("Declaration", KeyEvent.VK_B, MI_GOTO_DECLARATION, this));
+        menu.addItem(createMenuItem(MI_GOTO_RULE));
+        menu.addItem(createMenuItem(MI_GOTO_DECLARATION));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Line...", KeyEvent.VK_G, MI_GOTO_LINE, this));
         menu.addItem(new XJMenuItem("Character...", MI_GOTO_CHARACTER, this));
@@ -256,14 +251,14 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle("Refactor");
-        menu.addItem(new XJMenuItem("Rename...", KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this));
-        menu.addItem(new XJMenuItem("Replace Literals With Token Label...", MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this));
+        menu.addItem(createMenuItem(MI_RENAME));
+        menu.addItem(createMenuItem(MI_REPLACE_LITERAL_WITH_TOKEN_LABEL));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Remove Left Recursion", MI_REMOVE_LEFT_RECURSION, this));
         menu.addItem(new XJMenuItem("Remove All Left Recursion", MI_REMOVE_ALL_LEFT_RECURSION, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Extract Rule...", MI_EXTRACT_RULE, this));
-        menu.addItem(new XJMenuItem("Inline Rule", MI_INLINE_RULE, this));
+        menu.addItem(createMenuItem(MI_EXTRACT_RULE));
+        menu.addItem(createMenuItem(MI_INLINE_RULE));
         menu.addSeparator();
 
         XJMenu literals = new XJMenu();
@@ -315,11 +310,110 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.addItem(new XJMenuItem("Find...", KeyEvent.VK_F, MI_FIND, this));
         menu.addItem(new XJMenuItem("Find Next", KeyEvent.VK_F3, 0, MI_FIND_NEXT, this));
         menu.addItem(new XJMenuItem("Find Previous", KeyEvent.VK_F3, Event.SHIFT_MASK, MI_FIND_PREV, this));
-        menu.addItem(new XJMenuItem("Find Text at Caret", KeyEvent.VK_F3, MI_FIND_TOKEN, this));
+        menu.addItem(createMenuItem(MI_FIND_TOKEN));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Find Usages", KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this));
+        menu.addItem(createMenuItem(MI_FIND_USAGE));
 
         menubar.addCustomMenu(menu);
+    }
+
+    public XJMenuItem createMenuItem(int tag) {
+        return createMenuItem(tag, false);
+    }
+
+    public XJMenuItem createMenuItem(int tag, boolean contextual) {
+        XJMenuItem item = null;
+        switch(tag) {
+            case MI_FIND_TOKEN:
+                item = new XJMenuItem("Find Text at Caret", KeyEvent.VK_F3, MI_FIND_TOKEN, this);
+                break;
+            case MI_FIND_USAGE:
+                item = new XJMenuItem("Find Usages", KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this);
+                break;
+
+            case MI_SHOW_DECISION_DFA:
+                item = new XJMenuItem("Show Decision DFA", MI_SHOW_DECISION_DFA, this);
+                break;
+
+            case MI_SHOW_DEPENDENCY:
+                item = new XJMenuItem("Show Rule Dependency Graph", MI_SHOW_DEPENDENCY, this);
+                break;
+
+            case MI_GOTO_RULE:
+                item = new XJMenuItem(contextual?"Go To Rule...":"Rule...", KeyEvent.VK_B, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_GOTO_RULE, this);
+                break;
+
+            case MI_GOTO_DECLARATION:
+                item = new XJMenuItem(contextual?"Go To Declaration":"Declaration", KeyEvent.VK_B, MI_GOTO_DECLARATION, this);
+                break;
+
+            case MI_RENAME:
+                item = new XJMenuItem("Rename...", KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this);
+                break;
+
+            case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
+                item = new XJMenuItem("Replace Literals With Token Label...", MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this);
+                break;
+
+            case MI_EXTRACT_RULE:
+                item = new XJMenuItem("Extract Rule...", MI_EXTRACT_RULE, this);
+                break;
+
+            case MI_INLINE_RULE:
+                item = new XJMenuItem("Inline Rule", MI_INLINE_RULE, this);
+                break;
+
+            case MI_SHOW_RULE_GENCODE:
+                item = new XJMenuItem("Show Rule Code", MI_SHOW_RULE_GENCODE, this);
+                break;
+
+            case MI_EXPORT_AS_IMAGE:
+                item = new XJMenuItem(contextual?"Export As Bitmap Image...":"As Bitmap Image...", MI_EXPORT_AS_IMAGE, this);
+                break;
+
+            case MI_EXPORT_AS_EPS:
+                item = new XJMenuItem(contextual?"Export As EPS...":"As EPS...", MI_EXPORT_AS_EPS, this);
+                break;
+        }
+        return item;
+    }
+
+    public JPopupMenu getContextualMenu() {
+        boolean overReference = editor.getCurrentReference() != null;
+        boolean overToken = editor.getCurrentToken() != null;
+        boolean overRule = editor.getCurrentRule() != null;
+        boolean overSelection = editor.getTextPane().getSelectionStart() != editor.getTextPane().getSelectionEnd();
+
+        ContextualMenuFactory factory = new ContextualMenuFactory(this);
+        factory.addItem(MI_GOTO_RULE);
+        if(overReference)
+            factory.addItem(MI_GOTO_DECLARATION);
+
+        factory.addSeparator();
+        if(overToken)
+            factory.addItem(MI_RENAME);
+        if(editor.menuRefactor.canReplaceLiteralWithTokenLabel())
+            factory.addItem(MI_REPLACE_LITERAL_WITH_TOKEN_LABEL);
+        if(editor.menuRefactor.canExtractRule())
+            factory.addItem(MI_EXTRACT_RULE);
+        if(editor.menuRefactor.canInlineRule())
+            factory.addItem(MI_INLINE_RULE);
+
+        if(overToken) {
+            factory.addSeparator();
+            if(overSelection)
+                factory.addItem(MI_FIND_TOKEN);
+            factory.addItem(MI_FIND_USAGE);
+        }
+
+        if(overRule) {
+            factory.addSeparator();
+            factory.addItem(MI_SHOW_DECISION_DFA);
+            factory.addItem(MI_SHOW_DEPENDENCY);
+            factory.addItem(MI_SHOW_RULE_GENCODE);
+        }
+
+        return factory.menu;
     }
 
     public void menuItemState(XJMenuItem item) {
@@ -643,21 +737,10 @@ public class EditorMenu implements XJMenuItemDelegate {
                 editor.menuExport.exportAsEPS();
                 break;
 
-/*            case MI_SAVE_ANTLR_NFA_DOT:
-                editor.visual.saveANTLRNFA2DOT(editor.getCurrentRule());
-                break;
-
-            case MI_SAVE_RAW_NFA_DOT:
-                editor.visual.saveRawNFA2DOT(editor.getCurrentRule());
-                break;
-
-            case MI_SAVE_OPTIMIZED_NFA_DOT:
-                editor.visual.saveOptimizedNFA2DOT(editor.getCurrentRule());
-                break;*/
-
             case MI_EXPORT_EVENT:
                 editor.menuExport.exportEventsAsTextFile();
                 break;
         }
     }
+
 }

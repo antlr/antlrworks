@@ -32,20 +32,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization;
 
 import edu.usfca.xj.appkit.gview.GView;
-import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
-import org.antlr.tool.DOTGenerator;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.EngineGrammar;
-import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.Console;
-import org.antlr.works.utils.DotGenerator;
-import org.antlr.works.visualization.fa.FAFactory;
-import org.antlr.works.visualization.fa.FAState;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GContextProvider;
 import org.antlr.works.visualization.graphics.GEngineGraphics;
@@ -56,7 +50,6 @@ import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.FileWriter;
 
 public class Visual implements EditorTab, GContextProvider {
 
@@ -81,7 +74,7 @@ public class Visual implements EditorTab, GContextProvider {
         context.setSkin(skin);
         context.setProvider(this);
 
-        panel = new GPanel(context);
+        panel = new GPanel(editor, context);
 
         drawing = new VisualDrawing(this);
     }
@@ -178,62 +171,6 @@ public class Visual implements EditorTab, GContextProvider {
             return null;
 
         return XJFileChooser.shared().getSelectedFilePath();
-    }
-
-    public void saveANTLRNFA2DOT(GrammarSyntaxRule rule) {
-        String dotFile = chooseDOTFile();
-        if(dotFile == null)
-            return;
-
-        try {
-            DOTGenerator dotgen = new DOTGenerator(getGrammar().getGrammarForRule(rule.name));
-            String dot = dotgen.getDOT(getGrammar().getRuleStartState(rule.name));
-            FileWriter writer = new FileWriter(dotFile);
-            writer.write(dot);
-            writer.close();
-        } catch (Exception e) {
-            XJAlert.display(editor.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
-        }
-
-        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_ANTLRNFA_DOT);
-    }
-
-    public void saveOptimizedNFA2DOT(GrammarSyntaxRule rule) {
-        String dotFile = chooseDOTFile();
-        if(dotFile == null)
-            return;
-
-        try {
-            FAState state = new FAFactory(getGrammar().getGrammarForRule(rule.name)).buildNFA(getGrammar().getRuleStartState(rule.name), true);
-            if(state == null)
-                return;
-
-            DotGenerator jdot = new DotGenerator(state);
-            jdot.writeToFile(dotFile);
-        } catch (Exception e) {
-            XJAlert.display(editor.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
-        }
-
-        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_OPTIMIZEDNFA_DOT);
-    }
-
-    public void saveRawNFA2DOT(GrammarSyntaxRule rule) {
-        String dotFile = chooseDOTFile();
-        if(dotFile == null)
-            return;
-
-        try {
-            FAState state = new FAFactory(getGrammar().getGrammarForRule(rule.name)).buildNFA(getGrammar().getRuleStartState(rule.name), false);
-            if(state == null)
-                return;
-
-            DotGenerator jdot = new DotGenerator(state);
-            jdot.writeToFile(dotFile);
-        } catch (Exception e) {
-            XJAlert.display(editor.getJavaContainer(), "Error", "Cannot save DOT file: "+dotFile+"\nError: "+e);
-        }
-
-        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_RAWNFA_DOT);
     }
 
     public boolean canSaveImage() {

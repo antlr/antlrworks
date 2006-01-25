@@ -60,6 +60,8 @@ public class ParseTreePanel extends JPanel {
     protected ParseTreeGraphView parseTreeGraphView;
     protected JScrollPane graphScrollPane;
 
+    protected ParseTreePanelDelegate delegate;
+
     public ParseTreePanel(DefaultTreeModel treeModel) {
         super(new BorderLayout());
 
@@ -86,12 +88,17 @@ public class ParseTreePanel extends JPanel {
                     }
                 }
             }
+
         });
 
         listViewComponent = createListView();
         graphViewComponent = createGraphView();
 
         add(graphViewComponent, BorderLayout.CENTER);
+    }
+
+    public void setDelegate(ParseTreePanelDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public Component createListView() {
@@ -151,7 +158,7 @@ public class ParseTreePanel extends JPanel {
     public Component createGraphView() {
         JPanel panel = new JPanel(new BorderLayout());
 
-        parseTreeGraphView = new ParseTreeGraphView();
+        parseTreeGraphView = new ParseTreeGraphView(this);
         parseTreeGraphView.setAutoAdjustSize(true);
         parseTreeGraphView.setBackground(Color.white);
         parseTreeGraphView.setDrawBorder(false);
@@ -252,4 +259,10 @@ public class ParseTreePanel extends JPanel {
         XJAlert.display(this, "Node info", n.getInfoString());
     }
 
+    public JPopupMenu getContextualMenu() {
+        if(delegate != null)
+            return delegate.getContextualMenu();
+        else
+            return null;
+    }
 }

@@ -1,7 +1,6 @@
 
 * Prio 1
 - GUI to ignore some tokens in the interpreter
-- contextual menu in editor
 - fix tree appearance between interpreter and debugger on Windows
 - ask for string literal for T104 (Tokens artificial SD)
 
@@ -11,7 +10,6 @@
 - prefs: customizable list of "Insert Rule From Template" - or read from a file ?
 
 * Prio 3:
-- contextual menu to export to bitmap/eps
 - jump into source when navigating grammar text (in generated code)
 - display current token in syntax diagram
 - (Terence will change) handle "header with package" option (see with Terence for line numbering between files)

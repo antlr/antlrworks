@@ -58,7 +58,6 @@ public class ATETextPane extends JTextPane
         super(new ATEStyledDocument());
         setCaret(new ATECaret());
         setEditorKit(new ATECustomEditorKit(this));
-
         this.textEditor = textEditor;
     }
 
@@ -149,8 +148,6 @@ public class ATETextPane extends JTextPane
      */
 
     public boolean isViewVisible(View v) {
-        // @todo OPTIMIZATION
-
         Element e = v.getElement();
         String key = getKeyForView(v);
 
@@ -370,4 +367,5 @@ public class ATETextPane extends JTextPane
             return Character.isLetterOrDigit(c) || c == '_';
         }
     }
+
 }

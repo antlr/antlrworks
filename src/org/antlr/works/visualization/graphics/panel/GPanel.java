@@ -33,6 +33,9 @@ package org.antlr.works.visualization.graphics.panel;
 
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.editor.EditorMenu;
+import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.IconManager;
@@ -64,10 +67,13 @@ public class GPanel implements XJNotificationObserver {
     protected JScrollPane viewScrollPane;
 
     protected GrammarSyntaxRule rule;
+    protected CEditorGrammar editor;
 
-    public GPanel(GContext context) {
+    public GPanel(CEditorGrammar editor, GContext context) {
+        this.editor = editor;
         this.context = context;
         this.container = new JPanel(new BorderLayout());
+
         createNormalPanel();
 
         XJNotificationCenter.defaultCenter().addObserver(this, GPathGroup.NOTIF_CURRENT_PATH_DID_CHANGE);
@@ -140,7 +146,7 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private Container createVisualizationPane() {
-        view = new GView(this, context);
+        view = new CustomGView(this, context);
         viewScrollPane = new JScrollPane(view);
         return viewScrollPane;
     }
@@ -426,6 +432,21 @@ public class GPanel implements XJNotificationObserver {
     public void notificationFire(Object source, String name) {
         if(name.equals(GPathGroup.NOTIF_CURRENT_PATH_DID_CHANGE))
             updateCurrentAlternative();
+    }
+
+    protected class CustomGView extends GView {
+
+        public CustomGView(GPanel panel, GContext context) {
+            super(panel, context);
+        }
+
+        public JPopupMenu getContextualMenu() {
+            ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
+            factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
+            factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
+            return factory.menu;
+        }
+
     }
 
 }

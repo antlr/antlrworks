@@ -87,6 +87,14 @@ public class MenuRefactor extends MenuAbstract {
         }
     }
 
+    public boolean canReplaceLiteralWithTokenLabel() {
+        ATEToken token = editor.getCurrentToken();
+        if(token == null)
+            return false;
+
+        return token.type == ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING || token.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING;
+    }
+    
     public void replaceLiteralWithTokenLabel() {
         ATEToken token = editor.getCurrentToken();
         if(token == null)
@@ -260,13 +268,20 @@ public class MenuRefactor extends MenuAbstract {
         editor.endGroupChange();
     }
 
-    public void extractRule() {
+    public boolean canExtractRule() {
         int leftIndex = editor.getSelectionLeftIndexOnTokenBoundary();
         int rightIndex = editor.getSelectionRightIndexOnTokenBoundary();
-        if(leftIndex == -1 || rightIndex == -1) {
+        return leftIndex != -1 && rightIndex != -1;
+    }
+
+    public void extractRule() {
+        if(!canExtractRule()) {
             XJAlert.display(editor.getWindowContainer(), "Extract Rule", "At least one token must be selected.");
             return;
         }
+
+        int leftIndex = editor.getSelectionLeftIndexOnTokenBoundary();
+        int rightIndex = editor.getSelectionRightIndexOnTokenBoundary();
 
         editor.selectTextRange(leftIndex, rightIndex);
 
@@ -286,6 +301,10 @@ public class MenuRefactor extends MenuAbstract {
             }
             editor.endGroupChange();
         }
+    }
+
+    public boolean canInlineRule() {
+        return editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition()) != null;
     }
 
     public void inlineRule() {

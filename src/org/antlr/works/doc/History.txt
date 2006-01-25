@@ -6,6 +6,7 @@ Version 1.0ea8 - 01/24/06
 - new: references, comments and strings are now colorized inside actions
 - new: project document to edit multiple grammars, Java and any other text files and build
   them automatically within ANTLRWorks
+- new: contextual menus in editor, syntax diagram, interpreter and debugger
 
 - update the rules status and syntax diagram each time the grammar is analyzed (not only when using the Check Grammar command)
 - kill the remote parser if the debugger cannot stop it (not applicable to remote parser)

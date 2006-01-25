@@ -1,10 +1,10 @@
-package org.antlr.works.ate;
+package org.antlr.works.parsetree;
 
-import java.awt.*;
+import javax.swing.*;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,14 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface ATEPanelDelegate {
-    public void ateCaretUpdate(int index);
-    public void ateChangeUpdate(int offset, int length, boolean insert);
-    public void ateAutoIndent(int offset, int length);
-    public void ateMousePressed(Point point);
-    public void ateMouseExited();
-    public void ateMouseMoved(Point relativePoint);
-    public void ateInvokePopUp(Component component, int x, int y);
-    public void ateParserWillParse();
-    public void ateParserDidParse();
+public interface ParseTreePanelDelegate {
+    public JPopupMenu getContextualMenu();
 }

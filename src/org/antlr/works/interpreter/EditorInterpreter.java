@@ -42,8 +42,11 @@ import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.parsetree.ParseTreePanel;
+import org.antlr.works.parsetree.ParseTreePanelDelegate;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxRule;
@@ -59,7 +62,7 @@ import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
 
-public class EditorInterpreter implements Runnable, EditorTab {
+public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDelegate {
 
     protected JPanel panel;
     protected JSplitPane splitPane;
@@ -97,6 +100,7 @@ public class EditorInterpreter implements Runnable, EditorTab {
 
         treeModel = new EditorInterpreterTreeModel();
         parseTreePanel = new ParseTreePanel(treeModel);
+        parseTreePanel.setDelegate(this);
 
         splitPane = new JSplitPane();
         splitPane.setBorder(null);
@@ -253,6 +257,13 @@ public class EditorInterpreter implements Runnable, EditorTab {
 
     public Component getTabComponent() {
         return getContainer();
+    }
+
+    public JPopupMenu getContextualMenu() {
+        ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
+        factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
+        factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
+        return factory.menu;
     }
 
 }

@@ -5,7 +5,9 @@ import edu.usfca.xj.appkit.gview.object.GElement;
 import edu.usfca.xj.appkit.gview.utils.GDOTImporterDOT;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 
@@ -109,7 +111,7 @@ public abstract class GrammarDOTTab implements Runnable, EditorTab {
     protected void createInterface(GElement graph) {
         panel = new JPanel(new BorderLayout());
 
-        view = new GView();
+        view = new CustomGView();
         view.setAutoAdjustSize(true);
         view.setRootElement(graph);
         view.setBackground(Color.white);
@@ -202,6 +204,17 @@ public abstract class GrammarDOTTab implements Runnable, EditorTab {
 
     public Component getTabComponent() {
         return getContainer();
+    }
+
+    protected class CustomGView extends GView {
+
+        public JPopupMenu getContextualMenu(GElement element) {
+            ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
+            factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
+            factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
+            return factory.menu;
+        }
+
     }
 
     protected class StreamWatcher extends Thread {

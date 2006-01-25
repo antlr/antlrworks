@@ -139,6 +139,9 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
     public void ateMouseMoved(Point relativePoint) {
     }
 
+    public void ateInvokePopUp(Component component, int x, int y) {
+    }
+
     public void ateParserWillParse() {
     }
 

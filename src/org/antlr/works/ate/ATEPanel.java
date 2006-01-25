@@ -404,6 +404,11 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             underlyingManager.paint(g);
     }
 
+    public void textPaneInvokePopUp(Component component, int x, int y) {
+        if(delegate != null)
+            delegate.ateInvokePopUp(component, x, y);
+    }
+
     protected void createTextPane() {
         textPane = new ATETextPane(this);
         textPane.setBackground(Color.white);
@@ -609,8 +614,27 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
                 gutter.markDirty();
             }
 
+            checkForPopupTrigger(e);
+
             if(delegate != null)
                 delegate.ateMousePressed(e.getPoint());
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            checkForPopupTrigger(e);
+        }
+
+        public void checkForPopupTrigger(MouseEvent e) {
+            if(e.isPopupTrigger()) {
+                int index = textPane.viewToModel(e.getPoint());
+                if(textPane.getSelectionStart() != textPane.getSelectionEnd()) {
+                    if(index < textPane.getSelectionStart() || index > textPane.getSelectionEnd())
+                        setCaretPosition(index);
+                } else if(index != getCaretPosition())
+                    setCaretPosition(index);
+
+                textPaneInvokePopUp(e.getComponent(), e.getX(), e.getY());
+            }
         }
 
         public void mouseExited(MouseEvent e) {

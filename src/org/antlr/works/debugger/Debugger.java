@@ -38,10 +38,13 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.generate.DialogGenerate;
+import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.parsetree.ParseTreeNode;
 import org.antlr.works.parsetree.ParseTreePanel;
+import org.antlr.works.parsetree.ParseTreePanelDelegate;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.utils.IconManager;
@@ -61,7 +64,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-public class Debugger implements StreamWatcherDelegate, EditorTab {
+public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePanelDelegate {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
     public static final int DEFAULT_LOCAL_PORT = 0xC001;
@@ -201,6 +204,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
 
     public JComponent createTreePanel() {
         parseTreePanel = new ParseTreePanel(new DefaultTreeModel(null));
+        parseTreePanel.setDelegate(this);
         return parseTreePanel;
     }
 
@@ -691,6 +695,13 @@ public class Debugger implements StreamWatcherDelegate, EditorTab {
 
     public Component getTabComponent() {
         return getContainer();
+    }
+
+    public JPopupMenu getContextualMenu() {
+        ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
+        factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
+        factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
+        return factory.menu;
     }
 
     protected class StackListModel extends DefaultListModel {

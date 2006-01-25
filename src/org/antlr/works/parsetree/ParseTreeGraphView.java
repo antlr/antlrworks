@@ -8,6 +8,7 @@ import edu.usfca.xj.appkit.gview.object.GLink;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.ParseTree;
 
+import javax.swing.*;
 import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.util.HashMap;
@@ -58,8 +59,10 @@ public class ParseTreeGraphView extends GView {
     protected GElementNode highlightedNode;
     protected Map treeNodeToGElementMap = new HashMap();
     protected Graphics2D g2d;
+    protected ParseTreePanel panel;
 
-    public ParseTreeGraphView() {
+    public ParseTreeGraphView(ParseTreePanel panel) {
+        this.panel = panel;
         setPreferredSize(new Dimension(0, 0));
     }
 
@@ -173,6 +176,10 @@ public class ParseTreeGraphView extends GView {
             return;
 
         scrollElementToVisible(element);
+    }
+
+    public JPopupMenu getContextualMenu(GElement element) {
+        return panel.getContextualMenu();
     }
 
     public class GElementNode extends GElementRect {
