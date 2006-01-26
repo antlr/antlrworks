@@ -35,7 +35,7 @@ import org.antlr.analysis.NFAState;
 
 import java.util.*;
 
-/** Class defining an "GUI" NFA state. It is basically the same as a FAState.
+/** Class defining an "GUI" FA state. It is basically the same as a NFAState.
  *
  */
 
@@ -46,15 +46,15 @@ public class FAState {
     public String enclosingRuleName = null;
     public List transitions = new ArrayList();
 
-    // If the state represents a reference to an external state, this field
-    // contains the name of the referenced rule.
+    /** If the state represents a reference to an external state, this field
+     contains the name of the referenced rule. */
     public String externalRuleRefName = null;
 
-    // List of skipped states (they won't be displayed but we need to know their
-    // number in order to display corrected the error paths)
+    /** List of skipped states (they won't be displayed but we need to know their
+     number in order to display corrected the error paths) */
     public Set skippedStates = new HashSet();
 
-    // Temporary variable that is used by FAFactory to know when to build "loop" transition
+    /** Temporary variable that is used by FAFactory to know when to build "loop" transition */
     public boolean loop = false;
 
     public FAState(int stateNumber) {

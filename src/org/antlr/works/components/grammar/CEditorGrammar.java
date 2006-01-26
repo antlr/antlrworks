@@ -351,7 +351,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         }
 
         upDownSplitPane.setDividerLocation(300);
-        rulesTextSplitPane.setDividerLocation(150);
+        rulesTextSplitPane.setDividerLocation(200);
     }
 
     protected void awakeInterface() {

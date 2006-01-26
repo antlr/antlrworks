@@ -111,9 +111,9 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
                 }
                 else
                     embedded--;
-            } else if(C(0) == '$') {
+            } else if(C(0) == '$' || C(0) == '%') {
                 /** Parse also all internal action references */
-                token = matchID();
+                token = createNewToken(TOKEN_CHAR);
             }
 
             if(token != null)

@@ -55,7 +55,7 @@ public class GGraphGroup extends GGraphAbstract {
     public List graphs = new ArrayList();
     public GPathGroup pathGroup = new GPathGroup();
 
-    private GContext defaultContext;
+    protected GContext defaultContext;
 
     public GGraphGroup() {
         // The default context is used to evaluate the position of certain objects in addPath()

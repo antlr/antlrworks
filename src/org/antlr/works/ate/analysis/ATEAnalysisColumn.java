@@ -40,11 +40,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+/** This class handles the analysis column located at the right of the ATEPanel.
+ * It purposes is to display information about errors/warnings in the text.
+ * It uses the ATEAnalysisManager to find the errors/warnings to display.
+ */
+
 public class ATEAnalysisColumn extends JPanel {
 
     protected ATEPanel textEditor;
     protected ATEAnalysisColumnOverlay overlay;
-    protected MyAnalysisBox analysisBox;
+    protected ColumnAnalysisBox analysisBox;
 
     protected int topOffset = 30;
     protected int bottomOffset = 50;
@@ -55,11 +60,11 @@ public class ATEAnalysisColumn extends JPanel {
 
         setFocusable(false);
 
-        analysisBox = new MyAnalysisBox();
+        analysisBox = new ColumnAnalysisBox();
         overlay = new ATEAnalysisColumnOverlay(textEditor.getParentFrame(), this);
 
-        addMouseMotionListener(new MyMouseMotionAdapter());
-        addMouseListener(new MyMouseAdapter());
+        addMouseMotionListener(new ColumnMouseMotionAdapter());
+        addMouseListener(new ColumnMouseAdapter());
     }
 
     public ATEAnalysisManager getAnalysisManager() {
@@ -106,12 +111,15 @@ public class ATEAnalysisColumn extends JPanel {
         }
     }
 
-    protected class MyAnalysisBox {
+    /** This class is used to draw the little analysis colored box at the top
+     * of the analysis column.
+     */
 
-        protected final Color redColor = Color.red;
+    protected class ColumnAnalysisBox {
+
         protected final Rectangle r = new Rectangle(2, 2, 14, 14);
 
-        public MyAnalysisBox() {
+        public ColumnAnalysisBox() {
         }
 
         public void paint(Graphics g) {
@@ -121,7 +129,8 @@ public class ATEAnalysisColumn extends JPanel {
         }
     }
 
-    protected class MyMouseAdapter extends MouseAdapter {
+    protected class ColumnMouseAdapter extends MouseAdapter {
+
         public int getIndexOfFirstErrors(Point p) {
             int[] types = getAnalysisManager().getAvailableTypes();
             for(int type=0; type<types.length; type++) {
@@ -136,6 +145,10 @@ public class ATEAnalysisColumn extends JPanel {
             return -1;
         }
 
+        /** Jump into the text at the location of the current error/warning under
+         * the mouse.
+         */
+
         public void mousePressed(MouseEvent e) {
             int index = getIndexOfFirstErrors(e.getPoint());
             if(index > -1) {
@@ -149,7 +162,12 @@ public class ATEAnalysisColumn extends JPanel {
         }
     }
 
-    private class MyMouseMotionAdapter extends MouseMotionAdapter {
+    /** This class is used to display any tooltip describing the errors/warnings
+     * under the cursor position.
+     */
+
+    protected class ColumnMouseMotionAdapter extends MouseMotionAdapter {
+
         public void mouseMoved(MouseEvent e) {
             ATEAnalysisManager manager = getAnalysisManager();
             if(manager == null)

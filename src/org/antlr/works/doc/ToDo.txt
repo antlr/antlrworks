@@ -1,22 +1,16 @@
 
 * Prio 1
-- fix tree appearance between interpreter and debugger on Windows
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory
-- comment source code
 
 * Prio 2
 - DFA decision for lexer tokens (see with Terence) - position in lexer grammar
 - prefs: customizable list of "Insert Rule From Template" - or read from a file ?
-
-* Prio 3:
 - extract all strings into properties
 - jump into source when navigating grammar text (in generated code)
 - display current token in syntax diagram
+- jump to a definition by double-click in the syntax diagram
 - handle "header with package" option (see with Terence for line numbering between files)
 - lexical ambiguities (ask Terence)
-- if emacs is set (in preferences), disable all conflicting menu in Linux/Windows
-- jump to a definition by double-click in the syntax diagram
-- problem when more than one same LT between mark/rewind
 
 * Check-list *
 

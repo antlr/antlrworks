@@ -36,10 +36,12 @@ import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
 import edu.usfca.xj.appkit.utils.XJSmoothScrolling;
 import org.antlr.works.visualization.graphics.GContext;
+import org.antlr.works.visualization.graphics.graph.GGraph;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;
 import org.antlr.works.visualization.graphics.path.GPath;
 import org.antlr.works.visualization.graphics.path.GPathGroup;
+import org.antlr.works.visualization.graphics.shape.GLink;
 
 import javax.swing.*;
 import java.awt.*;
@@ -273,8 +275,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         GPath path = getCurrentPath();
         Rectangle rect = path.getBoundsOfSelectedElement();
         if(!rect.isEmpty()) {
-            // Expand the rectangle a little bit
-            // so the rectangle is "more" visible
+            // Expand the rectangle a little bit so the rectangle is "more" visible
             rect.x -= 50;
             rect.y -= 50;
             rect.width += 100;
@@ -415,6 +416,13 @@ public class GView extends JPanel implements XJMenuItemDelegate {
 
             if(getCurrentGraph() instanceof GGraphGroup)
                 handleMousePressedInGraphGroup(e);
+            else {
+                GGraph g = (GGraph)getCurrentGraph();
+                GLink link = g.findLinkAtPosition(e.getX(), e.getY());
+                if(link != null) {
+                    //System.out.println(link.transition.label);
+                }
+            }
         }
 
         public void mouseReleased(MouseEvent e) {

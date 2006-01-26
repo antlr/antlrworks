@@ -33,6 +33,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+/** Abstract class used as a delegate by the ATEAnalysisColumn class.
+ * It has to be subclassed to provide useful information ;-)
+ */
+
 public abstract class ATEAnalysisManager {
     public abstract int[] getAvailableTypes();
     public abstract List getItemsForType(int type);

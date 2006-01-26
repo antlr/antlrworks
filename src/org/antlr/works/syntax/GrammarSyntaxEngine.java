@@ -77,8 +77,9 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         StyleConstants.setItalic(labelAttr, true);
 
         actionRefAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(actionRefAttr, COLOR_ACTION_REF);
-        StyleConstants.setItalic(actionRefAttr, true);
+        //StyleConstants.setForeground(actionRefAttr, COLOR_ACTION_REF);
+        StyleConstants.setBackground(actionRefAttr, Color.yellow);
+        //StyleConstants.setItalic(actionRefAttr, true);
     }
 
     public ATESyntaxLexer createLexer() {
@@ -127,7 +128,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
             ATEToken it = (ATEToken)internalTokens.get(i);
 
             AttributeSet attr;
-            if(it.getAttribute().startsWith("$"))
+            if(it.getAttribute().equals("$") || it.getAttribute().equals("%"))
                 attr = actionRefAttr;
             else
                 attr = getAttributeForToken(it);

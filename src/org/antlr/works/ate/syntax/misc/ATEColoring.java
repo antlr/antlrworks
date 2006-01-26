@@ -63,6 +63,7 @@ public class ATEColoring extends ATEThread {
         this.textEditor = textEditor;
 
         standardAttr = new SimpleAttributeSet();
+        StyleConstants.setBackground(standardAttr, Color.white);
         StyleConstants.setForeground(standardAttr, Color.black);
         StyleConstants.setBold(standardAttr, false);
         StyleConstants.setItalic(standardAttr, false);

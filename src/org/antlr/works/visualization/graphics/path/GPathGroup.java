@@ -166,7 +166,6 @@ public class GPathGroup extends GObject implements GTimerDelegate {
             }
         }
 
-        System.out.println(selectPath);
         setSelectedPath(graphicPaths.indexOf(selectPath));
         context.repaint();
     }

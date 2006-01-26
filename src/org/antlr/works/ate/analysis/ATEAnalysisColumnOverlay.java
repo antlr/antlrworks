@@ -37,6 +37,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+/** This class handles the overlay used by the ATEAnalysisColumn class to display
+ * information about the current errors/warnings located under the mouse location.
+ */
+
 public class ATEAnalysisColumnOverlay extends OverlayObject implements ToolTipListDelegate {
 
     public ToolTipList toolTip;

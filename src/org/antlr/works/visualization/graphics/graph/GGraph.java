@@ -34,6 +34,7 @@ package org.antlr.works.visualization.graphics.graph;
 import org.antlr.analysis.NFAState;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.primitive.GDimension;
+import org.antlr.works.visualization.graphics.shape.GLink;
 import org.antlr.works.visualization.graphics.shape.GNode;
 
 import java.awt.*;
@@ -124,6 +125,21 @@ public class GGraph extends GGraphAbstract {
             if(up+down>0)
                 context.drawRect(offsetX, offsetY-up, width, up+down, false);
         }
+    }
+
+    public GLink findLinkAtPosition(int x, int y) {
+        for (Iterator iterator = nodes.iterator(); iterator.hasNext();) {
+            GNode node = (GNode) iterator.next();
+            for (Iterator iterator1 = node.links.iterator(); iterator1.hasNext();) {
+                GLink link = (GLink) iterator1.next();
+                /** Only non-null transition label has to be tested (that is, visible
+                 * syntax diagram box, not simple line)
+                 */
+                if(link.containsPoint(new Point(x, y)) && link.transition.label != null)
+                    return link;
+            }
+        }
+        return null;
     }
 
     public GNode findNodeForStateNumber(int stateNumber) {
