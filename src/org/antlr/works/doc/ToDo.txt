@@ -4,6 +4,9 @@
 - italic when guessing in debugger
 - ignore rule: via contextual menu -> display in italic in rules, do not propose a text field but only list them (rename Fetch by Guess)
 - select tree node in debugger parse tree and select input text and grammar
+- stats on grammar (show k or inf on each decision)
+- show code for any decision (Ter ads comments in code)
+- from generated code, jump back to grammar
 
 * Prio 2
 - DFA decision for lexer tokens (see with Terence) - position in lexer grammar
