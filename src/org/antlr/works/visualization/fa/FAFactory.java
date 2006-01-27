@@ -106,8 +106,6 @@ public class FAFactory {
             if(transition.isEpsilon()) {
                 buildRecursiveSkipState(parentState, target, new HashSet(currentPath));
             } else {
-                //System.out.println(transition.label.toString(g)+" - "+state.getAssociatedASTNode());
-
                 FAState targetState = buildRecursiveState(target, new HashSet(currentPath));
                 if(targetState.loop) {
                     // Handle "loop" transition by creating a "normal" transition and assigning a flag
@@ -183,8 +181,6 @@ public class FAFactory {
         FATransition tr = new FATransition(nameOfExternalReferencedRule(transition), ruleRefState);
         tr.setExternalRuleRef(true);
         dummyState.addTransition(tr);
-
-        //System.out.println(((NFAState)transition.target).getAssociatedASTNode().getToken().getLine());
 
         return ruleRefState;
     }

@@ -36,12 +36,10 @@ import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
 import edu.usfca.xj.appkit.utils.XJSmoothScrolling;
 import org.antlr.works.visualization.graphics.GContext;
-import org.antlr.works.visualization.graphics.graph.GGraph;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;
 import org.antlr.works.visualization.graphics.path.GPath;
 import org.antlr.works.visualization.graphics.path.GPathGroup;
-import org.antlr.works.visualization.graphics.shape.GLink;
 
 import javax.swing.*;
 import java.awt.*;
@@ -416,13 +414,15 @@ public class GView extends JPanel implements XJMenuItemDelegate {
 
             if(getCurrentGraph() instanceof GGraphGroup)
                 handleMousePressedInGraphGroup(e);
-            else {
-                GGraph g = (GGraph)getCurrentGraph();
+
+            /** In the future, if someone wants to know which link
+             * is under the mouse location, use the following code:
+             *  GGraph g = (GGraph)getCurrentGraph();
                 GLink link = g.findLinkAtPosition(e.getX(), e.getY());
                 if(link != null) {
-                    //System.out.println(link.transition.label);
+                    // Do something with link
                 }
-            }
+             */
         }
 
         public void mouseReleased(MouseEvent e) {

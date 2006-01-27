@@ -1,6 +1,10 @@
 
 * Prio 1
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory
+- bug when undoing /* -> needs to dirty the cache of getText() because the text is not correctly colored
+- italic when guessing in debugger
+- ignore rule: via contextual menu -> display in italic in rules, do not propose a text field but only list them (rename Fetch by Guess)
+- select tree node in debugger parse tree and select input text and grammar
 
 * Prio 2
 - DFA decision for lexer tokens (see with Terence) - position in lexer grammar
