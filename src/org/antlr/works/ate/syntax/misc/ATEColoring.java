@@ -48,9 +48,6 @@ public class ATEColoring extends ATEThread {
     protected ATEPanel textEditor;
     protected ATESyntaxEngine engine;
 
-    protected int colorizeOffset = -1;
-    protected int colorizeLength = -1;
-
     protected SimpleAttributeSet standardAttr;
 
     protected List tokens;
@@ -70,8 +67,6 @@ public class ATEColoring extends ATEThread {
         StyleConstants.setItalic(standardAttr, false);
 
         tokens = null;
-        colorizeOffset = -1;
-        colorizeLength = -1;
 
         start();
     }
@@ -89,14 +84,10 @@ public class ATEColoring extends ATEThread {
     }
 
     public synchronized void reset() {
-        colorizeOffset = -1;
-        colorizeLength = -1;
         tokens = null;
     }
 
     public synchronized void setColorizeLocation(int offset, int length) {
-        colorizeOffset = offset;
-        colorizeLength = length;
         // skip any job in the thread to be executed
         // because colorize() has been called probably a while ago
         // in the ateParserDidParse() method of EditorWindow

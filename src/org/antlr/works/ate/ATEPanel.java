@@ -580,8 +580,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
                 adjustTokens(offset, length);
                 colorize.setColorizeLocation(offset, length);
-                changeOccurred();
             }
+            changeOccurred();
         }
 
         public void insertUpdate(DocumentEvent e) {
