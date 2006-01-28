@@ -82,9 +82,11 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_SHOW_DECISION_DFA = 51;
     public static final int MI_SHOW_DEPENDENCY = 52;
     public static final int MI_INSERT_TEMPLATE = 53;
-    public static final int MI_GROUP = 54;
-    public static final int MI_UNGROUP = 55;
-    public static final int MI_CHECK_GRAMMAR = 56;
+    public static final int MI_GROUP_RULE = 54;
+    public static final int MI_UNGROUP_RULE = 55;
+    public static final int MI_IGNORE_RULE = 56;
+    public static final int MI_CONSIDER_RULE = 57;
+    public static final int MI_CHECK_GRAMMAR = 58;
 
     // Refactor
     public static final int MI_RENAME = 60;
@@ -281,9 +283,14 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.addItem(new XJMenuItem("Show Rule Dependency Graph", MI_SHOW_DEPENDENCY, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Insert Rule From Template", KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Group...", MI_GROUP, this));
-        menu.addItem(new XJMenuItem("Ungroup", MI_UNGROUP, this));
+
+        XJMenu rules = new XJMenu();
+        rules.setTitle("Rules");
+        rules.addItem(createMenuItem(MI_GROUP_RULE));
+        rules.addItem(createMenuItem(MI_UNGROUP_RULE));
+        rules.addSeparator();
+        rules.addItem(createMenuItem(MI_IGNORE_RULE));
+        rules.addItem(createMenuItem(MI_CONSIDER_RULE));
 
         XJMenu folding = new XJMenu();
         folding.setTitle("Folding");
@@ -296,6 +303,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         folding.addItem(new XJMenuItem("Collapse All Actions", KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_COLLAPSE_ALL_ACTIONS, this));
 
         menu.addSeparator();
+        menu.addItem(rules);
         menu.addItem(folding);
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Check Grammar", KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
@@ -365,6 +373,22 @@ public class EditorMenu implements XJMenuItemDelegate {
 
             case MI_SHOW_RULE_GENCODE:
                 item = new XJMenuItem("Show Rule Code", MI_SHOW_RULE_GENCODE, this);
+                break;
+
+            case MI_GROUP_RULE:
+                item = new XJMenuItem("Group...", MI_GROUP_RULE, this);
+                break;
+
+            case MI_UNGROUP_RULE:
+                item = new XJMenuItem("Ungroup", MI_UNGROUP_RULE, this);
+                break;
+
+            case MI_IGNORE_RULE:
+                item = new XJMenuItem("Ignore in Interpreter", MI_IGNORE_RULE, this);
+                break;
+
+            case MI_CONSIDER_RULE:
+                item = new XJMenuItem("Consider in Interpreter", MI_CONSIDER_RULE, this);
                 break;
 
             case MI_EXPORT_AS_IMAGE:
@@ -437,8 +461,8 @@ public class EditorMenu implements XJMenuItemDelegate {
             case MI_EXTRACT_RULE:
             case MI_INLINE_RULE:
             case MI_INSERT_TEMPLATE:
-            case MI_GROUP:
-            case MI_UNGROUP:
+            case MI_GROUP_RULE:
+            case MI_UNGROUP_RULE:
             case MI_EXPAND_COLLAPSE_RULE:
             case MI_EXPAND_ALL_RULES:
             case MI_COLLAPSE_ALL_RULES:
@@ -564,12 +588,20 @@ public class EditorMenu implements XJMenuItemDelegate {
                 editor.menuGrammar.insertRuleFromTemplate();
                 break;
 
-            case MI_GROUP:
+            case MI_GROUP_RULE:
                 editor.menuGrammar.group();
                 break;
 
-            case MI_UNGROUP:
+            case MI_UNGROUP_RULE:
                 editor.menuGrammar.ungroup();
+                break;
+
+            case MI_IGNORE_RULE:
+                editor.menuGrammar.ignore();
+                break;
+
+            case MI_CONSIDER_RULE:
+                editor.menuGrammar.consider();
                 break;
 
             case MI_CHECK_GRAMMAR:

@@ -288,7 +288,7 @@ public class ProjectExplorer {
             if(fileItem == null)
                 return;
 
-            modifySelectionIfNecessary(me);
+            filesTree.modifySelectionIfNecessary(me);
 
             String title;
             boolean ignore = project.getBuildList().isIgnoreBuild(fileItem);
@@ -326,24 +326,6 @@ public class ProjectExplorer {
                 return null;
         }
 
-        /** This method deselects the current selection of the item
-         * under the mouse location is not part of the current selection
-         */
-
-        public void modifySelectionIfNecessary(MouseEvent me) {
-            boolean partOfSelection = false;
-            int row = filesTree.getRowForLocation(me.getX(), me.getY());
-            if(filesTree.getSelectionRows() != null) {
-                for (int i = 0; i < filesTree.getSelectionRows().length; i++) {
-                    int selRow = filesTree.getSelectionRows()[i];
-                    if(selRow == row)
-                        partOfSelection = true;
-                }
-            }
-
-            if(!partOfSelection)
-                filesTree.setSelectionRow(row);
-        }
 
     }
 

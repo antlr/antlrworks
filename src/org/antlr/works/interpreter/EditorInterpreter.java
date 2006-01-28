@@ -73,7 +73,7 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
     protected EditorInterpreterTreeModel treeModel;
     protected ParseTreePanel parseTreePanel;
     protected JComboBox rulesCombo;
-    protected JTextField tokensToIgnoreField;
+    protected JLabel tokensToIgnoreLabel;
 
     protected XJDialogProgress progress;
 
@@ -156,22 +156,23 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
 
     public Box createTokensToIgnoreField() {
         Box box = Box.createHorizontalBox();
-        box.add(new JLabel("Ignore tokens:"));
+        box.add(new JLabel("Ignore rules:"));
+        box.add(Box.createHorizontalStrut(5));
 
-        tokensToIgnoreField = new JTextField();
-        tokensToIgnoreField.setText("WS COMMENT");
-        box.add(tokensToIgnoreField);
+        tokensToIgnoreLabel = new JLabel();
+        tokensToIgnoreLabel.setFont(tokensToIgnoreLabel.getFont().deriveFont(Font.ITALIC));
+        box.add(tokensToIgnoreLabel);
 
-        JButton button = new JButton("Fetch");
-        button.setToolTipText("Fetch the names of all rules containing an action with channel=99");
+/*        JButton button = new JButton("Guess");
+        button.setToolTipText("Find the name of all rules containing an action with channel=99");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                fetchTokensToIgnore();
+                findTokensToIgnore();
             }
         });
 
         box.add(button);
-
+           */
         return box;
     }
 
@@ -180,6 +181,11 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
     }
 
     public void setRules(List rules) {
+        updateRulesCombo(rules);
+        updateIgnoreTokens(rules);
+    }
+
+    public void updateRulesCombo(List rules) {
         Object selectedItem =  rulesCombo.getSelectedItem();
 
         rulesCombo.removeAllItems();
@@ -191,11 +197,24 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
             rulesCombo.setSelectedItem(selectedItem);
     }
 
+    public void updateIgnoreTokens(List rules) {
+        StringBuffer sb = new StringBuffer();
+        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
+            GrammarSyntaxRule r = (GrammarSyntaxRule) iterator.next();
+            if(r.ignored) {
+                if(sb.length() > 0)
+                    sb.append(" ");
+                sb.append(r.name);
+            }
+        }
+        tokensToIgnoreLabel.setText(sb.toString());
+    }
+
     /** This method iterates over all rules and all blocks inside each rule to
      * find a sequence of token equals to "channel=99".
      */
 
-    public void fetchTokensToIgnore() {
+    public void findTokensToIgnore() {
         List rules = editor.getRules();
         if(rules == null || rules.isEmpty())
             return;
@@ -238,7 +257,7 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
             }
         }
 
-        tokensToIgnoreField.setText(tokensToIgnore.toString());
+        tokensToIgnoreLabel.setText(tokensToIgnore.toString());
     }
 
     public void interpret() {
@@ -299,7 +318,7 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
         Interpreter lexEngine = new Interpreter(lexer, input);
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
 
-        StringTokenizer tk = new StringTokenizer(tokensToIgnoreField.getText(), " ");
+        StringTokenizer tk = new StringTokenizer(tokensToIgnoreLabel.getText(), " ");
         while ( tk.hasMoreTokens() ) {
             String tokenName = tk.nextToken();
             tokens.setTokenTypeChannel(lexer.getTokenType(tokenName), 99);

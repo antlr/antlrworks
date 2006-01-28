@@ -29,8 +29,6 @@ import org.antlr.works.menu.*;
 import org.antlr.works.navigation.GoToHistory;
 import org.antlr.works.navigation.GoToRule;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.rules.Rules;
-import org.antlr.works.rules.RulesDelegate;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.*;
 import org.antlr.works.utils.TextUtils;
@@ -81,7 +79,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public class CEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
-        RulesDelegate, EditorProvider, ATEPanelDelegate,
+        EditorProvider, ATEPanelDelegate,
         XJUndoDelegate
 {
 
@@ -107,7 +105,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     /* Components */
 
     public GrammarSyntaxEngine parserEngine;
-    public Rules rules;
+    public EditorRules rules;
     public Visual visual;
     public EditorInterpreter interpreter;
     public Debugger debugger;
@@ -189,8 +187,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     protected void initComponents() {
         parserEngine = new GrammarSyntaxEngine();
 
-        rules = new Rules(this, rulesTree);
-        rules.setDelegate(this);
+        rules = new EditorRules(this, rulesTree);
 
         grammarSyntax = new GrammarSyntax(this);
         visual = new Visual(this);
@@ -278,7 +275,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
                     return "";
 
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-                Rules.RuleTreeUserObject n = (Rules.RuleTreeUserObject) node.getUserObject();
+                EditorRules.RuleTreeUserObject n = (EditorRules.RuleTreeUserObject) node.getUserObject();
                 if(n == null)
                     return "";
 
@@ -569,23 +566,21 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void undoManagerWillUndo(boolean redo) {
-        disableTextPane(false);
     }
 
     public void undoManagerDidUndo(boolean redo) {
-        enableTextPane(false);
         changeUpdate();
     }
 
     public void loadText(String text) {
-        disableTextPane(true);
+        disableTextPaneUndo();
         try {
             textEditor.loadText(text);
             grammarChanged();
         } catch(Exception e) {
             e.printStackTrace();
         } finally {
-            enableTextPane(true);
+            enableTextPaneUndo();
         }
     }
 
@@ -819,6 +814,23 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public void rulesDidSelectRule() {
         updateVisualization(true);
+    }
+
+    public void rulesDidChange() {
+        interpreter.updateIgnoreTokens(getRules());
+    }
+
+    public JPopupMenu rulesGetContextualMenu(List selectedObjects) {
+        if(selectedObjects.isEmpty())
+            return null;
+
+        ContextualMenuFactory factory = new ContextualMenuFactory(editorMenu);
+        factory.addItem(EditorMenu.MI_GROUP_RULE);
+        factory.addItem(EditorMenu.MI_UNGROUP_RULE);
+        factory.addSeparator();
+        factory.addItem(EditorMenu.MI_IGNORE_RULE);
+        factory.addItem(EditorMenu.MI_CONSIDER_RULE);
+        return factory.menu;
     }
 
     /** Parser delegate methods

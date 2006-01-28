@@ -115,7 +115,7 @@ public class ATELabelView extends LabelView {
     public void paint(Graphics g, Shape allocation) {
         if(isVisible()) {
             super.paint(g, allocation);
-        } else if(getStartOffset() == getEntity().foldingEntityGetStartIndex() && isTopMostInvisible()) {
+        } else if(getEntity() != null && getStartOffset() == getEntity().foldingEntityGetStartIndex() && isTopMostInvisible()) {
             // Draw the placeholder only in the first rule paragraph. A rule
             // may have multiple paragraphs view
 

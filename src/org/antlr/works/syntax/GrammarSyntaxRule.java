@@ -48,8 +48,9 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
     public ATEToken colon;
     public ATEToken end;
 
+    public boolean ignored = false;
     public boolean expanded = true;
-    public boolean breakpoint;
+    public boolean breakpoint = false;
 
     public boolean lexer = false;
     public boolean hasLeftRecursion = false;
@@ -355,6 +356,7 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
 
     public void persistentAssign(EditorPersistentObject otherObject) {
         GrammarSyntaxRule oldRule = (GrammarSyntaxRule)otherObject;
+        this.ignored = oldRule.ignored;
         this.expanded = oldRule.expanded;
         this.breakpoint = oldRule.breakpoint;
     }

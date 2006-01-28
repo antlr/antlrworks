@@ -42,6 +42,7 @@ import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import javax.swing.*;
+import java.util.List;
 
 public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDOTTabDelegate, CheckGrammarDelegate {
 
@@ -92,15 +93,21 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
         String s = (String)JOptionPane.showInputDialog(editor.getWindowContainer(), "Group Name:", "Group",
                 JOptionPane.QUESTION_MESSAGE, null, null, "Group");
         if(s != null && s.length() > 0) {
-            editor.beginGroupChange("Group");
+            List rules = editor.rules.getSelectedRules();
+            if(!rules.isEmpty()) {
+                editor.beginGroupChange("Group");
 
-            int end = editor.getTextPane().getSelectionEnd();
-            editor.textEditor.insertText(end+1, "\n"+GrammarSyntaxParser.END_GROUP+"\n");
+                GrammarSyntaxRule firstRule = (GrammarSyntaxRule) rules.get(0);
+                GrammarSyntaxRule lastRule = (GrammarSyntaxRule) rules.get(rules.size()-1);
 
-            int start = editor.getTextPane().getSelectionStart();
-            editor.textEditor.insertText(start-1, "\n"+ GrammarSyntaxParser.BEGIN_GROUP+s+"\n");
+                int end = lastRule.getEndIndex();
+                editor.textEditor.insertText(end+1, "\n"+GrammarSyntaxParser.END_GROUP+"\n");
 
-            editor.endGroupChange();
+                int start = firstRule.getStartIndex();
+                editor.textEditor.insertText(start-1, "\n"+ GrammarSyntaxParser.BEGIN_GROUP+s+"\n");
+
+                editor.endGroupChange();
+            }
         }
     }
 
@@ -132,6 +139,14 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
         editor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
 
         editor.endGroupChange();
+    }
+
+    public void ignore() {
+        editor.rules.ignoreSelectedRules(true);
+    }
+
+    public void consider() {
+        editor.rules.ignoreSelectedRules(false);
     }
 
     public void checkGrammar() {

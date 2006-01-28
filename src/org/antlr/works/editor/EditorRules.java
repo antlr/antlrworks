@@ -29,7 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.rules;
+package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
@@ -64,10 +64,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public class Rules implements XJTreeDelegate {
+public class EditorRules implements XJTreeDelegate {
 
     protected CEditorGrammar editor;
-    protected RulesDelegate delegate;
 
     protected boolean programmaticallySelectingRule = false;
     protected boolean selectNextRule = false;
@@ -80,7 +79,7 @@ public class Rules implements XJTreeDelegate {
 
     protected boolean sort;
 
-    public Rules(CEditorGrammar editor, XJTree rulesTree) {
+    public EditorRules(CEditorGrammar editor, XJTree rulesTree) {
         this.editor = editor;
         this.rulesTree = rulesTree;
 
@@ -97,13 +96,9 @@ public class Rules implements XJTreeDelegate {
 
         rulesTree.setRootVisible(false);
         rulesTree.setShowsRootHandles(true);
-        rulesTree.setCellRenderer(new CustomTableRenderer());
+        rulesTree.setCellRenderer(new RulesTableRenderer());
         rulesTree.setRowHeight(17);
         rulesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-    }
-
-    public void setDelegate(RulesDelegate delegate) {
-        this.delegate = delegate;
     }
 
     public void setKeyBindings(ATEKeyBindings keyBindings) {
@@ -124,6 +119,15 @@ public class Rules implements XJTreeDelegate {
     public void toggleSorting() {
         sort = !sort;
         rebuildTree();
+    }
+
+    public void ignoreSelectedRules(boolean flag) {
+        for (Iterator iterator = getSelectedRules().iterator(); iterator.hasNext();) {
+            GrammarSyntaxRule r = (GrammarSyntaxRule) iterator.next();
+            r.ignored = flag;
+        }
+        rulesTree.repaint();
+        editor.rulesDidChange();
     }
 
     public class RuleMoveUpAction extends AbstractAction {
@@ -234,6 +238,17 @@ public class Rules implements XJTreeDelegate {
             }
         }
         return sortedRules;
+    }
+
+    public List getSelectedRules() {
+        List rules = new ArrayList(); // GrammarSyntaxRule objects
+        for (Iterator iterator = rulesTree.getSelectedNodes().iterator(); iterator.hasNext();) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) iterator.next();
+            RuleTreeUserObject o = (RuleTreeUserObject) node.getUserObject();
+            if(o.rule != null)
+                rules.add(o.rule);
+        }
+        return rules;
     }
 
     public GrammarSyntaxRule getLastRule() {
@@ -401,7 +416,7 @@ public class Rules implements XJTreeDelegate {
         rule = getParserEngine().getRuleAtIndex(index);
         if(rule != null) {
             editor.setCaretPosition(rule.getStartIndex());
-            delegate.rulesCaretPositionDidChange();
+            editor.rulesCaretPositionDidChange();
         }
     }
 
@@ -616,6 +631,11 @@ public class Rules implements XJTreeDelegate {
         if(programmaticallySelectingRule)
             return;
 
+        /** Select a rule only if there is one selected row
+         */
+        if(rulesTree.getSelectionCount() != 1)
+            return;
+
         TreePath selPath[] = rulesTree.getSelectionPaths();
         if(selPath == null)
             return;
@@ -646,8 +666,8 @@ public class Rules implements XJTreeDelegate {
     public boolean xjTreeDrop(XJTree tree, Object sourceObject, Object targetObject, int dropLocation) {
         Statistics.shared().recordEvent(Statistics.EVENT_DROP_RULE);
 
-        GrammarSyntaxRule sourceRule = ((Rules.RuleTreeUserObject) sourceObject).rule;
-        GrammarSyntaxRule targetRule = ((Rules.RuleTreeUserObject) targetObject).rule;
+        GrammarSyntaxRule sourceRule = ((EditorRules.RuleTreeUserObject) sourceObject).rule;
+        GrammarSyntaxRule targetRule = ((EditorRules.RuleTreeUserObject) targetObject).rule;
 
         return moveRule(sourceRule, targetRule, dropLocation == XJTree.DROP_ABOVE);
     }
@@ -664,7 +684,7 @@ public class Rules implements XJTreeDelegate {
         return null;
     }
 
-    public class CustomTableRenderer extends DefaultTreeCellRenderer {
+    public class RulesTableRenderer extends DefaultTreeCellRenderer {
 
         public Component getTreeCellRendererComponent(
                             JTree tree,
@@ -692,16 +712,18 @@ public class Rules implements XJTreeDelegate {
                     setIcon(IconManager.shared().getIconParser());                
             }
 
-            // @todo setFont is really slow (profiler)
-            if(n.rule != null && n.rule.hasErrors()) {
-                setForeground(Color.red);
-                //setFont(getFont().deriveFont(Font.BOLD));
-                setToolTipText(n.rule.getErrorMessageHTML());
-            } else {
-                setForeground(Color.black);
-                //setFont(getFont().deriveFont(Font.PLAIN));
-            }
+            setFont(getFont().deriveFont(Font.PLAIN));
+            setForeground(Color.black);
 
+            if(n.rule != null) {
+                if(n.rule.hasErrors()) {
+                    setForeground(Color.red);
+                    setToolTipText(n.rule.getErrorMessageHTML());
+                }
+                if(n.rule.ignored)
+                    setFont(getFont().deriveFont(Font.ITALIC));
+            }
+            
             return r;
         }
     }
@@ -713,9 +735,31 @@ public class Rules implements XJTreeDelegate {
     }
 
     public class RuleTreeMouseListener extends MouseAdapter {
+
         public void mousePressed(MouseEvent e) {
             selectRuleFromUserAction();
+            checkForPopupTrigger(e);
         }
+
+        public void mouseReleased(MouseEvent e) {
+            checkForPopupTrigger(e);
+        }
+
+        public void checkForPopupTrigger(MouseEvent e) {
+            if(e.isPopupTrigger()) {
+                rulesTree.modifySelectionIfNecessary(e);
+
+                List selectedObjects = new ArrayList(); // RuleTreeUserObject objects
+                for (Iterator iterator = rulesTree.getSelectedNodes().iterator(); iterator.hasNext();) {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) iterator.next();
+                    selectedObjects.add(node.getUserObject());
+                }
+                JPopupMenu menu = editor.rulesGetContextualMenu(selectedObjects);
+                if(menu != null)
+                    menu.show(e.getComponent(), e.getX(), e.getY());
+            }
+        }
+
     }
 
     public class RuleTreeUserObject implements Transferable {
