@@ -176,10 +176,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
     }
 
     public void becomingVisibleForTheFirstTime() {
-        /** Show the Project Settings if the project is just created
-         *
-         */
-
+        // Show the Project Settings if the project is just created
         if(getDocument().getDocumentPath() == null) {
             getDocument().changeDone();
             SwingUtilities.invokeLater(new Runnable() {

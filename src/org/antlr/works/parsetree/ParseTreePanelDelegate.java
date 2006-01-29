@@ -1,6 +1,7 @@
 package org.antlr.works.parsetree;
 
 import javax.swing.*;
+import javax.swing.tree.TreeNode;
 /*
 
 [The "BSD licence"]
@@ -33,5 +34,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface ParseTreePanelDelegate {
+    public void parseTreeDidSelectTreeNode(TreeNode node);
     public JPopupMenu getContextualMenu();
 }

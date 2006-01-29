@@ -59,10 +59,8 @@ import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Enumeration;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.Stack;
 
 public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePanelDelegate {
 
@@ -129,7 +127,6 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
         treeStackSplitPane.setRightComponent(createListInfoPanel());
         treeStackSplitPane.setContinuousLayout(true);
         treeStackSplitPane.setOneTouchExpandable(true);
-        treeStackSplitPane.setDividerLocation(300);
 
         ioSplitPane = new JSplitPane();
         ioSplitPane.setBorder(null);
@@ -138,7 +135,6 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
         ioSplitPane.setRightComponent(createOutputPanel());
         ioSplitPane.setContinuousLayout(true);
         ioSplitPane.setOneTouchExpandable(true);
-        ioSplitPane.setDividerLocation(100);
 
         ioTreeSplitPane = new JSplitPane();
         ioTreeSplitPane.setBorder(null);
@@ -147,7 +143,6 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
         ioTreeSplitPane.setRightComponent(treeStackSplitPane);
         ioTreeSplitPane.setContinuousLayout(true);
         ioTreeSplitPane.setOneTouchExpandable(true);
-        ioTreeSplitPane.setDividerLocation(200);
 
         panel.add(createControlPanel(), BorderLayout.NORTH);
         panel.add(ioTreeSplitPane, BorderLayout.CENTER);
@@ -158,6 +153,11 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
         player = new DebuggerPlayer(this, inputText);
 
         updateStatusInfo();
+    }
+
+    public void componentShouldLayout() {
+        treeStackSplitPane.setDividerLocation(0.7);
+        ioSplitPane.setDividerLocation(0.2);
     }
 
     public Container getWindowComponent() {
@@ -401,7 +401,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
             }
         });
     }
-    
+
     public void updateInterface() {
         stopButton.setEnabled(recorder.getStatus() != DebuggerRecorder.STATUS_STOPPED);
 
@@ -438,11 +438,44 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
         return breakCombo.getSelectedIndex();
     }
 
+    public void parseTreeDidSelectTreeNode(TreeNode node) {
+        if(node instanceof DebuggerParseTreeNode) {
+            DebuggerParseTreeNode n = (DebuggerParseTreeNode) node;
+            if(n.token == null) {
+                // token is non-null only for consumed event or other event
+                // that is recorded by the DebuggerInputText class.
+                // If token is null, the node n itself will contain
+                // the position in the grammar.
+                setGrammarPosition(n.line, n.pos);
+            }
+            inputText.selectToken(n.token);
+        }
+    }
+
     public void selectTreeParserNode(Token token) {
         DebuggerParseTreeNode root = (DebuggerParseTreeNode) parseTreePanel.getRoot();
         DebuggerParseTreeNode node = root.findNodeWithToken(token);
         if(node != null)
             parseTreePanel.selectNode(node);
+    }
+
+    public int grammarIndex;
+
+    public void setGrammarPosition(int line, int pos) {
+        grammarIndex = computeAbsoluteGrammarIndex(line, pos);
+        if(grammarIndex >= 0) {
+            if(editor.getTextPane().hasFocus()) {
+                // If the text pane will lose its focus,
+                // delay the text selection otherwise
+                // the selection will be hidden
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        editor.selectTextRange(grammarIndex, grammarIndex+1);
+                    }
+                });
+            } else
+                editor.selectTextRange(grammarIndex, grammarIndex+1);
+        }
     }
 
     public void displayNodeInfo(Object node) {
@@ -617,9 +650,11 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
         player.playEvents(events, reset);
     }
 
-    public void pushRule(String ruleName) {
+    public void pushRule(String ruleName, int line, int pos) {
         Debugger.DebuggerParseTreeNode parentRuleNode = (Debugger.DebuggerParseTreeNode)playCallStack.peek();
         Debugger.DebuggerParseTreeNode ruleNode = new Debugger.DebuggerParseTreeNode(ruleName);
+        ruleNode.setPosition(line, pos);
+
         parentRuleNode.add(ruleNode);
         updateParseTree(ruleNode);
 
@@ -704,6 +739,35 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
         return factory.menu;
     }
 
+    public static final String KEY_SPLITPANE_A = "KEY_SPLITPANE_A";
+    public static final String KEY_SPLITPANE_B = "KEY_SPLITPANE_B";
+    public static final String KEY_SPLITPANE_C = "KEY_SPLITPANE_C";
+
+    public void setPersistentData(Map data) {
+        if(data == null)
+            return;
+
+        Integer i = (Integer)data.get(KEY_SPLITPANE_A);
+        if(i != null)
+            ioSplitPane.setDividerLocation(i.intValue());
+
+        i = (Integer)data.get(KEY_SPLITPANE_B);
+        if(i != null)
+            ioTreeSplitPane.setDividerLocation(i.intValue());
+
+        i = (Integer)data.get(KEY_SPLITPANE_C);
+        if(i != null)
+            treeStackSplitPane.setDividerLocation(i.intValue());
+    }
+
+    public Map getPersistentData() {
+        Map data = new HashMap();
+        data.put(KEY_SPLITPANE_A, new Integer(ioSplitPane.getDividerLocation()));
+        data.put(KEY_SPLITPANE_B, new Integer(ioTreeSplitPane.getDividerLocation()));
+        data.put(KEY_SPLITPANE_C, new Integer(treeStackSplitPane.getDividerLocation()));
+        return data;
+    }
+
     protected class StackListModel extends DefaultListModel {
         public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); }
     }
@@ -712,11 +776,14 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
         public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); }
     }
 
-    protected class DebuggerParseTreeNode extends ParseTreeNode {
+    public class DebuggerParseTreeNode extends ParseTreeNode {
 
         protected String s;
         protected Token token;
         protected Exception e;
+
+        protected int line;
+        protected int pos;
 
         public DebuggerParseTreeNode(String s) {
             this.s = s;
@@ -763,6 +830,11 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
                 return e.toString();
 
             return "?";
+        }
+
+        public void setPosition(int line, int pos) {
+            this.line = line;
+            this.pos = pos;
         }
     }
 }

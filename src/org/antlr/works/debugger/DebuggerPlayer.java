@@ -217,7 +217,7 @@ public class DebuggerPlayer {
     }
 
     public void playEnterRule(String ruleName) {
-        debugger.pushRule(ruleName);
+        debugger.pushRule(ruleName, lastLocationLine, lastLocationPos);
         rewindLookAheadText();
     }
 

@@ -346,9 +346,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             rulesTextSplitPane.setDividerSize(10);
             upDownSplitPane.setDividerSize(10);
         }
-
-        upDownSplitPane.setDividerLocation(300);
-        rulesTextSplitPane.setDividerLocation(200);
     }
 
     protected void awakeInterface() {
@@ -898,6 +895,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         editorIdeas.hide();
     }
 
+    public void componentShouldLayout() {
+        rulesTextSplitPane.setDividerLocation(0.2);
+        upDownSplitPane.setDividerLocation(0.6);
+
+        interpreter.componentShouldLayout();
+        debugger.componentShouldLayout();
+    }
+
     public void componentDidAwake() {
         updateInformation();
         updateCursorInfo();
@@ -1103,6 +1108,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public static final String KEY_SPLITPANE_A = "KEY_SPLITPANE_A";
     public static final String KEY_SPLITPANE_B = "KEY_SPLITPANE_B";
+    public static final String KEY_INTERPRETER = "KEY_INTERPRETER";
+    public static final String KEY_DEBUGGER = "KEY_DEBUGGER";
 
     public void setPersistentData(Map data) {
         if(data == null)
@@ -1115,12 +1122,17 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         i = (Integer)data.get(KEY_SPLITPANE_B);
         if(i != null)
             upDownSplitPane.setDividerLocation(i.intValue());
+
+        interpreter.setPersistentData((Map) data.get(KEY_INTERPRETER));
+        debugger.setPersistentData((Map) data.get(KEY_DEBUGGER));
     }
 
     public Map getPersistentData() {
         Map data = new HashMap();
         data.put(KEY_SPLITPANE_A, new Integer(rulesTextSplitPane.getDividerLocation()));
         data.put(KEY_SPLITPANE_B, new Integer(upDownSplitPane.getDividerLocation()));
+        data.put(KEY_INTERPRETER, interpreter.getPersistentData());
+        data.put(KEY_DEBUGGER, debugger.getPersistentData());
         return data;
     }
 

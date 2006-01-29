@@ -28,6 +28,7 @@ Version 1.0ea8 - 01/25/06
 - popup the console tab if anything is reported in the console
 - improved current select path in syntax diagram when switching path visiblity
 - improved syntax diagram display (colored label and smaller size)
+- click in the debug parse tree will show corresponding token in input stream and position in grammar
 
 - fixed a bug where auto-indentation would be applied for a ':' even inside an action block
 - fixed a bug where some tokens were not properly colorized (cut and past the same token over itself)

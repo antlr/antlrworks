@@ -1,6 +1,7 @@
 package org.antlr.works.parsetree;
 
 import edu.usfca.xj.appkit.gview.GView;
+import edu.usfca.xj.appkit.gview.object.GElement;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TreeUtilities;
@@ -162,6 +163,21 @@ public class ParseTreePanel extends JPanel {
         parseTreeGraphView.setAutoAdjustSize(true);
         parseTreeGraphView.setBackground(Color.white);
         parseTreeGraphView.setDrawBorder(false);
+
+        parseTreeGraphView.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                GElement elem = parseTreeGraphView.getElementAtPoint(e.getPoint());
+                if(elem == null || !(elem instanceof ParseTreeGraphView.GElementNode))
+                    return;
+
+                TreeNode node = parseTreeGraphView.getTreeNode((ParseTreeGraphView.GElementNode)elem);
+                if(node == null)
+                    return;
+
+                delegate.parseTreeDidSelectTreeNode(node);
+                selectNode(node);
+            }
+        });
 
         graphScrollPane = new JScrollPane(parseTreeGraphView);
         graphScrollPane.setWheelScrollingEnabled(true);

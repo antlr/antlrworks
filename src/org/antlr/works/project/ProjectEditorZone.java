@@ -327,6 +327,19 @@ public class ProjectEditorZone {
                 new CContainerProjectText(project, item);
 
             item.getComponentContainer().getDocument().performLoad(item.getFilePath());
+
+            if(!item.isOpened()) {
+                // Update the layout of the item only if it is created and not loaded
+                // from disk (isOpened() will be false if it is being just created).
+                // When loaded from disk, the project will contain all data needed
+                // for the layout: that's why we don't need to layout (again) the item.
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        item.getComponentContainer().getEditor().componentShouldLayout();
+                    }
+                });
+            }
+
             fileEditorItemDidLoad(item);
         }
 

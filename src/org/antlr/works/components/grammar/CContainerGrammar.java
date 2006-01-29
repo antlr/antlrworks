@@ -94,6 +94,7 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
 
     public void becomingVisibleForTheFirstTime() {
         editor.componentDidAwake();
+        editor.componentShouldLayout();
     }
 
     public ComponentEditor getEditor() {

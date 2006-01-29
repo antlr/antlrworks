@@ -58,6 +58,7 @@ public class ParseTreeGraphView extends GView {
     protected TreeNode root;
     protected GElementNode highlightedNode;
     protected Map treeNodeToGElementMap = new HashMap();
+    protected Map gelementToTreeNodeMap = new HashMap();
     protected Graphics2D g2d;
     protected ParseTreePanel panel;
 
@@ -80,9 +81,13 @@ public class ParseTreeGraphView extends GView {
     public void rebuild() {
         if(getRootElement() == null && root != null && g2d != null) {
             treeNodeToGElementMap.clear();
+            gelementToTreeNodeMap.clear();
 
             GElement element = buildGraph(root, g2d);
+
             treeNodeToGElementMap.put(root, element);
+            gelementToTreeNodeMap.put(element, root);
+
             element.move(MARGIN, MARGIN);
             setSizeMargin(MARGIN);
             setRootElement(element);
@@ -121,6 +126,7 @@ public class ParseTreeGraphView extends GView {
         nodeElement.setLabel(nodeLabel);
 
         treeNodeToGElementMap.put(node, nodeElement);
+        gelementToTreeNodeMap.put(nodeElement, node);
 
         double x = 0;
         for(int index=0; index<node.getChildCount(); index++) {
@@ -150,6 +156,10 @@ public class ParseTreeGraphView extends GView {
         }
 
         return nodeElement;
+    }
+
+    public TreeNode getTreeNode(GElementNode elem) {
+        return (TreeNode) gelementToTreeNodeMap.get(elem);
     }
 
     public void highlightNode(TreeNode node) {

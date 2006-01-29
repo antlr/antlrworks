@@ -60,9 +60,8 @@ import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.StringTokenizer;
 
 public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDelegate {
 
@@ -112,12 +111,15 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
         splitPane.setRightComponent(parseTreePanel);
         splitPane.setContinuousLayout(true);
         splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(200);
 
         panel.add(createControlPanel(), BorderLayout.NORTH);
         panel.add(splitPane, BorderLayout.CENTER);
 
         editor.getXJFrame().registerUndo(null, textPane);
+    }
+
+    public void componentShouldLayout() {
+        splitPane.setDividerLocation(0.2);
     }
 
     public Box createControlPanel() {
@@ -361,11 +363,32 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
         return getContainer();
     }
 
+    public void parseTreeDidSelectTreeNode(TreeNode node) {
+        // not implemented
+    }
+
     public JPopupMenu getContextualMenu() {
         ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
         factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
         factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
         return factory.menu;
+    }
+
+    public static final String KEY_SPLITPANE_A = "KEY_SPLITPANE_A";
+
+    public void setPersistentData(Map data) {
+        if(data == null)
+            return;
+
+        Integer i = (Integer)data.get(KEY_SPLITPANE_A);
+        if(i != null)
+            splitPane.setDividerLocation(i.intValue());
+    }
+
+    public Map getPersistentData() {
+        Map data = new HashMap();
+        data.put(KEY_SPLITPANE_A, new Integer(splitPane.getDividerLocation()));
+        return data;
     }
 
 }
