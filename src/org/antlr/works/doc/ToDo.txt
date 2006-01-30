@@ -12,7 +12,6 @@
 - extract all strings into properties
 - jump into source when navigating grammar text (in generated code)
 - display current token in syntax diagram
-- jump to a definition by double-click in the syntax diagram
 - handle "header with package" option (see with Terence for line numbering between files)
 - lexical ambiguities (ask Terence)
 
