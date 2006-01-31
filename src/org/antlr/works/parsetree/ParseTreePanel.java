@@ -166,7 +166,7 @@ public class ParseTreePanel extends JPanel {
 
         parseTreeGraphView.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                GElement elem = parseTreeGraphView.getElementAtPoint(e.getPoint());
+                GElement elem = parseTreeGraphView.getElementAtMousePosition(e);
                 if(elem == null || !(elem instanceof ParseTreeGraphView.GElementNode))
                     return;
 

@@ -1,6 +1,5 @@
 
 * Prio 1
-- check initial splitter position on Windows/Linux
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory
 - stats on grammar (show k or inf on each decision)
 - show code for any decision (Ter ads comments in code)
@@ -26,6 +25,7 @@
 - package for Mac OS X
 - upload antlrworks.pdf
 
+DOT: /Applications/Graphviz.app/Contents/MacOS/dot
 JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\javac
 
 * Issues *
