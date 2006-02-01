@@ -63,6 +63,7 @@ import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
 
 public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
@@ -93,8 +94,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public void appDidLaunch(String[] args) {
-
-        XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel());
+        AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
         XJApplication.addDocumentType(CDocumentGrammar.class, CContainerGrammar.class, XJDataPlainText.class, "g", Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
         XJApplication.addDocumentType(CDocumentProject.class, CContainerProject.class, XJDataXML.class, "awp", Localizable.getLocalizedString(Localizable.PROJECT_TYPE));
 
@@ -209,18 +209,30 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public static String getApplicationPath() {
-        String classPath = "org/antlr/works/IDE.class";
-        URL url = XJApplication.getAppDelegate().getClass().getClassLoader().getResource(classPath);
-        if(url == null)
-            return null;
+        URL url = XJApplication.getAppDelegate().getClass().getProtectionDomain().getCodeSource().getLocation();
+        URI uri = URI.create(url.toString());
 
-        String p = url.getPath();
+        String p = uri.getPath();
         if(p.startsWith("file:"))
             p = p.substring("file:".length());
 
-        p = p.substring(0, p.length()-classPath.length());
-        if(p.endsWith("jar!/"))
-            p = p.substring(0, p.length()-2);
+        int index = p.lastIndexOf("!");
+        if(index != -1)
+            p = p.substring(0, index);
+
+        if(XJSystem.isWindows()) {
+            // Note: on Windows, we can something like "/C:/Document..."
+            if(p.charAt(0) == '/')
+                p = p.substring(1);
+
+            // Change all '/' to '\'
+            StringBuffer sb = new StringBuffer(p);
+            for(int i=0; i<sb.length(); i++) {
+                if(sb.charAt(i) == '/')
+                    sb.replace(i, i+1, "\\");
+            }
+            p = sb.toString();
+        }
 
         return p;
     }

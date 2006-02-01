@@ -116,8 +116,12 @@ public class EditorConsole implements EditorTab, Console {
     }
 
     public synchronized void println(String s) {
+        print(s+"\n");
+    }
+
+    public synchronized void print(String s) {
         String t = "["+dateFormat.format(new Date())+"] "+s;
-        textArea.setText(textArea.getText()+t+"\n");
+        textArea.setText(textArea.getText()+t);
         textArea.setCaretPosition(textArea.getText().length());
         System.out.println(s);
 

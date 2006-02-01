@@ -1,5 +1,9 @@
 
 * Prio 1
+- test debug+generate+project build on Linux/Windows
+- prefs: verbose mode to dump all activities like compiling, etc.
+- write to console the title of each operation (debug, interpret, check grammar, etc)
+
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory
 - stats on grammar (show k or inf on each decision)
 - show code for any decision (Ter ads comments in code)
@@ -30,6 +34,6 @@ JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\java
 
 * Issues *
 
-- interpreter tree doesn't display correctly (but debugger tree does)
+- jikes doesn't work from within a jar
 - use "load" on Linux/Windows when opening a document on an untouched one
 - tree view of TUsage: why use white spaces to be able to display the entire string ?

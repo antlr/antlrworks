@@ -64,7 +64,7 @@ public class EngineRuntime {
 
     public static String getClassPath(String outputPath) {
         String classPath = outputPath;
-        classPath += File.pathSeparatorChar+ IDE.getApplicationPath();
+        classPath += File.pathSeparatorChar+IDE.getApplicationPath();
         classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
         return classPath;
     }
@@ -172,6 +172,9 @@ public class EngineRuntime {
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
 
+                // @todo verbose
+                //System.out.println(Utils.toString(args));
+
                 Process p = Runtime.getRuntime().exec(args);
                 setProcess(p);
                 new StreamWatcher(p.getErrorStream(), "Compiler[error]", delegate).start();
@@ -188,6 +191,9 @@ public class EngineRuntime {
                 args[4] = outputFileDir;
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
+
+                // @todo verbose
+                //System.out.println(Utils.toString(args));
 
                 Process p = Runtime.getRuntime().exec(args);
                 setProcess(p);
@@ -219,7 +225,7 @@ public class EngineRuntime {
         }
 
         if(result != 0) {
-            error = "Compiler failed result:\n"+result;
+            error = "Compiler failed with result code "+result;
         }
 
         return error;

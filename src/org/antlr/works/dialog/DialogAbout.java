@@ -73,6 +73,7 @@ public class DialogAbout extends XJPanel {
 
     public void resetAcknowledge() {
         acknowledgeTextArea.setText("");
+        acknowledgeTextArea.setBackground(jFrame.getBackground());
     }
 
     public void addAcknowledge(String ack) {

@@ -1,5 +1,5 @@
 
-Version 1.0ea8 - 01/25/06
+Version 1.0ea8 - 01/30/06
 
 - new: rule dependency graph (can be exported to EPS or bitmap file)
 - new: syntax coloring for generated Java code
@@ -9,26 +9,25 @@ Version 1.0ea8 - 01/25/06
 - new: contextual menus in editor, syntax diagram, interpreter and debugger
 - new: user can now specify tokens to be ignored in interpreter
 
-- update the rules status and syntax diagram each time the grammar is analyzed (not only when using the Check Grammar command)
-- kill the remote parser if the debugger cannot stop it (not applicable to remote parser)
-- improved ANTLR usage by running ANTLR only when necessary
-- rules are now sorted in interpreter and debugger if they are sorted in the editor
-- new message in status bar if an error is reported in the console
-- disabling syntax diagram now display a message
 - new idea to convert invalid string literals to single quote literals
-- now reload the tokenVocab file content when ANTLRWorks is back to front
+- new message in status bar if an error is reported in the console
 - ctrl-k: now copy the deleted end of line to the system clipboard
 - ctrl-t: now swap two characters (insert templates is now invoked using meta-k)
+- click in the debug parse tree will show corresponding token in input stream and position in grammar
+- kill the remote parser if the debugger cannot stop it (not applicable to remote parser)
+- update the rules status and syntax diagram each time the grammar is analyzed (not only when using the Check Grammar command)
+- improved ANTLR usage by running ANTLR only when necessary
+- rules are now sorted in interpreter and debugger if they are sorted in the editor
+- disabling syntax diagram now display a message
+- now reload the tokenVocab file content when ANTLRWorks is back to front
 - improved selection of a identifier
 - improved word selection using the mouse: dragging the mouse without releasing the button
   now extends the selection word by word (as expected on Mac OS X)
 - improved decision DFA diagram using more precise B-splines
 - added an arrow at the end of each syntax diagram
-- check grammar command now also analyze the lexer part of a combined grammar
-- popup the console tab if anything is reported in the console
+- check grammar command now also analyzes the lexer part of a combined grammar
 - improved current select path in syntax diagram when switching path visiblity
 - improved syntax diagram display (colored label and smaller size)
-- click in the debug parse tree will show corresponding token in input stream and position in grammar
 
 - fixed a bug where auto-indentation would be applied for a ':' even inside an action block
 - fixed a bug where some tokens were not properly colorized (cut and past the same token over itself)

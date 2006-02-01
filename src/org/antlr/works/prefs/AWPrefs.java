@@ -251,6 +251,10 @@ public class AWPrefs {
         return getPreferences().getInt(PREF_PARSER_DELAY, DEFAULT_PARSER_DELAY);
     }
 
+    public static void setLookAndFeel(String name) {
+        getPreferences().setString(PREF_LOOK_AND_FEEL, name);
+    }
+
     public static String getLookAndFeel() {
         return getPreferences().getString(PREF_LOOK_AND_FEEL, null);
     }

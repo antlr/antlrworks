@@ -43,13 +43,14 @@ import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.StreamWatcher;
+import org.antlr.works.utils.StreamWatcherDelegate;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
+public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, StreamWatcherDelegate {
 
     public static final String remoteParserClassName = "Test";
     // @todo put this in the check-list
@@ -218,7 +219,9 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                XJAlert.display(debugger.editor.getWindowContainer(), error.title, error.message);
+                if(XJAlert.displayAlert(debugger.editor.getWindowContainer(), error.title, error.message, "Show Console", "OK", 1) == 0) {
+                    debugger.editor.selectConsoleTab();
+                }
             }
         });
     }
@@ -351,7 +354,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
     }
 
     protected void compileFiles(String[] files) {
-        String error = EngineRuntime.compileFiles(files, outputFileDir, debugger);
+        String error = EngineRuntime.compileFiles(files, outputFileDir, this);
         if(error != null)
             reportError(error);
     }
@@ -414,6 +417,17 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate {
         }
 
         return true;
+    }
+
+    public void streamWatcherDidStarted() {
+    }
+
+    public void streamWatcherDidReceiveString(String string) {
+        debugger.editor.getConsole().print(string);
+    }
+
+    public void streamWatcherException(Exception e) {
+        debugger.editor.getConsole().print(e);
     }
 
     protected class ErrorReporter {
