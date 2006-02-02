@@ -1,5 +1,6 @@
 package org.antlr.works.menu;
 
+import edu.usfca.xj.appkit.menu.XJMenuItem;
 import org.antlr.works.editor.EditorMenu;
 
 import javax.swing.*;
@@ -48,11 +49,13 @@ public class ContextualMenuFactory {
         shouldInsertSeparator = true;
     }
 
-    public void addItem(int tag) {
+    public XJMenuItem addItem(int tag) {
         if(shouldInsertSeparator) {
             menu.addSeparator();
             shouldInsertSeparator = false;
         }
-        menu.add(editorMenu.createMenuItem(tag, true).getSwingComponent());
+        XJMenuItem item = editorMenu.createMenuItem(tag, true);
+        menu.add(item.getSwingComponent());
+        return item;
     }
 }

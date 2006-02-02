@@ -3,6 +3,7 @@ package org.antlr.works.components.grammar;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
+import edu.usfca.xj.appkit.menu.XJMenuItemCheck;
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.text.XJURLLabel;
 import edu.usfca.xj.appkit.undo.XJUndo;
@@ -740,6 +741,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         editorMenu.menuItemState(item);
     }
 
+    public void handleMenuSelected(XJMenu menu) {
+        editorMenu.handleMenuSelected(menu);
+    }
+
     /** Update methods
      */
 
@@ -825,8 +830,9 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         factory.addItem(EditorMenu.MI_GROUP_RULE);
         factory.addItem(EditorMenu.MI_UNGROUP_RULE);
         factory.addSeparator();
-        factory.addItem(EditorMenu.MI_IGNORE_RULE);
-        factory.addItem(EditorMenu.MI_CONSIDER_RULE);
+        XJMenuItemCheck item = (XJMenuItemCheck) factory.addItem(EditorMenu.MI_IGNORE_RULE);
+        item.setSelected(rules.getFirstSelectedRuleIgnoredFlag());
+
         return factory.menu;
     }
 
@@ -866,6 +872,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
                     //rules.selectFirstRule();
                     updateVisualization(true);
                     executeFirstOpeningOperations();
+                    findTokensToIgnore();
                 }
             });
         }
@@ -1081,6 +1088,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             XJAlert.display(getWindowContainer(), "Incompatible Grammar Version", "This grammar does not appear to be an ANTLR 3.x grammar." +
                     "\nANTLRWorks includes ANTLR 3.x and therefore only ANTLR 3.x grammars are recognized.");
         }
+    }
+
+    public void findTokensToIgnore() {
+        rules.findTokensToIgnore();
+        interpreter.setRules(getRules());
     }
 
     public boolean wasSaving = false;

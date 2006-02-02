@@ -176,6 +176,9 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     public void menuItemState(XJMenuItem item) {
     }
 
+    public void handleMenuSelected(XJMenu menu) {
+    }
+
     public void componentActivated() {
     }
 

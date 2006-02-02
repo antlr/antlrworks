@@ -46,6 +46,9 @@ public class AWPrefs {
     public static final String PREF_CONSOLE_SHOW = "PREF_CONSOLE_SHOW";
     public static final String PREF_LOOK_AND_FEEL = "PREF_LOOK_AND_FEEL";
 
+    public static final String PREF_DEBUG_VERBOSE = "PREF_DEBUG_VERBOSE";
+    public static final String PREF_DEBUG_DONT_OPTIMIZE_NFA = "PREF_DONT_OPTIMIZE_NFA";
+
     public static final int STARTUP_NEW_DOC = 0;
     public static final int STARTUP_OPEN_LAST_DOC = 1;
 
@@ -177,6 +180,14 @@ public class AWPrefs {
             if(Font.getFont("Courier") != null)
                 DEFAULT_EDITOR_FONT = "Courier";
         }
+    }
+
+    public static boolean getDebugVerbose() {
+        return getPreferences().getBoolean(PREF_DEBUG_VERBOSE, false);
+    }
+
+    public static boolean getDebugDontOptimizeNFA() {
+        return getPreferences().getBoolean(PREF_DEBUG_DONT_OPTIMIZE_NFA, false);
     }
 
     public static void setOutputPath(String path) {

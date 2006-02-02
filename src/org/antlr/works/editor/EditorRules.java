@@ -35,6 +35,7 @@ import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.swing.ATEKeyBindings;
+import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.stats.Statistics;
@@ -128,6 +129,62 @@ public class EditorRules implements XJTreeDelegate {
         }
         rulesTree.repaint();
         editor.rulesDidChange();
+    }
+
+    /** This method iterates over all rules and all blocks inside each rule to
+     * find a sequence of token equals to "channel=99".
+     */
+
+    public void findTokensToIgnore() {
+        List rules = getRules();
+        if(rules == null || rules.isEmpty())
+            return;
+
+        ATESyntaxLexer lexer = new ATESyntaxLexer();
+        for (Iterator ruleIter = rules.iterator(); ruleIter.hasNext();) {
+            GrammarSyntaxRule rule = (GrammarSyntaxRule) ruleIter.next();
+            List blocks = rule.getBlocks();
+            if(blocks == null || blocks.isEmpty())
+                continue;
+
+            rule.ignored = false;
+
+            for (Iterator blockIter = blocks.iterator(); blockIter.hasNext();) {
+                ATEToken block = (ATEToken) blockIter.next();
+                lexer.tokenize(block.getAttribute());
+
+                List tokens = lexer.getTokens();
+                for(int t=0; t<tokens.size(); t++) {
+                    ATEToken token = (ATEToken)tokens.get(t);
+                    if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("channel") && t+3 < tokens.size()) {
+                        ATEToken t1 = (ATEToken)tokens.get(t+1);
+                        ATEToken t2 = (ATEToken)tokens.get(t+2);
+                        ATEToken t3 = (ATEToken)tokens.get(t+3);
+                        if(t1.type != ATESyntaxLexer.TOKEN_CHAR || !t1.getAttribute().equals("="))
+                            continue;
+
+                        if(t2.type != ATESyntaxLexer.TOKEN_CHAR || !t2.getAttribute().equals("9"))
+                            continue;
+
+                        if(t3.type != ATESyntaxLexer.TOKEN_CHAR || !t3.getAttribute().equals("9"))
+                            continue;
+
+                        rule.ignored = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        rulesTree.repaint();
+    }
+
+    public boolean getFirstSelectedRuleIgnoredFlag() {
+        List selectedRules = getSelectedRules();
+        if(selectedRules == null || selectedRules.isEmpty())
+            return false;
+        else
+            return ((GrammarSyntaxRule)selectedRules.get(0)).ignored;
     }
 
     public class RuleMoveUpAction extends AbstractAction {

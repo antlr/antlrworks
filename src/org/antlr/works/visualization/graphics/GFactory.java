@@ -53,6 +53,10 @@ public class GFactory {
     public GFactory() {
     }
 
+    public void setOptimize(boolean flag) {
+        this.optimize = flag;
+    }
+
     public void toggleNFAOptimization() {
         optimize = !optimize;
     }

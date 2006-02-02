@@ -5,6 +5,7 @@ import org.antlr.works.IDE;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.StreamWatcher;
 import org.antlr.works.utils.StreamWatcherDelegate;
+import org.antlr.works.utils.Utils;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -85,6 +86,8 @@ public class EngineRuntime {
             args[7] = libPath;
             args[8] = file;
 
+            IDE.debugVerbose(EngineRuntime.class, "Run ANTLR: "+Utils.toString(args));
+
             Process p = Runtime.getRuntime().exec(args);
             setProcess(p);
             esw = new StreamWatcher(p.getErrorStream(), "ANTLR[error]", delegate);
@@ -133,6 +136,8 @@ public class EngineRuntime {
             for(int i=0; i<params.length; i++)
                 args[3+i] = params[i];
 
+            IDE.debugVerbose(EngineRuntime.class, "Run Java: "+Utils.toString(args));
+
             Process p = Runtime.getRuntime().exec(args, null, new File(currentPath));
             setProcess(p);
             new StreamWatcher(p.getErrorStream(), "Java[error]", delegate).start();
@@ -172,8 +177,7 @@ public class EngineRuntime {
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
 
-                // @todo verbose
-                //System.out.println(Utils.toString(args));
+                IDE.debugVerbose(EngineRuntime.class, "Compile: "+Utils.toString(args));
 
                 Process p = Runtime.getRuntime().exec(args);
                 setProcess(p);
@@ -192,8 +196,7 @@ public class EngineRuntime {
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
 
-                // @todo verbose
-                //System.out.println(Utils.toString(args));
+                IDE.debugVerbose(EngineRuntime.class, "Compile: "+Utils.toString(args));
 
                 Process p = Runtime.getRuntime().exec(args);
                 setProcess(p);

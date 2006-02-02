@@ -33,6 +33,7 @@ package org.antlr.works.visualization;
 
 import org.antlr.analysis.NFAState;
 import org.antlr.works.ate.syntax.misc.ATEThread;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.visualization.graphics.GFactory;
@@ -55,7 +56,6 @@ public class VisualDrawing extends ATEThread {
 
     protected String threadText;
     protected GrammarSyntaxRule threadRule;
-
     protected GrammarSyntaxRule threadLastProcessedRule;
 
     protected Map cacheGraphs = new HashMap();
@@ -162,6 +162,7 @@ public class VisualDrawing extends ATEThread {
     protected synchronized void createGraphsForRule(GrammarSyntaxRule rule) throws Exception {
         List graphs = (List)cacheGraphs.get(rule);
         if(graphs == null) {
+            factory.setOptimize(!AWPrefs.getDebugDontOptimizeNFA());
             graphs = factory.buildGraphsForRule(visual.getEngineGrammar(), rule.name, rule.errors);
             if(graphs != null)
                 cacheGraphs.put(rule, graphs);

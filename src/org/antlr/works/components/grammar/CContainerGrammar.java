@@ -126,6 +126,11 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
         editor.menuItemState(item);
     }
 
+    public void handleMenuSelected(XJMenu menu) {
+        super.handleMenuSelected(menu);
+        editor.handleMenuSelected(menu);
+    }
+
     public void windowActivated() {
         super.windowActivated();
         editor.componentActivated();

@@ -5,6 +5,7 @@ import edu.usfca.xj.appkit.gview.base.Rect;
 import edu.usfca.xj.appkit.gview.object.GElement;
 import edu.usfca.xj.appkit.gview.object.GElementRect;
 import edu.usfca.xj.appkit.gview.object.GLink;
+import edu.usfca.xj.appkit.gview.shape.SLinkElbow;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.ParseTree;
 
@@ -49,11 +50,12 @@ public class ParseTreeGraphView extends GView {
     public static final boolean DRAGGABLE = false;
     
     public static final int HORIZONTAL_GAP = 20;
-    public static final int VERTICAL_GAP = 35;
+    public static final int VERTICAL_GAP = 20;
 
     public static final int MARGIN = 10;
 
     public static final Color HIGHLIGHTED_COLOR = new Color(0, 0.5f, 1, 0.4f);
+    public static final Font DEFAULT_FONT = new Font("Monospaced", Font.PLAIN, 11);
 
     protected TreeNode root;
     protected GElementNode highlightedNode;
@@ -96,6 +98,7 @@ public class ParseTreeGraphView extends GView {
 
     public void paintComponent(Graphics g) {
         g2d = (Graphics2D)g;
+        g2d.setFont(DEFAULT_FONT);
         rebuild();
         super.paintComponent(g);
     }
@@ -142,6 +145,11 @@ public class ParseTreeGraphView extends GView {
                                     childElement, GLink.ANCHOR_TOP,
                                     GLink.SHAPE_ELBOW, "", 0);
             link.setDraggable(DRAGGABLE);
+
+            SLinkElbow l = (SLinkElbow)link.getLink();
+            l.setOutOffsetLength(10);
+            l.getArrow().setLength(6);
+
             nodeElement.addElement(link);
             nodeElement.addElement(childElement);
         }

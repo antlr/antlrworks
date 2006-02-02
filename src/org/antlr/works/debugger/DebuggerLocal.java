@@ -38,6 +38,7 @@ import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
+import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.antlr.works.IDE;
 import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.generate.CodeGenerate;
@@ -334,7 +335,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
 
     protected void generateGlueCode() {
         try {
-            StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup");
+            StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup", DefaultTemplateLexer.class);
             StringTemplate glueCode = group.getInstanceOf(remoteParserTemplatePath+remoteParserTemplateName);
             glueCode.setAttribute(ST_ATTR_CLASSNAME, remoteParserClassName);
             glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(fileRemoteParserInputText));

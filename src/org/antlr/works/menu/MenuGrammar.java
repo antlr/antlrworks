@@ -153,6 +153,7 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
         showProgress("Checking Grammar...");
 
         editor.console.makeCurrent();
+        editor.console.println("Checking Grammar...");
         checkGrammar.check();
 
         Statistics.shared().recordEvent(Statistics.EVENT_CHECK_GRAMMAR);

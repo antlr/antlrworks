@@ -190,4 +190,8 @@ public abstract class CContainerProjectFile implements ComponentContainer, XJMen
         project.handleMenuEvent(menu, item);
     }
 
+    public void handleMenuSelected(XJMenu menu) {
+        project.handleMenuSelected(menu);
+    }
+
 }

@@ -31,10 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import edu.usfca.xj.appkit.menu.XJMainMenuBar;
-import edu.usfca.xj.appkit.menu.XJMenu;
-import edu.usfca.xj.appkit.menu.XJMenuItem;
-import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
+import edu.usfca.xj.appkit.menu.*;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.dialog.DialogStatistics;
 import org.antlr.works.menu.ContextualMenuFactory;
@@ -85,8 +82,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_GROUP_RULE = 54;
     public static final int MI_UNGROUP_RULE = 55;
     public static final int MI_IGNORE_RULE = 56;
-    public static final int MI_CONSIDER_RULE = 57;
-    public static final int MI_CHECK_GRAMMAR = 58;
+    public static final int MI_CHECK_GRAMMAR = 57;
 
     // Refactor
     public static final int MI_RENAME = 60;
@@ -133,6 +129,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_PRIVATE_UNREGISTER = 201;
 
     protected CEditorGrammar editor = null;
+    protected XJMenuItem ignoreRuleMenuItem;
 
     public EditorMenu(CEditorGrammar editor) {
         this.editor = editor;
@@ -289,8 +286,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         rules.addItem(createMenuItem(MI_GROUP_RULE));
         rules.addItem(createMenuItem(MI_UNGROUP_RULE));
         rules.addSeparator();
-        rules.addItem(createMenuItem(MI_IGNORE_RULE));
-        rules.addItem(createMenuItem(MI_CONSIDER_RULE));
+        rules.addItem(ignoreRuleMenuItem = createMenuItem(MI_IGNORE_RULE));
 
         XJMenu folding = new XJMenu();
         folding.setTitle("Folding");
@@ -384,11 +380,7 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_IGNORE_RULE:
-                item = new XJMenuItem("Ignore in Interpreter", MI_IGNORE_RULE, this);
-                break;
-
-            case MI_CONSIDER_RULE:
-                item = new XJMenuItem("Consider in Interpreter", MI_CONSIDER_RULE, this);
+                item = new XJMenuItemCheck("Ignore in Interpreter", MI_IGNORE_RULE, this, true);
                 break;
 
             case MI_EXPORT_AS_IMAGE:
@@ -505,10 +497,15 @@ public class EditorMenu implements XJMenuItemDelegate {
         }
     }
 
+    public void handleMenuSelected(XJMenu menu) {
+        boolean ignored = editor.rules.getFirstSelectedRuleIgnoredFlag();
+        ignoreRuleMenuItem.setSelected(ignored);
+    }
+
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
         handleMenuView(item.getTag());
         handleMenuFind(item.getTag());
-        handleMenuGrammar(item.getTag());
+        handleMenuGrammar(item);
         handleMenuRefactor(item.getTag());
         handleMenuGoTo(item.getTag());
         handleMenuGenerate(item.getTag());
@@ -570,8 +567,8 @@ public class EditorMenu implements XJMenuItemDelegate {
         }
     }
 
-    public void handleMenuGrammar(int itemTag) {
-        switch(itemTag) {
+    public void handleMenuGrammar(XJMenuItem item) {
+        switch(item.getTag()) {
             case MI_SHOW_TOKENS_SD:
                 editor.menuGrammar.showTokensSD();
                 break;
@@ -597,11 +594,10 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_IGNORE_RULE:
-                editor.menuGrammar.ignore();
-                break;
-
-            case MI_CONSIDER_RULE:
-                editor.menuGrammar.consider();
+                if(item.isSelected())
+                    editor.menuGrammar.ignore();
+                else
+                    editor.menuGrammar.consider();
                 break;
 
             case MI_CHECK_GRAMMAR:

@@ -40,7 +40,6 @@ import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
-import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
@@ -128,7 +127,6 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
         box.add(createRulesPopUp());
         box.add(Box.createHorizontalStrut(20));
         box.add(createTokensToIgnoreField());
-        box.add(Box.createHorizontalGlue());
         return box;
     }
 
@@ -165,16 +163,16 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
         tokensToIgnoreLabel.setFont(tokensToIgnoreLabel.getFont().deriveFont(Font.ITALIC));
         box.add(tokensToIgnoreLabel);
 
-/*        JButton button = new JButton("Guess");
+        JButton button = new JButton("Guess");
         button.setToolTipText("Find the name of all rules containing an action with channel=99");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                findTokensToIgnore();
+                editor.findTokensToIgnore();
             }
         });
-
+        box.add(Box.createHorizontalGlue());
         box.add(button);
-           */
+
         return box;
     }
 
@@ -191,8 +189,10 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
         Object selectedItem =  rulesCombo.getSelectedItem();
 
         rulesCombo.removeAllItems();
-        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-            rulesCombo.addItem(iterator.next().toString());
+        if(rules != null) {
+            for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
+                rulesCombo.addItem(iterator.next().toString());
+            }
         }
 
         if(selectedItem != null)
@@ -201,65 +201,20 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
 
     public void updateIgnoreTokens(List rules) {
         StringBuffer sb = new StringBuffer();
-        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-            GrammarSyntaxRule r = (GrammarSyntaxRule) iterator.next();
-            if(r.ignored) {
-                if(sb.length() > 0)
-                    sb.append(" ");
-                sb.append(r.name);
-            }
-        }
-        tokensToIgnoreLabel.setText(sb.toString());
-    }
-
-    /** This method iterates over all rules and all blocks inside each rule to
-     * find a sequence of token equals to "channel=99".
-     */
-
-    public void findTokensToIgnore() {
-        List rules = editor.getRules();
-        if(rules == null || rules.isEmpty())
-            return;
-
-        StringBuffer tokensToIgnore = new StringBuffer();
-
-        ATESyntaxLexer lexer = new ATESyntaxLexer();
-        for (Iterator ruleIter = rules.iterator(); ruleIter.hasNext();) {
-            GrammarSyntaxRule rule = (GrammarSyntaxRule) ruleIter.next();
-            List blocks = rule.getBlocks();
-            if(blocks == null || blocks.isEmpty())
-                continue;
-
-            for (Iterator blockIter = blocks.iterator(); blockIter.hasNext();) {
-                ATEToken block = (ATEToken) blockIter.next();
-                lexer.tokenize(block.getAttribute());
-
-                List tokens = lexer.getTokens();
-                for(int t=0; t<tokens.size(); t++) {
-                    ATEToken token = (ATEToken)tokens.get(t);
-                    if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("channel") && t+3 < tokens.size()) {
-                        ATEToken t1 = (ATEToken)tokens.get(t+1);
-                        ATEToken t2 = (ATEToken)tokens.get(t+2);
-                        ATEToken t3 = (ATEToken)tokens.get(t+3);
-                        if(t1.type != ATESyntaxLexer.TOKEN_CHAR || !t1.getAttribute().equals("="))
-                            continue;
-
-                        if(t2.type != ATESyntaxLexer.TOKEN_CHAR || !t2.getAttribute().equals("9"))
-                            continue;
-
-                        if(t3.type != ATESyntaxLexer.TOKEN_CHAR || !t3.getAttribute().equals("9"))
-                            continue;
-
-                        if(tokensToIgnore.length() > 0)
-                            tokensToIgnore.append(" ");
-                        tokensToIgnore.append(rule.name);
-                        break;
-                    }
+        if(rules != null) {
+            for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
+                GrammarSyntaxRule r = (GrammarSyntaxRule) iterator.next();
+                if(r.ignored) {
+                    if(sb.length() > 0)
+                        sb.append(" ");
+                    sb.append(r.name);
                 }
-            }
+            }            
         }
-
-        tokensToIgnoreLabel.setText(tokensToIgnore.toString());
+        if(sb.length() == 0)
+            tokensToIgnoreLabel.setText("-");
+        else
+            tokensToIgnoreLabel.setText(sb.toString());
     }
 
     public void interpret() {
@@ -304,6 +259,7 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
 
     protected void process() {
         progress.setInfo("Interpreting...");
+        editor.console.println("Interpreting...");
 
         CharStream input = new ANTLRStringStream(textPane.getText());
 

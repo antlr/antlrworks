@@ -237,6 +237,11 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         return p;
     }
 
+    public static void debugVerbose(Class c, String s) {
+        if(AWPrefs.getDebugVerbose())
+            System.out.println(c.getName()+": "+s);
+    }
+
     public void customizeHelpMenu(XJMenu menu) {
         menu.insertItemAfter(new XJMenuItem("Check for Updates", EditorMenu.MI_CHECK_UPDATES, this), XJMainMenuBar.MI_HELP);
         menu.insertItemAfter(new XJMenuItem("Send Feedback", EditorMenu.MI_SEND_FEEDBACK, this), XJMainMenuBar.MI_HELP);

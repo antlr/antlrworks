@@ -32,7 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization;
 
 import edu.usfca.xj.appkit.gview.GView;
-import edu.usfca.xj.appkit.utils.XJFileChooser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
@@ -164,13 +163,6 @@ public class Visual implements EditorTab, GContextProvider {
 
     public GGraphAbstract getCurrentGraph() {
         return panel.getCurrentGraph();
-    }
-
-    public String chooseDOTFile() {
-        if(!XJFileChooser.shared().displaySaveDialog(editor.getJavaContainer(), "DOT", "DOT file", false))
-            return null;
-
-        return XJFileChooser.shared().getSelectedFilePath();
     }
 
     public boolean canSaveImage() {

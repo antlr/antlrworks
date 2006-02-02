@@ -1,8 +1,6 @@
 
 * Prio 1
 - test debug+generate+project build on Linux/Windows
-- prefs: verbose mode to dump all activities like compiling, etc.
-- write to console the title of each operation (debug, interpret, check grammar, etc)
 
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory
 - stats on grammar (show k or inf on each decision)
@@ -25,6 +23,7 @@
 - remove private menu
 - optimize imports
 - check update.xml file
+- tests: check grammar, interpreter, debugger
 
 - package for Mac OS X
 - upload antlrworks.pdf
