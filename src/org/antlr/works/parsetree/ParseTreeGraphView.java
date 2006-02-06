@@ -117,7 +117,7 @@ public class ParseTreeGraphView extends GView {
         }
 
         FontMetrics fm = g.getFontMetrics();
-        double width = fm.stringWidth(nodeLabel)+16;
+        double width = (nodeLabel==null?0:fm.stringWidth(nodeLabel))+16;
         double height = fm.getHeight()+8;
 
         GElementNode nodeElement = new GElementNode();
