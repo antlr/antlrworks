@@ -1,9 +1,7 @@
 
 * Prio 1
 - prefs: syntax coloring colors in prefs
-- change color of $
 - create grammar file in project
-- mantra extension is now .om
 - test debug+generate+project build on Linux/Windows
 
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory

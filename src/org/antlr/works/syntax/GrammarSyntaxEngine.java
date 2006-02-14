@@ -77,10 +77,10 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         StyleConstants.setItalic(labelAttr, true);
 
         actionRefAttr = new SimpleAttributeSet();
-        //StyleConstants.setForeground(actionRefAttr, COLOR_ACTION_REF);
+        StyleConstants.setForeground(actionRefAttr, Color.red);
         //StyleConstants.setBackground(actionRefAttr, Color.yellow);
         //StyleConstants.setItalic(actionRefAttr, true);
-        StyleConstants.setUnderline(actionRefAttr, true);        
+        StyleConstants.setBold(actionRefAttr, true);
     }
 
     public ATESyntaxLexer createLexer() {

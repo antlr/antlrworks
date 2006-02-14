@@ -44,7 +44,7 @@ public class ProjectFileItem implements Comparable {
     public static final String FILE_JAVA_EXTENSION = ".java";
     public static final String FILE_STG_EXTENSION = ".stg";
     public static final String FILE_ST_EXTENSION = ".st";
-    public static final String FILE_MANTRA_EXTENSION = ".m";
+    public static final String FILE_MANTRA_EXTENSION = ".om";
     public static final String FILE_TEXT_EXTENSION = ".txt";
 
     public static final String FILE_TYPE_GRAMMAR = "FILE_TYPE_GRAMMAR";
