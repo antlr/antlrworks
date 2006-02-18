@@ -45,6 +45,7 @@ import org.antlr.works.stats.Statistics;
 import org.antlr.works.utils.HelpManager;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,18 +63,23 @@ public class AWPrefsDialog extends XJPanel {
         initComponents();
         setSize(700, 360);
 
+        prepareGeneralTab();
+        prepareEditorTab();
+        prepareSyntaxTab();
+        prepareCompilerTab();
+        prepareDebuggerTab();
+        prepareSCMTab();
+        prepareStatsTab();
+        prepareUpdateTab();
+
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 apply();
             }
         });
+    }
 
-        foldingButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
-            }
-        });
-
+    public void prepareGeneralTab() {
         browseDotToolPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
@@ -83,6 +89,83 @@ public class AWPrefsDialog extends XJPanel {
             }
         });
 
+        lafCombo.removeAllItems();
+        UIManager.LookAndFeelInfo[] info = UIManager.getInstalledLookAndFeels();
+        for (int i=0; i<info.length; i++) {
+            lafCombo.addItem(info[i].getName());
+        }
+
+        getPreferences().bindToPreferences(startupActionCombo, AWPrefs.PREF_STARTUP_ACTION, AWPrefs.STARTUP_OPEN_LAST_DOC);
+        getPreferences().bindToPreferences(lafCombo, AWPrefs.PREF_LOOK_AND_FEEL, XJLookAndFeel.getDefaultLookAndFeelName());
+        getPreferences().bindToPreferences(dotToolPathField, AWPrefs.PREF_DOT_TOOL_PATH, AWPrefs.DEFAULT_DOT_TOOL_PATH);
+
+        // General - debug only
+        getPreferences().bindToPreferences(debugVerboseButton, AWPrefs.PREF_DEBUG_VERBOSE, false);
+        getPreferences().bindToPreferences(debugDontOptimizeNFA, AWPrefs.PREF_DEBUG_DONT_OPTIMIZE_NFA, false);
+    }
+
+    public void prepareEditorTab() {
+        foldingButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
+            }
+        });
+
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String fontNames[] = ge.getAvailableFontFamilyNames();
+
+        editorFontCombo.removeAllItems();
+        for (int i=0; i<fontNames.length; i++) {
+            editorFontCombo.addItem(fontNames[i]);
+        }
+
+        getPreferences().bindToPreferences(autoSaveButton, AWPrefs.PREF_AUTOSAVE_ENABLED, false);
+        getPreferences().bindToPreferences(autoSaveDelayField, AWPrefs.PREF_AUTOSAVE_DELAY, 5);
+        getPreferences().bindToPreferences(highlightCursorLineButton, AWPrefs.PREF_HIGHLIGHTCURSORLINE, true);
+        getPreferences().bindToPreferences(tabWidthField, AWPrefs.PREF_TAB_WIDTH, AWPrefs.DEFAULT_TAB_WIDTH);
+        getPreferences().bindToPreferences(editorFontCombo, AWPrefs.PREF_EDITOR_FONT, AWPrefs.DEFAULT_EDITOR_FONT);
+        getPreferences().bindToPreferences(editorFontSizeSpinner, AWPrefs.PREF_EDITOR_FONT_SIZE, AWPrefs.DEFAULT_EDITOR_FONT_SIZE);
+        getPreferences().bindToPreferences(parserDelayField, AWPrefs.PREF_PARSER_DELAY, AWPrefs.DEFAULT_PARSER_DELAY);
+        getPreferences().bindToPreferences(foldingButton, AWPrefs.PREF_EDITOR_FOLDING, AWPrefs.DEFAULT_EDITOR_FOLDING);
+        getPreferences().bindToPreferences(actionsFoldingAnchorsButton, AWPrefs.PREF_ACTIONS_ANCHORS_FOLDING, AWPrefs.DEFAULT_ACTIONS_ANCHORS_FOLDING);
+        getPreferences().bindToPreferences(smoothScrollingButton, AWPrefs.PREF_SMOOTH_SCROLLING, AWPrefs.DEFAULT_SMOOTH_SCROLLING);
+    }
+
+    public void bindSyntax(String identifier, JPanel colorPanel, JCheckBox bold, JCheckBox italic) {
+        getPreferences().bindToPreferences(colorPanel, AWPrefs.getSyntaxColorKey(identifier), AWPrefs.getSyntaxDefaultColor(identifier));
+        getPreferences().bindToPreferences(bold, AWPrefs.getSyntaxBoldKey(identifier), AWPrefs.getSyntaxDefaultBold(identifier));
+        getPreferences().bindToPreferences(italic, AWPrefs.getSyntaxItalicKey(identifier), AWPrefs.getSyntaxDefaultItalic(identifier));
+    }
+
+    public void defaultSyntax(String identifier, JPanel colorPanel, JCheckBox bold, JCheckBox italic) {
+        getPreferences().defaultPreference(colorPanel, AWPrefs.getSyntaxColorKey(identifier), AWPrefs.getSyntaxDefaultColor(identifier));
+        getPreferences().defaultPreference(bold, AWPrefs.getSyntaxBoldKey(identifier), AWPrefs.getSyntaxDefaultBold(identifier));
+        getPreferences().defaultPreference(italic, AWPrefs.getSyntaxItalicKey(identifier), AWPrefs.getSyntaxDefaultItalic(identifier));
+    }
+
+    public void prepareSyntaxTab() {
+        syntaxDefaultButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                defaultSyntax(AWPrefs.PREF_SYNTAX_PARSER, parserColorPanel, parserBoldButton, parserItalicButton);
+                defaultSyntax(AWPrefs.PREF_SYNTAX_LEXER, lexerColorPanel, lexerBoldButton, lexerItalicButton);
+                defaultSyntax(AWPrefs.PREF_SYNTAX_LABEL, labelColorPanel, labelsBoldButton, labelsItalicButton);
+                defaultSyntax(AWPrefs.PREF_SYNTAX_REFS, refsActionColorPanel, refsActionBoldButton, refsActionItalicButton);
+                defaultSyntax(AWPrefs.PREF_SYNTAX_COMMENT, commentsColorPanel, commentsBoldButton, commentsItalicButton);
+                defaultSyntax(AWPrefs.PREF_SYNTAX_STRING, stringsColorPanel, stringsBoldButton, stringsItalicButton);
+                defaultSyntax(AWPrefs.PREF_SYNTAX_KEYWORD, keywordsColorPanel, keywordsBoldButton, keywordsItalicButton);
+            }
+        });
+
+        bindSyntax(AWPrefs.PREF_SYNTAX_PARSER, parserColorPanel, parserBoldButton, parserItalicButton);
+        bindSyntax(AWPrefs.PREF_SYNTAX_LEXER, lexerColorPanel, lexerBoldButton, lexerItalicButton);
+        bindSyntax(AWPrefs.PREF_SYNTAX_LABEL, labelColorPanel, labelsBoldButton, labelsItalicButton);
+        bindSyntax(AWPrefs.PREF_SYNTAX_REFS, refsActionColorPanel, refsActionBoldButton, refsActionItalicButton);
+        bindSyntax(AWPrefs.PREF_SYNTAX_COMMENT, commentsColorPanel, commentsBoldButton, commentsItalicButton);
+        bindSyntax(AWPrefs.PREF_SYNTAX_STRING, stringsColorPanel, stringsBoldButton, stringsItalicButton);
+        bindSyntax(AWPrefs.PREF_SYNTAX_KEYWORD, keywordsColorPanel, keywordsBoldButton, keywordsItalicButton);
+    }
+
+    public void prepareCompilerTab() {
         javacCustomPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 javacPathField.setEnabled(javacCustomPathButton.isSelected());
@@ -108,6 +191,45 @@ public class AWPrefsDialog extends XJPanel {
             }
         });
 
+        compilerRadioButtonGroup = new ButtonGroup();
+        compilerRadioButtonGroup.add(jikesRadio);
+        compilerRadioButtonGroup.add(integratedRadio);
+        compilerRadioButtonGroup.add(javacRadio);
+
+        integratedRadio.setActionCommand("integrated");
+        javacRadio.setActionCommand("javac");
+        jikesRadio.setActionCommand("jikes");
+
+        getPreferences().bindToPreferences(javacCustomPathButton, AWPrefs.PREF_JAVAC_CUSTOM_PATH, AWPrefs.DEFAULT_JAVAC_CUSTOM_PATH);
+        getPreferences().bindToPreferences(javacPathField, AWPrefs.PREF_JAVAC_PATH, AWPrefs.DEFAULT_JAVAC_PATH);
+        getPreferences().bindToPreferences(jikesPathField, AWPrefs.PREF_JIKES_PATH, AWPrefs.DEFAULT_JIKES_PATH);
+        getPreferences().bindToPreferences(compilerRadioButtonGroup, AWPrefs.PREF_COMPILER, AWPrefs.DEFAULT_COMPILER);
+    }
+
+    public void prepareDebuggerTab() {
+        getPreferences().bindToPreferences(debugDefaultLocalPortField, AWPrefs.PREF_DEBUG_LOCALPORT, AWPrefs.DEFAULT_DEBUG_LOCALPORT);
+
+        getPreferences().bindToPreferences(debugNonConsumedColorPanel, AWPrefs.PREF_NONCONSUMED_TOKEN_COLOR, AWPrefs.DEFAULT_NONCONSUMED_TOKEN_COLOR);
+        getPreferences().bindToPreferences(debugConsumedColorPanel, AWPrefs.PREF_CONSUMED_TOKEN_COLOR, AWPrefs.DEFAULT_CONSUMED_TOKEN_COLOR);
+        getPreferences().bindToPreferences(debugHiddenColorPanel, AWPrefs.PREF_HIDDEN_TOKEN_COLOR, AWPrefs.DEFAULT_HIDDEN_TOKEN_COLOR);
+        getPreferences().bindToPreferences(debugDeadColorPanel, AWPrefs.PREF_DEAD_TOKEN_COLOR, AWPrefs.DEFAULT_DEAD_TOKEN_COLOR);
+        getPreferences().bindToPreferences(debugLTColorPanel, AWPrefs.PREF_LOOKAHEAD_TOKEN_COLOR, AWPrefs.DEFAULT_LOOKAHEAD_TOKEN_COLOR);
+    }
+
+    public void prepareSCMTab() {
+        getPreferences().bindToPreferences(enablePerforceCheckBox, AWPrefs.PREF_SCM_P4_ENABLED, false);
+        getPreferences().bindToPreferences(p4PortField, AWPrefs.PREF_SCM_P4_PORT, "");
+        getPreferences().bindToPreferences(p4UserField, AWPrefs.PREF_SCM_P4_USER, "");
+        getPreferences().bindToPreferences(p4PasswordField, AWPrefs.PREF_SCM_P4_PASSWORD, "");
+        getPreferences().bindToPreferences(p4ClientField, AWPrefs.PREF_SCM_P4_CLIENT, "");
+        getPreferences().bindToPreferences(p4ExecPathField, AWPrefs.PREF_SCM_P4_EXEC, "");
+    }
+
+    public void prepareStatsTab() {
+        getPreferences().bindToPreferences(reportTypeCombo, AWPrefs.PREF_STATS_REMINDER_METHOD, AWPrefs.DEFAULT_STATS_REMINDER_METHOD);
+    }
+
+    public void prepareUpdateTab() {
         browseUpdateDownloadPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
@@ -123,85 +245,8 @@ public class AWPrefsDialog extends XJPanel {
             }
         });
 
-        compilerRadioButtonGroup = new ButtonGroup();
-        compilerRadioButtonGroup.add(jikesRadio);
-        compilerRadioButtonGroup.add(integratedRadio);
-        compilerRadioButtonGroup.add(javacRadio);
-
-        integratedRadio.setActionCommand("integrated");
-        javacRadio.setActionCommand("javac");
-        jikesRadio.setActionCommand("jikes");
-
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        String fontNames[] = ge.getAvailableFontFamilyNames();
-
-        editorFontCombo.removeAllItems();
-        for (int i=0; i<fontNames.length; i++) {
-            editorFontCombo.addItem(fontNames[i]);
-        }
-
-        lafCombo.removeAllItems();
-        UIManager.LookAndFeelInfo[] info = UIManager.getInstalledLookAndFeels();
-        for (int i=0; i<info.length; i++) {
-            lafCombo.addItem(info[i].getName());
-        }
-
-        fillColorComboBox(nonConsumedTokenColor);
-        fillColorComboBox(consumedTokenColor);
-        fillColorComboBox(hiddenTokenColor);
-        fillColorComboBox(deadTokenColor);
-        fillColorComboBox(lookaheadTokenColor);
-
-        // General
-        getPreferences().bindToPreferences(startupActionCombo, AWPrefs.PREF_STARTUP_ACTION, AWPrefs.STARTUP_OPEN_LAST_DOC);
-        getPreferences().bindToPreferences(lafCombo, AWPrefs.PREF_LOOK_AND_FEEL, XJLookAndFeel.getDefaultLookAndFeelName());
-
-        // General - debug only
-        getPreferences().bindToPreferences(debugVerboseButton, AWPrefs.PREF_DEBUG_VERBOSE, false);
-        getPreferences().bindToPreferences(debugDontOptimizeNFA, AWPrefs.PREF_DEBUG_DONT_OPTIMIZE_NFA, false);
-
-        // Editor
-        getPreferences().bindToPreferences(autoSaveButton, AWPrefs.PREF_AUTOSAVE_ENABLED, false);
-        getPreferences().bindToPreferences(autoSaveDelayField, AWPrefs.PREF_AUTOSAVE_DELAY, 5);
-        getPreferences().bindToPreferences(highlightCursorLineButton, AWPrefs.PREF_HIGHLIGHTCURSORLINE, true);
-        getPreferences().bindToPreferences(tabWidthField, AWPrefs.PREF_TAB_WIDTH, AWPrefs.DEFAULT_TAB_WIDTH);
-        getPreferences().bindToPreferences(editorFontCombo, AWPrefs.PREF_EDITOR_FONT, AWPrefs.DEFAULT_EDITOR_FONT);
-        getPreferences().bindToPreferences(editorFontSizeSpinner, AWPrefs.PREF_EDITOR_FONT_SIZE, AWPrefs.DEFAULT_EDITOR_FONT_SIZE);
-        getPreferences().bindToPreferences(parserDelayField, AWPrefs.PREF_PARSER_DELAY, AWPrefs.DEFAULT_PARSER_DELAY);
-        getPreferences().bindToPreferences(foldingButton, AWPrefs.PREF_EDITOR_FOLDING, AWPrefs.DEFAULT_EDITOR_FOLDING);
-        getPreferences().bindToPreferences(actionsFoldingAnchorsButton, AWPrefs.PREF_ACTIONS_ANCHORS_FOLDING, AWPrefs.DEFAULT_ACTIONS_ANCHORS_FOLDING);
-        getPreferences().bindToPreferences(smoothScrollingButton, AWPrefs.PREF_SMOOTH_SCROLLING, AWPrefs.DEFAULT_SMOOTH_SCROLLING);
-
-        // Visualization
-        getPreferences().bindToPreferences(dotToolPathField, AWPrefs.PREF_DOT_TOOL_PATH, AWPrefs.DEFAULT_DOT_TOOL_PATH);
-
-        // SCM - Perforce
-        getPreferences().bindToPreferences(enablePerforceCheckBox, AWPrefs.PREF_SCM_P4_ENABLED, false);
-        getPreferences().bindToPreferences(p4PortField, AWPrefs.PREF_SCM_P4_PORT, "");
-        getPreferences().bindToPreferences(p4UserField, AWPrefs.PREF_SCM_P4_USER, "");
-        getPreferences().bindToPreferences(p4PasswordField, AWPrefs.PREF_SCM_P4_PASSWORD, "");
-        getPreferences().bindToPreferences(p4ClientField, AWPrefs.PREF_SCM_P4_CLIENT, "");
-        getPreferences().bindToPreferences(p4ExecPathField, AWPrefs.PREF_SCM_P4_EXEC, "");
-
-        // Compiler
-        getPreferences().bindToPreferences(javacCustomPathButton, AWPrefs.PREF_JAVAC_CUSTOM_PATH, AWPrefs.DEFAULT_JAVAC_CUSTOM_PATH);
-        getPreferences().bindToPreferences(javacPathField, AWPrefs.PREF_JAVAC_PATH, AWPrefs.DEFAULT_JAVAC_PATH);
-        getPreferences().bindToPreferences(jikesPathField, AWPrefs.PREF_JIKES_PATH, AWPrefs.DEFAULT_JIKES_PATH);
-        getPreferences().bindToPreferences(compilerRadioButtonGroup, AWPrefs.PREF_COMPILER, AWPrefs.DEFAULT_COMPILER);
-
-        // Statistics
-        getPreferences().bindToPreferences(reportTypeCombo, AWPrefs.PREF_STATS_REMINDER_METHOD, AWPrefs.DEFAULT_STATS_REMINDER_METHOD);
-
-        // Updates
         getPreferences().bindToPreferences(updateTypeCombo, AWPrefs.PREF_UPDATE_TYPE, AWPrefs.DEFAULT_UPDATE_TYPE);
         getPreferences().bindToPreferences(downloadPathField, AWPrefs.PREF_DOWNLOAD_PATH, AWPrefs.DEFAULT_DOWNLOAD_PATH);
-
-        // Colors
-        getPreferences().bindToPreferences(nonConsumedTokenColor, AWPrefs.PREF_NONCONSUMED_TOKEN_COLOR, AWPrefs.DEFAULT_NONCONSUMED_TOKEN_COLOR);
-        getPreferences().bindToPreferences(consumedTokenColor, AWPrefs.PREF_CONSUMED_TOKEN_COLOR, AWPrefs.DEFAULT_CONSUMED_TOKEN_COLOR);
-        getPreferences().bindToPreferences(hiddenTokenColor, AWPrefs.PREF_HIDDEN_TOKEN_COLOR, AWPrefs.DEFAULT_HIDDEN_TOKEN_COLOR);
-        getPreferences().bindToPreferences(deadTokenColor, AWPrefs.PREF_DEAD_TOKEN_COLOR, AWPrefs.DEFAULT_DEAD_TOKEN_COLOR);
-        getPreferences().bindToPreferences(lookaheadTokenColor, AWPrefs.PREF_LOOKAHEAD_TOKEN_COLOR, AWPrefs.DEFAULT_LOOKAHEAD_TOKEN_COLOR);
     }
 
     public void becomingVisibleForTheFirstTime() {
@@ -247,57 +292,6 @@ public class AWPrefsDialog extends XJPanel {
         return XJApplication.shared().getPreferences();
     }
 
-    private void fillColorComboBox(JComboBox cb) {
-        cb.setRenderer(new ColoredRenderer());
-        cb.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JComboBox cb = (JComboBox)e.getSource();
-                ColoredObject item = ((ColoredObject)cb.getSelectedItem());
-                if(item != null)
-                    cb.setForeground(item.getColor());
-            }
-        });
-
-        cb.removeAllItems();
-
-        cb.addItem(new ColoredObject(Color.BLACK, "Black"));
-        cb.addItem(new ColoredObject(Color.BLUE, "Blue"));
-        cb.addItem(new ColoredObject(Color.CYAN, "Cyan"));
-        cb.addItem(new ColoredObject(Color.DARK_GRAY, "Dark gray"));
-        cb.addItem(new ColoredObject(Color.GRAY, "Gray"));
-        cb.addItem(new ColoredObject(Color.GREEN, "Green"));
-        cb.addItem(new ColoredObject(Color.LIGHT_GRAY, "Light gray"));
-        cb.addItem(new ColoredObject(Color.MAGENTA, "Magenta"));
-        cb.addItem(new ColoredObject(Color.ORANGE, "Orange"));
-        cb.addItem(new ColoredObject(Color.PINK, "Pink"));
-        cb.addItem(new ColoredObject(Color.RED, "Red"));
-        cb.addItem(new ColoredObject(Color.WHITE, "White"));
-        cb.addItem(new ColoredObject(Color.YELLOW, "Yellow"));
-    }
-
-    class ColoredObject {
-        Color color;
-        Object object;
-        public ColoredObject(Color color, Object object) {
-            this.color=color;
-            this.object=object;
-        }
-        public Object getObject() { return object; }
-        public Color getColor() { return color; }
-        public String toString() { return object.toString(); }
-    }
-
-    class ColoredRenderer extends DefaultListCellRenderer {
-        public Component getListCellRendererComponent(JList list, Object value,
-                                                      int index, boolean isSelected,
-                                                      boolean hasFocus) {
-            Component c = super.getListCellRendererComponent(list, value, index,
-                    isSelected,hasFocus);
-            c.setForeground(((ColoredObject)value).getColor());
-            return c;
-        }
-    }
-
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         dialogPane = new JPanel();
@@ -330,6 +324,36 @@ public class AWPrefsDialog extends XJPanel {
         label22 = new JLabel();
         parserDelayField = new JTextField();
         label23 = new JLabel();
+        tabSyntax = new JPanel();
+        label26 = new JLabel();
+        parserColorPanel = new JPanel();
+        parserBoldButton = new JCheckBox();
+        parserItalicButton = new JCheckBox();
+        label27 = new JLabel();
+        lexerColorPanel = new JPanel();
+        lexerBoldButton = new JCheckBox();
+        lexerItalicButton = new JCheckBox();
+        label28 = new JLabel();
+        labelColorPanel = new JPanel();
+        labelsBoldButton = new JCheckBox();
+        labelsItalicButton = new JCheckBox();
+        label29 = new JLabel();
+        refsActionColorPanel = new JPanel();
+        refsActionBoldButton = new JCheckBox();
+        refsActionItalicButton = new JCheckBox();
+        label30 = new JLabel();
+        commentsColorPanel = new JPanel();
+        commentsBoldButton = new JCheckBox();
+        commentsItalicButton = new JCheckBox();
+        label31 = new JLabel();
+        stringsColorPanel = new JPanel();
+        stringsBoldButton = new JCheckBox();
+        stringsItalicButton = new JCheckBox();
+        label32 = new JLabel();
+        keywordsColorPanel = new JPanel();
+        keywordsBoldButton = new JCheckBox();
+        syntaxDefaultButton = new JButton();
+        keywordsItalicButton = new JCheckBox();
         tabCompiler = new JPanel();
         jikesRadio = new JRadioButton();
         integratedRadio = new JRadioButton();
@@ -341,16 +365,18 @@ public class AWPrefsDialog extends XJPanel {
         jikesPathField = new JTextField();
         browseJikesPath = new JButton();
         tabDebugger = new JPanel();
+        label33 = new JLabel();
+        debugDefaultLocalPortField = new JTextField();
         label12 = new JLabel();
-        nonConsumedTokenColor = new JComboBox();
+        debugNonConsumedColorPanel = new JPanel();
         label13 = new JLabel();
-        consumedTokenColor = new JComboBox();
+        debugConsumedColorPanel = new JPanel();
         label14 = new JLabel();
-        hiddenTokenColor = new JComboBox();
+        debugHiddenColorPanel = new JPanel();
         label15 = new JLabel();
-        deadTokenColor = new JComboBox();
+        debugDeadColorPanel = new JPanel();
         label16 = new JLabel();
-        lookaheadTokenColor = new JComboBox();
+        debugLTColorPanel = new JPanel();
         tabSCM = new JPanel();
         enablePerforceCheckBox = new JCheckBox();
         label18 = new JLabel();
@@ -574,6 +600,220 @@ public class AWPrefsDialog extends XJPanel {
                     }
                     tabbedPane1.addTab("Editor", tabEditor);
 
+                    //======== tabSyntax ========
+                    {
+                        tabSyntax.setLayout(new FormLayout(
+                            new ColumnSpec[] {
+                                new ColumnSpec(Sizes.dluX(10)),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                FormFactory.DEFAULT_COLSPEC,
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                FormFactory.DEFAULT_COLSPEC,
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                FormFactory.DEFAULT_COLSPEC,
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(Sizes.dluX(20)),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                FormFactory.DEFAULT_COLSPEC,
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
+                            },
+                            new RowSpec[] {
+                                new RowSpec(Sizes.dluY(10)),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC
+                            }));
+
+                        //---- label26 ----
+                        label26.setText("Parser References:");
+                        tabSyntax.add(label26, cc.xywh(3, 3, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+
+                        //======== parserColorPanel ========
+                        {
+                            parserColorPanel.setBackground(new Color(255, 255, 51));
+                            parserColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            parserColorPanel.setForeground(Color.black);
+                            parserColorPanel.setPreferredSize(new Dimension(70, 20));
+                            parserColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabSyntax.add(parserColorPanel, cc.xy(5, 3));
+
+                        //---- parserBoldButton ----
+                        parserBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+                        parserBoldButton.setText("Bold");
+                        tabSyntax.add(parserBoldButton, cc.xy(7, 3));
+
+                        //---- parserItalicButton ----
+                        parserItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+                        parserItalicButton.setText("Italic");
+                        tabSyntax.add(parserItalicButton, cc.xy(9, 3));
+
+                        //---- label27 ----
+                        label27.setText("Lexer References:");
+                        tabSyntax.add(label27, cc.xy(3, 5));
+
+                        //======== lexerColorPanel ========
+                        {
+                            lexerColorPanel.setBackground(new Color(255, 255, 51));
+                            lexerColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            lexerColorPanel.setForeground(Color.black);
+                            lexerColorPanel.setPreferredSize(new Dimension(70, 20));
+                            lexerColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabSyntax.add(lexerColorPanel, cc.xy(5, 5));
+
+                        //---- lexerBoldButton ----
+                        lexerBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+                        lexerBoldButton.setText("Bold");
+                        tabSyntax.add(lexerBoldButton, cc.xy(7, 5));
+
+                        //---- lexerItalicButton ----
+                        lexerItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+                        lexerItalicButton.setText("Italic");
+                        tabSyntax.add(lexerItalicButton, cc.xy(9, 5));
+
+                        //---- label28 ----
+                        label28.setText("Labels:");
+                        tabSyntax.add(label28, cc.xy(3, 7));
+
+                        //======== labelColorPanel ========
+                        {
+                            labelColorPanel.setBackground(new Color(255, 255, 51));
+                            labelColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            labelColorPanel.setForeground(Color.black);
+                            labelColorPanel.setPreferredSize(new Dimension(70, 20));
+                            labelColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabSyntax.add(labelColorPanel, cc.xy(5, 7));
+
+                        //---- labelsBoldButton ----
+                        labelsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+                        labelsBoldButton.setText("Bold");
+                        tabSyntax.add(labelsBoldButton, cc.xy(7, 7));
+
+                        //---- labelsItalicButton ----
+                        labelsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+                        labelsItalicButton.setText("Italic");
+                        tabSyntax.add(labelsItalicButton, cc.xy(9, 7));
+
+                        //---- label29 ----
+                        label29.setText("References in action:");
+                        tabSyntax.add(label29, cc.xy(3, 9));
+
+                        //======== refsActionColorPanel ========
+                        {
+                            refsActionColorPanel.setBackground(new Color(255, 255, 51));
+                            refsActionColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            refsActionColorPanel.setForeground(Color.black);
+                            refsActionColorPanel.setPreferredSize(new Dimension(70, 20));
+                            refsActionColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabSyntax.add(refsActionColorPanel, cc.xy(5, 9));
+
+                        //---- refsActionBoldButton ----
+                        refsActionBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+                        refsActionBoldButton.setText("Bold");
+                        tabSyntax.add(refsActionBoldButton, cc.xy(7, 9));
+
+                        //---- refsActionItalicButton ----
+                        refsActionItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+                        refsActionItalicButton.setText("Italic");
+                        tabSyntax.add(refsActionItalicButton, cc.xy(9, 9));
+
+                        //---- label30 ----
+                        label30.setText("Comments:");
+                        tabSyntax.add(label30, cc.xy(3, 11));
+
+                        //======== commentsColorPanel ========
+                        {
+                            commentsColorPanel.setBackground(new Color(255, 255, 51));
+                            commentsColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            commentsColorPanel.setForeground(Color.black);
+                            commentsColorPanel.setPreferredSize(new Dimension(70, 20));
+                            commentsColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabSyntax.add(commentsColorPanel, cc.xy(5, 11));
+
+                        //---- commentsBoldButton ----
+                        commentsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+                        commentsBoldButton.setText("Bold");
+                        tabSyntax.add(commentsBoldButton, cc.xy(7, 11));
+
+                        //---- commentsItalicButton ----
+                        commentsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+                        commentsItalicButton.setText("Italic");
+                        tabSyntax.add(commentsItalicButton, cc.xy(9, 11));
+
+                        //---- label31 ----
+                        label31.setText("Strings:");
+                        tabSyntax.add(label31, cc.xy(3, 13));
+
+                        //======== stringsColorPanel ========
+                        {
+                            stringsColorPanel.setBackground(new Color(255, 255, 51));
+                            stringsColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            stringsColorPanel.setForeground(Color.black);
+                            stringsColorPanel.setPreferredSize(new Dimension(70, 20));
+                            stringsColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabSyntax.add(stringsColorPanel, cc.xy(5, 13));
+
+                        //---- stringsBoldButton ----
+                        stringsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+                        stringsBoldButton.setText("Bold");
+                        tabSyntax.add(stringsBoldButton, cc.xy(7, 13));
+
+                        //---- stringsItalicButton ----
+                        stringsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+                        stringsItalicButton.setText("Italic");
+                        tabSyntax.add(stringsItalicButton, cc.xy(9, 13));
+
+                        //---- label32 ----
+                        label32.setText("Keywords:");
+                        tabSyntax.add(label32, cc.xy(3, 15));
+
+                        //======== keywordsColorPanel ========
+                        {
+                            keywordsColorPanel.setBackground(new Color(255, 255, 51));
+                            keywordsColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            keywordsColorPanel.setForeground(Color.black);
+                            keywordsColorPanel.setPreferredSize(new Dimension(70, 20));
+                            keywordsColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabSyntax.add(keywordsColorPanel, cc.xy(5, 15));
+
+                        //---- keywordsBoldButton ----
+                        keywordsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+                        keywordsBoldButton.setText("Bold");
+                        tabSyntax.add(keywordsBoldButton, cc.xy(7, 15));
+
+                        //---- syntaxDefaultButton ----
+                        syntaxDefaultButton.setText("Default");
+                        tabSyntax.add(syntaxDefaultButton, cc.xy(13, 15));
+
+                        //---- keywordsItalicButton ----
+                        keywordsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+                        keywordsItalicButton.setText("Italic");
+                        tabSyntax.add(keywordsItalicButton, cc.xy(9, 15));
+                    }
+                    tabbedPane1.addTab("Syntax", tabSyntax);
+
                     //======== tabCompiler ========
                     {
                         tabCompiler.setLayout(new FormLayout(
@@ -641,13 +881,17 @@ public class AWPrefsDialog extends XJPanel {
                             new ColumnSpec[] {
                                 new ColumnSpec(Sizes.dluX(10)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
+                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                                FormFactory.DEFAULT_COLSPEC,
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                                 new ColumnSpec(Sizes.dluX(10))
                             },
                             new RowSpec[] {
+                                new RowSpec(Sizes.dluY(10)),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
                                 new RowSpec(Sizes.dluY(10)),
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
@@ -663,42 +907,88 @@ public class AWPrefsDialog extends XJPanel {
                                 FormFactory.DEFAULT_ROWSPEC
                             }));
 
+                        //---- label33 ----
+                        label33.setText("Default local port:");
+                        tabDebugger.add(label33, cc.xy(3, 3));
+
+                        //---- debugDefaultLocalPortField ----
+                        debugDefaultLocalPortField.setText("0xC001");
+                        tabDebugger.add(debugDefaultLocalPortField, cc.xy(5, 3));
+
                         //---- label12 ----
                         label12.setHorizontalAlignment(SwingConstants.RIGHT);
                         label12.setText("Non-consumed token:");
-                        tabDebugger.add(label12, cc.xy(3, 3));
+                        tabDebugger.add(label12, cc.xy(3, 7));
 
-                        //---- nonConsumedTokenColor ----
-                        nonConsumedTokenColor.setModel(new DefaultComboBoxModel(new String[] {
-                            "Black",
-                            "Blue",
-                            "Cyan"
-                        }));
-                        tabDebugger.add(nonConsumedTokenColor, cc.xy(5, 3));
+                        //======== debugNonConsumedColorPanel ========
+                        {
+                            debugNonConsumedColorPanel.setBackground(new Color(255, 255, 51));
+                            debugNonConsumedColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            debugNonConsumedColorPanel.setForeground(Color.black);
+                            debugNonConsumedColorPanel.setPreferredSize(new Dimension(70, 20));
+                            debugNonConsumedColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabDebugger.add(debugNonConsumedColorPanel, cc.xy(5, 7));
 
                         //---- label13 ----
                         label13.setHorizontalAlignment(SwingConstants.RIGHT);
                         label13.setText("Consumed token:");
-                        tabDebugger.add(label13, cc.xy(3, 5));
-                        tabDebugger.add(consumedTokenColor, cc.xy(5, 5));
+                        tabDebugger.add(label13, cc.xy(3, 9));
+
+                        //======== debugConsumedColorPanel ========
+                        {
+                            debugConsumedColorPanel.setBackground(new Color(255, 255, 51));
+                            debugConsumedColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            debugConsumedColorPanel.setForeground(Color.black);
+                            debugConsumedColorPanel.setPreferredSize(new Dimension(70, 20));
+                            debugConsumedColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabDebugger.add(debugConsumedColorPanel, cc.xy(5, 9));
 
                         //---- label14 ----
                         label14.setHorizontalAlignment(SwingConstants.RIGHT);
                         label14.setText("Hidden token:");
-                        tabDebugger.add(label14, cc.xy(3, 7));
-                        tabDebugger.add(hiddenTokenColor, cc.xy(5, 7));
+                        tabDebugger.add(label14, cc.xy(3, 11));
+
+                        //======== debugHiddenColorPanel ========
+                        {
+                            debugHiddenColorPanel.setBackground(new Color(255, 255, 51));
+                            debugHiddenColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            debugHiddenColorPanel.setForeground(Color.black);
+                            debugHiddenColorPanel.setPreferredSize(new Dimension(70, 20));
+                            debugHiddenColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabDebugger.add(debugHiddenColorPanel, cc.xy(5, 11));
 
                         //---- label15 ----
                         label15.setHorizontalAlignment(SwingConstants.RIGHT);
                         label15.setText("Dead token:");
-                        tabDebugger.add(label15, cc.xy(3, 9));
-                        tabDebugger.add(deadTokenColor, cc.xy(5, 9));
+                        tabDebugger.add(label15, cc.xy(3, 13));
+
+                        //======== debugDeadColorPanel ========
+                        {
+                            debugDeadColorPanel.setBackground(new Color(255, 255, 51));
+                            debugDeadColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            debugDeadColorPanel.setForeground(Color.black);
+                            debugDeadColorPanel.setPreferredSize(new Dimension(70, 20));
+                            debugDeadColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabDebugger.add(debugDeadColorPanel, cc.xy(5, 13));
 
                         //---- label16 ----
                         label16.setHorizontalAlignment(SwingConstants.RIGHT);
                         label16.setText("Lookahead token:");
-                        tabDebugger.add(label16, cc.xy(3, 11));
-                        tabDebugger.add(lookaheadTokenColor, cc.xy(5, 11));
+                        tabDebugger.add(label16, cc.xy(3, 15));
+
+                        //======== debugLTColorPanel ========
+                        {
+                            debugLTColorPanel.setBackground(new Color(255, 255, 51));
+                            debugLTColorPanel.setBorder(LineBorder.createBlackLineBorder());
+                            debugLTColorPanel.setForeground(Color.black);
+                            debugLTColorPanel.setPreferredSize(new Dimension(70, 20));
+                            debugLTColorPanel.setLayout(new FlowLayout());
+                        }
+                        tabDebugger.add(debugLTColorPanel, cc.xy(5, 15));
                     }
                     tabbedPane1.addTab("Debugger", tabDebugger);
 
@@ -932,6 +1222,36 @@ public class AWPrefsDialog extends XJPanel {
     private JLabel label22;
     private JTextField parserDelayField;
     private JLabel label23;
+    private JPanel tabSyntax;
+    private JLabel label26;
+    private JPanel parserColorPanel;
+    private JCheckBox parserBoldButton;
+    private JCheckBox parserItalicButton;
+    private JLabel label27;
+    private JPanel lexerColorPanel;
+    private JCheckBox lexerBoldButton;
+    private JCheckBox lexerItalicButton;
+    private JLabel label28;
+    private JPanel labelColorPanel;
+    private JCheckBox labelsBoldButton;
+    private JCheckBox labelsItalicButton;
+    private JLabel label29;
+    private JPanel refsActionColorPanel;
+    private JCheckBox refsActionBoldButton;
+    private JCheckBox refsActionItalicButton;
+    private JLabel label30;
+    private JPanel commentsColorPanel;
+    private JCheckBox commentsBoldButton;
+    private JCheckBox commentsItalicButton;
+    private JLabel label31;
+    private JPanel stringsColorPanel;
+    private JCheckBox stringsBoldButton;
+    private JCheckBox stringsItalicButton;
+    private JLabel label32;
+    private JPanel keywordsColorPanel;
+    private JCheckBox keywordsBoldButton;
+    private JButton syntaxDefaultButton;
+    private JCheckBox keywordsItalicButton;
     private JPanel tabCompiler;
     private JRadioButton jikesRadio;
     private JRadioButton integratedRadio;
@@ -943,16 +1263,18 @@ public class AWPrefsDialog extends XJPanel {
     private JTextField jikesPathField;
     private JButton browseJikesPath;
     private JPanel tabDebugger;
+    private JLabel label33;
+    private JTextField debugDefaultLocalPortField;
     private JLabel label12;
-    private JComboBox nonConsumedTokenColor;
+    private JPanel debugNonConsumedColorPanel;
     private JLabel label13;
-    private JComboBox consumedTokenColor;
+    private JPanel debugConsumedColorPanel;
     private JLabel label14;
-    private JComboBox hiddenTokenColor;
+    private JPanel debugHiddenColorPanel;
     private JLabel label15;
-    private JComboBox deadTokenColor;
+    private JPanel debugDeadColorPanel;
     private JLabel label16;
-    private JComboBox lookaheadTokenColor;
+    private JPanel debugLTColorPanel;
     private JPanel tabSCM;
     private JCheckBox enablePerforceCheckBox;
     private JLabel label18;
@@ -980,5 +1302,7 @@ public class AWPrefsDialog extends XJPanel {
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
+
 
 }

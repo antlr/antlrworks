@@ -1,5 +1,5 @@
 
-Version 1.0ea8 - 01/30/06
+Version 1.0ea8 - 02/18/06
 
 - new: rule dependency graph (can be exported to EPS or bitmap file)
 - new: syntax coloring for generated Java code
@@ -8,6 +8,7 @@ Version 1.0ea8 - 01/30/06
   them automatically within ANTLRWorks
 - new: contextual menus in editor, syntax diagram, interpreter and debugger
 - new: user can now specify tokens to be ignored in interpreter
+- new: syntax colors can be changed in the preferences
 
 - new idea to convert invalid string literals to single quote literals
 - new message in status bar if an error is reported in the console

@@ -36,6 +36,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.Console;
@@ -112,7 +113,7 @@ public class Visual implements EditorTab, GContextProvider {
 
     public Color contextGetColorForLabel(String label) {
         if(label.charAt(0) == '\'' || label.charAt(0) == '"')
-            return GrammarSyntaxEngine.COLOR_STRING;
+            return AWPrefs.getSyntaxColor(AWPrefs.PREF_SYNTAX_STRING);
         else {
             if(ATEToken.isLexerName(label))
                 return GrammarSyntaxEngine.COLOR_LEXER;

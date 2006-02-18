@@ -87,6 +87,14 @@ public class ATEColoring extends ATEThread {
         tokens = null;
     }
 
+    public synchronized void refresh() {
+        if(engine != null)
+            engine.refreshColoring();
+
+        reset();
+        colorize();
+    }
+
     public synchronized void setColorizeLocation(int offset, int length) {
         // skip any job in the thread to be executed
         // because colorize() has been called probably a while ago
@@ -119,6 +127,10 @@ public class ATEColoring extends ATEThread {
 
     private List fetchModifiedTokens() {
         List modifiedTokens = new ArrayList();
+
+        if(textEditor.getParserEngine() == null)
+            return modifiedTokens;
+
         List newTokens = textEditor.getParserEngine().getTokens();
 
         int nt = 0;

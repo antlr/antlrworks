@@ -262,6 +262,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         if(gutter != null)
             gutter.markDirty();
 
+        colorize.refresh();
+
         repaint();
     }
 

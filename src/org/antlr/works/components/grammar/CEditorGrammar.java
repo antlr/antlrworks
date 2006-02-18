@@ -894,7 +894,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public void notificationPrefsChanged() {
         applyPrefs();
-        applyFont();
         updateSCMStatus(null);
     }
 

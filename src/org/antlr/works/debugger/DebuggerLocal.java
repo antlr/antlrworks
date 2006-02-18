@@ -377,10 +377,10 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
     public boolean checkForLaunch() {
         boolean success = true;
         try {
-            ServerSocket serverSocket = new ServerSocket(Debugger.DEFAULT_LOCAL_PORT);
+            ServerSocket serverSocket = new ServerSocket(AWPrefs.getDebugDefaultLocalPort());
             serverSocket.close();
         } catch (IOException e) {
-            reportError("Cannot launch the remote parser because port "+Debugger.DEFAULT_LOCAL_PORT+" is already in use.");
+            reportError("Cannot launch the remote parser because port "+AWPrefs.getDebugDefaultLocalPort()+" is already in use.");
             success = false;
         }
         return success;

@@ -1,6 +1,5 @@
 
 * Prio 1
-- prefs: syntax coloring colors in prefs
 - create grammar file in project
 - test debug+generate+project build on Linux/Windows
 

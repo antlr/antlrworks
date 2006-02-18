@@ -36,6 +36,7 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +55,7 @@ public class DebuggerRemoteConnectDialog extends XJDialog {
     }
 
     public void dialogWillDisplay() {
-        portField.setText(String.valueOf(Debugger.DEFAULT_LOCAL_PORT));
+        portField.setText(String.valueOf(AWPrefs.getDebugDefaultLocalPort()));
     }
 
     public String getAddress() {

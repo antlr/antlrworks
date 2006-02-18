@@ -44,24 +44,35 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ATELanguageSyntaxEngine extends ATESyntaxEngine {
 
-    public static final Color COLOR_STRING = new Color(0, 0.5f, 0);
-
     protected SimpleAttributeSet commentAttr;
     protected SimpleAttributeSet stringAttr;
     protected SimpleAttributeSet keywordAttr;
 
     public ATELanguageSyntaxEngine() {
         commentAttr = new SimpleAttributeSet();
+        stringAttr = new SimpleAttributeSet();
+        keywordAttr = new SimpleAttributeSet();
+    }
+
+    public void applyCommentAttribute(SimpleAttributeSet commentAttr) {
         StyleConstants.setForeground(commentAttr, Color.lightGray);
         StyleConstants.setItalic(commentAttr, true);
+    }
 
-        stringAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(stringAttr, COLOR_STRING);
+    public void applyStringAttribute(SimpleAttributeSet stringAttr) {
+        StyleConstants.setForeground(stringAttr, new Color(0, 0.5f, 0));
         StyleConstants.setBold(stringAttr, true);
+    }
 
-        keywordAttr = new SimpleAttributeSet();
+    public void applyKeywordAttribute(SimpleAttributeSet keywordAttr) {
         StyleConstants.setForeground(keywordAttr, new Color(0, 0, 0.5f));
         StyleConstants.setBold(keywordAttr, true);
+    }
+
+    public void refreshColoring() {
+        applyCommentAttribute(commentAttr);
+        applyStringAttribute(stringAttr);
+        applyKeywordAttribute(keywordAttr);
     }
 
     public ATESyntaxLexer createLexer() {

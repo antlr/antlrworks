@@ -65,7 +65,6 @@ import java.util.List;
 public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePanelDelegate {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
-    public static final int DEFAULT_LOCAL_PORT = 0xC001;
 
     public static final String NOTIF_DEBUG_STARTED = "NOTIF_DEBUG_STARTED";
     public static final String NOTIF_DEBUG_STOPPED = "NOTIF_DEBUG_STOPPED";
@@ -513,7 +512,7 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
             Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER_BUILD);
         else
             Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER);
-        debuggerLaunch(DEFAULT_LOCAL_ADDRESS, DEFAULT_LOCAL_PORT);
+        debuggerLaunch(DEFAULT_LOCAL_ADDRESS, AWPrefs.getDebugDefaultLocalPort());
     }
 
     public void launchRemoteDebugger() {

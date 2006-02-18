@@ -37,6 +37,7 @@ import edu.usfca.xj.foundation.XJSystem;
 
 import java.awt.*;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 
 public class AWPrefs {
@@ -49,8 +50,11 @@ public class AWPrefs {
     public static final String PREF_DEBUG_VERBOSE = "PREF_DEBUG_VERBOSE";
     public static final String PREF_DEBUG_DONT_OPTIMIZE_NFA = "PREF_DONT_OPTIMIZE_NFA";
 
+    public static final String PREF_DOT_TOOL_PATH = "PREF_DOT_TOOL_PATH";
+
     public static final int STARTUP_NEW_DOC = 0;
     public static final int STARTUP_OPEN_LAST_DOC = 1;
+    public static final String DEFAULT_DOT_TOOL_PATH;
 
     // Editor
     public static final String PREF_TAB_WIDTH = "PREF_TAB_WIDTH";
@@ -73,10 +77,71 @@ public class AWPrefs {
     public static final int DEFAULT_PARSER_DELAY = 250;
     public static final boolean DEFAULT_SMOOTH_SCROLLING = true;
 
-    // Visualization
-    public static final String PREF_DOT_TOOL_PATH = "PREF_DOT_TOOL_PATH";
+    // Syntax
 
-    public static final String DEFAULT_DOT_TOOL_PATH;
+    public static final String PREF_SYNTAX_PARSER = "PREF_SYNTAX_PARSER";
+    public static final String PREF_SYNTAX_LEXER = "PREF_SYNTAX_LEXER";
+    public static final String PREF_SYNTAX_LABEL = "PREF_SYNTAX_LABEL";
+    public static final String PREF_SYNTAX_REFS = "PREF_SYNTAX_REFS";
+    public static final String PREF_SYNTAX_COMMENT = "PREF_SYNTAX_COMMENT";
+    public static final String PREF_SYNTAX_STRING = "PREF_SYNTAX_STRING";
+    public static final String PREF_SYNTAX_KEYWORD = "PREF_SYNTAX_KEYWORD";
+
+    public static Map color = new HashMap();
+    public static Map bold = new HashMap();
+    public static Map italic = new HashMap();
+
+    public static void addSyntax(String key, Color c, boolean b, boolean i) {
+        color.put(key, c);
+        bold.put(key, Boolean.valueOf(b));
+        italic.put(key, Boolean.valueOf(i));
+    }
+
+    static {
+        addSyntax(PREF_SYNTAX_PARSER, new Color(0.42f, 0, 0.42f), true, false);
+        addSyntax(PREF_SYNTAX_LEXER, new Color(0, 0, 0.5f), true, false);
+        addSyntax(PREF_SYNTAX_LABEL, Color.black, false, true);
+        addSyntax(PREF_SYNTAX_REFS, Color.red, true, false);
+        addSyntax(PREF_SYNTAX_COMMENT, Color.lightGray, false, true);
+        addSyntax(PREF_SYNTAX_STRING, new Color(0, 0.5f, 0), true, false);
+        addSyntax(PREF_SYNTAX_KEYWORD, new Color(0, 0, 0.5f), true, false);
+    }
+
+    public static String getSyntaxColorKey(String identifier) {
+        return identifier+"_COLOR";
+    }
+
+    public static String getSyntaxBoldKey(String identifier) {
+        return identifier+"_BOLD";
+    }
+
+    public static String getSyntaxItalicKey(String identifier) {
+        return identifier+"_ITALIC";
+    }
+
+    public static Color getSyntaxDefaultColor(String identifier) {
+        return (Color) color.get(identifier);
+    }
+
+    public static boolean getSyntaxDefaultBold(String identifier) {
+        return ((Boolean)bold.get(identifier)).booleanValue();
+    }
+
+    public static boolean getSyntaxDefaultItalic(String identifier) {
+        return ((Boolean)italic.get(identifier)).booleanValue();
+    }
+
+    public static Color getSyntaxColor(String identifier) {
+        return getPreferences().getColor(getSyntaxColorKey(identifier), getSyntaxDefaultColor(identifier));
+    }
+
+    public static boolean getSyntaxBold(String identifier) {
+        return getPreferences().getBoolean(getSyntaxBoldKey(identifier), getSyntaxDefaultBold(identifier));
+    }
+
+    public static boolean getSyntaxItalic(String identifier) {
+        return getPreferences().getBoolean(getSyntaxItalicKey(identifier), getSyntaxDefaultItalic(identifier));
+    }
 
     // SCM - Perforce
     public static final String PREF_SCM_P4_ENABLED = "PREF_SCM_ENABLE_P4";
@@ -123,24 +188,25 @@ public class AWPrefs {
     public static final int DEFAULT_UPDATE_TYPE = UPDATE_WEEKLY;
     public static final String DEFAULT_DOWNLOAD_PATH = System.getProperty("user.home");
 
-    // Colors
-    private static Color[] colors = { Color.BLACK, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, Color.GREEN,
-                                        Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.WHITE, Color.YELLOW};
+    // Debugger
 
-    public static final String PREF_NONCONSUMED_TOKEN_COLOR = "PREF_NONCONSUMED_TOKEN_COLOR";
-    public static final int DEFAULT_NONCONSUMED_TOKEN_COLOR = 6;    // light dray
+    public static final String PREF_NONCONSUMED_TOKEN_COLOR = "PREF_NONCONSUMED_TOKEN_COLOR2";
+    public static final Color DEFAULT_NONCONSUMED_TOKEN_COLOR = Color.lightGray;
 
-    public static final String PREF_CONSUMED_TOKEN_COLOR = "PREF_CONSUMED_TOKEN_COLOR";
-    public static final int DEFAULT_CONSUMED_TOKEN_COLOR = 0;    // black
+    public static final String PREF_CONSUMED_TOKEN_COLOR = "PREF_CONSUMED_TOKEN_COLOR2";
+    public static final Color DEFAULT_CONSUMED_TOKEN_COLOR = Color.black;
 
-    public static final String PREF_HIDDEN_TOKEN_COLOR = "PREF_HIDDEN_TOKEN_COLOR";
-    public static final int DEFAULT_HIDDEN_TOKEN_COLOR = 6;    // light dray
+    public static final String PREF_HIDDEN_TOKEN_COLOR = "PREF_HIDDEN_TOKEN_COLOR2";
+    public static final Color DEFAULT_HIDDEN_TOKEN_COLOR = Color.lightGray;
 
-    public static final String PREF_DEAD_TOKEN_COLOR = "PREF_DEAD_TOKEN_COLOR";
-    public static final int DEFAULT_DEAD_TOKEN_COLOR = 10;    // red
+    public static final String PREF_DEAD_TOKEN_COLOR = "PREF_DEAD_TOKEN_COLOR2";
+    public static final Color DEFAULT_DEAD_TOKEN_COLOR = Color.red;
 
-    public static final String PREF_LOOKAHEAD_TOKEN_COLOR = "PREF_LOOKAHEAD_TOKEN_COLOR";
-    public static final int DEFAULT_LOOKAHEAD_TOKEN_COLOR = 1;    // blue
+    public static final String PREF_LOOKAHEAD_TOKEN_COLOR = "PREF_LOOKAHEAD_TOKEN_COLOR2";
+    public static final Color DEFAULT_LOOKAHEAD_TOKEN_COLOR = Color.blue;
+
+    public static final String PREF_DEBUG_LOCALPORT = "PREF_DEBUG_LOCALPORT";
+    public static final int DEFAULT_DEBUG_LOCALPORT = 0xC001;
 
     // Other
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
@@ -148,7 +214,7 @@ public class AWPrefs {
 
     public static final String PREF_OUTPUT_PATH = "PREF_OUTPUT_PATH";
     public static final String PREF_START_SYMBOL = "PREF_START_SYMBOL";
-    public static final String PREF_DEBUGGER_INPUT_TEXT = "PREF_DEBUGGER_INPUT_TEXT";    
+    public static final String PREF_DEBUGGER_INPUT_TEXT = "PREF_DEBUGGER_INPUT_TEXT";
     public static final String PREF_DEBUG_BREAK_EVENT = "PREF_DEBUG_BREAK_EVENT";
 
     public static final String PREF_PERSONAL_INFO = "PREF_OUTPUT_DEV_DATE";
@@ -188,6 +254,10 @@ public class AWPrefs {
 
     public static boolean getDebugDontOptimizeNFA() {
         return getPreferences().getBoolean(PREF_DEBUG_DONT_OPTIMIZE_NFA, false);
+    }
+
+    public static int getDebugDefaultLocalPort() {
+        return getPreferences().getInt(PREF_DEBUG_LOCALPORT, DEFAULT_DEBUG_LOCALPORT);
     }
 
     public static void setOutputPath(String path) {
@@ -255,7 +325,7 @@ public class AWPrefs {
     }
 
     public static boolean getDisplayActionsAnchorsFolding() {
-        return getPreferences().getBoolean(PREF_ACTIONS_ANCHORS_FOLDING, DEFAULT_ACTIONS_ANCHORS_FOLDING);        
+        return getPreferences().getBoolean(PREF_ACTIONS_ANCHORS_FOLDING, DEFAULT_ACTIONS_ANCHORS_FOLDING);
     }
 
     public static int getParserDelay() {
@@ -391,23 +461,23 @@ public class AWPrefs {
     }
 
     public static Color getNonConsumedTokenColor() {
-        return colors[getPreferences().getInt(PREF_NONCONSUMED_TOKEN_COLOR, DEFAULT_NONCONSUMED_TOKEN_COLOR)];
+        return getPreferences().getColor(PREF_NONCONSUMED_TOKEN_COLOR, DEFAULT_NONCONSUMED_TOKEN_COLOR);
     }
 
     public static Color getConsumedTokenColor() {
-        return colors[getPreferences().getInt(PREF_CONSUMED_TOKEN_COLOR, DEFAULT_CONSUMED_TOKEN_COLOR)];
+        return getPreferences().getColor(PREF_CONSUMED_TOKEN_COLOR, DEFAULT_CONSUMED_TOKEN_COLOR);
     }
 
     public static Color getHiddenTokenColor() {
-        return colors[getPreferences().getInt(PREF_HIDDEN_TOKEN_COLOR, DEFAULT_HIDDEN_TOKEN_COLOR)];
+        return getPreferences().getColor(PREF_HIDDEN_TOKEN_COLOR, DEFAULT_HIDDEN_TOKEN_COLOR);
     }
 
     public static Color getDeadTokenColor() {
-        return colors[getPreferences().getInt(PREF_DEAD_TOKEN_COLOR, DEFAULT_DEAD_TOKEN_COLOR)];
+        return getPreferences().getColor(PREF_DEAD_TOKEN_COLOR, DEFAULT_DEAD_TOKEN_COLOR);
     }
 
     public static Color getLookaheadTokenColor() {
-        return colors[getPreferences().getInt(PREF_LOOKAHEAD_TOKEN_COLOR, DEFAULT_LOOKAHEAD_TOKEN_COLOR)];
+        return getPreferences().getColor(PREF_LOOKAHEAD_TOKEN_COLOR, DEFAULT_LOOKAHEAD_TOKEN_COLOR);
     }
 
     public static XJPreferences getPreferences() {

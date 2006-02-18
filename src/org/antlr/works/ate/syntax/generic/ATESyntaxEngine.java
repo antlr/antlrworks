@@ -93,6 +93,10 @@ public abstract class ATESyntaxEngine extends ATEThread {
     public abstract ATESyntaxParser createParser();
     public abstract AttributeSet getAttributeForToken(ATEToken token);
 
+    public void refreshColoring() {
+
+    }
+
     public void colorizeToken(ATEToken token, ATEStyledDocument doc) {
         AttributeSet attr = getAttributeForToken(token);
         if(attr != null)
@@ -123,4 +127,5 @@ public abstract class ATESyntaxEngine extends ATEThread {
             }
         });
     }
+
 }

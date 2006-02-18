@@ -36,6 +36,7 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
@@ -65,22 +66,36 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
     public GrammarSyntaxEngine() {
         parserRefAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(parserRefAttr, COLOR_PARSER);
-        StyleConstants.setBold(parserRefAttr, true);
-
         lexerRefAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(lexerRefAttr, COLOR_LEXER);
-        StyleConstants.setBold(lexerRefAttr, true);
-
         labelAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(labelAttr, Color.black);
-        StyleConstants.setItalic(labelAttr, true);
+        actionRefAttr = new SimpleAttributeSet();        
+    }
 
-        actionRefAttr = new SimpleAttributeSet();
-        StyleConstants.setForeground(actionRefAttr, Color.red);
-        //StyleConstants.setBackground(actionRefAttr, Color.yellow);
-        //StyleConstants.setItalic(actionRefAttr, true);
-        StyleConstants.setBold(actionRefAttr, true);
+    public void applyCommentAttribute(SimpleAttributeSet commentAttr) {
+        applyAttribute(commentAttr, AWPrefs.PREF_SYNTAX_COMMENT);
+    }
+
+    public void applyStringAttribute(SimpleAttributeSet stringAttr) {
+        applyAttribute(stringAttr, AWPrefs.PREF_SYNTAX_STRING);
+    }
+
+    public void applyKeywordAttribute(SimpleAttributeSet keywordAttr) {
+        applyAttribute(keywordAttr, AWPrefs.PREF_SYNTAX_KEYWORD);
+    }
+
+    public void applyAttribute(SimpleAttributeSet attr, String identifier) {
+        StyleConstants.setForeground(attr, AWPrefs.getSyntaxColor(identifier));
+        StyleConstants.setBold(attr, AWPrefs.getSyntaxBold(identifier));
+        StyleConstants.setItalic(attr, AWPrefs.getSyntaxItalic(identifier));
+    }
+
+    public void refreshColoring() {
+        super.refreshColoring();
+
+        applyAttribute(parserRefAttr, AWPrefs.PREF_SYNTAX_PARSER);
+        applyAttribute(lexerRefAttr, AWPrefs.PREF_SYNTAX_LEXER);
+        applyAttribute(labelAttr, AWPrefs.PREF_SYNTAX_LABEL);
+        applyAttribute(actionRefAttr, AWPrefs.PREF_SYNTAX_REFS);
     }
 
     public ATESyntaxLexer createLexer() {
