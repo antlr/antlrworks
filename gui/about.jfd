@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.5.0_05" class="java.beans.XMLDecoder"> 
+ <object class="com.ktauber.form.model.FormModel"> 
+  <void property="contentType"> 
+   <string>form/swing</string> 
+  </void> 
+  <void property="root"> 
+   <object class="com.ktauber.form.model.FormRoot"> 
+    <void method="add"> 
+     <object class="com.ktauber.form.model.FormWindow"> 
+      <string>javax.swing.JFrame</string> 
+      <object class="com.ktauber.form.model.FormLayoutManager"> 
+       <class>com.jgoodies.forms.layout.FormLayout</class> 
+       <void method="setProperty"> 
+        <string>$columnSpecs</string> 
+        <string>10dlu, labelcompgap, default, labelcompgap, default:grow, labelcompgap, 10dlu</string> 
+       </void> 
+       <void method="setProperty"> 
+        <string>$rowSpecs</string> 
+        <string>10dlu, linegap, bottom:default, linegap, top:max(default;20dlu), linegap, bottom:max(default;15dlu), linegap, top:max(default;15dlu), linegap, fill:max(default;60dlu):grow, linegap, 10dlu</string> 
+       </void> 
+      </object> 
+      <void method="setProperty"> 
+       <string>$size</string> 
+       <object class="java.awt.Dimension"> 
+        <int>818</int> 
+        <int>420</int> 
+       </object> 
+      </void> 
+      <void method="setProperty"> 
+       <string>resizable</string> 
+       <boolean>false</boolean> 
+      </void> 
+      <void method="setProperty"> 
+       <string>title</string> 
+       <string>About</string> 
+      </void> 
+      <void method="add"> 
+       <object class="com.ktauber.form.model.FormComponent"> 
+        <string>javax.swing.JButton</string> 
+        <void method="setProperty"> 
+         <string>icon</string> 
+         <object class="com.ktauber.form.model.SwingIcon"> 
+          <int>1</int> 
+          <string>/Users/bovet/Dev/Projects/ANTLRWorks/classes/org/antlr/works/icons/app.png</string> 
+         </object> 
+        </void> 
+        <void method="setProperty"> 
+         <string>borderPainted</string> 
+         <boolean>false</boolean> 
+        </void> 
+        <void method="setProperty"> 
+         <string>contentAreaFilled</string> 
+         <boolean>false</boolean> 
+        </void> 
+        <void method="setProperty"> 
+         <string>defaultCapable</string> 
+         <boolean>false</boolean> 
+        </void> 
+        <void method="setProperty"> 
+         <string>enabled</string> 
+         <boolean>true</boolean> 
+        </void> 
+        <void method="setProperty"> 
+         <string>focusable</string> 
+         <boolean>false</boolean> 
+        </void> 
+        <void method="setProperty"> 
+         <string>focusPainted</string> 
+         <boolean>false</boolean> 
+        </void> 
+        <void method="setProperty"> 
+         <string>preferredSize</string> 
+         <object class="java.awt.Dimension"> 
+          <int>124</int> 
+          <int>144</int> 
+         </object> 
+        </void> 
+        <void method="setProperty"> 
+         <string>maximumSize</string> 
+         <object class="java.awt.Dimension"> 
+          <int>136</int> 
+          <int>144</int> 
+         </object> 
+        </void> 
+        <void method="setProperty"> 
+         <string>minimumSize</string> 
+         <object class="java.awt.Dimension"> 
+          <int>136</int> 
+          <int>144</int> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>appIconButton</string> 
+        </void> 
+       </object> 
+       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+        <class>com.jgoodies.forms.layout.CellConstraints</class> 
+        <void method="setProperty"> 
+         <string>gridX</string> 
+         <int>3</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridY</string> 
+         <int>3</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridHeight</string> 
+         <int>8</int> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.ktauber.form.model.FormComponent"> 
+        <string>javax.swing.JLabel</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>A graphical development environment for developing and debugging ANTLR v3 grammars</string> 
+        </void> 
+        <void method="setProperty"> 
+         <string>horizontalAlignment</string> 
+         <int>2</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>horizontalTextPosition</string> 
+         <int>2</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>verticalTextPosition</string> 
+         <int>1</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>verticalAlignment</string> 
+         <int>1</int> 
+        </void> 
+        <void property="name"> 
+         <string>descriptionLabel</string> 
+        </void> 
+       </object> 
+       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+        <class>com.jgoodies.forms.layout.CellConstraints</class> 
+        <void method="setProperty"> 
+         <string>gridX</string> 
+         <int>5</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridY</string> 
+         <int>7</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridHeight</string> 
+         <int>2</int> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.ktauber.form.model.FormComponent"> 
+        <string>javax.swing.JLabel</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>ANTLRWorks</string> 
+        </void> 
+        <void method="setProperty"> 
+         <string>font</string> 
+         <object class="java.awt.Font"> 
+          <string>Lucida Grande</string> 
+          <int>1</int> 
+          <int>36</int> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>titleLabel</string> 
+        </void> 
+       </object> 
+       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+        <class>com.jgoodies.forms.layout.CellConstraints</class> 
+        <void method="setProperty"> 
+         <string>gridX</string> 
+         <int>5</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridY</string> 
+         <int>3</int> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.ktauber.form.model.FormComponent"> 
+        <string>javax.swing.JLabel</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>Version 1.0 early access 1</string> 
+        </void> 
+        <void property="name"> 
+         <string>versionLabel</string> 
+        </void> 
+       </object> 
+       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+        <class>com.jgoodies.forms.layout.CellConstraints</class> 
+        <void method="setProperty"> 
+         <string>gridX</string> 
+         <int>5</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridY</string> 
+         <int>5</int> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.ktauber.form.model.FormComponent"> 
+        <string>javax.swing.JLabel</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>Copyright (c) 2005 Jean Bovet &amp; Terence Parr</string> 
+        </void> 
+        <void property="name"> 
+         <string>copyrightLabel</string> 
+        </void> 
+       </object> 
+       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+        <class>com.jgoodies.forms.layout.CellConstraints</class> 
+        <void method="setProperty"> 
+         <string>gridX</string> 
+         <int>5</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridY</string> 
+         <int>9</int> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.ktauber.form.model.FormContainer"> 
+        <string>javax.swing.JTabbedPane</string> 
+        <object class="com.ktauber.form.model.FormLayoutManager"> 
+         <class>javax.swing.JTabbedPane</class> 
+        </object> 
+        <void property="name"> 
+         <string>tabbedPane1</string> 
+        </void> 
+        <void method="add"> 
+         <object class="com.ktauber.form.model.FormContainer"> 
+          <string>javax.swing.JPanel</string> 
+          <object class="com.ktauber.form.model.FormLayoutManager"> 
+           <class>com.jgoodies.forms.layout.FormLayout</class> 
+           <void method="setProperty"> 
+            <string>$columnSpecs</string> 
+            <string>10dlu, labelcompgap, default:grow, labelcompgap, 10dlu</string> 
+           </void> 
+           <void method="setProperty"> 
+            <string>$rowSpecs</string> 
+            <string>10dlu, linegap, fill:default, linegap, 10dlu</string> 
+           </void> 
+          </object> 
+          <void property="name"> 
+           <string>panel2</string> 
+          </void> 
+          <void method="add"> 
+           <object class="com.ktauber.form.model.FormComponent"> 
+            <string>javax.swing.JTextArea</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>ANTLR and StringTemplate are (c) 1989-2005 Terence Parr
+XJLibrary is (c) 2004-2005 Jean Bovet
+Portion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch
+Portion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber
+BrowserLauncher is (c) 2001 Eric Albert &lt;ejalbert@cs.stanford.edu&gt;
+Application icon is (c) Matthew McClintock &lt;matthew@mc.clintock.com&gt;
+</string> 
+            </void> 
+            <void method="setProperty"> 
+             <string>editable</string> 
+             <boolean>false</boolean> 
+            </void> 
+            <void method="setProperty"> 
+             <string>background</string> 
+             <object class="java.awt.SystemColor" field="window"/> 
+            </void> 
+            <void property="name"> 
+             <string>acknowledgeTextArea</string> 
+            </void> 
+           </object> 
+           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+            <class>com.jgoodies.forms.layout.CellConstraints</class> 
+            <void method="setProperty"> 
+             <string>gridX</string> 
+             <int>3</int> 
+            </void> 
+            <void method="setProperty"> 
+             <string>gridY</string> 
+             <int>3</int> 
+            </void> 
+           </object> 
+          </void> 
+         </object> 
+         <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+          <null/> 
+          <void method="setProperty"> 
+           <string>title</string> 
+           <string>Acknowledgment</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="add"> 
+         <object class="com.ktauber.form.model.FormContainer"> 
+          <string>javax.swing.JPanel</string> 
+          <object class="com.ktauber.form.model.FormLayoutManager"> 
+           <class>com.jgoodies.forms.layout.FormLayout</class> 
+           <void method="setProperty"> 
+            <string>$columnSpecs</string> 
+            <string>glue, labelcompgap, default, labelcompgap, default, labelcompgap, glue</string> 
+           </void> 
+           <void method="setProperty"> 
+            <string>$rowSpecs</string> 
+            <string>max(default;15dlu), linegap, default, linegap, default, linegap, default, linegap, 10dlu, linegap, default</string> 
+           </void> 
+          </object> 
+          <void property="name"> 
+           <string>panel1</string> 
+          </void> 
+          <void method="add"> 
+           <object class="com.ktauber.form.model.FormComponent"> 
+            <string>javax.swing.JLabel</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>ANTLRWorks:</string> 
+            </void> 
+            <void method="setProperty"> 
+             <string>horizontalAlignment</string> 
+             <int>4</int> 
+            </void> 
+            <void property="name"> 
+             <string>label5</string> 
+            </void> 
+           </object> 
+           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+            <class>com.jgoodies.forms.layout.CellConstraints</class> 
+            <void method="setProperty"> 
+             <string>gridX</string> 
+             <int>3</int> 
+            </void> 
+            <void method="setProperty"> 
+             <string>gridY</string> 
+             <int>3</int> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.ktauber.form.model.FormComponent"> 
+            <string>javax.swing.JLabel</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>-</string> 
+            </void> 
+            <void property="name"> 
+             <string>guiVersionLabel</string> 
+            </void> 
+           </object> 
+           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+            <class>com.jgoodies.forms.layout.CellConstraints</class> 
+            <void method="setProperty"> 
+             <string>gridX</string> 
+             <int>5</int> 
+            </void> 
+            <void method="setProperty"> 
+             <string>gridY</string> 
+             <int>3</int> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.ktauber.form.model.FormComponent"> 
+            <string>javax.swing.JLabel</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>3.0 early access 1</string> 
+            </void> 
+            <void property="name"> 
+             <string>antlrVersionLabel</string> 
+            </void> 
+           </object> 
+           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+            <class>com.jgoodies.forms.layout.CellConstraints</class> 
+            <void method="setProperty"> 
+             <string>gridX</string> 
+             <int>5</int> 
+            </void> 
+            <void method="setProperty"> 
+             <string>gridY</string> 
+             <int>5</int> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.ktauber.form.model.FormComponent"> 
+            <string>javax.swing.JLabel</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>StringTemplate:</string> 
+            </void> 
+            <void method="setProperty"> 
+             <string>horizontalAlignment</string> 
+             <int>4</int> 
+            </void> 
+            <void property="name"> 
+             <string>label11</string> 
+            </void> 
+           </object> 
+           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+            <class>com.jgoodies.forms.layout.CellConstraints</class> 
+            <void method="setProperty"> 
+             <string>gridX</string> 
+             <int>3</int> 
+            </void> 
+            <void method="setProperty"> 
+             <string>gridY</string> 
+             <int>7</int> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.ktauber.form.model.FormComponent"> 
+            <string>javax.swing.JLabel</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>2.1</string> 
+            </void> 
+            <void property="name"> 
+             <string>stringTemplateVersionLabel</string> 
+            </void> 
+           </object> 
+           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+            <class>com.jgoodies.forms.layout.CellConstraints</class> 
+            <void method="setProperty"> 
+             <string>gridX</string> 
+             <int>5</int> 
+            </void> 
+            <void method="setProperty"> 
+             <string>gridY</string> 
+             <int>7</int> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.ktauber.form.model.FormComponent"> 
+            <string>javax.swing.JLabel</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>XJLibrary:</string> 
+            </void> 
+            <void method="setProperty"> 
+             <string>horizontalAlignment</string> 
+             <int>4</int> 
+            </void> 
+            <void property="name"> 
+             <string>label12</string> 
+            </void> 
+           </object> 
+           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+            <class>com.jgoodies.forms.layout.CellConstraints</class> 
+            <void method="setProperty"> 
+             <string>gridX</string> 
+             <int>3</int> 
+            </void> 
+            <void method="setProperty"> 
+             <string>gridY</string> 
+             <int>9</int> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.ktauber.form.model.FormComponent"> 
+            <string>javax.swing.JLabel</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>1.2</string> 
+            </void> 
+            <void property="name"> 
+             <string>xjVersionLabel</string> 
+            </void> 
+           </object> 
+           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+            <class>com.jgoodies.forms.layout.CellConstraints</class> 
+            <void method="setProperty"> 
+             <string>gridX</string> 
+             <int>5</int> 
+            </void> 
+            <void method="setProperty"> 
+             <string>gridY</string> 
+             <int>9</int> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.ktauber.form.model.FormComponent"> 
+            <string>javax.swing.JLabel</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>ANTLR:</string> 
+            </void> 
+            <void method="setProperty"> 
+             <string>horizontalAlignment</string> 
+             <int>4</int> 
+            </void> 
+            <void property="name"> 
+             <string>label10</string> 
+            </void> 
+           </object> 
+           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+            <class>com.jgoodies.forms.layout.CellConstraints</class> 
+            <void method="setProperty"> 
+             <string>gridX</string> 
+             <int>3</int> 
+            </void> 
+            <void method="setProperty"> 
+             <string>gridY</string> 
+             <int>5</int> 
+            </void> 
+           </object> 
+          </void> 
+         </object> 
+         <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+          <null/> 
+          <void method="setProperty"> 
+           <string>title</string> 
+           <string>Version</string> 
+          </void> 
+         </object> 
+        </void> 
+       </object> 
+       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+        <class>com.jgoodies.forms.layout.CellConstraints</class> 
+        <void method="setProperty"> 
+         <string>gridX</string> 
+         <int>3</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridY</string> 
+         <int>11</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridWidth</string> 
+         <int>3</int> 
+        </void> 
+       </object> 
+      </void> 
+      <void property="name"> 
+       <string>this</string> 
+      </void> 
+     </object> 
+    </void> 
+   </object> 
+  </void> 
+ </object> 
+</java> 
