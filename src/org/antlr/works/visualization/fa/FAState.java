@@ -124,7 +124,7 @@ public class FAState {
         Iterator iterator = transitions.iterator();
         while(iterator.hasNext()) {
             FATransition transition = (FATransition)iterator.next();
-            if(transition.target.containsStateNumber(stateNumber))
+            if(transition.target.stateNumber == stateNumber)
                 return transition;
         }
         return null;
@@ -177,24 +177,13 @@ public class FAState {
         return false;
     }
 
-    public void addSkippedState(int stateNumber) {
-        skippedStates.add(new Integer(stateNumber));
-    }
-
-    public boolean containsStateNumber(int stateNumber) {
-        if(this.stateNumber == stateNumber)
-            return true;
-        else
-            return skippedStates.contains(new Integer(stateNumber));
-    }
-
     public int hashCode() {
         return stateNumber;
     }
 
     public boolean equals(Object o) {
         FAState otherState = (FAState)o;
-        return containsStateNumber(otherState.stateNumber);
+        return stateNumber == otherState.stateNumber;
     }
 
     public String toString() {

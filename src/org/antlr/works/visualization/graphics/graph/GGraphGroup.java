@@ -32,13 +32,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization.graphics.graph;
 
 import org.antlr.analysis.NFAState;
+import org.antlr.works.visualization.fa.FAState;
 import org.antlr.works.visualization.fa.FATransition;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.path.GPath;
 import org.antlr.works.visualization.graphics.path.GPathElement;
 import org.antlr.works.visualization.graphics.path.GPathGroup;
 import org.antlr.works.visualization.graphics.primitive.GDimension;
-import org.antlr.works.visualization.graphics.shape.GLink;
 import org.antlr.works.visualization.graphics.shape.GNode;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 
@@ -46,6 +46,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class GGraphGroup extends GGraphAbstract {
 
@@ -94,114 +95,216 @@ public class GGraphGroup extends GGraphAbstract {
         return getDimension().getPixelWidth(context)+TITLE_OFFSET;
     }
 
-    public void addPath(List path, boolean disabled) {
-        List elements = new ArrayList();
+    protected int pathIndex;
 
-        // Note: first create an array of continuous state/node.
-        // It may happen that some state doesn't have a corresponding node
-        // if, for example, the state is located after an accepted state (because
-        // nodes are built until the accepted state only).
-
-        List stateList = new ArrayList();
-        List nodeList = new ArrayList();
-        for(int i=0; i<path.size(); i++) {
-            NFAState state = (NFAState)path.get(i);
-            GNode node = findNodeForStateNumber(state.stateNumber);
-            if(node == null)
-                continue;
-
-            stateList.add(state);
-            nodeList.add(node);
+    public List getTransitionsMatchingSkippedStates(List candidates, List states) {
+        /** First convert the list of NFAStates to a list of Integer containing
+         * the state number
+         */
+        List statesNumbers = new ArrayList();
+        for(int i=0; i<states.size(); i++) {
+            statesNumbers.add((new Integer(((NFAState)states.get(i)).stateNumber)));
         }
 
-        for(int i=0; i<stateList.size(); i++) {
-            NFAState state = (NFAState)stateList.get(i);
-            GNode node = (GNode)nodeList.get(i);
-
-            elements.add(new GPathElement(node));
-
-            if(i == stateList.size()-1) {
-                // Exit here if last state
-                break;
+        /** Select only the transitions that containing all the state numbers */
+        List newCandidates = new ArrayList();
+        for(int c=0; c<candidates.size(); c++) {
+            FATransition t = (FATransition)candidates.get(c);
+            if(t.skippedStates != null && t.skippedStates.containsAll(statesNumbers)) {
+                newCandidates.add(t);
             }
+        }
 
-            // Find the next non-skipped state
-            NFAState nextState;
-            while(true) {
-                nextState = (NFAState)stateList.get(i+1);
-                if(node.state.containsStateNumber(nextState.stateNumber))
-                    i++;
-                else
+        return newCandidates;
+    }
+
+    public FATransition getNodeTransitionToNextNonSkippedState(GNode node, List path) {
+        List candidateTransitions = new ArrayList(node.state.transitions);
+        FATransition candidate = null;
+        int start = pathIndex;
+
+        loop:
+        for(; pathIndex < path.size(); pathIndex++) {
+            candidateTransitions = getTransitionsMatchingSkippedStates(candidateTransitions, path.subList(start, pathIndex+1));
+            switch(candidateTransitions.size()) {
+                case 0: // No more transitions. Exit and use the candidate transition.
+                    break loop;
+
+                case 1:
+                    // The uniquely identified transition has been found.
+                    // Continue to loop until all skipped states have been found.
+                    candidate = (FATransition) candidateTransitions.get(0);
+                    break;
+
+                default:
+                    // More than one transition candidates found. Look if any of these
+                    // transitions's target state correspond to the next path state to avoid
+                    // missing a transition: this can happen if a transition is a subset of
+                    // the others (the next state of the path can return no transition at all)
+                    if(pathIndex+1 < path.size()) {
+                        NFAState nextPathState = (NFAState) path.get(pathIndex+1);
+                        for(int i=0; i<candidateTransitions.size(); i++) {
+                            FATransition t = (FATransition)candidateTransitions.get(i);
+                            if(t.target.stateNumber == nextPathState.stateNumber) {
+                                pathIndex++;    // always points to the next element after the transition
+                                return t;
+                            }
+                        }
+                    }
                     break;
             }
+        }
 
-            if(state.getEnclosingRule().equals(nextState.getEnclosingRule())) {
-                // We are still in the same rule, simply add the existing link
+        return candidate;
+    }
 
-                FATransition transition = node.state.getTransitionToStateNumber(nextState.stateNumber);
-                if(transition == null) {
-                    // Probably a loop. In this case, the transition is located in the target state
-                    GNode targetNode = findNodeForStateNumber(nextState.stateNumber);
-                    transition = targetNode.state.getTransitionToStateNumber(node.state.stateNumber);
-                    if(transition == null) {
-                        // No transition found ? This is an reference to the same rule (recursive)
+    public void addNextElementInSameRule(List elements, GNode node, GNode nextNode, NFAState nextState) {
+        elements.add(GPathElement.createElement(node));
 
-                        if(node.state.getFirstTransition() == null) {
-                            // Add a link if the two states are not on the same axis
-                            // (otherwise, we have little chance to see this transition)
-                            if(node.position.getX(defaultContext) != targetNode.position.getY(defaultContext)) {
-                                GPathElement element = new GPathElement(node, targetNode);
-                                element.setRuleLink(true);
-                                elements.add(element);
-                            }
-                        } else {
-                            elements.add(new GPathElement(node.getLink(node.state.getFirstTransition())));
-
-                            GNode nextNode = findNodeForStateNumber(node.state.getFirstTransition().target.stateNumber);
-                            elements.add(new GPathElement(nextNode));
-
-                            GLink link = nextNode.getLink(nextNode.state.getFirstTransition());
-                            elements.add(new GPathElement(link));
-                        }
-                    } else
-                        elements.add(new GPathElement(targetNode.getLink(transition)));
-                } else
-                    elements.add(new GPathElement(node.getLink(transition)));
+        FATransition t = node.state.getTransitionToStateNumber(nextState.stateNumber);
+        if(t == null) {
+            // Probably a loop. In this case, the transition is located in the target state.
+            t = nextNode.state.getTransitionToStateNumber(node.state.stateNumber);
+            if(t == null) {
+                // Still no transition found. This is a reference to the same rule (recursive)
+                elements.add(GPathElement.createLink(node, nextNode));
             } else {
-                // The next state is in another rule. Add the external rule ref state
-                // (which should be the only target of the current rule) to the path
-                if(node.state.getFirstTransition() == null) {
-                    // Node without transition (probably at the end of a rule).
-                    // Create the link to the other rule
-                    GPathElement element = new GPathElement(node, findNodeForStateNumber(nextState.stateNumber));
-                    element.setRuleLink(true);
-                    elements.add(element);
-                } else {
-                    FATransition tr = node.state.getTransitionToExternalStateRule(nextState.getEnclosingRule());
-                    if(tr == null) {
-                        System.err.println("[GGraphGroup] No transition to external state "+nextState.stateNumber+"["+nextState.getEnclosingRule()+"] - using first transition by default");
-                        tr = node.state.getFirstTransition();
-                    }
-                    GLink test = node.getLink(tr);
+                // Add the loop transition to the path
+                elements.add(GPathElement.createElement(nextNode.getLink(t)));
+            }
+        } else {
+            // Add the transition to the path
+            elements.add(GPathElement.createElement(node.getLink(t)));
+        }
+    }
 
-                    elements.add(new GPathElement(node.getLink(tr)));
-
-                    GNode nextNode = findNodeForStateNumber(tr.target.stateNumber);
-                    elements.add(new GPathElement(nextNode));
-
-                    // 1.0ea8: remove this link so the external node is not highlighted
-                    //GLink link = nextNode.getLink(nextNode.state.getFirstTransition());
-                    //elements.add(new GPathElement(link));
-
-                    // Create the link to the other rule
-                    // 1.0ea8: make the external link start *before* the external node
-                    //GPathElement element = new GPathElement(link, findNodeForStateNumber(nextState.stateNumber));
-                    GPathElement element = new GPathElement(test, findNodeForStateNumber(nextState.stateNumber));
-                    element.setRuleLink(true);
-                    elements.add(element);
+    public void addNextElementInOtherRule(List elements, GNode node, GNode externalNode, GNode nextNode, NFAState nextState) {
+        if(externalNode == null) {
+            // The external node is not specified. Try to find it.
+            if(node.state.getFirstTransition() == null) {
+                // If the node contains no transition (probably if it is at the end of a rule), then
+                // ignore externalNode. We will draw only a link from node to nextNode.
+            } else {
+                // Find the transition that points to the external rule ref
+                FATransition t = node.state.getTransitionToExternalStateRule(nextState.getEnclosingRule());
+                if(t == null) {
+                    System.err.println("[GGraphGroup] No transition to external state "+nextState.stateNumber+"["+nextState.getEnclosingRule()+"] - using first transition by default");
+                    t = node.state.getFirstTransition();
                 }
+                externalNode = findNodeForStateNumber(t.target.stateNumber);
             }
         }
+
+        if(externalNode == null) {
+            // Add the link between node and nextNode, ignore externalNode because it doesn't exist
+            elements.add(GPathElement.createElement(node));
+            elements.add(GPathElement.createLink(node, nextNode));
+        } else {
+            elements.add(GPathElement.createElement(node));
+
+            // Add the link between node and externalNode.
+            FATransition t = node.state.getTransitionToStateNumber(externalNode.state.stateNumber);
+            elements.add(GPathElement.createElement(node.getLink(t)));
+            elements.add(GPathElement.createElement(externalNode));
+
+            // Add the link between externalNode and nextNode
+            elements.add(GPathElement.createLink(externalNode, nextNode));
+        }
+    }
+
+    public void addPath(List path, boolean disabled, Map skippedStates) {
+        List elements = new ArrayList();
+
+        /** path contains a list of NFAState states (from ANTLR): they represent
+         * all the states along the path. The graphical representation of the NFA/SD
+         * does not necessarily contains all the states of the path because the representation
+         * can be simplified to remove all unecessary states.
+         * The problem here is to use the information stored in the transition of the
+         * graphical representation to figure out exactly which graphical node corresponds
+         * to the path.
+         */
+
+        NFAState state;
+        GNode node;
+        NFAState nextState = null;
+        GNode nextNode = null;
+        for(pathIndex = 0; pathIndex < path.size(); pathIndex++) {
+            if(pathIndex == 0) {
+                nextState = (NFAState)path.get(pathIndex);
+                nextNode = findNodeForStateNumber(nextState.stateNumber);
+                if(nextNode == null) {
+                    // A path can start from anywhere in the graph. It might happen
+                    // that the starting state of the path has been skipped by
+                    // the optimization in FAFactory. We use the skippedStates mapping
+                    // to find out what is the parent state of the skipped state.
+                    FAState parentState = (FAState) skippedStates.get(new Integer(nextState.stateNumber));
+                    if(parentState == null) {
+                        System.err.println("[GGraphGroup] Starting path state "+nextState.stateNumber+"["+nextState.getEnclosingRule()+"] cannot be found in the graph");
+                        return;
+                    } else {
+                        nextNode = findNodeForStateNumber(parentState.stateNumber);
+                    }
+                }
+                continue;
+            } else {
+                state = nextState;
+                node = nextNode;
+            }
+
+            nextState = (NFAState)path.get(pathIndex);
+            nextNode = findNodeForStateNumber(nextState.stateNumber);
+
+            GNode externalNode = null;
+
+            if(nextNode == null) {
+                // The state has probably been skipped during the graphical rendering.
+                // Find the next non-skipped state.
+                FATransition t = getNodeTransitionToNextNonSkippedState(node, path);
+                if(t == null) {
+                    // No transition found. Look in the skipped states mapping because
+                    // it might be possible that the next state is in another rule but
+                    // cannot be found because it has been skipped.
+
+                    FAState parentState = (FAState) skippedStates.get(new Integer(nextState.stateNumber));
+                    if(parentState == null) {
+                        //  OK. The node really does not exist.
+                        if(node != null)
+                            elements.add(GPathElement.createElement(node));
+                        break;
+                    } else {
+                        nextNode = findNodeForStateNumber(parentState.stateNumber);
+                    }
+                } else {
+                    nextState = (NFAState)path.get(pathIndex);
+                    if(t.target.stateNumber == nextState.stateNumber) {
+                        nextNode = findNodeForStateNumber(t.target.stateNumber);
+                    } else {
+                        // The only case that the target state of the transition if not
+                        // the next state of the path is when the next state of the path
+                        // is in another rule. In this case, the target state of the transition
+                        // will contain a negative state number indicating an external rule reference:
+                        // this external rule reference is added by AW during rendering and is not
+                        // part of any ANTLR NFA.
+
+                        // This node is the node representing the external rule reference
+                        // before jumping outside of the rule
+                        externalNode = findNodeForStateNumber(t.target.stateNumber);
+
+                        // This node is the first node in the other rule
+                        nextNode = findNodeForStateNumber(nextState.stateNumber);
+                    }
+                }
+            }
+
+            if(state.getEnclosingRule().equals(nextState.getEnclosingRule()))
+                addNextElementInSameRule(elements, node, nextNode, nextState);
+            else
+                addNextElementInOtherRule(elements, node, externalNode, nextNode, nextState);
+        }
+
+        if(nextNode != null)
+            elements.add(GPathElement.createElement(nextNode));
+
         pathGroup.addPath(new GPath(elements, disabled));
     }
 
@@ -233,13 +336,9 @@ public class GGraphGroup extends GGraphAbstract {
     }
 
     public void draw() {
-        pathGroup.draw();
-
         context.nodeColor = Color.black;
         context.linkColor = Color.black;
         context.setLineWidth(1);
-
-        context.setIgnoreObjects(pathGroup.getObjectsToIgnore());
 
         for (int i = 0; i<graphs.size(); i++) {
             GGraph graph = (GGraph)graphs.get(i);
@@ -248,7 +347,7 @@ public class GGraphGroup extends GGraphAbstract {
             context.drawString(context.getRuleFont(), graph.name, TITLE_OFFSET-5, graph.offsetY, GContext.ALIGN_RIGHT);
         }
 
-        context.resetIgnoreObjects();
+        pathGroup.draw();
 
         if(context.drawdimension) {
             context.setLineWidth(1);

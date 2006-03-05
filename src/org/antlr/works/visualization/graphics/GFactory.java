@@ -135,7 +135,7 @@ public class GFactory {
             List states = (List) error.paths.get(i);
             Boolean disabled = (Boolean) error.pathsDisabled.get(i);
 
-            gg.addPath(states, disabled.booleanValue());
+            gg.addPath(states, disabled.booleanValue(), factory.getSkippedStatesMap());
         }
 
         if(error.paths.size()>0)

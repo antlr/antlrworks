@@ -37,10 +37,7 @@ import org.antlr.analysis.State;
 import org.antlr.analysis.Transition;
 import org.antlr.tool.Grammar;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** This class builds an "GUI" NFA from an "ANTLR" NFA by removing redundant epsilon transition(s).
  *
@@ -48,12 +45,13 @@ import java.util.Set;
 
 public class FAFactory {
 
-    private Grammar g;
-    private boolean optimize;
-    private FAAnalysis analysis = new FAAnalysis();
-    private Map processedStates = new HashMap();
+    protected Grammar g;
+    protected boolean optimize;
+    protected FAAnalysis analysis = new FAAnalysis();
+    protected Map processedStates = new HashMap();
+    protected Map skippedStatesMap = new HashMap();
 
-    public int newStateNumber = State.INVALID_STATE_NUMBER-1;
+    protected int newStateNumber = State.INVALID_STATE_NUMBER-1;
 
     public FAFactory(Grammar g) {
         this.g = g;
@@ -62,6 +60,10 @@ public class FAFactory {
     public FAState buildNFA(NFAState state, boolean optimize) {
         this.optimize = optimize;
         return build(state);
+    }
+
+    public Map getSkippedStatesMap() {
+        return skippedStatesMap;
     }
 
     public FAState build(NFAState state) {
@@ -100,11 +102,11 @@ public class FAFactory {
             NFAState target = (NFAState)transition.target;
             if(targetStateIsInAnotherRule(transition)) {
                 target = targetStateOfTransition(transition);
-                parentState = createRuleReferenceState(parentState, transition);
+                parentState = createRuleReferenceState(parentState, transition, null);
             }
 
             if(transition.isEpsilon()) {
-                buildRecursiveSkipState(parentState, target, new HashSet(currentPath));
+                buildRecursiveSkipState(parentState, target, new HashSet(currentPath), new ArrayList());
             } else {
                 FAState targetState = buildRecursiveState(target, new HashSet(currentPath));
                 if(targetState.loop) {
@@ -124,24 +126,24 @@ public class FAFactory {
      *
      */
 
-    public void buildRecursiveSkipState(FAState parentState, NFAState state, Set currentPath) {
+    public void buildRecursiveSkipState(FAState parentState, NFAState state, Set currentPath, List skippedStates) {
         if(canBeSkipped(state)) {
             // If the state can be skipped, apply recursively the same method for each transition(s)
             // providing the parent state.
 
-                // First add the number of the skipped state to the parent state.
-                // This will be used later to find a path even if the given states
-                // have been skipped here.
-            parentState.addSkippedState(state.stateNumber);
+            // Record each skipped state. They will be added later to the transition that replace them
+            Integer skippedState = new Integer(state.stateNumber);
+            skippedStates.add(skippedState);
+            skippedStatesMap.put(skippedState, parentState);
 
             for(int t=0; t<state.getNumberOfTransitions(); t++) {
                 Transition transition = state.transition(t);
                 if(targetStateIsInAnotherRule(transition)) {
                     NFAState target = targetStateOfTransition(transition);
-                    FAState ruleRefState = createRuleReferenceState(parentState, transition);
-                    buildRecursiveSkipState(ruleRefState, target, currentPath);
+                    FAState ruleRefState = createRuleReferenceState(parentState, transition, skippedStates);
+                    buildRecursiveSkipState(ruleRefState, target, currentPath, new ArrayList(skippedStates));
                 } else
-                    buildRecursiveSkipState(parentState, (NFAState)transition.target, currentPath);
+                    buildRecursiveSkipState(parentState, (NFAState)transition.target, currentPath, new ArrayList(skippedStates));
             }
         } else {
             // The state cannot be skipped. Build the remaining of the NFA...
@@ -150,10 +152,10 @@ public class FAFactory {
             // (this is the simplification ;-))
             if(targetState.loop) {
                 // See comment above (in the previous method)
-                targetState.addTransition(new FATransition(parentState), true);
+                targetState.addTransition(new FATransition(parentState, skippedStates), true);
                 targetState.loop = false;
             } else
-                parentState.addTransition(new FATransition(targetState));
+                parentState.addTransition(new FATransition(targetState, skippedStates));
         }
     }
 
@@ -173,11 +175,11 @@ public class FAFactory {
             return null;
     }
 
-    public FAState createRuleReferenceState(FAState parentState, Transition transition) {
+    public FAState createRuleReferenceState(FAState parentState, Transition transition, List skippedStates) {
         // Create epsilon transition before the external reference transition
         FAState dummyState = new FAState(newStateNumber--);
         dummyState.enclosingRuleName = parentState.enclosingRuleName;
-        FATransition epsilon = new FATransition(dummyState);
+        FATransition epsilon = new FATransition(dummyState, skippedStates);
         parentState.addTransition(epsilon);
 
         FAState ruleRefState = new FAState(newStateNumber--);
@@ -220,7 +222,7 @@ public class FAFactory {
         if(state.getDecisionNumber() > 0)
             return false;
 
-        // Cannot skip begin of block state
+        // Cannot skip start of block state
         if(state.endOfBlockStateNumber != State.INVALID_STATE_NUMBER)
             return false;
 

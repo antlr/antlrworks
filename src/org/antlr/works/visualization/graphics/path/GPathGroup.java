@@ -44,6 +44,7 @@ import java.util.List;
 public class GPathGroup extends GObject implements GTimerDelegate {
 
     public static final String NOTIF_CURRENT_PATH_DID_CHANGE = "NOTIF_CURRENT_PATH_DID_CHANGE";
+    public static int DEFAULT_PATH_WIDTH = 1;
 
     protected List graphicPaths = new ArrayList();
     protected int selectedPathIndex = 0;
@@ -193,9 +194,6 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     public void draw() {
         GPath currentPath = currentPath();
 
-        if(currentPath().isVisible())
-            context.setIgnoreObjects(currentPath.getObjects());
-
         for (Iterator iterator = graphicPaths.iterator(); iterator.hasNext();) {
             GPath path = (GPath) iterator.next();
             if(path != currentPath) {
@@ -205,13 +203,11 @@ public class GPathGroup extends GObject implements GTimerDelegate {
             }
 
             if(path.isVisible() && path != currentPath)
-                path.draw(1, null);
+                path.draw(DEFAULT_PATH_WIDTH, null);
         }
 
-        context.resetIgnoreObjects();
-
         if(currentPath.isVisible())
-            currentPath.draw(1, null);
+            currentPath.draw(DEFAULT_PATH_WIDTH, null);
     }
 
     public void drawSelectedElement() {

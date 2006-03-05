@@ -32,17 +32,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.fa;
 
+import java.util.List;
+
 public class FATransition {
 
     public FAState source;
     public String label;
     public FAState target;
 
-    // True if this is a "loop" transition (reverse direction)
+    /** True if this is a "loop" transition (reverse direction) */
     public boolean loop = false;
 
-    // True if this transition represent an external reference rule
+    /** True if this transition represent an external reference rule */
     public boolean externalRuleRef = false;
+
+    /** Set of all skipped states along this transition */
+    public List skippedStates;
 
     public FATransition(String label, FAState targetState) {
         this.label = label;
@@ -50,8 +55,13 @@ public class FATransition {
     }
 
     public FATransition(FAState targetState) {
+        this(targetState, null);
+    }
+
+    public FATransition(FAState targetState, List skippedStates) {
         this.label = null;  // epsilon transition
         this.target = targetState;
+        this.skippedStates = skippedStates;
     }
 
     public void setSourceState(FAState source) {
@@ -65,7 +75,7 @@ public class FATransition {
     public void setExternalRuleRef(boolean flag) {
         this.externalRuleRef = flag;
     }
-    
+
     public boolean isEpsilon() {
         return label == null;
     }

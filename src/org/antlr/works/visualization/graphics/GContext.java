@@ -37,8 +37,6 @@ import org.antlr.works.visualization.graphics.shape.GNode;
 import org.antlr.works.visualization.skin.Skin;
 
 import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Stack;
 
 public class GContext {
@@ -84,7 +82,6 @@ public class GContext {
     public Font titleFont = null;
 
     public Graphics2D g2d = null;
-    public Set ignoreObjects = new HashSet();
 
     public GContext() {
 
@@ -92,18 +89,6 @@ public class GContext {
 
     public void setProvider(GContextProvider provider) {
         this.provider = provider;
-    }
-
-    public void setIgnoreObjects(Set objects) {
-        ignoreObjects.addAll(objects);
-    }
-
-    public void resetIgnoreObjects() {
-        ignoreObjects.clear();
-    }
-
-    public boolean isObjectIgnored(GObject object) {
-        return ignoreObjects.contains(object);
     }
 
     public void clearCache() {
@@ -328,13 +313,11 @@ public class GContext {
     }
 
     public void drawNode(GNode node) {
-        if(!isObjectIgnored(node))
-            skin.drawNode(node);
+        skin.drawNode(node);
     }
 
     public void drawLink(GLink link) {
-        if(!isObjectIgnored(link))
-            skin.drawLink(link);
+        skin.drawLink(link);
     }
 
     public boolean isObjectVisible(GObject object) {

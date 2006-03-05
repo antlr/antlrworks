@@ -49,6 +49,16 @@ public class GPathElement extends GObject {
 
     public boolean isRuleLink = false;
 
+    public static GPathElement createLink(GNode node, GNode nextNode) {
+        GPathElement element = new GPathElement(node, nextNode);
+        element.setRuleLink(true);
+        return element;
+    }
+
+    public static GPathElement createElement(GObject object) {
+        return new GPathElement(object);
+    }
+
     public GPathElement(GObject object) {
         this.nodeOrLink = object;
     }

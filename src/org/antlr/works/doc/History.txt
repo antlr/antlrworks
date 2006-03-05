@@ -1,5 +1,5 @@
 
-Version 1.0ea8 - 02/18/06
+Version 1.0ea8 - 03/05/06
 
 - new: rule dependency graph (can be exported to EPS or bitmap file)
 - new: syntax coloring for generated Java code
@@ -39,6 +39,7 @@ Version 1.0ea8 - 02/18/06
 - fixed a bug where ANTLR would not be able to read the tokenVocab file (missing path)
 - fixed a bug in the code generation (problem with grammar name)
 - fixed a bug in the syntax diagram engine where a link from a rule to another rule would start at the wrong state
+- fixed a bug in the syntax diagram path drawing where some paths were not correctly rendered
 
 Version 1.0ea7 - 12/15/05
 

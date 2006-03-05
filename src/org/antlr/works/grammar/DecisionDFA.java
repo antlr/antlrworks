@@ -118,6 +118,7 @@ public class DecisionDFA extends GrammarDOTTab {
         decisionNumber = dfa.getDecisionNumber();
         DOTGenerator dg = new DOTGenerator(g);
         dg.setArrowheadType("none");
+        dg.setRankdir("LR");    // Left-to-right
         String dot = dg.getDOT( dfa.startState );
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(tempInputFile));

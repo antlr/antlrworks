@@ -132,7 +132,9 @@ public class ATEColoring extends ATEThread {
             return modifiedTokens;
 
         List newTokens = textEditor.getParserEngine().getTokens();
-
+        if(newTokens == null)
+            return modifiedTokens;
+        
         int nt = 0;
         int ot = 0;
         for(; nt<newTokens.size(); nt++) {

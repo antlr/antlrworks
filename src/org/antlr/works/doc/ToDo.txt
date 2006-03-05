@@ -37,3 +37,9 @@ JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\java
 - jikes doesn't work from within a jar
 - use "load" on Linux/Windows when opening a document on an untouched one
 - tree view of TUsage: why use white spaces to be able to display the entire string ?
+
+* Problem with syntax diagram path? *
+Look into:
+- GGraphGroup (where the path is created)
+- FAFactory (where the optimized FA is created)
+- GFactory (where everything is assembled before display)

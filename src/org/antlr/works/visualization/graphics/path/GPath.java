@@ -42,6 +42,9 @@ import java.util.Set;
 
 public class GPath extends GObject {
 
+    public static int MIN_PATH_BLINK_WIDTH = 2;
+    public static int MAX_PATH_BLINK_WIDTH = 4;
+    
     protected List elements;
     protected boolean disabled;
     protected boolean visible;
@@ -167,7 +170,7 @@ public class GPath extends GObject {
 
     public void incrementWidth() {
         currentLineWidth += step;
-        if(currentLineWidth >= 4 || currentLineWidth <= 1)
+        if(currentLineWidth >= MAX_PATH_BLINK_WIDTH || currentLineWidth <= MIN_PATH_BLINK_WIDTH)
             step = -step;
     }
 
@@ -181,10 +184,17 @@ public class GPath extends GObject {
     }
 
     public void nextElement() {
+        // looping prevents the while loop from looping indefinitely
+        // in case no visible element exists
+        int looping = currentIndex;
         do {
             currentIndex++;
             if(currentIndex >= elements.size())
                 currentIndex = 0;
+            if(looping == -1)
+                looping = 0;
+            else if(looping == currentIndex)
+                break;
         } while(!isCurrentElementVisible());
                 
         currentLineWidth = 3;
@@ -192,10 +202,17 @@ public class GPath extends GObject {
     }
 
     public void previousElement() {
+        // looping prevents the while loop from looping indefinitely
+        // in case no visible element exists
+        int looping = currentIndex;
         do {
             currentIndex--;
             if(currentIndex<0)
                 currentIndex = elements.size()-1;
+            if(looping == -1)
+                looping = 0;
+            else if(looping == currentIndex)
+                break;
         } while(!isCurrentElementVisible());
 
         currentLineWidth = 3;
