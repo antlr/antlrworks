@@ -44,10 +44,21 @@ public class GPath extends GObject {
 
     public static int MIN_PATH_BLINK_WIDTH = 2;
     public static int MAX_PATH_BLINK_WIDTH = 4;
-    
+
+    /** List of all elements composing the path */
     protected List elements;
-    protected boolean disabled;
-    protected boolean visible;
+
+    /** A disable path will be displayed in red */
+    protected boolean disabled = false;
+
+    /** A visible path will be displayed */
+    protected boolean visible = false;
+
+    /** A selectable path can be selected and each
+     * segment can be highlighted in turn using the
+     * arrow (the current segment will blink)
+     */
+    protected boolean selectable = true;
 
     protected int currentIndex = -1;
     protected float step = 0.2f;
@@ -77,6 +88,14 @@ public class GPath extends GObject {
 
     public boolean isVisible() {
         return visible;
+    }
+
+    public void setSelectable(boolean flag) {
+        this.selectable = flag;
+    }
+
+    public boolean isSelectable() {
+        return selectable;
     }
 
     public boolean isEnabled() {

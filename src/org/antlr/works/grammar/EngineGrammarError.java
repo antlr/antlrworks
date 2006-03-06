@@ -31,14 +31,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.grammar;
 
+import org.antlr.analysis.NFAState;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class EngineGrammarError {
 
+    /** Array of array of NFAState states */
     public List paths = new ArrayList();
+
+    /** Array describing which path is disabled */
     public List pathsDisabled = new ArrayList();
+
+    /** Array of array of NFAState states */
+    public List unreachableAlts = new ArrayList();
+
+    /** Array of rules concerned by the error */
     public List rules = new ArrayList();
+
+    /** Array of states concerned by the error */
+    public List states = new ArrayList();
+
     public int line;
     public String message;
 
@@ -50,9 +64,21 @@ public class EngineGrammarError {
         this.pathsDisabled.add(Boolean.valueOf(disabled));
     }
 
+    public void addUnreachableAlt(NFAState state, Integer alt) {
+        this.unreachableAlts.add(new Object[] { state, alt});
+    }
+
     public void addRule(String rule) {
         if(!rules.contains(rule))
             rules.add(rule);
+    }
+
+    public void addStates(NFAState state) {
+        this.states.add(state);
+    }
+
+    public void addStates(List states) {
+        this.states.addAll(states);
     }
 
     public void setLine(int line) {

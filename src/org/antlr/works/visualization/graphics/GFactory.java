@@ -117,25 +117,21 @@ public class GFactory {
         GGraphGroup gg = new GGraphGroup();
         for (Iterator graphIterator = graphs.iterator(); graphIterator.hasNext();) {
             GGraph graph = (GGraph) graphIterator.next();
-            boolean contains = false;
-            for (Iterator pathIterator = error.paths.iterator(); pathIterator.hasNext();) {
-                List states = (List) pathIterator.next();
-                if(graph.containsAtLeastOneState(states)) {
-                    contains = true;
-                    break;
-                }
-            }
-            if(contains)
+            if(graph.containsAtLeastOneState(error.states))
                 gg.add(graph);
         }
 
-        // Attach to the GGraphGroup all error paths
-
+        // Attach all error paths to the GGraphGroup
         for(int i=0; i<error.paths.size(); i++) {
             List states = (List) error.paths.get(i);
             Boolean disabled = (Boolean) error.pathsDisabled.get(i);
-
             gg.addPath(states, disabled.booleanValue(), factory.getSkippedStatesMap());
+        }
+
+        // Attach all unreacheable alts to the GGraphGroup
+        for(int i=0; i<error.unreachableAlts.size(); i++) {
+            Object[] unreachableAlt = (Object[]) error.unreachableAlts.get(i);
+            gg.addUnreachableAlt((NFAState)unreachableAlt[0], (Integer)unreachableAlt[1]);
         }
 
         if(error.paths.size()>0)

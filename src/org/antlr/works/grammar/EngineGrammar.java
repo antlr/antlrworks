@@ -40,6 +40,7 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.GrammarNonDeterminismMessage;
+import org.antlr.tool.GrammarUnreachableAltsMessage;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.GrammarSyntaxName;
@@ -268,43 +269,63 @@ public class EngineGrammar {
         errors.clear();
         for (Iterator iterator = ErrorListener.shared().warnings.iterator(); iterator.hasNext();) {
             Object o = iterator.next();
-            if ( o instanceof GrammarNonDeterminismMessage )
+
+            if(o instanceof GrammarUnreachableAltsMessage)
+                errors.add(buildUnreachableAltsError((GrammarUnreachableAltsMessage)o));
+            else if(o instanceof GrammarNonDeterminismMessage)
                 errors.add(buildNonDeterministicError((GrammarNonDeterminismMessage)o));
         }
     }
 
-    protected EngineGrammarError buildNonDeterministicError(GrammarNonDeterminismMessage nondetMsg) {
+    protected EngineGrammarError buildNonDeterministicError(GrammarNonDeterminismMessage message) {
         EngineGrammarError error = new EngineGrammarError();
 
-        List nonDetAlts = nondetMsg.probe.getNonDeterministicAltsForState(nondetMsg.problemState);
-        error.setLine(nondetMsg.probe.dfa.getDecisionASTNode().getLine()-1);
+        List nonDetAlts = message.probe.getNonDeterministicAltsForState(message.problemState);
+        error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
 
-        Set disabledAlts = nondetMsg.probe.getDisabledAlternatives(nondetMsg.problemState);
-        List labels = nondetMsg.probe.getSampleNonDeterministicInputSequence(nondetMsg.problemState);
-        String input = nondetMsg.probe.getInputSequenceDisplay(labels);
+        Set disabledAlts = message.probe.getDisabledAlternatives(message.problemState);
+        List labels = message.probe.getSampleNonDeterministicInputSequence(message.problemState);
+        String input = message.probe.getInputSequenceDisplay(labels);
         error.setMessage("Decision can match input such as \""+input+"\" using multiple alternatives");
 
         int firstAlt = 0;
 
         for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
             Integer displayAltI = (Integer) iter.next();
-            NFAState nfaStart = nondetMsg.probe.dfa.getNFADecisionStartState();
+            NFAState nfaStart = message.probe.dfa.getNFADecisionStartState();
 
-            int tracePathAlt = nfaStart.translateDisplayAltToWalkAlt(nondetMsg.probe.dfa, displayAltI.intValue());
+            int tracePathAlt = nfaStart.translateDisplayAltToWalkAlt(message.probe.dfa, displayAltI.intValue());
             if ( firstAlt == 0 )
                 firstAlt = tracePathAlt;
 
             List path =
-                nondetMsg.probe.getNFAPathStatesForAlt(firstAlt,
+                message.probe.getNFAPathStatesForAlt(firstAlt,
                                                        tracePathAlt,
                                                        labels);
             error.addPath(path, disabledAlts.contains(displayAltI));
+            error.addStates(path);
 
             // Find all rules enclosing each state (because a path can extend over multiple rules)
             for (Iterator iterator = path.iterator(); iterator.hasNext();) {
                 NFAState state = (NFAState)iterator.next();
                 error.addRule(state.getEnclosingRule());
             }
+        }
+
+        return error;
+    }
+
+    protected EngineGrammarError buildUnreachableAltsError(GrammarUnreachableAltsMessage message) {
+        EngineGrammarError error = new EngineGrammarError();
+
+        error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
+        error.setMessage("The following alternatives are unreachable: "+message.alts);
+
+        for(int alt=0; alt<message.alts.size(); alt++) {
+            NFAState state = message.probe.dfa.getNFADecisionStartState();
+            error.addUnreachableAlt(state, (Integer)message.alts.get(alt));
+            error.addStates(state);
+            error.addRule(state.getEnclosingRule());
         }
 
         return error;

@@ -99,7 +99,7 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     }
 
     public void makeSureCurrentPathIsVisible() {
-        if(currentPath().isVisible())
+        if(getCurrentPath().isVisible())
             return;
 
         for (Iterator iterator = graphicPaths.iterator(); iterator.hasNext();) {
@@ -119,7 +119,7 @@ public class GPathGroup extends GObject implements GTimerDelegate {
         setSelectedPath(selectedPathIndex+1);
     }
 
-    public GPath currentPath() {
+    public GPath getCurrentPath() {
         if(graphicPaths.size() > 0)
             return (GPath)graphicPaths.get(selectedPathIndex);
         else
@@ -192,7 +192,7 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     }
 
     public void draw() {
-        GPath currentPath = currentPath();
+        GPath currentPath = getCurrentPath();
 
         for (Iterator iterator = graphicPaths.iterator(); iterator.hasNext();) {
             GPath path = (GPath) iterator.next();
@@ -211,15 +211,15 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     }
 
     public void drawSelectedElement() {
-        if(currentPath().isVisible())
-            currentPath().drawSelectedElement();
+        if(getCurrentPath().isVisible() && getCurrentPath().isSelectable())
+            getCurrentPath().drawSelectedElement();
     }
 
     public void timerFired(GTimer timer) {
-        if(currentPath() == null || context == null)
+        if(getCurrentPath() == null || context == null || !getCurrentPath().isSelectable())
             return;
 
-        currentPath().incrementWidth();
+        getCurrentPath().incrementWidth();
         context.repaint();
     }
 

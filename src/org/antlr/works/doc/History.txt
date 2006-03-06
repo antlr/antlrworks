@@ -9,6 +9,7 @@ Version 1.0ea8 - 03/05/06
 - new: contextual menus in editor, syntax diagram, interpreter and debugger
 - new: user can now specify tokens to be ignored in interpreter
 - new: syntax colors can be changed in the preferences
+- new: display of unreachable alternatives in the syntax diagram
 
 - new idea to convert invalid string literals to single quote literals
 - new message in status bar if an error is reported in the console

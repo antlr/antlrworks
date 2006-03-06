@@ -224,6 +224,11 @@ public class GGraphGroup extends GGraphAbstract {
          * to the path.
          */
 
+        /*System.out.println("***");
+        for (Iterator iterator = path.iterator(); iterator.hasNext();) {
+            System.out.println(iterator.next());
+        } */
+
         NFAState state;
         GNode node;
         NFAState nextState = null;
@@ -296,6 +301,9 @@ public class GGraphGroup extends GGraphAbstract {
                 }
             }
 
+            if(state == null)
+                continue;
+
             if(state.getEnclosingRule().equals(nextState.getEnclosingRule()))
                 addNextElementInSameRule(elements, node, nextNode, nextState);
             else
@@ -306,6 +314,34 @@ public class GGraphGroup extends GGraphAbstract {
             elements.add(GPathElement.createElement(nextNode));
 
         pathGroup.addPath(new GPath(elements, disabled));
+    }
+
+    public void addUnreachableAlt(NFAState state, Integer alt) {
+        List elements = new ArrayList();
+
+        GNode node = findNodeForStateNumber(state.stateNumber);
+        if(node == null) {
+            System.err.println("[GGraphGroup] Decision state "+state.stateNumber+"["+state.getEnclosingRule()+"] cannot be found in the graph");
+            return;
+        }
+        List transitions = node.state.transitions;
+        int altNum = alt.intValue()-1;
+
+        if(altNum >= transitions.size()) {
+            System.err.println("[GGraphGroup] Unreachable alt "+altNum+"["+state.getEnclosingRule()+"] is out of bounds: "+transitions.size());
+            return;
+        }
+
+        FATransition t = (FATransition) transitions.get(altNum);
+
+        elements.add(GPathElement.createElement(node));
+        elements.add(GPathElement.createElement(node.getLink(t)));
+
+        /** This path has to be visible but not selectable */
+        GPath path = new GPath(elements, true);
+        path.setVisible(true);
+        path.setSelectable(false);
+        pathGroup.addPath(path);
     }
 
     public GNode findNodeForStateNumber(int stateNumber) {
