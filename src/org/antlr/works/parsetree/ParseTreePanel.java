@@ -14,10 +14,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 /*
 
@@ -164,20 +161,9 @@ public class ParseTreePanel extends JPanel {
         parseTreeGraphView.setBackground(Color.white);
         parseTreeGraphView.setDrawBorder(false);
 
-        parseTreeGraphView.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                GElement elem = parseTreeGraphView.getElementAtMousePosition(e);
-                if(elem == null || !(elem instanceof ParseTreeGraphView.GElementNode))
-                    return;
-
-                TreeNode node = parseTreeGraphView.getTreeNode((ParseTreeGraphView.GElementNode)elem);
-                if(node == null)
-                    return;
-
-                delegate.parseTreeDidSelectTreeNode(node);
-                selectNode(node);
-            }
-        });
+        ParseTreeMouseAdapter adapter = new ParseTreeMouseAdapter();
+        parseTreeGraphView.addMouseListener(adapter);
+        parseTreeGraphView.addMouseMotionListener(adapter);
 
         graphScrollPane = new JScrollPane(parseTreeGraphView);
         graphScrollPane.setWheelScrollingEnabled(true);
@@ -281,4 +267,56 @@ public class ParseTreePanel extends JPanel {
         else
             return null;
     }
+
+    protected class ParseTreeMouseAdapter implements MouseListener, MouseMotionListener {
+
+        public Point origin;
+        public Rectangle r;
+        public boolean dragging;
+
+        public void mousePressed(MouseEvent e) {
+            GElement elem = parseTreeGraphView.getElementAtMousePosition(e);
+            if(elem != null && elem instanceof ParseTreeGraphView.GElementNode) {
+                TreeNode node = parseTreeGraphView.getTreeNode((ParseTreeGraphView.GElementNode)elem);
+                if(node == null)
+                    return;
+
+                delegate.parseTreeDidSelectTreeNode(node);
+                selectNode(node);
+            }
+
+            origin = SwingUtilities.convertPoint(parseTreeGraphView, e.getPoint(), null);
+            r = parseTreeGraphView.getVisibleRect();
+            dragging = true;
+        }
+
+        public void mouseClicked(MouseEvent e) {
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            dragging = false;
+        }
+
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        public void mouseExited(MouseEvent e) {
+        }
+
+        public void mouseDragged(MouseEvent e) {
+            if(!dragging)
+                return;
+
+            Point p = SwingUtilities.convertPoint(parseTreeGraphView, e.getPoint(), null);
+
+            Rectangle r1 = new Rectangle(r);
+            r1.x -= p.x - origin.x;
+            r1.y -= p.y - origin.y;
+            parseTreeGraphView.scrollRectToVisible(r1);
+        }
+
+        public void mouseMoved(MouseEvent e) {
+        }
+    }
+
 }

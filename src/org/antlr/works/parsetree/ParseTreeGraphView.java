@@ -69,6 +69,10 @@ public class ParseTreeGraphView extends GView {
         setPreferredSize(new Dimension(0, 0));
     }
 
+    public void addDefaultEventManager() {
+        // No event manager by default for parse tree view
+    }
+
     public void setRoot(TreeNode root) {
         this.root = root;
         setRootElement(null);

@@ -1,5 +1,5 @@
 
-Version 1.0ea8 - 03/05/06
+Version 1.0ea8 - 03/06/06
 
 - new: rule dependency graph (can be exported to EPS or bitmap file)
 - new: syntax coloring for generated Java code
@@ -11,6 +11,7 @@ Version 1.0ea8 - 03/05/06
 - new: syntax colors can be changed in the preferences
 - new: display of unreachable alternatives in the syntax diagram
 
+- parse tree (interpreter/debugger) can now be scrolled by clicking and dragging the mouse
 - new idea to convert invalid string literals to single quote literals
 - new message in status bar if an error is reported in the console
 - ctrl-k: now copy the deleted end of line to the system clipboard

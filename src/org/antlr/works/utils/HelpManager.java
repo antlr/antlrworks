@@ -150,7 +150,8 @@ public class HelpManager implements XJScheduledTimerDelegate {
         }
 
         if(remind) {
-            new DialogReports(null).runModal();
+            // Statistics report is now disabled by default
+            //new DialogReports(null).runModal();
         }
     }
 }
