@@ -227,7 +227,7 @@ public class GGraphGroup extends GGraphAbstract {
         /*System.out.println("***");
         for (Iterator iterator = path.iterator(); iterator.hasNext();) {
             System.out.println(iterator.next());
-        } */
+        }*/
 
         NFAState state;
         GNode node;
@@ -272,10 +272,9 @@ public class GGraphGroup extends GGraphAbstract {
 
                     FAState parentState = (FAState) skippedStates.get(new Integer(nextState.stateNumber));
                     if(parentState == null) {
-                        //  OK. The node really does not exist.
-                        if(node != null)
-                            elements.add(GPathElement.createElement(node));
-                        break;
+                        //  OK. The node really does not exist. Continue by skipping it.
+                        nextNode = node;
+                        continue;
                     } else {
                         nextNode = findNodeForStateNumber(parentState.stateNumber);
                     }
@@ -301,7 +300,7 @@ public class GGraphGroup extends GGraphAbstract {
                 }
             }
 
-            if(state == null)
+            if(state == null || node == null || nextNode == null)
                 continue;
 
             if(state.getEnclosingRule().equals(nextState.getEnclosingRule()))
