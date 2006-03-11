@@ -46,6 +46,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
 
     protected String actionShowCodeRule;
     protected boolean actionShowCodeLexer;
+    protected boolean actionShowCodeAfterGeneration = false;
 
     public MenuGenerate(CEditorGrammar editor) {
         super(editor);
@@ -114,6 +115,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
             // this method (using actionShowCodeRule as flag)
             actionShowCodeRule = rule;
             actionShowCodeLexer = lexer;
+            actionShowCodeAfterGeneration = true;
             generateCode_();
             return;
         }
@@ -148,11 +150,12 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
     }
 
     public boolean codeGenerateDisplaySuccess() {
-        return actionShowCodeRule == null;
+        return !actionShowCodeAfterGeneration;
     }
 
     public void codeGenerateDidComplete() {
-        if(actionShowCodeRule != null) {
+        if(actionShowCodeAfterGeneration) {
+            actionShowCodeAfterGeneration = false;
             showGeneratedCode(actionShowCodeRule, actionShowCodeLexer);
         }
     }

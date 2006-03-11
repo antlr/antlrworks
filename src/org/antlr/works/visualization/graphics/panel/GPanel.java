@@ -254,7 +254,6 @@ public class GPanel implements XJNotificationObserver {
         JCheckBox button = new JCheckBox(String.valueOf(pathIndex+1));
         button.setName(String.valueOf(pathIndex));
         button.setFocusable(false);
-        button.setToolTipText("Alternate "+(pathIndex+1));
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 JCheckBox button = (JCheckBox)event.getSource();

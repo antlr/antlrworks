@@ -243,7 +243,9 @@ public class EngineGrammar {
             getANTLRGrammar().createLookaheadDFAs();
             if(getType() == GrammarSyntaxName.COMBINED) {
                 // If the grammar is combined, analyze also the lexer
-                getLexerGrammar().createLookaheadDFAs();
+                Grammar lexer = getLexerGrammar();
+                if(lexer != null)
+                    lexer.createLookaheadDFAs();
             }
 
             buildNonDeterministicErrors();

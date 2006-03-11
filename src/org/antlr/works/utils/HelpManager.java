@@ -129,11 +129,9 @@ public class HelpManager implements XJScheduledTimerDelegate {
 
     public void checkStatsReminder() {
         int method = AWPrefs.getStatsReminderType();
-        boolean remind = false;
+        if(method == AWPrefs.STATS_REMINDER_WEEKLY) {
+            boolean remind = false;
 
-        if(method == AWPrefs.STATS_REMINDER_MANUALLY)
-            remind = false;
-        else {
             Calendar currentCalendar = Calendar.getInstance();
             Calendar nextUpdateCalendar = AWPrefs.getStatsReminderNextDate();
 
@@ -147,11 +145,10 @@ public class HelpManager implements XJScheduledTimerDelegate {
                         break;
                 }
             }
+
+            if(remind)
+                new DialogReports(null).runModal();
         }
 
-        if(remind) {
-            // Statistics report is now disabled by default
-            //new DialogReports(null).runModal();
-        }
     }
 }

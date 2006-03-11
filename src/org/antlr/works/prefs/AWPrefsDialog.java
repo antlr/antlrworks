@@ -575,7 +575,7 @@ public class AWPrefsDialog extends XJPanel {
 
                         //---- actionsFoldingAnchorsButton ----
                         actionsFoldingAnchorsButton.setText("Display actions anchors");
-                        tabEditor.add(actionsFoldingAnchorsButton, cc.xy(7, 13));
+                        tabEditor.add(actionsFoldingAnchorsButton, cc.xywh(7, 13, 5, 1));
 
                         //---- label1 ----
                         label1.setHorizontalAlignment(SwingConstants.RIGHT);

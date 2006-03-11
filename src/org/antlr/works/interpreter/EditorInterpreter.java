@@ -239,14 +239,12 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
 
         try {
             editor.getEngineGrammar().analyze();
+            process();
         } catch(Exception e) {
             editor.console.print(e);
+        } finally {
             runEnded();
-            return;
         }
-
-        process();
-        runEnded();
     }
 
     public void runEnded() {

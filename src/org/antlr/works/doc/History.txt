@@ -1,11 +1,14 @@
 
-Version 1.0ea8 - 03/06/06
+Version 1.0ea9 - ...
+
+- new: project document to edit multiple grammars, Java and any other text files and build
+  them automatically within ANTLRWorks
+
+Version 1.0ea8 - 03/11/06
 
 - new: rule dependency graph (can be exported to EPS or bitmap file)
 - new: syntax coloring for generated Java code
 - new: references, comments and strings are now colorized inside actions
-- new: project document to edit multiple grammars, Java and any other text files and build
-  them automatically within ANTLRWorks
 - new: contextual menus in editor, syntax diagram, interpreter and debugger
 - new: user can now specify tokens to be ignored in interpreter
 - new: syntax colors can be changed in the preferences

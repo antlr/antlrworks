@@ -1,7 +1,9 @@
 
 * Prio 1
+- re-introduce now the replace all button in the find dialog?
+- re-introduce project document in debug prefs for 1.0ea9
+
 - create grammar file in project
-- test debug+generate+project build on Linux/Windows
 
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory
 - stats on grammar (show k or inf on each decision)

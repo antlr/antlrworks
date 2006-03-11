@@ -44,17 +44,10 @@ public class IdeaManager {
     protected IdeaOverlay overlay;
     protected IdeaManagerDelegate delegate;
     protected boolean enabled = true;
+    protected int lastPosition;
 
     public IdeaManager() {
-        timer = new Timer(1000, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(delegate != null) {
-                    if(!delegate.ideaManagerWillDisplayIdea())
-                        return;
-                }
-                overlay.display();
-            }
-        });
+        timer = new Timer(1000, new TimerActionListener());
         timer.setRepeats(false);
     }
 
@@ -98,6 +91,7 @@ public class IdeaManager {
         if(ideas == null || ideas.isEmpty())
             overlay.hide();
         else {
+            lastPosition = position;
             overlay.setIdeas(ideas);
             timer.restart();
         }
@@ -115,4 +109,24 @@ public class IdeaManager {
         return actions;
     }
 
+    protected class TimerActionListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            /** Make sure there is still some ideas to display */
+            List ideas = generateIdeaActions(lastPosition);
+            if(ideas.size() == 0)
+                return;
+
+            /** Update the current list in case it has changed since the timer
+             * has been fired
+             */
+            overlay.setIdeas(ideas);
+
+            if(delegate != null) {
+                if(!delegate.ideaManagerWillDisplayIdea())
+                    return;
+            }
+
+            overlay.display();
+        }
+    }
 }

@@ -73,6 +73,8 @@ public class ATEColoring extends ATEThread {
 
     public void setSyntaxEngine(ATESyntaxEngine engine) {
         this.engine = engine;
+        if(engine != null)
+            engine.refreshColoring();
     }
 
     public synchronized void setEnable(boolean flag) {
