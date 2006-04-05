@@ -8,8 +8,6 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.GrammarSyntaxLexer;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.util.List;
 /*
 
@@ -89,7 +87,7 @@ public class DecisionDFA extends GrammarDOTTab {
         return null;
     }
 
-    protected void generateDOTFile() throws Exception {
+    public String getDOTString() throws Exception {
         Grammar g;
 
         GrammarSyntaxRule rule = editor.getCurrentRule();
@@ -119,11 +117,7 @@ public class DecisionDFA extends GrammarDOTTab {
         DOTGenerator dg = new DOTGenerator(g);
         dg.setArrowheadType("none");
         dg.setRankdir("LR");    // Left-to-right
-        String dot = dg.getDOT( dfa.startState );
-
-        BufferedWriter bw = new BufferedWriter(new FileWriter(tempInputFile));
-        bw.write(dot);
-        bw.close();
+        return dg.getDOT( dfa.startState );
     }
 
     public String getTabName() {

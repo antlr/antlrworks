@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.find;
 
-import edu.usfca.xj.appkit.gview.GView;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
@@ -46,7 +45,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class Usages implements EditorTab {
+public class Usages extends EditorTab {
 
     protected JPanel panel;
     protected JScrollPane treeScrollPane;
@@ -127,14 +126,6 @@ public class Usages implements EditorTab {
 
     public void selectMatch(UsageMatch match) {
         editor.selectTextRange(match.token.getStartIndex(), match.token.getEndIndex());
-    }
-
-    public boolean hasExportableGView() {
-        return false;
-    }
-
-    public GView getExportableGView() {
-        return null;
     }
 
     public String getTabName() {

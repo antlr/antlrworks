@@ -34,9 +34,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface EditorTab {
-    public boolean hasExportableGView();
-    public GView getExportableGView();
-    public String getTabName();
-    public Component getTabComponent();
+public abstract class EditorTab {
+    public boolean canExportToEPS() { return false; }
+    public boolean canExportToBitmap() { return false; }
+    public boolean canExportToDOT() { return false; }
+    public String getDOTString() throws Exception { return null; }
+    public GView getExportableGView() { return null; }
+    public abstract String getTabName();
+    public abstract Component getTabComponent();
 }

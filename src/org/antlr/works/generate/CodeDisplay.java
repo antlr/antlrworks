@@ -32,26 +32,24 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.generate;
 
 import edu.usfca.xj.appkit.frame.XJFrame;
-import edu.usfca.xj.appkit.gview.GView;
 import org.antlr.works.ate.ATEPanel;
-import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.TextUtils;
 
 import java.awt.*;
 
-public class CodeDisplay implements EditorTab {
+public class CodeDisplay extends EditorTab {
 
     protected ATEPanel textEditor;
     protected String title;
 
     public CodeDisplay(XJFrame parentFrame) {
         textEditor = new ATEPanel(parentFrame);
-        textEditor.setParserEngine(new ATEJavaSyntaxEngine());
-        textEditor.setSyntaxColoring(true);
+        //textEditor.setParserEngine(new ATEJavaSyntaxEngine());
+        textEditor.setSyntaxColoring(false);
         textEditor.setAnalysisColumnVisible(false);
-        textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
+        //textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
         textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
         applyFont();
     }
@@ -71,14 +69,6 @@ public class CodeDisplay implements EditorTab {
 
     public Container getContainer() {
         return textEditor;
-    }
-
-    public boolean hasExportableGView() {
-        return false;
-    }
-
-    public GView getExportableGView() {
-        return null;
     }
 
     public String getTabName() {

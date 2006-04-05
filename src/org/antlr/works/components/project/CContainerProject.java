@@ -311,8 +311,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
 
     public void close() {
         // Automatically save the project
-        if(getDocument().getDocumentPath() != null)
-            getDocument().performSave(false);
+        getDocument().performAutoSave();
 
         explorer.close();
         super.close();

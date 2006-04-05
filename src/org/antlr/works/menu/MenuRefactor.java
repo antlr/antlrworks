@@ -109,6 +109,9 @@ public class MenuRefactor extends MenuAbstract {
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Replace Literal '"+token.getAttribute()+"' with token label:", "Replace Literal With Token Label",
                 JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(s != null && !s.equals(token.getAttribute())) {
+            // Remove the text selection because it causes Swing to hangs
+            editor.deselectTextRange();
+
             editor.beginGroupChange("Replace Literal With Token Label");
             replaceLiteralTokenWithTokenLabel(token, s);
             editor.endGroupChange();
@@ -288,6 +291,9 @@ public class MenuRefactor extends MenuAbstract {
         String ruleName = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Rule name:", "Extract Rule",
                             JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(ruleName != null && ruleName.length() > 0) {
+            // Remove the text selection because it causes Swing to hangs
+            editor.deselectTextRange();
+
             editor.beginGroupChange("Extract Rule");
             boolean lexer = ATEToken.isLexerName(ruleName);
             int index = insertionIndexForRule(lexer);

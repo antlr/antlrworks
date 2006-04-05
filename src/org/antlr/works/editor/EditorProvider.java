@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
+import edu.usfca.xj.appkit.document.XJDocument;
 import org.antlr.works.grammar.EngineGrammar;
 
 import java.awt.*;
@@ -38,6 +39,7 @@ import java.awt.*;
 public interface EditorProvider {
     public void changeDone();
     public String getText();
+    public XJDocument getDocument();
     public String getFileFolder();
     public String getFilePath();
     public String getFileName();

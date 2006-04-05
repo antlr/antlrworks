@@ -1,8 +1,12 @@
 
 Version 1.0ea9 - ...
 
-- new: project document to edit multiple grammars, Java and any other text files and build
-  them automatically within ANTLRWorks
+- can now export decision DFA as DOT file
+- generated code coloring has been disabled
+- auto-save document before parser code generation
+- generate parser if document has been modified since last generation
+
+- fixed a bug where ANTLRWorks would freeze when replace literals with token label
 
 Version 1.0ea8 - 03/11/06
 

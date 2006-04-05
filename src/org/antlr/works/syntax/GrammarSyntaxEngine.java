@@ -127,7 +127,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     public void colorizeToken(ATEToken token, ATEStyledDocument doc) {
         super.colorizeToken(token, doc);
 
-        /** Colorize now all internal tokens. We have to do
+        /** Colorize now all internal tokens of a block. We have to do
          * the colorization here by hand because they are internal tokens
          * not included in the global stream of tokens.
          */

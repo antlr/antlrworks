@@ -284,11 +284,11 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public List getTokens() {
-        return engine.getTokens();
+        return engine==null?null:engine.getTokens();
     }
 
     public List getLines() {
-        return engine.getLines();
+        return engine==null?null:engine.getLines();
     }
 
     public int getCurrentLinePosition() {
@@ -357,7 +357,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             ateEngineWillParse();
 
             textPane.setText(text);
-            engine.processSyntax();
+            if(engine != null)
+                engine.processSyntax();
             colorize.processColorize(true);
 
             textPane.setCaretPosition(0);
@@ -399,6 +400,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         textPane.getCaret().setSelectionVisible(true);
 
         scrollCenterToPosition(start, false);
+    }
+
+    public void deselectTextRange() {
+        textPane.setCaretPosition(textPane.getCaretPosition());
     }
 
     public void textPaneDidPaint(Graphics g) {
@@ -462,7 +467,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public void parse() {
-        engine.parse();
+        if(engine != null)
+            engine.parse();
     }
 
     public void ateEngineWillParse() {
@@ -548,7 +554,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             if(location == -1)
                 return;
 
-            List tokens = engine.getTokens();
+            List tokens = getTokens();
             if(tokens == null)
                 return;
 
@@ -577,7 +583,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
                 if(insert) {
                     autoIndent.indent(offset, length);
-                    immediateSyntaxColoring.colorize(offset, length);
+                    if(colorize.isEnable())
+                        immediateSyntaxColoring.colorize(offset, length);
                 }
 
                 adjustTokens(offset, length);

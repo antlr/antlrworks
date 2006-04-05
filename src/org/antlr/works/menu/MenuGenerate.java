@@ -55,18 +55,21 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
 
     public void generateCode() {
         actionShowCodeRule = null;
-        generateCode_();
+        generateCodeProcess();
     }
 
-    protected void generateCode_() {
+    protected void generateCodeProcess() {
         if(!checkLanguage())
             return;
 
         DialogGenerate dialog = new DialogGenerate(editor.getWindowContainer());
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
+            editor.getDocument().performAutoSave();
+
             generateCode.setDebug(dialog.generateDebugInformation());
             generateCode.setOutputPath(dialog.getOutputPath());
             generateCode.generateInThread(editor.getJavaContainer());
+
             Statistics.shared().recordEvent(Statistics.EVENT_GENERATE_CODE);
         }
     }
@@ -110,13 +113,15 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
         if(!checkLanguage())
             return;
 
-        if(!generateCode.isGeneratedTextFileExisting(lexer)) {
+        if(!generateCode.isGeneratedTextFileExisting(lexer)
+                || generateCode.isFileModifiedSinceLastGeneration()
+                || editor.getDocument().isDirty()) {
             // Generate automatically the code and call again
             // this method (using actionShowCodeRule as flag)
             actionShowCodeRule = rule;
             actionShowCodeLexer = lexer;
             actionShowCodeAfterGeneration = true;
-            generateCode_();
+            generateCodeProcess();
             return;
         }
 

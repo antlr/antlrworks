@@ -114,7 +114,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             }
         }
     }
-    
+
     public boolean tryMatchName() {
         mark();
 
@@ -229,9 +229,20 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
             nextToken();
             GrammarSyntaxBlock block = new GrammarSyntaxBlock(start.getAttribute(), start, T(0));
-            if(blockName.equals(TOKENS_BLOCK_NAME))
+            if(blockName.equals(TOKENS_BLOCK_NAME)) {
                 block.isTokenBlock = true;
-            else if(blockName.equals(OPTIONS_BLOCK_NAME)) {
+                // @todo DEBUG
+                /*tokens.remove(position);
+                for (Iterator iterator = block.getInternalTokens().iterator(); iterator.hasNext();) {
+                    ATEToken token = (ATEToken) iterator.next();
+                    token.type = GrammarSyntaxLexer.TOKEN_REFERENCE;
+                    token.start += block.start.end+2;
+                    token.end += block.start.end+2;
+                    tokens.add(position++, token);
+                    //references.add(new GrammarSyntaxReference(null, token));
+                } */
+
+            } else if(blockName.equals(OPTIONS_BLOCK_NAME)) {
                 block.isOptionsBlock = true;
                 block.parseOptionsBlock();
             }
@@ -441,7 +452,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     public boolean isCOLON(int index) {
         return isTokenType(index, GrammarSyntaxLexer.TOKEN_COLON);
     }
-    
+
     public boolean isBLOCK(int index) {
         return isTokenType(index, GrammarSyntaxLexer.TOKEN_BLOCK);
     }

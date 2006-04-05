@@ -574,7 +574,7 @@ public class AWPrefsDialog extends XJPanel {
                         tabEditor.add(foldingButton, cc.xywh(5, 11, 3, 1));
 
                         //---- actionsFoldingAnchorsButton ----
-                        actionsFoldingAnchorsButton.setText("Display actions anchors");
+                        actionsFoldingAnchorsButton.setText("Enable actions folding");
                         tabEditor.add(actionsFoldingAnchorsButton, cc.xywh(7, 13, 5, 1));
 
                         //---- label1 ----

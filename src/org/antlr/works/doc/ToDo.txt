@@ -1,10 +1,16 @@
 
 * Prio 1
+- links to the different DOT implementation per system so user know what to do the first time
+- look at the error manager in AW because apparently error message are duplicated over time like if a ST template was reused over and over
+	-> somehow, toString() is called twice on object of kind GrammarNonDeterminismMessage in my shared error manager
+- see if stats are still working with AW
+- bug: human readable for all doesn't display all infos
+
+- do not report error in console if only system.out
 - re-introduce now the replace all button in the find dialog?
-- re-introduce project document in debug prefs for 1.0ea9
+- tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
 
 - create grammar file in project
-
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory
 - stats on grammar (show k or inf on each decision)
 - show code for any decision (Ter ads comments in code)
@@ -31,6 +37,9 @@
 - package for Mac OS X
 - upload antlrworks.pdf
 
+* Info *
+
+Enable project document: set prefs PREF_PROJET_DOCUMENT to true
 DOT: /Applications/Graphviz.app/Contents/MacOS/dot
 JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\javac
 

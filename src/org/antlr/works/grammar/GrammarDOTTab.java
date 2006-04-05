@@ -47,7 +47,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class GrammarDOTTab implements Runnable, EditorTab {
+public abstract class GrammarDOTTab extends EditorTab implements Runnable {
 
     protected CEditorGrammar editor;
 
@@ -151,8 +151,14 @@ public abstract class GrammarDOTTab implements Runnable, EditorTab {
         generatePlainTextFile();
         return new GDOTImporterDOT().generateGraph(tempOutputFile);
     }
-
+    
     protected void generateDOTFile() throws Exception {
+        String dot = getDOTString();
+        if(dot != null) {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(tempInputFile));
+            bw.write(dot);
+            bw.close();
+        }
     }
 
     protected void generatePlainTextFile() throws Exception {
@@ -194,7 +200,15 @@ public abstract class GrammarDOTTab implements Runnable, EditorTab {
         new File(tempOutputFile).delete();
     }
 
-    public boolean hasExportableGView() {
+    public boolean canExportToEPS() {
+        return true;
+    }
+
+    public boolean canExportToBitmap() {
+        return true;
+    }
+
+    public boolean canExportToDOT() {
         return true;
     }
 
@@ -212,6 +226,7 @@ public abstract class GrammarDOTTab implements Runnable, EditorTab {
             ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
             factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
             factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
+            factory.addItem(EditorMenu.MI_EXPORT_AS_DOT);
             return factory.menu;
         }
 

@@ -603,6 +603,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         textEditor.selectTextRange(start, end);
     }
 
+    public void deselectTextRange() {
+        textEditor.deselectTextRange();
+    }
+
     public int getSelectionLeftIndexOnTokenBoundary() {
         ATEToken t = getTokenAtPosition(getTextPane().getSelectionStart());
         if(t == null)

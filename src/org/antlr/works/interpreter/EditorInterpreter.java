@@ -62,7 +62,7 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
-public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDelegate {
+public class EditorInterpreter extends EditorTab implements Runnable, ParseTreePanelDelegate {
 
     protected JPanel panel;
     protected JSplitPane splitPane;
@@ -301,7 +301,11 @@ public class EditorInterpreter implements Runnable, EditorTab, ParseTreePanelDel
         }
     }
 
-    public boolean hasExportableGView() {
+    public boolean canExportToBitmap() {
+        return true;
+    }
+
+    public boolean canExportToEPS() {
         return true;
     }
 

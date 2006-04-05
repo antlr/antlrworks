@@ -63,7 +63,7 @@ public class GoToRule extends OverlayObject {
 
     public JComponent overlayCreateInterface() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JLabel("Enter rule name:"), BorderLayout.NORTH);
+        panel.add(new JLabel("Go To Rule:"), BorderLayout.NORTH);
 
         ruleNameField = new JTextField();
         ruleNameField.addKeyListener(new TextFieldKeyAdapter());

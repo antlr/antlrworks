@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization;
 
-import edu.usfca.xj.appkit.gview.GView;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
@@ -51,7 +50,7 @@ import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Visual implements EditorTab, GContextProvider {
+public class Visual extends EditorTab implements GContextProvider {
 
     protected CEditorGrammar editor;
 
@@ -174,12 +173,12 @@ public class Visual implements EditorTab, GContextProvider {
         return panel.getImageOfView();
     }
 
-    public boolean hasExportableGView() {
+    public boolean canExportToBitmap() {
         return true;
     }
 
-    public GView getExportableGView() {
-        return null;
+    public boolean canExportToEPS() {
+        return true;
     }
 
     public String getTabName() {

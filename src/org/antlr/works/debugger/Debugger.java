@@ -62,7 +62,7 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
-public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePanelDelegate {
+public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseTreePanelDelegate {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
 
@@ -715,7 +715,11 @@ public class Debugger implements StreamWatcherDelegate, EditorTab, ParseTreePane
         editor.getConsole().print(e);
     }
 
-    public boolean hasExportableGView() {
+    public boolean canExportToBitmap() {
+        return true;
+    }
+
+    public boolean canExportToEPS() {
         return true;
     }
 

@@ -55,6 +55,8 @@ public class CodeGenerate implements Runnable {
     protected CodeGenerateDelegate delegate;
     protected ErrorListener errorListener;
 
+    protected long dateOfModificationOnDisk = 0;
+
     public CodeGenerate(EditorProvider provider, CodeGenerateDelegate delegate) {
         this.provider = provider;
         this.delegate = delegate;
@@ -110,7 +112,11 @@ public class CodeGenerate implements Runnable {
         Tool antlr = new Tool(params);
         antlr.process();
 
-        return !errorListener.hasErrors();
+        boolean success = !errorListener.hasErrors();
+        if(success) {
+            dateOfModificationOnDisk = provider.getDocument().getDateOfModificationOnDisk();
+        }
+        return success;
     }
 
     public String getGeneratedClassName(boolean lexer) throws Exception {
@@ -133,6 +139,10 @@ public class CodeGenerate implements Runnable {
             provider.getConsole().print(e);
         }
         return false;
+    }
+
+    public boolean isFileModifiedSinceLastGeneration() {
+        return dateOfModificationOnDisk != provider.getDocument().getDateOfModificationOnDisk();
     }
 
     public boolean supportsLexer() {

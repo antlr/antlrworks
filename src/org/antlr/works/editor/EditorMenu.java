@@ -123,6 +123,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     // File Export
     public static final int MI_EXPORT_AS_IMAGE = 110;
     public static final int MI_EXPORT_AS_EPS = 111;
+    public static final int MI_EXPORT_AS_DOT = 112;
     public static final int MI_EXPORT_EVENT = 115;
 
     public static final int MI_PRIVATE_STATS = 200;
@@ -151,8 +152,9 @@ public class EditorMenu implements XJMenuItemDelegate {
 
         exportMenu = new XJMenu();
         exportMenu.setTitle("Export");
-        exportMenu.addItem(new XJMenuItem("As Bitmap Image...", MI_EXPORT_AS_IMAGE, this));
         exportMenu.addItem(new XJMenuItem("As EPS...", MI_EXPORT_AS_EPS, this));
+        exportMenu.addItem(new XJMenuItem("As Bitmap Image...", MI_EXPORT_AS_IMAGE, this));
+        exportMenu.addItem(new XJMenuItem("As DOT...", MI_EXPORT_AS_DOT, this));
 
         menu.insertItemAfter(exportMenu, XJMainMenuBar.MI_SAVEAS);
 
@@ -390,6 +392,10 @@ public class EditorMenu implements XJMenuItemDelegate {
             case MI_EXPORT_AS_EPS:
                 item = new XJMenuItem(contextual?"Export As EPS...":"As EPS...", MI_EXPORT_AS_EPS, this);
                 break;
+
+            case MI_EXPORT_AS_DOT:
+                item = new XJMenuItem(contextual?"Export As DOT...":"As DOT...", MI_EXPORT_AS_DOT, this);
+                break;
         }
         return item;
     }
@@ -433,6 +439,8 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void menuItemState(XJMenuItem item) {
+        EditorTab tab = editor.getSelectedTab();
+
         switch(item.getTag()) {
             case XJMainMenuBar.MI_UNDO:
             case XJMainMenuBar.MI_REDO:
@@ -490,9 +498,15 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_EXPORT_AS_IMAGE:
+                item.setEnabled(tab.canExportToBitmap());
+                break;
+
             case MI_EXPORT_AS_EPS:
-                EditorTab tab = editor.getSelectedTab();
-                item.setEnabled(tab.hasExportableGView());
+                item.setEnabled(tab.canExportToEPS());
+                break;
+
+            case MI_EXPORT_AS_DOT:
+                item.setEnabled(tab.canExportToDOT());
                 break;
         }
     }
@@ -763,6 +777,10 @@ public class EditorMenu implements XJMenuItemDelegate {
 
             case MI_EXPORT_AS_EPS:
                 editor.menuExport.exportAsEPS();
+                break;
+
+            case MI_EXPORT_AS_DOT:
+                editor.menuExport.exportAsDOT();
                 break;
 
             case MI_EXPORT_EVENT:

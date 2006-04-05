@@ -88,7 +88,7 @@ public class MenuExport extends MenuAbstract {
 
     public void exportAsImage() {
         EditorTab tab = editor.getSelectedTab();
-        if(!tab.hasExportableGView())
+        if(!tab.canExportToBitmap())
             return;
 
         if(tab instanceof Visual)
@@ -132,7 +132,7 @@ public class MenuExport extends MenuAbstract {
 
     public void exportAsEPS() {
         EditorTab tab = editor.getSelectedTab();
-        if(!tab.hasExportableGView())
+        if(!tab.canExportToEPS())
             return;
 
         if(tab instanceof Visual)
@@ -190,6 +190,26 @@ public class MenuExport extends MenuAbstract {
         } catch (Exception e) {
             editor.console.print(e);
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
+        }
+    }
+
+    public void exportAsDOT() {
+        EditorTab tab = editor.getSelectedTab();
+        if(!tab.canExportToDOT())
+            return;
+
+        if(!XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "dot", "DOT file", false))
+            return;
+
+        String file = XJFileChooser.shared().getSelectedFilePath();
+        if(file == null)
+            return;
+
+        try {
+            XJUtils.writeStringToFile(tab.getDOTString(), file);
+        } catch (Exception e) {
+            editor.console.print(e);
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot export to DOT file: "+file+"\nError: "+e);
         }
     }
 

@@ -34,6 +34,7 @@ package org.antlr.works;
 import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
+import edu.usfca.xj.appkit.document.XJDataXML;
 import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
@@ -48,6 +49,8 @@ import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.works.components.grammar.CContainerGrammar;
 import org.antlr.works.components.grammar.CDocumentGrammar;
+import org.antlr.works.components.project.CContainerProject;
+import org.antlr.works.components.project.CDocumentProject;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.editor.EditorMenu;
@@ -93,7 +96,8 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     public void appDidLaunch(String[] args) {
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
         XJApplication.addDocumentType(CDocumentGrammar.class, CContainerGrammar.class, XJDataPlainText.class, "g", Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
-        //XJApplication.addDocumentType(CDocumentProject.class, CContainerProject.class, XJDataXML.class, "awp", Localizable.getLocalizedString(Localizable.PROJECT_TYPE));
+        if(AWPrefs.getEnableProjectDocument())
+            XJApplication.addDocumentType(CDocumentProject.class, CContainerProject.class, XJDataXML.class, "awp", Localizable.getLocalizedString(Localizable.PROJECT_TYPE));
 
         XJApplication.addScheduledTimer(new HelpManager(), 1, true);
 
