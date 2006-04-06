@@ -5,8 +5,9 @@ Version 1.0ea9 - ...
 - generated code coloring has been disabled
 - auto-save document before parser code generation
 - generate parser if document has been modified since last generation
+- more precise message when log are reported to the console (warnings or errors)
 
-- fixed a bug where ANTLRWorks would freeze when replace literals with token label
+- fixed a bug where ANTLRWorks would freeze when replacing literals with token label
 
 Version 1.0ea8 - 03/11/06
 

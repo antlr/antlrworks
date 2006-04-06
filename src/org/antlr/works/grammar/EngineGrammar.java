@@ -323,8 +323,8 @@ public class EngineGrammar {
         error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
         error.setMessage("The following alternatives are unreachable: "+message.alts);
 
+        NFAState state = message.probe.dfa.getNFADecisionStartState();
         for(int alt=0; alt<message.alts.size(); alt++) {
-            NFAState state = message.probe.dfa.getNFADecisionStartState();
             error.addUnreachableAlt(state, (Integer)message.alts.get(alt));
             error.addStates(state);
             error.addRule(state.getEnclosingRule());

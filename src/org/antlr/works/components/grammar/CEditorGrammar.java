@@ -32,6 +32,7 @@ import org.antlr.works.navigation.GoToRule;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.*;
+import org.antlr.works.utils.Console;
 import org.antlr.works.utils.TextUtils;
 import org.antlr.works.visualization.Visual;
 
@@ -146,7 +147,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     protected JLabel infoLabel;
     protected JLabel cursorLabel;
     protected JLabel scmLabel;
-    protected ErrorStatus errorStatus;
+    protected ConsoleStatus consoleStatus;
 
     protected JSplitPane rulesTextSplitPane;
     protected JSplitPane upDownSplitPane;
@@ -322,7 +323,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         infoLabel = new JLabel();
         cursorLabel = new JLabel();
         scmLabel = new JLabel();
-        errorStatus = new ErrorStatus();
+        consoleStatus = new ConsoleStatus();
 
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(infoLabel);
@@ -333,7 +334,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(createSeparator());
         statusBar.add(Box.createHorizontalStrut(5));
-        statusBar.add(errorStatus.getPanel());
+        statusBar.add(consoleStatus.getPanel());
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(createSeparator());
         statusBar.add(Box.createHorizontalStrut(5));
@@ -892,8 +893,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         engineGrammar.makeDirty();
     }
 
-    public void consolePrint(String s) {
-        errorStatus.showError();
+    public void consolePrint(String s, int level) {
+        consoleStatus.showLevel(level);
     }
 
     public void notificationPrefsChanged() {
@@ -1151,39 +1152,59 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return data;
     }
 
-    protected class ErrorStatus {
+    protected class ConsoleStatus {
 
         public Box box;
         public XJURLLabel label;
+        public boolean visible;
+        public int currentDisplayedLevel;
 
-        public ErrorStatus() {
+        public ConsoleStatus() {
             box = Box.createHorizontalBox();
 
             label = new XJURLLabel(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     selectConsoleTab();
-                    clearError();
+                    clearMessage();
                 }
             });
-            label.setUnvisitedURLColor(Color.red);
-            label.setVisitedURLColor(Color.red);
 
-            clearError();
+            clearMessage();
         }
 
-        public void showError() {
-            if(label.getText().length() == 0) {
-                label.setText("Errors reported in console");
+        public void showMessage(String message, Color color) {
+            label.setText(message);
+            label.setUnvisitedURLColor(color);
+            label.setVisitedURLColor(color);
+            label.repaint();
+        }
+
+        public void showLevel(int level) {
+            if(level == Console.LEVEL_NORMAL)
+                return;
+
+            if(!visible) {
+                visible = true;
                 box.removeAll();
                 box.add(label);
                 box.revalidate();
             }
+
+            if(level > currentDisplayedLevel) {
+                currentDisplayedLevel = level;
+                if(level == Console.LEVEL_ERROR)
+                    showMessage("Errors reported in console", Color.red);
+                else
+                    showMessage("Warnings reported in console", Color.blue);
+            }
         }
 
-        public void clearError() {
+        public void clearMessage() {
             label.setText("");
             box.removeAll();
             box.add(Box.createHorizontalStrut(20));
+            visible = false;
+            currentDisplayedLevel = Console.LEVEL_NORMAL;
         }
 
         public JComponent getPanel() {

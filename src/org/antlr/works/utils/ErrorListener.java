@@ -74,7 +74,7 @@ public class ErrorListener implements ANTLRErrorListener {
     }
 
     public boolean hasErrors() {
-        return size() > 0;
+        return errors.size() > 0;
     }
 
     public int size() {
@@ -85,40 +85,38 @@ public class ErrorListener implements ANTLRErrorListener {
         infos.add(msg);
         if(forwardListener != null)
             forwardListener.info(msg);
-        print(msg);
+        print(msg, Console.LEVEL_NORMAL);
     }
 
     public void error(Message msg) {
         errors.add(msg);
         if(forwardListener != null)
             forwardListener.error(msg);
-        print(msg);
+        print(msg.toString(), Console.LEVEL_ERROR);
     }
 
     public void warning(Message msg) {
         warnings.add(msg);
         if(forwardListener != null)
             forwardListener.warning(msg);
-        print(msg);
+        print(msg.toString(), Console.LEVEL_WARNING);
     }
 
     public void error(ToolMessage msg) {
         errors.add(msg);
         if(forwardListener != null)
             forwardListener.error(msg);
-        print(msg);
+        print(msg.toString(), Console.LEVEL_ERROR);
     }
 
-    public void print(String msg) {
-        if(printToConsole)
-            EditorConsole.getCurrent().println(msg);
-    }
+    public void print(String msg, int level) {
+        if(!printToConsole)
+            return;
 
-    public void print(Message msg) {
         boolean previousVerbose = DecisionProbe.verbose;
         DecisionProbe.verbose = false;
         try {
-            EditorConsole.getCurrent().println(msg.toString());
+            EditorConsole.getCurrent().println(msg, level);
         } catch(Exception e) {
             e.printStackTrace();
         }

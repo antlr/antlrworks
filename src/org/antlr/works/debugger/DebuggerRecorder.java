@@ -37,6 +37,7 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.DebugEventListener;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
+import org.antlr.works.utils.Console;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -410,7 +411,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         try {
             wait();
         } catch (InterruptedException e) {
-            debugger.editor.console.println("recorderThreadBreaksOnEvent: interrupted");
+            debugger.editor.console.println("recorderThreadBreaksOnEvent: interrupted", Console.LEVEL_WARNING);
         }
     }
 

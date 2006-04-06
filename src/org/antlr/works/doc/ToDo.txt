@@ -1,12 +1,10 @@
 
 * Prio 1
-- links to the different DOT implementation per system so user know what to do the first time
-- look at the error manager in AW because apparently error message are duplicated over time like if a ST template was reused over and over
-	-> somehow, toString() is called twice on object of kind GrammarNonDeterminismMessage in my shared error manager
 - see if stats are still working with AW
 - bug: human readable for all doesn't display all infos
+- links to the different DOT implementation per system so user know what to do the first time
+- build and debug with custom class path and main class
 
-- do not report error in console if only system.out
 - re-introduce now the replace all button in the find dialog?
 - tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
 

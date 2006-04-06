@@ -35,8 +35,13 @@ public interface Console {
     public static final int MODE_VERBOSE = 1;
     public static final int MODE_QUIET = 2;
 
+    public static final int LEVEL_NORMAL = 0;
+    public static final int LEVEL_WARNING = 1;
+    public static final int LEVEL_ERROR = 2;
+
     public void setMode(int mode);
 
     public void println(String s);
+    public void println(String s, int level);
     public void print(Exception e);
 }

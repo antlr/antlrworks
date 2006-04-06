@@ -43,6 +43,7 @@ import org.antlr.works.IDE;
 import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.utils.Console;
 import org.antlr.works.utils.StreamWatcher;
 import org.antlr.works.utils.StreamWatcherDelegate;
 
@@ -424,7 +425,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
     }
 
     public void streamWatcherDidReceiveString(String string) {
-        debugger.editor.getConsole().print(string);
+        debugger.editor.getConsole().print(string, Console.LEVEL_NORMAL);
     }
 
     public void streamWatcherException(Exception e) {

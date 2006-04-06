@@ -7,8 +7,6 @@ import org.antlr.works.syntax.GrammarSyntaxName;
 import org.antlr.works.syntax.GrammarSyntaxReference;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -81,7 +79,7 @@ public class RulesDependency extends GrammarDOTTab {
     public void willRun() {
     }
 
-    protected void generateDOTFile() throws Exception {
+    public String getDOTString() throws Exception {
         GrammarSyntaxRule rule = editor.getCurrentRule();
 
         visitedRules.clear();
@@ -92,9 +90,7 @@ public class RulesDependency extends GrammarDOTTab {
         buildGraph(rule);
         dependency.append("}");
 
-        BufferedWriter bw = new BufferedWriter(new FileWriter(tempInputFile));
-        bw.write(dependency.toString());
-        bw.close();
+        return dependency.toString();
     }
 
     protected void buildGraph(GrammarSyntaxRule rule) {

@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.debugger;
 
 import org.antlr.runtime.Token;
+import org.antlr.works.utils.Console;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
@@ -72,7 +73,7 @@ public class DebuggerPlayer {
 
     public void popLookAheadText(Object id) {
         if(lookAheadTextStack.empty()) {
-            debugger.editor.console.println("Lookahead text stack is empty while trying to popup object id "+id);
+            debugger.editor.console.println("Lookahead text stack is empty while trying to popup object id "+id, Console.LEVEL_WARNING);
             return;
         }
 
@@ -80,7 +81,7 @@ public class DebuggerPlayer {
         if(lat.id.equals(id)) {
             lastLookAheadText = (LookAheadText)lookAheadTextStack.pop();
         } else
-            debugger.editor.console.println("The top-of-stack LookAheadText doesn't correspond to id "+id+" ("+lat.id+")");
+            debugger.editor.console.println("The top-of-stack LookAheadText doesn't correspond to id "+id+" ("+lat.id+")", Console.LEVEL_WARNING);
     }
 
     public void rewindLookAheadText() {
@@ -206,7 +207,7 @@ public class DebuggerPlayer {
 
             case DebuggerEvent.TERMINATE:
                 if(lookAheadTextStack.size() > 0) {
-                    debugger.editor.console.println("Lookahead text stack not empty");
+                    debugger.editor.console.println("Lookahead text stack not empty", Console.LEVEL_WARNING);
                 }
                 break;
         }
@@ -353,14 +354,14 @@ public class DebuggerPlayer {
 
         public void enable() {
             if(enable)
-                debugger.editor.console.println("Enabling an already enabled LookAheadText");
+                debugger.editor.console.println("Enabling an already enabled LookAheadText", Console.LEVEL_WARNING);
 
             enable = true;
         }
 
         public void disable() {
             if(!enable)
-                debugger.editor.console.println("Disabling an already disabled LookAheadText");
+                debugger.editor.console.println("Disabling an already disabled LookAheadText", Console.LEVEL_WARNING);
 
             enable = false;
         }

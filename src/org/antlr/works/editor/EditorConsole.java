@@ -115,21 +115,25 @@ public class EditorConsole extends EditorTab implements Console {
     }
 
     public synchronized void println(String s) {
-        print(s+"\n");
+        println(s, Console.LEVEL_NORMAL);
     }
 
-    public synchronized void print(String s) {
+    public synchronized void println(String s, int level) {
+        print(s+"\n", level);
+    }
+
+    public synchronized void print(String s, int level) {
         String t = "["+dateFormat.format(new Date())+"] "+s;
         textArea.setText(textArea.getText()+t);
         textArea.setCaretPosition(textArea.getText().length());
         System.out.println(s);
 
         if(getMode() == Console.MODE_VERBOSE)
-            editor.consolePrint(s);
+            editor.consolePrint(s, level);
     }
 
     public synchronized void print(Exception e) {
-        println(XJUtils.stackTrace(e));
+        println(XJUtils.stackTrace(e), Console.LEVEL_ERROR);
     }
 
     public String getTabName() {

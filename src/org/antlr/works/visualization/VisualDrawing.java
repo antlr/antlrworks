@@ -146,7 +146,7 @@ public class VisualDrawing extends ATEThread {
 
         if(error != null) {
             visual.setPlaceholder(error);
-            visual.getConsole().println(error);
+            visual.getConsole().println(error, Console.LEVEL_ERROR);
             return;
         }
 
