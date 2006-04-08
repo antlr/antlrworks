@@ -259,19 +259,20 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
                 HelpManager.sendFeedback(XJApplication.shared().getActiveWindow().getJavaContainer());
                 break;
             case EditorMenu.MI_CHECK_UPDATES:
+                Statistics.shared().recordEvent(Statistics.EVENT_CHECK_FOR_UPDATES);
                 HelpManager.checkUpdates(XJApplication.shared().getActiveWindow().getJavaContainer(), false);
                 break;
         }
     }
 
     public void appShowHelp() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_HELP);
         String url = Localizable.getLocalizedString(Localizable.DOCUMENTATION_URL);
         try {
             BrowserLauncher.openURL(url);
         } catch (IOException e) {
             XJAlert.display(null, "Cannot access the online help file", "Browse "+url+" to download the PDF manual.");
         }
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_HELP);
     }
 
     public void appWillTerminate() {

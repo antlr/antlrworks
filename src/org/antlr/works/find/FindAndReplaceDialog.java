@@ -62,11 +62,6 @@ public class FindAndReplaceDialog extends XJPanel {
         // Default values
         ignoreCaseButton.setSelected(true);
         delegate.setIgnoreCase(true);
-
-        // @todo can do that now
-        // Currently not implemented. Have to think about the fact
-        // that actions may be collapsed
-        replaceAllButton.setVisible(false);
     }
 
     public void createActions() {

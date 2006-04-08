@@ -59,6 +59,8 @@ public class MenuExport extends MenuAbstract {
     }
 
     public void exportEventsAsTextFile() {
+        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_EVENTS_AS_TEXT);
+
         if(!XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "txt", "Text file", false))
             return;
 
@@ -82,11 +84,11 @@ public class MenuExport extends MenuAbstract {
         } catch (IOException e) {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot save text file: "+file+"\nError: "+e);
         }
-
-        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_EVENTS_TEXT);
     }
 
     public void exportAsImage() {
+        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_AS_BITMAP);
+
         EditorTab tab = editor.getSelectedTab();
         if(!tab.canExportToBitmap())
             return;
@@ -98,8 +100,6 @@ public class MenuExport extends MenuAbstract {
     }
 
     public void exportRuleAsImage() {
-        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_RULE_IMAGE);
-
         if(!editor.visual.canSaveImage()) {
             XJAlert.display(editor.getWindowContainer(), "Export Rule to Bitmap Image", "There is no rule at cursor position.");
             return;
@@ -131,6 +131,8 @@ public class MenuExport extends MenuAbstract {
     }
 
     public void exportAsEPS() {
+        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_AS_EPS);
+
         EditorTab tab = editor.getSelectedTab();
         if(!tab.canExportToEPS())
             return;
@@ -194,6 +196,8 @@ public class MenuExport extends MenuAbstract {
     }
 
     public void exportAsDOT() {
+        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_AS_DOT);
+
         EditorTab tab = editor.getSelectedTab();
         if(!tab.canExportToDOT())
             return;

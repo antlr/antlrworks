@@ -56,17 +56,20 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     public void showTokensSD() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_TOKEN_SD);
         editor.visual.setRule(new GrammarSyntaxRule("Tokens"), true);
         editor.makeBottomComponentVisible();
     }
 
     public void showDecisionDFA() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_DECISION_DFA);
         DecisionDFA decision = new DecisionDFA(editor, this);
         if(decision.launch())
             showProgress("Generating...");
     }
 
     public void showDependency() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_RULE_DEPENDENCY);
         RulesDependency dependency = new RulesDependency(editor, this);
         if(dependency.launch())
             showProgress("Generating...");
@@ -86,10 +89,13 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     public void insertRuleFromTemplate() {
+        Statistics.shared().recordEvent(Statistics.EVENT_INSERT_RULE_TEMPLATE);
         editor.ruleTemplates.display();
     }
 
     public void group() {
+        Statistics.shared().recordEvent(Statistics.EVENT_RULE_GROUP);
+
         String s = (String)JOptionPane.showInputDialog(editor.getWindowContainer(), "Group Name:", "Group",
                 JOptionPane.QUESTION_MESSAGE, null, null, "Group");
         if(s != null && s.length() > 0) {
@@ -112,6 +118,8 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     public void ungroup() {
+        Statistics.shared().recordEvent(Statistics.EVENT_RULE_UNGROUP);        
+
         GrammarSyntaxGroup openGroup = editor.rules.getSelectedGroup();
         if(openGroup == null) {
             // No open group selected in the tree. Try to find the closest open group

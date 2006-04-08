@@ -33,7 +33,6 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.menu.*;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.dialog.DialogStatistics;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 
@@ -126,8 +125,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_EXPORT_AS_DOT = 112;
     public static final int MI_EXPORT_EVENT = 115;
 
-    public static final int MI_PRIVATE_STATS = 200;
-    public static final int MI_PRIVATE_UNREGISTER = 201;
+    public static final int MI_PRIVATE_UNREGISTER = 200;
 
     protected CEditorGrammar editor = null;
     protected XJMenuItem ignoreRuleMenuItem;
@@ -177,7 +175,6 @@ public class EditorMenu implements XJMenuItemDelegate {
         if(AWPrefs.getPrivateMenu()) {
             menu = new XJMenu();
             menu.setTitle("*");
-            menu.addItem(new XJMenuItem("Statistics...", MI_PRIVATE_STATS, this));
             menu.addItem(new XJMenuItem("Unregister user", MI_PRIVATE_UNREGISTER, this));
 
             menubar.addCustomMenu(menu);
@@ -760,9 +757,6 @@ public class EditorMenu implements XJMenuItemDelegate {
 
     public void handleMenuPrivate(int itemTag) {
         switch(itemTag) {
-            case MI_PRIVATE_STATS:
-                new DialogStatistics(editor.getWindowContainer()).runModal();
-                break;
             case MI_PRIVATE_UNREGISTER:
                 AWPrefs.removeUserRegistration();
                 break;

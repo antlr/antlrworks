@@ -52,7 +52,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
     public static final int STATUS_RUNNING = 3;
     public static final int STATUS_BREAK = 4;
 
-    public static final int MAX_RETRY = 6;
+    public static final int MAX_RETRY = 12;
 
     protected Debugger debugger;
     protected int status = STATUS_STOPPED;

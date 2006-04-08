@@ -47,10 +47,13 @@ public class MenuGoTo extends MenuAbstract {
     }
 
     public void goToRule() {
+        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_RULE);
         editor.goToRule.display();
     }
 
     public void goToDeclaration() {
+        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_DECLARATION);
+
         GrammarSyntaxReference ref = editor.getCurrentReference();
         if(ref == null)
             return;
@@ -61,11 +64,14 @@ public class MenuGoTo extends MenuAbstract {
 
         editor.goToHistoryRememberCurrentPosition();
         editor.rules.goToRule(rule);
-
-        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_DECLARATION);
     }
 
     public void goToBreakpoint(int direction) {
+        if(direction == -1)
+            Statistics.shared().recordEvent(Statistics.EVENT_GOTO_PREV_BRKPT);
+        else
+            Statistics.shared().recordEvent(Statistics.EVENT_GOTO_NEXT_BRKPT);
+
         Set breakpoints = editor.breakpointManager.getBreakpoints();
         int line = editor.getTextEditor().getLineIndexAtTextPosition(getCaretPosition());
         if(line == -1)
@@ -84,15 +90,16 @@ public class MenuGoTo extends MenuAbstract {
     }
 
     public void goToLine() {
+        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_LINE);
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Line number:", "Go To Line",
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if(s != null) {
             moveCursorToLine(Integer.parseInt(s)-1);
-            Statistics.shared().recordEvent(Statistics.EVENT_GOTO_LINE);
         }
     }
 
     public void goToCharacter() {
+        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_CHAR);
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Character number:", "Go To Character",
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if(s != null) {
@@ -103,11 +110,12 @@ public class MenuGoTo extends MenuAbstract {
             editor.goToHistoryRememberCurrentPosition();
 
             setCaretPosition(character);
-            Statistics.shared().recordEvent(Statistics.EVENT_GOTO_CHAR);
         }
     }
 
     public void goToBackward() {
+        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_BACK);
+
         if(editor.goToHistory.canGoBack()) {
             setCaretPosition(editor.goToHistory.getBackPosition(getCaretPosition()));
             editor.refreshMainMenuBar();
@@ -115,6 +123,8 @@ public class MenuGoTo extends MenuAbstract {
     }
 
     public void goToForward() {
+        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_FORWARD);
+
         if(editor.goToHistory.canGoForward()) {
             setCaretPosition(editor.goToHistory.getForwardPosition());
             editor.refreshMainMenuBar();

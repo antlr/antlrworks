@@ -36,9 +36,9 @@ import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.prefs.AWPrefs;
 
 import java.awt.*;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
@@ -95,9 +95,9 @@ public class StatisticsReporter {
             return null;
         }
 
-        DataInputStream dis;
+        BufferedReader br;
         try {
-            dis = new DataInputStream(new BufferedInputStream(urc.getInputStream()));
+            br = new BufferedReader(new InputStreamReader(urc.getInputStream()));
         } catch (IOException e) {
             error = e.toString();
             return null;
@@ -106,8 +106,8 @@ public class StatisticsReporter {
         String id;
 
         try {
-            id = dis.readLine();
-            dis.close();
+            id = br.readLine();
+            br.close();
         } catch (IOException e) {
             error = e.toString();
             return null;
@@ -165,14 +165,14 @@ public class StatisticsReporter {
 
         URLConnection urc;
         URL url;
-        DataInputStream dis;
+        BufferedReader br;
         boolean success = false;
         try {
             url = new URL(param.toString());
             urc = url.openConnection();
-            dis = new DataInputStream(new BufferedInputStream(urc.getInputStream()));
-            success = dis.readLine().equalsIgnoreCase("OK");
-            dis.close();
+            br = new BufferedReader(new InputStreamReader(urc.getInputStream()));
+            success = br.readLine().equalsIgnoreCase("OK");
+            br.close();
         } catch (IOException e) {
             error = e.toString();
         }

@@ -49,11 +49,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class MenuRefactor extends MenuAbstract {
 
+    protected EditorTextMutator mutator;
+
     public MenuRefactor(CEditorGrammar editor) {
         super(editor);
     }
 
     public void rename() {
+        Statistics.shared().recordEvent(Statistics.EVENT_RENAME);
+
         ATEToken token = editor.getCurrentToken();
         if(token == null)
             return;
@@ -61,10 +65,9 @@ public class MenuRefactor extends MenuAbstract {
         String s = (String) JOptionPane.showInputDialog(editor.getJavaContainer(), "Rename '"+token.getAttribute()+"' and its usages to:", "Rename",
                 JOptionPane.QUESTION_MESSAGE, null, null, token.getAttribute());
         if(s != null && !s.equals(token.getAttribute())) {
-            editor.beginGroupChange("Rename");
+            beginRefactor("Rename");
             renameToken(token, s);
-            editor.endGroupChange();
-            Statistics.shared().recordEvent(Statistics.EVENT_RENAME);
+            endRefactor();
         }
     }
 
@@ -81,7 +84,7 @@ public class MenuRefactor extends MenuAbstract {
                 if(token.type == t.type || renameRefRule &&
                         (token.type == GrammarSyntaxLexer.TOKEN_REFERENCE || token.type == GrammarSyntaxLexer.TOKEN_RULE))
                 {
-                    editor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
+                    mutator.replace(token.getStartIndex(), token.getEndIndex(), name);
                 }
             }
         }
@@ -91,11 +94,13 @@ public class MenuRefactor extends MenuAbstract {
         ATEToken token = editor.getCurrentToken();
         if(token == null)
             return false;
-
-        return token.type == ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING || token.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING;
+        else
+            return token.type == ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING || token.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING;
     }
-    
+
     public void replaceLiteralWithTokenLabel() {
+        Statistics.shared().recordEvent(Statistics.EVENT_REPLACE_LITERALS);
+
         ATEToken token = editor.getCurrentToken();
         if(token == null)
             return;
@@ -109,19 +114,15 @@ public class MenuRefactor extends MenuAbstract {
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Replace Literal '"+token.getAttribute()+"' with token label:", "Replace Literal With Token Label",
                 JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(s != null && !s.equals(token.getAttribute())) {
-            // Remove the text selection because it causes Swing to hangs
-            editor.deselectTextRange();
-
-            editor.beginGroupChange("Replace Literal With Token Label");
+            beginRefactor("Replace Literal With Token Label");
             replaceLiteralTokenWithTokenLabel(token, s);
-            editor.endGroupChange();
+            endRefactor();
         }
     }
 
     public void replaceLiteralTokenWithTokenLabel(ATEToken t, String name) {
         // First insert the rule at the end of the grammar
-        int insertionIndex = editor.getText().length();
-        editor.textEditor.insertText(insertionIndex, "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
+        mutator.insert(editor.getText().length(), "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
 
         // Then rename all strings token
         List tokens = editor.getTokens();
@@ -134,24 +135,30 @@ public class MenuRefactor extends MenuAbstract {
             if(!token.getAttribute().equals(attr))
                 continue;
 
-            editor.replaceText(token.getStartIndex(), token.getEndIndex(), name);
+            mutator.replace(token.getStartIndex(), token.getEndIndex(), name);
         }
     }
 
     public void convertLiteralsToSingleQuote() {
-        editor.beginGroupChange("Convert Literals To Single Quote Literals");
+        Statistics.shared().recordEvent(Statistics.EVENT_CONVERT_LITERALS_TO_SINGLE);
+
+        beginRefactor("Convert Literals To Single Quote Literals");
         convertLiteralsToSpecifiedQuote(ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING, '\'', '"');
-        editor.endGroupChange();
+        endRefactor();
     }
 
     public void convertLiteralsToDoubleQuote() {
-        editor.beginGroupChange("Convert Literals To Double Quote Literals");
+        Statistics.shared().recordEvent(Statistics.EVENT_CONVERT_LITERALS_TO_DOUBLE);
+
+        beginRefactor("Convert Literals To Double Quote Literals");
         convertLiteralsToSpecifiedQuote(ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING, '"', '\'');
-        editor.endGroupChange();
+        endRefactor();
     }
 
     public void convertLiteralsToCStyleQuote() {
-        editor.beginGroupChange("Convert Literals To C-style Quote Literals");
+        Statistics.shared().recordEvent(Statistics.EVENT_CONVERT_LITERALS_TO_CSTYLE);
+
+        beginRefactor("Convert Literals To C-style Quote Literals");
 
         List tokens = editor.getTokens();
         for(int index = tokens.size()-1; index>0; index--) {
@@ -190,10 +197,10 @@ public class MenuRefactor extends MenuAbstract {
                 replaced = '\''+stripped+'\'';
             }
 
-            editor.replaceText(token.getStartIndex(), token.getEndIndex(), replaced);
+            mutator.replace(token.getStartIndex(), token.getEndIndex(), replaced);
         }
 
-        editor.endGroupChange();
+        endRefactor();
     }
 
     protected void convertLiteralsToSpecifiedQuote(int tokenType, char quote, char unescapeQuote) {
@@ -208,7 +215,7 @@ public class MenuRefactor extends MenuAbstract {
             if(stripped.indexOf(quote) != -1 || stripped.indexOf(unescapeQuote) != -1)
                 stripped = escapeStringQuote(stripped, quote, unescapeQuote);
 
-            editor.replaceText(token.getStartIndex(), token.getEndIndex(), quote+stripped+quote);
+            mutator.replace(token.getStartIndex(), token.getEndIndex(), quote+stripped+quote);
         }
     }
 
@@ -237,10 +244,13 @@ public class MenuRefactor extends MenuAbstract {
             } else
                 sb.append(c);
         }
+
         return sb.toString();
     }
 
     public void removeLeftRecursion() {
+        Statistics.shared().recordEvent(Statistics.EVENT_REMOVE_LEFT_RECURSION);
+
         GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {
             XJAlert.display(editor.getWindowContainer(), "Remove Left Recursion", "There is no rule at cursor position.");
@@ -252,23 +262,25 @@ public class MenuRefactor extends MenuAbstract {
             return;
         }
 
-        editor.beginGroupChange("Remove Left Recursion");
+        beginRefactor("Remove Left Recursion");
         String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
-        editor.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
-        editor.endGroupChange();
+        mutator.replace(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
+        endRefactor();
     }
 
     public void removeAllLeftRecursion() {
-        editor.beginGroupChange("Remove All Left Recursion");
+        Statistics.shared().recordEvent(Statistics.EVENT_REMOVE_ALL_LEFT_RECURSION);
+
+        beginRefactor("Remove All Left Recursion");
         List rules = editor.rules.getRules();
         for(int index = rules.size()-1; index >= 0; index--) {
             GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
             if(rule.hasLeftRecursion()) {
                 String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
-                editor.replaceText(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
+                mutator.replace(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
             }
         }
-        editor.endGroupChange();
+        endRefactor();
     }
 
     public boolean canExtractRule() {
@@ -278,6 +290,8 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void extractRule() {
+        Statistics.shared().recordEvent(Statistics.EVENT_EXTRACT_RULE);
+
         if(!canExtractRule()) {
             XJAlert.display(editor.getWindowContainer(), "Extract Rule", "At least one token must be selected.");
             return;
@@ -289,23 +303,20 @@ public class MenuRefactor extends MenuAbstract {
         editor.selectTextRange(leftIndex, rightIndex);
 
         String ruleName = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Rule name:", "Extract Rule",
-                            JOptionPane.QUESTION_MESSAGE, null, null, "");
+                JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(ruleName != null && ruleName.length() > 0) {
-            // Remove the text selection because it causes Swing to hangs
-            editor.deselectTextRange();
-
-            editor.beginGroupChange("Extract Rule");
+            beginRefactor("Extract Rule");
             boolean lexer = ATEToken.isLexerName(ruleName);
             int index = insertionIndexForRule(lexer);
             String ruleContent = editor.getText().substring(leftIndex, rightIndex);
             if(index > editor.getCaretPosition()) {
                 insertRuleAtIndex(createRule(ruleName, ruleContent), index);
-                editor.replaceText(leftIndex, rightIndex, ruleName);
+                mutator.replace(leftIndex, rightIndex, ruleName);
             } else {
-                editor.replaceText(leftIndex, rightIndex, ruleName);
+                mutator.replace(leftIndex, rightIndex, ruleName);
                 insertRuleAtIndex(createRule(ruleName, ruleContent), index);
             }
-            editor.endGroupChange();
+            endRefactor();
         }
     }
 
@@ -314,6 +325,8 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void inlineRule() {
+        Statistics.shared().recordEvent(Statistics.EVENT_INLINE_RULE);
+
         GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {
             XJAlert.display(editor.getWindowContainer(), "Inline Rule", "There is no rule at cursor position.");
@@ -324,17 +337,21 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     protected void inlineRule(String ruleName) {
+        Statistics.shared().recordEvent(Statistics.EVENT_INLINE_RULE);
+
         GrammarSyntaxRule rule = editor.rules.getRuleWithName(ruleName);
         if(rule == null) {
             XJAlert.display(editor.getWindowContainer(), "Inline Rule", "Rule \""+ruleName+"\" doesn't exist.");
             return;
         }
+
         inlineRule(rule);
     }
 
     protected void inlineRule(GrammarSyntaxRule rule) {
         String oldContent = editor.getText();
-        StringBuffer s = new StringBuffer(oldContent);
+
+        beginRefactor("Inline");
 
         String ruleName = rule.name;
         String ruleContent = Utils.trimString(oldContent.substring(rule.colon.getEndIndex(), rule.end.getStartIndex()));
@@ -348,7 +365,7 @@ public class MenuRefactor extends MenuAbstract {
         for(int r=rules.size()-1; r>=0; r--) {
             GrammarSyntaxRule candidate = (GrammarSyntaxRule)rules.get(r);
             if(candidate == rule) {
-                s.delete(rule.getStartIndex(), rule.getEndIndex()+1);
+                mutator.delete(rule.getStartIndex(), rule.getEndIndex()+1);
             } else {
                 List references = candidate.getReferences();
                 if(references == null)
@@ -357,34 +374,27 @@ public class MenuRefactor extends MenuAbstract {
                 for(int index=references.size()-1; index>=0; index--) {
                     GrammarSyntaxReference ref = (GrammarSyntaxReference)references.get(index);
                     if(ref.token.getAttribute().equals(ruleName)) {
-                        s.replace(ref.token.getStartIndex(), ref.token.getEndIndex(), ruleContent);
+                        mutator.replace(ref.token.getStartIndex(), ref.token.getEndIndex(), ruleContent);
                     }
                 }
             }
         }
 
-        replaceEditorTextAndAdjustCaretPosition(s.toString());
-
-        XJUndo undo = editor.getXJFrame().getUndo(getTextPane());
-        undo.addEditEvent(new UndoableInlineRuleEdit(oldContent, rule.name));
+        endRefactor();
     }
 
     public void createRuleAtIndex(boolean lexer, String name, String content) {
-        editor.beginGroupChange("Create Rule");
+        beginRefactor("Create Rule");
         int index = insertionIndexForRule(lexer);
         insertRuleAtIndex(createRule(name, content), index);
         setCaretPosition(index);
-        editor.endGroupChange();
+        endRefactor();
     }
 
-    protected void replaceEditorTextAndAdjustCaretPosition(String newText) {
-        int oldCaretPosition = editor.getTextPane().getCaretPosition();
-        String oldText = editor.getText();
-        int caretOffset = newText.length()-oldText.length();
-        editor.disableTextPaneUndo();
-        editor.setText(newText);
-        editor.enableTextPaneUndo();
-        editor.getTextEditor().setCaretPosition(oldCaretPosition +caretOffset, false, false);
+    public void deleteRuleAtIndex(int index) {
+        GrammarSyntaxRule r = editor.rules.getEnclosingRuleAtPosition(index);
+        if(r != null)
+            editor.replaceText(r.getStartIndex(), r.getEndIndex(), "");
     }
 
     public int insertionIndexForRule(boolean lexer) {
@@ -443,38 +453,79 @@ public class MenuRefactor extends MenuAbstract {
         return sb.toString();
     }
 
-    public void insertRuleAtIndex(String rule, int index) {
-        editor.textEditor.insertText(index, rule);
+    protected void insertRuleAtIndex(String rule, int index) {
+        mutator.insert(index, rule);
     }
 
-    public void deleteRuleAtIndex(int index) {
-        GrammarSyntaxRule r = editor.rules.getEnclosingRuleAtPosition(index);
-        if(r != null)
-            editor.replaceText(r.getStartIndex(), r.getEndIndex(), "");
+    protected void beginRefactor(String name) {
+        editor.beginGroupChange(name);
+        mutator = new EditorTextMutator();
     }
 
-    protected class UndoableInlineRuleEdit extends AbstractUndoableEdit {
+    protected void endRefactor() {
+        mutator.apply();
+        mutator = null;
+        editor.endGroupChange();
+    }
 
-        public String oldContent;
-        public String ruleName;
+    protected void refactorReplaceEditorText(String text) {
+        int oldCaretPosition = editor.getCaretPosition();
+        editor.disableTextPaneUndo();
+        editor.setText(text);
+        editor.enableTextPaneUndo();
+        editor.getTextEditor().setCaretPosition(Math.min(oldCaretPosition, text.length()), false, false);
+    }
 
-        public UndoableInlineRuleEdit(String oldContent, String ruleName) {
-            this.oldContent = oldContent;
-            this.ruleName = ruleName;
+    protected class EditorTextMutator {
+
+        public StringBuffer mutableText;
+
+        public EditorTextMutator() {
+            mutableText = new StringBuffer(editor.getText());
         }
 
-        public String getPresentationName() {
-            return "Inline Rule \""+ruleName+"\"";
+        public void replace(int start, int end, String s) {
+            mutableText.replace(start, end, s);
+        }
+
+        public void insert(int index, String s) {
+            mutableText.insert(index, s);
+        }
+
+        public void delete(int start, int end) {
+            mutableText.delete(start, end);
+        }
+
+        public void apply() {
+            String text = mutableText.toString();
+            String oldContent = editor.getText();
+
+            refactorReplaceEditorText(text);
+
+            XJUndo undo = editor.getXJFrame().getUndo(getTextPane());
+            undo.addEditEvent(new UndoableRefactoringEdit(oldContent, text));
+        }
+
+    }
+
+    protected class UndoableRefactoringEdit extends AbstractUndoableEdit {
+
+        public String oldContent;
+        public String newContent;
+
+        public UndoableRefactoringEdit(String oldContent, String newContent) {
+            this.oldContent = oldContent;
+            this.newContent = newContent;
         }
 
         public void redo() {
             super.redo();
-            inlineRule(ruleName);
+            refactorReplaceEditorText(newContent);
         }
 
         public void undo() {
             super.undo();
-            replaceEditorTextAndAdjustCaretPosition(oldContent);
+            refactorReplaceEditorText(oldContent);
         }
     }
 

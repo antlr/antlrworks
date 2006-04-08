@@ -124,7 +124,16 @@ public class FindAndReplace implements XJFrameDelegate {
     }
 
     public void replaceAll() {
+        Pattern p = getCompiledPattern();
+        if(p == null)
+            return;
 
+        Matcher m = p.matcher(editor.getText());
+        String s = m.replaceAll(replaceString);
+
+        int oldCursorPosition = editor.getCaretPosition();
+        editor.setText(s);
+        editor.getTextEditor().setCaretPosition(oldCursorPosition, false, false);
     }
 
     public void display() {

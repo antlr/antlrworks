@@ -45,23 +45,29 @@ public class MenuFind extends MenuAbstract {
     }
 
     public void find() {
+        Statistics.shared().recordEvent(Statistics.EVENT_FIND_DIALOG);
         editor.findAndReplace.find();
     }
 
     public void findNext() {
+        Statistics.shared().recordEvent(Statistics.EVENT_FIND_NEXT);
         editor.findAndReplace.next();
     }
 
     public void findPrev() {
+        Statistics.shared().recordEvent(Statistics.EVENT_FIND_PREVIOUS);
         editor.findAndReplace.prev();
     }
 
     public void findSelection() {
+        Statistics.shared().recordEvent(Statistics.EVENT_FIND_TEXT_AT_CARET);        
         editor.findAndReplace.setFindString(editor.getTextPane().getSelectedText());
         editor.findAndReplace.next();
     }
 
     public void findUsage() {
+        Statistics.shared().recordEvent(Statistics.EVENT_FIND_USAGES);
+
         ATEToken token = editor.getCurrentToken();
         if(token == null)
             return;
@@ -80,8 +86,6 @@ public class MenuFind extends MenuAbstract {
         }
 
         editor.makeBottomComponentVisible();
-
-        Statistics.shared().recordEvent(Statistics.EVENT_FIND_USAGES);
     }
 
 }

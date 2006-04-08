@@ -471,30 +471,32 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void toggleSyntaxColoring() {
+        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_COLORING);
         textEditor.toggleSyntaxColoring();
     }
 
     public void toggleRulesSorting() {
+        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_RULE_SORT);
         rules.toggleSorting();
         interpreter.setRules(getRules());
     }
 
     public void toggleSyntaxDiagram() {
+        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_DIAGRAM);
         visual.setEnable(!visual.isEnable());
         if(visual.isEnable()) {
             visual.setText(getText(), getFileName());
         }
         updateVisualization(false);
-        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_DIAGRAM);
     }
 
     public void toggleNFAOptimization() {
         visual.toggleNFAOptimization();
         updateVisualization(false);
-        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_NFA_OPTIMIZATION);
     }
 
     public void toggleIdeas() {
+        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_IDEAS);
         editorIdeas.toggleEnabled();
     }
 

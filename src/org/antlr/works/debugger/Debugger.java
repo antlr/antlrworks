@@ -216,7 +216,6 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         displayEventButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 infoList.setModel(eventListModel);
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_SHOW_EVENTS_LIST);
             }
         });
 
@@ -225,7 +224,6 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         displayStackButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 infoList.setModel(stackListModel);
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_SHOW_RULES_STACK);
             }
         });
 
@@ -296,7 +294,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
             public void actionPerformed(ActionEvent event) {
                 recorder.stepBackward(getBreakEvent());
                 updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_BACKWARD);
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_BACK);
             }
         });
         return button;
@@ -516,9 +514,9 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     }
 
     public void launchRemoteDebugger() {
+        Statistics.shared().recordEvent(Statistics.EVENT_REMOTE_DEBUGGER);
         DebuggerRemoteConnectDialog dialog = new DebuggerRemoteConnectDialog(getWindowComponent());
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
-            Statistics.shared().recordEvent(Statistics.EVENT_REMOTE_DEBUGGER);
             debuggerLaunch(dialog.getAddress(), dialog.getPort());
         }
     }

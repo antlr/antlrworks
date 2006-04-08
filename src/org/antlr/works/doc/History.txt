@@ -1,7 +1,8 @@
 
 Version 1.0ea9 - ...
 
-- can now export decision DFA as DOT file
+- can now export decision DFA and rule dependency graph as DOT file
+- new replace all feature in find dialog
 - generated code coloring has been disabled
 - auto-save document before parser code generation
 - generate parser if document has been modified since last generation

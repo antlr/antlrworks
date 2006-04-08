@@ -1,12 +1,9 @@
 
 * Prio 1
-- see if stats are still working with AW
-- bug: human readable for all doesn't display all infos
+- tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
 - links to the different DOT implementation per system so user know what to do the first time
 - build and debug with custom class path and main class
-
-- re-introduce now the replace all button in the find dialog?
-- tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
+- debug parser launch time-out in prefs?
 
 - create grammar file in project
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory

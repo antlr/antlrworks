@@ -59,6 +59,8 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
     }
 
     protected void generateCodeProcess() {
+        Statistics.shared().recordEvent(Statistics.EVENT_GENERATE_CODE);
+
         if(!checkLanguage())
             return;
 
@@ -69,8 +71,6 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
             generateCode.setDebug(dialog.generateDebugInformation());
             generateCode.setOutputPath(dialog.getOutputPath());
             generateCode.generateInThread(editor.getJavaContainer());
-
-            Statistics.shared().recordEvent(Statistics.EVENT_GENERATE_CODE);
         }
     }
 
@@ -88,6 +88,8 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
     }
 
     public void showGeneratedCode(boolean lexer) {
+        Statistics.shared().recordEvent(lexer?Statistics.EVENT_SHOW_LEXER_GENERATED_CODE:Statistics.EVENT_SHOW_PARSER_GENERATED_CODE);
+
         if(lexer && !generateCode.supportsLexer()) {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the lexer because there is no lexer in this grammar.");
             return;
@@ -97,16 +99,15 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
         }
 
         showGeneratedCode(null, lexer);
-        Statistics.shared().recordEvent(lexer?Statistics.EVENT_SHOW_LEXER_GENERATED_CODE:Statistics.EVENT_SHOW_PARSER_GENERATED_CODE);
     }
 
     public void showRuleGeneratedCode() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_RULE_GENERATED_CODE);
+
         if(editor.getCurrentRule() == null)
             XJAlert.display(editor.getWindowContainer(), "Error", "A rule must be selected first.");
-        else {
+        else
             showGeneratedCode(editor.getCurrentRule().name, false);
-            Statistics.shared().recordEvent(Statistics.EVENT_SHOW_RULE_GENERATED_CODE);
-        }
     }
 
     public void showGeneratedCode(String rule, boolean lexer) {

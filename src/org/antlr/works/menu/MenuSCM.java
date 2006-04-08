@@ -40,6 +40,7 @@ import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
 import org.antlr.works.scm.p4.P4;
 import org.antlr.works.scm.p4.P4SubmitDialog;
+import org.antlr.works.stats.Statistics;
 
 public class MenuSCM extends MenuAbstract implements SCMDelegate {
 
@@ -70,6 +71,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     }
 
     public void editFile() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SCM_EDIT);
         if(check()) {
             showProgress("Open for Edit");
             scm.editFile(getFilePath());
@@ -77,6 +79,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     }
 
     public void addFile() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SCM_ADD);
         if(check()) {
             showProgress("Mark for Add");
             scm.addFile(getFilePath());
@@ -84,6 +87,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     }
 
     public void deleteFile() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SCM_DELETE);
         if(check()) {
             showProgress("Mark for Delete");
             scm.deleteFile(getFilePath());
@@ -91,6 +95,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     }
 
     public void revertFile() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SCM_REVERT);
         if(check()) {
             if(XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Revert", "Are you sure you want to discard your changes to the file ?") == XJAlert.YES) {
                 showProgress("Revert");
@@ -100,6 +105,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     }
 
     public void submitFile() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SCM_SUBMIT);
         if(check()) {
             P4SubmitDialog dialog = new P4SubmitDialog(editor.getWindowContainer());
             if(dialog.runModal() == P4SubmitDialog.BUTTON_OK) {
@@ -110,6 +116,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     }
 
     public void sync() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SCM_SYNC);
         if(check()) {
             showProgress("Sync");
             scm.sync();
