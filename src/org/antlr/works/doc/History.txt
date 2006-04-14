@@ -9,6 +9,7 @@ Version 1.0ea9 - ...
 - more precise message when log are reported to the console (warnings or errors)
 
 - fixed a bug where ANTLRWorks would freeze when replacing literals with token label
+- fixed a bug where stats about programming and language implementation experience were inverted
 
 Version 1.0ea8 - 03/11/06
 

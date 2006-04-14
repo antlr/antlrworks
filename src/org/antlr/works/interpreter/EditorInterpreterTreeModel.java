@@ -107,6 +107,10 @@ public class EditorInterpreterTreeModel extends DefaultTreeModel {
                 return null;
         }
 
+        public boolean isEnabled() {
+            return true;
+        }
+        
         public String getInfoString() {
             StringBuffer info = new StringBuffer();
             Object payload = getPayload();

@@ -53,15 +53,18 @@ public class DebuggerEvent {
     public static final int ENTER_ALT = 13;
     public static final int MARK = 14;
     public static final int REWIND = 15;
-    public static final int BEGIN_RESYNC = 16;
-    public static final int END_RESYNC = 17;
-    public static final int COMMENCE = 18;
-    public static final int TERMINATE = 19;
+    public static final int BEGIN_BACKTRACK = 16;
+    public static final int END_BACKTRACK = 17;
+    public static final int BEGIN_RESYNC = 18;
+    public static final int END_RESYNC = 19;
+    public static final int COMMENCE = 20;
+    public static final int TERMINATE = 21;
 
     protected int type;
     protected String s;
     protected int int1;
     protected int int2;
+    protected boolean b;
     protected Token token;
     protected RecognitionException exception;
 
@@ -91,6 +94,12 @@ public class DebuggerEvent {
         this.int2 = arg2;
     }
 
+    public DebuggerEvent(int type, int arg1, boolean b) {
+        this.type = type;
+        this.int1 = arg1;
+        this.b = b;
+    }
+
     public DebuggerEvent(int type, Token token) {
         this.type = type;
         this.token = token;
@@ -117,6 +126,8 @@ public class DebuggerEvent {
             case LT:            return "LT";
             case MARK:     return "Mark";
             case REWIND:     return "Rewind";
+            case BEGIN_BACKTRACK:     return "Begin backtrack";
+            case END_BACKTRACK:     return "End backtrack";
             case RECOGNITION_EXCEPTION: return "Recognition exception";
             case BEGIN_RESYNC:     return "Begin resync";
             case END_RESYNC:     return "End resync";
@@ -142,6 +153,8 @@ public class DebuggerEvent {
             case LT:            return "LT "+int1+" "+token.getText();
             case MARK:     return "Mark "+int1;
             case REWIND:     return "Rewind "+int1;
+            case BEGIN_BACKTRACK:     return "Begin backtrack "+int1;
+            case END_BACKTRACK:     return "End backtrack "+int1+", "+b;
             case RECOGNITION_EXCEPTION: return "Recognition exception "+exception;
             case BEGIN_RESYNC:     return "Begin resync";
             case END_RESYNC:     return "End resync";

@@ -647,9 +647,10 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         player.playEvents(events, reset);
     }
 
-    public void pushRule(String ruleName, int line, int pos) {
-        Debugger.DebuggerParseTreeNode parentRuleNode = (Debugger.DebuggerParseTreeNode)playCallStack.peek();
-        Debugger.DebuggerParseTreeNode ruleNode = new Debugger.DebuggerParseTreeNode(ruleName);
+    public void pushRule(String ruleName, int line, int pos, boolean backtracking) {
+        DebuggerParseTreeNode parentRuleNode = (DebuggerParseTreeNode)playCallStack.peek();
+        DebuggerParseTreeNode ruleNode = new DebuggerParseTreeNode(ruleName);
+        ruleNode.setEnabled(!backtracking);
         ruleNode.setPosition(line, pos);
 
         parentRuleNode.add(ruleNode);
@@ -666,16 +667,18 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         playCallStack.pop();
     }
 
-    public void addToken(Token token) {
+    public void addToken(Token token, boolean backtracking) {
         DebuggerParseTreeNode ruleNode = (DebuggerParseTreeNode)playCallStack.peek();
         DebuggerParseTreeNode elementNode = new DebuggerParseTreeNode(token);
+        elementNode.setEnabled(!backtracking);
         ruleNode.add(elementNode);
         updateParseTree(elementNode);
     }
 
-    public void addException(Exception e) {
+    public void addException(Exception e, boolean backtracking) {
         DebuggerParseTreeNode ruleNode = (DebuggerParseTreeNode)playCallStack.peek();
         DebuggerParseTreeNode errorNode = new DebuggerParseTreeNode(e);
+        errorNode.setEnabled(!backtracking);
         ruleNode.add(errorNode);
         updateParseTree(errorNode);
     }
@@ -786,6 +789,8 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         protected int line;
         protected int pos;
 
+        protected boolean enabled = true;
+
         public DebuggerParseTreeNode(String s) {
             this.s = s;
         }
@@ -802,13 +807,26 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
             if(token != null && t.getTokenIndex() == token.getTokenIndex())
                 return this;
 
-            for(Enumeration enum = this.children(); enum.hasMoreElements(); ) {
-                DebuggerParseTreeNode node = (DebuggerParseTreeNode) enum.nextElement();
+            for(Enumeration childrenEnumerator = children(); childrenEnumerator.hasMoreElements(); ) {
+                DebuggerParseTreeNode node = (DebuggerParseTreeNode) childrenEnumerator.nextElement();
                 DebuggerParseTreeNode candidate = node.findNodeWithToken(t);
                 if(candidate != null)
                     return candidate;
             }
             return null;
+        }
+
+        public void setPosition(int line, int pos) {
+            this.line = line;
+            this.pos = pos;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
         }
 
         public String toString() {
@@ -833,9 +851,5 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
             return "?";
         }
 
-        public void setPosition(int line, int pos) {
-            this.line = line;
-            this.pos = pos;
-        }
     }
 }

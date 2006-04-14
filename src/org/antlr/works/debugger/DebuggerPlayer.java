@@ -54,6 +54,7 @@ public class DebuggerPlayer {
     protected DebuggerInputText inputText;
 
     protected int resyncing = 0;
+    protected int backtracking = 0;
     protected int eventPlayedCount = 0;
 
     public DebuggerPlayer(Debugger debugger, DebuggerInputText inputText) {
@@ -117,6 +118,7 @@ public class DebuggerPlayer {
         lookAheadTextStack.clear();
 
         resyncing = 0;
+        backtracking = 0;
         eventPlayedCount = 0;
     }
 
@@ -193,6 +195,14 @@ public class DebuggerPlayer {
                 playRewind(event.int1);
                 break;
 
+            case DebuggerEvent.BEGIN_BACKTRACK:
+                playBeginBacktrack(event.int1);
+                break;
+
+            case DebuggerEvent.END_BACKTRACK:
+                playEndBacktrack(event.int1, event.b);
+                break;
+
             case DebuggerEvent.RECOGNITION_EXCEPTION:
                 playRecognitionException(event.exception);
                 break;
@@ -218,7 +228,7 @@ public class DebuggerPlayer {
     }
 
     public void playEnterRule(String ruleName) {
-        debugger.pushRule(ruleName, lastLocationLine, lastLocationPos);
+        debugger.pushRule(ruleName, lastLocationLine, lastLocationPos, isBacktracking());
         rewindLookAheadText();
     }
 
@@ -266,7 +276,7 @@ public class DebuggerPlayer {
 
         // Parse tree construction
         if(!hidden) {
-            debugger.addToken(token);
+            debugger.addToken(token, isBacktracking());
         }
 
         rewindLookAheadText();
@@ -317,8 +327,16 @@ public class DebuggerPlayer {
         }
     }
 
+    public void playBeginBacktrack(int level) {
+        backtracking++;
+    }
+
+    public void playEndBacktrack(int level, boolean success) {
+        backtracking--;
+    }
+
     public void playRecognitionException(Exception e) {
-        debugger.addException(e);
+        debugger.addException(e, isBacktracking());
     }
 
     public void playBeginResync() {
@@ -327,6 +345,10 @@ public class DebuggerPlayer {
 
     public void playEndResync() {
         resyncing--;
+    }
+
+    public boolean isBacktracking() {
+        return backtracking > 0;
     }
 
     protected class LookAheadText {

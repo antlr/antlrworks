@@ -485,6 +485,14 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
             event(new DebuggerEvent(DebuggerEvent.REWIND, i));
         }
 
+        public void beginBacktrack(int level) {
+            event(new DebuggerEvent(DebuggerEvent.BEGIN_BACKTRACK, level));
+        }
+
+        public void endBacktrack(int level, boolean successful) {
+            event(new DebuggerEvent(DebuggerEvent.END_BACKTRACK, level, successful));
+        }
+
         public void recognitionException(RecognitionException e) {
             event(new DebuggerEvent(DebuggerEvent.RECOGNITION_EXCEPTION, e));
         }

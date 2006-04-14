@@ -222,7 +222,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
             p = p.substring(0, index);
 
         if(XJSystem.isWindows()) {
-            // Note: on Windows, we can something like "/C:/Document..."
+            // Note: on Windows, we can have something like "/C:/Document..."
             if(p.charAt(0) == '/')
                 p = p.substring(1);
 

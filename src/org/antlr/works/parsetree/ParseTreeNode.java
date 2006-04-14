@@ -34,4 +34,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public abstract class ParseTreeNode extends DefaultMutableTreeNode {    
     public abstract String getInfoString();
+    public abstract boolean isEnabled();
 }

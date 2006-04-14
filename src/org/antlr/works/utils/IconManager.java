@@ -43,7 +43,7 @@ public class IconManager {
     protected static IconManager shared = null;
     protected static Map cache = new HashMap();
 
-    public static IconManager shared() {
+    public static synchronized IconManager shared() {
         if(shared == null)
             shared = new IconManager();
         return shared;

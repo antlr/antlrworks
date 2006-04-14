@@ -108,6 +108,7 @@ public class ParseTreeGraphView extends GView {
     }
 
     public GElement buildGraph(TreeNode node, Graphics2D g) {
+        Color nodeColor = Color.black;
         String nodeLabel = node.toString();
 
         if(node instanceof ParseTree) {
@@ -118,6 +119,9 @@ public class ParseTreeGraphView extends GView {
             } else {
                 nodeLabel = payload.toString();
             }
+        } else if(node instanceof ParseTreeNode) {
+            if(!((ParseTreeNode)node).isEnabled())
+                nodeColor = Color.gray;
         }
 
         FontMetrics fm = g.getFontMetrics();
@@ -127,10 +131,14 @@ public class ParseTreeGraphView extends GView {
         GElementNode nodeElement = new GElementNode();
         nodeElement.setDraggable(DRAGGABLE);
         nodeElement.setSize(width, height);
+        
         // Must call setPositionOfUpperLeftCorner after
         // setting the size!!!!
         nodeElement.setPositionOfUpperLeftCorner(0, 0);
         nodeElement.setLabel(nodeLabel);
+
+        nodeElement.setColor(nodeColor);
+        nodeElement.setLabelColor(nodeColor);
 
         treeNodeToGElementMap.put(node, nodeElement);
         gelementToTreeNodeMap.put(nodeElement, node);

@@ -86,8 +86,8 @@ public class DialogPersonalInfo extends XJDialog {
         info.put(INFO_WHO, new Integer(whoCombo.getSelectedIndex()));
         info.put(INFO_SECTOR, new Integer(sectorCombo.getSelectedIndex()));
         info.put(INFO_DEVTOOL, new Integer(devtoolCombo.getSelectedIndex()));
-        info.put(INFO_YEARSLANG, programmingExperienceSpinner.getValue());
-        info.put(INFO_YEARSPROG, languageExperienceSpinner.getValue());
+        info.put(INFO_YEARSLANG, languageExperienceSpinner.getValue());
+        info.put(INFO_YEARSPROG, programmingExperienceSpinner.getValue());
         info.put(INFO_RESIDING, countryField.getText());
         info.put(INFO_CAFFEINE, funField.getText());
         AWPrefs.setPersonalInfo(info);
