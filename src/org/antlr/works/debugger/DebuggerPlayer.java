@@ -47,19 +47,19 @@ import java.util.Stack;
 public class DebuggerPlayer {
 
     protected Debugger debugger;
-
-    protected Stack lookAheadTextStack;
-
-    protected LookAheadText lastLookAheadText;
     protected DebuggerInputText inputText;
 
+    protected ContextInfo contextInfo;
+    protected Stack lookAheadTextStack;
+    protected LookAheadText lastLookAheadText;
+
     protected int resyncing = 0;
-    protected int backtracking = 0;
     protected int eventPlayedCount = 0;
 
     public DebuggerPlayer(Debugger debugger, DebuggerInputText inputText) {
         this.debugger = debugger;
         this.inputText = inputText;
+        contextInfo = new ContextInfo();
         lookAheadTextStack = new Stack();
     }
 
@@ -114,11 +114,12 @@ public class DebuggerPlayer {
         else
             inputText.rewindAll();
 
+        contextInfo.clear();
+
         lastLookAheadText = null;
         lookAheadTextStack.clear();
 
         resyncing = 0;
-        backtracking = 0;
         eventPlayedCount = 0;
     }
 
@@ -139,9 +140,6 @@ public class DebuggerPlayer {
     }
 
     public void playEvent(DebuggerEvent event, boolean lastEvent) {
-        debugger.eventListModel.addElement(event);
-        debugger.selectLastInfoListItem();
-
         switch(event.type) {
             case DebuggerEvent.ENTER_RULE:
                 playEnterRule(event.s);
@@ -222,6 +220,9 @@ public class DebuggerPlayer {
                 break;
         }
 
+        debugger.addEvent(event, contextInfo);
+        debugger.selectLastInfoTableItem();
+
         if(lastEvent) {
             playLocation();
         }
@@ -238,22 +239,27 @@ public class DebuggerPlayer {
     }
 
     public void playEnterSubrule(int i) {
+        contextInfo.enterSubrule(i);
         rewindLookAheadText();
     }
 
     public void playExitSubrule(int i) {
+        contextInfo.exitSubrule();
         rewindLookAheadText();
     }
 
     public void playEnterDecision(int i) {
+        contextInfo.enterDecision(i);
         pushLookAheadText(new Integer(i));
     }
 
     public void playExitDecision(int i) {
+        contextInfo.exitDecision();
         popLookAheadText(new Integer(i));
     }
 
     public void playEnterAlt(int alt) {
+        /* Currently ignored */
     }
 
     public void playLT(int index, Token token) {
@@ -263,7 +269,7 @@ public class DebuggerPlayer {
     }
 
     public void playConsumeToken(Token token, boolean hidden) {
-        if(resyncing>0) {
+        if(resyncing > 0) {
             rewindLookAheadText();
             inputText.consumeToken(token, DebuggerInputText.TOKEN_DEAD);
             return;
@@ -272,12 +278,12 @@ public class DebuggerPlayer {
         if(getLookAheadText() != null) {
             getLookAheadText().consumeToken(token, hidden);
             // If backtracking, also add the token to the parse tree
-            if(isBacktracking())
+            if(contextInfo.isBacktracking())
                 debugger.addToken(token);
             return;
         }
 
-        // Parse tree construction
+        // Build the parse tree only for visible token
         if(!hidden) {
             debugger.addToken(token);
         }
@@ -319,25 +325,33 @@ public class DebuggerPlayer {
     }
 
     public void playMark(int id) {
+        contextInfo.mark(id);
         if(getLookAheadText() != null) {
             getLookAheadText().setEventMark(id);
         }
     }
 
     public void playRewind(int id) {
+        contextInfo.rewind();
         if(getLookAheadText() != null) {
             getLookAheadText().setEventRewind(id);
         }
     }
 
     public void playBeginBacktrack(int level) {
-        backtracking++;
+        contextInfo.beginBacktrack(level);
+
+        /* Tell the debugger about the backtracking so the parse
+        tree coloring can be properly done */
         debugger.beginBacktrack(level);
     }
 
     public void playEndBacktrack(int level, boolean success) {
+        contextInfo.endBacktrack();
+
+        /* Tell the debugger about the backtracking so the parse
+        tree coloring can be properly done */
         debugger.endBacktrack(level, success);
-        backtracking--;
     }
 
     public void playRecognitionException(Exception e) {
@@ -352,17 +366,13 @@ public class DebuggerPlayer {
         resyncing--;
     }
 
-    public boolean isBacktracking() {
-        return backtracking > 0;
-    }
-
     protected class LookAheadText {
 
         public int start;
         public Object id;
 
         protected int startLTIndex;
-        protected java.util.List ltTokens;
+        protected List ltTokens;
 
         protected boolean enable;
         protected boolean mark;
@@ -403,8 +413,7 @@ public class DebuggerPlayer {
         }
 
         public void consumeToken(Token token, boolean hidden) {
-            // Display the token if not between mark/rewind or if backtracing
-            if(!mark || isBacktracking())
+            if(!mark)
                 inputText.consumeToken(token, hidden?DebuggerInputText.TOKEN_HIDDEN:DebuggerInputText.TOKEN_NORMAL);
         }
 
@@ -433,4 +442,77 @@ public class DebuggerPlayer {
         }
     }
 
+    protected class ContextInfo {
+
+        public Stack subrule = new Stack();
+        public Stack decision = new Stack();
+        public Stack mark = new Stack();
+        public Stack backtrack = new Stack();
+
+        public void enterSubrule(int i) {
+            subrule.push(new Integer(i));
+        }
+
+        public void exitSubrule() {
+            subrule.pop();
+        }
+
+        public int getSubrule() {
+            return getPeekValue(subrule);
+        }
+
+        public void enterDecision(int i) {
+            decision.push(new Integer(i));
+        }
+
+        public void exitDecision() {
+            decision.pop();
+        }
+
+        public int getDecision() {
+            return getPeekValue(decision);
+        }
+
+        public void mark(int i) {
+            mark.push(new Integer(i));
+        }
+
+        public void rewind() {
+            mark.pop();
+        }
+
+        public int getMark() {
+            return getPeekValue(mark);
+        }
+
+        public void beginBacktrack(int level) {
+            backtrack.push(new Integer(level));
+        }
+
+        public void endBacktrack() {
+            backtrack.pop();
+        }
+
+        public int getBacktrack() {
+            return getPeekValue(backtrack);
+        }
+
+        public boolean isBacktracking() {
+            return !backtrack.isEmpty();
+        }
+
+        public int getPeekValue(Stack s) {
+            if(s.isEmpty())
+                return -1;
+            else
+                return ((Integer)s.peek()).intValue();
+        }
+
+        public void clear() {
+            subrule.clear();
+            decision.clear();
+            mark.clear();
+            backtrack.clear();
+        }
+    }
 }

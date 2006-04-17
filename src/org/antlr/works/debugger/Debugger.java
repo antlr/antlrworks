@@ -54,6 +54,8 @@ import org.antlr.works.utils.TextPane;
 import org.antlr.works.utils.TextUtils;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.AttributeSet;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -73,18 +75,27 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     public static final boolean BUILD_AND_DEBUG = true;
     public static final boolean DEBUG = false;
 
+    public static final int INFO_COLUMN_COUNT = 0;  // 1st column of rule and even table
+    public static final int INFO_COLUMN_RULE = 1;   // 2nd column of rule table
+    public static final int INFO_COLUMN_EVENT = 1;  // 2nd column of event table
+    public static final int INFO_COLUMN_SUBRULE = 2;
+    public static final int INFO_COLUMN_DECISION = 3;
+    public static final int INFO_COLUMN_MARK = 4;
+    public static final int INFO_COLUMN_BACKTRACK = 5;
+
     protected JPanel panel;
     protected TextPane inputTextPane;
     protected TextPane outputTextPane;
 
     protected ParseTreePanel parseTreePanel;
 
-    protected JList infoList;
     protected JRadioButton displayEventButton;
-    protected JRadioButton displayStackButton;
+    protected JRadioButton displayRuleButton;
 
-    protected DefaultListModel stackListModel;
-    protected DefaultListModel eventListModel;
+    protected JTable infoTable;
+
+    protected RuleTableDataModel ruleTableDataModel;
+    protected EventTableDataModel eventTableDataModel;
 
     protected JLabel infoLabel;
     protected JButton debugButton;
@@ -112,7 +123,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     protected boolean running;
     protected JSplitPane ioSplitPane;
     protected JSplitPane ioTreeSplitPane;
-    protected JSplitPane treeStackSplitPane;
+    protected JSplitPane parseTreeInfoPanelSplitPane;
 
     protected long dateOfModificationOnDisk = 0;
 
@@ -123,13 +134,13 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     public void awake() {
         panel = new JPanel(new BorderLayout());
 
-        treeStackSplitPane = new JSplitPane();
-        treeStackSplitPane.setBorder(null);
-        treeStackSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        treeStackSplitPane.setLeftComponent(createTreePanel());
-        treeStackSplitPane.setRightComponent(createListInfoPanel());
-        treeStackSplitPane.setContinuousLayout(true);
-        treeStackSplitPane.setOneTouchExpandable(true);
+        parseTreeInfoPanelSplitPane = new JSplitPane();
+        parseTreeInfoPanelSplitPane.setBorder(null);
+        parseTreeInfoPanelSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        parseTreeInfoPanelSplitPane.setLeftComponent(createTreePanel());
+        parseTreeInfoPanelSplitPane.setRightComponent(createInfoPanel());
+        parseTreeInfoPanelSplitPane.setContinuousLayout(true);
+        parseTreeInfoPanelSplitPane.setOneTouchExpandable(true);
 
         ioSplitPane = new JSplitPane();
         ioSplitPane.setBorder(null);
@@ -143,7 +154,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         ioTreeSplitPane.setBorder(null);
         ioTreeSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         ioTreeSplitPane.setLeftComponent(ioSplitPane);
-        ioTreeSplitPane.setRightComponent(treeStackSplitPane);
+        ioTreeSplitPane.setRightComponent(parseTreeInfoPanelSplitPane);
         ioTreeSplitPane.setContinuousLayout(true);
         ioTreeSplitPane.setOneTouchExpandable(true);
 
@@ -159,7 +170,8 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     }
 
     public void componentShouldLayout() {
-        treeStackSplitPane.setDividerLocation(0.7);
+        parseTreeInfoPanelSplitPane.setDividerLocation(0.5);
+        ioTreeSplitPane.setDividerLocation(0.2);
         ioSplitPane.setDividerLocation(0.2);
     }
 
@@ -200,7 +212,6 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
 
         JScrollPane textScrollPane = new JScrollPane(outputTextPane);
         textScrollPane.setWheelScrollingEnabled(true);
-        textScrollPane.setPreferredSize(new Dimension(200, 50));
 
         return textScrollPane;
     }
@@ -211,48 +222,64 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         return parseTreePanel;
     }
 
-    public JPanel createListInfoPanel() {
-        stackListModel = new StackListModel();
-        eventListModel = new EventListModel();
+    public JPanel createInfoPanel() {
+        ruleTableDataModel = new RuleTableDataModel();
+        eventTableDataModel = new EventTableDataModel();
 
         displayEventButton = new JRadioButton("Events");
         displayEventButton.setFocusable(false);
         displayEventButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                infoList.setModel(eventListModel);
+                setInfoTableModel(eventTableDataModel);
             }
         });
 
-        displayStackButton = new JRadioButton("Stack");
-        displayStackButton.setFocusable(false);
-        displayStackButton.addActionListener(new ActionListener() {
+        displayRuleButton = new JRadioButton("Rules");
+        displayRuleButton.setFocusable(false);
+        displayRuleButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                infoList.setModel(stackListModel);
+                setInfoTableModel(ruleTableDataModel);
             }
         });
 
         displayEventButton.setSelected(false);
-        displayStackButton.setSelected(true);
+        displayRuleButton.setSelected(true);
 
         ButtonGroup bp = new ButtonGroup();
         bp.add(displayEventButton);
-        bp.add(displayStackButton);
+        bp.add(displayRuleButton);
 
-        infoList = new JList(stackListModel);
-        infoList.setPrototypeCellValue("ThisIsARuleName");
+        infoTable = new JTable();
+        infoTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        infoTable.setDefaultRenderer(Integer.class, new InfoTableCellRenderer());
+        setInfoTableModel(ruleTableDataModel);
 
-        JScrollPane listScrollPane = new JScrollPane(infoList);
-        listScrollPane.setWheelScrollingEnabled(true);
+        JScrollPane infoScrollPane = new JScrollPane(infoTable);
+        infoScrollPane.setWheelScrollingEnabled(true);
 
-        JPanel infoListControlPanel = new JPanel();
-        infoListControlPanel.add(displayStackButton);
-        infoListControlPanel.add(displayEventButton);
+        JPanel infoControlPanel = new JPanel();
+        infoControlPanel.add(displayRuleButton);
+        infoControlPanel.add(displayEventButton);
 
-        JPanel infoListPanel = new JPanel(new BorderLayout());
-        infoListPanel.add(infoListControlPanel, BorderLayout.SOUTH);
-        infoListPanel.add(listScrollPane, BorderLayout.CENTER);
+        JPanel infoPanel = new JPanel(new BorderLayout());
+        infoPanel.add(infoControlPanel, BorderLayout.SOUTH);
+        infoPanel.add(infoScrollPane, BorderLayout.CENTER);
 
-        return infoListPanel;
+        return infoPanel;
+    }
+
+    public void setInfoTableModel(AbstractTableModel model) {
+        infoTable.setModel(model);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setMaxWidth(35);
+        if(model == eventTableDataModel) {
+            infoTable.getColumnModel().getColumn(INFO_COLUMN_EVENT).setMinWidth(100);
+            infoTable.getColumnModel().getColumn(INFO_COLUMN_SUBRULE).setMaxWidth(30);
+            infoTable.getColumnModel().getColumn(INFO_COLUMN_DECISION).setMaxWidth(30);
+            infoTable.getColumnModel().getColumn(INFO_COLUMN_MARK).setMaxWidth(30);
+            infoTable.getColumnModel().getColumn(INFO_COLUMN_BACKTRACK).setMaxWidth(30);
+        }
+
+        selectLastInfoTableItem();
     }
 
     public Box createControlPanel() {
@@ -269,11 +296,11 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         box.add(Box.createHorizontalStrut(20));
         box.add(createBreakComboBox());
         box.add(Box.createHorizontalGlue());
-        box.add(createInfoPanel());
+        box.add(createInfoLabelPanel());
         return box;
     }
 
-    public JComponent createInfoPanel() {
+    public JComponent createInfoLabelPanel() {
         infoLabel = new JLabel();
         return infoLabel;
     }
@@ -498,8 +525,19 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         return editor.getRules();
     }
 
-    public List getEvents() {
-        return recorder.getCurrentEvents();
+    public String getEventsAsString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(eventTableDataModel.getHeadersAsString());
+        sb.append("\n");
+
+        List events = eventTableDataModel.events;
+        for(int i=0; i<events.size(); i++) {
+            sb.append(i);
+            sb.append(":\t");
+            sb.append(events.get(i).toString());
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
     public void launchLocalDebugger(boolean buildAndDebug) {
@@ -603,8 +641,8 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
 
         backtrackStack = new Stack();
 
-        stackListModel.removeAllElements();
-        eventListModel.removeAllElements();
+        ruleTableDataModel.clear();
+        eventTableDataModel.clear();
 
         TreeNode node = (TreeNode)playCallStack.peek();
 
@@ -632,11 +670,13 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         }
     }
 
-    public void selectLastInfoListItem() {
+    public void selectLastInfoTableItem() {
+        int count;
         if(displayEventButton.isSelected())
-            infoList.ensureIndexIsVisible(eventListModel.getSize()-1);
+            count = eventTableDataModel.events.size();
         else
-            infoList.ensureIndexIsVisible(stackListModel.getSize()-1);
+            count = ruleTableDataModel.rules.size();
+        infoTable.scrollRectToVisible(infoTable.getCellRect(count-1, 0, true));
     }
 
     public int computeAbsoluteGrammarIndex(int lineIndex, int pos) {
@@ -665,6 +705,10 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         return line.position+(c-1);
     }
 
+    public void addEvent(DebuggerEvent event, DebuggerPlayer.ContextInfo info) {
+        eventTableDataModel.add(event, info);
+    }
+
     public void playEvents(List events, boolean reset) {
         player.playEvents(events, reset);
     }
@@ -680,13 +724,13 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         updateParseTree(ruleNode);
 
         playCallStack.push(ruleNode);
-        stackListModel.addElement(ruleNode);
-        selectLastInfoListItem();
+        ruleTableDataModel.add(ruleNode);
+        selectLastInfoTableItem();
     }
 
     public void popRule(String ruleName) {
-        stackListModel.removeElement(playCallStack.peek());
-        selectLastInfoListItem();
+        ruleTableDataModel.remove(playCallStack.peek());
+        selectLastInfoTableItem();
         playCallStack.pop();
     }
 
@@ -807,23 +851,194 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
 
         i = (Integer)data.get(KEY_SPLITPANE_C);
         if(i != null)
-            treeStackSplitPane.setDividerLocation(i.intValue());
+            parseTreeInfoPanelSplitPane.setDividerLocation(i.intValue());
     }
 
     public Map getPersistentData() {
         Map data = new HashMap();
         data.put(KEY_SPLITPANE_A, new Integer(ioSplitPane.getDividerLocation()));
         data.put(KEY_SPLITPANE_B, new Integer(ioTreeSplitPane.getDividerLocation()));
-        data.put(KEY_SPLITPANE_C, new Integer(treeStackSplitPane.getDividerLocation()));
+        data.put(KEY_SPLITPANE_C, new Integer(parseTreeInfoPanelSplitPane.getDividerLocation()));
         return data;
     }
 
-    protected class StackListModel extends DefaultListModel {
-        public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); }
+    protected class RuleTableDataModel extends AbstractTableModel {
+
+        protected List rules = new ArrayList();
+
+        public void add(Object rule) {
+            rules.add(rule);
+            fireTableRowsInserted(rules.size()-1, rules.size()-1);
+        }
+
+        public void remove(Object rule) {
+            rules.remove(rule);
+            fireTableDataChanged();
+        }
+
+        public void clear() {
+            rules.clear();
+            fireTableDataChanged();
+        }
+
+        public int getRowCount() {
+            return rules.size();
+        }
+
+        public int getColumnCount() {
+            return 2;
+        }
+
+        public String getColumnName(int column) {
+            switch(column) {
+                case INFO_COLUMN_COUNT: return "#";
+                case INFO_COLUMN_RULE: return "Rule";
+            }
+            return super.getColumnName(column);
+        }
+
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            switch(columnIndex) {
+                case INFO_COLUMN_COUNT: return new Integer(rowIndex);
+                case INFO_COLUMN_RULE: return rules.get(rowIndex);
+            }
+            return null;
+        }
     }
 
-    protected class EventListModel extends DefaultListModel {
-        public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); }
+    protected class EventTableDataModel extends AbstractTableModel {
+
+        protected List events = new ArrayList();
+
+        public void add(DebuggerEvent event, DebuggerPlayer.ContextInfo info) {
+            events.add(new EventInfo(event, info));
+            fireTableRowsInserted(events.size()-1, events.size()-1);
+        }
+
+        public void clear() {
+            events.clear();
+            fireTableDataChanged();
+        }
+
+        public int getRowCount() {
+            return events.size();
+        }
+
+        public int getColumnCount() {
+            return 6;
+        }
+
+        public String getColumnName(int column) {
+            switch(column) {
+                case INFO_COLUMN_COUNT: return "#";
+                case INFO_COLUMN_EVENT: return "Event";
+                case INFO_COLUMN_SUBRULE: return "SR";
+                case INFO_COLUMN_DECISION: return "DEC";
+                case INFO_COLUMN_MARK: return "MK";
+                case INFO_COLUMN_BACKTRACK: return "BK";
+            }
+            return super.getColumnName(column);
+        }
+
+        public Class getColumnClass(int columnIndex) {
+            switch(columnIndex) {
+                case INFO_COLUMN_COUNT: return Integer.class;
+                case INFO_COLUMN_EVENT: return String.class;
+                case INFO_COLUMN_SUBRULE: return Integer.class;
+                case INFO_COLUMN_DECISION: return Integer.class;
+                case INFO_COLUMN_MARK: return Integer.class;
+                case INFO_COLUMN_BACKTRACK: return Integer.class;
+            }
+            return super.getColumnClass(columnIndex);
+        }
+
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            EventInfo info = (EventInfo) events.get(rowIndex);
+            switch(columnIndex) {
+                case INFO_COLUMN_COUNT: return new Integer(rowIndex);
+                case INFO_COLUMN_EVENT: return info.event;
+                case INFO_COLUMN_SUBRULE: return info.getSubrule();
+                case INFO_COLUMN_DECISION: return info.getDecision();
+                case INFO_COLUMN_MARK: return info.getMark();
+                case INFO_COLUMN_BACKTRACK: return info.getBacktrack();
+            }
+            return null;
+        }
+
+        public String getHeadersAsString() {
+            return "#\tEvent\tSubrule\tDecision\tMark\tBacktrack";
+        }
+
+        public class EventInfo {
+
+            public DebuggerEvent event;
+            public int subrule;
+            public int decision;
+            public int mark;
+            public int backtrack;
+
+            public EventInfo(DebuggerEvent event, DebuggerPlayer.ContextInfo info) {
+                this.event = event;
+                this.subrule = info.getSubrule();
+                this.decision = info.getDecision();
+                this.mark = info.getMark();
+                this.backtrack = info.getBacktrack();
+            }
+
+            public Object getSubrule() {
+                return subrule==-1?null:new Integer(subrule);
+            }
+
+            public Object getDecision() {
+                return decision==-1?null:new Integer(decision);
+            }
+
+            public Object getMark() {
+                return mark==-1?null:new Integer(mark);
+            }
+
+            public Object getBacktrack() {
+                return backtrack==-1?null:new Integer(backtrack);
+            }
+
+            public String getTextForExport(int value) {
+                if(value == -1)
+                    return "-";
+                else
+                    return String.valueOf(value);
+            }
+
+            public String toString() {
+                StringBuffer sb = new StringBuffer();
+                sb.append(event.toString());
+                sb.append("\t");
+                sb.append(getTextForExport(subrule));
+                sb.append("\t");
+                sb.append(getTextForExport(decision));
+                sb.append("\t");
+                sb.append(getTextForExport(mark));
+                sb.append("\t");
+                sb.append(getTextForExport(backtrack));
+                return sb.toString();
+            }
+        }
+    }
+
+    protected class InfoTableCellRenderer extends DefaultTableCellRenderer {
+
+        public InfoTableCellRenderer() {
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if(column == INFO_COLUMN_COUNT) {
+                setHorizontalAlignment(JLabel.RIGHT);
+                setHorizontalTextPosition(SwingConstants.RIGHT);
+            } else {
+                setHorizontalAlignment(JLabel.CENTER);
+                setHorizontalTextPosition(SwingConstants.CENTER);
+            }
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);    //To change body of overridden methods use File | Settings | File Templates.
+        }
     }
 
     protected class Backtrack {
@@ -835,7 +1050,13 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
             this.level = level;
         }
 
+        /** Node added to the backtrack object are displayed in blue
+         * by default. The definitive color will be applied by the end()
+         * method.
+         */
+
         public void addNode(DebuggerParseTreeNode node) {
+            node.setColor(AWPrefs.getLookaheadTokenColor());
             nodes.add(node);
         }
 
@@ -857,8 +1078,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         protected Color getColor(boolean success) {
             Color c = success?Color.green:Color.red;
             for(int i=1; i<level; i++) {
-                c = c.darker();
-                c = c.darker();
+                c = c.darker().darker();
             }
             return c;
         }

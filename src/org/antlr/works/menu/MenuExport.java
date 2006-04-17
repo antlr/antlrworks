@@ -68,18 +68,9 @@ public class MenuExport extends MenuAbstract {
         if(file == null)
             return;
 
-        StringBuffer text = new StringBuffer();
-        List events = editor.debugger.getEvents();
-        for(int i=0; i<events.size(); i++) {
-            text.append(i + 1);
-            text.append(": ");
-            text.append(events.get(i).toString());
-            text.append("\n");
-        }
-
         try {
             FileWriter writer = new FileWriter(file);
-            writer.write(text.toString());
+            writer.write(editor.debugger.getEventsAsString());
             writer.close();
         } catch (IOException e) {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot save text file: "+file+"\nError: "+e);
