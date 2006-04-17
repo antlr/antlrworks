@@ -41,6 +41,7 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.generate.DialogGenerate;
+import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.parsetree.ParseTreeNode;
 import org.antlr.works.parsetree.ParseTreePanel;
@@ -106,11 +107,14 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     protected DebuggerPlayer player;
 
     protected Stack playCallStack;
+    protected Stack backtrackStack;
 
     protected boolean running;
     protected JSplitPane ioSplitPane;
     protected JSplitPane ioTreeSplitPane;
     protected JSplitPane treeStackSplitPane;
+
+    protected long dateOfModificationOnDisk = 0;
 
     public Debugger(CEditorGrammar editor) {
         this.editor = editor;
@@ -412,8 +416,18 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         goToEndButton.setEnabled(enabled && !atEnd);
     }
 
-    public org.antlr.works.grammar.EngineGrammar getGrammar() {
+    public EngineGrammar getGrammar() {
         return editor.getEngineGrammar();
+    }
+
+    public boolean needsToGenerateGrammar() {
+        return dateOfModificationOnDisk != editor.getDocument().getDateOfModificationOnDisk()
+                || editor.getDocument().isDirty();
+    }
+
+    public void grammarGenerated() {
+        editor.getDocument().performAutoSave();
+        dateOfModificationOnDisk = editor.getDocument().getDateOfModificationOnDisk();
     }
 
     public void queryGrammarBreakpoints() {
@@ -490,7 +504,8 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
 
     public void launchLocalDebugger(boolean buildAndDebug) {
         // If the grammar is dirty, build it anyway
-        if(!buildAndDebug && editor.getEngineGrammar().isDirty())
+
+        if(needsToGenerateGrammar())
             buildAndDebug = true;
 
         if(buildAndDebug || !debuggerLocal.isRequiredFilesExisting()) {
@@ -499,6 +514,8 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
             if(dialog.runModal() == XJDialog.BUTTON_OK) {
                 debuggerLocal.setOutputPath(dialog.getOutputPath());
                 debuggerLocal.prepareAndLaunch(BUILD_AND_DEBUG);
+
+                grammarGenerated();
             }
         } else {
             debuggerLocal.prepareAndLaunch(DEBUG);
@@ -584,6 +601,8 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         playCallStack = new Stack();
         playCallStack.push(new Debugger.DebuggerParseTreeNode("root"));
 
+        backtrackStack = new Stack();
+
         stackListModel.removeAllElements();
         eventListModel.removeAllElements();
 
@@ -594,6 +613,9 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     }
 
     public void updateParseTree(TreeNode node) {
+        if(node == null)
+            return;
+
         parseTreePanel.refresh();
         parseTreePanel.scrollNodeToVisible(node);
     }
@@ -647,11 +669,12 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         player.playEvents(events, reset);
     }
 
-    public void pushRule(String ruleName, int line, int pos, boolean backtracking) {
+    public void pushRule(String ruleName, int line, int pos) {
         DebuggerParseTreeNode parentRuleNode = (DebuggerParseTreeNode)playCallStack.peek();
         DebuggerParseTreeNode ruleNode = new DebuggerParseTreeNode(ruleName);
-        ruleNode.setEnabled(!backtracking);
         ruleNode.setPosition(line, pos);
+
+        addNodeToCurrentBacktrack(ruleNode);
 
         parentRuleNode.add(ruleNode);
         updateParseTree(ruleNode);
@@ -667,20 +690,43 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         playCallStack.pop();
     }
 
-    public void addToken(Token token, boolean backtracking) {
+    public void addToken(Token token) {
         DebuggerParseTreeNode ruleNode = (DebuggerParseTreeNode)playCallStack.peek();
         DebuggerParseTreeNode elementNode = new DebuggerParseTreeNode(token);
-        elementNode.setEnabled(!backtracking);
+
+        addNodeToCurrentBacktrack(elementNode);
+
         ruleNode.add(elementNode);
         updateParseTree(elementNode);
     }
 
-    public void addException(Exception e, boolean backtracking) {
+    public void addException(Exception e) {
         DebuggerParseTreeNode ruleNode = (DebuggerParseTreeNode)playCallStack.peek();
         DebuggerParseTreeNode errorNode = new DebuggerParseTreeNode(e);
-        errorNode.setEnabled(!backtracking);
+
+        addNodeToCurrentBacktrack(errorNode);
+
         ruleNode.add(errorNode);
         updateParseTree(errorNode);
+    }
+
+    public void beginBacktrack(int level) {
+        backtrackStack.push(new Backtrack(level));
+    }
+
+    public void endBacktrack(int level, boolean success) {
+        Backtrack b = (Backtrack) backtrackStack.pop();
+        b.end(success);
+
+        updateParseTree(b.getLastNode());
+    }
+
+    public void addNodeToCurrentBacktrack(DebuggerParseTreeNode node) {
+        if(backtrackStack.isEmpty())
+            return;
+
+        Backtrack b = (Backtrack) backtrackStack.peek();
+        b.addNode(node);
     }
 
     public void recorderStatusDidChange() {
@@ -780,6 +826,45 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         public Object getElementAt(int index) { return "#"+(index+1)+" "+super.getElementAt(index); }
     }
 
+    protected class Backtrack {
+
+        public int level;
+        public LinkedList nodes = new LinkedList();
+
+        public Backtrack(int level) {
+            this.level = level;
+        }
+
+        public void addNode(DebuggerParseTreeNode node) {
+            nodes.add(node);
+        }
+
+        public void end(boolean success) {
+            Color color = getColor(success);
+            for (int i = 0; i < nodes.size(); i++) {
+                DebuggerParseTreeNode node = (DebuggerParseTreeNode) nodes.get(i);
+                node.setColor(color);
+            }
+        }
+
+        public ParseTreeNode getLastNode() {
+            if(nodes.isEmpty())
+                return null;
+            else
+                return (ParseTreeNode) nodes.getLast();
+        }
+
+        protected Color getColor(boolean success) {
+            Color c = success?Color.green:Color.red;
+            for(int i=1; i<level; i++) {
+                c = c.darker();
+                c = c.darker();
+            }
+            return c;
+        }
+
+    }
+
     public class DebuggerParseTreeNode extends ParseTreeNode {
 
         protected String s;
@@ -789,7 +874,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         protected int line;
         protected int pos;
 
-        protected boolean enabled = true;
+        protected Color color = Color.black;
 
         public DebuggerParseTreeNode(String s) {
             this.s = s;
@@ -821,12 +906,12 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
             this.pos = pos;
         }
 
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
+        public void setColor(Color color) {
+            this.color = color;
         }
 
-        public boolean isEnabled() {
-            return enabled;
+        public Color getColor() {
+            return color;
         }
 
         public String toString() {

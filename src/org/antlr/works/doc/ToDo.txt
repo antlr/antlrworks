@@ -1,6 +1,7 @@
 
 * Prio 1
 - about box background white on Windows (check on Linux)
+- indicate Java VM version used in about box
 - tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
 - links to the different DOT implementation per system so user know what to do the first time
 - build and debug with custom class path and main class

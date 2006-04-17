@@ -1,6 +1,7 @@
 package org.antlr.works.parsetree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -34,5 +35,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public abstract class ParseTreeNode extends DefaultMutableTreeNode {    
     public abstract String getInfoString();
-    public abstract boolean isEnabled();
+    public abstract Color getColor();
 }

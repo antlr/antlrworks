@@ -228,7 +228,7 @@ public class DebuggerPlayer {
     }
 
     public void playEnterRule(String ruleName) {
-        debugger.pushRule(ruleName, lastLocationLine, lastLocationPos, isBacktracking());
+        debugger.pushRule(ruleName, lastLocationLine, lastLocationPos);
         rewindLookAheadText();
     }
 
@@ -271,12 +271,15 @@ public class DebuggerPlayer {
 
         if(getLookAheadText() != null) {
             getLookAheadText().consumeToken(token, hidden);
+            // If backtracking, also add the token to the parse tree
+            if(isBacktracking())
+                debugger.addToken(token);
             return;
         }
 
         // Parse tree construction
         if(!hidden) {
-            debugger.addToken(token, isBacktracking());
+            debugger.addToken(token);
         }
 
         rewindLookAheadText();
@@ -329,14 +332,16 @@ public class DebuggerPlayer {
 
     public void playBeginBacktrack(int level) {
         backtracking++;
+        debugger.beginBacktrack(level);
     }
 
     public void playEndBacktrack(int level, boolean success) {
+        debugger.endBacktrack(level, success);
         backtracking--;
     }
 
     public void playRecognitionException(Exception e) {
-        debugger.addException(e, isBacktracking());
+        debugger.addException(e);
     }
 
     public void playBeginResync() {
@@ -398,7 +403,8 @@ public class DebuggerPlayer {
         }
 
         public void consumeToken(Token token, boolean hidden) {
-            if(!mark)
+            // Display the token if not between mark/rewind or if backtracing
+            if(!mark || isBacktracking())
                 inputText.consumeToken(token, hidden?DebuggerInputText.TOKEN_HIDDEN:DebuggerInputText.TOKEN_NORMAL);
         }
 

@@ -120,8 +120,7 @@ public class ParseTreeGraphView extends GView {
                 nodeLabel = payload.toString();
             }
         } else if(node instanceof ParseTreeNode) {
-            if(!((ParseTreeNode)node).isEnabled())
-                nodeColor = Color.gray;
+            nodeColor = ((ParseTreeNode)node).getColor();
         }
 
         FontMetrics fm = g.getFontMetrics();

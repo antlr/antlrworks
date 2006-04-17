@@ -40,6 +40,7 @@ import org.antlr.works.parsetree.ParseTreeNode;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import java.awt.*;
 import java.util.Enumeration;
 
 public class EditorInterpreterTreeModel extends DefaultTreeModel {
@@ -107,10 +108,10 @@ public class EditorInterpreterTreeModel extends DefaultTreeModel {
                 return null;
         }
 
-        public boolean isEnabled() {
-            return true;
+        public Color getColor() {
+            return Color.black;
         }
-        
+
         public String getInfoString() {
             StringBuffer info = new StringBuffer();
             Object payload = getPayload();
