@@ -1,5 +1,6 @@
 
 * Prio 1
+- use only one tab per generation (or other operation that can be uniquely identified)
 - about box background white on Windows (check on Linux)
 - indicate Java VM version used in about box
 - tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)

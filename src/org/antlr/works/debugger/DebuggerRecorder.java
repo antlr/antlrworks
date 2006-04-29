@@ -485,6 +485,10 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
             event(new DebuggerEvent(DebuggerEvent.REWIND, i));
         }
 
+        public void rewind() {
+            /** This event is currently ignored */
+        }
+
         public void beginBacktrack(int level) {
             event(new DebuggerEvent(DebuggerEvent.BEGIN_BACKTRACK, level));
         }
@@ -515,6 +519,46 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
         public void terminate() {
             event(new DebuggerEvent(DebuggerEvent.TERMINATE));
+        }
+
+        public void nilNode(int ID) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void setSubRuleRoot(String name, int ID) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void labelRoot(String label, int ID) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void createNode(int ID, String text, int type) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void createNode(int ID, int tokenIndex) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void becomeRoot(int newRootID, int oldRootID) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void addChild(int rootID, int childID) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void close(int rootID) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void trimNilRoot(int ID) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void setTokenBoundaries(int ID, int tokenStartIndex, int tokenStopIndex) {
+            //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 
