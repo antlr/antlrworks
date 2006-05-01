@@ -336,7 +336,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
         for (Iterator iter = tokens.values().iterator(); iter.hasNext();) {
             TokenInfo info = (TokenInfo) iter.next();
 
-            if(mouseIndex >= info.start && mouseIndex < info.end)
+            if(index >= info.start && index < info.end)
                 return info;
         }
         return null;

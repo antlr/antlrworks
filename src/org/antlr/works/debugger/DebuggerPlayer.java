@@ -68,17 +68,13 @@ public class DebuggerPlayer {
         inputText.close();        
     }
 
-    /** Called by playEnterDecision()
-     *
-     */
+    /** Called by playEnterDecision() */
 
     public void pushLookAheadText(Object id) {
         lookAheadTextStack.push(new LookAheadText(id));
     }
 
-    /** Called by playExitDecision()
-     *
-     */
+    /** Called by playExitDecision() */
 
     public void popLookAheadText(Object id) {
         if(lookAheadTextStack.empty()) {
@@ -93,9 +89,7 @@ public class DebuggerPlayer {
             debugger.editor.console.println("The top-of-stack LookAheadText doesn't correspond to id "+id+" ("+lat.id+")", Console.LEVEL_WARNING);
     }
 
-    /** Called by playRewind()
-     *
-     */
+    /** Called by playRewind() */
 
     public void rewindLookAheadText() {
         if(lastLookAheadText != null) {
@@ -223,6 +217,26 @@ public class DebuggerPlayer {
 
             case DebuggerEvent.END_RESYNC:
                 playEndResync();
+                break;
+
+            case DebuggerEvent.NIL_NODE:
+                playNilNode((DebuggerEventNilNode)event);
+                break;
+
+            case DebuggerEvent.CREATE_NODE:
+                playCreateNode((DebuggerEventCreateNode)event);
+                break;
+
+            case DebuggerEvent.BECOME_ROOT:
+                playBecomeRoot((DebuggerEventBecomeRoot)event);
+                break;
+
+            case DebuggerEvent.ADD_CHILD:
+                playAddChild((DebuggerEventAddChild)event);
+                break;
+
+            case DebuggerEvent.SET_TOKEN_BOUNDARIES:
+                playSetTokenBoundaries((DebuggerEventSetTokenBoundaries)event);
                 break;
 
             case DebuggerEvent.TERMINATE:
@@ -380,6 +394,26 @@ public class DebuggerPlayer {
 
     public void playEndResync() {
         resyncing--;
+    }
+
+    public void playNilNode(DebuggerEventNilNode event) {
+        debugger.astNilNode(event.id);
+    }
+
+    public void playCreateNode(DebuggerEventCreateNode event) {
+        debugger.astCreateNode(event.id, inputText.getTokenInfoAtIndex(event.tokenIndex).token);
+    }
+
+    public void playBecomeRoot(DebuggerEventBecomeRoot event) {
+        debugger.astBecomeRoot(event.newRootID, event.oldRootID);
+    }
+
+    public void playAddChild(DebuggerEventAddChild event) {
+        debugger.astAddChild(event.rootID, event.childID);
+    }
+
+    public void playSetTokenBoundaries(DebuggerEventSetTokenBoundaries event) {
+        debugger.astSetTokenBoundaries(event.id, event.startIndex, event.stopIndex);
     }
 
     protected class LookAheadText {

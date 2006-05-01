@@ -31,8 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger.events;
 
-import org.antlr.runtime.Token;
-
 public class DebuggerEvent {
 
     public static final int NO_EVENT = -1;
@@ -64,86 +62,6 @@ public class DebuggerEvent {
     public static final int ADD_CHILD = 24;
     public static final int SET_TOKEN_BOUNDARIES = 25;
     public static final int RECOGNITION_EXCEPTION = 26;
-
-    public static DebuggerEvent createLocation(int line, int pos) {
-        return new DebuggerEventLocation(line, pos);
-    }
-
-    public static DebuggerEvent createConsumeToken(Token token) {
-        return new DebuggerEventConsumeToken(token);
-    }
-
-    public static DebuggerEvent createConsumeHiddenToken(Token token) {
-        return new DebuggerEventConsumeHiddenToken(token);
-    }
-
-    public static DebuggerEvent createLT(int i, Token token) {
-        return new DebuggerEventLT(i, token);
-    }
-
-    public static DebuggerEvent createEnterRule(String name) {
-        return new DebuggerEventEnterRule(name);
-    }
-
-    public static DebuggerEvent createExitRule(String name) {
-        return new DebuggerEventExitRule(name);
-    }
-
-    public static DebuggerEvent createEnterSubRule(int decision) {
-        return new DebuggerEventEnterSubRule(decision);
-    }
-
-    public static DebuggerEvent createExitSubRule(int decision) {
-        return new DebuggerEventExitSubRule(decision);
-    }
-
-    public static DebuggerEvent createEnterDecision(int decision) {
-        return new DebuggerEventEnterDecision(decision);
-    }
-
-    public static DebuggerEvent createExitDecision(int decision) {
-        return new DebuggerEventExitDecision(decision);
-    }
-
-    public static DebuggerEvent createEnterAlt(int alt) {
-        return new DebuggerEventEnterAlt(alt);
-    }
-
-    public static DebuggerEvent createMark(int i) {
-        return new DebuggerEventMark(i);
-    }
-
-    public static DebuggerEvent createRewind(int i) {
-        return new DebuggerEventRewind(i);
-    }
-
-    public static DebuggerEvent createBeginBacktrack(int level) {
-        return new DebuggerEventBeginBacktrack(level);
-    }
-
-    public static DebuggerEvent createEndBacktrack(int level, boolean successful) {
-        return new DebuggerEventEndBacktrack(level, successful);
-    }
-
-    public static DebuggerEvent createRecognitionException(Exception e) {
-        return new DebuggerEventRecognitionException(e);
-    }
-
-    public static DebuggerEvent createBeginResync() {
-        return new DebuggerEvent(BEGIN_RESYNC);
-    }
-
-    public static DebuggerEvent createEndResync() {
-        return new DebuggerEvent(END_RESYNC);
-    }
-
-    public static DebuggerEvent createCommence() {
-        return new DebuggerEvent(COMMENCE);
-    }
-
-    public static DebuggerEvent createTerminate() {
-        return new DebuggerEvent(TERMINATE);
-    }
 
     public int type;
 

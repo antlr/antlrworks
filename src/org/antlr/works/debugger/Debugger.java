@@ -38,6 +38,8 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.debugger.ast.DebuggerASTModel;
+import org.antlr.works.debugger.ast.DebuggerASTPanel;
 import org.antlr.works.debugger.events.DebuggerEvent;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
@@ -89,6 +91,8 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     protected TextPane outputTextPane;
 
     protected ParseTreePanel parseTreePanel;
+    protected DebuggerASTPanel astPanel;
+    protected DebuggerASTModel astModel;
 
     protected JRadioButton displayEventButton;
     protected JRadioButton displayRuleButton;
@@ -171,9 +175,15 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     }
 
     public void componentShouldLayout() {
-        parseTreeInfoPanelSplitPane.setDividerLocation(0.5);
+        parseTreeInfoPanelSplitPane.setDividerLocation(0.6);
         ioTreeSplitPane.setDividerLocation(0.2);
         ioSplitPane.setDividerLocation(0.2);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                astPanel.componentShouldLayout();
+            }
+        });
     }
 
     public Container getWindowComponent() {
@@ -220,7 +230,17 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     public JComponent createTreePanel() {
         parseTreePanel = new ParseTreePanel(new DefaultTreeModel(null));
         parseTreePanel.setDelegate(this);
-        return parseTreePanel;
+
+        astModel = new DebuggerASTModel();
+        astPanel = new DebuggerASTPanel();
+        astPanel.setModel(astModel);
+
+        JTabbedPane tabPane = new JTabbedPane();
+        tabPane.setTabPlacement(JTabbedPane.BOTTOM);
+        tabPane.add("Parse Tree", parseTreePanel);
+        tabPane.add("AST", astPanel);
+
+        return tabPane;
     }
 
     public JPanel createInfoPanel() {
@@ -727,10 +747,12 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         DebuggerParseTreeNode ruleNode = new DebuggerParseTreeNode(ruleName);
         ruleNode.setPosition(line, pos);
 
-        addNodeToCurrentBacktrack(ruleNode);
-
         parentRuleNode.add(ruleNode);
         updateParseTree(ruleNode);
+
+        astModel.pushRule(ruleName);
+
+        addNodeToCurrentBacktrack(ruleNode);
 
         playCallStack.push(ruleNode);
         ruleTableDataModel.add(ruleNode);
@@ -738,6 +760,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     }
 
     public void popRule(String ruleName) {
+        astModel.popRule();
         ruleTableDataModel.remove(playCallStack.peek());
         selectLastInfoTableItem();
         playCallStack.pop();
@@ -780,6 +803,30 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
 
         Backtrack b = (Backtrack) backtrackStack.peek();
         b.addNode(node);
+    }
+
+    public void astNilNode(int id) {
+        astModel.nilNode(id);
+        astModel.fireDataChanged();
+    }
+
+    public void astCreateNode(int id, Token token) {
+        astModel.createNode(id, token);
+        astModel.fireDataChanged();
+    }
+
+    public void astBecomeRoot(int newRootID, int oldRootID) {
+        astModel.becomeRoot(newRootID, oldRootID);
+        astModel.fireDataChanged();
+    }
+
+    public void astAddChild(int rootID, int childID) {
+        astModel.addChild(rootID, childID);
+        astModel.fireDataChanged();
+    }
+
+    public void astSetTokenBoundaries(int id, int startIndex, int stopIndex) {
+        // @todo to implement
     }
 
     public void recorderStatusDidChange() {

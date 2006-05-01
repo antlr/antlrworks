@@ -39,6 +39,7 @@ import org.antlr.runtime.debug.DebugEventListener;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
 import org.antlr.works.debugger.events.DebuggerEvent;
 import org.antlr.works.debugger.events.DebuggerEventConsumeToken;
+import org.antlr.works.debugger.events.DebuggerEventFactory;
 import org.antlr.works.debugger.events.DebuggerEventLocation;
 import org.antlr.works.utils.Console;
 
@@ -437,78 +438,78 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         }
 
         public void enterRule(String ruleName) {
-            event(DebuggerEvent.createEnterRule(ruleName));
+            event(DebuggerEventFactory.createEnterRule(ruleName));
         }
 
         public void exitRule(String ruleName) {
-            event(DebuggerEvent.createExitRule(ruleName));
+            event(DebuggerEventFactory.createExitRule(ruleName));
         }
 
         public void enterSubRule(int decisionNumber) {
-            event(DebuggerEvent.createEnterSubRule(decisionNumber));
+            event(DebuggerEventFactory.createEnterSubRule(decisionNumber));
         }
 
         public void exitSubRule(int decisionNumber) {
-            event(DebuggerEvent.createExitSubRule(decisionNumber));
+            event(DebuggerEventFactory.createExitSubRule(decisionNumber));
         }
 
         public void enterDecision(int decisionNumber) {
-            event(DebuggerEvent.createEnterDecision(decisionNumber));
+            event(DebuggerEventFactory.createEnterDecision(decisionNumber));
         }
 
         public void exitDecision(int decisionNumber) {
-            event(DebuggerEvent.createExitDecision(decisionNumber));
+            event(DebuggerEventFactory.createExitDecision(decisionNumber));
         }
 
         public void enterAlt(int alt) {
-            event(DebuggerEvent.createEnterAlt(alt));
+            event(DebuggerEventFactory.createEnterAlt(alt));
         }
 
         public void location(int line, int pos) {
-            event(DebuggerEvent.createLocation(line, pos));
+            event(DebuggerEventFactory.createLocation(line, pos));
         }
 
         public void consumeToken(Token token) {
-            event(DebuggerEvent.createConsumeToken(token));
+            event(DebuggerEventFactory.createConsumeToken(token));
         }
 
         public void consumeHiddenToken(Token token) {
-            event(DebuggerEvent.createConsumeHiddenToken(token));
+            event(DebuggerEventFactory.createConsumeHiddenToken(token));
         }
 
         public void LT(int i, Token token) {
-            event(DebuggerEvent.createLT(i, token));
+            event(DebuggerEventFactory.createLT(i, token));
         }
 
         public void mark(int i) {
-            event(DebuggerEvent.createMark(i));
+            event(DebuggerEventFactory.createMark(i));
         }
 
         public void rewind(int i) {
-            event(DebuggerEvent.createRewind(i));
+            event(DebuggerEventFactory.createRewind(i));
         }
 
         public void rewind() {
         }
 
         public void beginBacktrack(int level) {
-            event(DebuggerEvent.createBeginBacktrack(level));
+            event(DebuggerEventFactory.createBeginBacktrack(level));
         }
 
         public void endBacktrack(int level, boolean successful) {
-            event(DebuggerEvent.createEndBacktrack(level, successful));
+            event(DebuggerEventFactory.createEndBacktrack(level, successful));
         }
 
         public void recognitionException(RecognitionException e) {
-            event(DebuggerEvent.createRecognitionException(e));
+            event(DebuggerEventFactory.createRecognitionException(e));
         }
 
         public void beginResync() {
-            event(DebuggerEvent.createBeginResync());
+            event(DebuggerEventFactory.createBeginResync());
         }
 
         public void endResync() {
-            event(DebuggerEvent.createEndResync());
+            event(DebuggerEventFactory.createEndResync());
         }
 
         public void semanticPredicate(boolean result, String predicate) {
@@ -516,29 +517,35 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         }
 
         public void commence() {
-            event(DebuggerEvent.createCommence());
+            event(DebuggerEventFactory.createCommence());
         }
 
         public void terminate() {
-            event(DebuggerEvent.createTerminate());
+            event(DebuggerEventFactory.createTerminate());
         }
 
         public void nilNode(int ID) {
+            event(DebuggerEventFactory.createNilNode(ID));
         }
 
         public void createNode(int ID, String text, int type) {
+            System.err.println("Create node unsupported now!!");
         }
 
         public void createNode(int ID, int tokenIndex) {
+            event(DebuggerEventFactory.createCreateNode(ID, tokenIndex));
         }
 
         public void becomeRoot(int newRootID, int oldRootID) {
+            event(DebuggerEventFactory.createBecomeRoot(newRootID, oldRootID));
         }
 
         public void addChild(int rootID, int childID) {
+            event(DebuggerEventFactory.createAddChild(rootID, childID));
         }
 
         public void setTokenBoundaries(int ID, int tokenStartIndex, int tokenStopIndex) {
+            event(DebuggerEventFactory.createSetTokenBoundaries(ID, tokenStartIndex, tokenStopIndex));
         }
     }
 

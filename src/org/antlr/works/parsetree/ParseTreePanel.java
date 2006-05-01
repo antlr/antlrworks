@@ -281,7 +281,8 @@ public class ParseTreePanel extends JPanel {
                 if(node == null)
                     return;
 
-                delegate.parseTreeDidSelectTreeNode(node);
+                if(delegate != null)
+                    delegate.parseTreeDidSelectTreeNode(node);
                 selectNode(node);
             }
 
