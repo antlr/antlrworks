@@ -36,7 +36,7 @@ import org.antlr.runtime.NoViableAltException;
 import org.antlr.runtime.tree.ParseTree;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.tool.Grammar;
-import org.antlr.works.parsetree.ParseTreeNode;
+import org.antlr.works.awtree.AWTreeNode;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -59,7 +59,7 @@ public class EditorInterpreterTreeModel extends DefaultTreeModel {
         setRoot(new InterpreterTreeNode(null, tree));
     }
 
-    public class InterpreterTreeNode extends ParseTreeNode {
+    public class InterpreterTreeNode extends AWTreeNode {
 
         protected TreeNode parent;
         protected Tree tree;

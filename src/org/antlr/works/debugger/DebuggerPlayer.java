@@ -135,7 +135,7 @@ public class DebuggerPlayer {
 
         for(int i=eventPlayedCount; i<events.size(); i++) {
             try {
-                DebuggerEvent event = (DebuggerEvent)events.get(i);
+                DBEvent event = (DBEvent)events.get(i);
                 boolean lastEvent = i == events.size()-1;
                 playEvent(event, lastEvent);
             } catch(Exception e) {
@@ -145,101 +145,101 @@ public class DebuggerPlayer {
         eventPlayedCount = events.size();        
     }
 
-    public void playEvent(DebuggerEvent event, boolean lastEvent) {
+    public void playEvent(DBEvent event, boolean lastEvent) {
         switch(event.type) {
-            case DebuggerEvent.ENTER_RULE:
-                playEnterRule((DebuggerEventEnterRule)event);
+            case DBEvent.ENTER_RULE:
+                playEnterRule((DBEventEnterRule)event);
                 break;
 
-            case DebuggerEvent.EXIT_RULE:
-                playExitRule((DebuggerEventExitRule)event);
+            case DBEvent.EXIT_RULE:
+                playExitRule((DBEventExitRule)event);
                 break;
 
-            case DebuggerEvent.ENTER_SUBRULE:
-                playEnterSubrule((DebuggerEventEnterSubRule)event);
+            case DBEvent.ENTER_SUBRULE:
+                playEnterSubrule((DBEventEnterSubRule)event);
                 break;
 
-            case DebuggerEvent.EXIT_SUBRULE:
-                playExitSubrule((DebuggerEventExitSubRule)event);
+            case DBEvent.EXIT_SUBRULE:
+                playExitSubrule((DBEventExitSubRule)event);
                 break;
 
-            case DebuggerEvent.ENTER_DECISION:
-                playEnterDecision((DebuggerEventEnterDecision)event);
+            case DBEvent.ENTER_DECISION:
+                playEnterDecision((DBEventEnterDecision)event);
                 break;
 
-            case DebuggerEvent.EXIT_DECISION:
-                playExitDecision((DebuggerEventExitDecision)event);
+            case DBEvent.EXIT_DECISION:
+                playExitDecision((DBEventExitDecision)event);
                 break;
 
-            case DebuggerEvent.ENTER_ALT:
-                playEnterAlt((DebuggerEventEnterAlt)event);
+            case DBEvent.ENTER_ALT:
+                playEnterAlt((DBEventEnterAlt)event);
                 break;
 
-            case DebuggerEvent.LT:
-                playLT((DebuggerEventLT)event);
+            case DBEvent.LT:
+                playLT((DBEventLT)event);
                 break;
 
-            case DebuggerEvent.CONSUME_TOKEN:
-                playConsumeToken((DebuggerEventConsumeToken)event);
+            case DBEvent.CONSUME_TOKEN:
+                playConsumeToken((DBEventConsumeToken)event);
                 break;
 
-            case DebuggerEvent.CONSUME_HIDDEN_TOKEN:
-                playConsumeToken((DebuggerEventConsumeHiddenToken)event);
+            case DBEvent.CONSUME_HIDDEN_TOKEN:
+                playConsumeToken((DBEventConsumeHiddenToken)event);
                 break;
 
-            case DebuggerEvent.LOCATION:
-                playLocation();
+            case DBEvent.LOCATION:
+                playLocation((DBEventLocation)event);
                 break;
 
-            case DebuggerEvent.MARK:
-                playMark((DebuggerEventMark)event);
+            case DBEvent.MARK:
+                playMark((DBEventMark)event);
                 break;
 
-            case DebuggerEvent.REWIND:
-                playRewind((DebuggerEventRewind)event);
+            case DBEvent.REWIND:
+                playRewind((DBEventRewind)event);
                 break;
 
-            case DebuggerEvent.BEGIN_BACKTRACK:
-                playBeginBacktrack((DebuggerEventBeginBacktrack)event);
+            case DBEvent.BEGIN_BACKTRACK:
+                playBeginBacktrack((DBEventBeginBacktrack)event);
                 break;
 
-            case DebuggerEvent.END_BACKTRACK:
-                playEndBacktrack((DebuggerEventEndBacktrack)event);
+            case DBEvent.END_BACKTRACK:
+                playEndBacktrack((DBEventEndBacktrack)event);
                 break;
 
-            case DebuggerEvent.RECOGNITION_EXCEPTION:
-                playRecognitionException((DebuggerEventRecognitionException)event);
+            case DBEvent.RECOGNITION_EXCEPTION:
+                playRecognitionException((DBEventRecognitionException)event);
                 break;
 
-            case DebuggerEvent.BEGIN_RESYNC:
+            case DBEvent.BEGIN_RESYNC:
                 playBeginResync();
                 break;
 
-            case DebuggerEvent.END_RESYNC:
+            case DBEvent.END_RESYNC:
                 playEndResync();
                 break;
 
-            case DebuggerEvent.NIL_NODE:
-                playNilNode((DebuggerEventNilNode)event);
+            case DBEvent.NIL_NODE:
+                playNilNode((DBEventNilNode)event);
                 break;
 
-            case DebuggerEvent.CREATE_NODE:
-                playCreateNode((DebuggerEventCreateNode)event);
+            case DBEvent.CREATE_NODE:
+                playCreateNode((DBEventCreateNode)event);
                 break;
 
-            case DebuggerEvent.BECOME_ROOT:
-                playBecomeRoot((DebuggerEventBecomeRoot)event);
+            case DBEvent.BECOME_ROOT:
+                playBecomeRoot((DBEventBecomeRoot)event);
                 break;
 
-            case DebuggerEvent.ADD_CHILD:
-                playAddChild((DebuggerEventAddChild)event);
+            case DBEvent.ADD_CHILD:
+                playAddChild((DBEventAddChild)event);
                 break;
 
-            case DebuggerEvent.SET_TOKEN_BOUNDARIES:
-                playSetTokenBoundaries((DebuggerEventSetTokenBoundaries)event);
+            case DBEvent.SET_TOKEN_BOUNDARIES:
+                playSetTokenBoundaries((DBEventSetTokenBoundaries)event);
                 break;
 
-            case DebuggerEvent.TERMINATE:
+            case DBEvent.TERMINATE:
                 if(lookAheadTextStack.size() > 0) {
                     debugger.editor.console.println("Lookahead text stack not empty", Console.LEVEL_WARNING);
                 }
@@ -247,54 +247,53 @@ public class DebuggerPlayer {
         }
 
         debugger.addEvent(event, contextInfo);
-        debugger.selectLastInfoTableItem();
 
         if(lastEvent) {
             playLocation();
         }
     }
 
-    public void playEnterRule(DebuggerEventEnterRule event) {
+    public void playEnterRule(DBEventEnterRule event) {
         debugger.pushRule(event.name, lastLocationLine, lastLocationPos);
     }
 
-    public void playExitRule(DebuggerEventExitRule event) {
+    public void playExitRule(DBEventExitRule event) {
         debugger.popRule(event.name);
     }
 
-    public void playEnterSubrule(DebuggerEventEnterSubRule event) {
+    public void playEnterSubrule(DBEventEnterSubRule event) {
         contextInfo.enterSubrule(event.decision);
     }
 
-    public void playExitSubrule(DebuggerEventExitSubRule event) {
+    public void playExitSubrule(DBEventExitSubRule event) {
         contextInfo.exitSubrule();
     }
 
-    public void playEnterDecision(DebuggerEventEnterDecision event) {
+    public void playEnterDecision(DBEventEnterDecision event) {
         contextInfo.enterDecision(event.decision);
         pushLookAheadText(new Integer(event.decision));
     }
 
-    public void playExitDecision(DebuggerEventExitDecision event) {
+    public void playExitDecision(DBEventExitDecision event) {
         contextInfo.exitDecision();
         popLookAheadText(new Integer(event.decision));
     }
 
-    public void playEnterAlt(DebuggerEventEnterAlt event) {
+    public void playEnterAlt(DBEventEnterAlt event) {
         /* Currently ignored */
     }
 
-    public void playLT(DebuggerEventLT event) {
+    public void playLT(DBEventLT event) {
         if(getLookAheadText() != null) {
             getLookAheadText().LT(event.index, event.token);
         }
     }
 
-    public void playConsumeToken(DebuggerEventConsumeToken event) {
+    public void playConsumeToken(DBEventConsumeToken event) {
         playConsumeToken(event.token, false);
     }
 
-    public void playConsumeToken(DebuggerEventConsumeHiddenToken event) {
+    public void playConsumeToken(DBEventConsumeHiddenToken event) {
         playConsumeToken(event.token, true);
     }
 
@@ -323,13 +322,13 @@ public class DebuggerPlayer {
     protected int lastLocationLine;
     protected int lastLocationPos;
 
-    public void playLocation(int line, int pos) {
+    public void playLocation(DBEventLocation event) {
         // Remember the last position in order to display
         // it when the events are all consumed. This allows
         // to remove the fast backward/forward movement of the cursor
         // in the grammar (not needed)
-        lastLocationLine = line;
-        lastLocationPos = pos;
+        lastLocationLine = event.line;
+        lastLocationPos = event.pos;
         inputText.setLocation(lastLocationLine, lastLocationPos);
     }
 
@@ -352,14 +351,14 @@ public class DebuggerPlayer {
         }
     }
 
-    public void playMark(DebuggerEventMark event) {
+    public void playMark(DBEventMark event) {
         contextInfo.mark(event.id);
         if(getLookAheadText() != null) {
             getLookAheadText().setEventMark(event.id);
         }
     }
 
-    public void playRewind(DebuggerEventRewind event) {
+    public void playRewind(DBEventRewind event) {
         rewindLookAheadText();
 
         contextInfo.rewind();
@@ -368,7 +367,7 @@ public class DebuggerPlayer {
         }
     }
 
-    public void playBeginBacktrack(DebuggerEventBeginBacktrack event) {
+    public void playBeginBacktrack(DBEventBeginBacktrack event) {
         contextInfo.beginBacktrack(event.level);
 
         /* Tell the debugger about the backtracking so the parse
@@ -376,7 +375,7 @@ public class DebuggerPlayer {
         debugger.beginBacktrack(event.level);
     }
 
-    public void playEndBacktrack(DebuggerEventEndBacktrack event) {
+    public void playEndBacktrack(DBEventEndBacktrack event) {
         contextInfo.endBacktrack();
 
         /* Tell the debugger about the backtracking so the parse
@@ -384,7 +383,7 @@ public class DebuggerPlayer {
         debugger.endBacktrack(event.level, event.successful);
     }
 
-    public void playRecognitionException(DebuggerEventRecognitionException event) {
+    public void playRecognitionException(DBEventRecognitionException event) {
         debugger.addException(event.e);
     }
 
@@ -396,23 +395,23 @@ public class DebuggerPlayer {
         resyncing--;
     }
 
-    public void playNilNode(DebuggerEventNilNode event) {
+    public void playNilNode(DBEventNilNode event) {
         debugger.astNilNode(event.id);
     }
 
-    public void playCreateNode(DebuggerEventCreateNode event) {
+    public void playCreateNode(DBEventCreateNode event) {
         debugger.astCreateNode(event.id, inputText.getTokenInfoAtIndex(event.tokenIndex).token);
     }
 
-    public void playBecomeRoot(DebuggerEventBecomeRoot event) {
+    public void playBecomeRoot(DBEventBecomeRoot event) {
         debugger.astBecomeRoot(event.newRootID, event.oldRootID);
     }
 
-    public void playAddChild(DebuggerEventAddChild event) {
+    public void playAddChild(DBEventAddChild event) {
         debugger.astAddChild(event.rootID, event.childID);
     }
 
-    public void playSetTokenBoundaries(DebuggerEventSetTokenBoundaries event) {
+    public void playSetTokenBoundaries(DBEventSetTokenBoundaries event) {
         debugger.astSetTokenBoundaries(event.id, event.startIndex, event.stopIndex);
     }
 

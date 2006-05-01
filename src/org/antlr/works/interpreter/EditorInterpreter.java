@@ -41,12 +41,12 @@ import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.awtree.AWTreePanel;
+import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ContextualMenuFactory;
-import org.antlr.works.parsetree.ParseTreePanel;
-import org.antlr.works.parsetree.ParseTreePanelDelegate;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxRule;
@@ -62,14 +62,14 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
-public class EditorInterpreter extends EditorTab implements Runnable, ParseTreePanelDelegate {
+public class EditorInterpreter extends EditorTab implements Runnable, AWTreePanelDelegate {
 
     protected JPanel panel;
     protected JSplitPane splitPane;
     protected JTextPane textPane;
     protected JScrollPane textScrollPane;
     protected EditorInterpreterTreeModel treeModel;
-    protected ParseTreePanel parseTreePanel;
+    protected AWTreePanel awTreePanel;
     protected JComboBox rulesCombo;
     protected JLabel tokensToIgnoreLabel;
 
@@ -100,14 +100,14 @@ public class EditorInterpreter extends EditorTab implements Runnable, ParseTreeP
         textScrollPane.setWheelScrollingEnabled(true);
 
         treeModel = new EditorInterpreterTreeModel();
-        parseTreePanel = new ParseTreePanel(treeModel);
-        parseTreePanel.setDelegate(this);
+        awTreePanel = new AWTreePanel(treeModel);
+        awTreePanel.setDelegate(this);
 
         splitPane = new JSplitPane();
         splitPane.setBorder(null);
         splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setLeftComponent(textScrollPane);
-        splitPane.setRightComponent(parseTreePanel);
+        splitPane.setRightComponent(awTreePanel);
         splitPane.setContinuousLayout(true);
         splitPane.setOneTouchExpandable(true);
 
@@ -297,7 +297,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, ParseTreeP
             treeModel.setGrammar(parser);
             treeModel.setTree(t);
 
-            parseTreePanel.setRoot((TreeNode)treeModel.getRoot());
+            awTreePanel.setRoot((TreeNode)treeModel.getRoot());
         }
     }
 
@@ -310,7 +310,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, ParseTreeP
     }
 
     public GView getExportableGView() {
-        return parseTreePanel.getGraphView();
+        return awTreePanel.getGraphView();
     }
 
     public String getTabName() {
@@ -321,11 +321,11 @@ public class EditorInterpreter extends EditorTab implements Runnable, ParseTreeP
         return getContainer();
     }
 
-    public void parseTreeDidSelectTreeNode(TreeNode node) {
+    public void awTreeDidSelectTreeNode(TreeNode node) {
         // not implemented
     }
 
-    public JPopupMenu getContextualMenu() {
+    public JPopupMenu awTreeGetContextualMenu() {
         ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
         factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
         factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);

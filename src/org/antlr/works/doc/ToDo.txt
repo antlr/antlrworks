@@ -1,5 +1,8 @@
 
 * Prio 1
+- DBASTPanel: implement selectToken()
+- Debugger: update status only at break (like the grammar position)
+
 - use only one tab per generation (or other operation that can be uniquely identified)
 - about box background white on Windows (check on Linux)
 - indicate Java VM version used in about box

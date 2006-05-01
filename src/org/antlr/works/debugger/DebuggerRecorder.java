@@ -37,10 +37,10 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.DebugEventListener;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
-import org.antlr.works.debugger.events.DebuggerEvent;
-import org.antlr.works.debugger.events.DebuggerEventConsumeToken;
-import org.antlr.works.debugger.events.DebuggerEventFactory;
-import org.antlr.works.debugger.events.DebuggerEventLocation;
+import org.antlr.works.debugger.events.DBEvent;
+import org.antlr.works.debugger.events.DBEventConsumeToken;
+import org.antlr.works.debugger.events.DBEventFactory;
+import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.utils.Console;
 
 import javax.swing.*;
@@ -68,8 +68,8 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
     protected ArrayList events;
     protected int position;
-    protected int breakType = DebuggerEvent.NONE;
-    protected int stoppedOnEvent = DebuggerEvent.NO_EVENT;
+    protected int breakType = DBEvent.NONE;
+    protected int stoppedOnEvent = DBEvent.NO_EVENT;
 
     protected EventListener eventListener;
     protected RemoteDebugEventSocketListener listener;
@@ -108,20 +108,20 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         position = -1;
     }
 
-    public synchronized void addEvent(DebuggerEvent event) {
+    public synchronized void addEvent(DBEvent event) {
         events.add(event);
         setPositionToEnd();
     }
 
-    public synchronized DebuggerEvent getEvent() {
+    public synchronized DBEvent getEvent() {
         if(position<0 || position>=events.size())
             return null;
         else
-            return (DebuggerEvent)events.get(position);
+            return (DBEvent)events.get(position);
     }
 
-    public synchronized DebuggerEvent getLastEvent() {
-        return (DebuggerEvent)events.get(events.size()-1);
+    public synchronized DBEvent getLastEvent() {
+        return (DBEvent)events.get(events.size()-1);
     }
 
     public synchronized List getCurrentEvents() {
@@ -164,7 +164,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
     public boolean handleIsOnBreakEvent() {
         int breakEvent = isOnBreakEvent();
-        if(breakEvent != DebuggerEvent.NO_EVENT) {
+        if(breakEvent != DBEvent.NO_EVENT) {
             stoppedOnEvent = breakEvent;
             setStatus(STATUS_BREAK);
             return true;
@@ -173,31 +173,31 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public int isOnBreakEvent() {
-        if(breakType == DebuggerEvent.NONE)
-            return DebuggerEvent.NO_EVENT;
+        if(breakType == DBEvent.NONE)
+            return DBEvent.NO_EVENT;
 
-        if(breakType == DebuggerEvent.ALL)
+        if(breakType == DBEvent.ALL)
             return breakType;
 
-        DebuggerEvent event = getEvent();
+        DBEvent event = getEvent();
         if(event == null)
-            return DebuggerEvent.NO_EVENT;
+            return DBEvent.NO_EVENT;
 
         // Stop on debugger breakpoints
-        if(event.type == DebuggerEvent.LOCATION)
-            if(debugger.isBreakpointAtLine(((DebuggerEventLocation)event).line-1))
+        if(event.type == DBEvent.LOCATION)
+            if(debugger.isBreakpointAtLine(((DBEventLocation)event).line-1))
                 return event.type;
 
         // Stop on input text breakpoint
-        if(event.type == DebuggerEvent.CONSUME_TOKEN)
-            if(debugger.isBreakpointAtToken(((DebuggerEventConsumeToken)event).token))
+        if(event.type == DBEvent.CONSUME_TOKEN)
+            if(debugger.isBreakpointAtToken(((DBEventConsumeToken)event).token))
                 return event.type;
 
-        if(event.type == DebuggerEvent.CONSUME_TOKEN && breakType == DebuggerEvent.CONSUME_TOKEN) {
+        if(event.type == DBEvent.CONSUME_TOKEN && breakType == DBEvent.CONSUME_TOKEN) {
             // Breaks only on consume token from channel 0
-            return ((DebuggerEventConsumeToken)event).token.getChannel() == Token.DEFAULT_CHANNEL?event.type:DebuggerEvent.NO_EVENT;
+            return ((DBEventConsumeToken)event).token.getChannel() == Token.DEFAULT_CHANNEL?event.type:DBEvent.NO_EVENT;
         } else
-            return event.type == breakType?event.type:DebuggerEvent.NO_EVENT;
+            return event.type == breakType?event.type:DBEvent.NO_EVENT;
     }
 
     public synchronized void setStatus(int status) {
@@ -214,11 +214,11 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public boolean isAtEnd() {
-        DebuggerEvent e = getEvent();
+        DBEvent e = getEvent();
         if(e == null)
             return true;
         else
-            return e.type == DebuggerEvent.TERMINATE;
+            return e.type == DBEvent.TERMINATE;
     }
 
     public void stepBackward(int breakEvent) {
@@ -252,7 +252,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
             return false;
         }
 
-        DebuggerEvent event;
+        DBEvent event;
         while((event = getEvent()) != null) {
             if(handleIsOnBreakEvent())
                 break;
@@ -271,7 +271,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public void goToEnd() {
-        stepForward(DebuggerEvent.TERMINATE);
+        stepForward(DBEvent.TERMINATE);
     }
 
     public void connect(String address, int port) {
@@ -370,20 +370,20 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         debugger.recorderDidStop();
     }
 
-    public void eventOccurred(DebuggerEvent event) {
+    public void eventOccurred(DBEvent event) {
         switch(getStatus()) {
             case STATUS_LAUNCHING:
                 setStatus(STATUS_RUNNING);
                 break;
 
             case STATUS_STOPPING:
-                if(event.type == DebuggerEvent.TERMINATE || debuggerReceivedTerminateEvent)
+                if(event.type == DBEvent.TERMINATE || debuggerReceivedTerminateEvent)
                     forceStop();
                 break;
         }
 
         if(isRunning()) {
-            if(event.type == DebuggerEvent.TERMINATE) {
+            if(event.type == DBEvent.TERMINATE) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         playEvents(false);
@@ -392,7 +392,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
                 debuggerReceivedTerminateEvent = true;
             }
 
-            if(event.type == DebuggerEvent.COMMENCE || handleIsOnBreakEvent()) {
+            if(event.type == DBEvent.COMMENCE || handleIsOnBreakEvent()) {
                 breaksOnEvent();
                 return;
             }
@@ -432,84 +432,84 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         public EventListener() {
         }
 
-        public void event(DebuggerEvent event) {
+        public void event(DBEvent event) {
             addEvent(event);
             eventOccurred(event);
         }
 
         public void enterRule(String ruleName) {
-            event(DebuggerEventFactory.createEnterRule(ruleName));
+            event(DBEventFactory.createEnterRule(ruleName));
         }
 
         public void exitRule(String ruleName) {
-            event(DebuggerEventFactory.createExitRule(ruleName));
+            event(DBEventFactory.createExitRule(ruleName));
         }
 
         public void enterSubRule(int decisionNumber) {
-            event(DebuggerEventFactory.createEnterSubRule(decisionNumber));
+            event(DBEventFactory.createEnterSubRule(decisionNumber));
         }
 
         public void exitSubRule(int decisionNumber) {
-            event(DebuggerEventFactory.createExitSubRule(decisionNumber));
+            event(DBEventFactory.createExitSubRule(decisionNumber));
         }
 
         public void enterDecision(int decisionNumber) {
-            event(DebuggerEventFactory.createEnterDecision(decisionNumber));
+            event(DBEventFactory.createEnterDecision(decisionNumber));
         }
 
         public void exitDecision(int decisionNumber) {
-            event(DebuggerEventFactory.createExitDecision(decisionNumber));
+            event(DBEventFactory.createExitDecision(decisionNumber));
         }
 
         public void enterAlt(int alt) {
-            event(DebuggerEventFactory.createEnterAlt(alt));
+            event(DBEventFactory.createEnterAlt(alt));
         }
 
         public void location(int line, int pos) {
-            event(DebuggerEventFactory.createLocation(line, pos));
+            event(DBEventFactory.createLocation(line, pos));
         }
 
         public void consumeToken(Token token) {
-            event(DebuggerEventFactory.createConsumeToken(token));
+            event(DBEventFactory.createConsumeToken(token));
         }
 
         public void consumeHiddenToken(Token token) {
-            event(DebuggerEventFactory.createConsumeHiddenToken(token));
+            event(DBEventFactory.createConsumeHiddenToken(token));
         }
 
         public void LT(int i, Token token) {
-            event(DebuggerEventFactory.createLT(i, token));
+            event(DBEventFactory.createLT(i, token));
         }
 
         public void mark(int i) {
-            event(DebuggerEventFactory.createMark(i));
+            event(DBEventFactory.createMark(i));
         }
 
         public void rewind(int i) {
-            event(DebuggerEventFactory.createRewind(i));
+            event(DBEventFactory.createRewind(i));
         }
 
         public void rewind() {
         }
 
         public void beginBacktrack(int level) {
-            event(DebuggerEventFactory.createBeginBacktrack(level));
+            event(DBEventFactory.createBeginBacktrack(level));
         }
 
         public void endBacktrack(int level, boolean successful) {
-            event(DebuggerEventFactory.createEndBacktrack(level, successful));
+            event(DBEventFactory.createEndBacktrack(level, successful));
         }
 
         public void recognitionException(RecognitionException e) {
-            event(DebuggerEventFactory.createRecognitionException(e));
+            event(DBEventFactory.createRecognitionException(e));
         }
 
         public void beginResync() {
-            event(DebuggerEventFactory.createBeginResync());
+            event(DBEventFactory.createBeginResync());
         }
 
         public void endResync() {
-            event(DebuggerEventFactory.createEndResync());
+            event(DBEventFactory.createEndResync());
         }
 
         public void semanticPredicate(boolean result, String predicate) {
@@ -517,15 +517,15 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         }
 
         public void commence() {
-            event(DebuggerEventFactory.createCommence());
+            event(DBEventFactory.createCommence());
         }
 
         public void terminate() {
-            event(DebuggerEventFactory.createTerminate());
+            event(DBEventFactory.createTerminate());
         }
 
         public void nilNode(int ID) {
-            event(DebuggerEventFactory.createNilNode(ID));
+            event(DBEventFactory.createNilNode(ID));
         }
 
         public void createNode(int ID, String text, int type) {
@@ -533,19 +533,19 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         }
 
         public void createNode(int ID, int tokenIndex) {
-            event(DebuggerEventFactory.createCreateNode(ID, tokenIndex));
+            event(DBEventFactory.createCreateNode(ID, tokenIndex));
         }
 
         public void becomeRoot(int newRootID, int oldRootID) {
-            event(DebuggerEventFactory.createBecomeRoot(newRootID, oldRootID));
+            event(DBEventFactory.createBecomeRoot(newRootID, oldRootID));
         }
 
         public void addChild(int rootID, int childID) {
-            event(DebuggerEventFactory.createAddChild(rootID, childID));
+            event(DBEventFactory.createAddChild(rootID, childID));
         }
 
         public void setTokenBoundaries(int ID, int tokenStartIndex, int tokenStopIndex) {
-            event(DebuggerEventFactory.createSetTokenBoundaries(ID, tokenStartIndex, tokenStopIndex));
+            event(DBEventFactory.createSetTokenBoundaries(ID, tokenStartIndex, tokenStopIndex));
         }
     }
 

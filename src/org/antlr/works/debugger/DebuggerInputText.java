@@ -371,7 +371,6 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
         for (Iterator iter = tokens.values().iterator(); iter.hasNext();) {
             TokenInfo info = (TokenInfo) iter.next();
             if(info.token.getTokenIndex() == t.getTokenIndex()) {
-                debugger.setGrammarPosition(info.line, info.charInLine);
                 highlightToken(info.start);
                 break;
             }
@@ -413,8 +412,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
 
             boolean controlKey = (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK;
             if(e.getButton() == MouseEvent.BUTTON1 && !controlKey) {
-                debugger.setGrammarPosition(info.line, info.charInLine);
-                debugger.selectTreeParserNode(info.token);
+                debugger.selectToken(info.token, info.line, info.charInLine);
             } else {
                 if(inputBreakpoints.contains(info))
                     inputBreakpoints.remove(info);
