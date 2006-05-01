@@ -54,7 +54,7 @@ import java.net.ServerSocket;
 
 public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, StreamWatcherDelegate {
 
-    public static final String remoteParserClassName = "Test";
+    public static final String remoteParserClassName = "__Test__";
     // @todo put this in the check-list
     public static final String remoteParserTemplatePath = "org/antlr/works/debugger/";
     public static final String remoteParserTemplateName = "RemoteParserGlueCode";
@@ -163,7 +163,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
                 askUserForInputText();
 
             if(!cancelled())
-                generateAndCompileGlueCode();
+                generateAndCompileGlueCode(buildAndDebug);
 
             if(!cancelled())
                 generateInputText();
@@ -318,12 +318,13 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
         compileFiles(new String[] { fileParser, fileLexer });
     }
 
-    protected void generateAndCompileGlueCode() {
+    protected void generateAndCompileGlueCode(boolean buildAndDebug) {
         progress.setInfo("Preparing...");
         progress.setIndeterminate(true);
 
-        if(lastStartRule != null && startRule.equals(lastStartRule))
+        if(!buildAndDebug && lastStartRule != null && startRule.equals(lastStartRule))
             return;
+
         lastStartRule = startRule;
 
         generateGlueCode();

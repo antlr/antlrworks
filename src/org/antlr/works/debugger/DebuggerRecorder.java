@@ -37,6 +37,9 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.DebugEventListener;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
+import org.antlr.works.debugger.events.DebuggerEvent;
+import org.antlr.works.debugger.events.DebuggerEventConsumeToken;
+import org.antlr.works.debugger.events.DebuggerEventLocation;
 import org.antlr.works.utils.Console;
 
 import javax.swing.*;
@@ -181,17 +184,17 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
         // Stop on debugger breakpoints
         if(event.type == DebuggerEvent.LOCATION)
-            if(debugger.isBreakpointAtLine(event.int1-1))
+            if(debugger.isBreakpointAtLine(((DebuggerEventLocation)event).line-1))
                 return event.type;
 
         // Stop on input text breakpoint
         if(event.type == DebuggerEvent.CONSUME_TOKEN)
-            if(debugger.isBreakpointAtToken(event.token))
+            if(debugger.isBreakpointAtToken(((DebuggerEventConsumeToken)event).token))
                 return event.type;
 
         if(event.type == DebuggerEvent.CONSUME_TOKEN && breakType == DebuggerEvent.CONSUME_TOKEN) {
             // Breaks only on consume token from channel 0
-            return event.token.getChannel() == Token.DEFAULT_CHANNEL?event.type:DebuggerEvent.NO_EVENT;
+            return ((DebuggerEventConsumeToken)event).token.getChannel() == Token.DEFAULT_CHANNEL?event.type:DebuggerEvent.NO_EVENT;
         } else
             return event.type == breakType?event.type:DebuggerEvent.NO_EVENT;
     }
@@ -434,79 +437,78 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         }
 
         public void enterRule(String ruleName) {
-            event(new DebuggerEvent(DebuggerEvent.ENTER_RULE, ruleName));
+            event(DebuggerEvent.createEnterRule(ruleName));
         }
 
         public void exitRule(String ruleName) {
-            event(new DebuggerEvent(DebuggerEvent.EXIT_RULE, ruleName));
+            event(DebuggerEvent.createExitRule(ruleName));
         }
 
         public void enterSubRule(int decisionNumber) {
-            event(new DebuggerEvent(DebuggerEvent.ENTER_SUBRULE, decisionNumber));
+            event(DebuggerEvent.createEnterSubRule(decisionNumber));
         }
 
         public void exitSubRule(int decisionNumber) {
-            event(new DebuggerEvent(DebuggerEvent.EXIT_SUBRULE, decisionNumber));
+            event(DebuggerEvent.createExitSubRule(decisionNumber));
         }
 
         public void enterDecision(int decisionNumber) {
-            event(new DebuggerEvent(DebuggerEvent.ENTER_DECISION, decisionNumber));
+            event(DebuggerEvent.createEnterDecision(decisionNumber));
         }
 
         public void exitDecision(int decisionNumber) {
-            event(new DebuggerEvent(DebuggerEvent.EXIT_DECISION, decisionNumber));
+            event(DebuggerEvent.createExitDecision(decisionNumber));
         }
 
         public void enterAlt(int alt) {
-            event(new DebuggerEvent(DebuggerEvent.ENTER_ALT, alt));
+            event(DebuggerEvent.createEnterAlt(alt));
         }
 
         public void location(int line, int pos) {
-            event(new DebuggerEvent(DebuggerEvent.LOCATION, line, pos));
+            event(DebuggerEvent.createLocation(line, pos));
         }
 
         public void consumeToken(Token token) {
-            event(new DebuggerEvent(DebuggerEvent.CONSUME_TOKEN, token));
+            event(DebuggerEvent.createConsumeToken(token));
         }
 
         public void consumeHiddenToken(Token token) {
-            event(new DebuggerEvent(DebuggerEvent.CONSUME_HIDDEN_TOKEN, token));
+            event(DebuggerEvent.createConsumeHiddenToken(token));
         }
 
         public void LT(int i, Token token) {
-            event(new DebuggerEvent(DebuggerEvent.LT, i, token));
+            event(DebuggerEvent.createLT(i, token));
         }
 
         public void mark(int i) {
-            event(new DebuggerEvent(DebuggerEvent.MARK, i));
+            event(DebuggerEvent.createMark(i));
         }
 
         public void rewind(int i) {
-            event(new DebuggerEvent(DebuggerEvent.REWIND, i));
+            event(DebuggerEvent.createRewind(i));
         }
 
         public void rewind() {
-            /** This event is currently ignored */
         }
 
         public void beginBacktrack(int level) {
-            event(new DebuggerEvent(DebuggerEvent.BEGIN_BACKTRACK, level));
+            event(DebuggerEvent.createBeginBacktrack(level));
         }
 
         public void endBacktrack(int level, boolean successful) {
-            event(new DebuggerEvent(DebuggerEvent.END_BACKTRACK, level, successful));
+            event(DebuggerEvent.createEndBacktrack(level, successful));
         }
 
         public void recognitionException(RecognitionException e) {
-            event(new DebuggerEvent(DebuggerEvent.RECOGNITION_EXCEPTION, e));
+            event(DebuggerEvent.createRecognitionException(e));
         }
 
         public void beginResync() {
-            event(new DebuggerEvent(DebuggerEvent.BEGIN_RESYNC));
+            event(DebuggerEvent.createBeginResync());
         }
 
         public void endResync() {
-            event(new DebuggerEvent(DebuggerEvent.END_RESYNC));
+            event(DebuggerEvent.createEndResync());
         }
 
         public void semanticPredicate(boolean result, String predicate) {
@@ -514,51 +516,29 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         }
 
         public void commence() {
-            event(new DebuggerEvent(DebuggerEvent.COMMENCE));
+            event(DebuggerEvent.createCommence());
         }
 
         public void terminate() {
-            event(new DebuggerEvent(DebuggerEvent.TERMINATE));
+            event(DebuggerEvent.createTerminate());
         }
 
         public void nilNode(int ID) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public void setSubRuleRoot(String name, int ID) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public void labelRoot(String label, int ID) {
-            //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public void createNode(int ID, String text, int type) {
-            //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public void createNode(int ID, int tokenIndex) {
-            //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public void becomeRoot(int newRootID, int oldRootID) {
-            //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public void addChild(int rootID, int childID) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public void close(int rootID) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public void trimNilRoot(int ID) {
-            //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public void setTokenBoundaries(int ID, int tokenStartIndex, int tokenStopIndex) {
-            //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 

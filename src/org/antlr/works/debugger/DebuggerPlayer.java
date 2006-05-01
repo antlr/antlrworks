@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.debugger;
 
 import org.antlr.runtime.Token;
+import org.antlr.works.debugger.events.*;
 import org.antlr.works.utils.Console;
 
 import javax.swing.text.AttributeSet;
@@ -67,10 +68,17 @@ public class DebuggerPlayer {
         inputText.close();        
     }
 
+    /** Called by playEnterDecision()
+     *
+     */
+
     public void pushLookAheadText(Object id) {
-        rewindLookAheadText();
         lookAheadTextStack.push(new LookAheadText(id));
     }
+
+    /** Called by playExitDecision()
+     *
+     */
 
     public void popLookAheadText(Object id) {
         if(lookAheadTextStack.empty()) {
@@ -84,6 +92,10 @@ public class DebuggerPlayer {
         } else
             debugger.editor.console.println("The top-of-stack LookAheadText doesn't correspond to id "+id+" ("+lat.id+")", Console.LEVEL_WARNING);
     }
+
+    /** Called by playRewind()
+     *
+     */
 
     public void rewindLookAheadText() {
         if(lastLookAheadText != null) {
@@ -142,67 +154,67 @@ public class DebuggerPlayer {
     public void playEvent(DebuggerEvent event, boolean lastEvent) {
         switch(event.type) {
             case DebuggerEvent.ENTER_RULE:
-                playEnterRule(event.s);
+                playEnterRule((DebuggerEventEnterRule)event);
                 break;
 
             case DebuggerEvent.EXIT_RULE:
-                playExitRule(event.s);
+                playExitRule((DebuggerEventExitRule)event);
                 break;
 
             case DebuggerEvent.ENTER_SUBRULE:
-                playEnterSubrule(event.int1);
+                playEnterSubrule((DebuggerEventEnterSubRule)event);
                 break;
 
             case DebuggerEvent.EXIT_SUBRULE:
-                playExitSubrule(event.int1);
+                playExitSubrule((DebuggerEventExitSubRule)event);
                 break;
 
             case DebuggerEvent.ENTER_DECISION:
-                playEnterDecision(event.int1);
+                playEnterDecision((DebuggerEventEnterDecision)event);
                 break;
 
             case DebuggerEvent.EXIT_DECISION:
-                playExitDecision(event.int1);
+                playExitDecision((DebuggerEventExitDecision)event);
                 break;
 
             case DebuggerEvent.ENTER_ALT:
-                playEnterAlt(event.int1);
+                playEnterAlt((DebuggerEventEnterAlt)event);
                 break;
 
             case DebuggerEvent.LT:
-                playLT(event.int1, event.token);
+                playLT((DebuggerEventLT)event);
                 break;
 
             case DebuggerEvent.CONSUME_TOKEN:
-                playConsumeToken(event.token, false);
+                playConsumeToken((DebuggerEventConsumeToken)event);
                 break;
 
             case DebuggerEvent.CONSUME_HIDDEN_TOKEN:
-                playConsumeToken(event.token, true);
+                playConsumeToken((DebuggerEventConsumeHiddenToken)event);
                 break;
 
             case DebuggerEvent.LOCATION:
-                playLocation(event.int1, event.int2);
+                playLocation();
                 break;
 
             case DebuggerEvent.MARK:
-                playMark(event.int1);
+                playMark((DebuggerEventMark)event);
                 break;
 
             case DebuggerEvent.REWIND:
-                playRewind(event.int1);
+                playRewind((DebuggerEventRewind)event);
                 break;
 
             case DebuggerEvent.BEGIN_BACKTRACK:
-                playBeginBacktrack(event.int1);
+                playBeginBacktrack((DebuggerEventBeginBacktrack)event);
                 break;
 
             case DebuggerEvent.END_BACKTRACK:
-                playEndBacktrack(event.int1, event.b);
+                playEndBacktrack((DebuggerEventEndBacktrack)event);
                 break;
 
             case DebuggerEvent.RECOGNITION_EXCEPTION:
-                playRecognitionException(event.exception);
+                playRecognitionException((DebuggerEventRecognitionException)event);
                 break;
 
             case DebuggerEvent.BEGIN_RESYNC:
@@ -228,49 +240,52 @@ public class DebuggerPlayer {
         }
     }
 
-    public void playEnterRule(String ruleName) {
-        debugger.pushRule(ruleName, lastLocationLine, lastLocationPos);
-        rewindLookAheadText();
+    public void playEnterRule(DebuggerEventEnterRule event) {
+        debugger.pushRule(event.name, lastLocationLine, lastLocationPos);
     }
 
-    public void playExitRule(String ruleName) {
-        debugger.popRule(ruleName);
-        rewindLookAheadText();
+    public void playExitRule(DebuggerEventExitRule event) {
+        debugger.popRule(event.name);
     }
 
-    public void playEnterSubrule(int i) {
-        contextInfo.enterSubrule(i);
-        rewindLookAheadText();
+    public void playEnterSubrule(DebuggerEventEnterSubRule event) {
+        contextInfo.enterSubrule(event.decision);
     }
 
-    public void playExitSubrule(int i) {
+    public void playExitSubrule(DebuggerEventExitSubRule event) {
         contextInfo.exitSubrule();
-        rewindLookAheadText();
     }
 
-    public void playEnterDecision(int i) {
-        contextInfo.enterDecision(i);
-        pushLookAheadText(new Integer(i));
+    public void playEnterDecision(DebuggerEventEnterDecision event) {
+        contextInfo.enterDecision(event.decision);
+        pushLookAheadText(new Integer(event.decision));
     }
 
-    public void playExitDecision(int i) {
+    public void playExitDecision(DebuggerEventExitDecision event) {
         contextInfo.exitDecision();
-        popLookAheadText(new Integer(i));
+        popLookAheadText(new Integer(event.decision));
     }
 
-    public void playEnterAlt(int alt) {
+    public void playEnterAlt(DebuggerEventEnterAlt event) {
         /* Currently ignored */
     }
 
-    public void playLT(int index, Token token) {
+    public void playLT(DebuggerEventLT event) {
         if(getLookAheadText() != null) {
-            getLookAheadText().LT(index, token);
+            getLookAheadText().LT(event.index, event.token);
         }
+    }
+
+    public void playConsumeToken(DebuggerEventConsumeToken event) {
+        playConsumeToken(event.token, false);
+    }
+
+    public void playConsumeToken(DebuggerEventConsumeHiddenToken event) {
+        playConsumeToken(event.token, true);
     }
 
     public void playConsumeToken(Token token, boolean hidden) {
         if(resyncing > 0) {
-            rewindLookAheadText();
             inputText.consumeToken(token, DebuggerInputText.TOKEN_DEAD);
             return;
         }
@@ -288,7 +303,6 @@ public class DebuggerPlayer {
             debugger.addToken(token);
         }
 
-        rewindLookAheadText();
         inputText.consumeToken(token, hidden?DebuggerInputText.TOKEN_HIDDEN:DebuggerInputText.TOKEN_NORMAL);
     }
 
@@ -324,38 +338,40 @@ public class DebuggerPlayer {
         }
     }
 
-    public void playMark(int id) {
-        contextInfo.mark(id);
+    public void playMark(DebuggerEventMark event) {
+        contextInfo.mark(event.id);
         if(getLookAheadText() != null) {
-            getLookAheadText().setEventMark(id);
+            getLookAheadText().setEventMark(event.id);
         }
     }
 
-    public void playRewind(int id) {
+    public void playRewind(DebuggerEventRewind event) {
+        rewindLookAheadText();
+
         contextInfo.rewind();
         if(getLookAheadText() != null) {
-            getLookAheadText().setEventRewind(id);
+            getLookAheadText().setEventRewind(event.id);
         }
     }
 
-    public void playBeginBacktrack(int level) {
-        contextInfo.beginBacktrack(level);
+    public void playBeginBacktrack(DebuggerEventBeginBacktrack event) {
+        contextInfo.beginBacktrack(event.level);
 
         /* Tell the debugger about the backtracking so the parse
         tree coloring can be properly done */
-        debugger.beginBacktrack(level);
+        debugger.beginBacktrack(event.level);
     }
 
-    public void playEndBacktrack(int level, boolean success) {
+    public void playEndBacktrack(DebuggerEventEndBacktrack event) {
         contextInfo.endBacktrack();
 
         /* Tell the debugger about the backtracking so the parse
         tree coloring can be properly done */
-        debugger.endBacktrack(level, success);
+        debugger.endBacktrack(event.level, event.successful);
     }
 
-    public void playRecognitionException(Exception e) {
-        debugger.addException(e);
+    public void playRecognitionException(DebuggerEventRecognitionException event) {
+        debugger.addException(event.e);
     }
 
     public void playBeginResync() {

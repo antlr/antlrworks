@@ -38,6 +38,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.debugger.events.DebuggerEvent;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.generate.DialogGenerate;
@@ -373,6 +374,13 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
         return button;
     }
 
+    static int[] COMBO_BREAK_EVENTS = new int[] { DebuggerEvent.LOCATION,
+            DebuggerEvent.CONSUME_TOKEN,
+            DebuggerEvent.LT,
+            DebuggerEvent.RECOGNITION_EXCEPTION,
+            DebuggerEvent.ALL
+    };
+
     public JComponent createBreakComboBox() {
         Box box = Box.createHorizontalBox();
 
@@ -380,8 +388,9 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
 
         breakCombo = new JComboBox();
 
-        for (int i = 0; i < DebuggerEvent.ALL+1; i++) {
-            breakCombo.addItem(DebuggerEvent.getEventName(i));
+        for (int i = 0; i < COMBO_BREAK_EVENTS.length; i++) {
+            breakCombo.addItem(DebuggerEvent.getEventName(COMBO_BREAK_EVENTS[i]));
+
         }
 
         AWPrefs.getPreferences().bindToPreferences(breakCombo, AWPrefs.PREF_DEBUG_BREAK_EVENT, DebuggerEvent.CONSUME_TOKEN);
@@ -473,7 +482,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate, ParseT
     }
 
     public int getBreakEvent() {
-        return breakCombo.getSelectedIndex();
+        return COMBO_BREAK_EVENTS[breakCombo.getSelectedIndex()];
     }
 
     public void parseTreeDidSelectTreeNode(TreeNode node) {
