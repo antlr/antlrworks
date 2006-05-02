@@ -29,43 +29,44 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.debugger;
+package org.antlr.works.debugger.tivo;
 
 import org.antlr.runtime.Token;
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.*;
+import org.antlr.works.debugger.input.DBInputText;
 import org.antlr.works.utils.Console;
 
-import javax.swing.text.AttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
-public class DebuggerPlayer {
+public class DBPlayer {
 
     protected Debugger debugger;
-    protected DebuggerInputText inputText;
+    protected DBInputText inputText;
 
-    protected ContextInfo contextInfo;
+    protected DBPlayerContextInfo contextInfo;
     protected Stack lookAheadTextStack;
     protected LookAheadText lastLookAheadText;
 
     protected int resyncing = 0;
     protected int eventPlayedCount = 0;
 
-    public DebuggerPlayer(Debugger debugger, DebuggerInputText inputText) {
+    public DBPlayer(Debugger debugger, DBInputText inputText) {
         this.debugger = debugger;
         this.inputText = inputText;
-        contextInfo = new ContextInfo();
+        contextInfo = new DBPlayerContextInfo();
         lookAheadTextStack = new Stack();
     }
 
     public void close() {
         inputText.close();        
+    }
+
+    public void toggleInputTextTokensBox() {
+        inputText.setDrawTokensBox(!inputText.isDrawTokensBox());
     }
 
     /** Called by playEnterDecision() */
@@ -78,7 +79,7 @@ public class DebuggerPlayer {
 
     public void popLookAheadText(Object id) {
         if(lookAheadTextStack.empty()) {
-            debugger.editor.console.println("Lookahead text stack is empty while trying to popup object id "+id, Console.LEVEL_WARNING);
+            debugger.getConsole().println("Lookahead text stack is empty while trying to popup object id "+id, Console.LEVEL_WARNING);
             return;
         }
 
@@ -86,7 +87,7 @@ public class DebuggerPlayer {
         if(lat.id.equals(id)) {
             lastLookAheadText = (LookAheadText)lookAheadTextStack.pop();
         } else
-            debugger.editor.console.println("The top-of-stack LookAheadText doesn't correspond to id "+id+" ("+lat.id+")", Console.LEVEL_WARNING);
+            debugger.getConsole().println("The top-of-stack LookAheadText doesn't correspond to id "+id+" ("+lat.id+")", Console.LEVEL_WARNING);
     }
 
     /** Called by playRewind() */
@@ -139,7 +140,7 @@ public class DebuggerPlayer {
                 boolean lastEvent = i == events.size()-1;
                 playEvent(event, lastEvent);
             } catch(Exception e) {
-                debugger.editor.console.print(e);
+                debugger.getConsole().print(e);
             }
         }
         eventPlayedCount = events.size();        
@@ -241,7 +242,7 @@ public class DebuggerPlayer {
 
             case DBEvent.TERMINATE:
                 if(lookAheadTextStack.size() > 0) {
-                    debugger.editor.console.println("Lookahead text stack not empty", Console.LEVEL_WARNING);
+                    debugger.getConsole().println("Lookahead text stack not empty", Console.LEVEL_WARNING);
                 }
                 break;
         }
@@ -299,7 +300,7 @@ public class DebuggerPlayer {
 
     public void playConsumeToken(Token token, boolean hidden) {
         if(resyncing > 0) {
-            inputText.consumeToken(token, DebuggerInputText.TOKEN_DEAD);
+            inputText.consumeToken(token, DBInputText.TOKEN_DEAD);
             return;
         }
 
@@ -316,7 +317,7 @@ public class DebuggerPlayer {
             debugger.addToken(token);
         }
 
-        inputText.consumeToken(token, hidden?DebuggerInputText.TOKEN_HIDDEN:DebuggerInputText.TOKEN_NORMAL);
+        inputText.consumeToken(token, hidden?DBInputText.TOKEN_HIDDEN:DBInputText.TOKEN_NORMAL);
     }
 
     protected int lastLocationLine;
@@ -339,16 +340,7 @@ public class DebuggerPlayer {
         if(index < 0)
             return;
 
-        try {
-            debugger.editor.setCaretPosition(index);
-            debugger.storeGrammarAttributeSet(index);
-
-            StyleContext sc = StyleContext.getDefaultStyleContext();
-            AttributeSet attr = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Background, Color.red);
-            debugger.editor.getTextPane().getStyledDocument().setCharacterAttributes(index, 1, attr, false);
-        } catch(Exception e) {
-            debugger.editor.console.print(e);
-        }
+        debugger.markLocationInGrammar(index);
     }
 
     public void playMark(DBEventMark event) {
@@ -420,17 +412,15 @@ public class DebuggerPlayer {
         public int start;
         public Object id;
 
-        protected int startLTIndex;
         protected List ltTokens;
 
         protected boolean enable;
         protected boolean mark;
 
         public LookAheadText(Object id) {
-            this.start = inputText.cursorIndex;
+            this.start = inputText.getCursorIndex();
             this.id = id;
 
-            startLTIndex = -1;
             ltTokens = new ArrayList();
             enable = false;
             mark = false;
@@ -440,14 +430,14 @@ public class DebuggerPlayer {
 
         public void enable() {
             if(enable)
-                debugger.editor.console.println("Enabling an already enabled LookAheadText", Console.LEVEL_WARNING);
+                debugger.getConsole().println("Enabling an already enabled LookAheadText", Console.LEVEL_WARNING);
 
             enable = true;
         }
 
         public void disable() {
             if(!enable)
-                debugger.editor.console.println("Disabling an already disabled LookAheadText", Console.LEVEL_WARNING);
+                debugger.getConsole().println("Disabling an already disabled LookAheadText", Console.LEVEL_WARNING);
 
             enable = false;
         }
@@ -463,7 +453,7 @@ public class DebuggerPlayer {
 
         public void consumeToken(Token token, boolean hidden) {
             if(!mark)
-                inputText.consumeToken(token, hidden?DebuggerInputText.TOKEN_HIDDEN:DebuggerInputText.TOKEN_NORMAL);
+                inputText.consumeToken(token, hidden?DBInputText.TOKEN_HIDDEN:DBInputText.TOKEN_NORMAL);
         }
 
         public void LT(int index, Token token) {
@@ -491,77 +481,4 @@ public class DebuggerPlayer {
         }
     }
 
-    protected class ContextInfo {
-
-        public Stack subrule = new Stack();
-        public Stack decision = new Stack();
-        public Stack mark = new Stack();
-        public Stack backtrack = new Stack();
-
-        public void enterSubrule(int i) {
-            subrule.push(new Integer(i));
-        }
-
-        public void exitSubrule() {
-            subrule.pop();
-        }
-
-        public int getSubrule() {
-            return getPeekValue(subrule);
-        }
-
-        public void enterDecision(int i) {
-            decision.push(new Integer(i));
-        }
-
-        public void exitDecision() {
-            decision.pop();
-        }
-
-        public int getDecision() {
-            return getPeekValue(decision);
-        }
-
-        public void mark(int i) {
-            mark.push(new Integer(i));
-        }
-
-        public void rewind() {
-            mark.pop();
-        }
-
-        public int getMark() {
-            return getPeekValue(mark);
-        }
-
-        public void beginBacktrack(int level) {
-            backtrack.push(new Integer(level));
-        }
-
-        public void endBacktrack() {
-            backtrack.pop();
-        }
-
-        public int getBacktrack() {
-            return getPeekValue(backtrack);
-        }
-
-        public boolean isBacktracking() {
-            return !backtrack.isEmpty();
-        }
-
-        public int getPeekValue(Stack s) {
-            if(s.isEmpty())
-                return -1;
-            else
-                return ((Integer)s.peek()).intValue();
-        }
-
-        public void clear() {
-            subrule.clear();
-            decision.clear();
-            mark.clear();
-            backtrack.clear();
-        }
-    }
 }

@@ -49,10 +49,7 @@ public class VisualDrawing extends ATEThread {
     protected GFactory factory = new GFactory();
 
     protected String text;
-    protected String filename;
     protected GrammarSyntaxRule rule;
-
-    protected boolean latchSilent = false;
 
     protected String threadText;
     protected GrammarSyntaxRule threadRule;
@@ -70,9 +67,8 @@ public class VisualDrawing extends ATEThread {
         clearCacheGraphs();
     }
 
-    public synchronized void setText(String text, String filename) {
+    public synchronized void setText(String text) {
         this.text = text;
-        this.filename = filename;
         awakeThread(500);
     }
 
@@ -83,10 +79,6 @@ public class VisualDrawing extends ATEThread {
 
     public synchronized void clearCacheGraphs() {
         cacheGraphs.clear();
-    }
-
-    public synchronized Map getCacheGraphs() {
-        return cacheGraphs;
     }
 
     public synchronized void refresh() {

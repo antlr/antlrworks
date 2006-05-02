@@ -220,7 +220,6 @@ public class Statistics {
     }
 
     protected Map events = null;
-    protected String date = null;
 
     public static synchronized Statistics shared() {
         if(shared == null)

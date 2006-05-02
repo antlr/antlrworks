@@ -336,18 +336,6 @@ public class MenuRefactor extends MenuAbstract {
         inlineRule(rule);
     }
 
-    protected void inlineRule(String ruleName) {
-        Statistics.shared().recordEvent(Statistics.EVENT_INLINE_RULE);
-
-        GrammarSyntaxRule rule = editor.rules.getRuleWithName(ruleName);
-        if(rule == null) {
-            XJAlert.display(editor.getWindowContainer(), "Inline Rule", "Rule \""+ruleName+"\" doesn't exist.");
-            return;
-        }
-
-        inlineRule(rule);
-    }
-
     protected void inlineRule(GrammarSyntaxRule rule) {
         String oldContent = editor.getText();
 

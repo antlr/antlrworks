@@ -1,8 +1,7 @@
-package org.antlr.works.debugger.ast;
+package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
 
-import javax.swing.tree.TreeNode;
 import java.util.*;
 /*
 
@@ -76,18 +75,6 @@ public class DBASTModel {
             return (Rule) rules.get(index);
     }
 
-    public int getRootCount() {
-        Stack roots = getRoots();
-        if(roots == null)
-            return 0;
-        else
-            return roots.size();
-    }
-
-    public ASTNode getRootAtIndex(int index) {
-        return (ASTNode) getRoots().get(index);
-    }
-
     /* Methods used by the debugger */
 
     public void pushRule(String name) {
@@ -102,10 +89,6 @@ public class DBASTModel {
 
     public void pushRoot(ASTNode node) {
         getRoots().push(node);
-    }
-
-    public void popRoot() {
-        getRoots().pop();
     }
 
     /** Replace a root node by another one */
@@ -194,19 +177,23 @@ public class DBASTModel {
         public ASTNode getRootAtIndex(int index) {
             return (ASTNode)roots.get(index);
         }
+
+        public Stack getRoots() {
+            return roots;
+        }
     }
 
-    public class ASTNode implements TreeNode {
+    public class ASTNode extends DBTreeNode {
 
         public int id;
-        public Token token = null;
         public boolean nil = false;
 
         public ASTNode parent = null;
-        public List children = new ArrayList();
 
         public ASTNode(int id) {
             this.id = id;
+            /** Children is defined in DefaultMutableTreeNode */
+            children = new Vector();
         }
 
         /** Add a child */
@@ -263,7 +250,7 @@ public class DBASTModel {
 
         /* TreeNode interface */
 
-        public TreeNode getChildAt(int childIndex) {
+        /*public TreeNode getChildAt(int childIndex) {
             return (TreeNode)children.get(childIndex);
         }
 
@@ -289,10 +276,12 @@ public class DBASTModel {
 
         public Enumeration children() {
             return Collections.enumeration(children);
-        }
+        } */
 
         public String toString() {
-            if(token == null)
+            if(nil)
+                return "Root";
+            else if(token == null)
                 return String.valueOf(id);
             else
                 return token.getText();

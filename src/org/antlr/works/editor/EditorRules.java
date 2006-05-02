@@ -33,7 +33,6 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
-import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
@@ -417,16 +416,6 @@ public class EditorRules implements XJTreeDelegate {
         return rule;
     }
 
-    public boolean isRuleName(String name) {
-        Iterator iterator = getParserEngine().getRules().iterator();
-        while(iterator.hasNext()) {
-            GrammarSyntaxRule r = (GrammarSyntaxRule)iterator.next();
-            if(r.name.equals(name))
-                return true;
-        }
-        return false;
-    }
-
     public GrammarSyntaxRule getRuleAtIndex(int index) {
         if(getParserEngine().getRules() == null)
             return null;
@@ -440,31 +429,8 @@ public class EditorRules implements XJTreeDelegate {
         return null;
     }
 
-    public GrammarSyntaxRule getRuleStartingWithToken(ATEToken startToken) {
-        if(getParserEngine().getRules() == null)
-            return null;
-
-        for(Iterator iterator = getParserEngine().getRules().iterator(); iterator.hasNext(); ) {
-            GrammarSyntaxRule r = (GrammarSyntaxRule)iterator.next();
-            if(r.start == startToken)
-                return r;
-        }
-        return null;
-    }
-
     public boolean isRuleAtIndex(int index) {
         return getRuleAtIndex(index) != null;
-    }
-
-    public void selectFirstRule() {
-        if(getParserEngine().getRules() == null || getParserEngine().getRules().size() == 0)
-            return;
-
-        programmaticallySelectingRule = true;
-        GrammarSyntaxRule r = (GrammarSyntaxRule)getParserEngine().getRules().get(0);
-        selectRuleInTree(r);
-        goToRule(r);
-        programmaticallySelectingRule = false;
     }
 
     public void selectNextRule() {
@@ -727,18 +693,6 @@ public class EditorRules implements XJTreeDelegate {
         GrammarSyntaxRule targetRule = ((EditorRules.RuleTreeUserObject) targetObject).rule;
 
         return moveRule(sourceRule, targetRule, dropLocation == XJTree.DROP_ABOVE);
-    }
-
-    public ATEFoldingEntity getEntityForKey(Object key) {
-        if(getParserEngine().getRules() == null)
-            return null;
-
-        for(Iterator iterator = getParserEngine().getRules().iterator(); iterator.hasNext(); ) {
-            GrammarSyntaxRule rule = (GrammarSyntaxRule)iterator.next();
-            if(rule.name.equals(key))
-                return rule;
-        }
-        return null;
     }
 
     public class RulesTableRenderer extends DefaultTreeCellRenderer {

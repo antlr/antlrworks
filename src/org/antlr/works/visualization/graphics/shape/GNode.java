@@ -188,10 +188,6 @@ public class GNode extends GObject {
         }
     }
 
-    public String toString(GContext context) {
-        return "["+state.stateNumber+", "+linkDimension.getPixelWidth(context)+", "+linkDimension.getPixelUp(context)+", "+linkDimension.getPixelDown(context)+"]";
-    }
-
     public String toString() {
         return String.valueOf(state.stateNumber);
     }

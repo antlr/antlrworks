@@ -80,7 +80,6 @@ public class GLiteral {
         public String s;
         public Map values;
         public int position;
-        public float value;
 
         public Evaluator(String s, Map values) {
             this.s = s;
@@ -89,7 +88,6 @@ public class GLiteral {
 
         public float evaluate() {
             position = 0;
-            value = 0;
             return eval();
         }
 

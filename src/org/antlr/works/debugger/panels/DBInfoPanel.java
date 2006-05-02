@@ -1,6 +1,7 @@
-package org.antlr.works.debugger;
+package org.antlr.works.debugger.panels;
 
 import org.antlr.works.debugger.events.DBEvent;
+import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -42,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DebuggerInfoPanel extends JPanel {
+public class DBInfoPanel extends JPanel {
 
     public static final int INFO_COLUMN_COUNT = 0;  // 1st column of rule and even table
     public static final int INFO_COLUMN_RULE = 1;   // 2nd column of rule table
@@ -62,7 +63,7 @@ public class DebuggerInfoPanel extends JPanel {
 
     protected Stack rules = new Stack();
 
-    public DebuggerInfoPanel() {
+    public DBInfoPanel() {
         super(new BorderLayout());
 
         ruleTableDataModel = new RuleTableDataModel();
@@ -136,7 +137,7 @@ public class DebuggerInfoPanel extends JPanel {
         eventTableDataModel.clear();
     }
 
-    public void addEvent(DBEvent event, DebuggerPlayer.ContextInfo info) {
+    public void addEvent(DBEvent event, DBPlayerContextInfo info) {
         eventTableDataModel.add(event, info);
     }
 
@@ -215,7 +216,7 @@ public class DebuggerInfoPanel extends JPanel {
 
         protected List events = new ArrayList();
 
-        public void add(DBEvent event, DebuggerPlayer.ContextInfo info) {
+        public void add(DBEvent event, DBPlayerContextInfo info) {
             events.add(new EventInfo(event, info));
             fireTableRowsInserted(events.size()-1, events.size()-1);
         }
@@ -282,7 +283,7 @@ public class DebuggerInfoPanel extends JPanel {
             public int mark;
             public int backtrack;
 
-            public EventInfo(DBEvent event, DebuggerPlayer.ContextInfo info) {
+            public EventInfo(DBEvent event, DBPlayerContextInfo info) {
                 this.event = event;
                 this.subrule = info.getSubrule();
                 this.decision = info.getDecision();

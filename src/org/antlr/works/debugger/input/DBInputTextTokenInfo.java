@@ -1,4 +1,6 @@
-package org.antlr.works.debugger.ast;
+package org.antlr.works.debugger.input;
+
+import org.antlr.runtime.Token;
 /*
 
 [The "BSD licence"]
@@ -30,6 +32,24 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface DBASTModelListener {
-    public void modelChanged(DBASTModel model);
+public class DBInputTextTokenInfo {
+
+    public Token token;
+    public int start;
+    public int end;
+
+    public int line;
+    public int charInLine;
+
+    public DBInputTextTokenInfo(Token token, int start, int line, int charInLine) {
+        this.token = token;
+        this.start = start;
+        this.end = start+token.getText().length();
+        this.line = line;
+        this.charInLine = charInLine;
+    }
+
+    public boolean containsToken(Token t) {
+        return t.getTokenIndex() == token.getTokenIndex();
+    }
 }

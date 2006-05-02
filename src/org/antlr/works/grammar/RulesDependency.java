@@ -43,9 +43,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class RulesDependency extends GrammarDOTTab {
 
-    protected int line;
-    protected int column;
-
     protected List visitedRules = new ArrayList();
     protected List visitedRefs = new ArrayList();
     protected StringBuffer dependency;

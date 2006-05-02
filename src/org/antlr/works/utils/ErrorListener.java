@@ -77,10 +77,6 @@ public class ErrorListener implements ANTLRErrorListener {
         return errors.size() > 0;
     }
 
-    public int size() {
-        return infos.size() + errors.size() + warnings.size();
-    }
-
     public void info(String msg) {
         infos.add(msg);
         if(forwardListener != null)

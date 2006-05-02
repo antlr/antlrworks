@@ -1,6 +1,7 @@
-package org.antlr.works.debugger.parsetree;
+package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
+import org.antlr.tool.Grammar;
 import org.antlr.works.awtree.AWTreeNode;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
@@ -51,6 +52,7 @@ public class DBParseTreeModel {
 
     public DBParseTreeModel(Debugger debugger) {
         this.debugger = debugger;
+        initRules();
     }
 
     public void addListener(DBParseTreeModelListener listener) {
@@ -71,10 +73,13 @@ public class DBParseTreeModel {
         }
     }
 
-    public void clear() {
+    public void initRules() {
         rules.clear();
         rules.push(new ParseTreeNode("root"));
+    }
 
+    public void clear() {
+        initRules();
         backtrackStack.clear();
 
         fireDataChanged(null);
@@ -82,9 +87,11 @@ public class DBParseTreeModel {
 
     public void pushRule(String name, int line, int pos) {
         ParseTreeNode parentRuleNode = (ParseTreeNode)rules.peek();
-        ParseTreeNode ruleNode = new ParseTreeNode(name);
 
+        ParseTreeNode ruleNode = new ParseTreeNode(name);
         ruleNode.setPosition(line, pos);
+        rules.push(ruleNode);
+
         parentRuleNode.add(ruleNode);
 
         addNodeToCurrentBacktrack(ruleNode);
@@ -96,16 +103,20 @@ public class DBParseTreeModel {
         rules.pop();
     }
 
+    public TreeNode getRootRule() {
+        return (TreeNode)rules.firstElement();
+    }
+
     public TreeNode peekRule() {
         if(rules.isEmpty())
             return null;
         else
-            return (TreeNode) rules.peek();
+            return (TreeNode)rules.peek();
     }
 
     public void addToken(Token token) {
         ParseTreeNode ruleNode = (ParseTreeNode)rules.peek();
-        ParseTreeNode elementNode = new ParseTreeNode(token);
+        ParseTreeNode elementNode = new ParseTreeNode(token, debugger.getGrammar().getANTLRGrammar());
         ruleNode.add(elementNode);
         addNodeToCurrentBacktrack(elementNode);
         fireDataChanged(elementNode);
@@ -138,68 +149,29 @@ public class DBParseTreeModel {
         fireDataUpdated(b.getLastNode());
     }
 
-    public class ParseTreeNode extends AWTreeNode {
-
+    public class ParseTreeNode extends DBTreeNode {
         protected String s;
-        protected Token token;
         protected Exception e;
-
-        protected int line;
-        protected int pos;
-
-        protected Color color = Color.black;
 
         public ParseTreeNode(String s) {
             this.s = s;
-        }
-
-        public ParseTreeNode(Token token) {
-            this.token = token;
         }
 
         public ParseTreeNode(Exception e) {
             this.e = e;
         }
 
-        public ParseTreeNode findNodeWithToken(Token t) {
-            if(token != null && t.getTokenIndex() == token.getTokenIndex())
-                return this;
-
-            for(Enumeration childrenEnumerator = children(); childrenEnumerator.hasMoreElements(); ) {
-                ParseTreeNode node = (ParseTreeNode) childrenEnumerator.nextElement();
-                ParseTreeNode candidate = node.findNodeWithToken(t);
-                if(candidate != null)
-                    return candidate;
-            }
-            return null;
-        }
-
-        public void setPosition(int line, int pos) {
-            this.line = line;
-            this.pos = pos;
-        }
-
-        public void setColor(Color color) {
-            this.color = color;
-        }
-
-        public Color getColor() {
-            return color;
+        public ParseTreeNode(Token token, Grammar grammar) {
+            super(token, grammar);
         }
 
         public String toString() {
             if(s != null)
                 return s;
-            else if(token != null)
-                return token.getText()+" <"+debugger.getGrammar().getANTLRGrammar().getTokenDisplayName(token.getType())+">";
             else if(e != null)
                 return e.toString();
-
-            return "?";
-        }
-
-        public String getInfoString() {
-            return toString();
+            else
+                return super.toString();
         }
 
     }
@@ -218,7 +190,7 @@ public class DBParseTreeModel {
          * method.
          */
 
-        public void addNode(ParseTreeNode node) {
+        public void addNode(DBTreeNode node) {
             node.setColor(AWPrefs.getLookaheadTokenColor());
             nodes.add(node);
         }
@@ -226,7 +198,7 @@ public class DBParseTreeModel {
         public void end(boolean success) {
             Color color = getColor(success);
             for (int i = 0; i < nodes.size(); i++) {
-                ParseTreeNode node = (ParseTreeNode) nodes.get(i);
+                DBTreeNode node = (DBTreeNode) nodes.get(i);
                 node.setColor(color);
             }
         }

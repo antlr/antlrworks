@@ -1,4 +1,4 @@
-package org.antlr.works.debugger.parsetree;
+package org.antlr.works.debugger.tree;
 
 import edu.usfca.xj.appkit.gview.GView;
 import org.antlr.runtime.Token;
@@ -68,8 +68,8 @@ public class DBParseTreePanel extends JPanel implements DBParseTreeModelListener
     }
 
     public void selectToken(Token token) {
-        DBParseTreeModel.ParseTreeNode root = (DBParseTreeModel.ParseTreeNode) treePanel.getRoot();
-        DBParseTreeModel.ParseTreeNode node = root.findNodeWithToken(token);
+        DBTreeNode root = (DBTreeNode) treePanel.getRoot();
+        DBTreeNode node = root.findNodeWithToken(token);
         if(node != null)
             treePanel.selectNode(node);
     }
@@ -84,8 +84,7 @@ public class DBParseTreePanel extends JPanel implements DBParseTreeModelListener
     }
 
     public void modelChanged(DBParseTreeModel model, TreeNode newNode) {
-        TreeNode node = model.peekRule();
-        treePanel.setRoot(node);
+        treePanel.setRoot(model.getRootRule());
         updateParseTree(newNode);
     }
 
@@ -94,7 +93,7 @@ public class DBParseTreePanel extends JPanel implements DBParseTreeModelListener
     }
 
     public void awTreeDidSelectTreeNode(TreeNode node) {
-        DBParseTreeModel.ParseTreeNode n = (DBParseTreeModel.ParseTreeNode) node;
+        DBTreeNode n = (DBTreeNode) node;
         debugger.selectToken(n.token, n.line, n.pos);
     }
 

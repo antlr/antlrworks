@@ -167,16 +167,6 @@ public class FAState {
         return getNumberOfTransitions() == 1;
     }
 
-    public boolean hasLoopTransition() {
-        Iterator iterator = transitions.iterator();
-        while(iterator.hasNext()) {
-            FATransition transition = (FATransition)iterator.next();
-            if(transition.loop)
-                return true;
-        }
-        return false;
-    }
-
     public int hashCode() {
         return stateNumber;
     }
@@ -191,36 +181,6 @@ public class FAState {
             return String.valueOf(stateNumber);
         else
             return "<"+externalRuleRefName+">";
-    }
-
-    /** Method used by the TestSuite
-     *
-     */
-
-    public void getPaths(Set alreadyVisitedStates, String path, List outPaths) {
-        alreadyVisitedStates.add(this);
-
-        if(transitions.size() == 0) {
-            outPaths.add(path);
-            return;
-        }
-
-        Iterator iterator = transitions.iterator();
-        while(iterator.hasNext()) {
-            FATransition transition = (FATransition)iterator.next();
-            FAState state = transition.target;
-
-            String np = (path.length()==0?"":path+",")+this+"-"+(transition.label!=null?transition.label:"e")+"-"+state;
-
-            if(alreadyVisitedStates.contains(state)) {
-                outPaths.add(np);
-            } else {
-                Set s = new HashSet();
-                s.addAll(alreadyVisitedStates);
-
-                state.getPaths(s, np, outPaths);
-            }
-        }
     }
 
 }

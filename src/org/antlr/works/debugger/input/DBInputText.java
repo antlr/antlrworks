@@ -29,11 +29,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.debugger;
+package org.antlr.works.debugger.input;
 
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.utils.TextPane;
@@ -50,7 +51,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
 import java.util.*;
 
-public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserver {
+public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
 
     public static final int TOKEN_NORMAL = 1;
     public static final int TOKEN_HIDDEN = 2;
@@ -86,7 +87,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
 
     protected boolean drawTokensBox;
 
-    public DebuggerInputText(Debugger debugger, TextPane textPane) {
+    public DBInputText(Debugger debugger, TextPane textPane) {
         this.debugger = debugger;
         this.textPane = textPane;
         this.textPane.setDelegate(this);
@@ -112,8 +113,13 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
         }
     }
 
+    public int getCursorIndex() {
+        return cursorIndex;
+    }
+
     public void setDrawTokensBox(boolean flag) {
         drawTokensBox = flag;
+        textPane.repaint();
     }
 
     public boolean isDrawTokensBox() {
@@ -201,7 +207,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             return;
 
         // Don't add if the token is already in the map
-        TokenInfo info = (TokenInfo) tokens.get(new Integer(index));
+        DBInputTextTokenInfo info = (DBInputTextTokenInfo) tokens.get(new Integer(index));
         if(info != null) {
             // But update its position to its most recent value
             info.line = locationLine;
@@ -209,14 +215,14 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             return;
         }
 
-        tokens.put(new Integer(index), new TokenInfo(token, persistenceTextLength, locationLine, locationCharInLine));
+        tokens.put(new Integer(index), new DBInputTextTokenInfo(token, persistenceTextLength, locationLine, locationCharInLine));
         persistenceTextLength += token.getText().length();
     }
 
     private void addText(Token token, AttributeSet attribute) {
         String text = token.getText();
         if(persistence) {
-            TokenInfo info = (TokenInfo)tokens.get(new Integer(token.getTokenIndex()));
+            DBInputTextTokenInfo info = (DBInputTextTokenInfo)tokens.get(new Integer(token.getTokenIndex()));
             if(info != null) {
                 textPane.getStyledDocument().setCharacterAttributes(info.start, info.end-info.start, attribute, true);
                 cursorIndex = info.end;
@@ -233,7 +239,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             textPane.getStyledDocument().insertString(getTextLength(), text, attribute);
             cursorIndex = getTextLength();
         } catch (BadLocationException e) {
-            debugger.editor.console.print(e);
+            debugger.getConsole().print(e);
         }
     }
 
@@ -242,7 +248,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             textPane.getDocument().remove(start, end-start);
             cursorIndex = getTextLength();
         } catch (BadLocationException e) {
-            debugger.editor.console.print(e);
+            debugger.getConsole().print(e);
         }
     }
 
@@ -266,7 +272,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
 
     public void textPaneDidPaint(Graphics g) {
         for (Iterator iterator = tokens.values().iterator(); iterator.hasNext();) {
-            TokenInfo info = (TokenInfo) iterator.next();
+            DBInputTextTokenInfo info = (DBInputTextTokenInfo) iterator.next();
 
             if(drawTokensBox)
                 drawToken(info, (Graphics2D)g, Color.red, false);
@@ -278,7 +284,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
         }
     }
 
-    public void drawToken(TokenInfo info, Graphics2D g, Color c, boolean fill) {
+    public void drawToken(DBInputTextTokenInfo info, Graphics2D g, Color c, boolean fill) {
         g.setColor(c);
         try {
             Rectangle r1 = textPane.modelToView(info.start);
@@ -332,9 +338,9 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
         }
     }
 
-    public TokenInfo getTokenInfoAtIndex(int index) {
+    public DBInputTextTokenInfo getTokenInfoAtIndex(int index) {
         for (Iterator iter = tokens.values().iterator(); iter.hasNext();) {
-            TokenInfo info = (TokenInfo) iter.next();
+            DBInputTextTokenInfo info = (DBInputTextTokenInfo) iter.next();
 
             if(index >= info.start && index < info.end)
                 return info;
@@ -344,7 +350,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
 
     public boolean isBreakpointAtToken(Token token) {
         for(Iterator iter = inputBreakpoints.iterator(); iter.hasNext();) {
-            TokenInfo info = (TokenInfo)iter.next();
+            DBInputTextTokenInfo info = (DBInputTextTokenInfo)iter.next();
             if(info.containsToken(token))
                 return true;
         }
@@ -368,35 +374,19 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             return;
         }
 
-        for (Iterator iter = tokens.values().iterator(); iter.hasNext();) {
-            TokenInfo info = (TokenInfo) iter.next();
-            if(info.token.getTokenIndex() == t.getTokenIndex()) {
-                highlightToken(info.start);
-                break;
-            }
-        }
+
+        DBInputTextTokenInfo info = getTokenInfoForToken(t);
+        if(info != null)
+            highlightToken(info.start);
     }
 
-    protected class TokenInfo {
-
-        public Token token;
-        public int start;
-        public int end;
-
-        public int line;
-        public int charInLine;
-
-        public TokenInfo(Token token, int start, int line, int charInLine) {
-            this.token = token;
-            this.start = start;
-            this.end = start+token.getText().length();
-            this.line = line;
-            this.charInLine = charInLine;
+    public DBInputTextTokenInfo getTokenInfoForToken(Token t) {
+        for (Iterator iter = tokens.values().iterator(); iter.hasNext();) {
+            DBInputTextTokenInfo info = (DBInputTextTokenInfo) iter.next();
+            if(info.token.getTokenIndex() == t.getTokenIndex())
+                return info;
         }
-
-        public boolean containsToken(Token t) {
-            return t.getTokenIndex() == token.getTokenIndex();
-        }
+        return null;
     }
 
     protected class MyMouseListener extends MouseAdapter {
@@ -406,7 +396,7 @@ public class DebuggerInputText implements TextPaneDelegate, XJNotificationObserv
             if(mouseIndex == -1)
                 return;
 
-            TokenInfo info = getTokenInfoAtIndex(mouseIndex);
+            DBInputTextTokenInfo info = getTokenInfoAtIndex(mouseIndex);
             if(info == null)
                 return;
 

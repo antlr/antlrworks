@@ -1,15 +1,17 @@
 
 * Prio 1
-- DBASTPanel: implement selectToken()
+- Debugger: finish show/hide panels
 - Debugger: update status only at break (like the grammar position)
 
 - use only one tab per generation (or other operation that can be uniquely identified)
 - about box background white on Windows (check on Linux)
 - indicate Java VM version used in about box
-- tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
 - links to the different DOT implementation per system so user know what to do the first time
 - build and debug with custom class path and main class
 - debug parser launch time-out in prefs?
+
+* Prio 2
+- tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
 
 - create grammar file in project
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory
@@ -17,7 +19,6 @@
 - show code for any decision (Ter ads comments in code)
 - from generated code, jump back to grammar
 
-* Prio 2
 - DFA decision for lexer tokens (see with Terence) - position in lexer grammar
 - prefs: customizable list of "Insert Rule From Template" - or read from a file ?
 - extract all strings into properties

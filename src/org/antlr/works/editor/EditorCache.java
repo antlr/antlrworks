@@ -37,7 +37,6 @@ import java.util.Map;
 public class EditorCache {
 
     public static final String CACHE_TEXT = "CacheText";
-    public static final String CACHE_PLAIN_TEXT = "CachePlainText";
 
     protected Map cacheMap = new HashMap();
 

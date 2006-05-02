@@ -38,28 +38,39 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.Token;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.debugger.ast.DBASTModel;
-import org.antlr.works.debugger.ast.DBASTPanel;
 import org.antlr.works.debugger.events.DBEvent;
-import org.antlr.works.debugger.parsetree.DBParseTreeModel;
-import org.antlr.works.debugger.parsetree.DBParseTreePanel;
+import org.antlr.works.debugger.input.DBInputText;
+import org.antlr.works.debugger.input.DBInputTextTokenInfo;
+import org.antlr.works.debugger.local.DBLocal;
+import org.antlr.works.debugger.panels.DBControlPanel;
+import org.antlr.works.debugger.panels.DBInfoPanel;
+import org.antlr.works.debugger.remote.DBRemoteConnectDialog;
+import org.antlr.works.debugger.tivo.DBPlayer;
+import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
+import org.antlr.works.debugger.tivo.DBRecorder;
+import org.antlr.works.debugger.tree.DBASTModel;
+import org.antlr.works.debugger.tree.DBASTPanel;
+import org.antlr.works.debugger.tree.DBParseTreeModel;
+import org.antlr.works.debugger.tree.DBParseTreePanel;
+import org.antlr.works.editor.EditorConsole;
 import org.antlr.works.editor.EditorMenu;
+import org.antlr.works.editor.EditorProvider;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.generate.DialogGenerate;
 import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.StreamWatcherDelegate;
 import org.antlr.works.utils.TextPane;
 import org.antlr.works.utils.TextUtils;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,16 +97,8 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     protected DBASTPanel astPanel;
     protected DBASTModel astModel;
 
-    protected DebuggerInfoPanel infoPanel;
-
-    protected JLabel infoLabel;
-    protected JButton debugButton;
-    protected JButton stopButton;
-    protected JButton backButton;
-    protected JButton forwardButton;
-    protected JButton goToStartButton;
-    protected JButton goToEndButton;
-    protected JComboBox breakCombo;
+    protected DBInfoPanel infoPanel;
+    protected DBControlPanel controlPanel;
 
     protected CEditorGrammar editor;
     protected AttributeSet previousGrammarAttributeSet;
@@ -103,15 +106,15 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
     protected Set breakpoints;
 
-    protected DebuggerInputText inputText;
-    protected DebuggerLocal debuggerLocal;
-    protected DebuggerRecorder recorder;
-    protected DebuggerPlayer player;
+    protected DBInputText inputText;
+    protected DBLocal debuggerLocal;
+    protected DBRecorder recorder;
+    protected DBPlayer player;
 
     protected boolean running;
     protected JSplitPane ioSplitPane;
     protected JSplitPane ioTreeSplitPane;
-    protected JSplitPane parseTreeInfoPanelSplitPane;
+    protected JSplitPane treeInfoPanelSplitPane;
 
     protected long dateOfModificationOnDisk = 0;
 
@@ -119,18 +122,26 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         this.editor = editor;
     }
 
+    // @todo to finish
+    protected JPanel treeInfoCanvas;
+    protected JComponent treePanel;
+
     public void awake() {
         panel = new JPanel(new BorderLayout());
 
-        infoPanel = new DebuggerInfoPanel();
+        treeInfoCanvas = new JPanel(new BorderLayout());
 
-        parseTreeInfoPanelSplitPane = new JSplitPane();
-        parseTreeInfoPanelSplitPane.setBorder(null);
-        parseTreeInfoPanelSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        parseTreeInfoPanelSplitPane.setLeftComponent(createTreePanel());
-        parseTreeInfoPanelSplitPane.setRightComponent(infoPanel);
-        parseTreeInfoPanelSplitPane.setContinuousLayout(true);
-        parseTreeInfoPanelSplitPane.setOneTouchExpandable(true);
+        infoPanel = new DBInfoPanel();
+        controlPanel = new DBControlPanel(this);
+        treePanel = createTreePanel();
+
+        treeInfoPanelSplitPane = new JSplitPane();
+        treeInfoPanelSplitPane.setBorder(null);
+        treeInfoPanelSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        treeInfoPanelSplitPane.setLeftComponent(treePanel);
+        treeInfoPanelSplitPane.setRightComponent(infoPanel);
+        treeInfoPanelSplitPane.setContinuousLayout(true);
+        treeInfoPanelSplitPane.setOneTouchExpandable(true);
 
         ioSplitPane = new JSplitPane();
         ioSplitPane.setBorder(null);
@@ -144,23 +155,25 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         ioTreeSplitPane.setBorder(null);
         ioTreeSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         ioTreeSplitPane.setLeftComponent(ioSplitPane);
-        ioTreeSplitPane.setRightComponent(parseTreeInfoPanelSplitPane);
+        ioTreeSplitPane.setRightComponent(treeInfoPanelSplitPane);
         ioTreeSplitPane.setContinuousLayout(true);
         ioTreeSplitPane.setOneTouchExpandable(true);
 
-        panel.add(createControlPanel(), BorderLayout.NORTH);
+        panel.add(controlPanel, BorderLayout.NORTH);
         panel.add(ioTreeSplitPane, BorderLayout.CENTER);
 
-        inputText = new DebuggerInputText(this, inputTextPane);
-        debuggerLocal = new DebuggerLocal(this);
-        recorder = new DebuggerRecorder(this);
-        player = new DebuggerPlayer(this, inputText);
+        inputText = new DBInputText(this, inputTextPane);
+        debuggerLocal = new DBLocal(this);
+        recorder = new DBRecorder(this);
+        player = new DBPlayer(this, inputText);
+
+        //treeInfoCanvas.add(treePanel, BorderLayout.CENTER);
 
         updateStatusInfo();
     }
 
     public void componentShouldLayout() {
-        parseTreeInfoPanelSplitPane.setDividerLocation(0.6);
+        treeInfoPanelSplitPane.setDividerLocation(0.6);
         ioTreeSplitPane.setDividerLocation(0.2);
         ioSplitPane.setDividerLocation(0.2);
 
@@ -171,8 +184,40 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         });
     }
 
+    public void showInfoPanel() {
+    /*    if(treeInfoCanvas.getComponent(0) == treePanel) {
+            treeInfoCanvas.remove(0);
+        } else {
+
+        }*/
+    }
+
+    public void showOutputPanel() {
+
+    }
+
+    public void selectConsoleTab() {
+        editor.selectConsoleTab();
+    }
+
+    public DBRecorder getRecorder() {
+        return recorder;
+    }
+
+    public DBPlayer getPlayer() {
+        return player;
+    }
+
     public Container getWindowComponent() {
         return editor.getWindowContainer();
+    }
+
+    public EditorConsole getConsole() {
+        return editor.getConsole();
+    }
+
+    public EditorProvider getProvider() {
+        return editor;
     }
 
     public void close() {
@@ -229,173 +274,12 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         return treeTabbedPane;
     }
 
-    public Box createControlPanel() {
-        Box box = Box.createHorizontalBox();
-        box.add(createRevealTokensButton());
-        box.add(Box.createHorizontalStrut(20));
-        box.add(stopButton = createDebuggerStopButton());
-        box.add(Box.createHorizontalStrut(20));
-        box.add(goToStartButton = createGoToStartButton());
-        box.add(goToEndButton = createGoToEndButton());
-        box.add(Box.createHorizontalStrut(20));
-        box.add(backButton = createStepBackButton());
-        box.add(forwardButton = createStepForwardButton());
-        box.add(Box.createHorizontalStrut(20));
-        box.add(createBreakComboBox());
-        box.add(Box.createHorizontalGlue());
-        box.add(createInfoLabelPanel());
-        return box;
-    }
-
-    public JComponent createInfoLabelPanel() {
-        infoLabel = new JLabel();
-        return infoLabel;
-    }
-
-    public JButton createDebuggerStopButton() {
-        JButton button = new JButton(IconManager.shared().getIconStop());
-        button.setToolTipText("Stop");
-        button.setFocusable(false);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                debuggerStop(false);
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STOP);
-            }
-        });
-        return button;
-    }
-
-    public JButton createStepBackButton() {
-        JButton button = new JButton(IconManager.shared().getIconStepBackward());
-        button.setToolTipText("Step Back");
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                recorder.stepBackward(getBreakEvent());
-                updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_BACK);
-            }
-        });
-        return button;
-    }
-
-    public JButton createStepForwardButton() {
-        JButton button = new JButton(IconManager.shared().getIconStepForward());
-        button.setToolTipText("Step Forward");
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                recorder.stepForward(getBreakEvent());
-                updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_FORWARD);
-            }
-        });
-        return button;
-    }
-
-    public JButton createGoToStartButton() {
-        JButton button = new JButton(IconManager.shared().getIconGoToStart());
-        button.setToolTipText("Go to start");
-        button.setFocusable(false);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                restorePreviousGrammarAttributeSet();
-                recorder.goToStart();
-                updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_START);
-            }
-        });
-        return button;
-    }
-
-    public JButton createGoToEndButton() {
-        JButton button = new JButton(IconManager.shared().getIconGoToEnd());
-        button.setToolTipText("Go to end");
-        button.setFocusable(false);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                recorder.goToEnd();
-                updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_END);
-            }
-        });
-        return button;
-    }
-
-    static int[] COMBO_BREAK_EVENTS = new int[] { DBEvent.LOCATION,
-            DBEvent.CONSUME_TOKEN,
-            DBEvent.LT,
-            DBEvent.RECOGNITION_EXCEPTION,
-            DBEvent.ALL
-    };
-
-    public JComponent createBreakComboBox() {
-        Box box = Box.createHorizontalBox();
-
-        box.add(new JLabel("Step on"));
-
-        breakCombo = new JComboBox();
-
-        for (int i = 0; i < COMBO_BREAK_EVENTS.length; i++) {
-            breakCombo.addItem(DBEvent.getEventName(COMBO_BREAK_EVENTS[i]));
-
-        }
-
-        AWPrefs.getPreferences().bindToPreferences(breakCombo, AWPrefs.PREF_DEBUG_BREAK_EVENT, DBEvent.CONSUME_TOKEN);
-
-        box.add(breakCombo);
-
-        return box;
-    }
-
-    public JButton createRevealTokensButton() {
-        JButton tokenButton = new JButton(IconManager.shared().getIconTokens());
-        tokenButton.setToolTipText("Reveal tokens in input text");
-        tokenButton.setFocusable(false);
-        tokenButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                player.inputText.setDrawTokensBox(!player.inputText.isDrawTokensBox());
-                inputTextPane.repaint();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
-            }
-        });
-        return tokenButton;
-    }
-
     public Container getContainer() {
         return panel;
     }
 
     public void updateStatusInfo() {
-        String info = "-";
-        switch(recorder.getStatus()) {
-            case DebuggerRecorder.STATUS_STOPPED: info = "Stopped"; break;
-            case DebuggerRecorder.STATUS_STOPPING: info = "Stopping"; break;
-            case DebuggerRecorder.STATUS_LAUNCHING: info = "Launching"; break;
-            case DebuggerRecorder.STATUS_RUNNING: info = "Running"; break;
-            case DebuggerRecorder.STATUS_BREAK: info = "Break on "+DBEvent.getEventName(recorder.getStoppedOnEvent()); break;
-        }
-        infoLabel.setText("Status: "+info);
-        updateInterface();
-    }
-
-    public void updateInterfaceLater() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                updateInterface();
-            }
-        });
-    }
-
-    public void updateInterface() {
-        stopButton.setEnabled(recorder.getStatus() != DebuggerRecorder.STATUS_STOPPED);
-
-        boolean enabled = recorder.isRunning();
-        boolean atBeginning = recorder.isAtBeginning();
-        boolean atEnd = recorder.isAtEnd();
-
-        backButton.setEnabled(enabled && !atBeginning);
-        forwardButton.setEnabled(enabled && !atEnd);
-        goToStartButton.setEnabled(enabled && !atBeginning);
-        goToEndButton.setEnabled(enabled && !atEnd);
+        controlPanel.updateStatusInfo();
     }
 
     public EngineGrammar getGrammar() {
@@ -427,13 +311,19 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         return inputText.isBreakpointAtToken(token);
     }
 
-    public int getBreakEvent() {
-        return COMBO_BREAK_EVENTS[breakCombo.getSelectedIndex()];
-    }
-
     public void selectToken(Token token, int line, int pos) {
-        setGrammarPosition(line, pos);
-        // @todo line and pos are 0 if token != null (ask inputtext)
+        if(token != null) {
+            /** If token is not null, ask the input text object the
+             * line and character number.
+             */
+
+            DBInputTextTokenInfo info = inputText.getTokenInfoForToken(token);
+            setGrammarPosition(info.line, info.charInLine);
+        } else {
+            /** If token is null, the line and pos will be provided as parameters */
+            setGrammarPosition(line, pos);
+        }
+
         inputText.selectToken(token);
         parseTreePanel.selectToken(token);
         astPanel.selectToken(token);
@@ -455,6 +345,19 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
                 });
             } else
                 editor.selectTextRange(grammarIndex, grammarIndex+1);
+        }
+    }
+
+    public void markLocationInGrammar(int index) {
+        try {
+            editor.setCaretPosition(index);
+            storeGrammarAttributeSet(index);
+
+            StyleContext sc = StyleContext.getDefaultStyleContext();
+            AttributeSet attr = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Background, Color.red);
+            editor.getTextPane().getStyledDocument().setCharacterAttributes(index, 1, attr, false);
+        } catch(Exception e) {
+            getConsole().print(e);
         }
     }
 
@@ -496,7 +399,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
     public void launchRemoteDebugger() {
         Statistics.shared().recordEvent(Statistics.EVENT_REMOTE_DEBUGGER);
-        DebuggerRemoteConnectDialog dialog = new DebuggerRemoteConnectDialog(getWindowComponent());
+        DBRemoteConnectDialog dialog = new DBRemoteConnectDialog(getWindowComponent());
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
             debuggerLaunch(dialog.getAddress(), dialog.getPort());
         }
@@ -548,9 +451,9 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     }
 
     public void debuggerStop(boolean force) {
-        if(recorder.getStatus() == DebuggerRecorder.STATUS_STOPPING) {
+        if(recorder.getStatus() == DBRecorder.STATUS_STOPPING) {
             if(force || XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES) {
-                debuggerLocal.remoteParserProcess.destroy();
+                debuggerLocal.forceStop();
                 recorder.forceStop();
             }
         } else
@@ -605,7 +508,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         return line.position+(c-1);
     }
 
-    public void addEvent(DBEvent event, DebuggerPlayer.ContextInfo info) {
+    public void addEvent(DBEvent event, DBPlayerContextInfo info) {
         infoPanel.addEvent(event, info);
         infoPanel.selectLastInfoTableItem();
     }
@@ -743,14 +646,14 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
         i = (Integer)data.get(KEY_SPLITPANE_C);
         if(i != null)
-            parseTreeInfoPanelSplitPane.setDividerLocation(i.intValue());
+            treeInfoPanelSplitPane.setDividerLocation(i.intValue());
     }
 
     public Map getPersistentData() {
         Map data = new HashMap();
         data.put(KEY_SPLITPANE_A, new Integer(ioSplitPane.getDividerLocation()));
         data.put(KEY_SPLITPANE_B, new Integer(ioTreeSplitPane.getDividerLocation()));
-        data.put(KEY_SPLITPANE_C, new Integer(parseTreeInfoPanelSplitPane.getDividerLocation()));
+        data.put(KEY_SPLITPANE_C, new Integer(treeInfoPanelSplitPane.getDividerLocation()));
         return data;
     }
 

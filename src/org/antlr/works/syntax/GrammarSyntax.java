@@ -77,42 +77,12 @@ public class GrammarSyntax {
         return count;
     }
 
-    public boolean isDuplicateRule(String rule) {
-        for(Iterator iterator = duplicateRules.iterator(); iterator.hasNext(); ) {
-            GrammarSyntaxRule r = (GrammarSyntaxRule)iterator.next();
-            if(r.name.equals(rule))
-                return true;
-        }
-        return false;
-    }
-
-    public boolean isDuplicateRule(GrammarSyntaxRule rule) {
-        return duplicateRules.contains(rule);
-    }
-
-    public List getHasLeftRecursionRules() {
-        return hasLeftRecursionRules;
-    }
-
     public List getDuplicateRules() {
         return duplicateRules;
     }
 
-    public boolean isUndefinedReference(ATEToken t) {
-        for(int index=0; index<undefinedReferences.size(); index++) {
-            GrammarSyntaxReference ref = (GrammarSyntaxReference)undefinedReferences.get(index);
-            if(ref.token.equals(t))
-                return true;
-        }
-        return false;
-    }
-
     public List getUndefinedReferences() {
         return undefinedReferences;
-    }
-
-    public List getReferences() {
-        return getParserEngine().getReferences();
     }
 
     public void resetTokenVocab() {

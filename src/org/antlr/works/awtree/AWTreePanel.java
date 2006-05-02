@@ -211,6 +211,10 @@ public class AWTreePanel extends JPanel {
         return slider;
     }
 
+    public void setRootVisible(boolean flag) {
+        tree.setRootVisible(flag);
+    }
+    
     public void setRoot(TreeNode node) {
         treeModel.setRoot(node);
         treeGraphView.setRoot(node);

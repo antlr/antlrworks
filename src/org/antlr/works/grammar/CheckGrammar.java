@@ -38,7 +38,6 @@ public class CheckGrammar implements Runnable {
 
     protected CheckGrammarDelegate delegate;
     protected CEditorGrammar editor;
-    protected boolean analyze = false;
 
     public CheckGrammar(CEditorGrammar editor, CheckGrammarDelegate delegate) {
         this.editor = editor;

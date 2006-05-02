@@ -78,10 +78,6 @@ public class Visual extends EditorTab implements GContextProvider {
         drawing = new VisualDrawing(this);
     }
 
-    public GrammarSyntaxEngine getParserEngine() {
-        return editor.getParserEngine();
-    }
-
     public Console getConsole() {
         return editor.getConsole();
     }
@@ -123,7 +119,7 @@ public class Visual extends EditorTab implements GContextProvider {
 
     public void setText(String text, String filename) {
         if(isEnable())
-            drawing.setText(text, filename);
+            drawing.setText(text);
     }
 
     public void setRule(GrammarSyntaxRule rule, boolean immediate) {

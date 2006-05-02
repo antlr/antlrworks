@@ -38,7 +38,8 @@ import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GObject;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class GPathGroup extends GObject implements GTimerDelegate {
@@ -179,16 +180,6 @@ public class GPathGroup extends GObject implements GTimerDelegate {
                 paths.add(path);
         }
         return paths;
-    }
-
-    public Set getObjectsToIgnore() {
-        Set objects = new HashSet();
-        for (Iterator iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = (GPath) iterator.next();
-            if(path.isVisible())
-                objects.addAll(path.getObjects());
-        }
-        return objects;
     }
 
     public void draw() {

@@ -64,10 +64,6 @@ public class ProjectFileItem implements Comparable {
     protected int tabIndex;
     protected Map containerData;
 
-    public ProjectFileItem(CContainerProject project) {
-        this.project = project;
-    }
-
     public ProjectFileItem(CContainerProject project, String name) {
         setFileName(name);
         this.project = project;

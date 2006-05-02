@@ -105,6 +105,8 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_DEBUG = 81;
     public static final int MI_BUILD_AND_DEBUG = 82;
     public static final int MI_DEBUG_REMOTE = 83;
+    public static final int MI_DEBUG_SHOW_INFO_PANEL = 84;
+    public static final int MI_DEBUG_SHOW_OUTPUT_PANEL = 85;
 
     // SCM
     public static final int MI_P4_EDIT = 90;
@@ -204,9 +206,15 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.addItem(new XJMenuItem("Run Interpreter", KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem("Debug...", KeyEvent.VK_F9, MI_DEBUG, this));
-        menu.addItem(new XJMenuItem("Build and Debug...", KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
-        menu.addSeparator();
+        /** Removed since 05/01/06 because 'Debug' automatically detects any change
+         * to the grammar and rebuild it.
+         */
+        //menu.addItem(new XJMenuItem("Build and Debug...", KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
+        //menu.addSeparator();
         menu.addItem(new XJMenuItem("Debug Remote...", KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem("Show Info Panel", MI_DEBUG_SHOW_INFO_PANEL, this));
+        menu.addItem(new XJMenuItem("Show Output Panel", MI_DEBUG_SHOW_OUTPUT_PANEL, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -728,6 +736,14 @@ public class EditorMenu implements XJMenuItemDelegate {
 
             case MI_DEBUG_REMOTE:
                 editor.menuRun.debugRemote();
+                break;
+
+            case MI_DEBUG_SHOW_INFO_PANEL:
+                editor.menuRun.showInfoPanel();
+                break;
+
+            case MI_DEBUG_SHOW_OUTPUT_PANEL:
+                editor.menuRun.showOutputPanel();
                 break;
         }
     }

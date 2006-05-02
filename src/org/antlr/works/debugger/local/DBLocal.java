@@ -29,7 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.debugger;
+package org.antlr.works.debugger.local;
 
 import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJAlert;
@@ -40,6 +40,8 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.antlr.works.IDE;
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerInputDialog;
 import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.prefs.AWPrefs;
@@ -52,12 +54,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, StreamWatcherDelegate {
+public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatcherDelegate {
 
     public static final String remoteParserClassName = "__Test__";
     // @todo put this in the check-list
-    public static final String remoteParserTemplatePath = "org/antlr/works/debugger/";
-    public static final String remoteParserTemplateName = "RemoteParserGlueCode";
+    public static final String parserGlueCodeTemplatePath = "org/antlr/works/debugger/local/";
+    public static final String parserGlueCodeTemplateName = "DBParserGlueCode";
 
     public static final String ST_ATTR_CLASSNAME = "class_name";
     public static final String ST_ATTR_INPUT_FILE = "input_file";
@@ -76,7 +78,6 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
     protected String lastStartRule;
 
     protected Process remoteParserProcess;
-    protected boolean remoteParserLaunched;
 
     protected boolean cancelled;
     protected boolean buildAndDebug;
@@ -89,10 +90,10 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
     protected XJDialogProgress progress;
     protected ErrorReporter error = new ErrorReporter();
 
-    public DebuggerLocal(Debugger debugger) {
+    public DBLocal(Debugger debugger) {
         this.debugger = debugger;
-        this.codeGenerator = new CodeGenerate(debugger.editor, null);
-        this.progress = new XJDialogProgress(debugger.editor.getJavaContainer());
+        this.codeGenerator = new CodeGenerate(debugger.getProvider(), null);
+        this.progress = new XJDialogProgress(debugger.getWindowComponent());
     }
 
     public void setOutputPath(String path) {
@@ -109,6 +110,10 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
 
     public String getInputText() {
         return inputText;
+    }
+
+    public void forceStop() {
+        remoteParserProcess.destroy();
     }
 
     public synchronized void cancel() {
@@ -197,7 +202,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
                 }
             });
         } catch (Exception e) {
-            debugger.editor.console.print(e);
+            debugger.getConsole().print(e);
         }
     }
 
@@ -221,8 +226,8 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                if(XJAlert.displayAlert(debugger.editor.getWindowContainer(), error.title, error.message, "Show Console", "OK", 1) == 0) {
-                    debugger.editor.selectConsoleTab();
+                if(XJAlert.displayAlert(debugger.getWindowComponent(), error.title, error.message, "Show Console", "OK", 1) == 0) {
+                    debugger.selectConsoleTab();
                 }
             }
         });
@@ -258,7 +263,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
             outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
             new File(outputFileDir).mkdirs();
         } catch(Exception e) {
-            debugger.editor.console.print(e);
+            debugger.getConsole().print(e);
             reportError("Error while preparing the grammar:\n"+e.toString());
             return false;
         }
@@ -290,7 +295,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
         try {
             debugger.getGrammar().analyze();
         } catch (Exception e) {
-            debugger.editor.console.print(e);
+            debugger.getConsole().print(e);
             errorMessage = e.getLocalizedMessage();
         }
         if(errorMessage != null) {
@@ -304,7 +309,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
             if(!codeGenerator.generate())
                 errorMessage = codeGenerator.getLastError();
         } catch (Exception e) {
-            debugger.editor.console.print(e);
+            debugger.getConsole().print(e);
             errorMessage = e.getLocalizedMessage();
         }
 
@@ -338,7 +343,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
     protected void generateGlueCode() {
         try {
             StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup", DefaultTemplateLexer.class);
-            StringTemplate glueCode = group.getInstanceOf(remoteParserTemplatePath+remoteParserTemplateName);
+            StringTemplate glueCode = group.getInstanceOf(parserGlueCodeTemplatePath +parserGlueCodeTemplateName);
             glueCode.setAttribute(ST_ATTR_CLASSNAME, remoteParserClassName);
             glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(fileRemoteParserInputText));
             glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(false));
@@ -347,7 +352,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
 
             XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
         } catch(Exception e) {
-            debugger.editor.console.print(e);
+            debugger.getConsole().print(e);
             reportError("Error while generating the glue-code:\n"+e.getLocalizedMessage());
         }
     }
@@ -366,7 +371,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
         try {
             XJUtils.writeStringToFile(getInputText(), fileRemoteParserInputText);
         } catch (IOException e) {
-            debugger.editor.console.print(e);
+            debugger.getConsole().print(e);
             reportError("Error while generating the input text:\n"+e.getLocalizedMessage());
         }
     }
@@ -397,7 +402,7 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
         classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
         classPath += File.pathSeparatorChar+".";
 
-        debugger.editor.console.println("Launch with path ="+classPath);
+        debugger.getConsole().println("Launch with path ="+classPath);
 
         try {
             // Use an array rather than a single string because white-space
@@ -426,11 +431,11 @@ public class DebuggerLocal implements Runnable, XJDialogProgressDelegate, Stream
     }
 
     public void streamWatcherDidReceiveString(String string) {
-        debugger.editor.getConsole().print(string, Console.LEVEL_NORMAL);
+        debugger.getConsole().print(string, Console.LEVEL_NORMAL);
     }
 
     public void streamWatcherException(Exception e) {
-        debugger.editor.getConsole().print(e);
+        debugger.getConsole().print(e);
     }
 
     protected class ErrorReporter {

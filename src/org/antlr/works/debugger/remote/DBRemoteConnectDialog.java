@@ -29,7 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.debugger;
+package org.antlr.works.debugger.remote;
 
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
@@ -41,9 +41,9 @@ import org.antlr.works.prefs.AWPrefs;
 import javax.swing.*;
 import java.awt.*;
 
-public class DebuggerRemoteConnectDialog extends XJDialog {
+public class DBRemoteConnectDialog extends XJDialog {
 
-    public DebuggerRemoteConnectDialog(Container parent) {
+    public DBRemoteConnectDialog(Container parent) {
         super(parent, true);
 
         initComponents();

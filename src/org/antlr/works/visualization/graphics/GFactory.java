@@ -79,10 +79,6 @@ public class GFactory {
         return Collections.singletonList(graph);
     }
 
-    public List buildGraphsForErrors(EngineGrammar grammar, String rule) throws Exception {
-        return buildGraphsForErrors(grammar, rule, grammar.getErrors());
-    }
-
     public List buildGraphsForErrors(EngineGrammar grammar, String rule, List errors) throws Exception {
         List graphs = new ArrayList();
 

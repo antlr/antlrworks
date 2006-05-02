@@ -1,4 +1,4 @@
-package org.antlr.works.debugger.ast;
+package org.antlr.works.debugger.tree;
 
 import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.swing.XJTable;
@@ -13,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import java.awt.*;
+import java.util.Stack;
 /*
 
 [The "BSD licence"]
@@ -53,8 +54,6 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
     public AWTreePanel treePanel;
 
     public DBASTModel model;
-    public RulesTableModel rulesModel;
-    public RootsTableModel rootsModel;
     public JSplitPane tablesSplitPane;
     public JSplitPane tableTreeSplitPane;
 
@@ -63,19 +62,20 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
 
         this.debugger = debugger;
 
-        rulesTable = new XJTable(rulesModel = new RulesTableModel());
+        rulesTable = new XJTable(new RulesTableModel());
         rulesTable.setFocusable(false);
         rulesTable.setDelegate(this);
         rulesTable.setAllowEmptySelection(false);
         rulesTable.setRememberSelection(true);
 
-        rootsTable = new XJTable(rootsModel = new RootsTableModel());
+        rootsTable = new XJTable(new RootsTableModel());
         rootsTable.setFocusable(false);
         rootsTable.setDelegate(this);
         rootsTable.setAllowEmptySelection(false);
         rootsTable.setRememberSelection(true);
 
         treePanel = new AWTreePanel(new DefaultTreeModel(null));
+        treePanel.setRootVisible(true);
         treePanel.setDelegate(this);
 
         tablesSplitPane = createSplitPane();
@@ -136,12 +136,22 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
         if(row == -1)
             treePanel.setRoot(null);
         else
-            treePanel.setRoot(getSelectedRootAtIndex(row));
+            treePanel.setRoot(getRootAtIndex(row));
         treePanel.refresh();
     }
 
     public void selectToken(Token token) {
-        // @todo to implement (in the current panel? or look for the panel)
+        /** Look currently only on the selected rule roots */
+        Stack roots = getSelectedRule().getRoots();
+        for (int r = 0; r < roots.size(); r++) {
+            DBASTModel.ASTNode node = (DBASTModel.ASTNode) roots.get(r);
+            DBTreeNode candidate = node.findNodeWithToken(token);
+            if(candidate != null) {
+                rootsTable.setSelectedRow(r);
+                treePanel.selectNode(candidate);
+                break;
+            }
+        }
     }
 
     public DBASTModel.Rule getSelectedRule() {
@@ -152,7 +162,7 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
             return model.getRuleAtIndex(row);
     }
 
-    public DBASTModel.ASTNode getSelectedRootAtIndex(int index) {
+    public DBASTModel.ASTNode getRootAtIndex(int index) {
         return getSelectedRule().getRootAtIndex(index);
     }
 
@@ -222,7 +232,8 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
         }
 
         public Object getValueAt(int rowIndex, int columnIndex) {
-            return getSelectedRootAtIndex(rowIndex);
+            return "r"+rowIndex;
+            //return getRootAtIndex(rowIndex);
         }
 
         public boolean isCellEditable(int row, int column) {

@@ -29,7 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.debugger;
+package org.antlr.works.debugger.tivo;
 
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
@@ -37,6 +37,7 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.DebugEventListener;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.events.DBEventConsumeToken;
 import org.antlr.works.debugger.events.DBEventFactory;
@@ -48,7 +49,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
+public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public static final int STATUS_STOPPED = 0;
     public static final int STATUS_STOPPING = 1;
@@ -60,7 +61,6 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
     protected Debugger debugger;
     protected int status = STATUS_STOPPED;
-    protected boolean debuggerStop = false;
     protected boolean cancelled;
 
     protected String address;
@@ -78,9 +78,9 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
     protected boolean debuggerReceivedTerminateEvent;
 
-    public DebuggerRecorder(Debugger debugger) {
+    public DBRecorder(Debugger debugger) {
         this.debugger = debugger;
-        this.progress = new XJDialogProgress(debugger.editor.getJavaContainer());
+        this.progress = new XJDialogProgress(debugger.getWindowComponent());
         reset();
     }
 
@@ -96,8 +96,8 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public synchronized boolean isRunning() {
-        return status == DebuggerRecorder.STATUS_RUNNING ||
-               status == DebuggerRecorder.STATUS_BREAK;
+        return status == DBRecorder.STATUS_RUNNING ||
+               status == DBRecorder.STATUS_BREAK;
     }
 
     public synchronized void reset() {
@@ -291,7 +291,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
             listener = null;
             try {
                 listener = new RemoteDebugEventSocketListener(eventListener,
-                        DebuggerRecorder.this.address, DebuggerRecorder.this.port);
+                        DBRecorder.this.address, DBRecorder.this.port);
             } catch (IOException e) {
                 listener = null;
             }
@@ -320,7 +320,6 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
             setStatus(STATUS_STOPPED);
             connectionFailed();
         } else {
-            debuggerStop = false;
             setStatus(STATUS_LAUNCHING);
 
             debuggerReceivedTerminateEvent = false;
@@ -358,7 +357,6 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
 
     public synchronized void stop() {
         setStatus(STATUS_STOPPING);
-        debuggerStop = true;
         notify();
 
         if(debuggerReceivedTerminateEvent)
@@ -415,7 +413,7 @@ public class DebuggerRecorder implements Runnable, XJDialogProgressDelegate {
         try {
             wait();
         } catch (InterruptedException e) {
-            debugger.editor.console.println("recorderThreadBreaksOnEvent: interrupted", Console.LEVEL_WARNING);
+            debugger.getConsole().println("recorderThreadBreaksOnEvent: interrupted", Console.LEVEL_WARNING);
         }
     }
 
