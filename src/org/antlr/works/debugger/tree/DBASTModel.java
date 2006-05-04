@@ -130,6 +130,15 @@ public class DBASTModel {
     public void addChild(int rootID, int childID) {
         ASTNode root = getTreeNode(rootID);
         ASTNode child = getTreeNode(childID);
+        if(root == null) {
+            System.err.println("Root node "+rootID+" not found!");
+            return;
+        }
+        if(child == null) {
+            System.err.println("Child node "+childID+" not found!");
+            return;
+        }
+
         removeRoot(child);
         root.addChild(child);
         fireDataChanged();

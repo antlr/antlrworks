@@ -286,7 +286,9 @@ public class DBPlayer {
 
     public void playLT(DBEventLT event) {
         if(getLookAheadText() != null) {
-            getLookAheadText().LT(event.index, event.token);
+            /** Ignore EOF token */
+            if(event.token.getType() != Token.EOF)
+                getLookAheadText().LT(event.index, event.token);
         }
     }
 
