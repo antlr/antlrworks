@@ -122,6 +122,10 @@ public class DBEventFactory {
         return new DBEventCreateNode(id, tokenIndex);
     }
 
+    public static DBEvent createCreateNode(int id, String text, int type) {
+        return new DBEventCreateNode(id, text, type);
+    }
+
     public static DBEvent createBecomeRoot(int newRootID, int oldRootID) {
         return new DBEventBecomeRoot(newRootID, oldRootID);
     }

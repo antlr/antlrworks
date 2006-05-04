@@ -159,7 +159,8 @@ public class DBControlPanel extends JPanel {
         box.add(new JLabel("Step on"));
 
         breakCombo = new JComboBox();
-
+        breakCombo.setFocusable(false);
+        
         for (int i = 0; i < COMBO_BREAK_EVENTS.length; i++) {
             breakCombo.addItem(DBEvent.getEventName(COMBO_BREAK_EVENTS[i]));
 

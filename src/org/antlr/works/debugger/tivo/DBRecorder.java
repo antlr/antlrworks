@@ -511,7 +511,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         }
 
         public void semanticPredicate(boolean result, String predicate) {
-            // @todo implement in the future
+            /** Currently ignored */
         }
 
         public void commence() {
@@ -527,7 +527,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         }
 
         public void createNode(int ID, String text, int type) {
-            System.err.println("Create node unsupported now!!");
+            event(DBEventFactory.createCreateNode(ID, text, type));
         }
 
         public void createNode(int ID, int tokenIndex) {

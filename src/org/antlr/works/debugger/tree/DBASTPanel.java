@@ -154,6 +154,14 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
         }
     }
 
+    public void selectLastRule() {
+        rulesTable.selectLastRow();
+    }
+
+    public void selectLastRootNode() {
+        rootsTable.selectLastRow();
+    }
+
     public DBASTModel.Rule getSelectedRule() {
         int row = rulesTable.getSelectedRow();
         if(row == -1)

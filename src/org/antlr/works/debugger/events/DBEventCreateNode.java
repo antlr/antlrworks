@@ -33,7 +33,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class DBEventCreateNode extends DBEvent {
 
     public int id;
-    public int tokenIndex;
+
+    /** A node with an index to a token in the input stream */
+    public int tokenIndex = -1;
+
+    /** A node can also be created with a text and token type.
+     * This is most of the time for imaginary tokens that don't
+     * have a "real" token in the input stream: so tokenIndex is not provided
+     */
+    public String text = null;
+    public int type;
 
     public DBEventCreateNode(int id, int tokenIndex) {
         super(CREATE_NODE);
@@ -41,7 +50,17 @@ public class DBEventCreateNode extends DBEvent {
         this.tokenIndex = tokenIndex;
     }
 
+    public DBEventCreateNode(int id, String text, int type) {
+        super(CREATE_NODE);
+        this.id = id;
+        this.text = text;
+        this.type = type;
+    }
+
     public String toString() {
-        return "Create node "+id+" ("+tokenIndex+")";
+        if(tokenIndex != -1)
+            return "Create node "+id+" ("+tokenIndex+")";
+        else
+            return "Create node "+id+" ("+text+"/"+type+")";
     }
 }

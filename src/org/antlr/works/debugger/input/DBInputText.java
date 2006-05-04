@@ -338,7 +338,11 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
         }
     }
 
-    public DBInputTextTokenInfo getTokenInfoAtIndex(int index) {
+    public DBInputTextTokenInfo getTokenInfoAtTokenIndex(int index) {
+        return (DBInputTextTokenInfo) tokens.get(new Integer(index));
+    }
+
+    public DBInputTextTokenInfo getTokenInfoAtPositionIndex(int index) {
         for (Iterator iter = tokens.values().iterator(); iter.hasNext();) {
             DBInputTextTokenInfo info = (DBInputTextTokenInfo) iter.next();
 
@@ -396,7 +400,7 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
             if(mouseIndex == -1)
                 return;
 
-            DBInputTextTokenInfo info = getTokenInfoAtIndex(mouseIndex);
+            DBInputTextTokenInfo info = getTokenInfoAtPositionIndex(mouseIndex);
             if(info == null)
                 return;
 

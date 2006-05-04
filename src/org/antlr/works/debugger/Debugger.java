@@ -35,6 +35,7 @@ import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import org.antlr.runtime.ClassicToken;
 import org.antlr.runtime.Token;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.grammar.CEditorGrammar;
@@ -521,6 +522,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         infoPanel.pushRule(ruleName);
         parseTreeModel.pushRule(ruleName, line, pos);
         astModel.pushRule(ruleName);
+        astPanel.selectLastRule();
     }
 
     public void popRule(String ruleName) {
@@ -547,10 +549,15 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
     public void astNilNode(int id) {
         astModel.nilNode(id);
+        astPanel.selectLastRootNode();
     }
 
     public void astCreateNode(int id, Token token) {
         astModel.createNode(id, token);
+    }
+
+    public void astCreateNode(int id, String text, int type) {
+        astModel.createNode(id, new ClassicToken(type, text));
     }
 
     public void astBecomeRoot(int newRootID, int oldRootID) {
@@ -562,7 +569,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     }
 
     public void astSetTokenBoundaries(int id, int startIndex, int stopIndex) {
-        // @todo to implement
+        /** Currently ignored */
     }
 
     public void recorderStatusDidChange() {

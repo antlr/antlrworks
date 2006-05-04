@@ -135,18 +135,24 @@ public class DBPlayer {
             resetPlayEvents(false);
 
         for(int i=eventPlayedCount; i<events.size(); i++) {
+            DBEvent event = (DBEvent)events.get(i);
+
             try {
-                DBEvent event = (DBEvent)events.get(i);
-                boolean lastEvent = i == events.size()-1;
-                playEvent(event, lastEvent);
+                playEvent(event);
             } catch(Exception e) {
                 debugger.getConsole().print(e);
+            }
+
+            debugger.addEvent(event, contextInfo);
+            if(i == events.size()-1) {
+                // Last event, play the location
+                playLocation();
             }
         }
         eventPlayedCount = events.size();        
     }
 
-    public void playEvent(DBEvent event, boolean lastEvent) {
+    public void playEvent(DBEvent event) {
         switch(event.type) {
             case DBEvent.ENTER_RULE:
                 playEnterRule((DBEventEnterRule)event);
@@ -245,12 +251,6 @@ public class DBPlayer {
                     debugger.getConsole().println("Lookahead text stack not empty", Console.LEVEL_WARNING);
                 }
                 break;
-        }
-
-        debugger.addEvent(event, contextInfo);
-
-        if(lastEvent) {
-            playLocation();
         }
     }
 
@@ -392,7 +392,11 @@ public class DBPlayer {
     }
 
     public void playCreateNode(DBEventCreateNode event) {
-        debugger.astCreateNode(event.id, inputText.getTokenInfoAtIndex(event.tokenIndex).token);
+        if(event.tokenIndex == -1) {
+            /** Imaginary token. Use the 'text' and 'type' info instead. */
+            debugger.astCreateNode(event.id, event.text, event.type);
+        } else
+            debugger.astCreateNode(event.id, inputText.getTokenInfoAtTokenIndex(event.tokenIndex).token);
     }
 
     public void playBecomeRoot(DBEventBecomeRoot event) {

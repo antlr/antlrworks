@@ -42,7 +42,6 @@ public class DBASTModel {
     /** Map of nodes */
     public Map nodesMap = new HashMap();
 
-
     public List listeners = new ArrayList();
 
     public void addListener(DBASTModelListener listener) {
@@ -73,6 +72,10 @@ public class DBASTModel {
             return null;
         else
             return (Rule) rules.get(index);
+    }
+
+    public int getRootCount() {
+        return getRoots().size();
     }
 
     /* Methods used by the debugger */
@@ -148,7 +151,6 @@ public class DBASTModel {
 
     protected ASTNode createTreeNode(int id) {
         ASTNode node = new ASTNode(id);
-
         nodesMap.put(new Integer(id), node);
         return node;
     }
@@ -248,39 +250,9 @@ public class DBASTModel {
             }
         }
 
-        /* TreeNode interface */
-
-        /*public TreeNode getChildAt(int childIndex) {
-            return (TreeNode)children.get(childIndex);
-        }
-
-        public int getChildCount() {
-            return children.size();
-        }
-
-        public TreeNode getParent() {
-            return parent;
-        }
-
-        public int getIndex(TreeNode node) {
-            return children.indexOf(node);
-        }
-
-        public boolean getAllowsChildren() {
-            return true;
-        }
-
-        public boolean isLeaf() {
-            return children.isEmpty();
-        }
-
-        public Enumeration children() {
-            return Collections.enumeration(children);
-        } */
-
         public String toString() {
             if(nil)
-                return "Root";
+                return "nil";
             else if(token == null)
                 return String.valueOf(id);
             else
