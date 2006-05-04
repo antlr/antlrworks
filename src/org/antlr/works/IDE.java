@@ -65,6 +65,7 @@ import javax.swing.*;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.util.ResourceBundle;
 
 public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
@@ -307,4 +308,10 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         return Localizable.getLocalizedString(Localizable.APP_VERSION_LONG);
     }
 
+    /** Localized resource bundle */
+    protected static ResourceBundle resourceMenusBundle = ResourceBundle.getBundle("org.antlr.works.properties.menus");
+
+    public static ResourceBundle getMenusResourceBundle() {
+        return resourceMenusBundle;
+    }
 }

@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.menu.*;
+import org.antlr.works.IDE;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
@@ -39,6 +40,7 @@ import org.antlr.works.prefs.AWPrefs;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ResourceBundle;
 
 public class EditorMenu implements XJMenuItemDelegate {
 
@@ -132,6 +134,9 @@ public class EditorMenu implements XJMenuItemDelegate {
     protected CEditorGrammar editor = null;
     protected XJMenuItem ignoreRuleMenuItem;
 
+    /** The resource bundle used to get localized strings */
+    protected static ResourceBundle resourceBundle = IDE.getMenusResourceBundle();
+
     public EditorMenu(CEditorGrammar editor) {
         this.editor = editor;
     }
@@ -145,16 +150,16 @@ public class EditorMenu implements XJMenuItemDelegate {
 
     public void customizeFileMenu(XJMenu menu) {
         XJMenu exportMenu = new XJMenu();
-        exportMenu.setTitle("Export Events");
-        exportMenu.addItem(new XJMenuItem("As Text...", MI_EXPORT_EVENT, this));
+        exportMenu.setTitle(resourceBundle.getString("menu.title.exportEvents"));
+        exportMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.asText"), MI_EXPORT_EVENT, this));
 
         menu.insertItemAfter(exportMenu, XJMainMenuBar.MI_SAVEAS);
 
         exportMenu = new XJMenu();
-        exportMenu.setTitle("Export");
-        exportMenu.addItem(new XJMenuItem("As EPS...", MI_EXPORT_AS_EPS, this));
-        exportMenu.addItem(new XJMenuItem("As Bitmap Image...", MI_EXPORT_AS_IMAGE, this));
-        exportMenu.addItem(new XJMenuItem("As DOT...", MI_EXPORT_AS_DOT, this));
+        exportMenu.setTitle(resourceBundle.getString("menu.title.export"));
+        exportMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.exportAsEPS"), MI_EXPORT_AS_EPS, this));
+        exportMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.exportAsBitmap"), MI_EXPORT_AS_IMAGE, this));
+        exportMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.exportAsDot"), MI_EXPORT_AS_DOT, this));
 
         menu.insertItemAfter(exportMenu, XJMainMenuBar.MI_SAVEAS);
 
@@ -177,7 +182,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         if(AWPrefs.getPrivateMenu()) {
             menu = new XJMenu();
             menu.setTitle("*");
-            menu.addItem(new XJMenuItem("Unregister user", MI_PRIVATE_UNREGISTER, this));
+            menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.unregisterUser"), MI_PRIVATE_UNREGISTER, this));
 
             menubar.addCustomMenu(menu);
         }
@@ -186,15 +191,15 @@ public class EditorMenu implements XJMenuItemDelegate {
     private void createSCMMenu(XJMainMenuBar menubar) {
         XJMenu menu;
         menu = new XJMenu();
-        menu.setTitle("SCM");
-        menu.addItem(new XJMenuItem("Open for Edit", MI_P4_EDIT, this));
-        menu.addItem(new XJMenuItem("Mark for Add", MI_P4_ADD, this));
+        menu.setTitle(resourceBundle.getString("menu.title.scm"));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmOpenForEdit"), MI_P4_EDIT, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmMarkForAdd"), MI_P4_ADD, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Mark for Delete", MI_P4_DELETE, this));
-        menu.addItem(new XJMenuItem("Revert", MI_P4_REVERT, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmMarkForDelete"), MI_P4_DELETE, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmRevert"), MI_P4_REVERT, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Submit...", MI_P4_SUBMIT, this));
-        menu.addItem(new XJMenuItem("Sync", MI_P4_SYNC, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmSubmit"), MI_P4_SUBMIT, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmSync"), MI_P4_SYNC, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -202,19 +207,19 @@ public class EditorMenu implements XJMenuItemDelegate {
     private void createRunMenu(XJMainMenuBar menubar) {
         XJMenu menu;
         menu = new XJMenu();
-        menu.setTitle("Run");
-        menu.addItem(new XJMenuItem("Run Interpreter", KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem("Debug...", KeyEvent.VK_F9, MI_DEBUG, this));
+        menu.setTitle(resourceBundle.getString("menu.title.debugger"));
+        //menu.addItem(new XJMenuItem("Run Interpreter", KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
+        //menu.addSeparator();
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debug"), KeyEvent.VK_F9, MI_DEBUG, this));
         /** Removed since 05/01/06 because 'Debug' automatically detects any change
          * to the grammar and rebuild it.
          */
         //menu.addItem(new XJMenuItem("Build and Debug...", KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
         //menu.addSeparator();
-        menu.addItem(new XJMenuItem("Debug Remote...", KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugRemote"), KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show Info Panel", MI_DEBUG_SHOW_INFO_PANEL, this));
-        menu.addItem(new XJMenuItem("Show Output Panel", MI_DEBUG_SHOW_OUTPUT_PANEL, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showInformation"), MI_DEBUG_SHOW_INFO_PANEL, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showOutput"), MI_DEBUG_SHOW_OUTPUT_PANEL, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -222,11 +227,11 @@ public class EditorMenu implements XJMenuItemDelegate {
     private void createGenerateMenu(XJMainMenuBar menubar) {
         XJMenu menu;
         menu = new XJMenu();
-        menu.setTitle("Generate");
-        menu.addItem(new XJMenuItem("Generate Code...", MI_GENERATE_CODE, this));
+        menu.setTitle(resourceBundle.getString("menu.title.generate"));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.generateCode"), MI_GENERATE_CODE, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Show Parser Code", MI_SHOW_GENERATED_PARSER_CODE, this));
-        menu.addItem(new XJMenuItem("Show Lexer Code", MI_SHOW_GENERATED_LEXER_CODE, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showParserCode"), MI_SHOW_GENERATED_PARSER_CODE, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showLexerCode"), MI_SHOW_GENERATED_LEXER_CODE, this));
         menu.addSeparator();
         menu.addItem(createMenuItem(MI_SHOW_RULE_GENCODE));
 
@@ -236,19 +241,19 @@ public class EditorMenu implements XJMenuItemDelegate {
     private void createGoToMenu(XJMainMenuBar menubar) {
         XJMenu menu;
         menu = new XJMenu();
-        menu.setTitle("Go To");
+        menu.setTitle(resourceBundle.getString("menu.title.goto"));
 
         menu.addItem(createMenuItem(MI_GOTO_RULE));
         menu.addItem(createMenuItem(MI_GOTO_DECLARATION));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Line...", KeyEvent.VK_G, MI_GOTO_LINE, this));
-        menu.addItem(new XJMenuItem("Character...", MI_GOTO_CHARACTER, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.gotoLine"), KeyEvent.VK_G, MI_GOTO_LINE, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.gotoCharacter"), MI_GOTO_CHARACTER, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Back", KeyEvent.VK_LEFT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_BACK, this));
-        menu.addItem(new XJMenuItem("Forward", KeyEvent.VK_RIGHT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_FORWARD, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.gotoBack"), KeyEvent.VK_LEFT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_BACK, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.gotoForward"), KeyEvent.VK_RIGHT, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_GOTO_FORWARD, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Previous Breakpoint", MI_PREV_BREAKPOINT, this));
-        menu.addItem(new XJMenuItem("Next Breakpoint", MI_NEXT_BREAKPOINT, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.gotoPreviousBreakpoint"), MI_PREV_BREAKPOINT, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.gotoNextBreakpoint"), MI_NEXT_BREAKPOINT, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -256,22 +261,22 @@ public class EditorMenu implements XJMenuItemDelegate {
     private void createRefactorMenu(XJMainMenuBar menubar) {
         XJMenu menu;
         menu = new XJMenu();
-        menu.setTitle("Refactor");
+        menu.setTitle(resourceBundle.getString("menu.title.refactor"));
         menu.addItem(createMenuItem(MI_RENAME));
         menu.addItem(createMenuItem(MI_REPLACE_LITERAL_WITH_TOKEN_LABEL));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Remove Left Recursion", MI_REMOVE_LEFT_RECURSION, this));
-        menu.addItem(new XJMenuItem("Remove All Left Recursion", MI_REMOVE_ALL_LEFT_RECURSION, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.removeLeftRecursion"), MI_REMOVE_LEFT_RECURSION, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.removeAllLeftRecursion"), MI_REMOVE_ALL_LEFT_RECURSION, this));
         menu.addSeparator();
         menu.addItem(createMenuItem(MI_EXTRACT_RULE));
         menu.addItem(createMenuItem(MI_INLINE_RULE));
         menu.addSeparator();
 
         XJMenu literals = new XJMenu();
-        literals.setTitle("Convert Literals");
-        literals.addItem(new XJMenuItem("To Single Quote Literals", MI_LITERAL_TO_SINGLEQUOTE, this));
-        literals.addItem(new XJMenuItem("To Double Quote Literals", MI_LITERAL_TO_DOUBLEQUOTE, this));
-        literals.addItem(new XJMenuItem("To C-style Quote Literals", MI_LITERAL_TO_CSTYLEQUOTE, this));
+        literals.setTitle(resourceBundle.getString("menu.title.convertLiterals"));
+        literals.addItem(new XJMenuItem(resourceBundle.getString("menu.item.convertToSingleQuote"), MI_LITERAL_TO_SINGLEQUOTE, this));
+        literals.addItem(new XJMenuItem(resourceBundle.getString("menu.item.convertToDoubleQuote"), MI_LITERAL_TO_DOUBLEQUOTE, this));
+        literals.addItem(new XJMenuItem(resourceBundle.getString("menu.item.convertToCStyleQuote"), MI_LITERAL_TO_CSTYLEQUOTE, this));
 
         menu.addItem(literals);
 
@@ -281,35 +286,35 @@ public class EditorMenu implements XJMenuItemDelegate {
     private void createGrammarMenu(XJMainMenuBar menubar) {
         XJMenu menu;
         menu = new XJMenu();
-        menu.setTitle("Grammar");
-        menu.addItem(new XJMenuItem("Show Tokens Syntax Diagram", MI_SHOW_TOKENS_SD, this));
-        menu.addItem(new XJMenuItem("Show Decision DFA", MI_SHOW_DECISION_DFA, this));
-        menu.addItem(new XJMenuItem("Show Rule Dependency Graph", MI_SHOW_DEPENDENCY, this));
+        menu.setTitle(resourceBundle.getString("menu.title.grammar"));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensSyntaxDiagram"), MI_SHOW_TOKENS_SD, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFA"), MI_SHOW_DECISION_DFA, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showRuleDependencyGraph"), MI_SHOW_DEPENDENCY, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Insert Rule From Template", KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.insertRuleFromTemplate"), KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
 
         XJMenu rules = new XJMenu();
-        rules.setTitle("Rules");
+        rules.setTitle(resourceBundle.getString("menu.title.rules"));
         rules.addItem(createMenuItem(MI_GROUP_RULE));
         rules.addItem(createMenuItem(MI_UNGROUP_RULE));
         rules.addSeparator();
         rules.addItem(ignoreRuleMenuItem = createMenuItem(MI_IGNORE_RULE));
 
         XJMenu folding = new XJMenu();
-        folding.setTitle("Folding");
-        folding.addItem(new XJMenuItem("Toggle Rule", KeyEvent.VK_PERIOD, MI_EXPAND_COLLAPSE_RULE, this));
-        folding.addItem(new XJMenuItem("Expand All Rules", KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EXPAND_ALL_RULES, this));
-        folding.addItem(new XJMenuItem("Collapse All Rules", KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_COLLAPSE_ALL_RULES, this));
+        folding.setTitle(resourceBundle.getString("menu.title.folding"));
+        folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.toggleRule"), KeyEvent.VK_PERIOD, MI_EXPAND_COLLAPSE_RULE, this));
+        folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.expandAllRules"), KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EXPAND_ALL_RULES, this));
+        folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.collapseAllRules"), KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_COLLAPSE_ALL_RULES, this));
         folding.addSeparator();
-        folding.addItem(new XJMenuItem("Toggle Action", KeyEvent.VK_MINUS, MI_EXPAND_COLLAPSE_ACTION, this));
-        folding.addItem(new XJMenuItem("Expand All Actions", KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_EXPAND_ALL_ACTIONS, this));
-        folding.addItem(new XJMenuItem("Collapse All Actions", KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_COLLAPSE_ALL_ACTIONS, this));
+        folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.toggleAction"), KeyEvent.VK_MINUS, MI_EXPAND_COLLAPSE_ACTION, this));
+        folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.expandAllActions"), KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_EXPAND_ALL_ACTIONS, this));
+        folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.collapseAllActions"), KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_COLLAPSE_ALL_ACTIONS, this));
 
         menu.addSeparator();
         menu.addItem(rules);
         menu.addItem(folding);
         menu.addSeparator();
-        menu.addItem(new XJMenuItem("Check Grammar", KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.checkGrammar"), KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -317,10 +322,10 @@ public class EditorMenu implements XJMenuItemDelegate {
     private void createFindMenu(XJMainMenuBar menubar) {
         XJMenu menu;
         menu = new XJMenu();
-        menu.setTitle("Find");
-        menu.addItem(new XJMenuItem("Find...", KeyEvent.VK_F, MI_FIND, this));
-        menu.addItem(new XJMenuItem("Find Next", KeyEvent.VK_F3, 0, MI_FIND_NEXT, this));
-        menu.addItem(new XJMenuItem("Find Previous", KeyEvent.VK_F3, Event.SHIFT_MASK, MI_FIND_PREV, this));
+        menu.setTitle(resourceBundle.getString("menu.title.find"));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.find"), KeyEvent.VK_F, MI_FIND, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.findNext"), KeyEvent.VK_F3, 0, MI_FIND_NEXT, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.findPrevious"), KeyEvent.VK_F3, Event.SHIFT_MASK, MI_FIND_PREV, this));
         menu.addItem(createMenuItem(MI_FIND_TOKEN));
         menu.addSeparator();
         menu.addItem(createMenuItem(MI_FIND_USAGE));
@@ -336,70 +341,70 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenuItem item = null;
         switch(tag) {
             case MI_FIND_TOKEN:
-                item = new XJMenuItem("Find Text at Caret", KeyEvent.VK_F3, MI_FIND_TOKEN, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.findTextAtCaret"), KeyEvent.VK_F3, MI_FIND_TOKEN, this);
                 break;
             case MI_FIND_USAGE:
-                item = new XJMenuItem("Find Usages", KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.findUsages"), KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this);
                 break;
 
             case MI_SHOW_DECISION_DFA:
-                item = new XJMenuItem("Show Decision DFA", MI_SHOW_DECISION_DFA, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFA"), MI_SHOW_DECISION_DFA, this);
                 break;
 
             case MI_SHOW_DEPENDENCY:
-                item = new XJMenuItem("Show Rule Dependency Graph", MI_SHOW_DEPENDENCY, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.showRuleDependencyGraph"), MI_SHOW_DEPENDENCY, this);
                 break;
 
             case MI_GOTO_RULE:
-                item = new XJMenuItem(contextual?"Go To Rule...":"Rule...", KeyEvent.VK_B, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_GOTO_RULE, this);
+                item = new XJMenuItem(contextual? resourceBundle.getString("contextual.item.gotoRule") : resourceBundle.getString("menu.item.gotoRule"), KeyEvent.VK_B, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_GOTO_RULE, this);
                 break;
 
             case MI_GOTO_DECLARATION:
-                item = new XJMenuItem(contextual?"Go To Declaration":"Declaration", KeyEvent.VK_B, MI_GOTO_DECLARATION, this);
+                item = new XJMenuItem(contextual? resourceBundle.getString("contextual.item.goToDeclaration") : resourceBundle.getString("menu.item.gotoDeclaration"), KeyEvent.VK_B, MI_GOTO_DECLARATION, this);
                 break;
 
             case MI_RENAME:
-                item = new XJMenuItem("Rename...", KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.rename"), KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this);
                 break;
 
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
-                item = new XJMenuItem("Replace Literals With Token Label...", MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.replaceLiteralsWithTokenLabel"), MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this);
                 break;
 
             case MI_EXTRACT_RULE:
-                item = new XJMenuItem("Extract Rule...", MI_EXTRACT_RULE, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.extractRule"), MI_EXTRACT_RULE, this);
                 break;
 
             case MI_INLINE_RULE:
-                item = new XJMenuItem("Inline Rule", MI_INLINE_RULE, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.inlineRule"), MI_INLINE_RULE, this);
                 break;
 
             case MI_SHOW_RULE_GENCODE:
-                item = new XJMenuItem("Show Rule Code", MI_SHOW_RULE_GENCODE, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.showRuleCode"), MI_SHOW_RULE_GENCODE, this);
                 break;
 
             case MI_GROUP_RULE:
-                item = new XJMenuItem("Group...", MI_GROUP_RULE, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.group"), MI_GROUP_RULE, this);
                 break;
 
             case MI_UNGROUP_RULE:
-                item = new XJMenuItem("Ungroup", MI_UNGROUP_RULE, this);
+                item = new XJMenuItem(resourceBundle.getString("menu.item.ungroup"), MI_UNGROUP_RULE, this);
                 break;
 
             case MI_IGNORE_RULE:
-                item = new XJMenuItemCheck("Ignore in Interpreter", MI_IGNORE_RULE, this, true);
+                item = new XJMenuItemCheck(resourceBundle.getString("menu.item.ignoreInInterpreter"), MI_IGNORE_RULE, this, true);
                 break;
 
             case MI_EXPORT_AS_IMAGE:
-                item = new XJMenuItem(contextual?"Export As Bitmap Image...":"As Bitmap Image...", MI_EXPORT_AS_IMAGE, this);
+                item = new XJMenuItem(contextual? resourceBundle.getString("contextual.item.exportAsBitmapImage") : resourceBundle.getString("menu.item.exportAsBitmap"), MI_EXPORT_AS_IMAGE, this);
                 break;
 
             case MI_EXPORT_AS_EPS:
-                item = new XJMenuItem(contextual?"Export As EPS...":"As EPS...", MI_EXPORT_AS_EPS, this);
+                item = new XJMenuItem(contextual? resourceBundle.getString("contextual.item.exportAsEPS") : resourceBundle.getString("menu.item.exportAsEPS"), MI_EXPORT_AS_EPS, this);
                 break;
 
             case MI_EXPORT_AS_DOT:
-                item = new XJMenuItem(contextual?"Export As DOT...":"As DOT...", MI_EXPORT_AS_DOT, this);
+                item = new XJMenuItem(contextual? resourceBundle.getString("contextual.item.exportAsDot") : resourceBundle.getString("menu.item.exportAsDot"), MI_EXPORT_AS_DOT, this);
                 break;
         }
         return item;
@@ -512,6 +517,16 @@ public class EditorMenu implements XJMenuItemDelegate {
 
             case MI_EXPORT_AS_DOT:
                 item.setEnabled(tab.canExportToDOT());
+                break;
+
+            case MI_DEBUG_SHOW_INFO_PANEL:
+                item.setTitle(editor.menuRun.isInfoPanelVisible()?
+                        resourceBundle.getString("menu.item.hideInformation") : resourceBundle.getString("menu.item.showInformation"));
+                break;
+
+            case MI_DEBUG_SHOW_OUTPUT_PANEL:
+                item.setTitle(editor.menuRun.isOutputPanelVisible()?
+                        resourceBundle.getString("menu.item.hideOutput") : resourceBundle.getString("menu.item.showOutput"));
                 break;
         }
     }
@@ -739,11 +754,13 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_DEBUG_SHOW_INFO_PANEL:
-                editor.menuRun.showInfoPanel();
+                editor.menuRun.toggleInformationPanel();
+                editor.refreshMainMenuBar();
                 break;
 
             case MI_DEBUG_SHOW_OUTPUT_PANEL:
-                editor.menuRun.showOutputPanel();
+                editor.menuRun.toggleOutputPanel();
+                editor.refreshMainMenuBar();
                 break;
         }
     }

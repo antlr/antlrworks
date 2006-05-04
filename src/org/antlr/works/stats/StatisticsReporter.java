@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.stats;
 
+import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.prefs.AWPrefs;
@@ -45,7 +46,7 @@ import java.util.Map;
 
 public class StatisticsReporter {
 
-    //http://www.antlr.org/stats/register?who=1&sector=2&devtool=3&yearslang=1&yearsprog=5&residing=bali&caffeine=coffee
+    //http://www.antlr.org/stats/register?who=1&sector=2&devtool=3&yearslang=1&yearsprog=5&residing=bali&caffeine=coffee&version=1.0ea8
 
     public static final String URL_REGISTER = "http://www.antlr.org/stats/register?";
     public static final String URL_SEND_STATS = "http://www.antlr.org/stats/notify?";
@@ -84,6 +85,8 @@ public class StatisticsReporter {
         s.append(XJUtils.encodeToURL((String)info.get(DialogPersonalInfo.INFO_RESIDING), "-"));
         s.append("&caffeine=");
         s.append(XJUtils.encodeToURL((String)info.get(DialogPersonalInfo.INFO_CAFFEINE), "-"));
+        s.append("&version=");
+        s.append(XJUtils.encodeToURL(XJApplication.getAppVersionShort(), "-"));
 
         URLConnection urc;
         URL url;

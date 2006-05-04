@@ -1,6 +1,7 @@
 
 Version 1.0ea9 - ...
 
+- display AST tree while debugging
 - parse tree in debugger shows backtrack nodes (colorized)
 - can now export decision DFA and rule dependency graph as DOT file
 - new replace all feature in find dialog

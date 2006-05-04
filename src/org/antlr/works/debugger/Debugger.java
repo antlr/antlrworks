@@ -92,6 +92,13 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     protected TextPane outputTextPane;
     protected JTabbedPane treeTabbedPane;
 
+    protected JPanel treeInfoCanvas;
+    protected JComponent treePanel;
+
+    protected JPanel ioCanvas;
+    protected JComponent inputPanel;
+    protected JComponent outputPanel;
+
     protected DBParseTreePanel parseTreePanel;
     protected DBParseTreeModel parseTreeModel;
 
@@ -123,23 +130,22 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         this.editor = editor;
     }
 
-    // @todo to finish
-    protected JPanel treeInfoCanvas;
-    protected JComponent treePanel;
-
     public void awake() {
         panel = new JPanel(new BorderLayout());
 
+        ioCanvas = new JPanel(new BorderLayout());
         treeInfoCanvas = new JPanel(new BorderLayout());
 
         infoPanel = new DBInfoPanel();
         controlPanel = new DBControlPanel(this);
         treePanel = createTreePanel();
 
+        inputPanel = createInputPanel();
+        outputPanel = createOutputPanel();
+
         treeInfoPanelSplitPane = new JSplitPane();
         treeInfoPanelSplitPane.setBorder(null);
         treeInfoPanelSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        treeInfoPanelSplitPane.setLeftComponent(treePanel);
         treeInfoPanelSplitPane.setRightComponent(infoPanel);
         treeInfoPanelSplitPane.setContinuousLayout(true);
         treeInfoPanelSplitPane.setOneTouchExpandable(true);
@@ -147,16 +153,15 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         ioSplitPane = new JSplitPane();
         ioSplitPane.setBorder(null);
         ioSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        ioSplitPane.setLeftComponent(createInputPanel());
-        ioSplitPane.setRightComponent(createOutputPanel());
+        ioSplitPane.setRightComponent(outputPanel);
         ioSplitPane.setContinuousLayout(true);
         ioSplitPane.setOneTouchExpandable(true);
 
         ioTreeSplitPane = new JSplitPane();
         ioTreeSplitPane.setBorder(null);
         ioTreeSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        ioTreeSplitPane.setLeftComponent(ioSplitPane);
-        ioTreeSplitPane.setRightComponent(treeInfoPanelSplitPane);
+        ioTreeSplitPane.setLeftComponent(ioCanvas);
+        ioTreeSplitPane.setRightComponent(treeInfoCanvas);
         ioTreeSplitPane.setContinuousLayout(true);
         ioTreeSplitPane.setOneTouchExpandable(true);
 
@@ -168,15 +173,16 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         recorder = new DBRecorder(this);
         player = new DBPlayer(this, inputText);
 
-        //treeInfoCanvas.add(treePanel, BorderLayout.CENTER);
+        ioCanvas.add(inputPanel, BorderLayout.CENTER);
+        treeInfoCanvas.add(treePanel, BorderLayout.CENTER);
 
         updateStatusInfo();
     }
 
     public void componentShouldLayout() {
-        treeInfoPanelSplitPane.setDividerLocation(0.6);
+        //treeInfoPanelSplitPane.setDividerLocation(0.6);
         ioTreeSplitPane.setDividerLocation(0.2);
-        ioSplitPane.setDividerLocation(0.2);
+        //ioSplitPane.setDividerLocation(0.2);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -185,16 +191,40 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         });
     }
 
-    public void showInfoPanel() {
-    /*    if(treeInfoCanvas.getComponent(0) == treePanel) {
+    public void toggleInformationPanel() {
+        if(isInfoPanelVisible()) {
+            treeInfoPanelSplitPane.setLeftComponent(null);
             treeInfoCanvas.remove(0);
+            treeInfoCanvas.add(treePanel);
         } else {
-
-        }*/
+            treeInfoCanvas.remove(0);
+            treeInfoCanvas.add(treeInfoPanelSplitPane);
+            treeInfoPanelSplitPane.setLeftComponent(treePanel);
+            treeInfoPanelSplitPane.setDividerLocation((int)(treeInfoCanvas.getWidth()*0.6));
+        }
+        treeInfoCanvas.revalidate();
     }
 
-    public void showOutputPanel() {
+    public boolean isInfoPanelVisible() {
+        return treeInfoCanvas.getComponent(0) == treeInfoPanelSplitPane;
+    }
 
+    public void toggleOutputPanel() {
+        if(isOutputPanelVisible()) {
+            ioSplitPane.setLeftComponent(null);
+            ioCanvas.remove(0);
+            ioCanvas.add(inputPanel);
+        } else {
+            ioCanvas.remove(0);
+            ioCanvas.add(ioSplitPane);
+            ioSplitPane.setLeftComponent(inputPanel);
+            ioSplitPane.setDividerLocation((int)(ioCanvas.getWidth()*0.4));
+        }
+        ioCanvas.revalidate();
+    }
+
+    public boolean isOutputPanelVisible() {
+        return ioCanvas.getComponent(0) == ioSplitPane;
     }
 
     public void selectConsoleTab() {
@@ -268,7 +298,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         astPanel.setModel(astModel);
 
         treeTabbedPane = new JTabbedPane();
-        treeTabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
+        //treeTabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
         treeTabbedPane.add("Parse Tree", parseTreePanel);
         treeTabbedPane.add("AST", astPanel);
 

@@ -63,11 +63,20 @@ public class MenuRun extends MenuAbstract {
         editor.debugger.launchRemoteDebugger();
     }
 
-    public void showInfoPanel() {
-        editor.debugger.showInfoPanel();
+    public void toggleInformationPanel() {
+        editor.debugger.toggleInformationPanel();
     }
 
-    public void showOutputPanel() {
-        editor.debugger.showOutputPanel();
+    public boolean isInfoPanelVisible() {
+        return editor.debugger.isInfoPanelVisible();
     }
+
+    public void toggleOutputPanel() {
+        editor.debugger.toggleOutputPanel();
+    }
+
+    public boolean isOutputPanelVisible() {
+        return editor.debugger.isOutputPanelVisible();
+    }
+
 }
