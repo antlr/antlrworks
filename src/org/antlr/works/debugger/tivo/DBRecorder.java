@@ -522,6 +522,8 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
             event(DBEventFactory.createTerminate());
         }
 
+        /** AST events */
+
         public void nilNode(int ID) {
             event(DBEventFactory.createNilNode(ID));
         }
@@ -545,6 +547,21 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         public void setTokenBoundaries(int ID, int tokenStartIndex, int tokenStopIndex) {
             event(DBEventFactory.createSetTokenBoundaries(ID, tokenStartIndex, tokenStopIndex));
         }
+
+        /** Tree parsing */
+
+        public void consumeNode(int ID, String text, int type) {
+        }
+
+        public void LT(int i, int ID, String text, int type) {
+        }
+
+        public void goUp() {
+        }
+
+        public void goDown() {
+        }
+
     }
 
 }
