@@ -82,12 +82,10 @@ public class DBASTModel {
 
     public void pushRule(String name) {
         rules.push(new Rule(name, new Stack()));
-        fireDataChanged();
     }
 
     public void popRule() {
         rules.pop();
-        fireDataChanged();
     }
 
     public void pushRoot(ASTNode node) {
@@ -111,12 +109,10 @@ public class DBASTModel {
 
     public void nilNode(int id) {
         pushRoot(createNilTreeNode(id));
-        fireDataChanged();
     }
 
     public void createNode(int id, Token token) {
         createTreeNode(id, token);
-        fireDataChanged();
     }
 
     public void becomeRoot(int newRootID, int oldRootID) {
@@ -124,7 +120,6 @@ public class DBASTModel {
         ASTNode oldRoot = getTreeNode(oldRootID);
         oldRoot.becomeParent(newRoot);
         replaceRoot(oldRoot, newRoot);
-        fireDataChanged();
     }
 
     public void addChild(int rootID, int childID) {
@@ -141,7 +136,6 @@ public class DBASTModel {
 
         removeRoot(child);
         root.addChild(child);
-        fireDataChanged();
     }
 
     /* Utility methods */

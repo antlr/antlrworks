@@ -1,8 +1,9 @@
 
 * Prio 1
+- launch debug events on other thread and dialog after 2s (see how it affects quick events)
+- implement debug skip rule
+
 - use only one tab per generation (or other operation that can be uniquely identified)
-- about box background white on Windows (check on Linux)
-- indicate Java VM version used in about box
 - links to the different DOT implementation per system so user know what to do the first time
 - build and debug with custom class path and command line arguments (to launch mantra for example)
     -> the command-line argument will launch the parser with any arguments it needs (we don't care)

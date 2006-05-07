@@ -1,10 +1,13 @@
 package org.antlr.works.debugger.tree;
 
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
 import org.antlr.tool.Grammar;
 import org.antlr.works.awtree.AWTreeNode;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.prefs.AWPrefsDialog;
 
 import javax.swing.tree.TreeNode;
 import java.awt.*;
@@ -41,10 +44,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBParseTreeModel {
+public class DBParseTreeModel implements XJNotificationObserver {
 
     public Stack rules = new Stack();
     public Stack backtrackStack = new Stack();
+
+    public Color lookaheadTokenColor;
+    public TreeNode lastNode;
 
     public Debugger debugger;
 
@@ -53,23 +59,17 @@ public class DBParseTreeModel {
     public DBParseTreeModel(Debugger debugger) {
         this.debugger = debugger;
         initRules();
+        XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
     }
 
     public void addListener(DBParseTreeModelListener listener) {
         listeners.add(listener);
     }
 
-    public void fireDataChanged(TreeNode node) {
+    public void fireDataChanged() {
         for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
             DBParseTreeModelListener listener = (DBParseTreeModelListener) iterator.next();
-            listener.modelChanged(this, node);
-        }
-    }
-
-    public void fireDataUpdated(TreeNode node) {
-        for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            DBParseTreeModelListener listener = (DBParseTreeModelListener) iterator.next();
-            listener.modelUpdated(this, node);
+            listener.modelChanged(this);
         }
     }
 
@@ -82,7 +82,16 @@ public class DBParseTreeModel {
         initRules();
         backtrackStack.clear();
 
-        fireDataChanged(null);
+        setLastNode(null);
+        fireDataChanged();
+    }
+
+    public void setLastNode(TreeNode node) {
+        this.lastNode = node;
+    }
+
+    public TreeNode getLastNode() {
+        return lastNode;
     }
 
     public void pushRule(String name, int line, int pos) {
@@ -96,7 +105,7 @@ public class DBParseTreeModel {
 
         addNodeToCurrentBacktrack(ruleNode);
 
-        fireDataChanged(ruleNode);
+        setLastNode(ruleNode);
     }
 
     public void popRule() {
@@ -119,7 +128,7 @@ public class DBParseTreeModel {
         ParseTreeNode elementNode = new ParseTreeNode(token, debugger.getGrammar().getANTLRGrammar());
         ruleNode.add(elementNode);
         addNodeToCurrentBacktrack(elementNode);
-        fireDataChanged(elementNode);
+        setLastNode(elementNode);
     }
 
     public void addException(Exception e) {
@@ -127,7 +136,7 @@ public class DBParseTreeModel {
         ParseTreeNode errorNode = new ParseTreeNode(e);
         ruleNode.add(errorNode);
         addNodeToCurrentBacktrack(errorNode);
-        fireDataChanged(errorNode);
+        setLastNode(errorNode);
     }
 
     public void addNodeToCurrentBacktrack(ParseTreeNode node) {
@@ -145,8 +154,13 @@ public class DBParseTreeModel {
     public void endBacktrack(int level, boolean success) {
         Backtrack b = (Backtrack) backtrackStack.pop();
         b.end(success);
+        setLastNode(b.getLastNode());
+    }
 
-        fireDataUpdated(b.getLastNode());
+    public void notificationFire(Object source, String name) {
+        if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
+            lookaheadTokenColor = AWPrefs.getLookaheadTokenColor();
+        }
     }
 
     public class ParseTreeNode extends DBTreeNode {
@@ -191,7 +205,7 @@ public class DBParseTreeModel {
          */
 
         public void addNode(DBTreeNode node) {
-            node.setColor(AWPrefs.getLookaheadTokenColor());
+            node.setColor(lookaheadTokenColor);
             nodes.add(node);
         }
 

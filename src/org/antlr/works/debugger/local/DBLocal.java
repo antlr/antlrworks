@@ -113,7 +113,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     public void forceStop() {
-        remoteParserProcess.destroy();
+        if(remoteParserProcess != null)
+            remoteParserProcess.destroy();
     }
 
     public synchronized void cancel() {

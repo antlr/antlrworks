@@ -41,9 +41,14 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DialogAbout extends XJPanel {
+
+    public InfoTableModel tableModel = new InfoTableModel();
 
     public DialogAbout() {
         initComponents();
@@ -52,10 +57,14 @@ public class DialogAbout extends XJPanel {
         copyrightLabel.setText("Copyright (c) 2005-2006 Jean Bovet & Terence Parr");
 
         versionLabel.setText("Version "+XJApplication.getAppVersionLong());
-        guiVersionLabel.setText(XJApplication.getAppVersionShort());
-        antlrVersionLabel.setText(Tool.VERSION);
-        stringTemplateVersionLabel.setText(StringTemplate.VERSION);
-        xjVersionLabel.setText(XJLib.stringVersion());
+
+        infoTable.setModel(tableModel);
+        tableModel.addInfo("ANTLRWorks", XJApplication.getAppVersionShort());
+        tableModel.addInfo("ANTLR", Tool.VERSION);
+        tableModel.addInfo("StringTemplate", StringTemplate.VERSION);
+        tableModel.addInfo("XJLibrary", XJLib.stringVersion());
+        tableModel.addInfo("Java", System.getProperty("java.version")+" ("+System.getProperty("java.vendor")+")");
+        tableModel.fireTableDataChanged();
 
         resetAcknowledge();
         addAcknowledge("ANTLR and StringTemplate are (c) 1989-2006 Terence Parr");
@@ -73,7 +82,8 @@ public class DialogAbout extends XJPanel {
 
     public void resetAcknowledge() {
         acknowledgeTextArea.setText("");
-        acknowledgeTextArea.setBackground(jFrame.getBackground());
+        //acknowledgeTextArea.setBackground(jFrame.getBackground());
+        acknowledgeTextArea.setBackground(null);
     }
 
     public void addAcknowledge(String ack) {
@@ -82,6 +92,41 @@ public class DialogAbout extends XJPanel {
 
     public boolean isAuxiliaryWindow() {
         return true;
+    }
+
+    public class InfoTableModel extends DefaultTableModel {
+
+        public List info = new ArrayList();
+
+        public Object getValueAt(int row, int column) {
+            return ((Object[])info.get(row))[column];
+        }
+
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+
+        public int getRowCount() {
+            if(info == null)
+                return 0;
+            else
+                return info.size();
+        }
+
+        public int getColumnCount() {
+            return 2;
+        }
+
+        public String getColumnName(int column) {
+            if(column == 0)
+                return "Name";
+            else
+                return "Version";
+        }
+
+        public void addInfo(String name, String version) {
+            info.add(new Object[] { name, version });
+        }
     }
 
     private void initComponents() {
@@ -95,14 +140,8 @@ public class DialogAbout extends XJPanel {
         panel2 = new JPanel();
         acknowledgeTextArea = new JTextArea();
         panel1 = new JPanel();
-        label5 = new JLabel();
-        guiVersionLabel = new JLabel();
-        antlrVersionLabel = new JLabel();
-        label11 = new JLabel();
-        stringTemplateVersionLabel = new JLabel();
-        label12 = new JLabel();
-        xjVersionLabel = new JLabel();
-        label10 = new JLabel();
+        scrollPane1 = new JScrollPane();
+        infoTable = new JTable();
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
@@ -202,65 +241,48 @@ public class DialogAbout extends XJPanel {
             {
                 panel1.setLayout(new FormLayout(
                     new ColumnSpec[] {
-                        FormFactory.GLUE_COLSPEC,
+                        new ColumnSpec(Sizes.dluX(10)),
                         FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.DEFAULT_COLSPEC,
+                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
                         FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.DEFAULT_COLSPEC,
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.GLUE_COLSPEC
+                        new ColumnSpec(Sizes.dluX(10))
                     },
                     new RowSpec[] {
-                        new RowSpec("max(default;15dlu)"),
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
                         new RowSpec(Sizes.dluY(10)),
                         FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC
+                        new RowSpec(RowSpec.FILL, Sizes.dluY(10), FormSpec.DEFAULT_GROW),
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        new RowSpec(Sizes.dluY(10))
                     }));
 
-                //---- label5 ----
-                label5.setHorizontalAlignment(SwingConstants.RIGHT);
-                label5.setText("ANTLRWorks:");
-                panel1.add(label5, cc.xy(3, 3));
+                //======== scrollPane1 ========
+                {
 
-                //---- guiVersionLabel ----
-                guiVersionLabel.setText("-");
-                panel1.add(guiVersionLabel, cc.xy(5, 3));
-
-                //---- antlrVersionLabel ----
-                antlrVersionLabel.setText("3.0 early access 1");
-                panel1.add(antlrVersionLabel, cc.xy(5, 5));
-
-                //---- label11 ----
-                label11.setHorizontalAlignment(SwingConstants.RIGHT);
-                label11.setText("StringTemplate:");
-                panel1.add(label11, cc.xy(3, 7));
-
-                //---- stringTemplateVersionLabel ----
-                stringTemplateVersionLabel.setText("2.1");
-                panel1.add(stringTemplateVersionLabel, cc.xy(5, 7));
-
-                //---- label12 ----
-                label12.setHorizontalAlignment(SwingConstants.RIGHT);
-                label12.setText("XJLibrary:");
-                panel1.add(label12, cc.xy(3, 9));
-
-                //---- xjVersionLabel ----
-                xjVersionLabel.setText("1.2");
-                panel1.add(xjVersionLabel, cc.xy(5, 9));
-
-                //---- label10 ----
-                label10.setHorizontalAlignment(SwingConstants.RIGHT);
-                label10.setText("ANTLR:");
-                panel1.add(label10, cc.xy(3, 5));
+                    //---- infoTable ----
+                    infoTable.setModel(new DefaultTableModel(
+                        new Object[][] {
+                            {null, null},
+                            {null, null},
+                            {null, null},
+                            {null, null},
+                        },
+                        new String[] {
+                            "Name", "Version"
+                        }
+                    ) {
+                        boolean[] columnEditable = new boolean[] {
+                            false, false
+                        };
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                            return columnEditable[columnIndex];
+                        }
+                    });
+                    infoTable.setShowVerticalLines(true);
+                    scrollPane1.setViewportView(infoTable);
+                }
+                panel1.add(scrollPane1, cc.xy(3, 3));
             }
-            tabbedPane1.addTab("Version", panel1);
+            tabbedPane1.addTab("Information", panel1);
         }
         contentPane.add(tabbedPane1, cc.xywh(3, 11, 3, 1));
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
@@ -276,14 +298,9 @@ public class DialogAbout extends XJPanel {
     private JPanel panel2;
     private JTextArea acknowledgeTextArea;
     private JPanel panel1;
-    private JLabel label5;
-    private JLabel guiVersionLabel;
-    private JLabel antlrVersionLabel;
-    private JLabel label11;
-    private JLabel stringTemplateVersionLabel;
-    private JLabel label12;
-    private JLabel xjVersionLabel;
-    private JLabel label10;
+    private JScrollPane scrollPane1;
+    private JTable infoTable;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
 
 }

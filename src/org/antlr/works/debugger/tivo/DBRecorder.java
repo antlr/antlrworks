@@ -201,8 +201,10 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public synchronized void setStatus(int status) {
-        this.status = status;
-        debugger.recorderStatusDidChange();
+        if(this.status != status) {
+            this.status = status;
+            debugger.recorderStatusDidChange();            
+        }
     }
 
     public synchronized int getStatus() {

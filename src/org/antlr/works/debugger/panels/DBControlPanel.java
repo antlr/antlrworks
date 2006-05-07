@@ -119,7 +119,7 @@ public class DBControlPanel extends JPanel {
 
     public JButton createGoToStartButton() {
         JButton button = new JButton(IconManager.shared().getIconGoToStart());
-        button.setToolTipText("Go to start");
+        button.setToolTipText("Fast backward");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -134,7 +134,7 @@ public class DBControlPanel extends JPanel {
 
     public JButton createGoToEndButton() {
         JButton button = new JButton(IconManager.shared().getIconGoToEnd());
-        button.setToolTipText("Go to end");
+        button.setToolTipText("Fast forward");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {

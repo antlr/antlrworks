@@ -137,6 +137,17 @@ public class DBInfoPanel extends JPanel {
         eventTableDataModel.clear();
     }
 
+    public void updateOnBreakEvent() {
+        ruleTableDataModel.update();
+        eventTableDataModel.update();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                selectLastInfoTableItem();
+            }
+        });
+    }
+
     public void addEvent(DBEvent event, DBPlayerContextInfo info) {
         eventTableDataModel.add(event, info);
     }
@@ -144,12 +155,10 @@ public class DBInfoPanel extends JPanel {
     public void pushRule(String ruleName) {
         rules.push(ruleName);
         ruleTableDataModel.add(ruleName);
-        selectLastInfoTableItem();
     }
 
     public void popRule() {
         ruleTableDataModel.remove(rules.peek());
-        selectLastInfoTableItem();
         rules.pop();
     }
 
@@ -168,22 +177,24 @@ public class DBInfoPanel extends JPanel {
         return sb.toString();
     }
 
-    protected class RuleTableDataModel extends AbstractTableModel {
+    public class RuleTableDataModel extends AbstractTableModel {
 
         protected List rules = new ArrayList();
 
         public void add(Object rule) {
             rules.add(rule);
-            fireTableRowsInserted(rules.size()-1, rules.size()-1);
         }
 
         public void remove(Object rule) {
             rules.remove(rule);
-            fireTableDataChanged();
         }
 
         public void clear() {
             rules.clear();
+            fireTableDataChanged();
+        }
+
+        public void update() {
             fireTableDataChanged();
         }
 
@@ -212,17 +223,20 @@ public class DBInfoPanel extends JPanel {
         }
     }
 
-    protected class EventTableDataModel extends AbstractTableModel {
+    public class EventTableDataModel extends AbstractTableModel {
 
         protected List events = new ArrayList();
 
         public void add(DBEvent event, DBPlayerContextInfo info) {
             events.add(new EventInfo(event, info));
-            fireTableRowsInserted(events.size()-1, events.size()-1);
         }
 
         public void clear() {
             events.clear();
+            fireTableDataChanged();
+        }
+
+        public void update() {
             fireTableDataChanged();
         }
 
@@ -330,7 +344,7 @@ public class DBInfoPanel extends JPanel {
         }
     }
 
-    protected class InfoTableCellRenderer extends DefaultTableCellRenderer {
+    public class InfoTableCellRenderer extends DefaultTableCellRenderer {
 
         public InfoTableCellRenderer() {
         }

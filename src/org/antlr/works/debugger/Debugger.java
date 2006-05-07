@@ -298,7 +298,6 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         astPanel.setModel(astModel);
 
         treeTabbedPane = new JTabbedPane();
-        //treeTabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
         treeTabbedPane.add("Parse Tree", parseTreePanel);
         treeTabbedPane.add("AST", astPanel);
 
@@ -311,6 +310,11 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
     public void updateStatusInfo() {
         controlPanel.updateStatusInfo();
+        if(recorder.getStatus() == DBRecorder.STATUS_BREAK) {
+            parseTreePanel.updateOnBreakEvent();
+            astPanel.updateOnBreakEvent();
+            infoPanel.updateOnBreakEvent();
+        }
     }
 
     public EngineGrammar getGrammar() {
@@ -541,7 +545,6 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
     public void addEvent(DBEvent event, DBPlayerContextInfo info) {
         infoPanel.addEvent(event, info);
-        infoPanel.selectLastInfoTableItem();
     }
 
     public void playEvents(List events, boolean reset) {
@@ -552,7 +555,6 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         infoPanel.pushRule(ruleName);
         parseTreeModel.pushRule(ruleName, line, pos);
         astModel.pushRule(ruleName);
-        astPanel.selectLastRule();
     }
 
     public void popRule(String ruleName) {
@@ -579,7 +581,6 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
     public void astNilNode(int id) {
         astModel.nilNode(id);
-        astPanel.selectLastRootNode();
     }
 
     public void astCreateNode(int id, Token token) {

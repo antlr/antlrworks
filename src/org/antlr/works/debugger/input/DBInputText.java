@@ -378,7 +378,6 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
             return;
         }
 
-
         DBInputTextTokenInfo info = getTokenInfoForToken(t);
         if(info != null)
             highlightToken(info.start);

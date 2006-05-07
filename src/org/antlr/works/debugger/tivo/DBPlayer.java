@@ -37,8 +37,6 @@ import org.antlr.works.debugger.events.*;
 import org.antlr.works.debugger.input.DBInputText;
 import org.antlr.works.utils.Console;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -418,8 +416,6 @@ public class DBPlayer {
         public int start;
         public Object id;
 
-        protected List ltTokens;
-
         protected boolean enable;
         protected boolean mark;
 
@@ -427,7 +423,6 @@ public class DBPlayer {
             this.start = inputText.getCursorIndex();
             this.id = id;
 
-            ltTokens = new ArrayList();
             enable = false;
             mark = false;
 
@@ -446,15 +441,6 @@ public class DBPlayer {
                 debugger.getConsole().println("Disabling an already disabled LookAheadText", Console.LEVEL_WARNING);
 
             enable = false;
-        }
-
-        public boolean existsToken(Token token) {
-            for (Iterator iterator = ltTokens.iterator(); iterator.hasNext();) {
-                Token t = (Token) iterator.next();
-                if(t.getTokenIndex() == token.getTokenIndex())
-                    return true;
-            }
-            return false;
         }
 
         public void consumeToken(Token token, boolean hidden) {

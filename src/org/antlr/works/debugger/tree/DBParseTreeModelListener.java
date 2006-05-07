@@ -1,6 +1,5 @@
 package org.antlr.works.debugger.tree;
 
-import javax.swing.tree.TreeNode;
 /*
 
 [The "BSD licence"]
@@ -33,6 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface DBParseTreeModelListener {
-    public void modelChanged(DBParseTreeModel model, TreeNode newNode);
-    public void modelUpdated(DBParseTreeModel model, TreeNode node);
+    public void modelChanged(DBParseTreeModel model);
+    public void modelUpdated(DBParseTreeModel model);
 }

@@ -100,16 +100,27 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
     }
 
     public void componentShouldLayout() {
-        tableTreeSplitPane.setDividerLocation(0.5);
+        tableTreeSplitPane.setDividerLocation(0.3);
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                tablesSplitPane.setDividerLocation(0.5);
+                tablesSplitPane.setDividerLocation(0.7);
             }
         });        
     }
 
     public void clear() {
         model.clear();
+    }
+
+    public void updateOnBreakEvent() {
+        model.fireDataChanged();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                selectLastRule();
+                selectLastRootNode();
+            }
+        });
     }
 
     public void setModel(DBASTModel model) {
@@ -142,7 +153,11 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
 
     public void selectToken(Token token) {
         /** Look currently only on the selected rule roots */
-        Stack roots = getSelectedRule().getRoots();
+        DBASTModel.Rule rule = getSelectedRule();
+        if(rule == null)
+            return;
+
+        Stack roots = rule.getRoots();
         for (int r = 0; r < roots.size(); r++) {
             DBASTModel.ASTNode node = (DBASTModel.ASTNode) roots.get(r);
             DBTreeNode candidate = node.findNodeWithToken(token);

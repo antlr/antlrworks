@@ -67,6 +67,10 @@ public class DBParseTreePanel extends JPanel implements DBParseTreeModelListener
         model.clear();
     }
 
+    public void updateOnBreakEvent() {
+        model.fireDataChanged();
+    }
+    
     public void selectToken(Token token) {
         DBTreeNode root = (DBTreeNode) treePanel.getRoot();
         DBTreeNode node = root.findNodeWithToken(token);
@@ -74,22 +78,22 @@ public class DBParseTreePanel extends JPanel implements DBParseTreeModelListener
             treePanel.selectNode(node);
     }
 
-    public void updateParseTree(TreeNode selectNode) {
+    public void updateParseTree() {
         treePanel.refresh();
-        treePanel.scrollNodeToVisible(selectNode);
+        treePanel.scrollNodeToVisible(model.getLastNode());
     }
 
     public GView getGraphView() {
         return treePanel.getGraphView();
     }
 
-    public void modelChanged(DBParseTreeModel model, TreeNode newNode) {
+    public void modelChanged(DBParseTreeModel model) {
         treePanel.setRoot(model.getRootRule());
-        updateParseTree(newNode);
+        updateParseTree();
     }
 
-    public void modelUpdated(DBParseTreeModel model, TreeNode node) {
-        updateParseTree(node);
+    public void modelUpdated(DBParseTreeModel model) {
+        updateParseTree();
     }
 
     public void awTreeDidSelectTreeNode(TreeNode node) {
