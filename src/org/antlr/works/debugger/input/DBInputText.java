@@ -64,20 +64,19 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
     protected TextPane textPane;
     protected int mouseIndex = -1;
 
-    // Location where the next token will be inserted
-    protected int cursorIndex;
-    protected Map tokens;
+    protected LinkedList inputTokenIndexes = new LinkedList();
+    protected Map indexToTokenInfoMap = new HashMap();
+    protected Map indexToConsumeAttributeMap = new HashMap();
+    protected Set lookaheadTokenIndexes = new HashSet();
 
-    protected boolean persistence;
-    // Length of the persistent text (for which we have tokens)
-    protected int persistenceTextLength;
+    protected int currentTokenIndex;
 
     // Last location event received by the debugger
     protected int locationLine;
     protected int locationCharInLine;
 
     // Input breakpoints
-    protected Set inputBreakpoints = new HashSet();
+    protected Set inputBreakpointIndexes = new HashSet();
 
     protected SimpleAttributeSet attributeNonConsumed;
     protected SimpleAttributeSet attributeConsume;
@@ -94,7 +93,6 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
         this.textPane.addMouseListener(new MyMouseListener());
         this.textPane.addMouseMotionListener(new MyMouseMotionListener());
 
-        tokens = new HashMap();
         drawTokensBox = false;
 
         reset();
@@ -107,16 +105,6 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 
-    public void notificationFire(Object source, String name) {
-        if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
-            createTextAttributes();
-        }
-    }
-
-    public int getCursorIndex() {
-        return cursorIndex;
-    }
-
     public void setDrawTokensBox(boolean flag) {
         drawTokensBox = flag;
         textPane.repaint();
@@ -124,6 +112,10 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
 
     public boolean isDrawTokensBox() {
         return drawTokensBox;
+    }
+
+    public int getCurrentTokenIndex() {
+        return currentTokenIndex;
     }
 
     public void setLocation(int line, int charInLine) {
@@ -138,121 +130,136 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
             case TOKEN_HIDDEN: attr = attributeConsumeHidden; break;
             case TOKEN_DEAD: attr = attributeConsumeDead; break;
         }
-        addText(token, attr);
         addToken(token);
+        addConsumeAttribute(token, attr);
+        removeTokenLT(token);
     }
 
-    public void doLT(Token token) {
-        addText(token, attributeLookahead);
+    public void LT(Token token) {
         addToken(token);
+        addTokenLT(token);
+    }
+
+    public void addConsumeAttribute(Token token, AttributeSet attribute) {
+        indexToConsumeAttributeMap.put(new Integer(token.getTokenIndex()), attribute);
+    }
+
+    public void addTokenLT(Token token) {
+        lookaheadTokenIndexes.add(new Integer(token.getTokenIndex()));
+    }
+
+    public void removeTokenLT(Token token) {
+        lookaheadTokenIndexes.remove(new Integer(token.getTokenIndex()));
+    }
+
+    public void removeAllLT() {
+        lookaheadTokenIndexes.clear();
     }
 
     public void stop() {
-        inputBreakpoints.clear();
+        inputBreakpointIndexes.clear();
     }
 
     public void reset() {
         textPane.setText("");
-
         textPane.setCharacterAttributes(SimpleAttributeSet.EMPTY, true);
-        cursorIndex = 0;
 
-        tokens.clear();
+        currentTokenIndex = -1;
 
-        persistence = true;
-        persistenceTextLength = 0;
+        inputTokenIndexes.clear();
+        indexToTokenInfoMap.clear();
+        indexToConsumeAttributeMap.clear();
+        lookaheadTokenIndexes.clear();
     }
 
     public void rewindAll() {
-        if(persistence) {
-            textPane.selectAll();
-            textPane.setCharacterAttributes(attributeNonConsumed, true);
-            textPane.setCaretPosition(0);
-        } else {
-            textPane.setText("");
-        }
-        cursorIndex = 0;
+        rewind(-1);
     }
 
     public void rewind(int start) {
-        if(persistence) {
-            int persistentStart = Math.max(persistenceTextLength, start);
-            if(getTextLength()>persistentStart) {
-                removeText(persistentStart, getTextLength());
-            }
+        currentTokenIndex = start;
 
-            if(persistentStart>start) {
-                textPane.getStyledDocument().setCharacterAttributes(start, persistentStart-start, attributeNonConsumed, true);
-                cursorIndex = start;
+        /** Remove any consume and lookahead attribute for any token with index
+         * greater than start
+         */
+        for (Iterator iterator = inputTokenIndexes.iterator(); iterator.hasNext();) {
+            Integer idx = (Integer) iterator.next();
+            if(idx.intValue() >= start) {
+                indexToConsumeAttributeMap.remove(idx);
+                lookaheadTokenIndexes.remove(idx);
             }
-        } else {
-            removeText(start, getTextLength());
         }
     }
 
-    protected int getTextLength() {
-        return textPane.getDocument().getLength();
-    }
-
-    private void addToken(Token token) {
+    public void addToken(Token token) {
         int index = token.getTokenIndex();
-        // Don't add -1 and disable persistence mode if the token don't have a valid index
-        if(index == -1 || !persistence) {
-            persistence = false;
+        if(index == -1) {
+            // @todo can this happen?
+            System.err.println("Negative index in DBInputText.addToken() for token "+token);
             return;
         }
 
-        // Don't add if the token is not contiguous to the last one
-        if(index>0 && tokens.get(new Integer(index-1)) == null)
-            return;
+        Integer idx = new Integer(index);
+        currentTokenIndex = idx.intValue();
 
-        // Don't add if the token is already in the map
-        DBInputTextTokenInfo info = (DBInputTextTokenInfo) tokens.get(new Integer(index));
-        if(info != null) {
-            // But update its position to its most recent value
-            info.line = locationLine;
-            info.charInLine = locationCharInLine;
-            return;
-        }
+        /** Insert the index into the list of sorted indexes - used to render the token */
 
-        tokens.put(new Integer(index), new DBInputTextTokenInfo(token, persistenceTextLength, locationLine, locationCharInLine));
-        persistenceTextLength += token.getText().length();
-    }
-
-    private void addText(Token token, AttributeSet attribute) {
-        String text = token.getText();
-        if(persistence) {
-            DBInputTextTokenInfo info = (DBInputTextTokenInfo)tokens.get(new Integer(token.getTokenIndex()));
-            if(info != null) {
-                textPane.getStyledDocument().setCharacterAttributes(info.start, info.end-info.start, attribute, true);
-                cursorIndex = info.end;
-            } else {
-                insertText(text, attribute);
+        if(!indexToTokenInfoMap.containsKey(idx)) {
+            if(inputTokenIndexes.isEmpty())
+                inputTokenIndexes.add(idx);
+            else {
+                for(int i=inputTokenIndexes.size()-1; i >= 0; i--) {
+                    Integer n = (Integer) inputTokenIndexes.get(i);
+                    if(n.intValue() < idx.intValue()) {
+                        inputTokenIndexes.add(i+1, idx);
+                        break;
+                    }
+                }
             }
-        } else {
-            insertText(text, attribute);
+        }
+
+        /** Add the token even if it is already in the map because its position or attribute
+         * may have changed
+         */
+
+        indexToTokenInfoMap.put(idx, new DBInputTextTokenInfo(token, locationLine, locationCharInLine));
+    }
+
+    public String renderTokensText() {
+        StringBuffer text = new StringBuffer();
+        for (int i = 0; i < inputTokenIndexes.size(); i++) {
+            Integer idx = (Integer) inputTokenIndexes.get(i);
+            DBInputTextTokenInfo info = (DBInputTextTokenInfo) indexToTokenInfoMap.get(idx);
+            info.setStart(text.length());
+            text.append(info.getText());
+        }
+        return text.toString();
+    }
+
+    public void render() {
+        /** Apply the text */
+
+        String text = renderTokensText();
+        textPane.setText(text);
+        textPane.getStyledDocument().setCharacterAttributes(0, text.length(), SimpleAttributeSet.EMPTY, true);
+
+        /** Apply the style for each token */
+        for (int i = 0; i < inputTokenIndexes.size(); i++) {
+            Integer idx = (Integer) inputTokenIndexes.get(i);
+            DBInputTextTokenInfo info = (DBInputTextTokenInfo) indexToTokenInfoMap.get(idx);
+            AttributeSet attribute = (AttributeSet) indexToConsumeAttributeMap.get(idx);
+            if(attribute == null)
+                attribute = attributeNonConsumed;
+
+            /** LT attribute override the other */
+            if(lookaheadTokenIndexes.contains(idx))
+                attribute = attributeLookahead;
+
+            textPane.getStyledDocument().setCharacterAttributes(info.start, info.end, attribute, true);
         }
     }
 
-    private void insertText(String text, AttributeSet attribute) {
-        try {
-            textPane.getStyledDocument().insertString(getTextLength(), text, attribute);
-            cursorIndex = getTextLength();
-        } catch (BadLocationException e) {
-            debugger.getConsole().print(e);
-        }
-    }
-
-    private void removeText(int start, int end) {
-        try {
-            textPane.getDocument().remove(start, end-start);
-            cursorIndex = getTextLength();
-        } catch (BadLocationException e) {
-            debugger.getConsole().print(e);
-        }
-    }
-
-    private void createTextAttributes() {
+    public void createTextAttributes() {
         attributeNonConsumed = new SimpleAttributeSet();
         StyleConstants.setForeground(attributeNonConsumed, AWPrefs.getNonConsumedTokenColor());
 
@@ -271,13 +278,13 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
     }
 
     public void textPaneDidPaint(Graphics g) {
-        for (Iterator iterator = tokens.values().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = indexToTokenInfoMap.values().iterator(); iterator.hasNext();) {
             DBInputTextTokenInfo info = (DBInputTextTokenInfo) iterator.next();
 
             if(drawTokensBox)
                 drawToken(info, (Graphics2D)g, Color.red, false);
 
-            if(inputBreakpoints.contains(info))
+            if(inputBreakpointIndexes.contains(new Integer(info.token.getTokenIndex())))
                 drawToken(info, (Graphics2D)g, INPUT_BREAKPOINT_COLOR, true);
             else if(mouseIndex >= info.start && mouseIndex < info.end)
                 drawToken(info, (Graphics2D)g, HIGHLIGHTED_COLOR, true);
@@ -339,13 +346,12 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
     }
 
     public DBInputTextTokenInfo getTokenInfoAtTokenIndex(int index) {
-        return (DBInputTextTokenInfo) tokens.get(new Integer(index));
+        return (DBInputTextTokenInfo) indexToTokenInfoMap.get(new Integer(index));
     }
 
     public DBInputTextTokenInfo getTokenInfoAtPositionIndex(int index) {
-        for (Iterator iter = tokens.values().iterator(); iter.hasNext();) {
+        for (Iterator iter = indexToTokenInfoMap.values().iterator(); iter.hasNext();) {
             DBInputTextTokenInfo info = (DBInputTextTokenInfo) iter.next();
-
             if(index >= info.start && index < info.end)
                 return info;
         }
@@ -353,9 +359,9 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
     }
 
     public boolean isBreakpointAtToken(Token token) {
-        for(Iterator iter = inputBreakpoints.iterator(); iter.hasNext();) {
-            DBInputTextTokenInfo info = (DBInputTextTokenInfo)iter.next();
-            if(info.containsToken(token))
+        for(Iterator iter = inputBreakpointIndexes.iterator(); iter.hasNext();) {
+            Integer index = (Integer)iter.next();
+            if(index.intValue() == token.getTokenIndex())
                 return true;
         }
         return false;
@@ -384,12 +390,18 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
     }
 
     public DBInputTextTokenInfo getTokenInfoForToken(Token t) {
-        for (Iterator iter = tokens.values().iterator(); iter.hasNext();) {
+        for (Iterator iter = indexToTokenInfoMap.values().iterator(); iter.hasNext();) {
             DBInputTextTokenInfo info = (DBInputTextTokenInfo) iter.next();
             if(info.token.getTokenIndex() == t.getTokenIndex())
                 return info;
         }
         return null;
+    }
+
+    public void notificationFire(Object source, String name) {
+        if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
+            createTextAttributes();
+        }
     }
 
     protected class MyMouseListener extends MouseAdapter {
@@ -407,10 +419,11 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
             if(e.getButton() == MouseEvent.BUTTON1 && !controlKey) {
                 debugger.selectToken(info.token, info.line, info.charInLine);
             } else {
-                if(inputBreakpoints.contains(info))
-                    inputBreakpoints.remove(info);
+                Integer index = new Integer(info.token.getTokenIndex());
+                if(inputBreakpointIndexes.contains(index))
+                    inputBreakpointIndexes.remove(index);
                 else
-                    inputBreakpoints.add(info);
+                    inputBreakpointIndexes.add(index);
             }
         }
 

@@ -3,6 +3,15 @@
 - launch debug events on other thread and dialog after 2s (see how it affects quick events)
 - implement debug skip rule
 
+- pop r<n> when exiting subrule
+- check breakpoint
+- make AST panel "detachable"
+- make breakpoint in grammar and stop around this location (line, column)
+- step over a rule/subrule
+- don't "move" if several LT 1 are sent (only if LT1, LT2, LT3, etc..)
+- display "Backtracking level" a cote du combo box pour etre plus explicite a l'utilisateur
+- put step by location, consume and all with radio?
+
 - use only one tab per generation (or other operation that can be uniquely identified)
 - links to the different DOT implementation per system so user know what to do the first time
 - build and debug with custom class path and command line arguments (to launch mantra for example)

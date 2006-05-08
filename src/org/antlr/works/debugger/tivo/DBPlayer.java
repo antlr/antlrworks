@@ -35,7 +35,6 @@ import org.antlr.runtime.Token;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.*;
 import org.antlr.works.debugger.input.DBInputText;
-import org.antlr.works.utils.Console;
 
 import java.util.List;
 import java.util.Stack;
@@ -46,8 +45,7 @@ public class DBPlayer {
     protected DBInputText inputText;
 
     protected DBPlayerContextInfo contextInfo;
-    protected Stack lookAheadTextStack;
-    protected LookAheadText lastLookAheadText;
+    protected Stack markStack;
 
     protected int resyncing = 0;
     protected int eventPlayedCount = 0;
@@ -56,7 +54,7 @@ public class DBPlayer {
         this.debugger = debugger;
         this.inputText = inputText;
         contextInfo = new DBPlayerContextInfo();
-        lookAheadTextStack = new Stack();
+        markStack = new Stack();
     }
 
     public void close() {
@@ -67,62 +65,20 @@ public class DBPlayer {
         inputText.setDrawTokensBox(!inputText.isDrawTokensBox());
     }
 
-    /** Called by playEnterDecision() */
-
-    public void pushLookAheadText(Object id) {
-        lookAheadTextStack.push(new LookAheadText(id));
-    }
-
-    /** Called by playExitDecision() */
-
-    public void popLookAheadText(Object id) {
-        if(lookAheadTextStack.empty()) {
-            debugger.getConsole().println("Lookahead text stack is empty while trying to popup object id "+id, Console.LEVEL_WARNING);
-            return;
-        }
-
-        LookAheadText lat = (LookAheadText)lookAheadTextStack.peek();
-        if(lat.id.equals(id)) {
-            lastLookAheadText = (LookAheadText)lookAheadTextStack.pop();
-        } else
-            debugger.getConsole().println("The top-of-stack LookAheadText doesn't correspond to id "+id+" ("+lat.id+")", Console.LEVEL_WARNING);
-    }
-
-    /** Called by playRewind() */
-
-    public void rewindLookAheadText() {
-        if(lastLookAheadText != null) {
-            if(lastLookAheadText.enable) {
-                lastLookAheadText.rewind();
-                lastLookAheadText.disable();
-            }
-            lastLookAheadText = null;
-        }
-    }
-
-    public LookAheadText getLookAheadText() {
-        if(lookAheadTextStack.empty())
-            return null;
-        else
-            return (LookAheadText)lookAheadTextStack.peek();
-    }
-
     public synchronized void resetPlayEvents(boolean first) {
         debugger.resetGUI();
 
-        // Only reset the input text the first time
-        // the events are reset (when the debugger starts).
-        // Then, keep rewinding the input text so already received
-        // tokens are displayed
+        /** Only reset the input text the first time
+            the events are reset (when the debugger starts).
+            Then, keep rewinding the input text so already received
+            tokens are displayed */
         if(first)
             inputText.reset();
         else
             inputText.rewindAll();
 
         contextInfo.clear();
-
-        lastLookAheadText = null;
-        lookAheadTextStack.clear();
+        markStack.clear();
 
         resyncing = 0;
         eventPlayedCount = 0;
@@ -245,37 +201,38 @@ public class DBPlayer {
                 break;
 
             case DBEvent.TERMINATE:
-                if(lookAheadTextStack.size() > 0) {
-                    debugger.getConsole().println("Lookahead text stack not empty", Console.LEVEL_WARNING);
-                }
                 break;
         }
     }
 
     public void playEnterRule(DBEventEnterRule event) {
         debugger.pushRule(event.name, lastLocationLine, lastLocationPos);
+        inputText.removeAllLT();
     }
 
     public void playExitRule(DBEventExitRule event) {
         debugger.popRule(event.name);
+        inputText.removeAllLT();
     }
 
     public void playEnterSubrule(DBEventEnterSubRule event) {
         contextInfo.enterSubrule(event.decision);
+        inputText.removeAllLT();
     }
 
     public void playExitSubrule(DBEventExitSubRule event) {
         contextInfo.exitSubrule();
+        inputText.removeAllLT();
     }
 
     public void playEnterDecision(DBEventEnterDecision event) {
         contextInfo.enterDecision(event.decision);
-        pushLookAheadText(new Integer(event.decision));
+        inputText.removeAllLT();
     }
 
     public void playExitDecision(DBEventExitDecision event) {
         contextInfo.exitDecision();
-        popLookAheadText(new Integer(event.decision));
+        inputText.removeAllLT();
     }
 
     public void playEnterAlt(DBEventEnterAlt event) {
@@ -283,11 +240,11 @@ public class DBPlayer {
     }
 
     public void playLT(DBEventLT event) {
-        if(getLookAheadText() != null) {
-            /** Ignore EOF token */
-            if(event.token.getType() != Token.EOF)
-                getLookAheadText().LT(event.index, event.token);
-        }
+        /* Ignore EOF LT */
+        if(event.token.getType() == Token.EOF)
+            return;
+
+        inputText.LT(event.token);
     }
 
     public void playConsumeToken(DBEventConsumeToken event) {
@@ -304,19 +261,21 @@ public class DBPlayer {
             return;
         }
 
-        if(getLookAheadText() != null) {
-            getLookAheadText().consumeToken(token, hidden);
-            // If backtracking, also add the token to the parse tree
-            if(contextInfo.isBacktracking())
-                debugger.addToken(token);
+        /* If backtracking add token only */
+        if(contextInfo.isBacktracking()) {
+            debugger.addToken(token);
             return;
         }
 
-        // Build the parse tree only for visible token
-        if(!hidden) {
-            debugger.addToken(token);
-        }
+        /* Ignore consume token between mark/rewind */
+        if(!markStack.isEmpty())
+            return;
 
+        /* Add only visible token */
+        if(!hidden)
+            debugger.addToken(token);
+
+        /* Consume the token */
         inputText.consumeToken(token, hidden?DBInputText.TOKEN_HIDDEN:DBInputText.TOKEN_NORMAL);
     }
 
@@ -345,17 +304,14 @@ public class DBPlayer {
 
     public void playMark(DBEventMark event) {
         contextInfo.mark(event.id);
-        if(getLookAheadText() != null) {
-            getLookAheadText().setEventMark(event.id);
-        }
+        markStack.push(new Integer(inputText.getCurrentTokenIndex()));
     }
 
     public void playRewind(DBEventRewind event) {
-        rewindLookAheadText();
-
-        contextInfo.rewind();
-        if(getLookAheadText() != null) {
-            getLookAheadText().setEventRewind(event.id);
+        inputText.rewind(((Integer)markStack.peek()).intValue());
+        if(!event.rewindToLastMark()) {
+            markStack.pop();
+            contextInfo.rewind();
         }
     }
 
@@ -409,68 +365,6 @@ public class DBPlayer {
 
     public void playSetTokenBoundaries(DBEventSetTokenBoundaries event) {
         debugger.astSetTokenBoundaries(event.id, event.startIndex, event.stopIndex);
-    }
-
-    protected class LookAheadText {
-
-        public int start;
-        public Object id;
-
-        protected boolean enable;
-        protected boolean mark;
-
-        public LookAheadText(Object id) {
-            this.start = inputText.getCursorIndex();
-            this.id = id;
-
-            enable = false;
-            mark = false;
-
-            enable();
-        }
-
-        public void enable() {
-            if(enable)
-                debugger.getConsole().println("Enabling an already enabled LookAheadText", Console.LEVEL_WARNING);
-
-            enable = true;
-        }
-
-        public void disable() {
-            if(!enable)
-                debugger.getConsole().println("Disabling an already disabled LookAheadText", Console.LEVEL_WARNING);
-
-            enable = false;
-        }
-
-        public void consumeToken(Token token, boolean hidden) {
-            if(!mark)
-                inputText.consumeToken(token, hidden?DBInputText.TOKEN_HIDDEN:DBInputText.TOKEN_NORMAL);
-        }
-
-        public void LT(int index, Token token) {
-            if(!enable)
-                return;
-
-            // @todo what if between mark and rewind ? Use token index instead ?
-            // Rewind when LT 1 and only if not between mark/rewind events
-            if(index == 1 && !mark)
-                rewind();
-
-            inputText.doLT(token);
-        }
-
-        public void setEventMark(int id) {
-            mark = true;
-        }
-
-        public void setEventRewind(int id) {
-            mark = false;
-        }
-
-        public void rewind() {
-            inputText.rewind(start);
-        }
     }
 
 }

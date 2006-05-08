@@ -35,21 +35,26 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class DBInputTextTokenInfo {
 
     public Token token;
+
     public int start;
     public int end;
 
     public int line;
     public int charInLine;
 
-    public DBInputTextTokenInfo(Token token, int start, int line, int charInLine) {
+    public DBInputTextTokenInfo(Token token, int line, int charInLine) {
         this.token = token;
-        this.start = start;
-        this.end = start+token.getText().length();
         this.line = line;
         this.charInLine = charInLine;
     }
 
-    public boolean containsToken(Token t) {
-        return t.getTokenIndex() == token.getTokenIndex();
+    public void setStart(int start) {
+        this.start = start;
+        this.end = start+getText().length();
     }
+
+    public String getText() {
+        return token.getText();
+    }
+
 }

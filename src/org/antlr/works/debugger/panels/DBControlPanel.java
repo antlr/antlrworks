@@ -45,10 +45,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class DBControlPanel extends JPanel {
 
     protected JButton stopButton;
-    protected JButton backButton;
-    protected JButton forwardButton;
     protected JButton goToStartButton;
     protected JButton goToEndButton;
+    protected JButton fastForwardButton;
+    protected JButton backButton;
+    protected JButton forwardButton;
     protected JComboBox breakCombo;
 
     protected JLabel infoLabel;
@@ -66,10 +67,10 @@ public class DBControlPanel extends JPanel {
         box.add(stopButton = createDebuggerStopButton());
         box.add(Box.createHorizontalStrut(20));
         box.add(goToStartButton = createGoToStartButton());
-        box.add(goToEndButton = createGoToEndButton());
-        box.add(Box.createHorizontalStrut(20));
         box.add(backButton = createStepBackButton());
+        box.add(fastForwardButton = createFastForwardButton());
         box.add(forwardButton = createStepForwardButton());
+        box.add(goToEndButton = createGoToEndButton());
         box.add(Box.createHorizontalStrut(20));
         box.add(createBreakComboBox());
         box.add(Box.createHorizontalGlue());
@@ -119,7 +120,7 @@ public class DBControlPanel extends JPanel {
 
     public JButton createGoToStartButton() {
         JButton button = new JButton(IconManager.shared().getIconGoToStart());
-        button.setToolTipText("Fast backward");
+        button.setToolTipText("Go To Start");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -134,11 +135,25 @@ public class DBControlPanel extends JPanel {
 
     public JButton createGoToEndButton() {
         JButton button = new JButton(IconManager.shared().getIconGoToEnd());
-        button.setToolTipText("Fast forward");
+        button.setToolTipText("Go To End");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 debugger.getRecorder().goToEnd();
+                updateInterfaceLater();
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_END);
+            }
+        });
+        return button;
+    }
+
+    public JButton createFastForwardButton() {
+        JButton button = new JButton(IconManager.shared().getIconFastForward());
+        button.setToolTipText("Fast forward");
+        button.setFocusable(false);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                debugger.getRecorder().fastForward();
                 updateInterfaceLater();
                 Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_END);
             }
@@ -211,12 +226,13 @@ public class DBControlPanel extends JPanel {
     public void updateInterface() {
         stopButton.setEnabled(debugger.getRecorder().getStatus() != DBRecorder.STATUS_STOPPED);
 
-        boolean enabled = debugger.getRecorder().isRunning();
+        boolean enabled = debugger.getRecorder().isAlive();
         boolean atBeginning = debugger.getRecorder().isAtBeginning();
         boolean atEnd = debugger.getRecorder().isAtEnd();
 
         backButton.setEnabled(enabled && !atBeginning);
         forwardButton.setEnabled(enabled && !atEnd);
+        fastForwardButton.setEnabled(enabled && !atEnd);
         goToStartButton.setEnabled(enabled && !atBeginning);
         goToEndButton.setEnabled(enabled && !atEnd);
     }

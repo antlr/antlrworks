@@ -86,6 +86,10 @@ public class DBEventFactory {
         return new DBEventRewind(i);
     }
 
+    public static DBEvent createRewind() {
+        return new DBEventRewind();
+    }
+
     public static DBEvent createBeginBacktrack(int level) {
         return new DBEventBeginBacktrack(level);
     }

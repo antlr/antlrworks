@@ -33,14 +33,11 @@ package org.antlr.works.debugger.tivo;
 
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
-import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
-import org.antlr.runtime.debug.DebugEventListener;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.events.DBEventConsumeToken;
-import org.antlr.works.debugger.events.DBEventFactory;
 import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.utils.Console;
 
@@ -70,8 +67,9 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     protected int position;
     protected int breakType = DBEvent.NONE;
     protected int stoppedOnEvent = DBEvent.NO_EVENT;
+    protected boolean ignoreBreakpoints = false;
 
-    protected EventListener eventListener;
+    protected DBRecorderEventListener eventListener;
     protected RemoteDebugEventSocketListener listener;
 
     protected XJDialogProgress progress;
@@ -95,7 +93,13 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         progress.close();
     }
 
+    /** Return true if the debugger is running */
     public synchronized boolean isRunning() {
+        return status == DBRecorder.STATUS_RUNNING;
+    }
+
+    /** Return true if the debugger is alive (i.e. not stopped, stopping, starting) */
+    public synchronized boolean isAlive() {
         return status == DBRecorder.STATUS_RUNNING ||
                status == DBRecorder.STATUS_BREAK;
     }
@@ -106,11 +110,6 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         else
             events.clear();
         position = -1;
-    }
-
-    public synchronized void addEvent(DBEvent event) {
-        events.add(event);
-        setPositionToEnd();
     }
 
     public synchronized DBEvent getEvent() {
@@ -151,6 +150,22 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         return breakType;
     }
 
+    public void setStoppedOnEvent(int event) {
+        stoppedOnEvent = event;
+    }
+
+    public int getStoppedOnEvent() {
+        return stoppedOnEvent;
+    }
+
+    public void setIgnoreBreakpoints(boolean flag) {
+        this.ignoreBreakpoints = flag;
+    }
+
+    public boolean ignoreBreakpoints() {
+        return ignoreBreakpoints;
+    }
+
     public void queryGrammarBreakpoints() {
         // Get the current breakpoints in the grammar text
         // because they can be set/unset during a debugging
@@ -158,21 +173,19 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         debugger.queryGrammarBreakpoints();
     }
 
-    public int getStoppedOnEvent() {
-        return stoppedOnEvent;
-    }
-
-    public boolean handleIsOnBreakEvent() {
-        int breakEvent = isOnBreakEvent();
+    /** Return true if the debugger hitted a break event */
+    public boolean isOnBreakEvent() {
+        int breakEvent = getOnBreakEvent();
         if(breakEvent != DBEvent.NO_EVENT) {
-            stoppedOnEvent = breakEvent;
+            setStoppedOnEvent(breakEvent);
             setStatus(STATUS_BREAK);
             return true;
         } else
             return false;
     }
 
-    public int isOnBreakEvent() {
+    /** Return the event type that causes the break */
+    public int getOnBreakEvent() {
         if(breakType == DBEvent.NONE)
             return DBEvent.NO_EVENT;
 
@@ -184,12 +197,12 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
             return DBEvent.NO_EVENT;
 
         // Stop on debugger breakpoints
-        if(event.type == DBEvent.LOCATION)
+        if(event.type == DBEvent.LOCATION && !ignoreBreakpoints())
             if(debugger.isBreakpointAtLine(((DBEventLocation)event).line-1))
                 return event.type;
 
         // Stop on input text breakpoint
-        if(event.type == DBEvent.CONSUME_TOKEN)
+        if(event.type == DBEvent.CONSUME_TOKEN && !ignoreBreakpoints())
             if(debugger.isBreakpointAtToken(((DBEventConsumeToken)event).token))
                 return event.type;
 
@@ -224,12 +237,14 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public void stepBackward(int breakEvent) {
+        setIgnoreBreakpoints(false);
         stepContinue(breakEvent);
         if(stepMove(-1))
             playEvents(true);
     }
 
     public void stepForward(int breakEvent) {
+        setIgnoreBreakpoints(false);
         stepContinue(breakEvent);
         if(stepMove(1))
             playEvents(false);
@@ -256,7 +271,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
         DBEvent event;
         while((event = getEvent()) != null) {
-            if(handleIsOnBreakEvent())
+            if(isOnBreakEvent())
                 break;
 
             position += direction;
@@ -269,10 +284,20 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public void goToStart() {
         position = 0;
+        setIgnoreBreakpoints(false);
         playEvents(true);
     }
 
     public void goToEnd() {
+        setIgnoreBreakpoints(true);
+        stepContinue(DBEvent.TERMINATE);
+        if(stepMove(1))
+            playEvents(false);
+        else
+            threadNotify();
+    }
+
+    public void fastForward() {
         stepForward(DBEvent.TERMINATE);
     }
 
@@ -284,7 +309,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public void run() {
-        eventListener = new EventListener();
+        eventListener = new DBRecorderEventListener(this);
         cancelled = false;
 
         boolean connected = false;
@@ -359,7 +384,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public synchronized void stop() {
         setStatus(STATUS_STOPPING);
-        notify();
+        threadNotify();
 
         if(debuggerReceivedTerminateEvent)
             forceStop();
@@ -370,31 +395,43 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         debugger.recorderDidStop();
     }
 
-    public void eventOccurred(DBEvent event) {
+    /** This method is called by DBRecorderEventListener for each event received from
+     * the remote parser. It is running on another thread than the event thread.
+     */
+
+    public synchronized void listenerEvent(DBEvent event) {
+        events.add(event);
+        setPositionToEnd();
+
         switch(getStatus()) {
             case STATUS_LAUNCHING:
                 setStatus(STATUS_RUNNING);
                 break;
 
             case STATUS_STOPPING:
+                // @todo comment this
                 if(event.type == DBEvent.TERMINATE || debuggerReceivedTerminateEvent)
                     forceStop();
                 break;
         }
 
         if(isRunning()) {
-            if(event.type == DBEvent.TERMINATE) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        playEvents(false);
-                    }
-                });
-                debuggerReceivedTerminateEvent = true;
-            }
+            switch(event.type) {
+                case DBEvent.TERMINATE:
+                    setStoppedOnEvent(DBEvent.TERMINATE);
+                    breaksOnEvent(false);
+                    debuggerReceivedTerminateEvent = true;
+                    break;
 
-            if(event.type == DBEvent.COMMENCE || handleIsOnBreakEvent()) {
-                breaksOnEvent();
-                return;
+                case DBEvent.COMMENCE:
+                    setStoppedOnEvent(DBEvent.COMMENCE);
+                    breaksOnEvent(true);
+                    break;
+
+                default:
+                    if(isOnBreakEvent())
+                        breaksOnEvent(true);
+                    break;
             }
         }
     }
@@ -403,15 +440,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         notify();
     }
 
-    public synchronized void breaksOnEvent() {
-        setStatus(STATUS_BREAK);
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                playEvents(false);
-            }
-        });
-
+    public synchronized void threadWait() {
         try {
             wait();
         } catch (InterruptedException e) {
@@ -419,151 +448,35 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         }
     }
 
+    public synchronized void breaksOnEvent(boolean wait) {
+        setStatus(STATUS_BREAK);
+        playEvents(false);
+        if(wait)
+            threadWait();
+    }
+
     protected synchronized void playEvents(boolean reset) {
-        debugger.playEvents(getCurrentEvents(), reset);
+        /** Make sure this method is called on the event dispatch thread */
+        if(!SwingUtilities.isEventDispatchThread())
+            SwingUtilities.invokeLater(new PlayEventRunnable(reset));
+        else
+            debugger.playEvents(getCurrentEvents(), reset);
     }
 
     public void dialogDidCancel() {
         cancelled = true;
     }
 
-    protected class EventListener implements DebugEventListener {
+    public class PlayEventRunnable implements Runnable {
 
-        public EventListener() {
+        public boolean reset;
+
+        public PlayEventRunnable(boolean reset) {
+            this.reset = reset;
         }
 
-        public void event(DBEvent event) {
-            addEvent(event);
-            eventOccurred(event);
+        public void run() {
+            playEvents(reset);
         }
-
-        public void enterRule(String ruleName) {
-            event(DBEventFactory.createEnterRule(ruleName));
-        }
-
-        public void exitRule(String ruleName) {
-            event(DBEventFactory.createExitRule(ruleName));
-        }
-
-        public void enterSubRule(int decisionNumber) {
-            event(DBEventFactory.createEnterSubRule(decisionNumber));
-        }
-
-        public void exitSubRule(int decisionNumber) {
-            event(DBEventFactory.createExitSubRule(decisionNumber));
-        }
-
-        public void enterDecision(int decisionNumber) {
-            event(DBEventFactory.createEnterDecision(decisionNumber));
-        }
-
-        public void exitDecision(int decisionNumber) {
-            event(DBEventFactory.createExitDecision(decisionNumber));
-        }
-
-        public void enterAlt(int alt) {
-            event(DBEventFactory.createEnterAlt(alt));
-        }
-
-        public void location(int line, int pos) {
-            event(DBEventFactory.createLocation(line, pos));
-        }
-
-        public void consumeToken(Token token) {
-            event(DBEventFactory.createConsumeToken(token));
-        }
-
-        public void consumeHiddenToken(Token token) {
-            event(DBEventFactory.createConsumeHiddenToken(token));
-        }
-
-        public void LT(int i, Token token) {
-            event(DBEventFactory.createLT(i, token));
-        }
-
-        public void mark(int i) {
-            event(DBEventFactory.createMark(i));
-        }
-
-        public void rewind(int i) {
-            event(DBEventFactory.createRewind(i));
-        }
-
-        public void rewind() {
-        }
-
-        public void beginBacktrack(int level) {
-            event(DBEventFactory.createBeginBacktrack(level));
-        }
-
-        public void endBacktrack(int level, boolean successful) {
-            event(DBEventFactory.createEndBacktrack(level, successful));
-        }
-
-        public void recognitionException(RecognitionException e) {
-            event(DBEventFactory.createRecognitionException(e));
-        }
-
-        public void beginResync() {
-            event(DBEventFactory.createBeginResync());
-        }
-
-        public void endResync() {
-            event(DBEventFactory.createEndResync());
-        }
-
-        public void semanticPredicate(boolean result, String predicate) {
-            /** Currently ignored */
-        }
-
-        public void commence() {
-            event(DBEventFactory.createCommence());
-        }
-
-        public void terminate() {
-            event(DBEventFactory.createTerminate());
-        }
-
-        /** AST events */
-
-        public void nilNode(int ID) {
-            event(DBEventFactory.createNilNode(ID));
-        }
-
-        public void createNode(int ID, String text, int type) {
-            event(DBEventFactory.createCreateNode(ID, text, type));
-        }
-
-        public void createNode(int ID, int tokenIndex) {
-            event(DBEventFactory.createCreateNode(ID, tokenIndex));
-        }
-
-        public void becomeRoot(int newRootID, int oldRootID) {
-            event(DBEventFactory.createBecomeRoot(newRootID, oldRootID));
-        }
-
-        public void addChild(int rootID, int childID) {
-            event(DBEventFactory.createAddChild(rootID, childID));
-        }
-
-        public void setTokenBoundaries(int ID, int tokenStartIndex, int tokenStopIndex) {
-            event(DBEventFactory.createSetTokenBoundaries(ID, tokenStartIndex, tokenStopIndex));
-        }
-
-        /** Tree parsing */
-
-        public void consumeNode(int ID, String text, int type) {
-        }
-
-        public void LT(int i, int ID, String text, int type) {
-        }
-
-        public void goUp() {
-        }
-
-        public void goDown() {
-        }
-
     }
-
 }

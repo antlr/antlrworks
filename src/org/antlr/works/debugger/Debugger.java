@@ -254,6 +254,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     public void close() {
         debuggerStop(true);
         player.close();
+        parseTreeModel.close();
     }
 
     public JComponent createInputPanel() {
@@ -310,11 +311,13 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
     public void updateStatusInfo() {
         controlPanel.updateStatusInfo();
-        if(recorder.getStatus() == DBRecorder.STATUS_BREAK) {
-            parseTreePanel.updateOnBreakEvent();
-            astPanel.updateOnBreakEvent();
-            infoPanel.updateOnBreakEvent();
-        }
+    }
+
+    public void breaksOnEvent() {
+        inputText.render();
+        parseTreePanel.updateOnBreakEvent();
+        astPanel.updateOnBreakEvent();
+        infoPanel.updateOnBreakEvent();
     }
 
     public EngineGrammar getGrammar() {
@@ -549,6 +552,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
     public void playEvents(List events, boolean reset) {
         player.playEvents(events, reset);
+        breaksOnEvent();
     }
 
     public void pushRule(String ruleName, int line, int pos) {

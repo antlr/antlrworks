@@ -32,11 +32,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DBEventRewind extends DBEvent {
 
+    public static final int REWIND_TO_LAST_MARK = Integer.MIN_VALUE;
+
     public int id;
 
     public DBEventRewind(int i) {
         super(REWIND);
         this.id = i;
+    }
+
+    public DBEventRewind() {
+        super(REWIND);
+        this.id = REWIND_TO_LAST_MARK;
+    }
+
+    public boolean rewindToLastMark() {
+        return id == REWIND_TO_LAST_MARK;
     }
 
     public String toString() {

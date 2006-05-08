@@ -172,6 +172,10 @@ public class IconManager {
         return createImageIcon(path+"gotoend.png");
     }
 
+    public ImageIcon getIconFastForward() {
+        return createImageIcon(path+"fastforward.png");
+    }
+
     public ImageIcon getIconTokens() {
         return createImageIcon(path+"tokens.png");
     }

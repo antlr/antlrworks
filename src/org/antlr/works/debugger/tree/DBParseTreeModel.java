@@ -62,6 +62,10 @@ public class DBParseTreeModel implements XJNotificationObserver {
         XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
     }
 
+    public void close() {
+        XJNotificationCenter.defaultCenter().removeObserver(this);
+    }
+
     public void addListener(DBParseTreeModelListener listener) {
         listeners.add(listener);
     }
