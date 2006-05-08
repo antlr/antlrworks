@@ -213,7 +213,12 @@ public class AWPrefs {
     public static final String PREF_OUTPUT_PATH = "PREF_OUTPUT_PATH";
     public static final String PREF_START_SYMBOL = "PREF_START_SYMBOL";
     public static final String PREF_DEBUGGER_INPUT_TEXT = "PREF_DEBUGGER_INPUT_TEXT";
-    public static final String PREF_DEBUG_BREAK_EVENT = "PREF_DEBUG_BREAK_EVENT";
+
+    public static final String PREF_DEBUG_BREAK_ALL = "PREF_DEBUG_BREAK_ALL";
+    public static final String PREF_DEBUG_BREAK_LOCACTION = "PREF_DEBUG_BREAK_LOCACTION";
+    public static final String PREF_DEBUG_BREAK_CONSUME = "PREF_DEBUG_BREAK_CONSUME";
+    public static final String PREF_DEBUG_BREAK_LT = "PREF_DEBUG_BREAK_LT";
+    public static final String PREF_DEBUG_BREAK_EXCEPTION = "PREF_DEBUG_BREAK_EXCEPTION";
 
     public static final String PREF_PERSONAL_INFO = "PREF_OUTPUT_DEV_DATE";
     public static final String PREF_PRIVATE_MENU = "PREF_PRIVATE_MENU";

@@ -6,11 +6,13 @@ import org.antlr.works.debugger.tivo.DBRecorder;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.utils.IconManager;
+import org.antlr.works.utils.NumberSet;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Set;
 /*
 
 [The "BSD licence"]
@@ -50,7 +52,12 @@ public class DBControlPanel extends JPanel {
     protected JButton fastForwardButton;
     protected JButton backButton;
     protected JButton forwardButton;
-    protected JComboBox breakCombo;
+
+    protected JCheckBox breakAll;
+    protected JCheckBox breakLocation;
+    protected JCheckBox breakConsume;
+    protected JCheckBox breakLT;
+    protected JCheckBox breakException;
 
     protected JLabel infoLabel;
 
@@ -171,21 +178,26 @@ public class DBControlPanel extends JPanel {
     public JComponent createBreakComboBox() {
         Box box = Box.createHorizontalBox();
 
-        box.add(new JLabel("Step on"));
+        box.add(new JLabel("Break on:"));
+        box.add(breakAll = createBreakButton("All"));
+        box.add(breakLocation = createBreakButton("Location"));
+        box.add(breakConsume = createBreakButton("Consume"));
+        box.add(breakLT = createBreakButton("LT"));
+        box.add(breakException = createBreakButton("Exception"));
 
-        breakCombo = new JComboBox();
-        breakCombo.setFocusable(false);
-        
-        for (int i = 0; i < COMBO_BREAK_EVENTS.length; i++) {
-            breakCombo.addItem(DBEvent.getEventName(COMBO_BREAK_EVENTS[i]));
-
-        }
-
-        AWPrefs.getPreferences().bindToPreferences(breakCombo, AWPrefs.PREF_DEBUG_BREAK_EVENT, DBEvent.CONSUME_TOKEN);
-
-        box.add(breakCombo);
+        AWPrefs.getPreferences().bindToPreferences(breakAll, AWPrefs.PREF_DEBUG_BREAK_ALL, false);
+        AWPrefs.getPreferences().bindToPreferences(breakLocation, AWPrefs.PREF_DEBUG_BREAK_LOCACTION, false);
+        AWPrefs.getPreferences().bindToPreferences(breakConsume, AWPrefs.PREF_DEBUG_BREAK_CONSUME, true);
+        AWPrefs.getPreferences().bindToPreferences(breakLT, AWPrefs.PREF_DEBUG_BREAK_LT, false);
+        AWPrefs.getPreferences().bindToPreferences(breakException, AWPrefs.PREF_DEBUG_BREAK_EXCEPTION, false);
 
         return box;
+    }
+
+    public JCheckBox createBreakButton(String title) {
+        JCheckBox button = new JCheckBox(title);
+        button.setFocusable(false);
+        return button;
     }
 
     public JButton createRevealTokensButton() {
@@ -206,8 +218,25 @@ public class DBControlPanel extends JPanel {
         return infoLabel;
     }
 
-    public int getBreakEvent() {
-        return COMBO_BREAK_EVENTS[breakCombo.getSelectedIndex()];
+    public Set getBreakEvent() {
+        NumberSet set = new NumberSet();
+
+        if(breakAll.isSelected())
+            set.add(DBEvent.ALL);
+
+        if(breakLocation.isSelected())
+            set.add(DBEvent.LOCATION);
+
+        if(breakConsume.isSelected())
+            set.add(DBEvent.CONSUME_TOKEN);
+
+        if(breakLT.isSelected())
+            set.add(DBEvent.LT);
+
+        if(breakException.isSelected())
+            set.add(DBEvent.RECOGNITION_EXCEPTION);
+
+        return set;
     }
 
     public void updateStatusInfo() {

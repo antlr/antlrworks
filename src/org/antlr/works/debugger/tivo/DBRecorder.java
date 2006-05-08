@@ -40,11 +40,13 @@ import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.events.DBEventConsumeToken;
 import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.utils.Console;
+import org.antlr.works.utils.NumberSet;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
@@ -65,7 +67,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     protected ArrayList events;
     protected int position;
-    protected int breakType = DBEvent.NONE;
+    protected NumberSet breakEvents = new NumberSet();
     protected int stoppedOnEvent = DBEvent.NO_EVENT;
     protected boolean ignoreBreakpoints = false;
 
@@ -142,12 +144,12 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         position = events.size()-1;
     }
 
-    public void setBreaksOnEventType(int breakType) {
-        this.breakType = breakType;
+    public void setBreakEvents(Set events) {
+        this.breakEvents.replaceAll(events);
     }
 
-    public int getBreaksEventType() {
-        return breakType;
+    public Set getBreakEvents() {
+        return breakEvents;
     }
 
     public void setStoppedOnEvent(int event) {
@@ -186,15 +188,15 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     /** Return the event type that causes the break */
     public int getOnBreakEvent() {
-        if(breakType == DBEvent.NONE)
+        if(breakEvents.isEmpty())
             return DBEvent.NO_EVENT;
-
-        if(breakType == DBEvent.ALL)
-            return breakType;
 
         DBEvent event = getEvent();
         if(event == null)
             return DBEvent.NO_EVENT;
+
+        if(breakEvents.contains(DBEvent.ALL))
+            return event.type;
 
         // Stop on debugger breakpoints
         if(event.type == DBEvent.LOCATION && !ignoreBreakpoints())
@@ -206,17 +208,17 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
             if(debugger.isBreakpointAtToken(((DBEventConsumeToken)event).token))
                 return event.type;
 
-        if(event.type == DBEvent.CONSUME_TOKEN && breakType == DBEvent.CONSUME_TOKEN) {
+        if(event.type == DBEvent.CONSUME_TOKEN && breakEvents.contains(DBEvent.CONSUME_TOKEN)) {
             // Breaks only on consume token from channel 0
             return ((DBEventConsumeToken)event).token.getChannel() == Token.DEFAULT_CHANNEL?event.type:DBEvent.NO_EVENT;
         } else
-            return event.type == breakType?event.type:DBEvent.NO_EVENT;
+            return breakEvents.contains(event.type)?event.type:DBEvent.NO_EVENT;
     }
 
     public synchronized void setStatus(int status) {
         if(this.status != status) {
             this.status = status;
-            debugger.recorderStatusDidChange();            
+            debugger.recorderStatusDidChange();
         }
     }
 
@@ -236,24 +238,24 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
             return e.type == DBEvent.TERMINATE;
     }
 
-    public void stepBackward(int breakEvent) {
+    public void stepBackward(Set breakEvents) {
         setIgnoreBreakpoints(false);
-        stepContinue(breakEvent);
+        stepContinue(breakEvents);
         if(stepMove(-1))
             playEvents(true);
     }
 
-    public void stepForward(int breakEvent) {
+    public void stepForward(Set breakEvents) {
         setIgnoreBreakpoints(false);
-        stepContinue(breakEvent);
+        stepContinue(breakEvents);
         if(stepMove(1))
             playEvents(false);
         else
             threadNotify();
     }
 
-    public void stepContinue(int breakEvent) {
-        setBreaksOnEventType(breakEvent);
+    public void stepContinue(Set breakEvents) {
+        setBreakEvents(breakEvents);
         queryGrammarBreakpoints();
         setStatus(STATUS_RUNNING);
     }
@@ -290,7 +292,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public void goToEnd() {
         setIgnoreBreakpoints(true);
-        stepContinue(DBEvent.TERMINATE);
+        stepContinue(new NumberSet(DBEvent.TERMINATE));
         if(stepMove(1))
             playEvents(false);
         else
@@ -298,7 +300,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public void fastForward() {
-        stepForward(DBEvent.TERMINATE);
+        stepForward(new NumberSet(DBEvent.TERMINATE));
     }
 
     public void connect(String address, int port) {

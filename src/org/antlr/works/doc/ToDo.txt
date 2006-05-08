@@ -10,7 +10,7 @@
 - step over a rule/subrule
 - don't "move" if several LT 1 are sent (only if LT1, LT2, LT3, etc..)
 - display "Backtracking level" a cote du combo box pour etre plus explicite a l'utilisateur
-- put step by location, consume and all with radio?
+- be able to search the generated grammar too
 
 - use only one tab per generation (or other operation that can be uniquely identified)
 - links to the different DOT implementation per system so user know what to do the first time

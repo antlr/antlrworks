@@ -93,7 +93,7 @@ public class DBInfoPanel extends JPanel {
         bp.add(displayRuleButton);
 
         infoTable = new JTable();
-        infoTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        //infoTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         infoTable.setDefaultRenderer(Integer.class, new InfoTableCellRenderer());
         setInfoTableModel(ruleTableDataModel);
 
@@ -110,13 +110,16 @@ public class DBInfoPanel extends JPanel {
 
     public void setInfoTableModel(AbstractTableModel model) {
         infoTable.setModel(model);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setMaxWidth(35);
-        if(model == eventTableDataModel) {
+
+        if(infoTable.getModel() == eventTableDataModel) {
+            infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setPreferredWidth(35);
             infoTable.getColumnModel().getColumn(INFO_COLUMN_EVENT).setMinWidth(100);
             infoTable.getColumnModel().getColumn(INFO_COLUMN_SUBRULE).setMaxWidth(30);
             infoTable.getColumnModel().getColumn(INFO_COLUMN_DECISION).setMaxWidth(30);
             infoTable.getColumnModel().getColumn(INFO_COLUMN_MARK).setMaxWidth(30);
             infoTable.getColumnModel().getColumn(INFO_COLUMN_BACKTRACK).setMaxWidth(30);
+        } else {
+            infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setMaxWidth(35);
         }
 
         selectLastInfoTableItem();

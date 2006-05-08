@@ -72,8 +72,8 @@ public class DBEvent {
     public static String getEventName(int type) {
         switch(type) {
             case NO_EVENT: return "-";
-            case CONSUME_TOKEN: return "Consume token";
-            case CONSUME_HIDDEN_TOKEN: return "Consume hidden token";
+            case CONSUME_TOKEN: return "Consume";
+            case CONSUME_HIDDEN_TOKEN: return "Consume hidden";
             case ENTER_RULE:    return "Enter rule";
             case EXIT_RULE:     return "Exit rule";
             case ENTER_SUBRULE: return "Enter subrule";

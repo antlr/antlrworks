@@ -10,6 +10,8 @@ Version 1.0ea9 - ...
 - generate parser if document has been modified since last generation
 - more precise message when log are reported to the console (warnings or errors)
 - more information are reported in the events list of the debugger
+- improved debugger: output pane and information pane can be hidden
+- improved debugger: flexible method to select the break event(s)
 
 - fixed a bug where ANTLRWorks would freeze when replacing literals with token label
 - fixed a bug where stats about programming and language implementation experience were inverted
