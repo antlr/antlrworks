@@ -182,7 +182,7 @@ public class EngineGrammar {
         grammarDirty = false;
     }
 
-    protected String getFileName() {
+    public String getFileName() {
         String fileName = editor.getFileName();
         return fileName==null?"<notsaved>":fileName;
     }

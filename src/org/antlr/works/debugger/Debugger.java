@@ -492,10 +492,10 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         if(recorder.getStatus() == DBRecorder.STATUS_STOPPING) {
             if(force || XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES) {
                 debuggerLocal.forceStop();
-                recorder.forceStop();
+                recorder.stop();
             }
         } else
-            recorder.stop();
+            recorder.requestStop();
     }
 
     public boolean isRunning() {

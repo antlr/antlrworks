@@ -1,25 +1,21 @@
 
 * Prio 1
-- launch debug events on other thread and dialog after 2s (see how it affects quick events)
-- implement debug skip rule
 
 - pop r<n> when exiting subrule
 - check breakpoint
 - make AST panel "detachable"
 - make breakpoint in grammar and stop around this location (line, column)
 - step over a rule/subrule
-- don't "move" if several LT 1 are sent (only if LT1, LT2, LT3, etc..)
 - display "Backtracking level" a cote du combo box pour etre plus explicite a l'utilisateur
 - be able to search the generated grammar too
-
 - use only one tab per generation (or other operation that can be uniquely identified)
 - links to the different DOT implementation per system so user know what to do the first time
-- build and debug with custom class path and command line arguments (to launch mantra for example)
-    -> the command-line argument will launch the parser with any arguments it needs (we don't care)
 - debug parser launch time-out in prefs?
 
 * Prio 2
 - tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
+- build and debug with custom class path and command line arguments (to launch mantra for example)
+    -> the command-line argument will launch the parser with any arguments it needs (we don't care)
 
 - create grammar file in project
 - ask for string literal for T104 (Tokens artificial SD) -> nameOfExternalReferencedRule() in FAFactory

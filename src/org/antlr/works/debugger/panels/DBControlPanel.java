@@ -71,7 +71,7 @@ public class DBControlPanel extends JPanel {
         Box box = Box.createHorizontalBox();
         box.add(createRevealTokensButton());
         box.add(Box.createHorizontalStrut(20));
-        box.add(stopButton = createDebuggerStopButton());
+        box.add(stopButton = createStopButton());
         box.add(Box.createHorizontalStrut(20));
         box.add(goToStartButton = createGoToStartButton());
         box.add(backButton = createStepBackButton());
@@ -79,14 +79,14 @@ public class DBControlPanel extends JPanel {
         box.add(forwardButton = createStepForwardButton());
         box.add(goToEndButton = createGoToEndButton());
         box.add(Box.createHorizontalStrut(20));
-        box.add(createBreakComboBox());
+        box.add(createBreakEventsBox());
         box.add(Box.createHorizontalGlue());
         box.add(createInfoLabelPanel());
 
         add(box, BorderLayout.CENTER);
     }
 
-    public JButton createDebuggerStopButton() {
+    public JButton createStopButton() {
         JButton button = new JButton(IconManager.shared().getIconStop());
         button.setToolTipText("Stop");
         button.setFocusable(false);
@@ -162,7 +162,7 @@ public class DBControlPanel extends JPanel {
             public void actionPerformed(ActionEvent event) {
                 debugger.getRecorder().fastForward();
                 updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_END);
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_FAST_FORWARD);
             }
         });
         return button;
@@ -175,7 +175,7 @@ public class DBControlPanel extends JPanel {
             DBEvent.ALL
     };
 
-    public JComponent createBreakComboBox() {
+    public JComponent createBreakEventsBox() {
         Box box = Box.createHorizontalBox();
 
         box.add(new JLabel("Break on:"));

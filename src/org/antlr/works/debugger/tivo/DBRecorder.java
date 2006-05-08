@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger.tivo;
 
+import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
 import org.antlr.runtime.Token;
@@ -76,7 +77,16 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     protected XJDialogProgress progress;
 
+    /** This flag is used to indicate that the debugger received the terminate event.
+     * It is used to force stop the debugger if it cannot be stopped by the normal method.
+     */
     protected boolean debuggerReceivedTerminateEvent;
+
+    /** Flag used to indicate if the user has been warning about a problem
+     * with the remote parser state. It ensure the message is only displayed once
+     * during a debugging session.
+     */
+    protected boolean remoteParserStateWarned = false;
 
     public DBRecorder(Debugger debugger) {
         this.debugger = debugger;
@@ -112,6 +122,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         else
             events.clear();
         position = -1;
+        remoteParserStateWarned = false;
     }
 
     public synchronized DBEvent getEvent() {
@@ -384,17 +395,52 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         });
     }
 
-    public synchronized void stop() {
+    public synchronized void requestStop() {
         setStatus(STATUS_STOPPING);
         threadNotify();
 
         if(debuggerReceivedTerminateEvent)
-            forceStop();
+            stop();
     }
 
-    public void forceStop() {
+    public void stop() {
         setStatus(STATUS_STOPPED);
         debugger.recorderDidStop();
+    }
+
+    /** This method checks that the remote parser's states are in sync with
+     * the state of the debugger (i.e. name of the grammar). This method
+     * is called in the event dispatch thread.
+     */
+
+    public void checkRemoteParserHeaders() {
+        /* @todo check later for the version */
+
+        //Tool.VERSION
+        //System.out.println(listener.version);
+
+        if(!debugger.getGrammar().getFileName().equals(listener.grammarFileName)) {
+            String message = "Warning: the grammar used by the remote parser is not the same ("+listener.grammarFileName+").";
+            XJAlert.display(debugger.getWindowComponent(), "Grammar Mismatch", message);
+        }
+    }
+
+    /** Check any error coming from the remote parser */
+
+    public void checkRemoteParserState() {
+        if(remoteParserStateWarned)
+            return;
+
+        if(listener.tokenIndexesAreInvalid()) {
+            remoteParserStateWarned = true;
+
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    String message = "Invalid token indexes. Make sure that the remote parser implements the getTokenIndex() method of Token. The indexes must be unique for each consumed token.";
+                    XJAlert.display(debugger.getWindowComponent(), "Invalid Token Indexes", message);
+                }
+            });
+        }
     }
 
     /** This method is called by DBRecorderEventListener for each event received from
@@ -411,13 +457,18 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
                 break;
 
             case STATUS_STOPPING:
-                // @todo comment this
+                /* Stop the debugger if the terminate event is reached or if the flag
+                debuggerReceivedTerminateEvent is true
+                */
                 if(event.type == DBEvent.TERMINATE || debuggerReceivedTerminateEvent)
-                    forceStop();
+                    stop();
                 break;
         }
 
         if(isRunning()) {
+
+            checkRemoteParserState();
+
             switch(event.type) {
                 case DBEvent.TERMINATE:
                     setStoppedOnEvent(DBEvent.TERMINATE);
@@ -426,6 +477,11 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
                     break;
 
                 case DBEvent.COMMENCE:
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            checkRemoteParserHeaders();
+                        }
+                    });
                     setStoppedOnEvent(DBEvent.COMMENCE);
                     breaksOnEvent(true);
                     break;

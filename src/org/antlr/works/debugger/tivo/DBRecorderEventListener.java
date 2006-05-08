@@ -48,6 +48,14 @@ public class DBRecorderEventListener implements DebugEventListener {
         recorder.listenerEvent(event);
     }
 
+    public void commence() {
+        event(DBEventFactory.createCommence());
+    }
+
+    public void terminate() {
+        event(DBEventFactory.createTerminate());
+    }
+
     public void enterRule(String ruleName) {
         event(DBEventFactory.createEnterRule(ruleName));
     }
@@ -126,14 +134,6 @@ public class DBRecorderEventListener implements DebugEventListener {
 
     public void semanticPredicate(boolean result, String predicate) {
         /** Currently ignored */
-    }
-
-    public void commence() {
-        event(DBEventFactory.createCommence());
-    }
-
-    public void terminate() {
-        event(DBEventFactory.createTerminate());
     }
 
     /** AST events */
