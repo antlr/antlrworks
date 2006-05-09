@@ -199,12 +199,12 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     /** Return the event type that causes the break */
     public int getOnBreakEvent() {
-        if(breakEvents.isEmpty())
-            return DBEvent.NO_EVENT;
-
         DBEvent event = getEvent();
         if(event == null)
             return DBEvent.NO_EVENT;
+
+        if(event.type == DBEvent.COMMENCE)
+            return event.type;
 
         if(breakEvents.contains(DBEvent.ALL))
             return event.type;
@@ -252,17 +252,27 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     public void stepBackward(Set breakEvents) {
         setIgnoreBreakpoints(false);
         stepContinue(breakEvents);
-        if(stepMove(-1))
-            playEvents(true);
+        stepMove(-1);
+        /* Play the events in any case. Otherwise the debugger might not get notified
+         correctly of a backward step. */
+        playEvents(true);
     }
 
     public void stepForward(Set breakEvents) {
         setIgnoreBreakpoints(false);
         stepContinue(breakEvents);
-        if(stepMove(1))
+        if(stepMove(1)) {
+            /* There is some events left, play them */
             playEvents(false);
-        else
-            threadNotify();
+        } else {
+            /* No more events. If the debugger received the terminate event,
+               play the events so far. Otherwise, notify the thread that it can
+               continue to receive more events from the remote parser. */
+            if(debuggerReceivedTerminateEvent)
+                playEvents(false);
+            else
+                threadNotify();
+        }
     }
 
     public void stepContinue(Set breakEvents) {
@@ -271,6 +281,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         setStatus(STATUS_RUNNING);
     }
 
+    /** This method returns false if no more event is available */
     public boolean stepMove(int direction) {
         position += direction;
         if(position<0) {

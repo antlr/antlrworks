@@ -180,9 +180,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     }
 
     public void componentShouldLayout() {
-        //treeInfoPanelSplitPane.setDividerLocation(0.6);
         ioTreeSplitPane.setDividerLocation(0.2);
-        //ioSplitPane.setDividerLocation(0.2);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -314,7 +312,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     }
 
     public void breaksOnEvent() {
-        inputText.render();
+        inputText.updateOnBreakEvent();
         parseTreePanel.updateOnBreakEvent();
         astPanel.updateOnBreakEvent();
         infoPanel.updateOnBreakEvent();
@@ -466,6 +464,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
         editor.getTextPane().setEditable(false);
         editor.getTextPane().requestFocus(false);
+        
         previousGrammarAttributeSet = null;
         player.resetPlayEvents(true);
     }

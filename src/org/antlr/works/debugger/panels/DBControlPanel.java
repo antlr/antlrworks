@@ -53,11 +53,11 @@ public class DBControlPanel extends JPanel {
     protected JButton backButton;
     protected JButton forwardButton;
 
-    protected JCheckBox breakAll;
-    protected JCheckBox breakLocation;
-    protected JCheckBox breakConsume;
-    protected JCheckBox breakLT;
-    protected JCheckBox breakException;
+    protected JCheckBox breakAllButton;
+    protected JCheckBox breakLocationButton;
+    protected JCheckBox breakConsumeButton;
+    protected JCheckBox breakLTButton;
+    protected JCheckBox breakExceptionButton;
 
     protected JLabel infoLabel;
 
@@ -168,28 +168,21 @@ public class DBControlPanel extends JPanel {
         return button;
     }
 
-    static int[] COMBO_BREAK_EVENTS = new int[] { DBEvent.LOCATION,
-            DBEvent.CONSUME_TOKEN,
-            DBEvent.LT,
-            DBEvent.RECOGNITION_EXCEPTION,
-            DBEvent.ALL
-    };
-
     public JComponent createBreakEventsBox() {
         Box box = Box.createHorizontalBox();
 
         box.add(new JLabel("Break on:"));
-        box.add(breakAll = createBreakButton("All"));
-        box.add(breakLocation = createBreakButton("Location"));
-        box.add(breakConsume = createBreakButton("Consume"));
-        box.add(breakLT = createBreakButton("LT"));
-        box.add(breakException = createBreakButton("Exception"));
+        box.add(breakAllButton = createBreakButton("All"));
+        box.add(breakLocationButton = createBreakButton("Location"));
+        box.add(breakConsumeButton = createBreakButton("Consume"));
+        box.add(breakLTButton = createBreakButton("LT"));
+        box.add(breakExceptionButton = createBreakButton("Exception"));
 
-        AWPrefs.getPreferences().bindToPreferences(breakAll, AWPrefs.PREF_DEBUG_BREAK_ALL, false);
-        AWPrefs.getPreferences().bindToPreferences(breakLocation, AWPrefs.PREF_DEBUG_BREAK_LOCACTION, false);
-        AWPrefs.getPreferences().bindToPreferences(breakConsume, AWPrefs.PREF_DEBUG_BREAK_CONSUME, true);
-        AWPrefs.getPreferences().bindToPreferences(breakLT, AWPrefs.PREF_DEBUG_BREAK_LT, false);
-        AWPrefs.getPreferences().bindToPreferences(breakException, AWPrefs.PREF_DEBUG_BREAK_EXCEPTION, false);
+        AWPrefs.getPreferences().bindToPreferences(breakAllButton, AWPrefs.PREF_DEBUG_BREAK_ALL, false);
+        AWPrefs.getPreferences().bindToPreferences(breakLocationButton, AWPrefs.PREF_DEBUG_BREAK_LOCATION, false);
+        AWPrefs.getPreferences().bindToPreferences(breakConsumeButton, AWPrefs.PREF_DEBUG_BREAK_CONSUME, true);
+        AWPrefs.getPreferences().bindToPreferences(breakLTButton, AWPrefs.PREF_DEBUG_BREAK_LT, false);
+        AWPrefs.getPreferences().bindToPreferences(breakExceptionButton, AWPrefs.PREF_DEBUG_BREAK_EXCEPTION, false);
 
         return box;
     }
@@ -197,6 +190,15 @@ public class DBControlPanel extends JPanel {
     public JCheckBox createBreakButton(String title) {
         JCheckBox button = new JCheckBox(title);
         button.setFocusable(false);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                /** Select 'All' if no events are selected */
+                if(getBreakEvent().isEmpty()) {
+                    breakAllButton.setSelected(true);
+                    AWPrefs.getPreferences().setBoolean(AWPrefs.PREF_DEBUG_BREAK_ALL, true);
+                }
+            }
+        });
         return button;
     }
 
@@ -221,19 +223,19 @@ public class DBControlPanel extends JPanel {
     public Set getBreakEvent() {
         NumberSet set = new NumberSet();
 
-        if(breakAll.isSelected())
+        if(breakAllButton.isSelected())
             set.add(DBEvent.ALL);
 
-        if(breakLocation.isSelected())
+        if(breakLocationButton.isSelected())
             set.add(DBEvent.LOCATION);
 
-        if(breakConsume.isSelected())
+        if(breakConsumeButton.isSelected())
             set.add(DBEvent.CONSUME_TOKEN);
 
-        if(breakLT.isSelected())
+        if(breakLTButton.isSelected())
             set.add(DBEvent.LT);
 
-        if(breakException.isSelected())
+        if(breakExceptionButton.isSelected())
             set.add(DBEvent.RECOGNITION_EXCEPTION);
 
         return set;

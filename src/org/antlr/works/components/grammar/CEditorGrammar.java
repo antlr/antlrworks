@@ -796,7 +796,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
         int warnings = grammarSyntax.getNumberOfRulesWithErrors();
         if(warnings > 0)
-            t += " ("+warnings+" warnings)";
+            t += " ("+warnings+" warning"+(warnings>0?"s":"")+")";
 
         infoLabel.setText(t);
     }

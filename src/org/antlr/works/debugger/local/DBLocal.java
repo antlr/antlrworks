@@ -104,6 +104,10 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         this.startRule = rule;
     }
 
+    public String getStartRule() {
+        return startRule;
+    }
+
     public void dialogDidCancel() {
         cancel();
     }

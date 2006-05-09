@@ -354,8 +354,8 @@ public class DBInfoPanel extends JPanel {
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             if(column == INFO_COLUMN_COUNT) {
-                setHorizontalAlignment(JLabel.RIGHT);
-                setHorizontalTextPosition(SwingConstants.RIGHT);
+                setHorizontalAlignment(JLabel.LEFT);
+                setHorizontalTextPosition(SwingConstants.LEFT);
             } else {
                 setHorizontalAlignment(JLabel.CENTER);
                 setHorizontalTextPosition(SwingConstants.CENTER);

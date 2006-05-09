@@ -85,7 +85,10 @@ public class DBASTModel {
     }
 
     public void popRule() {
-        rules.pop();
+        /* Do not pop the start rule: we want to be able to see the AST
+        tree at the end of event stream so we keep the start rule on the stack. */
+        if(rules.size() > 1)
+            rules.pop();
     }
 
     public void pushRoot(ASTNode node) {

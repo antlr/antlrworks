@@ -215,7 +215,7 @@ public class AWPrefs {
     public static final String PREF_DEBUGGER_INPUT_TEXT = "PREF_DEBUGGER_INPUT_TEXT";
 
     public static final String PREF_DEBUG_BREAK_ALL = "PREF_DEBUG_BREAK_ALL";
-    public static final String PREF_DEBUG_BREAK_LOCACTION = "PREF_DEBUG_BREAK_LOCACTION";
+    public static final String PREF_DEBUG_BREAK_LOCATION = "PREF_DEBUG_BREAK_LOCATION";
     public static final String PREF_DEBUG_BREAK_CONSUME = "PREF_DEBUG_BREAK_CONSUME";
     public static final String PREF_DEBUG_BREAK_LT = "PREF_DEBUG_BREAK_LT";
     public static final String PREF_DEBUG_BREAK_EXCEPTION = "PREF_DEBUG_BREAK_EXCEPTION";

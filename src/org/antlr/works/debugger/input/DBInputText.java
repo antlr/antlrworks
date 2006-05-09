@@ -40,6 +40,7 @@ import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.utils.TextPane;
 import org.antlr.works.utils.TextPaneDelegate;
 
+import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
@@ -69,13 +70,17 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
     protected Map indexToConsumeAttributeMap = new HashMap();
     protected Set lookaheadTokenIndexes = new HashSet();
 
+    /** Current token index */
     protected int currentTokenIndex;
 
-    // Last location event received by the debugger
+    /** Current token position in the input text */
+    protected int currentTokenIndexInText;
+
+    /** Last location event received by the debugger */
     protected int locationLine;
     protected int locationCharInLine;
 
-    // Input breakpoints
+    /** Input breakpoints */
     protected Set inputBreakpointIndexes = new HashSet();
 
     protected SimpleAttributeSet attributeNonConsumed;
@@ -165,6 +170,7 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
         textPane.setCharacterAttributes(SimpleAttributeSet.EMPTY, true);
 
         currentTokenIndex = -1;
+        currentTokenIndexInText = 0;
 
         inputTokenIndexes.clear();
         indexToTokenInfoMap.clear();
@@ -226,12 +232,16 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
     }
 
     public String renderTokensText() {
+        currentTokenIndexInText = 0;
         StringBuffer text = new StringBuffer();
         for (int i = 0; i < inputTokenIndexes.size(); i++) {
             Integer idx = (Integer) inputTokenIndexes.get(i);
             DBInputTextTokenInfo info = (DBInputTextTokenInfo) indexToTokenInfoMap.get(idx);
             info.setStart(text.length());
             text.append(info.getText());
+
+            if(idx.intValue() == getCurrentTokenIndex())
+                currentTokenIndexInText = info.start;
         }
         return text.toString();
     }
@@ -257,6 +267,23 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
 
             textPane.getStyledDocument().setCharacterAttributes(info.start, info.end, attribute, true);
         }
+    }
+
+    public void updateOnBreakEvent() {
+        render();
+
+        /** Scroll the text pane to the current token position. Invoke that later on
+         * so the pane scrolls at the correct position (otherwise the scroll will be reset).
+         */
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    textPane.scrollRectToVisible(textPane.modelToView(currentTokenIndexInText));
+                } catch (BadLocationException e) {
+                    debugger.getConsole().print(e);
+                }
+            }
+        });
     }
 
     public void createTextAttributes() {
