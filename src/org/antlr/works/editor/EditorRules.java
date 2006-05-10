@@ -116,6 +116,10 @@ public class EditorRules implements XJTreeDelegate {
         return sort;
     }
 
+    public void setSorted(boolean flag) {
+        this.sort = flag;
+    }
+
     public void toggleSorting() {
         sort = !sort;
         rebuildTree();
@@ -280,6 +284,9 @@ public class EditorRules implements XJTreeDelegate {
     }
     
     public List getSortedRules(List rules) {
+        if(rules == null)
+            return null;
+
         List sortedRules = new ArrayList(rules);
         Collections.sort(sortedRules);
         GrammarSyntaxRule firstRule = (GrammarSyntaxRule)sortedRules.get(0);
@@ -472,6 +479,9 @@ public class EditorRules implements XJTreeDelegate {
 
         List rules = getParserEngine().getRules();
         List groups = getParserEngine().getGroups();
+        if(rules == null || groups == null)
+            return;
+
         if(groups.isEmpty()) {
             buildTree(rulesTreeRootNode, rules, 0, rules.size()-1);
         } else {

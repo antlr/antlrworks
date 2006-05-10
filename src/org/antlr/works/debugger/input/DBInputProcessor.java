@@ -45,7 +45,7 @@ public interface DBInputProcessor {
     public void rewindAll();
 
     public void LT(Token token);
-    public void consumeToken(Token token, int type);
+    public void consumeToken(Token token, int flavor);
     public void setLocation(int line, int pos);
 
     public int getCurrentTokenIndex();

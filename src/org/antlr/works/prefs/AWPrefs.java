@@ -50,6 +50,8 @@ public class AWPrefs {
     public static final String PREF_DEBUG_DONT_OPTIMIZE_NFA = "PREF_DONT_OPTIMIZE_NFA";
 
     public static final String PREF_DOT_TOOL_PATH = "PREF_DOT_TOOL_PATH";
+    
+    public static final String PREF_TOOLBAR_SORT = "PREF_TOOLBAR_SORT";
 
     public static final int STARTUP_NEW_DOC = 0;
     public static final int STARTUP_OPEN_LAST_DOC = 1;

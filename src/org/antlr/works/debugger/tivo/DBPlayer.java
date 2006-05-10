@@ -240,6 +240,15 @@ public class DBPlayer {
         if(event.token.getType() == Token.EOF)
             return;
 
+        /* Ignore LT with negative index (i.e. LT(-1)) */
+        if(event.index < 0)
+            return;
+
+        /* Ignore LT if they are not part of a decision. contextinfo returns
+         -1 if the stack of decision is empty. */
+        if(contextInfo.getDecision() == -1)
+            return;
+
         processor.LT(event.token);
     }
 

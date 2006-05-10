@@ -259,6 +259,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         interpreter.awake();
         debugger.awake();
 
+        toolbar.awake();
+        
         rules.setKeyBindings(textEditor.getKeyBindings());
 
         textEditor.setParserEngine(parserEngine);

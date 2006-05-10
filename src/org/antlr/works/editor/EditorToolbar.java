@@ -4,6 +4,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
@@ -51,11 +52,7 @@ public class EditorToolbar implements XJNotificationObserver {
     public JToggleButton sort;
     public JButton sd;
     public JButton coloring;
-    public JButton analysis;
-
     public JButton ideas;
-    public JButton underlying;
-    public JButton tips;
 
     public JButton find;
 
@@ -94,15 +91,18 @@ public class EditorToolbar implements XJNotificationObserver {
         toolbar.add(sd = (JButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Toggle Syntax diagram", false));
         toolbar.add(coloring = (JButton)createNewButton(IconManager.shared().getIconColoring(), "Toggle Syntax coloring", false));
         toolbar.add(ideas = (JButton)createNewButton(IconManager.shared().getIconIdea(), "Toggle Syntax ideas", false));
-//        toolbar.add(analysis = (JButton)createNewButton(IconManager.shared().getIconAnalysis(), "Syntax analysis", false));
-//        toolbar.add(underlying = (JButton)createNewButton(IconManager.shared().getIconUnderlying(), "Syntax underlying", false));
-//        toolbar.add(tips = (JButton)createNewButton(IconManager.shared().getIconTips(), "Syntax tips", false));
         toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(sort = (JToggleButton)createNewButton(IconManager.shared().getIconSort(), "Toggle Sort rules", true));
         toolbar.add(find = (JButton)createNewButton(IconManager.shared().getIconFind(), "Find text", false));
         toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(backward = (JButton)createNewButton(IconManager.shared().getIconBackward(), "Back", false));
         toolbar.add(forward = (JButton)createNewButton(IconManager.shared().getIconForward(), "Forward", false));
+
+        AWPrefs.getPreferences().bindToPreferences(sort, AWPrefs.PREF_TOOLBAR_SORT, false);
+    }
+
+    public void awake() {
+        editor.rules.setSorted(AWPrefs.getPreferences().getBoolean(AWPrefs.PREF_TOOLBAR_SORT, false));
     }
 
     public void addActions() {
@@ -136,29 +136,11 @@ public class EditorToolbar implements XJNotificationObserver {
             }
         });
 
-/*        analysis.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                editor.toggleAnalysis();
-            }
-        });*/
-
         ideas.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 editor.toggleIdeas();
             }
         });
-
-/*        underlying.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                editor.toggleUnderlying();
-            }
-        });
-
-        tips.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                editor.toggleTips();
-            }
-        });*/
 
         find.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

@@ -1,11 +1,20 @@
 package org.antlr.works.debugger.input;
 
+import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
 import org.antlr.tool.Grammar;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.tree.DBTreeNode;
 import org.antlr.works.debugger.tree.DBTreeToken;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.prefs.AWPrefsDialog;
+
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -37,29 +46,66 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBInputProcessorTree implements DBInputProcessor {
+public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObserver {
 
     public AWTreePanel treePanel;
     public Debugger debugger;
 
     public InputTreeNode rootNode;
     public InputTreeNode currentNode;
+    public InputTreeNode lastNode;
 
+    /** Map of token to tree node information */
+    public Map nodeInfoForToken = new HashMap();
+
+    /** Last position in the grammar received from the parser */
     public int line, pos;
+
+    /** Node colors */
+    public Color nonConsumedColor;
+    public Color consumedColor;
+    public Color ltColor;
 
     public DBInputProcessorTree(AWTreePanel treePanel, Debugger debugger) {
         this.treePanel = treePanel;
         this.debugger = debugger;
+
+        createColors();
+
+        XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
+    }
+
+    public void close() {
+        XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 
     public void updateTreePanel() {
-        treePanel.setRoot(rootNode);
         treePanel.refresh();
+        treePanel.scrollNodeToVisible(lastNode);
+    }
+
+    public void createColors() {
+        nonConsumedColor = AWPrefs.getNonConsumedTokenColor();
+        consumedColor = AWPrefs.getConsumedTokenColor();
+        ltColor = AWPrefs.getLookaheadTokenColor();
+    }
+
+    public void applyColor(Color c) {
+        for (Iterator iterator = nodeInfoForToken.values().iterator(); iterator.hasNext();) {
+            NodeInfo info = (NodeInfo) iterator.next();
+            if(info.node != null)
+                info.node.setColor(c);
+        }
     }
 
     public void reset() {
+        nodeInfoForToken.clear();
+
         rootNode = createNode(null);
+        treePanel.setRoot(rootNode);
+
         currentNode = rootNode;
+        lastNode = currentNode;
     }
 
     public void removeAllLT() {
@@ -69,32 +115,74 @@ public class DBInputProcessorTree implements DBInputProcessor {
     }
 
     public void rewindAll() {
-        reset();
+        applyColor(nonConsumedColor);
+
+        currentNode = rootNode;
+        lastNode = currentNode;
     }
 
     public void LT(Token token) {
+        InputTreeNode node = processToken(token);
+        if(node != null) {
+            lastNode = node;
+            node.setColor(ltColor);
+        }
     }
 
-    public void consumeToken(Token token, int type) {
+    public void consumeToken(Token token, int flavor) {
+        InputTreeNode node = processToken(token);
+        if(node != null) {
+            lastNode = node;
+            node.setColor(consumedColor);
+        }
+    }
+
+    public InputTreeNode processToken(Token token) {
+        /** Check to see if the token has already been processed */
+        NodeInfo info = getNode(token);
+        if(info != null) {
+            /** Set the current position to the one when the node has been created */
+            currentNode = info.currentNode;
+            /** Return the node itself */
+            return info.node;
+        }
+
+        /** The token hasn't been yet processed */
+        info = new NodeInfo(token);
+
         switch(token.getType()) {
             case Token.DOWN:
                 currentNode = (InputTreeNode)currentNode.getLastChild();
+                info.currentNode = currentNode;
                 break;
 
             case Token.UP:
                 currentNode = (InputTreeNode)currentNode.getParent();
+                info.currentNode = currentNode;
                 break;
 
             default:
-                currentNode.add(createNode(token));
+                currentNode.add(info.node = createNode(token));
+                info.currentNode = currentNode;
                 break;
         }
+
+        /** Add all new node to the map using their unique ID */
+        DBTreeToken tt = (DBTreeToken)token;
+        nodeInfoForToken.put(new Integer(tt.ID), info);
+
+        return info.node;
     }
 
     public InputTreeNode createNode(Token token) {
         InputTreeNode node = new InputTreeNode((DBTreeToken)token, debugger.getGrammar().getANTLRGrammar());
         node.setPosition(line, pos);
         return node;
+    }
+
+    public NodeInfo getNode(Token token) {
+        DBTreeToken tt = (DBTreeToken)token;
+        return (NodeInfo)nodeInfoForToken.get(new Integer(tt.ID));
     }
 
     public void setLocation(int line, int pos) {
@@ -115,6 +203,28 @@ public class DBInputProcessorTree implements DBInputProcessor {
         return null;
     }
 
+    public void notificationFire(Object source, String name) {
+        if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
+            createColors();
+        }
+    }
+
+    public class NodeInfo {
+
+        /** Token */
+        public Token token;
+
+        /** Node associated with the token. null if associated with token UP or DOWN */
+        public InputTreeNode node;
+
+        /** Current node when the associated node has been created */
+        public InputTreeNode currentNode;
+
+        public NodeInfo(Token token) {
+            this.token = token;
+        }
+
+    }
     public class InputTreeNode extends DBTreeNode {
 
         public InputTreeNode(DBTreeToken token, Grammar grammar) {

@@ -47,7 +47,7 @@ public class DBEventLT extends DBEvent {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         if(token instanceof DBTreeToken)
-            sb.append("LT node  ");
+            sb.append("LT node ");
         else
             sb.append("LT ");
         sb.append(index);

@@ -125,9 +125,9 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
         this.locationCharInLine = charInLine;
     }
 
-    public void consumeToken(Token token, int type) {
+    public void consumeToken(Token token, int flavor) {
         SimpleAttributeSet attr = null;
-        switch(type) {
+        switch(flavor) {
             case TOKEN_NORMAL: attr = attributeConsume; break;
             case TOKEN_HIDDEN: attr = attributeConsumeHidden; break;
             case TOKEN_DEAD: attr = attributeConsumeDead; break;
