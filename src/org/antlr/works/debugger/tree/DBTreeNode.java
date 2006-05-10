@@ -61,6 +61,14 @@ public class DBTreeNode extends AWTreeNode {
         this.pos = pos;
     }
 
+    public int getLine() {
+        return line;
+    }
+
+    public int getPosition() {
+        return pos;
+    }
+
     public void setColor(Color color) {
         this.color = color;
     }
@@ -69,9 +77,27 @@ public class DBTreeNode extends AWTreeNode {
         return color;
     }
 
+    public Token getToken() {
+        return token;
+    }
+
     public DBTreeNode findNodeWithToken(Token t) {
-        if(token != null && t.getTokenIndex() == token.getTokenIndex())
-            return this;
+        if(t == null)
+            return null;
+
+        if(token != null) {
+            /** Little hack here. If the token is of type DBTreeToken (tree grammar), then
+             * the token index cannot be used (we don't have this information). We will use
+             * the ID unique to each tree node instead.
+             */
+            if(token instanceof DBTreeToken && t instanceof DBTreeToken) {
+                DBTreeToken t1 = (DBTreeToken)token;
+                DBTreeToken t2 = (DBTreeToken)t;
+                if(t1.ID == t2.ID)
+                    return this;
+            } else if(t.getTokenIndex() == token.getTokenIndex())
+                return this;
+        }
 
         for(Enumeration childrenEnumerator = children(); childrenEnumerator.hasMoreElements(); ) {
             DBTreeNode node = (DBTreeNode) childrenEnumerator.nextElement();
@@ -79,6 +105,7 @@ public class DBTreeNode extends AWTreeNode {
             if(candidate != null)
                 return candidate;
         }
+
         return null;
     }
 

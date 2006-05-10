@@ -148,6 +148,7 @@ public class GPanel implements XJNotificationObserver {
     private Container createVisualizationPane() {
         view = new CustomGView(this, context);
         viewScrollPane = new JScrollPane(view);
+        viewScrollPane.setWheelScrollingEnabled(true);
         return viewScrollPane;
     }
 

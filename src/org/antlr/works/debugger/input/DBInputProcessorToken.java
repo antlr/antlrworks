@@ -52,11 +52,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
 import java.util.*;
 
-public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
-
-    public static final int TOKEN_NORMAL = 1;
-    public static final int TOKEN_HIDDEN = 2;
-    public static final int TOKEN_DEAD = 3;
+public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate, XJNotificationObserver {
 
     public static final Color HIGHLIGHTED_COLOR = new Color(0, 0.5f, 1, 0.4f);
     public static final Color INPUT_BREAKPOINT_COLOR = new Color(1, 0.2f, 0, 0.5f);
@@ -91,8 +87,9 @@ public class DBInputText implements TextPaneDelegate, XJNotificationObserver {
 
     protected boolean drawTokensBox;
 
-    public DBInputText(Debugger debugger, TextPane textPane) {
+    public DBInputProcessorToken(Debugger debugger, TextPane textPane) {
         this.debugger = debugger;
+
         this.textPane = textPane;
         this.textPane.setDelegate(this);
         this.textPane.addMouseListener(new MyMouseListener());

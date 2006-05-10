@@ -1,7 +1,13 @@
-package org.antlr.works.debugger.events;
+package org.antlr.works.debugger.panels;
 
-import org.antlr.runtime.Token;
-import org.antlr.works.debugger.tree.DBTreeToken;
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.utils.StreamWatcherDelegate;
+import org.antlr.works.utils.TextPane;
+import org.antlr.works.utils.TextUtils;
+
+import javax.swing.*;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -33,19 +39,41 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBEventConsumeToken extends DBEvent {
+public class DBOutputPanel extends JPanel implements StreamWatcherDelegate {
 
-    public Token token;
+    protected TextPane outputTextPane;
+    protected Debugger debugger;
 
-    public DBEventConsumeToken(Token token) {
-        super(CONSUME_TOKEN);
-        this.token = token;
+    public DBOutputPanel(Debugger debugger) {
+        super(new BorderLayout());
+
+        this.debugger = debugger;
+
+        outputTextPane = new TextPane();
+        outputTextPane.setBackground(Color.white);
+        outputTextPane.setBorder(null);
+        outputTextPane.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
+        outputTextPane.setText("");
+        outputTextPane.setEditable(false);
+
+        TextUtils.createTabs(outputTextPane);
+
+        JScrollPane textScrollPane = new JScrollPane(outputTextPane);
+        textScrollPane.setWheelScrollingEnabled(true);
+
+        add(textScrollPane, BorderLayout.CENTER);
     }
 
-    public String toString() {
-        if(token instanceof DBTreeToken)
-            return "Consume node "+token;
-        else
-            return "Consume "+token;
+    public void streamWatcherDidStarted() {
+        outputTextPane.setText("");
     }
+
+    public void streamWatcherDidReceiveString(String string) {
+        outputTextPane.setText(outputTextPane.getText()+string);
+    }
+
+    public void streamWatcherException(Exception e) {
+        debugger.getConsole().print(e);
+    }
+
 }

@@ -34,7 +34,8 @@ package org.antlr.works.debugger.tivo;
 import org.antlr.runtime.Token;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.*;
-import org.antlr.works.debugger.input.DBInputText;
+import org.antlr.works.debugger.input.DBInputProcessor;
+import org.antlr.works.debugger.input.DBInputTextTokenInfo;
 
 import java.util.List;
 import java.util.Stack;
@@ -42,7 +43,7 @@ import java.util.Stack;
 public class DBPlayer {
 
     protected Debugger debugger;
-    protected DBInputText inputText;
+    protected DBInputProcessor processor;
 
     protected DBPlayerContextInfo contextInfo;
     protected Stack markStack;
@@ -50,19 +51,14 @@ public class DBPlayer {
     protected int resyncing = 0;
     protected int eventPlayedCount = 0;
 
-    public DBPlayer(Debugger debugger, DBInputText inputText) {
+    public DBPlayer(Debugger debugger) {
         this.debugger = debugger;
-        this.inputText = inputText;
         contextInfo = new DBPlayerContextInfo();
         markStack = new Stack();
     }
 
-    public void close() {
-        inputText.close();        
-    }
-
-    public void toggleInputTextTokensBox() {
-        inputText.setDrawTokensBox(!inputText.isDrawTokensBox());
+    public void setInputBuffer(DBInputProcessor processor) {
+        this.processor = processor;
     }
 
     public synchronized void resetPlayEvents(boolean first) {
@@ -73,9 +69,9 @@ public class DBPlayer {
             Then, keep rewinding the input text so already received
             tokens are displayed */
         if(first)
-            inputText.reset();
+            processor.reset();
         else
-            inputText.rewindAll();
+            processor.rewindAll();
 
         contextInfo.clear();
         markStack.clear();
@@ -206,33 +202,33 @@ public class DBPlayer {
     }
 
     public void playEnterRule(DBEventEnterRule event) {
-        debugger.pushRule(event.name, lastLocationLine, lastLocationPos);
-        inputText.removeAllLT();
+        debugger.playerPushRule(event.name);
+        processor.removeAllLT();
     }
 
     public void playExitRule(DBEventExitRule event) {
-        debugger.popRule(event.name);
-        inputText.removeAllLT();
+        debugger.playerPopRule(event.name);
+        processor.removeAllLT();
     }
 
     public void playEnterSubrule(DBEventEnterSubRule event) {
         contextInfo.enterSubrule(event.decision);
-        inputText.removeAllLT();
+        processor.removeAllLT();
     }
 
     public void playExitSubrule(DBEventExitSubRule event) {
         contextInfo.exitSubrule();
-        inputText.removeAllLT();
+        processor.removeAllLT();
     }
 
     public void playEnterDecision(DBEventEnterDecision event) {
         contextInfo.enterDecision(event.decision);
-        inputText.removeAllLT();
+        processor.removeAllLT();
     }
 
     public void playExitDecision(DBEventExitDecision event) {
         contextInfo.exitDecision();
-        inputText.removeAllLT();
+        processor.removeAllLT();
     }
 
     public void playEnterAlt(DBEventEnterAlt event) {
@@ -244,7 +240,7 @@ public class DBPlayer {
         if(event.token.getType() == Token.EOF)
             return;
 
-        inputText.LT(event.token);
+        processor.LT(event.token);
     }
 
     public void playConsumeToken(DBEventConsumeToken event) {
@@ -257,13 +253,13 @@ public class DBPlayer {
 
     public void playConsumeToken(Token token, boolean hidden) {
         if(resyncing > 0) {
-            inputText.consumeToken(token, DBInputText.TOKEN_DEAD);
+            processor.consumeToken(token, DBInputProcessor.TOKEN_DEAD);
             return;
         }
 
         /* If backtracking add token only */
         if(contextInfo.isBacktracking()) {
-            debugger.addToken(token);
+            debugger.playerConsumeToken(token);
             return;
         }
 
@@ -273,10 +269,10 @@ public class DBPlayer {
 
         /* Add only visible token */
         if(!hidden)
-            debugger.addToken(token);
+            debugger.playerConsumeToken(token);
 
         /* Consume the token */
-        inputText.consumeToken(token, hidden?DBInputText.TOKEN_HIDDEN:DBInputText.TOKEN_NORMAL);
+        processor.consumeToken(token, hidden?DBInputProcessor.TOKEN_HIDDEN:DBInputProcessor.TOKEN_NORMAL);
     }
 
     protected int lastLocationLine;
@@ -289,7 +285,9 @@ public class DBPlayer {
         // in the grammar (not needed)
         lastLocationLine = event.line;
         lastLocationPos = event.pos;
-        inputText.setLocation(lastLocationLine, lastLocationPos);
+
+        debugger.playerSetLocation(lastLocationLine, lastLocationPos);
+        processor.setLocation(lastLocationLine, lastLocationPos);
     }
 
     public void playLocation() {
@@ -304,11 +302,11 @@ public class DBPlayer {
 
     public void playMark(DBEventMark event) {
         contextInfo.mark(event.id);
-        markStack.push(new Integer(inputText.getCurrentTokenIndex()));
+        markStack.push(new Integer(processor.getCurrentTokenIndex()));
     }
 
     public void playRewind(DBEventRewind event) {
-        inputText.rewind(((Integer)markStack.peek()).intValue());
+        processor.rewind(((Integer)markStack.peek()).intValue());
         if(!event.rewindToLastMark()) {
             markStack.pop();
             contextInfo.rewind();
@@ -320,7 +318,7 @@ public class DBPlayer {
 
         /* Tell the debugger about the backtracking so the parse
         tree coloring can be properly done */
-        debugger.beginBacktrack(event.level);
+        debugger.playerBeginBacktrack(event.level);
     }
 
     public void playEndBacktrack(DBEventEndBacktrack event) {
@@ -328,11 +326,11 @@ public class DBPlayer {
 
         /* Tell the debugger about the backtracking so the parse
         tree coloring can be properly done */
-        debugger.endBacktrack(event.level, event.successful);
+        debugger.playerEndBacktrack(event.level, event.successful);
     }
 
     public void playRecognitionException(DBEventRecognitionException event) {
-        debugger.addException(event.e);
+        debugger.playerRecognitionException(event.e);
     }
 
     public void playBeginResync() {
@@ -344,27 +342,32 @@ public class DBPlayer {
     }
 
     public void playNilNode(DBEventNilNode event) {
-        debugger.astNilNode(event.id);
+        debugger.playerNilNode(event.id);
     }
 
     public void playCreateNode(DBEventCreateNode event) {
         if(event.tokenIndex == -1) {
             /** Imaginary token. Use the 'text' and 'type' info instead. */
-            debugger.astCreateNode(event.id, event.text, event.type);
-        } else
-            debugger.astCreateNode(event.id, inputText.getTokenInfoAtTokenIndex(event.tokenIndex).token);
+            debugger.playerCreateNode(event.id, event.text, event.type);
+        } else {
+            DBInputTextTokenInfo info = processor.getTokenInfoAtTokenIndex(event.tokenIndex);
+            if(info == null)
+                debugger.getConsole().println("No token info for token index "+event.tokenIndex);
+            else
+                debugger.playerCreateNode(event.id, info.token);
+        }
     }
 
     public void playBecomeRoot(DBEventBecomeRoot event) {
-        debugger.astBecomeRoot(event.newRootID, event.oldRootID);
+        debugger.playerBecomeRoot(event.newRootID, event.oldRootID);
     }
 
     public void playAddChild(DBEventAddChild event) {
-        debugger.astAddChild(event.rootID, event.childID);
+        debugger.playerAddChild(event.rootID, event.childID);
     }
 
     public void playSetTokenBoundaries(DBEventSetTokenBoundaries event) {
-        debugger.astSetTokenBoundaries(event.id, event.startIndex, event.stopIndex);
+        debugger.playerSetTokenBoundaries(event.id, event.startIndex, event.stopIndex);
     }
 
 }

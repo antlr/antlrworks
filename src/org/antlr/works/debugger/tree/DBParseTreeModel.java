@@ -51,6 +51,7 @@ public class DBParseTreeModel implements XJNotificationObserver {
 
     public Color lookaheadTokenColor;
     public TreeNode lastNode;
+    public int line, pos;
 
     public Debugger debugger;
 
@@ -88,6 +89,8 @@ public class DBParseTreeModel implements XJNotificationObserver {
 
         setLastNode(null);
         fireDataChanged();
+
+        line = pos = 0;
     }
 
     public void setLastNode(TreeNode node) {
@@ -98,7 +101,12 @@ public class DBParseTreeModel implements XJNotificationObserver {
         return lastNode;
     }
 
-    public void pushRule(String name, int line, int pos) {
+    public void setLocation(int line, int pos) {
+        this.line = line;
+        this.pos = pos;
+    }
+
+    public void pushRule(String name) {
         ParseTreeNode parentRuleNode = (ParseTreeNode)rules.peek();
 
         ParseTreeNode ruleNode = new ParseTreeNode(name);
@@ -130,6 +138,7 @@ public class DBParseTreeModel implements XJNotificationObserver {
     public void addToken(Token token) {
         ParseTreeNode ruleNode = (ParseTreeNode)rules.peek();
         ParseTreeNode elementNode = new ParseTreeNode(token, debugger.getGrammar().getANTLRGrammar());
+        elementNode.setPosition(line, pos);
         ruleNode.add(elementNode);
         addNodeToCurrentBacktrack(elementNode);
         setLastNode(elementNode);
@@ -138,6 +147,7 @@ public class DBParseTreeModel implements XJNotificationObserver {
     public void addException(Exception e) {
         ParseTreeNode ruleNode = (ParseTreeNode)rules.peek();
         ParseTreeNode errorNode = new ParseTreeNode(e);
+        errorNode.setPosition(line, pos);
         ruleNode.add(errorNode);
         addNodeToCurrentBacktrack(errorNode);
         setLastNode(errorNode);
@@ -168,6 +178,7 @@ public class DBParseTreeModel implements XJNotificationObserver {
     }
 
     public class ParseTreeNode extends DBTreeNode {
+
         protected String s;
         protected Exception e;
 

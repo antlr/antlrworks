@@ -1,7 +1,6 @@
-package org.antlr.works.debugger.events;
+package org.antlr.works.debugger.input;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.tree.DBTreeToken;
 /*
 
 [The "BSD licence"]
@@ -33,19 +32,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBEventConsumeToken extends DBEvent {
+public interface DBInputProcessor {
 
-    public Token token;
+    public static final int TOKEN_NORMAL = 1;
+    public static final int TOKEN_HIDDEN = 2;
+    public static final int TOKEN_DEAD = 3;
 
-    public DBEventConsumeToken(Token token) {
-        super(CONSUME_TOKEN);
-        this.token = token;
-    }
+    public void reset();
+    public void removeAllLT();
 
-    public String toString() {
-        if(token instanceof DBTreeToken)
-            return "Consume node "+token;
-        else
-            return "Consume "+token;
-    }
+    public void rewind(int i);
+    public void rewindAll();
+
+    public void LT(Token token);
+    public void consumeToken(Token token, int type);
+    public void setLocation(int line, int pos);
+
+    public int getCurrentTokenIndex();
+    public DBInputTextTokenInfo getTokenInfoAtTokenIndex(int index);
 }

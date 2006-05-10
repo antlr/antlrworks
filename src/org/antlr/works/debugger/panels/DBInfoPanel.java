@@ -5,7 +5,6 @@ import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -93,8 +92,6 @@ public class DBInfoPanel extends JPanel {
         bp.add(displayRuleButton);
 
         infoTable = new JTable();
-        //infoTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        infoTable.setDefaultRenderer(Integer.class, new InfoTableCellRenderer());
         setInfoTableModel(ruleTableDataModel);
 
         JScrollPane infoScrollPane = new JScrollPane(infoTable);
@@ -113,6 +110,7 @@ public class DBInfoPanel extends JPanel {
 
         if(infoTable.getModel() == eventTableDataModel) {
             infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setPreferredWidth(35);
+            infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setMaxWidth(60);
             infoTable.getColumnModel().getColumn(INFO_COLUMN_EVENT).setMinWidth(100);
             infoTable.getColumnModel().getColumn(INFO_COLUMN_SUBRULE).setMaxWidth(30);
             infoTable.getColumnModel().getColumn(INFO_COLUMN_DECISION).setMaxWidth(30);
@@ -219,7 +217,7 @@ public class DBInfoPanel extends JPanel {
 
         public Object getValueAt(int rowIndex, int columnIndex) {
             switch(columnIndex) {
-                case INFO_COLUMN_COUNT: return new Integer(rowIndex);
+                case INFO_COLUMN_COUNT: return String.valueOf(rowIndex);
                 case INFO_COLUMN_RULE: return rules.get(rowIndex);
             }
             return null;
@@ -265,12 +263,12 @@ public class DBInfoPanel extends JPanel {
 
         public Class getColumnClass(int columnIndex) {
             switch(columnIndex) {
-                case INFO_COLUMN_COUNT: return Integer.class;
+                case INFO_COLUMN_COUNT: return String.class;
                 case INFO_COLUMN_EVENT: return String.class;
-                case INFO_COLUMN_SUBRULE: return Integer.class;
-                case INFO_COLUMN_DECISION: return Integer.class;
-                case INFO_COLUMN_MARK: return Integer.class;
-                case INFO_COLUMN_BACKTRACK: return Integer.class;
+                case INFO_COLUMN_SUBRULE: return String.class;
+                case INFO_COLUMN_DECISION: return String.class;
+                case INFO_COLUMN_MARK: return String.class;
+                case INFO_COLUMN_BACKTRACK: return String.class;
             }
             return super.getColumnClass(columnIndex);
         }
@@ -278,7 +276,7 @@ public class DBInfoPanel extends JPanel {
         public Object getValueAt(int rowIndex, int columnIndex) {
             EventInfo info = (EventInfo) events.get(rowIndex);
             switch(columnIndex) {
-                case INFO_COLUMN_COUNT: return new Integer(rowIndex);
+                case INFO_COLUMN_COUNT: return String.valueOf(rowIndex);
                 case INFO_COLUMN_EVENT: return info.event;
                 case INFO_COLUMN_SUBRULE: return info.getSubrule();
                 case INFO_COLUMN_DECISION: return info.getDecision();
@@ -309,19 +307,19 @@ public class DBInfoPanel extends JPanel {
             }
 
             public Object getSubrule() {
-                return subrule==-1?null:new Integer(subrule);
+                return subrule==-1?null:String.valueOf(subrule);
             }
 
             public Object getDecision() {
-                return decision==-1?null:new Integer(decision);
+                return decision==-1?null:String.valueOf(decision);
             }
 
             public Object getMark() {
-                return mark==-1?null:new Integer(mark);
+                return mark==-1?null:String.valueOf(mark);
             }
 
             public Object getBacktrack() {
-                return backtrack==-1?null:new Integer(backtrack);
+                return backtrack==-1?null:String.valueOf(backtrack);
             }
 
             public String getTextForExport(int value) {
@@ -344,23 +342,6 @@ public class DBInfoPanel extends JPanel {
                 sb.append(getTextForExport(backtrack));
                 return sb.toString();
             }
-        }
-    }
-
-    public class InfoTableCellRenderer extends DefaultTableCellRenderer {
-
-        public InfoTableCellRenderer() {
-        }
-
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            if(column == INFO_COLUMN_COUNT) {
-                setHorizontalAlignment(JLabel.LEFT);
-                setHorizontalTextPosition(SwingConstants.LEFT);
-            } else {
-                setHorizontalAlignment(JLabel.CENTER);
-                setHorizontalTextPosition(SwingConstants.CENTER);
-            }
-            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 

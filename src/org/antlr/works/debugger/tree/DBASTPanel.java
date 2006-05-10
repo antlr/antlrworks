@@ -81,8 +81,13 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
         tablesSplitPane = createSplitPane();
         tableTreeSplitPane = createSplitPane();
 
-        tablesSplitPane.setLeftComponent(new JScrollPane(rulesTable));
-        tablesSplitPane.setRightComponent(new JScrollPane(rootsTable));
+        JScrollPane rulesScrollPane = new JScrollPane(rulesTable);
+        rulesScrollPane.setWheelScrollingEnabled(true);
+        tablesSplitPane.setLeftComponent(rulesScrollPane);
+
+        JScrollPane rootsScrollPane = new JScrollPane(rootsTable);
+        rootsScrollPane.setWheelScrollingEnabled(true);
+        tablesSplitPane.setRightComponent(rootsScrollPane);
 
         tableTreeSplitPane.setLeftComponent(tablesSplitPane);
         tableTreeSplitPane.setRightComponent(treePanel);

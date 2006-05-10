@@ -413,8 +413,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             // Use an array rather than a single string because white-space
             // are not correctly handled in a single string (why?)
             remoteParserProcess = Runtime.getRuntime().exec(new String[] { "java", "-classpath", classPath, remoteParserClassName});
-            new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher", debugger).start();
-            new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher", debugger).start();
+            new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher", debugger.getOutputPanel()).start();
+            new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher", debugger.getOutputPanel()).start();
         } catch (IOException e) {
             reportError("Cannot launch the remote parser:\n"+e.getLocalizedMessage());
             return false;

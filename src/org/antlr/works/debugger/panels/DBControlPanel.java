@@ -208,7 +208,7 @@ public class DBControlPanel extends JPanel {
         tokenButton.setFocusable(false);
         tokenButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                debugger.getPlayer().toggleInputTextTokensBox();
+                debugger.toggleInputTextTokensBox();
                 Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
             }
         });

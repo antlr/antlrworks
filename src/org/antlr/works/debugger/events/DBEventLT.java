@@ -1,6 +1,7 @@
 package org.antlr.works.debugger.events;
 
 import org.antlr.runtime.Token;
+import org.antlr.works.debugger.tree.DBTreeToken;
 /*
 
 [The "BSD licence"]
@@ -44,7 +45,16 @@ public class DBEventLT extends DBEvent {
     }
 
     public String toString() {
-        return "LT "+index +" ("+token.getText()+")";
+        StringBuffer sb = new StringBuffer();
+        if(token instanceof DBTreeToken)
+            sb.append("LT node  ");
+        else
+            sb.append("LT ");
+        sb.append(index);
+        sb.append(" (");
+        sb.append(token.getText());
+        sb.append(")");
+        return sb.toString();
     }
 
 }

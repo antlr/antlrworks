@@ -5,6 +5,7 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.DebugEventListener;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.events.DBEventFactory;
+import org.antlr.works.debugger.tree.DBTreeToken;
 /*
 
 [The "BSD licence"]
@@ -165,15 +166,15 @@ public class DBRecorderEventListener implements DebugEventListener {
     /** Tree parsing */
 
     public void consumeNode(int ID, String text, int type) {
+        /** Create a special kind of token holding information about the tree node. This allow
+         * us to use the same method for token parser and tree parser.
+         */
+        event(DBEventFactory.createConsumeToken(new DBTreeToken(ID, text, type)));
     }
 
     public void LT(int i, int ID, String text, int type) {
-    }
-
-    public void goUp() {
-    }
-
-    public void goDown() {
+        /** See consumeNode() comment */
+        event(DBEventFactory.createLT(i, new DBTreeToken(ID, text, type)));
     }
 
 }

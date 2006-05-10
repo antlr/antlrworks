@@ -104,9 +104,9 @@ public class DBEvent {
 
     public String toString() {
         switch(type) {
-            case BEGIN_RESYNC:     return "Begin resync";
-            case END_RESYNC:     return "End resync";
-            case COMMENCE:    return "Commence";
+            case BEGIN_RESYNC:  return "Begin resync";
+            case END_RESYNC:    return "End resync";
+            case COMMENCE:      return "Commence";
             case TERMINATE:     return "Terminate";
         }
         return super.toString();

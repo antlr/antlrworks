@@ -121,8 +121,11 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable {
         b.add(new JLabel("Zoom"));
         b.add(createZoomSlider());
 
+        JScrollPane sp = new JScrollPane(view);
+        sp.setWheelScrollingEnabled(true);
+
         panel.add(b, BorderLayout.NORTH);
-        panel.add(new JScrollPane(view), BorderLayout.CENTER);
+        panel.add(sp, BorderLayout.CENTER);
     }
 
     protected JSlider createZoomSlider() {

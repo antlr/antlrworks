@@ -40,11 +40,12 @@ import org.antlr.runtime.Token;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.events.DBEvent;
-import org.antlr.works.debugger.input.DBInputText;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
 import org.antlr.works.debugger.local.DBLocal;
 import org.antlr.works.debugger.panels.DBControlPanel;
 import org.antlr.works.debugger.panels.DBInfoPanel;
+import org.antlr.works.debugger.panels.DBInputPanel;
+import org.antlr.works.debugger.panels.DBOutputPanel;
 import org.antlr.works.debugger.remote.DBRemoteConnectDialog;
 import org.antlr.works.debugger.tivo.DBPlayer;
 import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
@@ -62,9 +63,6 @@ import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
-import org.antlr.works.utils.StreamWatcherDelegate;
-import org.antlr.works.utils.TextPane;
-import org.antlr.works.utils.TextUtils;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -77,7 +75,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Debugger extends EditorTab implements StreamWatcherDelegate {
+public class Debugger extends EditorTab {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
 
@@ -88,16 +86,15 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     public static final boolean DEBUG = false;
 
     protected JPanel panel;
-    protected TextPane inputTextPane;
-    protected TextPane outputTextPane;
+    protected DBInputPanel inputPanel;
+    protected DBOutputPanel outputPanel;
+
     protected JTabbedPane treeTabbedPane;
 
     protected JPanel treeInfoCanvas;
     protected JComponent treePanel;
 
     protected JPanel ioCanvas;
-    protected JComponent inputPanel;
-    protected JComponent outputPanel;
 
     protected DBParseTreePanel parseTreePanel;
     protected DBParseTreeModel parseTreeModel;
@@ -114,8 +111,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
     protected Set breakpoints;
 
-    protected DBInputText inputText;
-    protected DBLocal debuggerLocal;
+    protected DBLocal local;
     protected DBRecorder recorder;
     protected DBPlayer player;
 
@@ -140,8 +136,8 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         controlPanel = new DBControlPanel(this);
         treePanel = createTreePanel();
 
-        inputPanel = createInputPanel();
-        outputPanel = createOutputPanel();
+        inputPanel = new DBInputPanel(this);
+        outputPanel = new DBOutputPanel(this);
 
         treeInfoPanelSplitPane = new JSplitPane();
         treeInfoPanelSplitPane.setBorder(null);
@@ -168,10 +164,9 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         panel.add(controlPanel, BorderLayout.NORTH);
         panel.add(ioTreeSplitPane, BorderLayout.CENTER);
 
-        inputText = new DBInputText(this, inputTextPane);
-        debuggerLocal = new DBLocal(this);
+        local = new DBLocal(this);
         recorder = new DBRecorder(this);
-        player = new DBPlayer(this, inputText);
+        player = new DBPlayer(this);
 
         ioCanvas.add(inputPanel, BorderLayout.CENTER);
         treeInfoCanvas.add(treePanel, BorderLayout.CENTER);
@@ -225,8 +220,16 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         return ioCanvas.getComponent(0) == ioSplitPane;
     }
 
+    public void toggleInputTextTokensBox() {
+        inputPanel.toggleInputTextTokensBox();
+    }
+
     public void selectConsoleTab() {
         editor.selectConsoleTab();
+    }
+
+    public DBOutputPanel getOutputPanel() {
+        return outputPanel;
     }
 
     public DBRecorder getRecorder() {
@@ -251,40 +254,8 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
 
     public void close() {
         debuggerStop(true);
-        player.close();
+        inputPanel.close();
         parseTreeModel.close();
-    }
-
-    public JComponent createInputPanel() {
-        inputTextPane = new TextPane();
-        inputTextPane.setBackground(Color.white);
-        inputTextPane.setBorder(null);
-        inputTextPane.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        inputTextPane.setText("");
-        inputTextPane.setEditable(false);
-
-        TextUtils.createTabs(inputTextPane);
-
-        JScrollPane textScrollPane = new JScrollPane(inputTextPane);
-        textScrollPane.setWheelScrollingEnabled(true);
-
-        return textScrollPane;
-    }
-
-    public JComponent createOutputPanel() {
-        outputTextPane = new TextPane();
-        outputTextPane.setBackground(Color.white);
-        outputTextPane.setBorder(null);
-        outputTextPane.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        outputTextPane.setText("");
-        outputTextPane.setEditable(false);
-
-        TextUtils.createTabs(outputTextPane);
-
-        JScrollPane textScrollPane = new JScrollPane(outputTextPane);
-        textScrollPane.setWheelScrollingEnabled(true);
-
-        return textScrollPane;
     }
 
     public JComponent createTreePanel() {
@@ -312,7 +283,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     }
 
     public void breaksOnEvent() {
-        inputText.updateOnBreakEvent();
+        inputPanel.updateOnBreakEvent();
         parseTreePanel.updateOnBreakEvent();
         astPanel.updateOnBreakEvent();
         infoPanel.updateOnBreakEvent();
@@ -344,7 +315,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     }
 
     public boolean isBreakpointAtToken(Token token) {
-        return inputText.isBreakpointAtToken(token);
+        return inputPanel.isBreakpointAtToken(token);
     }
 
     public void selectToken(Token token, int line, int pos) {
@@ -353,14 +324,17 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
              * line and character number.
              */
 
-            DBInputTextTokenInfo info = inputText.getTokenInfoForToken(token);
-            setGrammarPosition(info.line, info.charInLine);
+            DBInputTextTokenInfo info = inputPanel.getTokenInfoForToken(token);
+            if(info == null)
+                setGrammarPosition(line, pos);
+            else
+                setGrammarPosition(info.line, info.charInLine);
         } else {
             /** If token is null, the line and pos will be provided as parameters */
             setGrammarPosition(line, pos);
         }
 
-        inputText.selectToken(token);
+        inputPanel.selectToken(token);
         parseTreePanel.selectToken(token);
         astPanel.selectToken(token);
     }
@@ -411,17 +385,17 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         if(needsToGenerateGrammar())
             buildAndDebug = true;
 
-        if(buildAndDebug || !debuggerLocal.isRequiredFilesExisting()) {
+        if(buildAndDebug || !local.isRequiredFilesExisting()) {
             DialogGenerate dialog = new DialogGenerate(getWindowComponent());
             dialog.setDebugOnly();
             if(dialog.runModal() == XJDialog.BUTTON_OK) {
-                debuggerLocal.setOutputPath(dialog.getOutputPath());
-                debuggerLocal.prepareAndLaunch(BUILD_AND_DEBUG);
+                local.setOutputPath(dialog.getOutputPath());
+                local.prepareAndLaunch(BUILD_AND_DEBUG);
 
                 grammarGenerated();
             }
         } else {
-            debuggerLocal.prepareAndLaunch(DEBUG);
+            local.prepareAndLaunch(DEBUG);
         }
     }
 
@@ -449,6 +423,10 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         }
 
         queryGrammarBreakpoints();
+
+        inputPanel.prepareForGrammar(getGrammar());
+        player.setInputBuffer(inputPanel.getInputBuffer());
+
         recorder.connect(address, port);
     }
 
@@ -490,7 +468,7 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
     public void debuggerStop(boolean force) {
         if(recorder.getStatus() == DBRecorder.STATUS_STOPPING) {
             if(force || XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES) {
-                debuggerLocal.forceStop();
+                local.forceStop();
                 recorder.stop();
             }
         } else
@@ -554,55 +532,59 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
         breaksOnEvent();
     }
 
-    public void pushRule(String ruleName, int line, int pos) {
+    public void playerSetLocation(int line, int pos) {
+        parseTreeModel.setLocation(line, pos);
+    }
+
+    public void playerPushRule(String ruleName) {
         infoPanel.pushRule(ruleName);
-        parseTreeModel.pushRule(ruleName, line, pos);
+        parseTreeModel.pushRule(ruleName);
         astModel.pushRule(ruleName);
     }
 
-    public void popRule(String ruleName) {
+    public void playerPopRule(String ruleName) {
         infoPanel.popRule();
         parseTreeModel.popRule();
         astModel.popRule();
     }
 
-    public void addToken(Token token) {
+    public void playerConsumeToken(Token token) {
         parseTreeModel.addToken(token);
     }
 
-    public void addException(Exception e) {
+    public void playerRecognitionException(Exception e) {
         parseTreeModel.addException(e);
     }
 
-    public void beginBacktrack(int level) {
+    public void playerBeginBacktrack(int level) {
         parseTreeModel.beginBacktrack(level);
     }
 
-    public void endBacktrack(int level, boolean success) {
+    public void playerEndBacktrack(int level, boolean success) {
         parseTreeModel.endBacktrack(level, success);
     }
 
-    public void astNilNode(int id) {
+    public void playerNilNode(int id) {
         astModel.nilNode(id);
     }
 
-    public void astCreateNode(int id, Token token) {
+    public void playerCreateNode(int id, Token token) {
         astModel.createNode(id, token);
     }
 
-    public void astCreateNode(int id, String text, int type) {
+    public void playerCreateNode(int id, String text, int type) {
         astModel.createNode(id, new ClassicToken(type, text));
     }
 
-    public void astBecomeRoot(int newRootID, int oldRootID) {
+    public void playerBecomeRoot(int newRootID, int oldRootID) {
         astModel.becomeRoot(newRootID, oldRootID);
     }
 
-    public void astAddChild(int rootID, int childID) {
+    public void playerAddChild(int rootID, int childID) {
         astModel.addChild(rootID, childID);
     }
 
-    public void astSetTokenBoundaries(int id, int startIndex, int stopIndex) {
+    public void playerSetTokenBoundaries(int id, int startIndex, int stopIndex) {
         /** Currently ignored */
     }
 
@@ -619,24 +601,12 @@ public class Debugger extends EditorTab implements StreamWatcherDelegate {
             public void run() {
                 restorePreviousGrammarAttributeSet();
                 editor.getTextPane().setEditable(true);
-                inputText.stop();
+                inputPanel.stop();
                 running = false;
                 editor.refreshMainMenuBar();
                 XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STOPPED);
             }
         });
-    }
-
-    public void streamWatcherDidStarted() {
-        outputTextPane.setText("");
-    }
-
-    public void streamWatcherDidReceiveString(String string) {
-        outputTextPane.setText(outputTextPane.getText()+string);
-    }
-
-    public void streamWatcherException(Exception e) {
-        editor.getConsole().print(e);
     }
 
     public boolean canExportToBitmap() {

@@ -1,7 +1,6 @@
-package org.antlr.works.debugger.events;
+package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.tree.DBTreeToken;
 /*
 
 [The "BSD licence"]
@@ -33,19 +32,59 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBEventConsumeToken extends DBEvent {
+public class DBTreeToken extends Token {
 
-    public Token token;
+    public int ID;
+    public String text;
+    public int type;
 
-    public DBEventConsumeToken(Token token) {
-        super(CONSUME_TOKEN);
-        this.token = token;
+    public DBTreeToken(int ID, String text, int type) {
+        this.ID = ID;
+        this.text = text;
+        this.type = type;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int ttype) {
+        this.type = ttype;
+    }
+
+    public int getLine() {
+        return 0;
+    }
+
+    public void setLine(int line) {
+    }
+
+    public int getCharPositionInLine() {
+        return 0;
+    }
+
+    public void setCharPositionInLine(int pos) {
+    }
+
+    public int getChannel() {
+        return 0;
+    }
+
+    public void setChannel(int channel) {
+    }
+
+    public int getTokenIndex() {
+        return 0;
+    }
+
+    public void setTokenIndex(int index) {
     }
 
     public String toString() {
-        if(token instanceof DBTreeToken)
-            return "Consume node "+token;
-        else
-            return "Consume "+token;
+        return "["+text+"/, <"+type+">, "+ID+"]";
     }
 }

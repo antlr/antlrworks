@@ -111,6 +111,10 @@ public class EngineGrammar {
         return errors;
     }
 
+    public boolean isTreeParserGrammar() {
+        return getType() == GrammarSyntaxName.TREEPARSER;
+    }
+
     public boolean hasGrammar() {
         switch(getType()) {
             case GrammarSyntaxName.COMBINED:

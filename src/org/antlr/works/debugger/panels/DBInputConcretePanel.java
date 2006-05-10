@@ -1,7 +1,10 @@
-package org.antlr.works.debugger.events;
+package org.antlr.works.debugger.panels;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.tree.DBTreeToken;
+import org.antlr.works.debugger.input.DBInputProcessor;
+import org.antlr.works.debugger.input.DBInputTextTokenInfo;
+
+import javax.swing.*;
 /*
 
 [The "BSD licence"]
@@ -33,19 +36,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBEventConsumeToken extends DBEvent {
+public interface DBInputConcretePanel {
 
-    public Token token;
+    public void close();
+    public void stop();
 
-    public DBEventConsumeToken(Token token) {
-        super(CONSUME_TOKEN);
-        this.token = token;
-    }
+    public JComponent getComponent();
+    public DBInputProcessor getInputProcessor();
 
-    public String toString() {
-        if(token instanceof DBTreeToken)
-            return "Consume node "+token;
-        else
-            return "Consume "+token;
-    }
+    public void toggleInputTextTokensBox();
+    public boolean isBreakpointAtToken(Token token);
+
+    public void selectToken(Token token);
+    public DBInputTextTokenInfo getTokenInfoForToken(Token token);
+
+    public void updateOnBreakEvent();
+
 }
