@@ -111,7 +111,7 @@ public class DBTreeNode extends AWTreeNode {
 
     public String toString() {
         if(token != null)
-            return token.getText()+" <"+grammar.getTokenDisplayName(token.getType())+">";
+            return token.getText(); //+" <"+grammar.getTokenDisplayName(token.getType())+">"
         else
             return "?";
     }
