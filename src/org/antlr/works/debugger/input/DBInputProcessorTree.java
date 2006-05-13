@@ -209,6 +209,14 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
         }
     }
 
+    public boolean isBreakpointAtToken(Token token) {
+        NodeInfo info = getNode(token);
+        if(info == null || info.node == null)
+            return false;
+        else
+            return info.node.breakpoint;
+    }
+
     public class NodeInfo {
 
         /** Token */
@@ -227,8 +235,23 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     }
     public class InputTreeNode extends DBTreeNode {
 
+        public boolean breakpoint = false;
+
         public InputTreeNode(DBTreeToken token, Grammar grammar) {
             super(token, grammar);
+        }
+
+        public void toggleBreakpoint() {
+            breakpoint = !breakpoint;
+            /** Repaint the node to reflect the new state */
+            treePanel.getGraphView().repaintNode(this);
+        }
+
+        public Color getColor() {
+            if(breakpoint)
+                return Color.red;
+            else
+                return super.getColor();
         }
 
         public String toString() {

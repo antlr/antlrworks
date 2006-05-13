@@ -96,7 +96,7 @@ public class DBParseTreePanel extends JPanel implements DBParseTreeModelListener
         updateParseTree();
     }
 
-    public void awTreeDidSelectTreeNode(TreeNode node) {
+    public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey) {
         DBTreeNode n = (DBTreeNode) node;
         debugger.selectToken(n.token, n.line, n.pos);
     }

@@ -34,6 +34,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface AWTreePanelDelegate {
-    public void awTreeDidSelectTreeNode(TreeNode node);
+    public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey);
     public JPopupMenu awTreeGetContextualMenu();
 }

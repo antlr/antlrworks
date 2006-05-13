@@ -199,6 +199,21 @@ public class AWTreeGraphView extends GView {
         repaint();
     }
 
+    /** This method is used to repaint a node by applying its color to
+     * its corresponding GElement.
+     */
+    public void repaintNode(TreeNode node) {
+        GElementNode element = (GElementNode)treeNodeToGElementMap.get(node);
+        if(element == null)
+            return;
+
+        if(node instanceof AWTreeNode) {
+            Color nodeColor = ((AWTreeNode)node).getColor();
+            element.setColor(nodeColor);
+            element.setLabelColor(nodeColor);
+        }
+    }
+
     public void scrollNodeToVisible(TreeNode node) {
         GElementNode element = (GElementNode)treeNodeToGElementMap.get(node);
         if(element == null)

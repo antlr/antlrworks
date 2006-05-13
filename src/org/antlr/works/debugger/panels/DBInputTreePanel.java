@@ -7,7 +7,6 @@ import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.input.DBInputProcessor;
 import org.antlr.works.debugger.input.DBInputProcessorTree;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
-import org.antlr.works.debugger.tree.DBTreeNode;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
@@ -80,8 +79,7 @@ public class DBInputTreePanel implements DBInputConcretePanel, AWTreePanelDelega
     }
 
     public boolean isBreakpointAtToken(Token token) {
-        /** Not applicable here. Ignore */
-        return false;
+        return processorTree.isBreakpointAtToken(token);
     }
 
     public void selectToken(Token token) {
@@ -96,8 +94,11 @@ public class DBInputTreePanel implements DBInputConcretePanel, AWTreePanelDelega
         processorTree.updateTreePanel();
     }
 
-    public void awTreeDidSelectTreeNode(TreeNode node) {
-        DBTreeNode n = (DBTreeNode) node;
+    public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey) {
+        DBInputProcessorTree.InputTreeNode n = (DBInputProcessorTree.InputTreeNode) node;
+        if(shiftKey)
+            n.toggleBreakpoint();
+
         debugger.selectToken(n.getToken(), n.getLine(), n.getPosition());
     }
 

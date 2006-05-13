@@ -206,7 +206,7 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
         }
     }
 
-    public void awTreeDidSelectTreeNode(TreeNode node) {
+    public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey) {
         DBASTModel.ASTNode n = (DBASTModel.ASTNode)node;
         debugger.selectToken(n.token, n.token.getLine(), n.token.getCharPositionInLine());
     }

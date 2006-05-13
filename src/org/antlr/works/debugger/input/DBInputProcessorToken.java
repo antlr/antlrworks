@@ -383,12 +383,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     }
 
     public boolean isBreakpointAtToken(Token token) {
-        for(Iterator iter = inputBreakpointIndexes.iterator(); iter.hasNext();) {
-            Integer index = (Integer)iter.next();
-            if(index.intValue() == token.getTokenIndex())
-                return true;
-        }
-        return false;
+        return inputBreakpointIndexes.contains(new Integer(token.getTokenIndex()));
     }
 
     /** This method highlights the token at the specified index
@@ -439,8 +434,8 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
             if(info == null)
                 return;
 
-            boolean controlKey = (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK;
-            if(e.getButton() == MouseEvent.BUTTON1 && !controlKey) {
+            boolean shiftKey = (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) == MouseEvent.SHIFT_DOWN_MASK;
+            if(e.getButton() == MouseEvent.BUTTON1 && !shiftKey) {
                 debugger.selectToken(info.token, info.line, info.charInLine);
             } else {
                 Integer index = new Integer(info.token.getTokenIndex());

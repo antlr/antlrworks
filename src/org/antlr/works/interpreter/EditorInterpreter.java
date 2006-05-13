@@ -321,7 +321,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         return getContainer();
     }
 
-    public void awTreeDidSelectTreeNode(TreeNode node) {
+    public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey) {
         // not implemented
     }
 

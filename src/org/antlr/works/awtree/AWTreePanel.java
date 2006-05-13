@@ -1,6 +1,5 @@
 package org.antlr.works.awtree;
 
-import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.gview.object.GElement;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.utils.IconManager;
@@ -225,7 +224,7 @@ public class AWTreePanel extends JPanel {
         return treeModel.getRoot();
     }
 
-    public GView getGraphView() {
+    public AWTreeGraphView getGraphView() {
         return treeGraphView;
     }
 
@@ -288,8 +287,10 @@ public class AWTreePanel extends JPanel {
                 if(node == null)
                     return;
 
+                boolean shiftKey = (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) == MouseEvent.SHIFT_DOWN_MASK;
                 if(delegate != null)
-                    delegate.awTreeDidSelectTreeNode(node);
+                    delegate.awTreeDidSelectTreeNode(node, shiftKey);
+
                 selectNode(node);
             }
 
