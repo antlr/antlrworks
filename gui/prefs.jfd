@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<java version="1.5.0_05" class="java.beans.XMLDecoder"> 
+<java version="1.5.0_06" class="java.beans.XMLDecoder"> 
  <object class="com.ktauber.form.model.FormModel"> 
   <void property="contentType"> 
    <string>form/swing</string> 
@@ -1985,7 +1985,7 @@
                <class>com.jgoodies.forms.layout.FormLayout</class> 
                <void method="setProperty"> 
                 <string>$columnSpecs</string> 
-                <string>10dlu, labelcompgap, right:default, labelcompgap, default, labelcompgap, 10dlu</string> 
+                <string>10dlu, labelcompgap, right:default, labelcompgap, default, labelcompgap, 10dlu, labelcompgap, right:default, labelcompgap, max(default;20dlu), labelcompgap, default, labelcompgap, 10dlu</string> 
                </void> 
                <void method="setProperty"> 
                 <string>$rowSpecs</string> 
@@ -2034,6 +2034,75 @@
                 <void method="setProperty"> 
                  <string>gridX</string> 
                  <int>5</int> 
+                </void> 
+                <void method="setProperty"> 
+                 <string>gridY</string> 
+                 <int>3</int> 
+                </void> 
+               </object> 
+              </void> 
+              <void method="add"> 
+               <object class="com.ktauber.form.model.FormComponent"> 
+                <string>javax.swing.JLabel</string> 
+                <void method="setProperty"> 
+                 <string>text</string> 
+                 <string>Remote parser launch time-out:</string> 
+                </void> 
+                <void property="name"> 
+                 <string>label34</string> 
+                </void> 
+               </object> 
+               <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+                <class>com.jgoodies.forms.layout.CellConstraints</class> 
+                <void method="setProperty"> 
+                 <string>gridX</string> 
+                 <int>9</int> 
+                </void> 
+                <void method="setProperty"> 
+                 <string>gridY</string> 
+                 <int>3</int> 
+                </void> 
+               </object> 
+              </void> 
+              <void method="add"> 
+               <object class="com.ktauber.form.model.FormComponent"> 
+                <string>javax.swing.JTextField</string> 
+                <void method="setProperty"> 
+                 <string>text</string> 
+                 <string>5</string> 
+                </void> 
+                <void property="name"> 
+                 <string>debugLaunchTimeoutField</string> 
+                </void> 
+               </object> 
+               <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+                <class>com.jgoodies.forms.layout.CellConstraints</class> 
+                <void method="setProperty"> 
+                 <string>gridX</string> 
+                 <int>11</int> 
+                </void> 
+                <void method="setProperty"> 
+                 <string>gridY</string> 
+                 <int>3</int> 
+                </void> 
+               </object> 
+              </void> 
+              <void method="add"> 
+               <object class="com.ktauber.form.model.FormComponent"> 
+                <string>javax.swing.JLabel</string> 
+                <void method="setProperty"> 
+                 <string>text</string> 
+                 <string>seconds</string> 
+                </void> 
+                <void property="name"> 
+                 <string>label35</string> 
+                </void> 
+               </object> 
+               <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+                <class>com.jgoodies.forms.layout.CellConstraints</class> 
+                <void method="setProperty"> 
+                 <string>gridX</string> 
+                 <int>13</int> 
                 </void> 
                 <void method="setProperty"> 
                  <string>gridY</string> 

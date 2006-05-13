@@ -2,6 +2,7 @@ package org.antlr.works.debugger.panels;
 
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
+import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 import org.antlr.works.debugger.tivo.DBRecorder;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
@@ -69,8 +70,6 @@ public class DBControlPanel extends JPanel {
         this.debugger = debugger;
 
         Box box = Box.createHorizontalBox();
-        box.add(createRevealTokensButton());
-        box.add(Box.createHorizontalStrut(20));
         box.add(stopButton = createStopButton());
         box.add(Box.createHorizontalStrut(20));
         box.add(goToStartButton = createGoToStartButton());
@@ -202,19 +201,6 @@ public class DBControlPanel extends JPanel {
         return button;
     }
 
-    public JButton createRevealTokensButton() {
-        JButton tokenButton = new JButton(IconManager.shared().getIconTokens());
-        tokenButton.setToolTipText("Reveal tokens in input text");
-        tokenButton.setFocusable(false);
-        tokenButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                debugger.toggleInputTextTokensBox();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
-            }
-        });
-        return tokenButton;
-    }
-
     public JComponent createInfoLabelPanel() {
         infoLabel = new JLabel();
         return infoLabel;
@@ -242,15 +228,27 @@ public class DBControlPanel extends JPanel {
     }
 
     public void updateStatusInfo() {
-        String info = "-";
+        StringBuffer info = new StringBuffer();
+
+        String status = "-";
         switch(debugger.getRecorder().getStatus()) {
-            case DBRecorder.STATUS_STOPPED: info = "Stopped"; break;
-            case DBRecorder.STATUS_STOPPING: info = "Stopping"; break;
-            case DBRecorder.STATUS_LAUNCHING: info = "Launching"; break;
-            case DBRecorder.STATUS_RUNNING: info = "Running"; break;
-            case DBRecorder.STATUS_BREAK: info = "Break on "+DBEvent.getEventName(debugger.getRecorder().getStoppedOnEvent()); break;
+            case DBRecorder.STATUS_STOPPED: status = "Stopped"; break;
+            case DBRecorder.STATUS_STOPPING: status = "Stopping"; break;
+            case DBRecorder.STATUS_LAUNCHING: status = "Launching"; break;
+            case DBRecorder.STATUS_RUNNING: status = "Running"; break;
+            case DBRecorder.STATUS_BREAK: status = "Break on "+DBEvent.getEventName(debugger.getRecorder().getStoppedOnEvent()); break;
         }
-        infoLabel.setText("Status: "+info);
+
+        info.append(status);
+
+        DBPlayerContextInfo context = debugger.getPlayer().getContextInfo();
+        if(context.isBacktracking()) {
+            info.append(" (backtrack ");
+            info.append(context.getBacktrack());
+            info.append(")");
+        }
+
+        infoLabel.setText(info.toString());
         updateInterface();
     }
 

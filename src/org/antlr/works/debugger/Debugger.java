@@ -220,8 +220,12 @@ public class Debugger extends EditorTab {
         return ioCanvas.getComponent(0) == ioSplitPane;
     }
 
-    public void toggleInputTextTokensBox() {
-        inputPanel.toggleInputTextTokensBox();
+    public void toggleInputTokensBox() {
+        inputPanel.toggleInputTokensBox();
+    }
+
+    public boolean isInputTokenVisible() {
+        return inputPanel.isInputTokensBoxVisible();
     }
 
     public void selectConsoleTab() {
@@ -520,6 +524,7 @@ public class Debugger extends EditorTab {
 
             c++;
         }
+        //System.out.println(lineIndex+", "+pos+"="+(line.position+(c-1)));
         return line.position+(c-1);
     }
 
@@ -667,6 +672,5 @@ public class Debugger extends EditorTab {
         data.put(KEY_SPLITPANE_C, new Integer(treeInfoPanelSplitPane.getDividerLocation()));
         return data;
     }
-
 
 }

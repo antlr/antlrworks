@@ -208,6 +208,7 @@ public class AWPrefsDialog extends XJPanel {
 
     public void prepareDebuggerTab() {
         getPreferences().bindToPreferences(debugDefaultLocalPortField, AWPrefs.PREF_DEBUG_LOCALPORT, AWPrefs.DEFAULT_DEBUG_LOCALPORT);
+        getPreferences().bindToPreferences(debugLaunchTimeoutField, AWPrefs.PREF_DEBUG_LAUNCHTIMEOUT, AWPrefs.DEFAULT_DEBUG_LAUNCHTIMEOUT);
 
         getPreferences().bindToPreferences(debugNonConsumedColorPanel, AWPrefs.PREF_NONCONSUMED_TOKEN_COLOR, AWPrefs.DEFAULT_NONCONSUMED_TOKEN_COLOR);
         getPreferences().bindToPreferences(debugConsumedColorPanel, AWPrefs.PREF_CONSUMED_TOKEN_COLOR, AWPrefs.DEFAULT_CONSUMED_TOKEN_COLOR);
@@ -367,6 +368,9 @@ public class AWPrefsDialog extends XJPanel {
         tabDebugger = new JPanel();
         label33 = new JLabel();
         debugDefaultLocalPortField = new JTextField();
+        label34 = new JLabel();
+        debugLaunchTimeoutField = new JTextField();
+        label35 = new JLabel();
         label12 = new JLabel();
         debugNonConsumedColorPanel = new JPanel();
         label13 = new JLabel();
@@ -574,8 +578,8 @@ public class AWPrefsDialog extends XJPanel {
                         tabEditor.add(foldingButton, cc.xywh(5, 11, 3, 1));
 
                         //---- actionsFoldingAnchorsButton ----
-                        actionsFoldingAnchorsButton.setText("Enable actions folding");
-                        tabEditor.add(actionsFoldingAnchorsButton, cc.xywh(7, 13, 5, 1));
+                        actionsFoldingAnchorsButton.setText("Display actions anchors");
+                        tabEditor.add(actionsFoldingAnchorsButton, cc.xy(7, 13));
 
                         //---- label1 ----
                         label1.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -885,6 +889,14 @@ public class AWPrefsDialog extends XJPanel {
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                                 FormFactory.DEFAULT_COLSPEC,
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(Sizes.dluX(10)),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                new ColumnSpec("max(default;20dlu)"),
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                FormFactory.DEFAULT_COLSPEC,
+                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                                 new ColumnSpec(Sizes.dluX(10))
                             },
                             new RowSpec[] {
@@ -914,6 +926,18 @@ public class AWPrefsDialog extends XJPanel {
                         //---- debugDefaultLocalPortField ----
                         debugDefaultLocalPortField.setText("0xC001");
                         tabDebugger.add(debugDefaultLocalPortField, cc.xy(5, 3));
+
+                        //---- label34 ----
+                        label34.setText("Remote parser launch time-out:");
+                        tabDebugger.add(label34, cc.xy(9, 3));
+
+                        //---- debugLaunchTimeoutField ----
+                        debugLaunchTimeoutField.setText("5");
+                        tabDebugger.add(debugLaunchTimeoutField, cc.xy(11, 3));
+
+                        //---- label35 ----
+                        label35.setText("seconds");
+                        tabDebugger.add(label35, cc.xy(13, 3));
 
                         //---- label12 ----
                         label12.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -1265,6 +1289,9 @@ public class AWPrefsDialog extends XJPanel {
     private JPanel tabDebugger;
     private JLabel label33;
     private JTextField debugDefaultLocalPortField;
+    private JLabel label34;
+    private JTextField debugLaunchTimeoutField;
+    private JLabel label35;
     private JLabel label12;
     private JPanel debugNonConsumedColorPanel;
     private JLabel label13;
@@ -1302,7 +1329,4 @@ public class AWPrefsDialog extends XJPanel {
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
-
-
-
 }

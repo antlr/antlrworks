@@ -76,15 +76,15 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable {
         return AWPrefs.getDOTToolPath();
     }
 
+    public static final String dotInfo = "The 'dot' tool is used to render directed graph. It can be downloaded from www.graphviz.org.";
+
     public boolean launch() {
         if(getDOTToolPath() == null) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the graph because the DOT tool path is not defined.\n"+
-                    "It can be defined in the Preferences.");
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the graph because the 'dot' tool path is not defined. The path can be set in the Preferences.\n"+dotInfo);
             return false;
         }
         if(!new File(getDOTToolPath()).exists()) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the graph because the DOT tool does not exist at the specified path.\n" +
-                    "Check the tool path in the Preferences.");
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the graph because the 'dot' tool does not exist at the specified path. Check the tool path in the Preferences.\n"+dotInfo);
             return false;
         }
 

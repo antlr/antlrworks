@@ -112,7 +112,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
         textPane.repaint();
     }
 
-    public boolean isDrawTokensBox() {
+    public boolean isTokensBoxVisible() {
         return drawTokensBox;
     }
 
@@ -197,7 +197,6 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     public void addToken(Token token) {
         int index = token.getTokenIndex();
         if(index == -1) {
-            // @todo can this happen?
             System.err.println("Negative index in DBInputText.addToken() for token "+token);
             return;
         }

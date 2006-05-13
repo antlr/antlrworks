@@ -82,7 +82,11 @@ public class DBInputTokenPanel implements DBInputConcretePanel {
     }
 
     public void toggleInputTextTokensBox() {
-        processorToken.setDrawTokensBox(!processorToken.isDrawTokensBox());
+        processorToken.setDrawTokensBox(!processorToken.isTokensBoxVisible());
+    }
+
+    public boolean isInputTokensBoxVisible() {
+        return processorToken.isTokensBoxVisible();
     }
 
     public boolean isBreakpointAtToken(Token token) {

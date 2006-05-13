@@ -102,13 +102,14 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_SHOW_GENERATED_LEXER_CODE = 72;
     public static final int MI_SHOW_RULE_GENCODE = 73;
 
-    // Run
+    // Debugger
     public static final int MI_RUN_INTERPRETER = 80;
     public static final int MI_DEBUG = 81;
     public static final int MI_BUILD_AND_DEBUG = 82;
     public static final int MI_DEBUG_REMOTE = 83;
     public static final int MI_DEBUG_SHOW_INFO_PANEL = 84;
     public static final int MI_DEBUG_SHOW_OUTPUT_PANEL = 85;
+    public static final int MI_DEBUG_SHOW_INPUT_TOKENS = 86;
 
     // SCM
     public static final int MI_P4_EDIT = 90;
@@ -220,6 +221,8 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu.addSeparator();
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showInformation"), MI_DEBUG_SHOW_INFO_PANEL, this));
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showOutput"), MI_DEBUG_SHOW_OUTPUT_PANEL, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showInputTokens"), MI_DEBUG_SHOW_INPUT_TOKENS, this));
 
         menubar.addCustomMenu(menu);
     }
@@ -520,13 +523,18 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_DEBUG_SHOW_INFO_PANEL:
-                item.setTitle(editor.menuRun.isInfoPanelVisible()?
+                item.setTitle(editor.menuDebugger.isInfoPanelVisible()?
                         resourceBundle.getString("menu.item.hideInformation") : resourceBundle.getString("menu.item.showInformation"));
                 break;
 
             case MI_DEBUG_SHOW_OUTPUT_PANEL:
-                item.setTitle(editor.menuRun.isOutputPanelVisible()?
+                item.setTitle(editor.menuDebugger.isOutputPanelVisible()?
                         resourceBundle.getString("menu.item.hideOutput") : resourceBundle.getString("menu.item.showOutput"));
+                break;
+
+            case MI_DEBUG_SHOW_INPUT_TOKENS:
+                item.setTitle(editor.menuDebugger.isInputTokenVisible()?
+                        resourceBundle.getString("menu.item.hideInputTokens") : resourceBundle.getString("menu.item.showInputTokens"));
                 break;
         }
     }
@@ -739,27 +747,32 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuRun(int itemTag) {
         switch(itemTag) {
             case MI_RUN_INTERPRETER:
-                editor.menuRun.runInterpreter();
+                editor.menuDebugger.runInterpreter();
                 break;
             case MI_DEBUG:
-                editor.menuRun.debug();
+                editor.menuDebugger.debug();
                 break;
 
             case MI_BUILD_AND_DEBUG:
-                editor.menuRun.buildAndDebug();
+                editor.menuDebugger.buildAndDebug();
                 break;
 
             case MI_DEBUG_REMOTE:
-                editor.menuRun.debugRemote();
+                editor.menuDebugger.debugRemote();
                 break;
 
             case MI_DEBUG_SHOW_INFO_PANEL:
-                editor.menuRun.toggleInformationPanel();
+                editor.menuDebugger.toggleInformationPanel();
                 editor.refreshMainMenuBar();
                 break;
 
             case MI_DEBUG_SHOW_OUTPUT_PANEL:
-                editor.menuRun.toggleOutputPanel();
+                editor.menuDebugger.toggleOutputPanel();
+                editor.refreshMainMenuBar();
+                break;
+
+            case MI_DEBUG_SHOW_INPUT_TOKENS:
+                editor.menuDebugger.toggleInputTokens();
                 editor.refreshMainMenuBar();
                 break;
         }

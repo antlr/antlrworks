@@ -40,6 +40,7 @@ import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.events.DBEventConsumeToken;
 import org.antlr.works.debugger.events.DBEventLocation;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.NumberSet;
 
@@ -337,8 +338,12 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         cancelled = false;
 
         boolean connected = false;
-        int retryCount = MAX_RETRY;
-        while(retryCount-- > 0 && !cancelled) {
+        boolean showProgress = false;
+
+        long t = System.currentTimeMillis();
+        long timeout = AWPrefs.getDebugLaunchTimeout()*1000;
+
+        while((System.currentTimeMillis()-t) < timeout && !cancelled) {
             listener = null;
             try {
                 listener = new RemoteDebugEventSocketListener(eventListener,
@@ -352,8 +357,10 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
                 break;
             }
 
-            if(retryCount == MAX_RETRY-1)
+            if((System.currentTimeMillis()-t) >= 2 && !showProgress) {
                 showProgress();
+                showProgress = true;
+            }
 
             try {
                 Thread.sleep(500);

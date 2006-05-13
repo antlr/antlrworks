@@ -208,6 +208,9 @@ public class AWPrefs {
     public static final String PREF_DEBUG_LOCALPORT = "PREF_DEBUG_LOCALPORT";
     public static final int DEFAULT_DEBUG_LOCALPORT = 0xC001;
 
+    public static final String PREF_DEBUG_LAUNCHTIMEOUT = "PREF_DEBUG_LAUNCHTIMEOUT";
+    public static final int DEFAULT_DEBUG_LAUNCHTIMEOUT = 5;
+
     // Other
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
     public static final String PREF_SERVER_ID = "PREF_SERVER_ID";
@@ -265,6 +268,10 @@ public class AWPrefs {
 
     public static int getDebugDefaultLocalPort() {
         return getPreferences().getInt(PREF_DEBUG_LOCALPORT, DEFAULT_DEBUG_LOCALPORT);
+    }
+
+    public static int getDebugLaunchTimeout() {
+        return getPreferences().getInt(PREF_DEBUG_LAUNCHTIMEOUT, DEFAULT_DEBUG_LAUNCHTIMEOUT);
     }
 
     public static void setOutputPath(String path) {

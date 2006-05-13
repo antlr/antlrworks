@@ -35,9 +35,9 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.stats.Statistics;
 
-public class MenuRun extends MenuAbstract {
+public class MenuDebugger extends MenuAbstract {
 
-    public MenuRun(CEditorGrammar editor) {
+    public MenuDebugger(CEditorGrammar editor) {
         super(editor);
     }
 
@@ -79,4 +79,12 @@ public class MenuRun extends MenuAbstract {
         return editor.debugger.isOutputPanelVisible();
     }
 
+    public void toggleInputTokens() {
+        editor.debugger.toggleInputTokensBox();
+        Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
+    }
+
+    public boolean isInputTokenVisible() {
+        return editor.debugger.isInputTokenVisible();
+    }
 }

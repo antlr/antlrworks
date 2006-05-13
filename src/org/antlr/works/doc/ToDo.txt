@@ -3,16 +3,12 @@
 
 - pop r<n> when exiting subrule
 - check breakpoint
-- make AST panel "detachable"
 - make breakpoint in grammar and stop around this location (line, column)
 - step over a rule/subrule
-- display "Backtracking level" a cote du combo box pour etre plus explicite a l'utilisateur
 - be able to search the generated grammar too
-- use only one tab per generation (or other operation that can be uniquely identified)
-- links to the different DOT implementation per system so user know what to do the first time
-- debug parser launch time-out in prefs?
 
 * Prio 2
+- make AST panel "detachable"
 - tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
 - build and debug with custom class path and command line arguments (to launch mantra for example)
     -> the command-line argument will launch the parser with any arguments it needs (we don't care)

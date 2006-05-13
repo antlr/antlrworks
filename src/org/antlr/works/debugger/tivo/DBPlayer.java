@@ -61,6 +61,10 @@ public class DBPlayer {
         this.processor = processor;
     }
 
+    public DBPlayerContextInfo getContextInfo() {
+        return contextInfo;
+    }
+    
     public synchronized void resetPlayEvents(boolean first) {
         debugger.resetGUI();
 

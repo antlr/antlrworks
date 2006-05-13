@@ -82,8 +82,12 @@ public class DBInputPanel extends JPanel {
         return currentPanel.getInputProcessor();
     }
 
-    public void toggleInputTextTokensBox() {
+    public void toggleInputTokensBox() {
         currentPanel.toggleInputTextTokensBox();
+    }
+
+    public boolean isInputTokensBoxVisible() {
+        return currentPanel.isInputTokensBoxVisible();
     }
 
     public void updateOnBreakEvent() {

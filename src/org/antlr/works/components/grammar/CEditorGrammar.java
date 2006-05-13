@@ -131,7 +131,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public MenuRefactor menuRefactor;
     public MenuGoTo menuGoTo;
     public MenuGenerate menuGenerate;
-    public MenuRun menuRun;
+    public MenuDebugger menuDebugger;
     public MenuSCM menuSCM;
     public MenuExport menuExport;
 
@@ -231,7 +231,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         menuRefactor = new MenuRefactor(this);
         menuGoTo = new MenuGoTo(this);
         menuGenerate = new MenuGenerate(this);
-        menuRun = new MenuRun(this);
+        menuDebugger = new MenuDebugger(this);
         menuSCM = new MenuSCM(this);
         menuExport = new MenuExport(this);
     }
@@ -406,9 +406,30 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void addTab(EditorTab tab) {
-        tabs.add(tab);
-        tabbedPane.add(tab.getTabName(), tab.getTabComponent());
+        /** Replace any existing tab with this one if the title matches. Don't
+         * replace the first three tabs because they are always visible.
+         */
+        int index = getSimilarTab(tab);
+        if(index > 3) {
+            tabs.remove(index);
+            tabs.add(index, tab);
+            tabbedPane.removeTabAt(index);
+            tabbedPane.insertTab(tab.getTabName(), null, tab.getTabComponent(), null, index);
+        } else {
+            tabs.add(tab);
+            tabbedPane.add(tab.getTabName(), tab.getTabComponent());
+        }
+
         selectTab(tab.getTabComponent());
+    }
+
+    public int getSimilarTab(EditorTab tab) {
+        for (int i = 0; i < tabs.size(); i++) {
+            EditorTab t = (EditorTab) tabs.get(i);
+            if(t.getTabName().equals(tab.getTabName()))
+                return i;
+        }
+        return -1;
     }
 
     public EditorTab getSelectedTab() {

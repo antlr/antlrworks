@@ -45,6 +45,8 @@ public interface DBInputConcretePanel {
     public DBInputProcessor getInputProcessor();
 
     public void toggleInputTextTokensBox();
+    public boolean isInputTokensBoxVisible();
+
     public boolean isBreakpointAtToken(Token token);
 
     public void selectToken(Token token);

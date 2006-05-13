@@ -78,6 +78,10 @@ public class DBInputTreePanel implements DBInputConcretePanel, AWTreePanelDelega
         /** Not applicable here. Ignore */
     }
 
+    public boolean isInputTokensBoxVisible() {
+        return false;
+    }
+
     public boolean isBreakpointAtToken(Token token) {
         return processorTree.isBreakpointAtToken(token);
     }
