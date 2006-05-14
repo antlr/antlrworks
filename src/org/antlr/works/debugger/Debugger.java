@@ -507,25 +507,7 @@ public class Debugger extends EditorTab {
             return -1;
 
         ATELine line = (ATELine)lines.get(lineIndex-1);
-        String t = editor.getText();
-
-        // ANTLR gives a position using a tab size of 8. I have to
-        // convert this to the current editor tab size
-        // @todo if ANTLR changes the tab size, adjust here
-        int antlr_tab = 8;
-        int antlr_pos = 0;
-        int c = 0;
-        while(antlr_pos<pos) {
-            if(t.charAt(line.position+c) == '\t') {
-                antlr_pos = ((antlr_pos/antlr_tab)+1)*antlr_tab;
-            } else {
-                antlr_pos++;
-            }
-
-            c++;
-        }
-        //System.out.println(lineIndex+", "+pos+"="+(line.position+(c-1)));
-        return line.position+(c-1);
+        return line.position+pos-1;
     }
 
     public void addEvent(DBEvent event, DBPlayerContextInfo info) {
