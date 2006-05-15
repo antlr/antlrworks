@@ -296,7 +296,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         rulesTree.setDragEnabled(true);
 
         rulesScrollPane = new JScrollPane(rulesTree);
-        rulesScrollPane.setBorder(null);
         rulesScrollPane.setWheelScrollingEnabled(true);
 
         // Assemble

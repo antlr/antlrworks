@@ -16,6 +16,7 @@ Version 1.0ea9 - ...
 - debugger: message if remote parser's grammar file does not match current file
 - tab are reused for the same operation rather than populating
 - remote parser launch time-out can be specified in the preferences
+- syntax: added exception clause of rule
 
 - fixed a bug where ANTLRWorks would freeze when replacing literals with token label
 - fixed a bug where stats about programming and language implementation experience were inverted

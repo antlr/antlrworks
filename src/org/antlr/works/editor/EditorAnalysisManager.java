@@ -85,15 +85,21 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
     public String getAnalysisDescription() {
         StringBuffer sb = new StringBuffer();
         if(numberOfErrors == 0)
-            sb.append("No errors");
+            sb.append("No error");
         else {
             sb.append(numberOfErrors);
-            sb.append(" errors found");
+            if(numberOfErrors > 1)
+                sb.append(" errors found");
+            else
+                sb.append(" error found");
         }
         if(numberOfWarnings > 0) {
             sb.append("\n");
             sb.append(numberOfWarnings);
-            sb.append(" warnings found");
+            if(numberOfWarnings > 1)
+                sb.append(" warnings found");
+            else
+                sb.append(" warning found");
         }
         return sb.toString();
     }

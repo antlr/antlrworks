@@ -256,6 +256,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         // ("protected" | "public" | "private" | "fragment")? rulename_id '!'?
         // ARG_ACTION? ("returns" ARG_ACTION)? throwsSpec? optionsSpec? ruleScopeSpec?
         // ("@init" ACTION)? ":" ... ";"
+        // exceptionGroup etc... (see antlr.g)
 
         ATEToken start = T(0);
 
@@ -314,6 +315,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         while(nextToken()) {
             switch(T(0).type) {
                 case GrammarSyntaxLexer.TOKEN_SEMI:
+                    matchRuleExceptionGroup();
                     rule.end = T(0);
                     tokenName.type = GrammarSyntaxLexer.TOKEN_RULE;
                     if(references.size() > refOldSize)
@@ -371,6 +373,20 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             }
         }
         return null;
+    }
+
+    public void matchRuleExceptionGroup() {
+        if(!matchOptional("exception"))
+            return;
+
+        // Optional ARG_ACTION
+        if(isBLOCK(1))
+            nextToken();
+
+        while(matchOptional("catch")) {
+            nextToken();    // ARG_ACTION: []
+            nextToken();    // ACTION: { }
+        }
     }
 
     public void matchRewriteSyntax() {
@@ -439,6 +455,14 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 return new GrammarSyntaxGroup(rules.size()-1, token);
         } else
             return null;
+    }
+
+    public boolean matchOptional(String t) {
+        if(isID(1, t)) {
+            nextToken();
+            return true;
+        } else
+            return false;
     }
 
     public boolean isLPAREN(int index) {
