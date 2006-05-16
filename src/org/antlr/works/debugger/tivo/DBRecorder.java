@@ -34,6 +34,7 @@ package org.antlr.works.debugger.tivo;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
+import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
 import org.antlr.works.debugger.Debugger;
@@ -437,7 +438,10 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         //Tool.VERSION
         //System.out.println(listener.version);
 
-        if(!debugger.getGrammar().getFileName().equals(listener.grammarFileName)) {
+        String grammarFileName = debugger.getGrammar().getFileName();
+        String remoteParserGrammarFileName = XJUtils.getLastPathComponent(listener.grammarFileName);
+
+        if(!grammarFileName.equals(remoteParserGrammarFileName)) {
             String message = "Warning: the grammar used by the remote parser is not the same ("+listener.grammarFileName+").";
             XJAlert.display(debugger.getWindowComponent(), "Grammar Mismatch", message);
         }
