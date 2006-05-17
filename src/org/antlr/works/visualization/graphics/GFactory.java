@@ -62,6 +62,9 @@ public class GFactory {
     }
 
     public List buildGraphsForRule(EngineGrammar grammar, String rule, List errors) throws Exception {
+        if(grammar == null)
+            return null;
+        
         if(errors == null || errors.size() == 0)
             return buildGraphsForRule(grammar, rule);
         else

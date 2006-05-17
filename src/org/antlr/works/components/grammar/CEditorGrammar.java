@@ -969,7 +969,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         // Called when the document associated file has changed on the disk
         int oldCursorPosition = getCaretPosition();
         getDocument().reload();
-        setCaretPosition(oldCursorPosition);
+        setCaretPosition(Math.min(oldCursorPosition, getText().length()));
     }
 
     /** AutoCompletionMenuDelegate method: return the list of corresponding words

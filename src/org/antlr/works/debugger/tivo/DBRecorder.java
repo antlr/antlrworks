@@ -442,7 +442,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         String remoteParserGrammarFileName = XJUtils.getLastPathComponent(listener.grammarFileName);
 
         if(!grammarFileName.equals(remoteParserGrammarFileName)) {
-            String message = "Warning: the grammar used by the remote parser is not the same ("+listener.grammarFileName+").";
+            String message = "Warning: the grammar used by the remote parser is not the same ("+remoteParserGrammarFileName+").";
             XJAlert.display(debugger.getWindowComponent(), "Grammar Mismatch", message);
         }
     }

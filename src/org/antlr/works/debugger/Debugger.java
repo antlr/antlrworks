@@ -588,6 +588,7 @@ public class Debugger extends EditorTab {
             public void run() {
                 restorePreviousGrammarAttributeSet();
                 editor.getTextPane().setEditable(true);
+                editor.getTextPane().requestFocus();
                 inputPanel.stop();
                 running = false;
                 editor.refreshMainMenuBar();
