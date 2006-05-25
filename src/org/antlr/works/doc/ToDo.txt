@@ -2,6 +2,8 @@
 * Prio 1
 
 - null exception when generating grammar without saving it (no file name defined)
+- handle # in generated lexer file
+
 - pop r<n> when exiting subrule
 - check breakpoint
 - make breakpoint in grammar and stop around this location (line, column)

@@ -33,6 +33,7 @@ package org.antlr.works.menu;
 
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
+import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.*;
@@ -44,10 +45,11 @@ import org.antlr.works.syntax.GrammarSyntaxRule;
 import javax.swing.*;
 import java.util.List;
 
-public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDOTTabDelegate, CheckGrammarDelegate {
+public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDOTTabDelegate, CheckGrammarDelegate, XJDialogProgressDelegate {
 
     protected XJDialogProgress progress;
     protected CheckGrammar checkGrammar;
+    protected boolean checkingGrammar;
 
     public MenuGrammar(CEditorGrammar editor) {
         super(editor);
@@ -168,15 +170,17 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     public void checkGrammarDidBegin() {
+        checkingGrammar = true;
     }
 
     public void checkGrammarDidEnd() {
+        checkingGrammar = false;
         hideProgress();
     }
 
     protected void showProgress(String title) {
         progress.setInfo(title);
-        progress.setCancellable(false);
+        progress.setCancellable(true);
         progress.setIndeterminate(true);
         progress.display();
     }
@@ -185,4 +189,8 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
         progress.close();
     }
 
+    public void dialogDidCancel() {
+        if(checkingGrammar)
+            checkGrammar.cancel();
+    }
 }

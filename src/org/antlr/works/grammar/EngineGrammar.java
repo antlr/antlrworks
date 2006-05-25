@@ -232,6 +232,14 @@ public class EngineGrammar {
     }
 
     public void analyze() throws Exception {
+        Grammar g = getANTLRGrammar();
+        if(g == null)
+            return;
+
+        g.checkAllRulesForLeftRecursion();
+        if(ErrorManager.doNotAttemptAnalysis())
+            return;
+
         createGrammars();
 
         if(!grammarAnalyzeDirty)
@@ -244,7 +252,7 @@ public class EngineGrammar {
 
         try {
             ErrorListener.shared().clear();
-            getANTLRGrammar().createLookaheadDFAs();
+            g.createLookaheadDFAs();
             if(getType() == GrammarSyntaxName.COMBINED) {
                 // If the grammar is combined, analyze also the lexer
                 Grammar lexer = getLexerGrammar();
@@ -269,6 +277,12 @@ public class EngineGrammar {
         }
 
         grammarAnalyzeDirty = false;
+    }
+
+    public void cancel() {
+        Grammar g = getANTLRGrammar();
+        if(g != null)
+            g.abortNFAToDFAConverstion();
     }
 
     protected void buildNonDeterministicErrors() {

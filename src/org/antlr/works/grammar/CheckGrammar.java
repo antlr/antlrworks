@@ -48,6 +48,10 @@ public class CheckGrammar implements Runnable {
         new Thread(this).start();
     }
 
+    public void cancel() {
+        editor.getEngineGrammar().cancel();
+    }
+
     public void run() {
         editor.getConsole().setMode(Console.MODE_VERBOSE);
         delegate.checkGrammarDidBegin();
