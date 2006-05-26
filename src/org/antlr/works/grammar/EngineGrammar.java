@@ -282,7 +282,7 @@ public class EngineGrammar {
     public void cancel() {
         Grammar g = getANTLRGrammar();
         if(g != null)
-            g.abortNFAToDFAConverstion();
+            g.abortNFAToDFAConversion();
     }
 
     protected void buildNonDeterministicErrors() {
