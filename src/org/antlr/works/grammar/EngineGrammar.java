@@ -45,6 +45,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.GrammarSyntaxName;
 import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 
 import javax.swing.*;
@@ -231,12 +232,42 @@ public class EngineGrammar {
         lexerGrammar.createNFAs();
     }
 
+    public void printLeftRecursionToConsole(List rules) {
+        StringBuffer info = new StringBuffer();
+        info.append("Aborting because the following rules are mutually left-recursive:");
+        for (int i = 0; i < rules.size(); i++) {
+            Set rulesSet = (Set) rules.get(i);
+            info.append("\n    ");
+            info.append(rulesSet);
+        }
+        editor.getConsole().println(info.toString(), Console.LEVEL_ERROR);
+    }
+
+    public void markLeftRecursiveRules(List rules) {
+        // 'rules' is a list of set of rules given by ANTLR
+        for (int i = 0; i < rules.size(); i++) {
+            Set rulesSet = (Set) rules.get(i);
+            for (Iterator iterator = rulesSet.iterator(); iterator.hasNext();) {
+                String name = (String) iterator.next();
+                GrammarSyntaxRule r = editor.rules.getRuleWithName(name);
+                if(r == null)
+                    continue;
+                r.setLeftRecursiveRulesSet(rulesSet);
+            }
+        }
+    }
+
     public void analyze() throws Exception {
         Grammar g = getANTLRGrammar();
         if(g == null)
             return;
 
-        g.checkAllRulesForLeftRecursion();
+        List rules = g.checkAllRulesForLeftRecursion();
+        if(!rules.isEmpty()) {
+            printLeftRecursionToConsole(rules);
+            markLeftRecursiveRules(rules);
+        }
+
         if(ErrorManager.doNotAttemptAnalysis())
             return;
 

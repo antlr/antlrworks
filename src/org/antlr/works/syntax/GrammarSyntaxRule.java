@@ -10,6 +10,7 @@ import org.antlr.works.grammar.EngineGrammarError;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 /*
 
 [The "BSD licence"]
@@ -53,7 +54,10 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
     public boolean breakpoint = false;
 
     public boolean lexer = false;
+    // Flag if a rule has a single left recursion that can be removed by ANTLRWorks
     public boolean hasLeftRecursion = false;
+    // Set of rules that are mutually left recursive (cannot be fixed by ANTLRWorks)
+    public Set leftRecursiveRulesSet;
 
     public List errors;
     protected GrammarSyntaxParser parser;
@@ -186,6 +190,14 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
 
     public boolean isExpanded() {
         return expanded;
+    }
+
+    public void setLeftRecursiveRulesSet(Set rulesSet) {
+        leftRecursiveRulesSet = rulesSet;
+    }
+
+    public Set getLeftRecursiveRulesSet() {
+        return leftRecursiveRulesSet;
     }
 
     public boolean hasLeftRecursion() {
@@ -359,6 +371,7 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
         this.ignored = oldRule.ignored;
         this.expanded = oldRule.expanded;
         this.breakpoint = oldRule.breakpoint;
+        this.leftRecursiveRulesSet = oldRule.leftRecursiveRulesSet;
     }
 
 }

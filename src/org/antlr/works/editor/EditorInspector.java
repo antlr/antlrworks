@@ -12,6 +12,7 @@ import org.antlr.works.syntax.GrammarSyntaxToken;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 /*
 
 [The "BSD licence"]
@@ -62,6 +63,7 @@ public class EditorInspector {
     public List getWarnings() {
         List warnings = new ArrayList();
         discoverLeftRecursionRules(warnings);
+        discoverLeftRecursiveRulesSet(warnings);
         return warnings;
     }
 
@@ -177,7 +179,26 @@ public class EditorInspector {
             Item item = new ItemLeftRecursion();
             item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
                     rule.start.startLineNumber, Color.blue,
-                    "Left recursion for rule \""+rule.name+"\"");
+                    "Rule \""+rule.name+"\" is left-recursive");
+            items.add(item);
+        }
+    }
+
+    protected void discoverLeftRecursiveRulesSet(List items) {
+        List rules = editor.rules.getRules();
+        if(rules == null)
+            return;
+
+        for(int index=0; index<rules.size(); index++) {
+            GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
+            Set rulesSet = rule.getLeftRecursiveRulesSet();
+            if(rulesSet == null || rulesSet.size() < 2)
+                continue;
+
+            Item item = new Item();
+            item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
+                    rule.start.startLineNumber, Color.blue,
+                    "Rule \""+rule.name+"\" is mutually left-recursive with other rules (see Console)");
             items.add(item);
         }
     }
