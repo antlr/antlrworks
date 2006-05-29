@@ -41,6 +41,7 @@ import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxGroup;
 import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.tool.Grammar;
 
 import javax.swing.*;
 import java.util.List;
@@ -59,7 +60,7 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
 
     public void showTokensSD() {
         Statistics.shared().recordEvent(Statistics.EVENT_SHOW_TOKEN_SD);
-        editor.visual.setRule(new GrammarSyntaxRule("Tokens"), true);
+        editor.visual.setRule(new GrammarSyntaxRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);
         editor.makeBottomComponentVisible();
     }
 
