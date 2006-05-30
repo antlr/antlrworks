@@ -61,10 +61,13 @@ public class DBParseTreePanel extends JPanel implements DBParseTreeModelListener
     public void setModel(DBParseTreeModel model) {
         this.model = model;
         this.model.addListener(this);
+        // @todo use later when the model will be fully optimized
+        //treePanel.setAWTreeModel(model);
     }
 
     public void clear() {
         model.clear();
+        treePanel.clear();
     }
 
     public void updateOnBreakEvent() {

@@ -1,5 +1,6 @@
 package org.antlr.works.components.grammar;
 
+import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
@@ -911,6 +912,13 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         grammarChanged();
         editorCache.invalidate();
         getDocument().changeDone();
+    }
+
+    public boolean ensureDocumentSaved() {
+        if(getDocument().getDocumentPath() == null)
+            return getDocument().performSave(false) == XJApplication.YES;
+        else
+            return true;
     }
 
     public void grammarChanged() {

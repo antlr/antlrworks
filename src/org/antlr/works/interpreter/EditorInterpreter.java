@@ -298,6 +298,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
             treeModel.setTree(t);
 
             awTreePanel.setRoot((TreeNode)treeModel.getRoot());
+            awTreePanel.refresh();
         }
     }
 

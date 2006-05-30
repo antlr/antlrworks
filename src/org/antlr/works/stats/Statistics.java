@@ -68,13 +68,14 @@ public class Statistics {
     public static final int EVENT_GOTO_NEXT_BRKPT = 27;
 
     /* Menu Grammar */
-    public static final int EVENT_SHOW_TOKEN_SD = 40;
-    public static final int EVENT_SHOW_DECISION_DFA = 41;
-    public static final int EVENT_SHOW_RULE_DEPENDENCY = 42;
-    public static final int EVENT_INSERT_RULE_TEMPLATE = 43;
-    public static final int EVENT_RULE_GROUP = 44;
-    public static final int EVENT_RULE_UNGROUP = 45;
-    public static final int EVENT_CHECK_GRAMMAR = 46;
+    public static final int EVENT_SHOW_TOKENS_SD = 40;
+    public static final int EVENT_SHOW_TOKENS_DFA = 41;
+    public static final int EVENT_SHOW_DECISION_DFA = 42;
+    public static final int EVENT_SHOW_RULE_DEPENDENCY = 44;
+    public static final int EVENT_INSERT_RULE_TEMPLATE = 45;
+    public static final int EVENT_RULE_GROUP = 45;
+    public static final int EVENT_RULE_UNGROUP = 46;
+    public static final int EVENT_CHECK_GRAMMAR = 47;
 
     /* Menu Refactor */
     public static final int EVENT_RENAME = 60;
@@ -163,7 +164,8 @@ public class Statistics {
         register(EVENT_GOTO_PREV_BRKPT, "Goto previous breakpoint");
         register(EVENT_GOTO_NEXT_BRKPT, "Goto next breakpoint");
 
-        register(EVENT_SHOW_TOKEN_SD, "Show tokens syntax diagram");
+        register(EVENT_SHOW_TOKENS_SD, "Show tokens syntax diagram");
+        register(EVENT_SHOW_TOKENS_DFA, "Show tokens DFA");
         register(EVENT_SHOW_DECISION_DFA, "Show decision DFA");
         register(EVENT_SHOW_RULE_DEPENDENCY, "Show rule dependency");
         register(EVENT_INSERT_RULE_TEMPLATE, "Insert rule from template");

@@ -174,7 +174,9 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable {
         p.waitFor();
     }
 
-    public abstract void willRun();
+    public void willRun() {
+
+    }
 
     public void run() {
         error = null;

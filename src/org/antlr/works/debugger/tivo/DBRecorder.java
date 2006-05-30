@@ -39,6 +39,7 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
+import org.antlr.works.debugger.events.DBEventConsumeHiddenToken;
 import org.antlr.works.debugger.events.DBEventConsumeToken;
 import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.prefs.AWPrefs;
@@ -73,6 +74,10 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     protected NumberSet breakEvents = new NumberSet();
     protected int stoppedOnEvent = DBEvent.NO_EVENT;
     protected boolean ignoreBreakpoints = false;
+
+    protected int lastTokenIndexEventNumber;
+    protected int currentTokenIndexEventNumber;
+    protected int currentTokenIndex;
 
     protected DBRecorderEventListener eventListener;
     protected RemoteDebugEventSocketListener listener;
@@ -124,6 +129,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         else
             events.clear();
         position = -1;
+        currentTokenIndex = -1;
         remoteParserStateWarned = false;
     }
 
@@ -447,21 +453,48 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         }
     }
 
-    /** Check any error coming from the remote parser */
+    /** Check any error coming from the remote parser. Return true if the debugger needs
+      to be paused
+    */
 
-    public void checkRemoteParserState() {
+    public boolean checkRemoteParserState() {
         if(remoteParserStateWarned)
-            return;
+            return false;
 
         if(listener.tokenIndexesAreInvalid()) {
             remoteParserStateWarned = true;
 
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    String message = "Invalid token indexes. Make sure that the remote parser implements the getTokenIndex() method of Token. The indexes must be unique for each consumed token.";
+                    String message = "Invalid token indexes (current index is "+currentTokenIndex+" at event "+currentTokenIndexEventNumber+" while the same index was used at event "+lastTokenIndexEventNumber+"). Make sure that the remote parser implements the getTokenIndex() method of Token. The indexes must be unique for each consumed token.";
                     XJAlert.display(debugger.getWindowComponent(), "Invalid Token Indexes", message);
                 }
             });
+
+            return true;
+        }
+        return false;
+    }
+
+    /** This method keeps track of the last consumed index in order to display
+     * useful information if an invalid index is detected
+     */
+
+    public void recordIndexes(DBEvent event) {
+        Token t = null;
+        if(event instanceof DBEventConsumeToken) {
+            DBEventConsumeToken e = (DBEventConsumeToken) event;
+            t = e.token;
+        }
+        if(event instanceof DBEventConsumeHiddenToken) {
+            DBEventConsumeHiddenToken e = (DBEventConsumeHiddenToken) event;
+            t = e.token;
+        }
+
+        if(t != null) {
+            lastTokenIndexEventNumber = currentTokenIndexEventNumber;
+            currentTokenIndexEventNumber = events.size()-1;
+            currentTokenIndex = t.getTokenIndex();
         }
     }
 
@@ -471,6 +504,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public synchronized void listenerEvent(DBEvent event) {
         events.add(event);
+        recordIndexes(event);
         setPositionToEnd();
 
         switch(getStatus()) {
@@ -488,9 +522,6 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         }
 
         if(isRunning()) {
-
-            checkRemoteParserState();
-
             switch(event.type) {
                 case DBEvent.TERMINATE:
                     setStoppedOnEvent(DBEvent.TERMINATE);
@@ -509,7 +540,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
                     break;
 
                 default:
-                    if(isOnBreakEvent())
+                    if(checkRemoteParserState() || isOnBreakEvent())
                         breaksOnEvent(true);
                     break;
             }

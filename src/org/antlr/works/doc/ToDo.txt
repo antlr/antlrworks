@@ -1,17 +1,14 @@
 
 * Prio 1
 
-- null exception when generating grammar without saving it (no file name defined)
-- handle # in generated lexer file
-
-- pop r<n> when exiting subrule
-- check breakpoint
-- make breakpoint in grammar and stop around this location (line, column)
 - step over a rule/subrule
-- be able to search the generated grammar too
+- make AST panel "detachable"
+- finish "Show Tokens DFA"
 
 * Prio 2
-- make AST panel "detachable"
+- optimize tree drawing using incremental model
+- make breakpoint in grammar and stop around this location (line, column)
+- be able to search the generated grammar too
 - tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
 - build and debug with custom class path and command line arguments (to launch mantra for example)
     -> the command-line argument will launch the parser with any arguments it needs (we don't care)
@@ -47,6 +44,7 @@
 Enable project document: set prefs PREF_PROJET_DOCUMENT to true
 DOT: /Applications/Graphviz.app/Contents/MacOS/dot
 JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\javac
+SD path width: modify constants in GPath and GPathGroup
 
 * Issues *
 

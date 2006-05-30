@@ -77,13 +77,14 @@ public class EditorMenu implements XJMenuItemDelegate {
 
     // Grammar
     public static final int MI_SHOW_TOKENS_SD = 50;
-    public static final int MI_SHOW_DECISION_DFA = 51;
-    public static final int MI_SHOW_DEPENDENCY = 52;
-    public static final int MI_INSERT_TEMPLATE = 53;
-    public static final int MI_GROUP_RULE = 54;
-    public static final int MI_UNGROUP_RULE = 55;
-    public static final int MI_IGNORE_RULE = 56;
-    public static final int MI_CHECK_GRAMMAR = 57;
+    public static final int MI_SHOW_TOKENS_DFA = 51;
+    public static final int MI_SHOW_DECISION_DFA = 52;
+    public static final int MI_SHOW_DEPENDENCY = 53;
+    public static final int MI_INSERT_TEMPLATE = 54;
+    public static final int MI_GROUP_RULE = 55;
+    public static final int MI_UNGROUP_RULE = 56;
+    public static final int MI_IGNORE_RULE = 57;
+    public static final int MI_CHECK_GRAMMAR = 58;
 
     // Refactor
     public static final int MI_RENAME = 60;
@@ -291,6 +292,8 @@ public class EditorMenu implements XJMenuItemDelegate {
         menu = new XJMenu();
         menu.setTitle(resourceBundle.getString("menu.title.grammar"));
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensSyntaxDiagram"), MI_SHOW_TOKENS_SD, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensDFA"), MI_SHOW_TOKENS_DFA, this));
+        menu.addSeparator();
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFA"), MI_SHOW_DECISION_DFA, this));
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showRuleDependencyGraph"), MI_SHOW_DEPENDENCY, this));
         menu.addSeparator();
@@ -613,6 +616,10 @@ public class EditorMenu implements XJMenuItemDelegate {
         switch(item.getTag()) {
             case MI_SHOW_TOKENS_SD:
                 editor.menuGrammar.showTokensSD();
+                break;
+
+            case MI_SHOW_TOKENS_DFA:
+                editor.menuGrammar.showTokensDFA();
                 break;
 
             case MI_SHOW_DECISION_DFA:

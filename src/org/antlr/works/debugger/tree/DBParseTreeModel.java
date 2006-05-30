@@ -4,6 +4,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
 import org.antlr.tool.Grammar;
+import org.antlr.works.awtree.AWTreeModel;
 import org.antlr.works.awtree.AWTreeNode;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
@@ -44,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBParseTreeModel implements XJNotificationObserver {
+public class DBParseTreeModel extends AWTreeModel implements XJNotificationObserver {
 
     public Stack rules = new Stack();
     public Stack backtrackStack = new Stack();
@@ -84,6 +85,8 @@ public class DBParseTreeModel implements XJNotificationObserver {
     }
 
     public void clear() {
+        super.clear();
+        
         initRules();
         backtrackStack.clear();
 
@@ -113,8 +116,7 @@ public class DBParseTreeModel implements XJNotificationObserver {
         ruleNode.setPosition(line, pos);
         rules.push(ruleNode);
 
-        parentRuleNode.add(ruleNode);
-
+        addNode(parentRuleNode, ruleNode);
         addNodeToCurrentBacktrack(ruleNode);
 
         setLastNode(ruleNode);
@@ -139,7 +141,7 @@ public class DBParseTreeModel implements XJNotificationObserver {
         ParseTreeNode ruleNode = (ParseTreeNode)rules.peek();
         ParseTreeNode elementNode = new ParseTreeNode(token, debugger.getGrammar().getANTLRGrammar());
         elementNode.setPosition(line, pos);
-        ruleNode.add(elementNode);
+        addNode(ruleNode, elementNode);
         addNodeToCurrentBacktrack(elementNode);
         setLastNode(elementNode);
     }
@@ -148,7 +150,7 @@ public class DBParseTreeModel implements XJNotificationObserver {
         ParseTreeNode ruleNode = (ParseTreeNode)rules.peek();
         ParseTreeNode errorNode = new ParseTreeNode(e);
         errorNode.setPosition(line, pos);
-        ruleNode.add(errorNode);
+        addNode(ruleNode, errorNode);
         addNodeToCurrentBacktrack(errorNode);
         setLastNode(errorNode);
     }

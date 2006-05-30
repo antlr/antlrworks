@@ -52,7 +52,7 @@ public class AWTreePanel extends JPanel {
     protected Component graphViewComponent;
 
     protected JTree tree;
-    protected DefaultTreeModel treeModel;
+    protected DefaultTreeModel jTreeModel;
 
     protected AWTreeGraphView treeGraphView;
     protected JScrollPane graphScrollPane;
@@ -62,7 +62,7 @@ public class AWTreePanel extends JPanel {
     public AWTreePanel(DefaultTreeModel treeModel) {
         super(new BorderLayout());
 
-        this.treeModel = treeModel;
+        this.jTreeModel = treeModel;
         tree = new JTree(treeModel);
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
@@ -96,6 +96,10 @@ public class AWTreePanel extends JPanel {
 
     public void setDelegate(AWTreePanelDelegate delegate) {
         this.delegate = delegate;
+    }
+
+    public void setAWTreeModel(AWTreeModel model) {
+        treeGraphView.setModel(model);
     }
 
     public Component createListView() {
@@ -215,21 +219,24 @@ public class AWTreePanel extends JPanel {
     }
     
     public void setRoot(TreeNode node) {
-        treeModel.setRoot(node);
+        jTreeModel.setRoot(node);
         treeGraphView.setRoot(node);
-        refresh();
     }
 
     public Object getRoot() {
-        return treeModel.getRoot();
+        return jTreeModel.getRoot();
     }
 
     public AWTreeGraphView getGraphView() {
         return treeGraphView;
     }
 
+    public void clear() {
+        treeGraphView.clear();
+    }
+
     public void refresh() {
-        treeModel.reload();
+        jTreeModel.reload();
         TreeUtilities.expandAll(tree);
         treeGraphView.refresh();
     }
@@ -247,7 +254,7 @@ public class AWTreePanel extends JPanel {
     }
 
     public void selectNode(TreeNode node) {
-        TreePath path = new TreePath(treeModel.getPathToRoot(node));
+        TreePath path = new TreePath(jTreeModel.getPathToRoot(node));
         tree.scrollPathToVisible(path);
         tree.setSelectionPath(path);
 
@@ -258,7 +265,7 @@ public class AWTreePanel extends JPanel {
         if(node == null)
             return;
 
-        tree.scrollPathToVisible(new TreePath(treeModel.getPathToRoot(node)));
+        tree.scrollPathToVisible(new TreePath(jTreeModel.getPathToRoot(node)));
         treeGraphView.scrollNodeToVisible(node);
     }
 
@@ -283,7 +290,7 @@ public class AWTreePanel extends JPanel {
         public void mousePressed(MouseEvent e) {
             GElement elem = treeGraphView.getElementAtMousePosition(e);
             if(elem != null && elem instanceof AWTreeGraphView.GElementNode) {
-                TreeNode node = treeGraphView.getTreeNode((AWTreeGraphView.GElementNode)elem);
+                TreeNode node = treeGraphView.getTreeNodeForElement((AWTreeGraphView.GElementNode)elem);
                 if(node == null)
                     return;
 

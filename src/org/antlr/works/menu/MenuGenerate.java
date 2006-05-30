@@ -61,6 +61,9 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
     protected void generateCodeProcess() {
         Statistics.shared().recordEvent(Statistics.EVENT_GENERATE_CODE);
 
+        if(!editor.ensureDocumentSaved())
+            return;
+
         if(!checkLanguage())
             return;
 

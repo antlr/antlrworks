@@ -73,9 +73,6 @@ public class RulesDependency extends GrammarDOTTab {
         return true;
     }
 
-    public void willRun() {
-    }
-
     public String getDOTString() throws Exception {
         GrammarSyntaxRule rule = editor.getCurrentRule();
 

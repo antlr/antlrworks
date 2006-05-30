@@ -48,7 +48,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class AWTreeGraphView extends GView {
 
     public static final boolean DRAGGABLE = false;
-    
+
     public static final int HORIZONTAL_GAP = 20;
     public static final int VERTICAL_GAP = 20;
 
@@ -59,10 +59,17 @@ public class AWTreeGraphView extends GView {
 
     protected TreeNode root;
     protected GElementNode highlightedNode;
+
     protected Map treeNodeToGElementMap = new HashMap();
     protected Map gelementToTreeNodeMap = new HashMap();
-    protected Graphics2D g2d;
+
     protected AWTreePanel panel;
+    protected AWTreeModel model;
+
+    protected Graphics2D g2d;
+    protected FontMetrics fontMetrics;
+
+    protected boolean dirty = true;
 
     public AWTreeGraphView(AWTreePanel panel) {
         this.panel = panel;
@@ -70,115 +77,262 @@ public class AWTreeGraphView extends GView {
     }
 
     public void addDefaultEventManager() {
-        // No event manager by default for parse tree view
+        // No event manager by default for tree view
+    }
+
+    public void setModel(AWTreeModel model) {
+        this.model = model;
     }
 
     public void setRoot(TreeNode root) {
         this.root = root;
-        setRootElement(null);
+    }
+
+    public void clear() {
+        if(model != null)
+            model.clear();
+        clearMaps();
     }
 
     public void refresh() {
-        setRootElement(null);
+        /** Mark the tree as dirty so it gets rebuild */
+        dirty = true;
+
+        /** Need to rebuild now because the tree nodes need to be
+         * available for other operation (like scrollNodeToVisible())
+         */
         rebuild();
+
+        /** Repaint the tree */
         repaint();
     }
 
     public void rebuild() {
-        if(getRootElement() == null && root != null && g2d != null) {
-            treeNodeToGElementMap.clear();
-            gelementToTreeNodeMap.clear();
+        if(g2d == null || root == null)
+            return;
 
-            GElement element = buildGraph(root, g2d);
-
-            treeNodeToGElementMap.put(root, element);
-            gelementToTreeNodeMap.put(element, root);
-
-            element.move(MARGIN, MARGIN);
-            setSizeMargin(MARGIN);
-            setRootElement(element);
+        if(dirty) {
+            dirty = false;
+            if(model == null)
+                rebuildNoModel();
+            else
+                rebuildWithModel();
         }
     }
 
-    public void paintComponent(Graphics g) {
-        g2d = (Graphics2D)g;
-        g2d.setFont(DEFAULT_FONT);
-        rebuild();
-        super.paintComponent(g);
+    public void clearMaps() {
+        treeNodeToGElementMap.clear();
+        gelementToTreeNodeMap.clear();
     }
 
-    public GElement buildGraph(TreeNode node, Graphics2D g) {
-        Color nodeColor = Color.black;
-        String nodeLabel = node.toString();
+    public void mapNodeAndElement(TreeNode node, GElement element) {
+        treeNodeToGElementMap.put(node, element);
+        gelementToTreeNodeMap.put(element, node);
+    }
 
-        if(node instanceof ParseTree) {
-            Object payload = ((ParseTree)node).payload;
-            if(payload instanceof CommonToken) {
-                CommonToken t = (CommonToken)payload;
-                nodeLabel = t.getText();
-            } else {
-                nodeLabel = payload.toString();
-            }
-        } else if(node instanceof AWTreeNode) {
-            nodeColor = ((AWTreeNode)node).getColor();
-        }
+    public TreeNode getTreeNodeForElement(GElementNode elem) {
+        return (TreeNode) gelementToTreeNodeMap.get(elem);
+    }
 
-        FontMetrics fm = g.getFontMetrics();
-        double width = (nodeLabel==null?0:fm.stringWidth(nodeLabel))+16;
-        double height = fm.getHeight()+8;
+    public GElementNode getGElementForNode(TreeNode node) {
+        if(node == null)
+            return null;
+        else
+            return (GElementNode)treeNodeToGElementMap.get(node);
+    }
 
-        GElementNode nodeElement = new GElementNode();
-        nodeElement.setDraggable(DRAGGABLE);
-        nodeElement.setSize(width, height);
-        
-        // Must call setPositionOfUpperLeftCorner after
-        // setting the size!!!!
-        nodeElement.setPositionOfUpperLeftCorner(0, 0);
-        nodeElement.setLabel(nodeLabel);
+    /** This method rebuild the tree completely. This can be expensive if the tree
+     * contains many node. Use a AWTreeModel instead (see rebuildWithModel)
+     */
 
-        nodeElement.setColor(nodeColor);
-        nodeElement.setLabelColor(nodeColor);
+    public void rebuildNoModel() {
+        clearMaps();
 
-        treeNodeToGElementMap.put(node, nodeElement);
-        gelementToTreeNodeMap.put(nodeElement, node);
+        GElement element = buildGraph(null);
+        element.move(MARGIN, MARGIN);
 
-        double x = 0;
+        setSizeMargin(MARGIN);
+        setRootElement(element);
+    }
+
+    public GElementNode buildGraph(TreeNode node) {
+        if(node == null)
+            node = root;
+
+        GElementNode nodeElement = getGElementForNode(node);
+        if(nodeElement == null)
+            nodeElement = createGElement(node);
+
+        /** Add all the children of the node */
         for(int index=0; index<node.getChildCount(); index++) {
             TreeNode child = node.getChildAt(index);
-            GElement childElement = buildGraph(child, g);
-            Rect r = childElement.bounds();
-            childElement.move(x, height+VERTICAL_GAP);
-            x += r.r.width;
-            if(index < node.getChildCount()-1)
-                x += HORIZONTAL_GAP;
 
-            GLink link = new GLink(nodeElement, GLink.ANCHOR_BOTTOM,
-                                    childElement, GLink.ANCHOR_TOP,
-                                    GLink.SHAPE_ELBOW, "", 0);
-            link.setDraggable(DRAGGABLE);
+            /** Then add it to the parent node */
+            addChildElement(nodeElement, createGElement(child));
 
-            SLinkElbow l = (SLinkElbow)link.getLink();
-            l.setOutOffsetLength(10);
-            l.getArrow().setLength(6);
-
-            nodeElement.addElement(link);
-            nodeElement.addElement(childElement);
+            /** Recursively build the children of the child */
+            buildGraph(child);
         }
 
-        if(x > 0) {
-            if(x >= width)
-                nodeElement.setPositionOfUpperLeftCorner(x*0.5-width*0.5, 0);
-            else {
-                nodeElement.move((width-x)*0.5, 0);
-                nodeElement.setPositionOfUpperLeftCorner(0, 0);
-            }
-        }
+        /** Adjust the parent element position after adding all its children */
+        adjustElementPositionRelativeToItsChildren(node, false);
 
         return nodeElement;
     }
 
-    public TreeNode getTreeNode(GElementNode elem) {
-        return (TreeNode) gelementToTreeNodeMap.get(elem);
+    /** This method rebuild the tree incrementally using the information provided
+     * by the tree model. This method is faster than rebuildNoModel() for large tree.
+     */
+    //@todo actually it is slower because of the adjustElement...() method which is called too often
+
+    public void rebuildWithModel() {
+        for(int n=0; n<model.getNewNodesCount(); n++) {
+            TreeNode parent = model.getNewNodeParentAtIndex(n);
+            TreeNode child = model.getNewNodeAtIndex(n);
+
+            GElementNode parentElement = getGElementForNode(parent);
+            if(parentElement == null) {
+                parentElement = createGElement(root);
+                parentElement.move(MARGIN, MARGIN);
+                setSizeMargin(MARGIN);
+                setRootElement(parentElement);
+            }
+
+            GElementNode childElement = createGElement(child);
+            addChildElement(parentElement, childElement);
+            adjustElementPositionRelativeToItsChildren(parent, true);
+        }
+
+        autoAdjustSize();
+
+        model.clearNewNodes();
+    }
+
+    public void paintComponent(Graphics g) {
+        if(g2d != g) {
+            g2d = (Graphics2D)g;
+            g2d.setFont(DEFAULT_FONT);
+            fontMetrics = g2d.getFontMetrics();
+        }
+        rebuild();
+        super.paintComponent(g);
+    }
+
+    public void addChildElement(GElementNode parent, GElementNode child) {
+        /** Get the far right position of the last child */
+        double x = parent.getLastChildRightSpan();
+
+        /** Add a gap if there is already a child otherwise use the parent left coordinate */
+        if(x > 0)
+            x += HORIZONTAL_GAP;
+        else
+            x = parent.getLeft();
+
+        /** Set the child position */
+        child.setPositionOfUpperLeftCorner(x, parent.getBottom()+VERTICAL_GAP);
+
+        /** Create the link from the parent to this child */
+        GLink link = new GLink(parent, GLink.ANCHOR_BOTTOM,
+                child, GLink.ANCHOR_TOP,
+                GLink.SHAPE_ELBOW, "", 0);
+        link.setDraggable(DRAGGABLE);
+
+        /** Configure the link geometry */
+        SLinkElbow l = (SLinkElbow)link.getLink();
+        l.setOutOffsetLength(10);
+        l.getArrow().setLength(6);
+
+        /** Add the link and the child */
+        parent.addElement(link);
+        parent.addElement(child);
+    }
+
+    /** This method recursively adjusts a node position relative to its children */
+
+    public void adjustElementPositionRelativeToItsChildren(TreeNode node, boolean recursive) {
+        GElementNode element = getGElementForNode(node);
+        if(element == null)
+            return;
+
+        double elementWidth = element.getWidth();
+        double childrenWidth = element.getLastChildRightSpan()-element.getFirstChildLeftSpan();
+
+        /** Nothing to adjust if there is no children */
+        if(childrenWidth == 0)
+            return;
+
+        /** x and y are the coordinates of the upper-left corner of the frame enclosing
+         * the element and all its children.
+         */
+        double x = Math.min(element.getLeft(), element.getFirstChildLeftSpan());
+        double y = element.getTop();
+        double spanWidth = Math.max(elementWidth, childrenWidth);
+
+        /** First move the children if needed. To move all the children at once, we move
+         * the element itself (which will cause all the children to be moved recursively).
+         * The element position is set after this operation.
+         */
+        double childrenOffset = spanWidth*0.5-childrenWidth*0.5;
+
+        /** Compute the offset to move the children given their current position */
+        double offset = x+childrenOffset-element.getFirstChildLeftSpan();
+        element.move(offset, 0);
+
+        /** Set the element position */
+        element.setPositionOfUpperLeftCorner(x+spanWidth*0.5-elementWidth*0.5, y);
+
+        /** Set the span (children width) of the element */
+        element.setSpanWidth(spanWidth);
+
+        /** Recursively adjust the parent node */
+        if(recursive)
+            adjustElementPositionRelativeToItsChildren(node.getParent(), recursive);
+    }
+
+    public String getNodeLabel(TreeNode node) {
+        if(node instanceof ParseTree) {
+            Object payload = ((ParseTree)node).payload;
+            if(payload instanceof CommonToken) {
+                CommonToken t = (CommonToken)payload;
+                return t.getText();
+            } else {
+                return payload.toString();
+            }
+        }
+        return node.toString();
+    }
+
+    public Color getNodeColor(TreeNode node) {
+        if(node instanceof AWTreeNode)
+            return ((AWTreeNode)node).getColor();
+        else
+            return Color.black;
+    }
+
+    public GElementNode createGElement(TreeNode node) {
+        Color nodeColor = getNodeColor(node);
+        String nodeLabel = getNodeLabel(node);
+
+        double width = (nodeLabel==null?0:fontMetrics.stringWidth(nodeLabel))+16;
+        double height = fontMetrics.getHeight()+8;
+
+        GElementNode element = new GElementNode();
+        element.setDraggable(DRAGGABLE);
+
+        /** Must call setPositionOfUpperLeftCorner after
+         * setting the size of the element.
+         */
+        element.setSize(width, height);
+        element.setPositionOfUpperLeftCorner(0, 0);
+
+        element.setLabel(nodeLabel);
+        element.setColor(nodeColor);
+        element.setLabelColor(nodeColor);
+
+        /** Map the node to the element for quick access */
+        mapNodeAndElement(node, element);
+
+        return element;
     }
 
     public void highlightNode(TreeNode node) {
@@ -187,7 +341,7 @@ public class AWTreeGraphView extends GView {
             highlightedNode = null;
         }
 
-        GElementNode element = (GElementNode)treeNodeToGElementMap.get(node);
+        GElementNode element = getGElementForNode(node);
         if(element == null)
             return;
 
@@ -203,7 +357,7 @@ public class AWTreeGraphView extends GView {
      * its corresponding GElement.
      */
     public void repaintNode(TreeNode node) {
-        GElementNode element = (GElementNode)treeNodeToGElementMap.get(node);
+        GElementNode element = getGElementForNode(node);
         if(element == null)
             return;
 
@@ -215,7 +369,7 @@ public class AWTreeGraphView extends GView {
     }
 
     public void scrollNodeToVisible(TreeNode node) {
-        GElementNode element = (GElementNode)treeNodeToGElementMap.get(node);
+        GElementNode element = getGElementForNode(node);
         if(element == null)
             return;
 
@@ -229,6 +383,7 @@ public class AWTreeGraphView extends GView {
     public class GElementNode extends GElementRect {
 
         public boolean highlighted = false;
+        public double spanWidth = 0;
 
         public void setHighlighted(boolean flag) {
             this.highlighted = flag;
@@ -244,5 +399,88 @@ public class AWTreeGraphView extends GView {
             super.draw(g);
         }
 
+        /** Methods to retrieve the span width of the node. The span width
+         * is the maximum width of the node and its children.
+         */
+
+        public void setSpanWidth(double width) {
+            spanWidth = width;
+        }
+
+        public double getLeftSpan() {
+            if(spanWidth <= getWidth())
+                return getLeft();
+            else
+                return getLeft()-(spanWidth-getWidth())*0.5;
+        }
+
+        public double getRightSpan() {
+            if(spanWidth <= getWidth())
+                return getRight();
+            else
+                return getRight()+(spanWidth-getWidth())*0.5;
+        }
+
+        /** Return the last children right coordinate of this node. Note that links are
+         * also in the list of children so we must skip them.
+         */
+        public double getLastChildRightSpan() {
+            if(elements == null)
+                return 0;
+
+            for (int i = elements.size()-1; i >= 0; i--) {
+                GElement element = (GElement) elements.get(i);
+                if(element instanceof GElementNode) {
+                    GElementNode n = (GElementNode)element;
+                    return n.getRightSpan();
+                }
+            }
+
+            return 0;
+        }
+
+        /** Return the first children left coordinate of this node. Note that links are
+         * also in the list of children so we must skip them.
+         */
+        public double getFirstChildLeftSpan() {
+            if(elements == null)
+                return 0;
+
+            for (int i = 0; i < elements.size(); i++) {
+                GElement element = (GElement) elements.get(i);
+                if(element instanceof GElementNode) {
+                    GElementNode n = (GElementNode)element;
+                    return n.getLeftSpan();
+                }
+            }
+
+            return 0;
+        }
+
+        /** Methods used to retrieve the coordinate of the frame. Note that
+         * a GElementRect position is always centered so we need to use getFrame()
+         * to get the frame rectangle from which we can get the coordinate we want. */
+
+        public double getLeft() {
+            return getFrame().r.x;
+        }
+
+        public double getTop() {
+            return getFrame().r.y;
+        }
+
+        public double getRight() {
+            Rect r = getFrame();
+            return r.r.x+r.r.width;
+        }
+
+        public double getBottom() {
+            Rect r = getFrame();
+            return r.r.y+r.r.height;
+        }
+
+        public void setTop(double top) {
+            position.y = top+getHeight()*0.5;
+        }
     }
 }

@@ -312,10 +312,9 @@ public class GRenderer {
         FAState state = alt;
         while(state != null) {
             FATransition transition = state.getFirstTransition();
-            if(transition == null) {
-                System.err.println("[GRenderer] No transition out of state "+state+" (alternative state "+alt+")");
+            if(transition == null)
                 break;
-            } else
+            else
                 state = transition.target;
 
             // Note: a state can be both an end-of-alternative and an alternative itself ;-)

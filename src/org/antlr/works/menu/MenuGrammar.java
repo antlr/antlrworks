@@ -34,6 +34,7 @@ package org.antlr.works.menu;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
+import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.*;
@@ -41,7 +42,6 @@ import org.antlr.works.stats.Statistics;
 import org.antlr.works.syntax.GrammarSyntaxGroup;
 import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.syntax.GrammarSyntaxRule;
-import org.antlr.tool.Grammar;
 
 import javax.swing.*;
 import java.util.List;
@@ -59,9 +59,16 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     public void showTokensSD() {
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_TOKEN_SD);
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_TOKENS_SD);
         editor.visual.setRule(new GrammarSyntaxRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);
         editor.makeBottomComponentVisible();
+    }
+
+    public void showTokensDFA() {
+        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_TOKENS_DFA);
+        TokensDFA decision = new TokensDFA(editor, this);
+        if(decision.launch())
+            showProgress("Generating...");
     }
 
     public void showDecisionDFA() {

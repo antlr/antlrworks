@@ -233,6 +233,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
         }
 
     }
+    
     public class InputTreeNode extends DBTreeNode {
 
         public boolean breakpoint = false;

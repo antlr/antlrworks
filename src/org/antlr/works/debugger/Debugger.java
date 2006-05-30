@@ -389,6 +389,9 @@ public class Debugger extends EditorTab {
         if(needsToGenerateGrammar())
             buildAndDebug = true;
 
+        if(buildAndDebug && !editor.ensureDocumentSaved())
+            return;
+
         if(buildAndDebug || !local.isRequiredFilesExisting()) {
             DialogGenerate dialog = new DialogGenerate(getWindowComponent());
             dialog.setDebugOnly();

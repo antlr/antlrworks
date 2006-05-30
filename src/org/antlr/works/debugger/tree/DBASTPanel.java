@@ -115,6 +115,7 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
 
     public void clear() {
         model.clear();
+        treePanel.clear();
     }
 
     public void updateOnBreakEvent() {
