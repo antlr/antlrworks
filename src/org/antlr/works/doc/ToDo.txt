@@ -3,10 +3,9 @@
 
 - step over a rule/subrule
 - make AST panel "detachable"
-- finish "Show Tokens DFA"
 
 * Prio 2
-- optimize tree drawing using incremental model
+- optimize tree drawing using incremental model (see AWTreeGraphView)
 - make breakpoint in grammar and stop around this location (line, column)
 - be able to search the generated grammar too
 - tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)

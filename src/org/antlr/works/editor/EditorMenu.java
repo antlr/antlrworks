@@ -76,10 +76,10 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_NEXT_BREAKPOINT = 47;
 
     // Grammar
-    public static final int MI_SHOW_TOKENS_SD = 50;
-    public static final int MI_SHOW_TOKENS_DFA = 51;
-    public static final int MI_SHOW_DECISION_DFA = 52;
-    public static final int MI_SHOW_DEPENDENCY = 53;
+    public static final int MI_SHOW_DECISION_DFA = 50;
+    public static final int MI_SHOW_DEPENDENCY = 51;
+    public static final int MI_SHOW_TOKENS_SD = 52;
+    public static final int MI_SHOW_TOKENS_DFA = 53;
     public static final int MI_INSERT_TEMPLATE = 54;
     public static final int MI_GROUP_RULE = 55;
     public static final int MI_UNGROUP_RULE = 56;
@@ -291,11 +291,11 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle(resourceBundle.getString("menu.title.grammar"));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensSyntaxDiagram"), MI_SHOW_TOKENS_SD, this));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensDFA"), MI_SHOW_TOKENS_DFA, this));
-        menu.addSeparator();
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFA"), MI_SHOW_DECISION_DFA, this));
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showRuleDependencyGraph"), MI_SHOW_DEPENDENCY, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensSyntaxDiagram"), MI_SHOW_TOKENS_SD, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensDFA"), MI_SHOW_TOKENS_DFA, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.insertRuleFromTemplate"), KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
 

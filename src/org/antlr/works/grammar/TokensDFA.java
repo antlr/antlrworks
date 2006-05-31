@@ -1,6 +1,7 @@
 package org.antlr.works.grammar;
 
 import org.antlr.analysis.DFA;
+import org.antlr.analysis.NFAState;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Rule;
@@ -47,7 +48,8 @@ public class TokensDFA extends GrammarDOTTab {
 
         Grammar g = editor.getEngineGrammar().getLexerGrammar();
         Rule r = g.getRule(Grammar.ARTIFICIAL_TOKENS_RULENAME);
-        DFA dfa = g.getLookaheadDFA(r.startState.getDecisionNumber());
+        NFAState s = (NFAState)r.startState.transition(0).target;
+        DFA dfa = g.getLookaheadDFA(s.getDecisionNumber());
 
         DOTGenerator dg = new DOTGenerator(g);
         dg.setArrowheadType("none");
