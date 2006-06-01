@@ -166,15 +166,6 @@ public class AWPrefs {
     public static final String COMPILER_JIKES = "jikes";
     public static final String COMPILER_INTEGRATED = "integrated";
 
-    // Statistics
-    public static final String PREF_STATS_REMINDER_METHOD = "PREF_STATS_REMINDER_METHOD";
-    public static final String PREF_STATS_REMINDER_NEXT_DATE = "PREF_STATS_REMINDER_NEXT_DATE";
-
-    public static final int STATS_REMINDER_MANUALLY = 0;
-    public static final int STATS_REMINDER_WEEKLY = 1;
-
-    public static final int DEFAULT_STATS_REMINDER_METHOD = STATS_REMINDER_MANUALLY;
-
     // Updates
     public static final String PREF_UPDATE_TYPE = "PREF_UPDATE_TYPE";
     public static final String PREF_DOWNLOAD_PATH = "PREF_DOWNLOAD_PATH";
@@ -404,18 +395,6 @@ public class AWPrefs {
 
     public static String getCompiler() {
         return getPreferences().getString(PREF_COMPILER, DEFAULT_COMPILER);
-    }
-
-    public static int getStatsReminderType() {
-        return getPreferences().getInt(PREF_STATS_REMINDER_METHOD, DEFAULT_STATS_REMINDER_METHOD);
-    }
-
-    public static void setStatsReminderNextDate(Calendar date) {
-        getPreferences().setObject(PREF_STATS_REMINDER_NEXT_DATE, date);
-    }
-
-    public static Calendar getStatsReminderNextDate() {
-        return (Calendar)getPreferences().getObject(PREF_STATS_REMINDER_NEXT_DATE, null);
     }
 
     public static int getUpdateType() {

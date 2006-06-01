@@ -51,7 +51,6 @@ public class HelpManager implements XJScheduledTimerDelegate {
 
     public void scheduledTimerFired(boolean startup) {
         checkUpdatesAuto(startup);
-        checkStatsReminder();
     }
 
     public static void submitStats(Container parent) {
@@ -127,28 +126,4 @@ public class HelpManager implements XJScheduledTimerDelegate {
         }
     }
 
-    public void checkStatsReminder() {
-        int method = AWPrefs.getStatsReminderType();
-        if(method == AWPrefs.STATS_REMINDER_WEEKLY) {
-            boolean remind = false;
-
-            Calendar currentCalendar = Calendar.getInstance();
-            Calendar nextUpdateCalendar = AWPrefs.getStatsReminderNextDate();
-
-            if(nextUpdateCalendar == null || currentCalendar.equals(nextUpdateCalendar) || currentCalendar.after(nextUpdateCalendar)) {
-
-                switch(method) {
-                    case AWPrefs.STATS_REMINDER_WEEKLY:
-                        remind = nextUpdateCalendar != null;
-                        currentCalendar.add(Calendar.DATE, 7);
-                        AWPrefs.setStatsReminderNextDate(currentCalendar);
-                        break;
-                }
-            }
-
-            if(remind)
-                new DialogReports(null).runModal();
-        }
-
-    }
 }

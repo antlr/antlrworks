@@ -92,7 +92,7 @@ public class DialogPersonalInfo extends XJDialog {
         info.put(INFO_CAFFEINE, funField.getText());
         AWPrefs.setPersonalInfo(info);
 
-        StatisticsReporter sr = new StatisticsReporter(jDialog);
+        StatisticsReporter sr = new StatisticsReporter();
         String id = sr.getID();
         if(id == null) {
             System.err.println("Cannot send info ="+sr.getError());

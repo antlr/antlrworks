@@ -69,7 +69,6 @@ public class AWPrefsDialog extends XJPanel {
         prepareCompilerTab();
         prepareDebuggerTab();
         prepareSCMTab();
-        prepareStatsTab();
         prepareUpdateTab();
 
         applyButton.addActionListener(new ActionListener() {
@@ -224,10 +223,6 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(p4PasswordField, AWPrefs.PREF_SCM_P4_PASSWORD, "");
         getPreferences().bindToPreferences(p4ClientField, AWPrefs.PREF_SCM_P4_CLIENT, "");
         getPreferences().bindToPreferences(p4ExecPathField, AWPrefs.PREF_SCM_P4_EXEC, "");
-    }
-
-    public void prepareStatsTab() {
-        getPreferences().bindToPreferences(reportTypeCombo, AWPrefs.PREF_STATS_REMINDER_METHOD, AWPrefs.DEFAULT_STATS_REMINDER_METHOD);
     }
 
     public void prepareUpdateTab() {
@@ -393,11 +388,6 @@ public class AWPrefsDialog extends XJPanel {
         p4ClientField = new JTextField();
         label17 = new JLabel();
         p4ExecPathField = new JTextField();
-        tabStats = new JPanel();
-        reportTypeCombo = new JComboBox();
-        label6 = new JLabel();
-        label8 = new JLabel();
-        label9 = new JLabel();
         tabUpdates = new JPanel();
         label7 = new JLabel();
         updateTypeCombo = new JComboBox();
@@ -1081,57 +1071,6 @@ public class AWPrefsDialog extends XJPanel {
                     }
                     tabbedPane1.addTab("SCM", tabSCM);
 
-                    //======== tabStats ========
-                    {
-                        tabStats.setLayout(new FormLayout(
-                            new ColumnSpec[] {
-                                new ColumnSpec(Sizes.dluX(10)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(10))
-                            },
-                            new RowSpec[] {
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                new RowSpec(RowSpec.TOP, Sizes.DLUY6, FormSpec.NO_GROW),
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC
-                            }));
-
-                        //---- reportTypeCombo ----
-                        reportTypeCombo.setModel(new DefaultComboBoxModel(new String[] {
-                            "Manually",
-                            "Remind me automatically each week"
-                        }));
-                        tabStats.add(reportTypeCombo, cc.xywh(3, 5, 3, 1));
-
-                        //---- label6 ----
-                        label6.setText("Submit reports:");
-                        tabStats.add(label6, cc.xy(3, 3));
-
-                        //---- label8 ----
-                        label8.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-                        label8.setText("No personal or confidential information is sent.");
-                        tabStats.add(label8, cc.xywh(3, 9, 3, 1));
-
-                        //---- label9 ----
-                        label9.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-                        label9.setText("Each report is displayed in human readable form before being sent.");
-                        tabStats.add(label9, cc.xywh(3, 11, 3, 1));
-                    }
-                    tabbedPane1.addTab("Statistics", tabStats);
-
                     //======== tabUpdates ========
                     {
                         tabUpdates.setLayout(new FormLayout(
@@ -1314,11 +1253,6 @@ public class AWPrefsDialog extends XJPanel {
     private JTextField p4ClientField;
     private JLabel label17;
     private JTextField p4ExecPathField;
-    private JPanel tabStats;
-    private JComboBox reportTypeCombo;
-    private JLabel label6;
-    private JLabel label8;
-    private JLabel label9;
     private JPanel tabUpdates;
     private JLabel label7;
     private JComboBox updateTypeCombo;
@@ -1329,4 +1263,5 @@ public class AWPrefsDialog extends XJPanel {
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
 }

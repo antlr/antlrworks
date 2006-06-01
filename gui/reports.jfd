@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<java version="1.4.2_07" class="java.beans.XMLDecoder"> 
+<java version="1.5.0_06" class="java.beans.XMLDecoder"> 
  <object class="com.ktauber.form.model.FormModel"> 
   <void property="contentType"> 
    <string>form/swing</string> 
@@ -50,7 +50,7 @@
            <class>com.jgoodies.forms.layout.FormLayout</class> 
            <void method="setProperty"> 
             <string>$columnSpecs</string> 
-            <string>default, labelcompgap, default, labelcompgap, default, labelcompgap, max(min;30dlu), labelcompgap, default:grow</string> 
+            <string>default, labelcompgap, max(min;30dlu), labelcompgap, relgap, labelcompgap, max(min;30dlu):grow, labelcompgap, default:grow</string> 
            </void> 
            <void method="setProperty"> 
             <string>$rowSpecs</string> 
@@ -118,12 +118,35 @@
              <int>3</int> 
             </void> 
             <void method="setProperty"> 
-             <string>gridY</string> 
+             <string>gridWidth</string> 
+             <int>5</int> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.ktauber.form.model.FormComponent"> 
+            <string>javax.swing.JLabel</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>Format:</string> 
+            </void> 
+            <void method="setProperty"> 
+             <string>horizontalAlignment</string> 
+             <int>4</int> 
+            </void> 
+            <void property="name"> 
+             <string>label22</string> 
+            </void> 
+           </object> 
+           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+            <class>com.jgoodies.forms.layout.CellConstraints</class> 
+            <void method="setProperty"> 
+             <string>gridX</string> 
              <int>1</int> 
             </void> 
             <void method="setProperty"> 
-             <string>gridWidth</string> 
-             <int>5</int> 
+             <string>gridY</string> 
+             <int>3</int> 
             </void> 
            </object> 
           </void> 
@@ -132,7 +155,7 @@
             <string>javax.swing.JCheckBox</string> 
             <void method="setProperty"> 
              <string>text</string> 
-             <string>Human readable format</string> 
+             <string>Human readable</string> 
             </void> 
             <void method="setProperty"> 
              <string>selected</string> 
@@ -154,67 +177,7 @@
             </void> 
             <void method="setProperty"> 
              <string>gridWidth</string> 
-             <int>5</int> 
-            </void> 
-           </object> 
-          </void> 
-          <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
-            <string>javax.swing.JLabel</string> 
-            <void method="setProperty"> 
-             <string>text</string> 
-             <string>Range:</string> 
-            </void> 
-            <void method="setProperty"> 
-             <string>horizontalAlignment</string> 
-             <int>4</int> 
-            </void> 
-            <void property="name"> 
-             <string>label2</string> 
-            </void> 
-           </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
-            <class>com.jgoodies.forms.layout.CellConstraints</class> 
-            <void method="setProperty"> 
-             <string>gridX</string> 
-             <int>1</int> 
-            </void> 
-            <void method="setProperty"> 
-             <string>gridY</string> 
-             <int>5</int> 
-            </void> 
-           </object> 
-          </void> 
-          <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
-            <string>javax.swing.JRadioButton</string> 
-            <void method="setProperty"> 
-             <string>text</string> 
-             <string>All</string> 
-            </void> 
-            <void method="setProperty"> 
-             <string>$buttonGroup</string> 
-             <object class="com.ktauber.form.model.FormReference"> 
-              <string>buttonGroup1</string> 
-             </object> 
-            </void> 
-            <void method="setProperty"> 
-             <string>selected</string> 
-             <boolean>true</boolean> 
-            </void> 
-            <void property="name"> 
-             <string>allRadioButton</string> 
-            </void> 
-           </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
-            <class>com.jgoodies.forms.layout.CellConstraints</class> 
-            <void method="setProperty"> 
-             <string>gridX</string> 
-             <int>3</int> 
-            </void> 
-            <void method="setProperty"> 
-             <string>gridY</string> 
-             <int>5</int> 
+             <int>7</int> 
             </void> 
            </object> 
           </void> 
@@ -240,36 +203,38 @@
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
-             <int>7</int> 
+             <int>3</int> 
             </void> 
             <void method="setProperty"> 
              <string>gridY</string> 
              <int>5</int> 
             </void> 
+            <void method="setProperty"> 
+             <string>gridWidth</string> 
+             <int>2</int> 
+            </void> 
            </object> 
           </void> 
           <void method="add"> 
            <object class="com.ktauber.form.model.FormComponent"> 
-            <string>javax.swing.JRadioButton</string> 
+            <string>javax.swing.JLabel</string> 
             <void method="setProperty"> 
              <string>text</string> 
-             <string>One by one</string> 
+             <string>Report:</string> 
             </void> 
             <void method="setProperty"> 
-             <string>$buttonGroup</string> 
-             <object class="com.ktauber.form.model.FormReference"> 
-              <string>buttonGroup1</string> 
-             </object> 
+             <string>horizontalAlignment</string> 
+             <int>4</int> 
             </void> 
             <void property="name"> 
-             <string>oneByOneRadio</string> 
+             <string>label2</string> 
             </void> 
            </object> 
            <object class="com.ktauber.form.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
-             <int>5</int> 
+             <int>1</int> 
             </void> 
             <void method="setProperty"> 
              <string>gridY</string> 
@@ -292,11 +257,15 @@
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
-             <int>9</int> 
+             <int>7</int> 
             </void> 
             <void method="setProperty"> 
              <string>gridY</string> 
              <int>5</int> 
+            </void> 
+            <void method="setProperty"> 
+             <string>gridWidth</string> 
+             <int>3</int> 
             </void> 
            </object> 
           </void> 

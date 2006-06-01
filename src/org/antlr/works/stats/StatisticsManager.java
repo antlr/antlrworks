@@ -48,7 +48,6 @@ public class StatisticsManager {
     public static final int TYPE_RUNTIME = 2;
 
     protected int type;
-    protected List readableLines = new ArrayList();
     protected List rawLines = new ArrayList();
 
     public StatisticsManager(int type) {
@@ -57,14 +56,21 @@ public class StatisticsManager {
     }
 
     public int getStatsCount() {
-        return readableLines.size();
+        return rawLines.size();
     }
 
     public String getReadableString(int index) {
-        if(index < 0 || index >= readableLines.size())
+        if(index < 0 || index >= rawLines.size())
             return null;
-        else
-            return (String)readableLines.get(index);
+        else {
+            String rawLine = (String)rawLines.get(index);
+            if(type == TYPE_GRAMMAR)
+                return GrammarReport.toString(rawLine);
+            else if(type == TYPE_RUNTIME)
+                return Profiler.toString(rawLine);
+            else
+                return Statistics.shared().getReadableString();
+        }
     }
 
     public String getRawString(int index) {
@@ -75,7 +81,6 @@ public class StatisticsManager {
     }
 
     public boolean load() {
-        readableLines.clear();
         rawLines.clear();
         switch(type) {
             case TYPE_GUI:  return loadGUI();
@@ -86,20 +91,19 @@ public class StatisticsManager {
     }
 
     protected boolean loadGUI() {
-        addReadableLine(Statistics.shared().getReadableString());
         addRawLine(Statistics.shared().getRawString());
         return true;
     }
 
     protected boolean loadGrammar() {
-        return loadFromFile(GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME), true);
+        return loadFromFile(GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME));
     }
 
     protected boolean loadRuntime() {
-        return loadFromFile(GrammarReport.getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME), false);
+        return loadFromFile(GrammarReport.getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME));
     }
 
-    protected boolean loadFromFile(String file, boolean grammar) {
+    protected boolean loadFromFile(String file) {
         if(file == null)
             return false;
 
@@ -112,10 +116,6 @@ public class StatisticsManager {
             String line;
             while((line = br.readLine()) != null) {
                 addRawLine(line);
-                if(grammar)
-                    addReadableLine(GrammarReport.toString(line));
-                else
-                    addReadableLine(Profiler.toString(line));
             }
             br.close();
         } catch (Exception e) {
@@ -124,10 +124,6 @@ public class StatisticsManager {
         }
 
         return true;
-    }
-
-    protected void addReadableLine(String line) {
-        readableLines.add(line);
     }
 
     protected void addRawLine(String line) {

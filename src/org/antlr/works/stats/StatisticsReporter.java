@@ -36,7 +36,6 @@ import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.prefs.AWPrefs;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -56,11 +55,9 @@ public class StatisticsReporter {
     public static final String TYPE_RUNTIME = "runtime";
 
     protected String error = null;
+    protected boolean cancel = false;
 
-    protected Container parent;
-
-    public StatisticsReporter(Container parent) {
-        this.parent = parent;
+    public StatisticsReporter() {
     }
 
     public String getError() {
@@ -130,6 +127,10 @@ public class StatisticsReporter {
         return id;
     }
 
+    public void cancel() {
+        cancel = true;
+    }
+
     public boolean submitGUI(StatisticsManager sm) {
         return submitStats(sm, TYPE_GUI);
     }
@@ -143,9 +144,12 @@ public class StatisticsReporter {
     }
 
     public boolean submitStats(StatisticsManager sm, String type) {
+        cancel = false;
         for(int index=0; index<sm.getStatsCount(); index++) {
             if(!submitStats(getID(), type, sm.getRawString(index)))
                 return false;
+            if(cancel)
+                return true;
         }
 
         return true;

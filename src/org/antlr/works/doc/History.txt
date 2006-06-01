@@ -4,6 +4,7 @@ Version 1.0ea9 - ...
 - debugger: display now AST tree during debugging
 - debugger: can debug tree grammar (display input tree)
 - parse tree in debugger shows backtrack nodes (colorized)
+- show now Tokens DFA
 - can now export decision DFA and rule dependency graph as DOT file
 - new replace all feature in find dialog
 - generated code coloring has been disabled
@@ -18,6 +19,7 @@ Version 1.0ea9 - ...
 - remote parser launch time-out can be specified in the preferences
 - syntax: added exception clause of rule
 
+- fixed a bug in the DOT engine that could prevent a DOT graph to be correctly displayed
 - fixed a bug where ANTLRWorks would freeze when replacing literals with token label
 - fixed a bug where stats about programming and language implementation experience were inverted
 
