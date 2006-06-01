@@ -90,7 +90,60 @@ public class DialogReports extends XJDialog {
         new SendReport().send();
     }
 
-    public class SendReport implements Runnable, XJDialogProgressDelegate {
+    protected void updateInfo(boolean textOnly) {
+        StatisticsManager sm = null;
+        boolean rangeEnabled = true;
+
+        switch(typeCombo.getSelectedIndex()) {
+            case 0:
+                rangeEnabled = false;
+                sm = guiManager;
+                break;
+            case 1:
+                rangeEnabled = true;
+                sm = grammarManager;
+                break;
+            case 2:
+                rangeEnabled = true;
+                sm = runtimeManager;
+                break;
+        }
+
+        if(!textOnly)
+            setRangeEnabled(rangeEnabled, sm);
+
+        setText(sm);
+    }
+
+    protected void setRangeEnabled(boolean flag, StatisticsManager sm) {
+        currentSpinner.setEnabled(flag);
+        infoLabel.setEnabled(flag);
+
+        currentSpinner.setValue(new Integer(1));
+        SpinnerNumberModel spm = (SpinnerNumberModel)currentSpinner.getModel();
+        spm.setMaximum(new Integer(sm.getStatsCount()));
+
+        if(flag)
+            infoLabel.setText("of "+sm.getStatsCount());
+        else
+            infoLabel.setText("");
+    }
+
+    protected void setText(StatisticsManager sm) {
+        int index = ((Integer)currentSpinner.getValue()).intValue()-1;
+        String text = isHumanReadable() ? sm.getReadableString(index) : sm.getRawString(index);
+        if(text == null)
+            text = "* no statistics available *";
+
+        statsTextArea.setText(text);
+        statsTextArea.setCaretPosition(0);
+    }
+
+    protected boolean isHumanReadable() {
+        return humanFormatCheck.isSelected();
+    }
+
+    protected class SendReport implements Runnable, XJDialogProgressDelegate {
 
         public boolean error = false;
         public boolean cancel = false;
@@ -160,7 +213,7 @@ public class DialogReports extends XJDialog {
                     info = "An error has occurred when sending the statistics:\n"+reporter.getError();
                 } else {
                     title = "Thank you";
-                    info = "The statistics have been successfully transmitted. Thank you.";
+                    info = "The statistics have been successfully transmitte.";
                 }
             }
             XJAlert.display(getJavaComponent(), title, info);
@@ -170,59 +223,6 @@ public class DialogReports extends XJDialog {
             cancel = true;
             reporter.cancel();
         }
-    }
-
-    protected void updateInfo(boolean textOnly) {
-        StatisticsManager sm = null;
-        boolean rangeEnabled = true;
-
-        switch(typeCombo.getSelectedIndex()) {
-            case 0:
-                rangeEnabled = false;
-                sm = guiManager;
-                break;
-            case 1:
-                rangeEnabled = true;
-                sm = grammarManager;
-                break;
-            case 2:
-                rangeEnabled = true;
-                sm = runtimeManager;
-                break;
-        }
-
-        if(!textOnly)
-            setRangeEnabled(rangeEnabled, sm);
-
-        setText(sm);
-    }
-
-    protected void setRangeEnabled(boolean flag, StatisticsManager sm) {
-        currentSpinner.setEnabled(flag);
-        infoLabel.setEnabled(flag);
-
-        currentSpinner.setValue(new Integer(1));
-        SpinnerNumberModel spm = (SpinnerNumberModel)currentSpinner.getModel();
-        spm.setMaximum(new Integer(sm.getStatsCount()));
-
-        if(flag)
-            infoLabel.setText("of "+sm.getStatsCount());
-        else
-            infoLabel.setText("");
-    }
-
-    protected void setText(StatisticsManager sm) {
-        int index = ((Integer)currentSpinner.getValue()).intValue()-1;
-        String text = isHumanReadable() ? sm.getReadableString(index) : sm.getRawString(index);
-        if(text == null)
-            text = "* no statistics available *";
-
-        statsTextArea.setText(text);
-        statsTextArea.setCaretPosition(0);
-    }
-
-    protected boolean isHumanReadable() {
-        return humanFormatCheck.isSelected();
     }
 
     protected class MyActionListener implements ActionListener {
