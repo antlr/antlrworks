@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.completion;
 
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.OverlayObject;
 
 import javax.swing.*;
@@ -188,7 +188,7 @@ public class AutoCompletionMenu extends OverlayObject {
     public void resize() {
         Rectangle rect = null;
 
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_AUTO_COMPLETION_MENU);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_AUTO_COMPLETION_MENU);
 
         try {
             rect = getTextComponent().getUI().modelToView(getTextComponent(), displayIndex);

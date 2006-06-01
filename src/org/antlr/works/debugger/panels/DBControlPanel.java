@@ -5,7 +5,7 @@ import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 import org.antlr.works.debugger.tivo.DBRecorder;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.NumberSet;
 
@@ -76,8 +76,8 @@ public class DBControlPanel extends JPanel {
         box.add(goToStartButton = createGoToStartButton());
         box.add(backButton = createStepBackButton());
         box.add(forwardButton = createStepForwardButton());
-        box.add(fastForwardButton = createFastForwardButton());
         box.add(stepOverButton = createStepOverButton());
+        box.add(fastForwardButton = createFastForwardButton());
         box.add(goToEndButton = createGoToEndButton());
         box.add(Box.createHorizontalStrut(20));
         box.add(createBreakEventsBox());
@@ -94,7 +94,7 @@ public class DBControlPanel extends JPanel {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 debugger.debuggerStop(false);
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STOP);
+                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_STOP);
             }
         });
         return button;
@@ -107,7 +107,7 @@ public class DBControlPanel extends JPanel {
             public void actionPerformed(ActionEvent event) {
                 debugger.getRecorder().stepBackward(getBreakEvent());
                 updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_BACK);
+                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_STEP_BACK);
             }
         });
         return button;
@@ -120,7 +120,7 @@ public class DBControlPanel extends JPanel {
             public void actionPerformed(ActionEvent event) {
                 debugger.getRecorder().stepForward(getBreakEvent());
                 updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_FORWARD);
+                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_STEP_FORWARD);
             }
         });
         return button;
@@ -133,7 +133,7 @@ public class DBControlPanel extends JPanel {
             public void actionPerformed(ActionEvent event) {
                 debugger.getRecorder().stepOver();
                 updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_OVER);
+                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_STEP_OVER);
             }
         });
         return button;
@@ -148,7 +148,7 @@ public class DBControlPanel extends JPanel {
                 debugger.restorePreviousGrammarAttributeSet();
                 debugger.getRecorder().goToStart();
                 updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_START);
+                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_GOTO_START);
             }
         });
         return button;
@@ -162,7 +162,7 @@ public class DBControlPanel extends JPanel {
             public void actionPerformed(ActionEvent event) {
                 debugger.getRecorder().goToEnd();
                 updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_GOTO_END);
+                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_GOTO_END);
             }
         });
         return button;
@@ -176,7 +176,7 @@ public class DBControlPanel extends JPanel {
             public void actionPerformed(ActionEvent event) {
                 debugger.getRecorder().fastForward();
                 updateInterfaceLater();
-                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_FAST_FORWARD);
+                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_FAST_FORWARD);
             }
         });
         return button;

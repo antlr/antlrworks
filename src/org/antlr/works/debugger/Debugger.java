@@ -62,7 +62,7 @@ import org.antlr.works.generate.DialogGenerate;
 import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -408,14 +408,14 @@ public class Debugger extends EditorTab {
 
     public void debuggerLocalDidRun(boolean builtAndDebug) {
         if(builtAndDebug)
-            Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER_BUILD);
+            StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_LOCAL_DEBUGGER_BUILD);
         else
-            Statistics.shared().recordEvent(Statistics.EVENT_LOCAL_DEBUGGER);
+            StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_LOCAL_DEBUGGER);
         debuggerLaunch(DEFAULT_LOCAL_ADDRESS, AWPrefs.getDebugDefaultLocalPort());
     }
 
     public void launchRemoteDebugger() {
-        Statistics.shared().recordEvent(Statistics.EVENT_REMOTE_DEBUGGER);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOTE_DEBUGGER);
         DBRemoteConnectDialog dialog = new DBRemoteConnectDialog(getWindowComponent());
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
             debuggerLaunch(dialog.getAddress(), dialog.getPort());

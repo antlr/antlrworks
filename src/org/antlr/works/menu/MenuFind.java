@@ -3,7 +3,7 @@ package org.antlr.works.menu;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.find.Usages;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import java.util.Iterator;
@@ -45,28 +45,28 @@ public class MenuFind extends MenuAbstract {
     }
 
     public void find() {
-        Statistics.shared().recordEvent(Statistics.EVENT_FIND_DIALOG);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_DIALOG);
         editor.findAndReplace.find();
     }
 
     public void findNext() {
-        Statistics.shared().recordEvent(Statistics.EVENT_FIND_NEXT);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_NEXT);
         editor.findAndReplace.next();
     }
 
     public void findPrev() {
-        Statistics.shared().recordEvent(Statistics.EVENT_FIND_PREVIOUS);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_PREVIOUS);
         editor.findAndReplace.prev();
     }
 
     public void findSelection() {
-        Statistics.shared().recordEvent(Statistics.EVENT_FIND_TEXT_AT_CARET);        
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_TEXT_AT_CARET);
         editor.findAndReplace.setFindString(editor.getTextPane().getSelectedText());
         editor.findAndReplace.next();
     }
 
     public void findUsage() {
-        Statistics.shared().recordEvent(Statistics.EVENT_FIND_USAGES);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_USAGES);
 
         ATEToken token = editor.getCurrentToken();
         if(token == null)

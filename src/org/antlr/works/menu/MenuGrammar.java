@@ -38,7 +38,7 @@ import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.*;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxGroup;
 import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.syntax.GrammarSyntaxRule;
@@ -59,27 +59,27 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     public void showTokensSD() {
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_TOKENS_SD);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_TOKENS_SD);
         editor.visual.setRule(new GrammarSyntaxRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);
         editor.makeBottomComponentVisible();
     }
 
     public void showTokensDFA() {
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_TOKENS_DFA);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_TOKENS_DFA);
         TokensDFA decision = new TokensDFA(editor, this);
         if(decision.launch())
             showProgress("Generating...");
     }
 
     public void showDecisionDFA() {
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_DECISION_DFA);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_DECISION_DFA);
         DecisionDFA decision = new DecisionDFA(editor, this);
         if(decision.launch())
             showProgress("Generating...");
     }
 
     public void showDependency() {
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_RULE_DEPENDENCY);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_RULE_DEPENDENCY);
         RulesDependency dependency = new RulesDependency(editor, this);
         if(dependency.launch())
             showProgress("Generating...");
@@ -99,12 +99,12 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     public void insertRuleFromTemplate() {
-        Statistics.shared().recordEvent(Statistics.EVENT_INSERT_RULE_TEMPLATE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INSERT_RULE_TEMPLATE);
         editor.ruleTemplates.display();
     }
 
     public void group() {
-        Statistics.shared().recordEvent(Statistics.EVENT_RULE_GROUP);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_RULE_GROUP);
 
         String s = (String)JOptionPane.showInputDialog(editor.getWindowContainer(), "Group Name:", "Group",
                 JOptionPane.QUESTION_MESSAGE, null, null, "Group");
@@ -128,7 +128,7 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     public void ungroup() {
-        Statistics.shared().recordEvent(Statistics.EVENT_RULE_UNGROUP);        
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_RULE_UNGROUP);
 
         GrammarSyntaxGroup openGroup = editor.rules.getSelectedGroup();
         if(openGroup == null) {
@@ -174,7 +174,7 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
         editor.console.println("Checking Grammar...");
         checkGrammar.check();
 
-        Statistics.shared().recordEvent(Statistics.EVENT_CHECK_GRAMMAR);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CHECK_GRAMMAR);
     }
 
     public void checkGrammarDidBegin() {

@@ -48,7 +48,7 @@ import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.IconManager;
@@ -135,7 +135,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         button.setToolTipText("Run");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_BUTTON);
+                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INTERPRETER_BUTTON);
                 interpret();
             }
         });

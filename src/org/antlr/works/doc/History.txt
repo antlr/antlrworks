@@ -19,6 +19,7 @@ Version 1.0ea9 - 06/01/06
 - tab are reused for the same operation rather than populating
 - remote parser launch time-out can be specified in the preferences
 - syntax: added exception clause of rule
+- stats can be sent without launching AW (-stats to submit and -stats -erase to erase stats)
 
 - fixed a bug in the DOT engine that could prevent a DOT graph to be correctly displayed
 - fixed a bug where ANTLRWorks would freeze when replacing literals with token label

@@ -37,7 +37,7 @@ import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.syntax.GrammarSyntaxGroup;
 import org.antlr.works.syntax.GrammarSyntaxReference;
@@ -697,7 +697,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public boolean xjTreeDrop(XJTree tree, Object sourceObject, Object targetObject, int dropLocation) {
-        Statistics.shared().recordEvent(Statistics.EVENT_DROP_RULE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DROP_RULE);
 
         GrammarSyntaxRule sourceRule = ((EditorRules.RuleTreeUserObject) sourceObject).rule;
         GrammarSyntaxRule targetRule = ((EditorRules.RuleTreeUserObject) targetObject).rule;

@@ -77,8 +77,12 @@ public class DialogPersonalInfo extends XJDialog {
         devtoolCombo.addActionListener(new MyActionListener());
 
         okButton.setEnabled(false);
+    }
 
-        setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+    public void dialogWillCloseCancel() {
+        /** If the user closes the dialog, we will use dummy info to get an ID */
+
+        requestAndRegisterID();
     }
 
     public void dialogWillCloseOK() {
@@ -92,10 +96,14 @@ public class DialogPersonalInfo extends XJDialog {
         info.put(INFO_CAFFEINE, funField.getText());
         AWPrefs.setPersonalInfo(info);
 
+        requestAndRegisterID();
+    }
+
+    public void requestAndRegisterID() {
         StatisticsReporter sr = new StatisticsReporter();
         String id = sr.getID();
         if(id == null) {
-            System.err.println("Cannot send info ="+sr.getError());
+            System.err.println("Cannot send info ="+sr.getError()+"\nID is null.");
         }
     }
 

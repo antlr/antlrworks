@@ -33,7 +33,7 @@ package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxReference;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 
@@ -47,12 +47,12 @@ public class MenuGoTo extends MenuAbstract {
     }
 
     public void goToRule() {
-        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_RULE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_RULE);
         editor.goToRule.display();
     }
 
     public void goToDeclaration() {
-        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_DECLARATION);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_DECLARATION);
 
         GrammarSyntaxReference ref = editor.getCurrentReference();
         if(ref == null)
@@ -68,9 +68,9 @@ public class MenuGoTo extends MenuAbstract {
 
     public void goToBreakpoint(int direction) {
         if(direction == -1)
-            Statistics.shared().recordEvent(Statistics.EVENT_GOTO_PREV_BRKPT);
+            StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_PREV_BRKPT);
         else
-            Statistics.shared().recordEvent(Statistics.EVENT_GOTO_NEXT_BRKPT);
+            StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_NEXT_BRKPT);
 
         Set breakpoints = editor.breakpointManager.getBreakpoints();
         int line = editor.getTextEditor().getLineIndexAtTextPosition(getCaretPosition());
@@ -90,7 +90,7 @@ public class MenuGoTo extends MenuAbstract {
     }
 
     public void goToLine() {
-        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_LINE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_LINE);
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Line number:", "Go To Line",
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if(s != null) {
@@ -99,7 +99,7 @@ public class MenuGoTo extends MenuAbstract {
     }
 
     public void goToCharacter() {
-        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_CHAR);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_CHAR);
         String s = (String)JOptionPane.showInputDialog(editor.getJavaContainer(), "Character number:", "Go To Character",
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if(s != null) {
@@ -114,7 +114,7 @@ public class MenuGoTo extends MenuAbstract {
     }
 
     public void goToBackward() {
-        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_BACK);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_BACK);
 
         if(editor.goToHistory.canGoBack()) {
             setCaretPosition(editor.goToHistory.getBackPosition(getCaretPosition()));
@@ -123,7 +123,7 @@ public class MenuGoTo extends MenuAbstract {
     }
 
     public void goToForward() {
-        Statistics.shared().recordEvent(Statistics.EVENT_GOTO_FORWARD);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_FORWARD);
 
         if(editor.goToHistory.canGoForward()) {
             setCaretPosition(editor.goToHistory.getForwardPosition());

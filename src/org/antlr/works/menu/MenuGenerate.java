@@ -38,7 +38,7 @@ import org.antlr.works.generate.CodeDisplay;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
 import org.antlr.works.generate.DialogGenerate;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 
 public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
 
@@ -59,7 +59,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
     }
 
     protected void generateCodeProcess() {
-        Statistics.shared().recordEvent(Statistics.EVENT_GENERATE_CODE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GENERATE_CODE);
 
         if(!editor.ensureDocumentSaved())
             return;
@@ -91,7 +91,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
     }
 
     public void showGeneratedCode(boolean lexer) {
-        Statistics.shared().recordEvent(lexer?Statistics.EVENT_SHOW_LEXER_GENERATED_CODE:Statistics.EVENT_SHOW_PARSER_GENERATED_CODE);
+        StatisticsAW.shared().recordEvent(lexer?StatisticsAW.EVENT_SHOW_LEXER_GENERATED_CODE:StatisticsAW.EVENT_SHOW_PARSER_GENERATED_CODE);
 
         if(lexer && !generateCode.supportsLexer()) {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the lexer because there is no lexer in this grammar.");
@@ -105,7 +105,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
     }
 
     public void showRuleGeneratedCode() {
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_RULE_GENERATED_CODE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_RULE_GENERATED_CODE);
 
         if(editor.getCurrentRule() == null)
             XJAlert.display(editor.getWindowContainer(), "Error", "A rule must be selected first.");

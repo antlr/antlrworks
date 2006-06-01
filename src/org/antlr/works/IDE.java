@@ -57,6 +57,7 @@ import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.HelpManager;
 import org.antlr.works.utils.Localizable;
 import org.antlr.works.utils.Utils;
@@ -79,19 +80,23 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         XJSystem.setSystemProperties();
         XJApplication.setPropertiesPath("org/antlr/works/properties/");
 
-        sc = new SplashScreen();
+        if(args.length >= 1 && args[0].equals("-stats")) {
+            XJApplication.run(new Statistics(), args, "Statistics");
+        } else {
+            sc = new SplashScreen();
 
-        try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                public void run() {
-                    sc.setVisible(true);
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        sc.setVisible(true);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            XJApplication.run(new IDE(), args);
         }
-
-        XJApplication.run(new IDE(), args);
     }
 
     public void appDidLaunch(String[] args) {
@@ -108,7 +113,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         checkLibraries();
         checkEnvironment();
 
-        if(args.length == 2 && args[0].equals("-f")) {
+        if(args.length >= 2 && args[0].equals("-f")) {
             XJApplication.shared().openDocument(args[1]);
         } else {
             switch (AWPrefs.getStartupAction()) {
@@ -260,14 +265,14 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
                 HelpManager.sendFeedback(XJApplication.shared().getActiveWindow().getJavaContainer());
                 break;
             case EditorMenu.MI_CHECK_UPDATES:
-                Statistics.shared().recordEvent(Statistics.EVENT_CHECK_FOR_UPDATES);
+                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CHECK_FOR_UPDATES);
                 HelpManager.checkUpdates(XJApplication.shared().getActiveWindow().getJavaContainer(), false);
                 break;
         }
     }
 
     public void appShowHelp() {
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_HELP);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_HELP);
         String url = Localizable.getLocalizedString(Localizable.DOCUMENTATION_URL);
         try {
             BrowserLauncher.openURL(url);
@@ -277,7 +282,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public void appWillTerminate() {
-        Statistics.shared().close();
+        StatisticsAW.shared().close();
     }
 
     public Class appPreferencesPanelClass() {

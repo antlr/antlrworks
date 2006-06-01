@@ -37,7 +37,7 @@ import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.visualization.Visual;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GEngine;
@@ -59,7 +59,7 @@ public class MenuExport extends MenuAbstract {
     }
 
     public void exportEventsAsTextFile() {
-        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_EVENTS_AS_TEXT);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_EXPORT_EVENTS_AS_TEXT);
 
         if(!XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), "txt", "Text file", false))
             return;
@@ -78,7 +78,7 @@ public class MenuExport extends MenuAbstract {
     }
 
     public void exportAsImage() {
-        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_AS_BITMAP);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_EXPORT_AS_BITMAP);
 
         EditorTab tab = editor.getSelectedTab();
         if(!tab.canExportToBitmap())
@@ -122,7 +122,7 @@ public class MenuExport extends MenuAbstract {
     }
 
     public void exportAsEPS() {
-        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_AS_EPS);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_EXPORT_AS_EPS);
 
         EditorTab tab = editor.getSelectedTab();
         if(!tab.canExportToEPS())
@@ -187,7 +187,7 @@ public class MenuExport extends MenuAbstract {
     }
 
     public void exportAsDOT() {
-        Statistics.shared().recordEvent(Statistics.EVENT_EXPORT_AS_DOT);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_EXPORT_AS_DOT);
 
         EditorTab tab = editor.getSelectedTab();
         if(!tab.canExportToDOT())

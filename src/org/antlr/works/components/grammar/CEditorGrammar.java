@@ -31,7 +31,7 @@ import org.antlr.works.menu.*;
 import org.antlr.works.navigation.GoToHistory;
 import org.antlr.works.navigation.GoToRule;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.*;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.TextUtils;
@@ -494,18 +494,18 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void toggleSyntaxColoring() {
-        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_COLORING);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_SYNTAX_COLORING);
         textEditor.toggleSyntaxColoring();
     }
 
     public void toggleRulesSorting() {
-        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_RULE_SORT);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_RULE_SORT);
         rules.toggleSorting();
         interpreter.setRules(getRules());
     }
 
     public void toggleSyntaxDiagram() {
-        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SYNTAX_DIAGRAM);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_SYNTAX_DIAGRAM);
         visual.setEnable(!visual.isEnable());
         if(visual.isEnable()) {
             visual.setText(getText(), getFileName());
@@ -519,7 +519,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void toggleIdeas() {
-        Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_IDEAS);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_IDEAS);
         editorIdeas.toggleEnabled();
     }
 

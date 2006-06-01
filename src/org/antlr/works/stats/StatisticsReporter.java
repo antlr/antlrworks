@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.Map;
 
 public class StatisticsReporter {
@@ -66,6 +67,11 @@ public class StatisticsReporter {
 
     public String fetchIDFromServer() {
         Map info = AWPrefs.getPersonalInfo();
+        /** Send null info if we cannot get the personal info */
+        if(info == null) {
+            System.err.println("No personal info available. Sending blank data to request a new ID from ANTLR's server.");
+            info = new HashMap();
+        }
 
         StringBuffer s = new StringBuffer(URL_REGISTER);
         s.append("who=");

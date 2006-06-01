@@ -1,10 +1,9 @@
 
 * Prio 1
 
-- check AW compile on Java 1.4
+- make AST panel "detachable"
 
 * Prio 2
-- make AST panel "detachable"
 - optimize tree drawing using incremental model (see AWTreeGraphView)
 - make breakpoint in grammar and stop around this location (line, column)
 - be able to search the generated grammar too

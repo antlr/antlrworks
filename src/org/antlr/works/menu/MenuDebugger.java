@@ -33,7 +33,7 @@ package org.antlr.works.menu;
 
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.Debugger;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 
 public class MenuDebugger extends MenuAbstract {
 
@@ -43,7 +43,7 @@ public class MenuDebugger extends MenuAbstract {
 
     public void runInterpreter() {
         try {
-            Statistics.shared().recordEvent(Statistics.EVENT_INTERPRETER_MENU);
+            StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INTERPRETER_MENU);
             editor.selectInterpreterTab();
             editor.interpreter.interpret();
         } catch (Exception e) {
@@ -81,7 +81,7 @@ public class MenuDebugger extends MenuAbstract {
 
     public void toggleInputTokens() {
         editor.debugger.toggleInputTokensBox();
-        Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
     }
 
     public boolean isInputTokenVisible() {

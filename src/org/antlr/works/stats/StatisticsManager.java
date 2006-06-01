@@ -43,6 +43,8 @@ import java.util.List;
 
 public class StatisticsManager {
 
+    public static final int MAX_REPORTS = 1000;
+    
     public static final int TYPE_GUI = 0;
     public static final int TYPE_GRAMMAR = 1;
     public static final int TYPE_RUNTIME = 2;
@@ -69,7 +71,7 @@ public class StatisticsManager {
             else if(type == TYPE_RUNTIME)
                 return Profiler.toString(rawLine);
             else
-                return Statistics.shared().getReadableString();
+                return StatisticsAW.shared().getReadableString();
         }
     }
 
@@ -91,7 +93,7 @@ public class StatisticsManager {
     }
 
     protected boolean loadGUI() {
-        addRawLine(Statistics.shared().getRawString());
+        addRawLine(StatisticsAW.shared().getRawString());
         return true;
     }
 
@@ -128,12 +130,18 @@ public class StatisticsManager {
 
     protected void addRawLine(String line) {
         rawLines.add(line);
+        if(rawLines.size() > MAX_REPORTS)
+            rawLines.remove(0);
     }
 
     public void reset() {
+        reset(type);
+    }
+
+    public static void reset(int type) {
         switch(type) {
             case TYPE_GUI:
-                Statistics.shared().reset();
+                StatisticsAW.shared().reset();
                 break;
             case TYPE_GRAMMAR: {
                 String file = GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME);

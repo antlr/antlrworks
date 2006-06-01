@@ -36,7 +36,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.menu.ContextualMenuFactory;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.visualization.graphics.GContext;
@@ -401,7 +401,7 @@ public class GPanel implements XJNotificationObserver {
         button.setSelected(context.skin instanceof NFASkin);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                Statistics.shared().recordEvent(Statistics.EVENT_TOGGLE_SD_NFA);
+                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_SD_NFA);
 
                 JCheckBox button = (JCheckBox)event.getSource();
                 if(button.isSelected())

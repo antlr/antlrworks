@@ -6,7 +6,7 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxLexer;
 import org.antlr.works.syntax.GrammarSyntaxReference;
 import org.antlr.works.syntax.GrammarSyntaxRule;
@@ -56,7 +56,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void rename() {
-        Statistics.shared().recordEvent(Statistics.EVENT_RENAME);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_RENAME);
 
         ATEToken token = editor.getCurrentToken();
         if(token == null)
@@ -99,7 +99,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void replaceLiteralWithTokenLabel() {
-        Statistics.shared().recordEvent(Statistics.EVENT_REPLACE_LITERALS);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REPLACE_LITERALS);
 
         ATEToken token = editor.getCurrentToken();
         if(token == null)
@@ -140,7 +140,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void convertLiteralsToSingleQuote() {
-        Statistics.shared().recordEvent(Statistics.EVENT_CONVERT_LITERALS_TO_SINGLE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CONVERT_LITERALS_TO_SINGLE);
 
         beginRefactor("Convert Literals To Single Quote Literals");
         convertLiteralsToSpecifiedQuote(ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING, '\'', '"');
@@ -148,7 +148,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void convertLiteralsToDoubleQuote() {
-        Statistics.shared().recordEvent(Statistics.EVENT_CONVERT_LITERALS_TO_DOUBLE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CONVERT_LITERALS_TO_DOUBLE);
 
         beginRefactor("Convert Literals To Double Quote Literals");
         convertLiteralsToSpecifiedQuote(ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING, '"', '\'');
@@ -156,7 +156,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void convertLiteralsToCStyleQuote() {
-        Statistics.shared().recordEvent(Statistics.EVENT_CONVERT_LITERALS_TO_CSTYLE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CONVERT_LITERALS_TO_CSTYLE);
 
         beginRefactor("Convert Literals To C-style Quote Literals");
 
@@ -249,7 +249,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void removeLeftRecursion() {
-        Statistics.shared().recordEvent(Statistics.EVENT_REMOVE_LEFT_RECURSION);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOVE_LEFT_RECURSION);
 
         GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {
@@ -269,7 +269,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void removeAllLeftRecursion() {
-        Statistics.shared().recordEvent(Statistics.EVENT_REMOVE_ALL_LEFT_RECURSION);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOVE_ALL_LEFT_RECURSION);
 
         beginRefactor("Remove All Left Recursion");
         List rules = editor.rules.getRules();
@@ -290,7 +290,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void extractRule() {
-        Statistics.shared().recordEvent(Statistics.EVENT_EXTRACT_RULE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_EXTRACT_RULE);
 
         if(!canExtractRule()) {
             XJAlert.display(editor.getWindowContainer(), "Extract Rule", "At least one token must be selected.");
@@ -325,7 +325,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void inlineRule() {
-        Statistics.shared().recordEvent(Statistics.EVENT_INLINE_RULE);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INLINE_RULE);
 
         GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {

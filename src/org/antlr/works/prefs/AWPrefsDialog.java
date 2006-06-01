@@ -41,7 +41,7 @@ import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
-import org.antlr.works.stats.Statistics;
+import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.HelpManager;
 
 import javax.swing.*;
@@ -250,7 +250,7 @@ public class AWPrefsDialog extends XJPanel {
         javacPathField.setEnabled(javacCustomPathButton.isSelected());
         browseJavacPath.setEnabled(javacCustomPathButton.isSelected());
         actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
-        Statistics.shared().recordEvent(Statistics.EVENT_SHOW_PREFERENCES);
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_PREFERENCES);
     }
 
     public void close() {

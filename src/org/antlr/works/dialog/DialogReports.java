@@ -54,6 +54,8 @@ public class DialogReports extends XJDialog {
     protected StatisticsManager guiManager;
     protected StatisticsManager grammarManager;
     protected StatisticsManager runtimeManager;
+
+    protected DialogReportsDelegate delegate;
     protected XJDialogProgress progress;
 
     public DialogReports(Container parent) {
@@ -78,12 +80,25 @@ public class DialogReports extends XJDialog {
         });
     }
 
+    public void setDelegate(DialogReportsDelegate delegate) {
+        this.delegate = delegate;
+    }
+
     public void dialogWillDisplay() {
         guiManager = new StatisticsManager(StatisticsManager.TYPE_GUI);
         grammarManager = new StatisticsManager(StatisticsManager.TYPE_GRAMMAR);
         runtimeManager = new StatisticsManager(StatisticsManager.TYPE_RUNTIME);
 
         updateInfo(false);
+    }
+
+    public void dialogWillCloseCancel() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if(delegate != null)
+                    delegate.reportsCancelled();                        
+            }
+        });
     }
 
     public void dialogWillCloseOK() {
@@ -213,10 +228,17 @@ public class DialogReports extends XJDialog {
                     info = "An error has occurred when sending the statistics:\n"+reporter.getError();
                 } else {
                     title = "Thank you";
-                    info = "The statistics have been successfully transmitte.";
+                    info = "The statistics have been successfully transmitted.";
                 }
             }
             XJAlert.display(getJavaComponent(), title, info);
+
+            if(delegate != null) {
+                if(cancel)
+                    delegate.reportsCancelled();
+                else
+                    delegate.reportsSend(!error);
+            }
         }
 
         public void dialogDidCancel() {
