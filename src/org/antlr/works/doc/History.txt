@@ -1,5 +1,5 @@
 
-Version 1.0ea9 - ...
+Version 1.0ea9 - 06/01/06
 
 - debugger: display now AST tree during debugging
 - debugger: can debug tree grammar (display input tree)

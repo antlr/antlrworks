@@ -1,8 +1,8 @@
 ANTLRWorks
-Version 1.0 early access 4
-October 22, 2005
+Version 1.0 early access 9
+June 1, 2006
 
-(c) 2005 Jean Bovet & Terence Parr
+(c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
 
 * INTRODUCTION *
@@ -67,11 +67,148 @@ using "java org.antlr.works.IDE".
 
 - This version disables emacs key-bindings on all OS except Mac OS X.
   It will be available in future version.
-- Rule collapsing is still experimental. Collapsed rule may visually
-  disappear but are still in the underlying text buffer.
 
 
 * HISTORY *
+
+06/01/06 - version 1.0ea9
+
+- debugger: display now AST tree during debugging
+- debugger: can debug tree grammar (display input tree)
+- debugger: can step over a rule
+- parse tree in debugger shows backtrack nodes (colorized)
+- show now Tokens DFA
+- can now export decision DFA and rule dependency graph as DOT file
+- new replace all feature in find dialog
+- generated code coloring has been disabled
+- auto-save document before debugging and generating code for display
+- generate parser if document has been modified since last generation
+- more precise message when log are reported to the console (warnings or errors)
+- more information are reported in the events list of the debugger
+- debugger: output pane and information pane are now hidden by default
+- debugger: new method to select the break event(s)
+- debugger: message if remote parser's grammar file does not match current file
+- tab are reused for the same operation rather than populating
+- remote parser launch time-out can be specified in the preferences
+- syntax: added exception clause of rule
+
+- fixed a bug in the DOT engine that could prevent a DOT graph to be correctly displayed
+- fixed a bug where ANTLRWorks would freeze when replacing literals with token label
+- fixed a bug where stats about programming and language implementation experience were inverted
+
+03/11/06 - version 1.0ea8
+
+- new: rule dependency graph (can be exported to EPS or bitmap file)
+- new: syntax coloring for generated Java code
+- new: references, comments and strings are now colorized inside actions
+- new: contextual menus in editor, syntax diagram, interpreter and debugger
+- new: user can now specify tokens to be ignored in interpreter
+- new: syntax colors can be changed in the preferences
+- new: display of unreachable alternatives in the syntax diagram
+
+- parse tree (interpreter/debugger) can now be scrolled by clicking and dragging the mouse
+- new idea to convert invalid string literals to single quote literals
+- new message in status bar if an error is reported in the console
+- ctrl-k: now copy the deleted end of line to the system clipboard
+- ctrl-t: now swap two characters (insert templates is now invoked using meta-k)
+- click in the debug parse tree will show corresponding token in input stream and position in grammar
+- kill the remote parser if the debugger cannot stop it (not applicable to remote parser)
+- update the rules status and syntax diagram each time the grammar is analyzed (not only when using the Check Grammar command)
+- improved ANTLR usage by running ANTLR only when necessary
+- rules are now sorted in interpreter and debugger if they are sorted in the editor
+- disabling syntax diagram now display a message
+- now reload the tokenVocab file content when ANTLRWorks is back to front
+- improved selection of a identifier
+- improved word selection using the mouse: dragging the mouse without releasing the button
+  now extends the selection word by word (as expected on Mac OS X)
+- improved decision DFA diagram using more precise B-splines
+- added an arrow at the end of each syntax diagram
+- check grammar command now also analyzes the lexer part of a combined grammar
+- improved current select path in syntax diagram when switching path visiblity
+- improved syntax diagram display (colored label and smaller size)
+
+- fixed a bug where auto-indentation would be applied for a ':' even inside an action block
+- fixed a bug where some tokens were not properly colorized (cut and past the same token over itself)
+- fixed a bug where the file content was not properly parsed if modified outside ANTLRWorks
+- fixed a bug where the analysis indicator was colored improperly
+- fixed a bug where Go To Character would be off by one character
+- fixed a bug when reading the tokenVocab file (was missing the first character)
+- fixed a bug where ANTLR would not be able to read the tokenVocab file (missing path)
+- fixed a bug in the code generation (problem with grammar name)
+- fixed a bug in the syntax diagram engine where a link from a rule to another rule would start at the wrong state
+- fixed a bug in the syntax diagram path drawing where some paths were not correctly rendered
+
+12/15/05 - version 1.0ea7
+
+- fixed a bug which prevented ANTLRWorks to launch on Windows
+
+12/14/05 - version 1.0ea6
+
+- new: graphical representation of the parse tree (interpreter and debugger) that
+       can also be exported to bitmap or eps
+- new: show artificial Tokens rule
+- new: click on an input token (debugger) selects the corresponding token in the grammar
+       and in the parse tree
+- new: breakpoints in input text (right-click to toggle the breakpoint on any tokens)
+- new: breakpoints in grammar now works (click in the editor gutter to enable/disable them)
+- new: convert literal quote refactoring tools (to single, to double or c-style quote)
+- new: now available as a bundle for Mac OS X (can now drag a grammar file to its icon in the dock)
+- new: handle now the tokenVocab options
+
+- improved debugger: display the event where the debugger stopped at
+- improved decision DFA: vectorial representation where states can be moved using the mouse
+- improved decision DFA: exportable to EPS and bitmap image
+- improved export to EPS: file size has been reduced by up to 1/2 of the previous generated size
+- improved show generated code: automatically generate the code if needed
+- improved: auto-scrolling when following ambiguous paths in syntax diagram
+- improved: smooth scrolling when jumping to rule in the grammar
+
+- move caret to decision location when displaying DFA decision
+- rules list can be sorted (group are not sorted)
+- can open the file using Perforce automatically when saving it if it was closed
+
+- debugger input text is now saved and restored in preferences
+- improved caret visibility with wider caret in grammar text
+
+- improved message redirection to editor console
+- improved debugger token outline when a token spans on multiple lines
+- improved underlying menu update system
+- report a message if ANTLR installation is corrupted
+
+11/13/05 - version 1.0ea5
+
+- new: display syntax diagram and NFA for lexer rules
+- new: export syntax diagram and NFA to eps file (File>Export Rule>As EPS...)
+- new: inline and extract rule refactoring
+
+- added optional path to javac in the preferences
+- added output text pane in debugger (all System.out from the parser are redirected to this pane)
+- added break on exception in debugger
+- added regex expression in the Find dialog
+- added "Find Text at Caret" and modified menu shortcut for "Find Previous"
+- added invalid character literal detection
+
+- improved caret jump to position by centering the text
+- improved syntax coloring to match more of ANTLR 3 specification (label, tokens block, etc)
+- improved display decision NFA: doesn't require an exact caret position anymore
+- improved rule folding: can now fold using the bottom anchor
+- re-introduced actions folding (anchors can be disabled in the preferences)
+- expand or collapse all rules or actions
+- improved Go To Rule: ignore case and display typed text in red if no match found
+- improved debugger connection to remote parser (threaded)
+- build and debug/debug: the starting rule pop-up menu has been moved to the input text dialog
+- improved the build & debug feature to include the ANTLRWorks jar itself in the classpath
+
+- hide and disable ideas during debugging
+- display a message if the syntax diagram cannot be displayed
+- display warning message if ANTLR 2.x grammars detected
+- changed debugger port from 2005 to 0xC001 (49153)
+
+- fixed a bug where the undo/redo menu item title would not display the correct action name
+- fixed a bug in the Find dialog where some pattern would cause an exception (didn't quote in the regex)
+- fixed a bug which would prevent drag and drop of rules to work on Windows
+- fixed a bug where not all messages would be displayed in the console (added group "idle")
+- fixed a bug where applying the preferences would apply the current look and feel (not needed)
 
 10/22/05 - version 1.0ea4
   - find and replace
@@ -149,7 +286,7 @@ using "java org.antlr.works.IDE".
 
 * WARNING *
 
-Per the license in LICENSE.txt, this software is not guaranteed to
+Per the license in license.txt, this software is not guaranteed to
 work and might even destroy all life on this planet:
 
 THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
