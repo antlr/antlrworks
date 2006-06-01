@@ -53,6 +53,7 @@ public class DBControlPanel extends JPanel {
     protected JButton fastForwardButton;
     protected JButton backButton;
     protected JButton forwardButton;
+    protected JButton stepOverButton;
 
     protected JCheckBox breakAllButton;
     protected JCheckBox breakLocationButton;
@@ -74,8 +75,9 @@ public class DBControlPanel extends JPanel {
         box.add(Box.createHorizontalStrut(20));
         box.add(goToStartButton = createGoToStartButton());
         box.add(backButton = createStepBackButton());
-        box.add(fastForwardButton = createFastForwardButton());
         box.add(forwardButton = createStepForwardButton());
+        box.add(fastForwardButton = createFastForwardButton());
+        box.add(stepOverButton = createStepOverButton());
         box.add(goToEndButton = createGoToEndButton());
         box.add(Box.createHorizontalStrut(20));
         box.add(createBreakEventsBox());
@@ -119,6 +121,19 @@ public class DBControlPanel extends JPanel {
                 debugger.getRecorder().stepForward(getBreakEvent());
                 updateInterfaceLater();
                 Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_FORWARD);
+            }
+        });
+        return button;
+    }
+
+    public JButton createStepOverButton() {
+        JButton button = new JButton(IconManager.shared().getIconStepOver());
+        button.setToolTipText("Step Over");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                debugger.getRecorder().stepOver();
+                updateInterfaceLater();
+                Statistics.shared().recordEvent(Statistics.EVENT_DEBUGGER_STEP_OVER);
             }
         });
         return button;
@@ -261,6 +276,7 @@ public class DBControlPanel extends JPanel {
 
         backButton.setEnabled(enabled && !atBeginning);
         forwardButton.setEnabled(enabled && !atEnd);
+        stepOverButton.setEnabled(enabled && !atEnd);
         fastForwardButton.setEnabled(enabled && !atEnd);
         goToStartButton.setEnabled(enabled && !atBeginning);
         goToEndButton.setEnabled(enabled && !atEnd);

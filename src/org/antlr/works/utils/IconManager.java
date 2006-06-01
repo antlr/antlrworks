@@ -164,6 +164,10 @@ public class IconManager {
         return createImageIcon(path+"stepbackward.png");
     }
 
+    public ImageIcon getIconStepOver() {
+        return createImageIcon(path+"stepover.png");
+    }
+
     public ImageIcon getIconGoToStart() {
         return createImageIcon(path+"gotostart.png");
     }

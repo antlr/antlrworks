@@ -3,6 +3,7 @@ Version 1.0ea9 - ...
 
 - debugger: display now AST tree during debugging
 - debugger: can debug tree grammar (display input tree)
+- debugger: can step over a rule
 - parse tree in debugger shows backtrack nodes (colorized)
 - show now Tokens DFA
 - can now export decision DFA and rule dependency graph as DOT file

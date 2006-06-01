@@ -130,10 +130,11 @@ public class Statistics {
     public static final int EVENT_DEBUGGER_STOP = 140;
     public static final int EVENT_DEBUGGER_STEP_BACK = 141;
     public static final int EVENT_DEBUGGER_STEP_FORWARD = 142;
-    public static final int EVENT_DEBUGGER_FAST_FORWARD = 143;
-    public static final int EVENT_DEBUGGER_GOTO_START = 144;
-    public static final int EVENT_DEBUGGER_GOTO_END = 145;
-    public static final int EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS = 146;
+    public static final int EVENT_DEBUGGER_STEP_OVER = 143;
+    public static final int EVENT_DEBUGGER_FAST_FORWARD = 144;
+    public static final int EVENT_DEBUGGER_GOTO_START = 145;
+    public static final int EVENT_DEBUGGER_GOTO_END = 146;
+    public static final int EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS = 147;
 
     static final Map eventNames = new HashMap();
     static final List eventList = new ArrayList();
@@ -217,6 +218,7 @@ public class Statistics {
         register(EVENT_DEBUGGER_STOP, "Debugger stop");
         register(EVENT_DEBUGGER_STEP_BACK, "Debugger step back");
         register(EVENT_DEBUGGER_STEP_FORWARD, "Debugger step forward");
+        register(EVENT_DEBUGGER_STEP_OVER, "Debugger step over");
         register(EVENT_DEBUGGER_FAST_FORWARD, "Debugger fast forward");
         register(EVENT_DEBUGGER_GOTO_START, "Debugger goto start");
         register(EVENT_DEBUGGER_GOTO_END, "Debugger goto end");

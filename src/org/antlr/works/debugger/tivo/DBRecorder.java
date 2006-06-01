@@ -38,10 +38,7 @@ import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
 import org.antlr.works.debugger.Debugger;
-import org.antlr.works.debugger.events.DBEvent;
-import org.antlr.works.debugger.events.DBEventConsumeHiddenToken;
-import org.antlr.works.debugger.events.DBEventConsumeToken;
-import org.antlr.works.debugger.events.DBEventLocation;
+import org.antlr.works.debugger.events.*;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.NumberSet;
@@ -74,6 +71,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     protected NumberSet breakEvents = new NumberSet();
     protected int stoppedOnEvent = DBEvent.NO_EVENT;
     protected boolean ignoreBreakpoints = false;
+    protected StepOver stepOver = new StepOver();
 
     protected int lastTokenIndexEventNumber;
     protected int currentTokenIndexEventNumber;
@@ -211,6 +209,15 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         if(event == null)
             return DBEvent.NO_EVENT;
 
+        /** If we are stepping over handle it here */
+        if(stepOver.isSteppingOver()) {
+            if(stepOver.shouldStop(event)) {
+                stepOver.endStepOver();
+                return event.type;
+            } else
+                return DBEvent.NO_EVENT;
+        }
+
         if(event.type == DBEvent.COMMENCE)
             return event.type;
 
@@ -281,6 +288,11 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
             else
                 threadNotify();
         }
+    }
+
+    public void stepOver() {
+        stepOver.beginStepOver();
+        fastForward();
     }
 
     public void stepContinue(Set breakEvents) {
@@ -437,10 +449,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
      * the state of the debugger (i.e. name of the grammar). This method
      * is called in the event dispatch thread.
      */
-
     public void checkRemoteParserHeaders() {
-        /* @todo check later for the version */
-
         //Tool.VERSION
         //System.out.println(listener.version);
 
@@ -456,7 +465,6 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     /** Check any error coming from the remote parser. Return true if the debugger needs
       to be paused
     */
-
     public boolean checkRemoteParserState() {
         if(remoteParserStateWarned)
             return false;
@@ -479,7 +487,6 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     /** This method keeps track of the last consumed index in order to display
      * useful information if an invalid index is detected
      */
-
     public void recordIndexes(DBEvent event) {
         Token t = null;
         if(event instanceof DBEventConsumeToken) {
@@ -501,7 +508,6 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     /** This method is called by DBRecorderEventListener for each event received from
      * the remote parser. It is running on another thread than the event thread.
      */
-
     public synchronized void listenerEvent(DBEvent event) {
         events.add(event);
         recordIndexes(event);
@@ -576,6 +582,69 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public void dialogDidCancel() {
         cancelled = true;
+    }
+
+    public class StepOver {
+
+        public static final int MODE_DISABLED = 0;
+        public static final int MODE_WAIT_ENTER_RULE = 1;
+        public static final int MODE_WAIT_EXIT_RULE = 2;
+        public static final int MODE_WAIT_LOCATION = 3;
+
+        public int mode = MODE_DISABLED;
+
+        /** Count the number of nested stepped over rule name */
+        public int nested;
+        /** Name of the stepped over rule */
+        public String ruleName;
+
+        public void beginStepOver() {
+            mode = MODE_WAIT_ENTER_RULE;
+        }
+
+        public void endStepOver() {
+            mode = MODE_DISABLED;
+        }
+
+        public boolean isSteppingOver() {
+            return mode != MODE_DISABLED;
+        }
+
+        public boolean shouldStop(DBEvent event) {
+            switch(mode) {
+                case MODE_WAIT_ENTER_RULE:
+                    if(event instanceof DBEventEnterRule) {
+                        DBEventEnterRule e = (DBEventEnterRule)event;
+                        ruleName = e.name;
+                        mode = MODE_WAIT_EXIT_RULE;
+                        nested = 0;
+                    }
+                    break;
+
+                case MODE_WAIT_EXIT_RULE:
+                    if(event instanceof DBEventEnterRule) {
+                        DBEventEnterRule e = (DBEventEnterRule)event;
+                        if(e.name.equals(ruleName))
+                            nested++;
+                    } else if(event instanceof DBEventExitRule) {
+                        DBEventExitRule e = (DBEventExitRule)event;
+                        if(e.name.equals(ruleName)) {
+                            if(nested == 0) {
+                                mode = MODE_WAIT_LOCATION;
+                            } else {
+                                nested--;
+                            }
+                        }
+                    }
+                    break;
+
+                case MODE_WAIT_LOCATION:
+                    if(event instanceof DBEventLocation)
+                        return true;
+                    break;
+            }
+            return false;
+        }
     }
 
     public class PlayEventRunnable implements Runnable {

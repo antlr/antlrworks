@@ -1,7 +1,6 @@
 
 * Prio 1
 
-- step over a rule/subrule
 - check AW compile on Java 1.4
 
 * Prio 2
