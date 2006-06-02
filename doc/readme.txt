@@ -1,6 +1,6 @@
 ANTLRWorks
 Version 1.0 early access 9
-June 1, 2006
+June 2, 2006
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -71,7 +71,7 @@ using "java org.antlr.works.IDE".
 
 * HISTORY *
 
-06/01/06 - version 1.0ea9
+06/02/06 - version 1.0ea9
 
 - debugger: display now AST tree during debugging
 - debugger: can debug tree grammar (display input tree)
