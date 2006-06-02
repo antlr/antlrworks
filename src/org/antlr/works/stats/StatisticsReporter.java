@@ -137,22 +137,10 @@ public class StatisticsReporter {
         cancel = true;
     }
 
-    public boolean submitGUI(StatisticsManager sm) {
-        return submitStats(sm, TYPE_GUI);
-    }
-
-    public boolean submitGrammar(StatisticsManager sm) {
-        return submitStats(sm, TYPE_GRAMMAR);
-    }
-
-    public boolean submitRuntime(StatisticsManager sm) {
-        return submitStats(sm, TYPE_RUNTIME);
-    }
-
-    public boolean submitStats(StatisticsManager sm, String type) {
+    public boolean submitStats(StatisticsManager sm) {
         cancel = false;
         for(int index=0; index<sm.getStatsCount(); index++) {
-            if(!submitStats(getID(), type, sm.getRawString(index)))
+            if(!submitStats(getID(), sm.type, sm.getRawString(index)))
                 return false;
             if(cancel)
                 return true;

@@ -44,15 +44,11 @@ import java.util.List;
 public class StatisticsManager {
 
     public static final int MAX_REPORTS = 1000;
-    
-    public static final int TYPE_GUI = 0;
-    public static final int TYPE_GRAMMAR = 1;
-    public static final int TYPE_RUNTIME = 2;
 
-    protected int type;
+    protected String type;
     protected List rawLines = new ArrayList();
 
-    public StatisticsManager(int type) {
+    public StatisticsManager(String type) {
         this.type = type;
         load();
     }
@@ -66,9 +62,9 @@ public class StatisticsManager {
             return null;
         else {
             String rawLine = (String)rawLines.get(index);
-            if(type == TYPE_GRAMMAR)
+            if(type.equals(StatisticsReporter.TYPE_GRAMMAR))
                 return GrammarReport.toString(rawLine);
-            else if(type == TYPE_RUNTIME)
+            else if(type.equals(StatisticsReporter.TYPE_RUNTIME))
                 return Profiler.toString(rawLine);
             else
                 return StatisticsAW.shared().getReadableString();
@@ -84,12 +80,14 @@ public class StatisticsManager {
 
     public boolean load() {
         rawLines.clear();
-        switch(type) {
-            case TYPE_GUI:  return loadGUI();
-            case TYPE_GRAMMAR:  return loadGrammar();
-            case TYPE_RUNTIME:  return loadRuntime();
-        }
-        return false;
+        if(type.equals(StatisticsReporter.TYPE_GRAMMAR))
+            return loadGrammar();
+        else if(type.equals(StatisticsReporter.TYPE_RUNTIME))
+            return loadRuntime();
+        else if(type.equals(StatisticsReporter.TYPE_GUI))
+            return loadGUI();
+        else
+            return false;
     }
 
     protected boolean loadGUI() {
@@ -138,20 +136,14 @@ public class StatisticsManager {
         reset(type);
     }
 
-    public static void reset(int type) {
-        switch(type) {
-            case TYPE_GUI:
-                StatisticsAW.shared().reset();
-                break;
-            case TYPE_GRAMMAR: {
-                String file = GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME);
-                new File(file).delete();
-                break;
-            }
-            case TYPE_RUNTIME: {
-                String file = GrammarReport.getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME);
-                new File(file).delete();
-            }
-        }
+    public static void reset(String type) {
+        if(type.equals(StatisticsReporter.TYPE_GRAMMAR)) {
+            String file = GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME);
+            new File(file).delete();
+        } else if(type.equals(StatisticsReporter.TYPE_RUNTIME)) {
+            String file = GrammarReport.getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME);
+            new File(file).delete();
+        } else if(type.equals(StatisticsReporter.TYPE_GUI))
+            StatisticsAW.shared().reset();
     }
 }

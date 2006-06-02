@@ -54,7 +54,7 @@ public class HelpManager implements XJScheduledTimerDelegate {
     }
 
     public static void submitStats(Container parent) {
-        new DialogReports(parent).runModal();
+        new DialogReports(parent, true).runModal();
     }
 
     public static void sendFeedback(Container parent) {

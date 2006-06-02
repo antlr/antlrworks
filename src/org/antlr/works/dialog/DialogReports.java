@@ -51,6 +51,10 @@ import java.awt.event.ActionListener;
 
 public class DialogReports extends XJDialog {
 
+    public static final int TYPE_GUI = 0;
+    public static final int TYPE_GRAMMAR = 1;
+    public static final int TYPE_RUNTIME = 2;
+
     protected StatisticsManager guiManager;
     protected StatisticsManager grammarManager;
     protected StatisticsManager runtimeManager;
@@ -58,8 +62,13 @@ public class DialogReports extends XJDialog {
     protected DialogReportsDelegate delegate;
     protected XJDialogProgress progress;
 
-    public DialogReports(Container parent) {
+    protected DefaultComboBoxModel typeModel = new DefaultComboBoxModel();
+    protected boolean usesAWStats = true;
+
+    public DialogReports(Container parent, boolean usesAWStats) {
         super(parent, true);
+
+        this.usesAWStats = usesAWStats;
 
         initComponents();
         setSize(550, 500);
@@ -67,6 +76,8 @@ public class DialogReports extends XJDialog {
         setDefaultButton(submitButton);
         setOKButton(submitButton);
         setCancelButton(cancelButton);
+
+        buildTypeCombo();
 
         humanFormatCheck.setSelected(true);
         statsTextArea.setTabSize(2);
@@ -84,10 +95,19 @@ public class DialogReports extends XJDialog {
         this.delegate = delegate;
     }
 
+    public void buildTypeCombo() {
+        if(usesAWStats)
+            typeModel.addElement("ANTLRWorks");
+        typeModel.addElement("ANTLR - grammar");
+        typeModel.addElement("ANTLR - runtime");
+
+        typeCombo.setModel(typeModel);
+    }
+
     public void dialogWillDisplay() {
-        guiManager = new StatisticsManager(StatisticsManager.TYPE_GUI);
-        grammarManager = new StatisticsManager(StatisticsManager.TYPE_GRAMMAR);
-        runtimeManager = new StatisticsManager(StatisticsManager.TYPE_RUNTIME);
+        guiManager = new StatisticsManager(StatisticsReporter.TYPE_GUI);
+        grammarManager = new StatisticsManager(StatisticsReporter.TYPE_GRAMMAR);
+        runtimeManager = new StatisticsManager(StatisticsReporter.TYPE_RUNTIME);
 
         updateInfo(false);
     }
@@ -105,20 +125,27 @@ public class DialogReports extends XJDialog {
         new SendReport().send();
     }
 
+    protected int getTypeIndex() {
+        if(usesAWStats)
+            return typeCombo.getSelectedIndex();
+        else
+            return typeCombo.getSelectedIndex()+1;
+    }
+
     protected void updateInfo(boolean textOnly) {
         StatisticsManager sm = null;
         boolean rangeEnabled = true;
 
-        switch(typeCombo.getSelectedIndex()) {
-            case 0:
+        switch(getTypeIndex()) {
+            case TYPE_GUI:
                 rangeEnabled = false;
                 sm = guiManager;
                 break;
-            case 1:
+            case TYPE_GRAMMAR:
                 rangeEnabled = true;
                 sm = grammarManager;
                 break;
-            case 2:
+            case TYPE_RUNTIME:
                 rangeEnabled = true;
                 sm = runtimeManager;
                 break;
@@ -185,8 +212,11 @@ public class DialogReports extends XJDialog {
             for (int i = 0; i < managers.length; i++) {
                 StatisticsManager manager = managers[i];
 
+                if(manager == guiManager && !usesAWStats)
+                    continue;
+
                 progress.setProgress(i+1);
-                if(!reporter.submitGUI(manager))
+                if(!reporter.submitStats(manager))
                     return true;
 
                 if(cancel)

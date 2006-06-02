@@ -50,9 +50,9 @@ public class Statistics extends XJApplicationDelegate implements DialogReportsDe
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
 
         if(args.length >= 2 && args[1].equals("-erase")) {
-            StatisticsManager.reset(StatisticsManager.TYPE_GUI);
-            StatisticsManager.reset(StatisticsManager.TYPE_GRAMMAR);
-            StatisticsManager.reset(StatisticsManager.TYPE_RUNTIME);
+            StatisticsManager.reset(StatisticsReporter.TYPE_GUI);
+            StatisticsManager.reset(StatisticsReporter.TYPE_GRAMMAR);
+            StatisticsManager.reset(StatisticsReporter.TYPE_RUNTIME);
             XJAlert.display(null, "Statistics", "The statistics have been successfully erased.");
             System.exit(0);
         } else {
@@ -63,7 +63,7 @@ public class Statistics extends XJApplicationDelegate implements DialogReportsDe
                 AWPrefs.setUserRegistered(true);
             }
 
-            DialogReports reports = new DialogReports(null);
+            DialogReports reports = new DialogReports(null, false);
             reports.setDelegate(this);
             reports.runModal();
         }
