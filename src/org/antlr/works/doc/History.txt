@@ -1,3 +1,6 @@
+Version 1.0ea10 - ?
+
+- fixed null pointer exception when display a syntax diagram
 
 Version 1.0ea9 - 06/02/06
 

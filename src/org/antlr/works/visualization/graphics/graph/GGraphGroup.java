@@ -119,6 +119,9 @@ public class GGraphGroup extends GGraphAbstract {
     }
 
     public FATransition getNodeTransitionToNextNonSkippedState(GNode node, List path) {
+        if(node == null)
+            return null;
+
         List candidateTransitions = new ArrayList(node.state.transitions);
         FATransition candidate = null;
         int start = pathIndex;
@@ -280,6 +283,11 @@ public class GGraphGroup extends GGraphAbstract {
                         nextNode = findNodeForStateNumber(parentState.stateNumber);
                     }
                 } else {
+                    // pathIndex can be out of range because getNodeTransitionToNextNonSkippedState()
+                    // is incrementing it
+                    if(pathIndex >= path.size())
+                        continue;
+
                     nextState = (NFAState)path.get(pathIndex);
                     if(t.target.stateNumber == nextState.stateNumber) {
                         nextNode = findNodeForStateNumber(t.target.stateNumber);
