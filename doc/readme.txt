@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0 early access 9
-June 2, 2006
+Version 1.0 early access 10
+June 28, 2006
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -70,6 +70,11 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+06/28/06 - version 1.0ea10
+
+- ANTLR 3.0b1 integrated
+- fixed null pointer exception when display a syntax diagram
 
 06/02/06 - version 1.0ea9
 
