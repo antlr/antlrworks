@@ -1,5 +1,7 @@
-Version 1.0ea10 - ?
 
+Version 1.0ea10 - 06/28/06
+
+- ANTLR 3.0b1 integrated
 - fixed null pointer exception when display a syntax diagram
 
 Version 1.0ea9 - 06/02/06
