@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0 early access 10
-June 28, 2006
+Version 1.0 early access 11
+July 5, 2006
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -70,6 +70,10 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+07/05/06 - Version 1.0ea11
+
+- includes ANTLR 3.0b2
 
 06/28/06 - version 1.0ea10
 

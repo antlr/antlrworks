@@ -155,6 +155,7 @@ public class VisualDrawing extends ATEThread {
         List graphs = (List)cacheGraphs.get(rule);
         if(graphs == null) {
             factory.setOptimize(!AWPrefs.getDebugDontOptimizeNFA());
+            factory.setConsole(visual.getConsole());
             graphs = factory.buildGraphsForRule(visual.getEngineGrammar(), rule.name, rule.errors);
             if(graphs != null)
                 cacheGraphs.put(rule, graphs);

@@ -39,6 +39,7 @@ import org.antlr.works.visualization.fa.FAFactory;
 import org.antlr.works.visualization.fa.FAState;
 import org.antlr.works.visualization.graphics.graph.GGraph;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;
+import org.antlr.works.utils.Console;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +50,7 @@ public class GFactory {
 
     protected GRenderer renderer = new GRenderer();
     protected boolean optimize = true;
+    protected Console console = null;
 
     public GFactory() {
     }
@@ -59,6 +61,10 @@ public class GFactory {
 
     public void toggleNFAOptimization() {
         optimize = !optimize;
+    }
+
+    public void setConsole(Console console) {
+        this.console = console;
     }
 
     public List buildGraphsForRule(EngineGrammar grammar, String rule, List errors) throws Exception {
@@ -124,7 +130,14 @@ public class GFactory {
         for(int i=0; i<error.paths.size(); i++) {
             List states = (List) error.paths.get(i);
             Boolean disabled = (Boolean) error.pathsDisabled.get(i);
-            gg.addPath(states, disabled.booleanValue(), factory.getSkippedStatesMap());
+            try {
+                gg.addPath(states, disabled.booleanValue(), factory.getSkippedStatesMap());
+            } catch(Exception e) {
+                if(console == null)
+                    e.printStackTrace();
+                else
+                    console.print(e);
+            }
         }
 
         // Attach all unreacheable alts to the GGraphGroup
