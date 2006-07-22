@@ -1,6 +1,7 @@
 
 * Prio 1
 
+- dot on Windows is usually located in "c:\Program Files\ATT\Graphviz\bin\dot.exe
 - make AST panel "detachable"
 
 * Prio 2

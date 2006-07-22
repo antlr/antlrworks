@@ -83,6 +83,10 @@ public class GLink extends GObject {
         return virtualPosition.getY(null);
     }
 
+    public boolean containsStateNumber(int n) {
+        return transition.containsStateNumber(n);
+    }
+
     public boolean containsPoint(Point p) {
         return context.objectContainsPoint(this, p);
     }

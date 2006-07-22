@@ -784,6 +784,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             if(r == null) {
                 visual.setPlaceholder("Select a rule to display its syntax diagram");
             } else {
+                if(r.hasErrors() && r.needsToBuildErrors()) {
+                    engineGrammar.computeRuleErrors(r);                    
+                }
+
                 visual.setRule(r, immediate);
             }
         } else {

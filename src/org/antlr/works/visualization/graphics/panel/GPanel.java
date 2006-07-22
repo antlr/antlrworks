@@ -60,7 +60,8 @@ public class GPanel implements XJNotificationObserver {
 
     protected Container container;
     protected Box pathButtonSelectionBox;
-    protected JLabel errorLabel;
+    protected Box controlPanel;
+    protected JTextField errorLabel;
 
     protected GContext context;
     protected GView view;
@@ -153,7 +154,7 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private Container createErrorPane() {
-        Box controlPanel = new Box(BoxLayout.X_AXIS);
+        controlPanel = new Box(BoxLayout.X_AXIS);
 
         if(rule.errors.size()>1) {
             controlPanel.add(createPrevErrorButton());
@@ -162,7 +163,10 @@ public class GPanel implements XJNotificationObserver {
         controlPanel.add(Box.createHorizontalStrut(5));
         controlPanel.add(new JLabel(IconManager.shared().getIconWarning()));
         controlPanel.add(Box.createHorizontalStrut(3));
-        controlPanel.add(errorLabel = new JLabel());
+        controlPanel.add(errorLabel = new JTextField());
+        errorLabel.setBorder(null);
+        errorLabel.setEditable(false);
+        errorLabel.setBackground(getContainer().getBackground());
 
         controlPanel.add(Box.createHorizontalGlue());
 
@@ -231,6 +235,7 @@ public class GPanel implements XJNotificationObserver {
         }
         sb.append(rule.getErrorMessageString(index));
         errorLabel.setText(sb.toString());
+        controlPanel.revalidate();
     }
 
     private void createPathSelectionButtons() {

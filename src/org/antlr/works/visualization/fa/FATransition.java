@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.fa;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class FATransition {
@@ -80,4 +81,12 @@ public class FATransition {
         return label == null;
     }
 
+    public boolean containsStateNumber(int n) {
+        for (Iterator iterator = skippedStates.iterator(); iterator.hasNext();) {
+            Integer state = (Integer) iterator.next();
+            if(state.intValue() == n)
+                return true;
+        }
+        return false;
+    }
 }

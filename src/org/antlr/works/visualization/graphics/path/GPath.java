@@ -203,6 +203,11 @@ public class GPath extends GObject {
     }
 
     public void nextElement() {
+        if(elements.isEmpty()) {
+            currentIndex = -1;
+            return;
+        }
+
         // looping prevents the while loop from looping indefinitely
         // in case no visible element exists
         int looping = currentIndex;
@@ -221,6 +226,11 @@ public class GPath extends GObject {
     }
 
     public void previousElement() {
+        if(elements.isEmpty()) {
+            currentIndex = -1;
+            return;
+        }
+
         // looping prevents the while loop from looping indefinitely
         // in case no visible element exists
         int looping = currentIndex;

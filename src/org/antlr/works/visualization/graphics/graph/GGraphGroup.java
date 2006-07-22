@@ -161,10 +161,12 @@ public class GGraphGroup extends GGraphAbstract {
         return candidate;
     }
 
-    public void addNextElementInSameRule(List elements, GNode node, GNode nextNode, NFAState nextState) {
+    public void addNextElementInSameRule(List elements, GNode node, GNode nextNode) {
         elements.add(GPathElement.createElement(node));
 
-        FATransition t = node.state.getTransitionToStateNumber(nextState.stateNumber);
+        // Use nextNode instead of nextState (previously in parameter) because nextState
+        // could be null if it was skipped during optimization. nextNode cannot be null.
+        FATransition t = node.state.getTransitionToStateNumber(nextNode.state.stateNumber);
         if(t == null) {
             // Probably a loop. In this case, the transition is located in the target state.
             t = nextNode.state.getTransitionToStateNumber(node.state.stateNumber);
@@ -285,26 +287,28 @@ public class GGraphGroup extends GGraphAbstract {
                 } else {
                     // pathIndex can be out of range because getNodeTransitionToNextNonSkippedState()
                     // is incrementing it
-                    if(pathIndex >= path.size())
-                        continue;
-
-                    nextState = (NFAState)path.get(pathIndex);
-                    if(t.target.stateNumber == nextState.stateNumber) {
+                    if(pathIndex >= path.size()) {
                         nextNode = findNodeForStateNumber(t.target.stateNumber);
                     } else {
-                        // The only case that the target state of the transition if not
-                        // the next state of the path is when the next state of the path
-                        // is in another rule. In this case, the target state of the transition
-                        // will contain a negative state number indicating an external rule reference:
-                        // this external rule reference is added by AW during rendering and is not
-                        // part of any ANTLR NFA.
+                        nextState = (NFAState)path.get(pathIndex);
 
-                        // This node is the node representing the external rule reference
-                        // before jumping outside of the rule
-                        externalNode = findNodeForStateNumber(t.target.stateNumber);
+                        if(t.target.stateNumber == nextState.stateNumber) {
+                            nextNode = findNodeForStateNumber(t.target.stateNumber);
+                        } else {
+                            // The only case that the target state of the transition if not
+                            // the next state of the path is when the next state of the path
+                            // is in another rule. In this case, the target state of the transition
+                            // will contain a negative state number indicating an external rule reference:
+                            // this external rule reference is added by AW during rendering and is not
+                            // part of any ANTLR NFA.
 
-                        // This node is the first node in the other rule
-                        nextNode = findNodeForStateNumber(nextState.stateNumber);
+                            // This node is the node representing the external rule reference
+                            // before jumping outside of the rule
+                            externalNode = findNodeForStateNumber(t.target.stateNumber);
+
+                            // This node is the first node in the other rule
+                            nextNode = findNodeForStateNumber(nextState.stateNumber);
+                        }
                     }
                 }
             }
@@ -313,7 +317,7 @@ public class GGraphGroup extends GGraphAbstract {
                 continue;
 
             if(state.getEnclosingRule().equals(nextState.getEnclosingRule()))
-                addNextElementInSameRule(elements, node, nextNode, nextState);
+                addNextElementInSameRule(elements, node, nextNode);
             else
                 addNextElementInOtherRule(elements, node, externalNode, nextNode, nextState);
         }

@@ -60,6 +60,8 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
     public Set leftRecursiveRulesSet;
 
     public List errors;
+    public boolean needsToBuildErrors = true;
+
     protected GrammarSyntaxParser parser;
 
     protected int refsStartIndex = -1;
@@ -184,6 +186,10 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
         this.errors = errors;
     }
 
+    public List getErrors() {
+        return errors;
+    }
+
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
     }
@@ -259,9 +265,17 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
             return !errors.isEmpty();
     }
 
+    public void setNeedsToBuildErrors(boolean flag) {
+        this.needsToBuildErrors = flag;
+    }
+
+    public boolean needsToBuildErrors() {
+        return needsToBuildErrors;
+    }
+
     public String getErrorMessageString(int index) {
         EngineGrammarError error = (EngineGrammarError) errors.get(index);
-        return error.message;
+        return error.messageText;
     }
 
     public String getErrorMessageHTML() {
@@ -269,7 +283,7 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
         message.append("<html>");
         for (Iterator iterator = errors.iterator(); iterator.hasNext();) {
             EngineGrammarError error = (EngineGrammarError) iterator.next();
-            message.append(error.message);
+            message.append(error.messageText);
             if(iterator.hasNext())
                 message.append("<br>");
         }

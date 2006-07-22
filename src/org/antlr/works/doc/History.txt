@@ -1,4 +1,10 @@
 
+Version 1.0ea12 - 
+
+- improved speed when checking grammar (delay creation of error paths when the user clicks on a rule)
+- fixed a bug that would prevent small error paths from being displayed in the syntax diagram
+- fixed a bug where performing some menu commands would failed on Windows/Linux (mostly cut and paste)
+
 Version 1.0ea11 - 07/05/06
 
 - includes ANTLR 3.0b2

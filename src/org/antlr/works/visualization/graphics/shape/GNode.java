@@ -77,6 +77,21 @@ public class GNode extends GObject {
         this.position = new GPoint(position);
     }
 
+    public boolean containsStateNumber(int n) {
+        if(state.stateNumber == state.stateNumber)
+            return true;
+
+        // Look into each transition to see if the state number
+        // has been skipped during NFA optimization: in this case,
+        // any skipped state will be stored in the transition.
+        for (Iterator iterator = links.iterator(); iterator.hasNext();) {
+            GLink link = (GLink) iterator.next();
+            if(link.containsStateNumber(n))
+                return true;
+        }
+        return false;
+    }
+
     public void addLink(GLink link) {
         link.setSource(this);
         links.add(link);

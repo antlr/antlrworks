@@ -157,7 +157,7 @@ public class GGraph extends GGraphAbstract {
             GNode node = (GNode) nodeIterator.next();
             for (Iterator stateIterator = states.iterator(); stateIterator.hasNext();) {
                 NFAState state = (NFAState) stateIterator.next();
-                if(state.stateNumber == node.state.stateNumber)
+                if(node.containsStateNumber(state.stateNumber))
                     return true;
             }
         }

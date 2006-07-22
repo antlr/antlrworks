@@ -35,7 +35,6 @@ package org.antlr.works.grammar;
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
 import org.antlr.Tool;
-import org.antlr.analysis.DecisionProbe;
 import org.antlr.analysis.NFAState;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
@@ -276,9 +275,6 @@ public class EngineGrammar {
         if(!grammarAnalyzeDirty)
             return;
 
-        boolean oldVerbose = DecisionProbe.verbose;
-        DecisionProbe.verbose = true;
-
         ErrorManager.setErrorListener(ErrorListener.shared());
 
         try {
@@ -294,7 +290,7 @@ public class EngineGrammar {
             buildNonDeterministicErrors();
             markRulesWithWarningsOrErrors();
         } finally {
-            DecisionProbe.verbose = oldVerbose;
+            // ignore
         }
 
         if(SwingUtilities.isEventDispatchThread()) {
@@ -330,38 +326,14 @@ public class EngineGrammar {
 
     protected EngineGrammarError buildNonDeterministicError(GrammarNonDeterminismMessage message) {
         EngineGrammarError error = new EngineGrammarError();
-
-        List nonDetAlts = message.probe.getNonDeterministicAltsForState(message.problemState);
         error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
 
-        Set disabledAlts = message.probe.getDisabledAlternatives(message.problemState);
         List labels = message.probe.getSampleNonDeterministicInputSequence(message.problemState);
+        error.setLabels(labels);
+
         String input = message.probe.getInputSequenceDisplay(labels);
-        error.setMessage("Decision can match input such as \""+input+"\" using multiple alternatives");
-
-        int firstAlt = 0;
-
-        for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
-            Integer displayAltI = (Integer) iter.next();
-            NFAState nfaStart = message.probe.dfa.getNFADecisionStartState();
-
-            int tracePathAlt = nfaStart.translateDisplayAltToWalkAlt(message.probe.dfa, displayAltI.intValue());
-            if ( firstAlt == 0 )
-                firstAlt = tracePathAlt;
-
-            List path =
-                message.probe.getNFAPathStatesForAlt(firstAlt,
-                                                       tracePathAlt,
-                                                       labels);
-            error.addPath(path, disabledAlts.contains(displayAltI));
-            error.addStates(path);
-
-            // Find all rules enclosing each state (because a path can extend over multiple rules)
-            for (Iterator iterator = path.iterator(); iterator.hasNext();) {
-                NFAState state = (NFAState)iterator.next();
-                error.addRule(state.getEnclosingRule());
-            }
-        }
+        error.setMessageText("Decision can match input such as \""+input+"\" using multiple alternatives");
+        error.setMessage(message);
 
         return error;
     }
@@ -370,14 +342,8 @@ public class EngineGrammar {
         EngineGrammarError error = new EngineGrammarError();
 
         error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
-        error.setMessage("The following alternatives are unreachable: "+message.alts);
-
-        NFAState state = message.probe.dfa.getNFADecisionStartState();
-        for(int alt=0; alt<message.alts.size(); alt++) {
-            error.addUnreachableAlt(state, (Integer)message.alts.get(alt));
-            error.addStates(state);
-            error.addRule(state.getEnclosingRule());
-        }
+        error.setMessageText("The following alternatives are unreachable: "+message.alts);
+        error.setMessage(message);
 
         return error;
     }
@@ -395,7 +361,7 @@ public class EngineGrammar {
 
     protected void updateRuleWithErrors(GrammarSyntaxRule rule, List errors) throws Exception {
         rule.setErrors(errors);
-        editor.visual.createGraphsForRule(rule);
+        rule.setNeedsToBuildErrors(true);
     }
 
     protected List fetchErrorsForRule(GrammarSyntaxRule rule) {
@@ -406,6 +372,65 @@ public class EngineGrammar {
                 errors.add(error);
         }
         return errors;
+    }
+
+    public void computeRuleErrors(GrammarSyntaxRule rule) {
+        List errors = rule.getErrors();
+        for (Iterator iterator = errors.iterator(); iterator.hasNext();) {
+            EngineGrammarError error = (EngineGrammarError) iterator.next();
+            Object o = error.getMessage();
+            if(o instanceof GrammarUnreachableAltsMessage)
+                computeRuleError(rule, error, (GrammarUnreachableAltsMessage)o);
+            else if(o instanceof GrammarNonDeterminismMessage)
+                computeRuleError(rule, error, (GrammarNonDeterminismMessage)o);
+        }
+
+        try {
+            editor.visual.createGraphsForRule(rule);
+        } catch (Exception e) {
+            // ignore
+        }
+
+        rule.setNeedsToBuildErrors(false);
+    }
+
+    public void computeRuleError(GrammarSyntaxRule rule, EngineGrammarError error, GrammarNonDeterminismMessage message) {
+        List nonDetAlts = message.probe.getNonDeterministicAltsForState(message.problemState);
+        Set disabledAlts = message.probe.getDisabledAlternatives(message.problemState);
+
+        int firstAlt = 0;
+
+        for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
+            Integer displayAltI = (Integer) iter.next();
+            NFAState nfaStart = message.probe.dfa.getNFADecisionStartState();
+
+            int tracePathAlt = nfaStart.translateDisplayAltToWalkAlt(message.probe.dfa, displayAltI.intValue());
+            if ( firstAlt == 0 )
+                firstAlt = tracePathAlt;
+
+            List path =
+                message.probe.getNFAPathStatesForAlt(firstAlt,
+                                                       tracePathAlt,
+                                                       error.getLabels());
+
+            error.addPath(path, disabledAlts.contains(displayAltI));
+            error.addStates(path);
+
+            // Find all rules enclosing each state (because a path can extend over multiple rules)
+            for (Iterator iterator = path.iterator(); iterator.hasNext();) {
+                NFAState state = (NFAState)iterator.next();
+                error.addRule(state.getEnclosingRule());
+            }
+        }
+    }
+
+    public void computeRuleError(GrammarSyntaxRule rule, EngineGrammarError error, GrammarUnreachableAltsMessage message) {
+        NFAState state = message.probe.dfa.getNFADecisionStartState();
+        for(int alt=0; alt<message.alts.size(); alt++) {
+            error.addUnreachableAlt(state, (Integer)message.alts.get(alt));
+            error.addStates(state);
+            error.addRule(state.getEnclosingRule());
+        }
     }
 
 }

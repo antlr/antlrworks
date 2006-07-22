@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.grammar;
 
 import org.antlr.analysis.NFAState;
+import org.antlr.tool.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +54,11 @@ public class EngineGrammarError {
     /** Array of states concerned by the error */
     public List states = new ArrayList();
 
+    public List labels;
+
     public int line;
-    public String message;
+    public String messageText;
+    public Message message;
 
     public EngineGrammarError() {
     }
@@ -85,7 +89,23 @@ public class EngineGrammarError {
         this.line = line;
     }
 
-    public void setMessage(String message) {
+    public void setMessageText(String messageText) {
+        this.messageText = messageText;
+    }
+
+    public void setMessage(Message message) {
         this.message = message;
+    }
+
+    public Message getMessage() {
+        return message;
+    }
+    
+    public void setLabels(List labels) {
+        this.labels = labels;
+    }
+
+    public List getLabels() {
+        return labels;
     }
 }
