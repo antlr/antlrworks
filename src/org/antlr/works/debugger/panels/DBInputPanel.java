@@ -6,7 +6,6 @@ import org.antlr.works.debugger.input.DBInputProcessor;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
 import org.antlr.works.grammar.EngineGrammar;
 
-import javax.swing.*;
 import java.awt.*;
 /*
 
@@ -39,7 +38,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBInputPanel extends JPanel {
+public class DBInputPanel extends DBDetachablePanel {
 
     protected Debugger debugger;
 
@@ -49,7 +48,8 @@ public class DBInputPanel extends JPanel {
     protected DBInputConcretePanel currentPanel;
 
     public DBInputPanel(Debugger debugger) {
-        super(new BorderLayout());
+        super("Input");
+
         this.debugger = debugger;
 
         inputTokenPanel = new DBInputTokenPanel(debugger);
@@ -61,10 +61,10 @@ public class DBInputPanel extends JPanel {
 
     public void setCurrentPanel(DBInputConcretePanel panel) {
         this.currentPanel = panel;
-        if(getComponentCount() > 0)
-            remove(0);
+        if(mainPanel.getComponentCount() > 0)
+            mainPanel.remove(0);
 
-        add(currentPanel.getComponent(), BorderLayout.CENTER);
+        mainPanel.add(currentPanel.getComponent(), BorderLayout.CENTER);
     }
 
     public void prepareForGrammar(EngineGrammar grammar) {

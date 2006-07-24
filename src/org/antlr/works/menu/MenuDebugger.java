@@ -63,22 +63,6 @@ public class MenuDebugger extends MenuAbstract {
         editor.debugger.launchRemoteDebugger();
     }
 
-    public void toggleInformationPanel() {
-        editor.debugger.toggleInformationPanel();
-    }
-
-    public boolean isInfoPanelVisible() {
-        return editor.debugger.isInfoPanelVisible();
-    }
-
-    public void toggleOutputPanel() {
-        editor.debugger.toggleOutputPanel();
-    }
-
-    public boolean isOutputPanelVisible() {
-        return editor.debugger.isOutputPanelVisible();
-    }
-
     public void toggleInputTokens() {
         editor.debugger.toggleInputTokensBox();
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);

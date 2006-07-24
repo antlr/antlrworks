@@ -5,6 +5,7 @@ import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.panels.DBDetachablePanel;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
@@ -41,28 +42,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBParseTreePanel extends JPanel implements DBParseTreeModelListener, AWTreePanelDelegate {
+public class DBParseTreePanel extends DBDetachablePanel implements DBParseTreeModelListener, AWTreePanelDelegate {
 
     protected Debugger debugger;
     protected DBParseTreeModel model;
     protected AWTreePanel treePanel;
 
     public DBParseTreePanel(Debugger debugger) {
-        super(new BorderLayout());
+        super("Parse Tree");
 
         this.debugger = debugger;
 
+        model = new DBParseTreeModel(debugger);
+        model.addListener(this);
+        
         treePanel = new AWTreePanel(new DefaultTreeModel(null));
         treePanel.setDelegate(this);
 
-        add(treePanel, BorderLayout.CENTER);
+        mainPanel.add(treePanel, BorderLayout.CENTER);
     }
 
-    public void setModel(DBParseTreeModel model) {
-        this.model = model;
-        this.model.addListener(this);
-        // @todo use later when the model will be fully optimized
-        //treePanel.setAWTreeModel(model);
+    public DBParseTreeModel getModel() {
+        return model;
     }
 
     public void clear() {

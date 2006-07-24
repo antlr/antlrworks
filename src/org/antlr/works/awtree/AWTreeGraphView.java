@@ -74,6 +74,7 @@ public class AWTreeGraphView extends GView {
     public AWTreeGraphView(AWTreePanel panel) {
         this.panel = panel;
         setPreferredSize(new Dimension(0, 0));
+        setFocusable(true);
     }
 
     public void addDefaultEventManager() {

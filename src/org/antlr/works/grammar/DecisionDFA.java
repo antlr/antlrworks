@@ -67,14 +67,20 @@ public class DecisionDFA extends GrammarDOTTab {
         }
     }
 
+    /** Find the closest decision token. We backup until we see a colon and then
+     * use the last seen token (because the token in a rule can be in another line
+     * than the colon)
+     * @return The closest token of a decision point
+     */
     public ATEToken findClosestDecisionToken() {
         ATEToken ct = editor.getCurrentToken();
+        ATEToken lastToken = ct;
         List tokens = editor.getTokens();
         int nestedParen = 0;
         for(int index=tokens.indexOf(ct); index >= 0; index--) {
             ATEToken t = (ATEToken)tokens.get(index);
             if(t.type == GrammarSyntaxLexer.TOKEN_COLON)
-                return t;
+                return lastToken;
             else if(t.type == GrammarSyntaxLexer.TOKEN_RPAREN)
                 nestedParen++;
             else if(t.type == GrammarSyntaxLexer.TOKEN_LPAREN) {
@@ -83,6 +89,7 @@ public class DecisionDFA extends GrammarDOTTab {
                 else
                     nestedParen--;
             }
+            lastToken = t;
         }
         return null;
     }

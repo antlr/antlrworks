@@ -1,13 +1,9 @@
 package org.antlr.works.debugger.panels;
 
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.utils.StreamWatcherDelegate;
-import org.antlr.works.utils.TextPane;
-import org.antlr.works.utils.TextUtils;
-
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.TextLayout;
+import java.awt.geom.Rectangle2D;
 /*
 
 [The "BSD licence"]
@@ -39,41 +35,55 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBOutputPanel extends DBDetachablePanel implements StreamWatcherDelegate {
+public class DBToggleButton extends JToggleButton {
 
-    protected TextPane outputTextPane;
-    protected Debugger debugger;
+    public int tag;
 
-    public DBOutputPanel(Debugger debugger) {
-        super("Output");
-
-        this.debugger = debugger;
-
-        outputTextPane = new TextPane();
-        outputTextPane.setBackground(Color.white);
-        outputTextPane.setBorder(null);
-        outputTextPane.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        outputTextPane.setText("");
-        outputTextPane.setEditable(false);
-
-        TextUtils.createTabs(outputTextPane);
-
-        JScrollPane textScrollPane = new JScrollPane(outputTextPane);
-        textScrollPane.setWheelScrollingEnabled(true);
-
-        mainPanel.add(textScrollPane, BorderLayout.CENTER);
+    public DBToggleButton(String title) {
+        super(title);
+        setBorderPainted(false);
+        setMaximumSize(new Dimension(0, 25));
+        setFont(getFont().deriveFont(12f));
+    }
+    
+    public void setTag(int tag) {
+        this.tag = tag;
     }
 
-    public void streamWatcherDidStarted() {
-        outputTextPane.setText("");
+    public int getTag() {
+        return tag;
     }
 
-    public void streamWatcherDidReceiveString(String string) {
-        outputTextPane.setText(outputTextPane.getText()+string);
+    public final int round = 4;
+
+    public void paintComponent(Graphics g) {
+        Graphics2D g2d = (Graphics2D)g;
+
+        paintBackground(g2d);
+
+        TextLayout layout = new TextLayout(getText(), g.getFont(), g2d.getFontRenderContext());
+        Rectangle2D r = layout.getBounds();
+
+        float tx = (float) (getWidth()*0.5f-r.getWidth()*0.5f);
+        float ty = (float) (getHeight()*0.5f+r.getHeight()*0.5f);
+        g2d.setColor(Color.black);
+        layout.draw(g2d, tx, ty);
     }
 
-    public void streamWatcherException(Exception e) {
-        debugger.getConsole().print(e);
-    }
+    public void paintBackground(Graphics2D g2d) {
+        int x = getWidth()-3;
+        int y = getHeight()-3;
 
+        if(isSelected())
+            g2d.setColor(Color.lightGray);
+        else
+            g2d.setColor(new Color(0.98f, 0.98f, 0.98f));
+        g2d.fillRoundRect(1, 1, x, y, round, round);
+
+        if(isSelected())
+            g2d.setColor(Color.darkGray);
+        else
+            g2d.setColor(Color.gray);
+        g2d.drawRoundRect(1, 1, x, y, round, round);
+    }
 }

@@ -1,8 +1,9 @@
 
 * Prio 1
 
+- terminer les detachable panels
+- terminate "getExportableGView" method in Debugger
 - dot on Windows is usually located in "c:\Program Files\ATT\Graphviz\bin\dot.exe
-- make AST panel "detachable"
 
 * Prio 2
 - optimize tree drawing using incremental model (see AWTreeGraphView)

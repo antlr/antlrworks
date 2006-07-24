@@ -151,7 +151,7 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         return null;
     }
 
-    public void componentShouldLayout() {
+    public void componentShouldLayout(Dimension size) {
 
     }
 

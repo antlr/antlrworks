@@ -7,6 +7,7 @@ import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.panels.DBDetachablePanel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -45,7 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDelegate, AWTreePanelDelegate {
+public class DBASTPanel extends DBDetachablePanel implements DBASTModelListener, XJTableDelegate, AWTreePanelDelegate {
 
     public Debugger debugger;
 
@@ -58,18 +59,21 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
     public JSplitPane tableTreeSplitPane;
 
     public DBASTPanel(Debugger debugger) {
-        super(new BorderLayout());
+        super("AST");
 
         this.debugger = debugger;
 
+        model = new DBASTModel();
+        model.addListener(this);
+
         rulesTable = new XJTable(new RulesTableModel());
-        rulesTable.setFocusable(false);
+        rulesTable.setFocusable(true);
         rulesTable.setDelegate(this);
         rulesTable.setAllowEmptySelection(false);
         rulesTable.setRememberSelection(true);
 
         rootsTable = new XJTable(new RootsTableModel());
-        rootsTable.setFocusable(false);
+        rootsTable.setFocusable(true);
         rootsTable.setDelegate(this);
         rootsTable.setAllowEmptySelection(false);
         rootsTable.setRememberSelection(true);
@@ -92,7 +96,7 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
         tableTreeSplitPane.setLeftComponent(tablesSplitPane);
         tableTreeSplitPane.setRightComponent(treePanel);
 
-        add(tableTreeSplitPane, BorderLayout.CENTER);
+        mainPanel.add(tableTreeSplitPane, BorderLayout.CENTER);
     }
 
     public JSplitPane createSplitPane() {
@@ -104,13 +108,9 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
         return sp;
     }
 
-    public void componentShouldLayout() {
-        tableTreeSplitPane.setDividerLocation(0.3);
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                tablesSplitPane.setDividerLocation(0.7);
-            }
-        });        
+    public void componentShouldLayout(Dimension size) {
+        tableTreeSplitPane.setDividerLocation((int)(size.width*0.5));
+        tablesSplitPane.setDividerLocation((int)(size.width*0.3));
     }
 
     public void clear() {
@@ -129,11 +129,10 @@ public class DBASTPanel extends JPanel implements DBASTModelListener, XJTableDel
         });
     }
 
-    public void setModel(DBASTModel model) {
-        this.model = model;
-        this.model.addListener(this);
+    public DBASTModel getModel() {
+        return model;
     }
-
+    
     public void modelChanged(DBASTModel model) {
         rulesModelChanged();
         rootsModelChanged();

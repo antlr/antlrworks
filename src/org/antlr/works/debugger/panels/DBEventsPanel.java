@@ -6,11 +6,8 @@ import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 /*
 
 [The "BSD licence"]
@@ -42,104 +39,58 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBInfoPanel extends JPanel {
+public class DBEventsPanel extends DBDetachablePanel {
 
-    public static final int INFO_COLUMN_COUNT = 0;  // 1st column of rule and even table
-    public static final int INFO_COLUMN_RULE = 1;   // 2nd column of rule table
-    public static final int INFO_COLUMN_EVENT = 1;  // 2nd column of event table
+    public static final int INFO_COLUMN_COUNT = 0;
+    public static final int INFO_COLUMN_EVENT = 1;
     public static final int INFO_COLUMN_SUBRULE = 2;
     public static final int INFO_COLUMN_DECISION = 3;
     public static final int INFO_COLUMN_MARK = 4;
     public static final int INFO_COLUMN_BACKTRACK = 5;
 
-    protected JRadioButton displayEventButton;
-    protected JRadioButton displayRuleButton;
-
     protected JTable infoTable;
 
-    protected RuleTableDataModel ruleTableDataModel;
     protected EventTableDataModel eventTableDataModel;
 
-    protected Stack rules = new Stack();
+    public DBEventsPanel() {
+        super("Events");
 
-    public DBInfoPanel() {
-        super(new BorderLayout());
-
-        ruleTableDataModel = new RuleTableDataModel();
         eventTableDataModel = new EventTableDataModel();
 
-        displayEventButton = new JRadioButton("Events");
-        displayEventButton.setFocusable(false);
-        displayEventButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setInfoTableModel(eventTableDataModel);
-            }
-        });
-
-        displayRuleButton = new JRadioButton("Rules");
-        displayRuleButton.setFocusable(false);
-        displayRuleButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setInfoTableModel(ruleTableDataModel);
-            }
-        });
-
-        displayEventButton.setSelected(false);
-        displayRuleButton.setSelected(true);
-
-        ButtonGroup bp = new ButtonGroup();
-        bp.add(displayEventButton);
-        bp.add(displayRuleButton);
-
         infoTable = new JTable();
-        setInfoTableModel(ruleTableDataModel);
+        infoTable.setFocusable(true);
+        setInfoTableModel(eventTableDataModel);
 
         JScrollPane infoScrollPane = new JScrollPane(infoTable);
         infoScrollPane.setWheelScrollingEnabled(true);
 
-        JPanel infoControlPanel = new JPanel();
-        infoControlPanel.add(displayRuleButton);
-        infoControlPanel.add(displayEventButton);
-
-        add(infoControlPanel, BorderLayout.SOUTH);
-        add(infoScrollPane, BorderLayout.CENTER);
+        mainPanel.add(infoScrollPane, BorderLayout.CENTER);
     }
 
     public void setInfoTableModel(AbstractTableModel model) {
         infoTable.setModel(model);
 
-        if(infoTable.getModel() == eventTableDataModel) {
-            infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setPreferredWidth(35);
-            infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setMaxWidth(60);
-            infoTable.getColumnModel().getColumn(INFO_COLUMN_EVENT).setMinWidth(100);
-            infoTable.getColumnModel().getColumn(INFO_COLUMN_SUBRULE).setMaxWidth(30);
-            infoTable.getColumnModel().getColumn(INFO_COLUMN_DECISION).setMaxWidth(30);
-            infoTable.getColumnModel().getColumn(INFO_COLUMN_MARK).setMaxWidth(30);
-            infoTable.getColumnModel().getColumn(INFO_COLUMN_BACKTRACK).setMaxWidth(30);
-        } else {
-            infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setMaxWidth(35);
-        }
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setPreferredWidth(35);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setMaxWidth(60);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_EVENT).setMinWidth(100);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_SUBRULE).setMaxWidth(30);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_DECISION).setMaxWidth(30);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_MARK).setMaxWidth(30);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_BACKTRACK).setMaxWidth(30);
 
         selectLastInfoTableItem();
     }
 
     public void selectLastInfoTableItem() {
-        int count;
-        if(displayEventButton.isSelected())
-            count = eventTableDataModel.events.size();
-        else
-            count = ruleTableDataModel.rules.size();
+        int count = eventTableDataModel.events.size();
         infoTable.scrollRectToVisible(infoTable.getCellRect(count-1, 0, true));
     }
 
     public void clear() {
-        rules.clear();
-        ruleTableDataModel.clear();
         eventTableDataModel.clear();
     }
 
     public void updateOnBreakEvent() {
-        ruleTableDataModel.update();
         eventTableDataModel.update();
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -151,16 +102,6 @@ public class DBInfoPanel extends JPanel {
 
     public void addEvent(DBEvent event, DBPlayerContextInfo info) {
         eventTableDataModel.add(event, info);
-    }
-
-    public void pushRule(String ruleName) {
-        rules.push(ruleName);
-        ruleTableDataModel.add(ruleName);
-    }
-
-    public void popRule() {
-        ruleTableDataModel.remove(rules.peek());
-        rules.pop();
     }
 
     public String getEventsAsString() {
@@ -176,52 +117,6 @@ public class DBInfoPanel extends JPanel {
             sb.append("\n");
         }
         return sb.toString();
-    }
-
-    public class RuleTableDataModel extends AbstractTableModel {
-
-        protected List rules = new ArrayList();
-
-        public void add(Object rule) {
-            rules.add(rule);
-        }
-
-        public void remove(Object rule) {
-            rules.remove(rule);
-        }
-
-        public void clear() {
-            rules.clear();
-            fireTableDataChanged();
-        }
-
-        public void update() {
-            fireTableDataChanged();
-        }
-
-        public int getRowCount() {
-            return rules.size();
-        }
-
-        public int getColumnCount() {
-            return 2;
-        }
-
-        public String getColumnName(int column) {
-            switch(column) {
-                case INFO_COLUMN_COUNT: return "#";
-                case INFO_COLUMN_RULE: return "Rule";
-            }
-            return super.getColumnName(column);
-        }
-
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            switch(columnIndex) {
-                case INFO_COLUMN_COUNT: return String.valueOf(rowIndex);
-                case INFO_COLUMN_RULE: return rules.get(rowIndex);
-            }
-            return null;
-        }
     }
 
     public class EventTableDataModel extends AbstractTableModel {

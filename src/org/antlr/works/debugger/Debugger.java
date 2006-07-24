@@ -42,10 +42,7 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
 import org.antlr.works.debugger.local.DBLocal;
-import org.antlr.works.debugger.panels.DBControlPanel;
-import org.antlr.works.debugger.panels.DBInfoPanel;
-import org.antlr.works.debugger.panels.DBInputPanel;
-import org.antlr.works.debugger.panels.DBOutputPanel;
+import org.antlr.works.debugger.panels.*;
 import org.antlr.works.debugger.remote.DBRemoteConnectDialog;
 import org.antlr.works.debugger.tivo.DBPlayer;
 import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
@@ -70,6 +67,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,16 +84,13 @@ public class Debugger extends EditorTab {
     public static final boolean BUILD_AND_DEBUG = true;
     public static final boolean DEBUG = false;
 
+    public static final float PERCENT_WIDTH_LEFT = 0.2f;
+    public static final float PERCENT_WIDTH_MIDDLE = 0.5f;
+
     protected JPanel panel;
+
     protected DBInputPanel inputPanel;
     protected DBOutputPanel outputPanel;
-
-    protected JTabbedPane treeTabbedPane;
-
-    protected JPanel treeInfoCanvas;
-    protected JComponent treePanel;
-
-    protected JPanel ioCanvas;
 
     protected DBParseTreePanel parseTreePanel;
     protected DBParseTreeModel parseTreeModel;
@@ -102,8 +98,13 @@ public class Debugger extends EditorTab {
     protected DBASTPanel astPanel;
     protected DBASTModel astModel;
 
-    protected DBInfoPanel infoPanel;
+    protected DBStackPanel stackPanel;
+    protected DBEventsPanel eventsPanel;
+
     protected DBControlPanel controlPanel;
+
+    protected DBSplitPanel splitPanel;
+    protected Map components2toggle;
 
     protected CEditorGrammar editor;
     protected AttributeSet previousGrammarAttributeSet;
@@ -116,10 +117,6 @@ public class Debugger extends EditorTab {
     protected DBPlayer player;
 
     protected boolean running;
-    protected JSplitPane ioSplitPane;
-    protected JSplitPane ioTreeSplitPane;
-    protected JSplitPane treeInfoPanelSplitPane;
-
     protected long dateOfModificationOnDisk = 0;
 
     public Debugger(CEditorGrammar editor) {
@@ -128,96 +125,135 @@ public class Debugger extends EditorTab {
 
     public void awake() {
         panel = new JPanel(new BorderLayout());
+        splitPanel = new DBSplitPanel();
+        components2toggle = new HashMap();
 
-        ioCanvas = new JPanel(new BorderLayout());
-        treeInfoCanvas = new JPanel(new BorderLayout());
-
-        infoPanel = new DBInfoPanel();
         controlPanel = new DBControlPanel(this);
-        treePanel = createTreePanel();
 
         inputPanel = new DBInputPanel(this);
         outputPanel = new DBOutputPanel(this);
 
-        treeInfoPanelSplitPane = new JSplitPane();
-        treeInfoPanelSplitPane.setBorder(null);
-        treeInfoPanelSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        treeInfoPanelSplitPane.setRightComponent(infoPanel);
-        treeInfoPanelSplitPane.setContinuousLayout(true);
-        treeInfoPanelSplitPane.setOneTouchExpandable(true);
+        parseTreePanel = new DBParseTreePanel(this);
+        parseTreeModel = parseTreePanel.getModel();
 
-        ioSplitPane = new JSplitPane();
-        ioSplitPane.setBorder(null);
-        ioSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        ioSplitPane.setRightComponent(outputPanel);
-        ioSplitPane.setContinuousLayout(true);
-        ioSplitPane.setOneTouchExpandable(true);
+        astPanel = new DBASTPanel(this);
+        astModel = astPanel.getModel();
 
-        ioTreeSplitPane = new JSplitPane();
-        ioTreeSplitPane.setBorder(null);
-        ioTreeSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        ioTreeSplitPane.setLeftComponent(ioCanvas);
-        ioTreeSplitPane.setRightComponent(treeInfoCanvas);
-        ioTreeSplitPane.setContinuousLayout(true);
-        ioTreeSplitPane.setOneTouchExpandable(true);
+        stackPanel = new DBStackPanel();
+        eventsPanel = new DBEventsPanel();
 
         panel.add(controlPanel, BorderLayout.NORTH);
-        panel.add(ioTreeSplitPane, BorderLayout.CENTER);
+        panel.add(splitPanel, BorderLayout.CENTER);
+        panel.add(createToggleButtons(), BorderLayout.SOUTH);
 
         local = new DBLocal(this);
         recorder = new DBRecorder(this);
         player = new DBPlayer(this);
 
-        ioCanvas.add(inputPanel, BorderLayout.CENTER);
-        treeInfoCanvas.add(treePanel, BorderLayout.CENTER);
-
         updateStatusInfo();
     }
 
-    public void componentShouldLayout() {
-        ioTreeSplitPane.setDividerLocation(0.2);
+    public void componentShouldLayout(Dimension size) {
+        assemblePanelsIntoSplitPane(size.width);
+        astPanel.componentShouldLayout(new Dimension((int) (size.width*PERCENT_WIDTH_MIDDLE), size.height));
+    }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                astPanel.componentShouldLayout();
+    public static final int TOGGLE_INPUT = 0;
+    public static final int TOGGLE_OUTPUT = 1;
+    public static final int TOGGLE_PTREE = 2;
+    public static final int TOGGLE_AST = 3;
+    public static final int TOGGLE_STACK = 4;
+    public static final int TOGGLE_EVENTS = 5;
+
+    public Box createToggleButtons() {
+        Box b = Box.createHorizontalBox();
+        b.add(createToggleButton("Input", TOGGLE_INPUT, inputPanel));
+        b.add(createToggleButton("Output", TOGGLE_OUTPUT, outputPanel));
+        b.add(Box.createHorizontalStrut(15));
+        b.add(createToggleButton("Parse Tree", TOGGLE_PTREE, parseTreePanel));
+        b.add(createToggleButton("AST", TOGGLE_AST, astPanel));
+        b.add(Box.createHorizontalStrut(15));
+        b.add(createToggleButton("Stack", TOGGLE_STACK, stackPanel));
+        b.add(createToggleButton("Events", TOGGLE_EVENTS, eventsPanel));
+        b.add(Box.createHorizontalGlue());
+        return b;
+    }
+
+    public JToggleButton createToggleButton(String title, int tag, Component c) {
+        DBToggleButton b = new DBToggleButton(title);
+        b.setTag(tag);
+        b.setFocusable(false);
+        b.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                performToggleButtonAction((DBToggleButton)e.getSource());
             }
+
         });
+        components2toggle.put(c, b);
+        return b;
     }
 
-    public void toggleInformationPanel() {
-        if(isInfoPanelVisible()) {
-            treeInfoPanelSplitPane.setLeftComponent(null);
-            treeInfoCanvas.remove(0);
-            treeInfoCanvas.add(treePanel);
-        } else {
-            treeInfoCanvas.remove(0);
-            treeInfoCanvas.add(treeInfoPanelSplitPane);
-            treeInfoPanelSplitPane.setLeftComponent(treePanel);
-            treeInfoPanelSplitPane.setDividerLocation((int)(treeInfoCanvas.getWidth()*0.6));
+    public void assemblePanelsIntoSplitPane(int width) {
+        setComponentVisible(inputPanel, true);
+        setComponentVisible(outputPanel, false);
+
+        setComponentVisible(parseTreePanel, true);
+        setComponentVisible(astPanel, false);
+
+        setComponentVisible(stackPanel, true);
+        setComponentVisible(eventsPanel, false);
+
+        splitPanel.setComponentWidth(inputPanel, width*PERCENT_WIDTH_LEFT);
+        splitPanel.setComponentWidth(outputPanel, width*PERCENT_WIDTH_LEFT);
+
+        splitPanel.setComponentWidth(parseTreePanel, width*PERCENT_WIDTH_MIDDLE);
+        splitPanel.setComponentWidth(astPanel, width*PERCENT_WIDTH_MIDDLE);
+
+        splitPanel.setComponents(inputPanel, parseTreePanel, stackPanel);
+    }
+
+    public void setComponentVisible(Component c, boolean flag) {
+        c.setVisible(flag);
+        JToggleButton b = (JToggleButton)components2toggle.get(c);
+        b.setSelected(flag);
+    }
+
+    public void performToggleButtonAction(DBToggleButton button) {
+        switch(button.getTag()) {
+            case TOGGLE_INPUT:
+                toggleComponents(inputPanel, outputPanel, DBSplitPanel.LEFT_INDEX);
+                break;
+            case TOGGLE_OUTPUT:
+                toggleComponents(outputPanel, inputPanel, DBSplitPanel.LEFT_INDEX);
+                break;
+
+            case TOGGLE_PTREE:
+                toggleComponents(parseTreePanel, astPanel, DBSplitPanel.MIDDLE_INDEX);
+                break;
+            case TOGGLE_AST:
+                toggleComponents(astPanel, parseTreePanel, DBSplitPanel.MIDDLE_INDEX);
+                break;
+
+            case TOGGLE_STACK:
+                toggleComponents(stackPanel, eventsPanel, DBSplitPanel.RIGHT_INDEX);
+                break;
+            case TOGGLE_EVENTS:
+                toggleComponents(eventsPanel, stackPanel, DBSplitPanel.RIGHT_INDEX);
+                break;
         }
-        treeInfoCanvas.revalidate();
     }
 
-    public boolean isInfoPanelVisible() {
-        return treeInfoCanvas.getComponent(0) == treeInfoPanelSplitPane;
-    }
-
-    public void toggleOutputPanel() {
-        if(isOutputPanelVisible()) {
-            ioSplitPane.setLeftComponent(null);
-            ioCanvas.remove(0);
-            ioCanvas.add(inputPanel);
+    public void toggleComponents(Component c, Component other, int index) {
+        c.setVisible(!c.isVisible());
+        if(c.isVisible()) {
+            setComponentVisible(other, false);
+            splitPanel.setComponent(c, index);
         } else {
-            ioCanvas.remove(0);
-            ioCanvas.add(ioSplitPane);
-            ioSplitPane.setLeftComponent(inputPanel);
-            ioSplitPane.setDividerLocation((int)(ioCanvas.getWidth()*0.4));
+            if(other.isVisible())
+                splitPanel.setComponent(other, index);
+            else
+                splitPanel.setComponent(null, index);
         }
-        ioCanvas.revalidate();
-    }
-
-    public boolean isOutputPanelVisible() {
-        return ioCanvas.getComponent(0) == ioSplitPane;
     }
 
     public void toggleInputTokensBox() {
@@ -262,22 +298,6 @@ public class Debugger extends EditorTab {
         parseTreeModel.close();
     }
 
-    public JComponent createTreePanel() {
-        parseTreeModel = new DBParseTreeModel(this);
-        parseTreePanel = new DBParseTreePanel(this);
-        parseTreePanel.setModel(parseTreeModel);
-
-        astModel = new DBASTModel();
-        astPanel = new DBASTPanel(this);
-        astPanel.setModel(astModel);
-
-        treeTabbedPane = new JTabbedPane();
-        treeTabbedPane.add("Parse Tree", parseTreePanel);
-        treeTabbedPane.add("AST", astPanel);
-
-        return treeTabbedPane;
-    }
-
     public Container getContainer() {
         return panel;
     }
@@ -290,7 +310,8 @@ public class Debugger extends EditorTab {
         inputPanel.updateOnBreakEvent();
         parseTreePanel.updateOnBreakEvent();
         astPanel.updateOnBreakEvent();
-        infoPanel.updateOnBreakEvent();
+        stackPanel.updateOnBreakEvent();
+        eventsPanel.updateOnBreakEvent();
     }
 
     public EngineGrammar getGrammar() {
@@ -380,7 +401,7 @@ public class Debugger extends EditorTab {
     }
 
     public String getEventsAsString() {
-        return infoPanel.getEventsAsString();
+        return eventsPanel.getEventsAsString();
     }
 
     public void launchLocalDebugger(boolean buildAndDebug) {
@@ -411,19 +432,19 @@ public class Debugger extends EditorTab {
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_LOCAL_DEBUGGER_BUILD);
         else
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_LOCAL_DEBUGGER);
-        debuggerLaunch(DEFAULT_LOCAL_ADDRESS, AWPrefs.getDebugDefaultLocalPort());
+        debuggerLaunch(DEFAULT_LOCAL_ADDRESS, AWPrefs.getDebugDefaultLocalPort(), false);
     }
 
     public void launchRemoteDebugger() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOTE_DEBUGGER);
         DBRemoteConnectDialog dialog = new DBRemoteConnectDialog(getWindowComponent());
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
-            debuggerLaunch(dialog.getAddress(), dialog.getPort());
+            debuggerLaunch(dialog.getAddress(), dialog.getPort(), true);
         }
     }
 
-    public void debuggerLaunch(String address, int port) {
-        if(!debuggerLaunchGrammar()) {
+    public void debuggerLaunch(String address, int port, boolean remote) {
+        if(remote && !debuggerLaunchGrammar()) {
             XJAlert.display(editor.getWindowContainer(), "Error",
                     "Cannot launch the debugger.\nException while parsing grammar.");
             return;
@@ -487,7 +508,8 @@ public class Debugger extends EditorTab {
     }
 
     public void resetGUI() {
-        infoPanel.clear();
+        stackPanel.clear();
+        eventsPanel.clear();
         parseTreePanel.clear();
         astPanel.clear();
     }
@@ -514,7 +536,7 @@ public class Debugger extends EditorTab {
     }
 
     public void addEvent(DBEvent event, DBPlayerContextInfo info) {
-        infoPanel.addEvent(event, info);
+        eventsPanel.addEvent(event, info);
     }
 
     public void playEvents(List events, boolean reset) {
@@ -527,13 +549,13 @@ public class Debugger extends EditorTab {
     }
 
     public void playerPushRule(String ruleName) {
-        infoPanel.pushRule(ruleName);
+        stackPanel.pushRule(ruleName);
         parseTreeModel.pushRule(ruleName);
         astModel.pushRule(ruleName);
     }
 
     public void playerPopRule(String ruleName) {
-        infoPanel.popRule();
+        stackPanel.popRule();
         parseTreeModel.popRule();
         astModel.popRule();
     }
@@ -609,10 +631,12 @@ public class Debugger extends EditorTab {
     }
 
     public GView getExportableGView() {
-        if(treeTabbedPane.getSelectedComponent() == parseTreePanel)
+        // @todo finish
+        /*if(treeTabbedPane.getSelectedComponent() == parseTreePanel)
             return parseTreePanel.getGraphView();
         else
-            return astPanel.getGraphView();
+            return astPanel.getGraphView();*/
+        return null;
     }
 
     public String getTabName() {
@@ -638,7 +662,7 @@ public class Debugger extends EditorTab {
         if(data == null)
             return;
 
-        Integer i = (Integer)data.get(KEY_SPLITPANE_A);
+/*        Integer i = (Integer)data.get(KEY_SPLITPANE_A);
         if(i != null)
             ioSplitPane.setDividerLocation(i.intValue());
 
@@ -648,15 +672,16 @@ public class Debugger extends EditorTab {
 
         i = (Integer)data.get(KEY_SPLITPANE_C);
         if(i != null)
-            treeInfoPanelSplitPane.setDividerLocation(i.intValue());
+            treeInfoPanelSplitPane.setDividerLocation(i.intValue());*/
     }
 
     public Map getPersistentData() {
-        Map data = new HashMap();
+        /*Map data = new HashMap();
         data.put(KEY_SPLITPANE_A, new Integer(ioSplitPane.getDividerLocation()));
         data.put(KEY_SPLITPANE_B, new Integer(ioTreeSplitPane.getDividerLocation()));
         data.put(KEY_SPLITPANE_C, new Integer(treeInfoPanelSplitPane.getDividerLocation()));
-        return data;
+        return data;*/
+        return new HashMap();
     }
 
 }

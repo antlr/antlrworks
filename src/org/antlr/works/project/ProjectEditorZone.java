@@ -335,7 +335,8 @@ public class ProjectEditorZone {
                 // for the layout: that's why we don't need to layout (again) the item.
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        item.getComponentContainer().getEditor().componentShouldLayout();
+                        // @todo needs to get the size of the editor
+                        //item.getComponentContainer().getEditor().componentShouldLayout();
                     }
                 });
             }

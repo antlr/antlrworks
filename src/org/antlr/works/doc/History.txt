@@ -1,7 +1,12 @@
 
 Version 1.0ea12 - 
 
+- improved debugger UI with detachable panels
 - improved speed when checking grammar (delay creation of error paths when the user clicks on a rule)
+- fixed a bug that would prevent decision DFA to be displayed if the first token of a rule was
+  not in the same line as the colon
+- do not analyze the grammar when debugging remotely
+- mark the grammar as dirty if the file is modified outside ANTLRWorks
 - fixed a bug that would prevent small error paths from being displayed in the syntax diagram
 - fixed a bug where performing some menu commands would failed on Windows/Linux (mostly cut and paste)
 

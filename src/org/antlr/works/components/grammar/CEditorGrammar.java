@@ -942,12 +942,12 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         editorIdeas.hide();
     }
 
-    public void componentShouldLayout() {
-        rulesTextSplitPane.setDividerLocation(0.2);
-        upDownSplitPane.setDividerLocation(0.6);
+    public void componentShouldLayout(Dimension size) {
+        rulesTextSplitPane.setDividerLocation((int)(size.width*0.2));
+        upDownSplitPane.setDividerLocation((int)(size.height*0.5));
 
         interpreter.componentShouldLayout();
-        debugger.componentShouldLayout();
+        debugger.componentShouldLayout(size);
     }
 
     public void componentDidAwake() {
@@ -981,6 +981,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         // Called when the document associated file has changed on the disk
         int oldCursorPosition = getCaretPosition();
         getDocument().reload();
+        grammarChanged();
         setCaretPosition(Math.min(oldCursorPosition, getText().length()));
     }
 
