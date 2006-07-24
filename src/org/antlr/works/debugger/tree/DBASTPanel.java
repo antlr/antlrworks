@@ -218,6 +218,9 @@ public class DBASTPanel extends DBDetachablePanel implements DBASTModelListener,
     public class RulesTableModel extends DefaultTableModel {
 
         public int getRowCount() {
+        	if(DBASTPanel.this == null)
+        		return 0;
+        	
             if(model == null)
                 return 0;
             else
@@ -244,7 +247,10 @@ public class DBASTPanel extends DBDetachablePanel implements DBASTModelListener,
     public class RootsTableModel extends DefaultTableModel {
 
         public int getRowCount() {
-            DBASTModel.Rule r = getSelectedRule();
+        	if(DBASTPanel.this == null)
+        		return 0;
+
+        	DBASTModel.Rule r = getSelectedRule();
             if(r == null)
                 return 0;
             else
