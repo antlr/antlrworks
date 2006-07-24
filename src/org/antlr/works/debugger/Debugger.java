@@ -400,6 +400,10 @@ public class Debugger extends EditorTab {
         return editor.getRules();
     }
 
+    public List getSortedRules() {
+        return editor.getSortedRules();
+    }
+
     public String getEventsAsString() {
         return eventsPanel.getEventsAsString();
     }

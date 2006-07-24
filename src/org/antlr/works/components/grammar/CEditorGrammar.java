@@ -676,6 +676,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             return rules.getRules();
     }
 
+    public List getSortedRules() {
+        return rules.getSortedRules();
+    }
+
     public List getActions() {
         return parserEngine.getActions();
     }

@@ -1,6 +1,7 @@
 
 Version 1.0ea12 - 
 
+- rules are sorted in the debugger input dialog
 - improved debugger UI with detachable panels
 - improved speed when checking grammar (delay creation of error paths when the user clicks on a rule)
 - fixed a bug that would prevent decision DFA to be displayed if the first token of a rule was

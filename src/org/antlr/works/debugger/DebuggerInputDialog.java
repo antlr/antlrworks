@@ -62,7 +62,7 @@ public class DebuggerInputDialog extends XJDialog {
         inputTextArea.setText(AWPrefs.getDebuggerInputText());
 
         rulesCombo.removeAllItems();
-        for (Iterator iterator = debugger.getRules().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = debugger.getSortedRules().iterator(); iterator.hasNext();) {
             GrammarSyntaxRule rule = (GrammarSyntaxRule)iterator.next();
             rulesCombo.addItem(rule.name);
         }
