@@ -1,6 +1,7 @@
 package org.antlr.works.grammar;
 
 import edu.usfca.xj.appkit.gview.GView;
+import edu.usfca.xj.appkit.gview.GViewDelegate;
 import edu.usfca.xj.appkit.gview.object.GElement;
 import edu.usfca.xj.appkit.gview.utils.GDOTImporterDOT;
 import edu.usfca.xj.appkit.utils.XJAlert;
@@ -47,7 +48,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class GrammarDOTTab extends EditorTab implements Runnable {
+public abstract class GrammarDOTTab extends EditorTab implements Runnable, GViewDelegate {
 
     protected CEditorGrammar editor;
 
@@ -116,6 +117,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable {
         view.setRootElement(graph);
         view.setBackground(Color.white);
         view.setDrawBorder(false);
+        view.setDelegate(this);
 
         Box b = Box.createHorizontalBox();
         b.add(new JLabel("Zoom"));
@@ -141,9 +143,6 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable {
 
                 view.setZoom((float)slider.getValue()/100);
                 view.repaint();
-
-                // Let the JScrollPane know that the dfaView size may have changed
-                view.revalidate();
             }
         });
         return slider;
@@ -223,6 +222,25 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable {
 
     public Component getTabComponent() {
         return getContainer();
+    }
+
+    public int getHorizontalMagnetics() {
+        return 0;
+    }
+
+    public int getVerticalMagnetics() {
+        return 0;
+    }
+
+    public void contextualHelp(GElement element) {
+    }
+
+    public void changeOccured() {
+    }
+
+    public void viewSizeDidChange() {
+        // Let the JScrollPane know that the dfaView size may have changed
+        view.revalidate();        
     }
 
     protected class CustomGView extends GView {

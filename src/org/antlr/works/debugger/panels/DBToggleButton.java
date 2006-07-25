@@ -38,12 +38,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class DBToggleButton extends JToggleButton {
 
     public int tag;
+    public final int round = 4;
+    public final int height = 22;
+    public final float fontSize = 12f;
 
     public DBToggleButton(String title) {
         super(title);
         setBorderPainted(false);
-        setMaximumSize(new Dimension(0, 25));
-        setFont(getFont().deriveFont(12f));
+        setMaximumSize(new Dimension(0, height));
+        setFont(getFont().deriveFont(fontSize));
     }
     
     public void setTag(int tag) {
@@ -54,36 +57,56 @@ public class DBToggleButton extends JToggleButton {
         return tag;
     }
 
-    public final int round = 4;
-
     public void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D)g;
+        paintButton((Graphics2D)g, 0, 0, getWidth()-2, getHeight()-1, isSelected());
+    }
 
-        paintBackground(g2d);
+    public void paintButton(Graphics2D g2d, int x, int y, int width, int height, boolean selected) {
+        Color topColor;
+        Color middleUpColor;
+        Color middleDownColor;
+        Color bottomColor;
+        final Color snowColor = new Color(0.95f, 0.95f, 0.95f);
 
-        TextLayout layout = new TextLayout(getText(), g.getFont(), g2d.getFontRenderContext());
+        if(selected) {
+            topColor = new Color(0.7f, 0.9f, 1.0f);
+            middleUpColor = new Color(0.5f, 0.7f, 1.0f);
+            middleDownColor = new Color(0.1f, 0.6f, 0.9f);
+            bottomColor = new Color(0.8f, 0.9f, 1.0f);
+        } else {
+            topColor = new Color(0.99f, 0.99f, 0.99f);
+            middleUpColor = new Color(0.9f, 0.9f, 0.9f);
+            middleDownColor = new Color(0.85f, 0.85f, 0.85f);
+            bottomColor = new Color(0.99f, 0.99f, 0.99f);
+        }
+
+        GradientPaint gradient = new GradientPaint(x, y, topColor,
+                x, y+height/2, middleUpColor);
+        g2d.setPaint(gradient);
+        g2d.fillRoundRect(x, y, width, height/2, round, round);
+
+        g2d.setColor(snowColor);
+        g2d.drawLine(x, y+1, x+width, y+1);
+
+        gradient = new GradientPaint(x, y+height/2, middleDownColor,
+                x, y+height, bottomColor);
+        g2d.setPaint(gradient);
+        g2d.fillRoundRect(x, y+height/2, width, height/2, round, round);
+
+        if(selected)
+            g2d.setColor(Color.darkGray);
+        else
+            g2d.setColor(Color.gray);
+        g2d.drawRoundRect(x, y, width, height, round, round);
+
+        // Label
+        TextLayout layout = new TextLayout(getText(), g2d.getFont(), g2d.getFontRenderContext());
         Rectangle2D r = layout.getBounds();
 
-        float tx = (float) (getWidth()*0.5f-r.getWidth()*0.5f);
-        float ty = (float) (getHeight()*0.5f+r.getHeight()*0.5f);
+        float tx = (float) (width*0.5f-r.getWidth()*0.5f);
+        float ty = (float) (height*0.5f+r.getHeight()*0.5f);
         g2d.setColor(Color.black);
         layout.draw(g2d, tx, ty);
     }
 
-    public void paintBackground(Graphics2D g2d) {
-        int x = getWidth()-3;
-        int y = getHeight()-3;
-
-        if(isSelected())
-            g2d.setColor(Color.lightGray);
-        else
-            g2d.setColor(new Color(0.98f, 0.98f, 0.98f));
-        g2d.fillRoundRect(1, 1, x, y, round, round);
-
-        if(isSelected())
-            g2d.setColor(Color.darkGray);
-        else
-            g2d.setColor(Color.gray);
-        g2d.drawRoundRect(1, 1, x, y, round, round);
-    }
 }

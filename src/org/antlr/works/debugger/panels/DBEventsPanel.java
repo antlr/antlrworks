@@ -73,10 +73,10 @@ public class DBEventsPanel extends DBDetachablePanel {
         infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setPreferredWidth(35);
         infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setMaxWidth(60);
         infoTable.getColumnModel().getColumn(INFO_COLUMN_EVENT).setMinWidth(100);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_SUBRULE).setMaxWidth(30);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_DECISION).setMaxWidth(30);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_MARK).setMaxWidth(30);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_BACKTRACK).setMaxWidth(30);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_SUBRULE).setMaxWidth(35);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_DECISION).setMaxWidth(35);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_MARK).setMaxWidth(35);
+        infoTable.getColumnModel().getColumn(INFO_COLUMN_BACKTRACK).setMaxWidth(35);
 
         selectLastInfoTableItem();
     }
