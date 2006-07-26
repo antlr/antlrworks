@@ -1,5 +1,6 @@
 package org.antlr.works.debugger.panels;
 
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 
@@ -52,8 +53,8 @@ public class DBEventsPanel extends DBDetachablePanel {
 
     protected EventTableDataModel eventTableDataModel;
 
-    public DBEventsPanel() {
-        super("Events");
+    public DBEventsPanel(Debugger debugger) {
+        super("Events", debugger);
 
         eventTableDataModel = new EventTableDataModel();
 

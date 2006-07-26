@@ -1,7 +1,14 @@
 package org.antlr.works.debugger.panels;
 
+import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.frame.XJFrameDelegate;
+import edu.usfca.xj.appkit.frame.XJWindow;
+import org.antlr.works.utils.IconManager;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 /*
@@ -35,14 +42,26 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBDetachablePanel extends JPanel {
+public class DBDetachablePanel extends JPanel implements XJFrameDelegate {
 
+    protected DBDetachablePanelDelegate delegate;
     protected JPanel mainPanel;
     protected TitlePanel titlePanel;
+    protected String title;
 
-    public DBDetachablePanel(String title) {
+    protected boolean detached = false;
+    protected JButton detach;
+    protected XJWindow window;
+    protected int tag;
+
+    public DBDetachablePanel(String title, DBDetachablePanelDelegate delegate) {
         super(new BorderLayout());
+
+        this.delegate = delegate;
+        this.title = title;
+
         createTitleBar(title);
+
         mainPanel = new JPanel(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
@@ -70,9 +89,27 @@ public class DBDetachablePanel extends JPanel {
         l.setForeground(Color.white);
         box.add(Box.createHorizontalStrut(2));
         box.add(l);
+        box.add(Box.createHorizontalGlue());
+        box.add(detach = createDetachButton());
+
         titlePanel = new TitlePanel();
         titlePanel.add(box);
         super.add(titlePanel, BorderLayout.NORTH);
+    }
+
+    public JButton createDetachButton() {
+        JButton detach = new JButton(IconManager.shared().getIconExpand());
+        detach.setBorderPainted(false);
+        detach.setOpaque(false);
+        detach.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(detached)
+                    attach();
+                else
+                    detach();
+            }
+        });
+        return detach;
     }
 
     public boolean isParentOf(Component c) {
@@ -92,6 +129,68 @@ public class DBDetachablePanel extends JPanel {
 
     public void focusLost() {
         titlePanel.setFocused(false);
+    }
+
+    public void setTag(int tag) {
+        this.tag = tag;
+    }
+
+    public int getTag() {
+        return tag;
+    }
+
+    public void setVisible(boolean flag) {
+        super.setVisible(flag);
+        if(flag) {
+            if(detached) {
+                window.setVisible(true);
+            }
+        } else {
+            if(detached) {
+                window.setVisible(false);
+            }
+        }
+    }
+
+    public boolean isDetached() {
+        return detached;
+    }
+
+    public void detach() {
+        detached = true;
+
+        Point p = getLocationOnScreen();
+
+        delegate.panelDoDetach(this);
+
+        detach.setIcon(IconManager.shared().getIconCollapse());
+
+        window = new XJWindow();
+        window.setTitle(title);
+        window.setPosition(p.x, p.y);
+        window.setSize(getWidth(), getHeight());
+
+        window.setDelegate(this);
+        window.getContentPane().add(this);
+
+        window.setVisible(true);
+    }
+
+    public void attach() {
+        detached = false;
+        window.getRootPane().remove(0);
+        window.close(); // will invoke frameDidClose()
+        detach.setIcon(IconManager.shared().getIconExpand());
+        delegate.panelDoAttach(this);
+    }
+
+    public void frameDidClose(XJFrame frame) {
+        if(detached) {
+            detached = false;
+            setVisible(false);
+            detach.setIcon(IconManager.shared().getIconExpand());
+            delegate.panelDoClose(this);
+        }
     }
 
     public class TitlePanel extends JPanel {

@@ -1,5 +1,7 @@
 package org.antlr.works.debugger.panels;
 
+import org.antlr.works.debugger.Debugger;
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
@@ -47,8 +49,8 @@ public class DBStackPanel extends DBDetachablePanel {
 
     protected Stack rules = new Stack();
 
-    public DBStackPanel() {
-        super("Stack");
+    public DBStackPanel(Debugger debugger) {
+        super("Stack", debugger);
 
         ruleTableDataModel = new DBStackPanel.RuleTableDataModel();
 

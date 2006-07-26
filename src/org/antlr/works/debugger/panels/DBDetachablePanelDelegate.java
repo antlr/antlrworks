@@ -1,13 +1,4 @@
 package org.antlr.works.debugger.panels;
-
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.utils.StreamWatcherDelegate;
-import org.antlr.works.utils.TextPane;
-import org.antlr.works.utils.TextUtils;
-
-import javax.swing.*;
-import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -39,41 +30,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBOutputPanel extends DBDetachablePanel implements StreamWatcherDelegate {
-
-    protected TextPane outputTextPane;
-    protected Debugger debugger;
-
-    public DBOutputPanel(Debugger debugger) {
-        super("Output", debugger);
-
-        this.debugger = debugger;
-
-        outputTextPane = new TextPane();
-        outputTextPane.setBackground(Color.white);
-        outputTextPane.setBorder(null);
-        outputTextPane.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        outputTextPane.setText("");
-        outputTextPane.setEditable(false);
-
-        TextUtils.createTabs(outputTextPane);
-
-        JScrollPane textScrollPane = new JScrollPane(outputTextPane);
-        textScrollPane.setWheelScrollingEnabled(true);
-
-        mainPanel.add(textScrollPane, BorderLayout.CENTER);
-    }
-
-    public void streamWatcherDidStarted() {
-        outputTextPane.setText("");
-    }
-
-    public void streamWatcherDidReceiveString(String string) {
-        outputTextPane.setText(outputTextPane.getText()+string);
-    }
-
-    public void streamWatcherException(Exception e) {
-        debugger.getConsole().print(e);
-    }
-
+public interface DBDetachablePanelDelegate {
+    public void panelDoDetach(DBDetachablePanel panel);
+    public void panelDoAttach(DBDetachablePanel panel);
+    public void panelDoClose(DBDetachablePanel panel);
 }

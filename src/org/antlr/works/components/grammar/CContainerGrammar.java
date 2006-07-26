@@ -61,11 +61,10 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
         getJFrame().pack();
     }
 
-    // The size of the project's window is full size (by default)
     public void setDefaultSize() {
         Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        //r.width *= 0.75;
-        //r.height *= 0.75;
+        r.width *= 0.8;
+        r.height *= 0.8;
         getRootPane().setPreferredSize(r.getSize());
     }
 

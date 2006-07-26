@@ -171,8 +171,8 @@ public class DBSplitPanel extends JPanel {
             rightSplitPane.setLeftComponent(leftSplitPane);
         } else if(left != null) {
             remove(left);
-            rightSplitPane.setLeftComponent(c);
-            rightSplitPane.setRightComponent(left);
+            rightSplitPane.setLeftComponent(left);
+            rightSplitPane.setRightComponent(c);
             add(rightSplitPane);
         } else if(right != null) {
             remove(right);
@@ -180,7 +180,7 @@ public class DBSplitPanel extends JPanel {
             rightSplitPane.setRightComponent(right);
             add(rightSplitPane);
         } else if(middle == null) {
-            add(middle);
+            add(c);
         }
         middle = c;
         resize();
@@ -217,8 +217,8 @@ public class DBSplitPanel extends JPanel {
             rightSplitPane.setRightComponent(null);
             leftSplitPane.setLeftComponent(left);
             leftSplitPane.setRightComponent(middle);
-            rightSplitPane.setRightComponent(c);
             rightSplitPane.setLeftComponent(leftSplitPane);
+            rightSplitPane.setRightComponent(c);
         } else if(left != null) {
             remove(left);
             rightSplitPane.setLeftComponent(left);
@@ -229,8 +229,8 @@ public class DBSplitPanel extends JPanel {
             rightSplitPane.setLeftComponent(middle);
             rightSplitPane.setRightComponent(c);
             add(rightSplitPane);
-        } else if(right != null) {
-            add(right);
+        } else if(right == null) {
+            add(c);
         }
         right = c;
         resize();

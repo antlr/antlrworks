@@ -59,7 +59,7 @@ public class DBASTPanel extends DBDetachablePanel implements DBASTModelListener,
     public JSplitPane tableTreeSplitPane;
 
     public DBASTPanel(Debugger debugger) {
-        super("AST");
+        super("AST", debugger);
 
         this.debugger = debugger;
 

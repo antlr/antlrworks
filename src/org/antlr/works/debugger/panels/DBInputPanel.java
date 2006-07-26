@@ -48,7 +48,7 @@ public class DBInputPanel extends DBDetachablePanel {
     protected DBInputConcretePanel currentPanel;
 
     public DBInputPanel(Debugger debugger) {
-        super("Input");
+        super("Input", debugger);
 
         this.debugger = debugger;
 

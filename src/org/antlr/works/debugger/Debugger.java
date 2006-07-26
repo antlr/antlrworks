@@ -74,7 +74,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Debugger extends EditorTab {
+public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
 
@@ -131,16 +131,22 @@ public class Debugger extends EditorTab {
         controlPanel = new DBControlPanel(this);
 
         inputPanel = new DBInputPanel(this);
+        inputPanel.setTag(DBSplitPanel.LEFT_INDEX);
         outputPanel = new DBOutputPanel(this);
+        outputPanel.setTag(DBSplitPanel.LEFT_INDEX);
 
         parseTreePanel = new DBParseTreePanel(this);
+        parseTreePanel.setTag(DBSplitPanel.MIDDLE_INDEX);
         parseTreeModel = parseTreePanel.getModel();
 
         astPanel = new DBASTPanel(this);
+        astPanel.setTag(DBSplitPanel.MIDDLE_INDEX);
         astModel = astPanel.getModel();
 
-        stackPanel = new DBStackPanel();
-        eventsPanel = new DBEventsPanel();
+        stackPanel = new DBStackPanel(this);
+        stackPanel.setTag(DBSplitPanel.RIGHT_INDEX);
+        eventsPanel = new DBEventsPanel(this);
+        eventsPanel.setTag(DBSplitPanel.RIGHT_INDEX);
 
         panel.add(controlPanel, BorderLayout.NORTH);
         panel.add(splitPanel, BorderLayout.CENTER);
@@ -243,13 +249,15 @@ public class Debugger extends EditorTab {
         }
     }
 
-    public void toggleComponents(Component c, Component other, int index) {
+    public void toggleComponents(DBDetachablePanel c, DBDetachablePanel other, int index) {
         c.setVisible(!c.isVisible());
         if(c.isVisible()) {
-            setComponentVisible(other, false);
-            splitPanel.setComponent(c, index);
+            if(!other.isDetached())
+                setComponentVisible(other, false);
+            if(!c.isDetached())
+                splitPanel.setComponent(c, index);
         } else {
-            if(other.isVisible())
+            if(other.isVisible() && !other.isDetached())
                 splitPanel.setComponent(other, index);
             else
                 splitPanel.setComponent(null, index);
@@ -688,4 +696,16 @@ public class Debugger extends EditorTab {
         return new HashMap();
     }
 
+    public void panelDoDetach(DBDetachablePanel panel) {
+        splitPanel.setComponent(null, panel.getTag());
+    }
+
+    public void panelDoAttach(DBDetachablePanel panel) {
+        splitPanel.setComponent(panel, panel.getTag());
+    }
+
+    public void panelDoClose(DBDetachablePanel panel) {
+        DBToggleButton button = (DBToggleButton) components2toggle.get(panel);
+        button.setSelected(false);
+    }
 }

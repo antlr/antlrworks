@@ -49,7 +49,7 @@ public class DBParseTreePanel extends DBDetachablePanel implements DBParseTreeMo
     protected AWTreePanel treePanel;
 
     public DBParseTreePanel(Debugger debugger) {
-        super("Parse Tree");
+        super("Parse Tree", debugger);
 
         this.debugger = debugger;
 

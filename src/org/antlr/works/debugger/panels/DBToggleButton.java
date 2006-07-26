@@ -83,7 +83,7 @@ public class DBToggleButton extends JToggleButton {
         GradientPaint gradient = new GradientPaint(x, y, topColor,
                 x, y+height/2, middleUpColor);
         g2d.setPaint(gradient);
-        g2d.fillRoundRect(x, y, width, height/2, round, round);
+        g2d.fillRect(x, y, width, height/2);
 
         g2d.setColor(snowColor);
         g2d.drawLine(x, y+1, x+width, y+1);
@@ -91,7 +91,7 @@ public class DBToggleButton extends JToggleButton {
         gradient = new GradientPaint(x, y+height/2, middleDownColor,
                 x, y+height, bottomColor);
         g2d.setPaint(gradient);
-        g2d.fillRoundRect(x, y+height/2, width, height/2, round, round);
+        g2d.fillRect(x, y+height/2, width, height/2);
 
         if(selected)
             g2d.setColor(Color.darkGray);
