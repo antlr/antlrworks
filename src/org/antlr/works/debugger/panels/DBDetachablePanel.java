@@ -1,8 +1,6 @@
 package org.antlr.works.debugger.panels;
 
-import edu.usfca.xj.appkit.frame.XJFrame;
-import edu.usfca.xj.appkit.frame.XJFrameDelegate;
-import edu.usfca.xj.appkit.frame.XJWindow;
+import edu.usfca.xj.appkit.frame.XJDialog;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
@@ -42,7 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBDetachablePanel extends JPanel implements XJFrameDelegate {
+public class DBDetachablePanel extends JPanel {
 
     protected DBDetachablePanelDelegate delegate;
     protected JPanel mainPanel;
@@ -51,7 +49,7 @@ public class DBDetachablePanel extends JPanel implements XJFrameDelegate {
 
     protected boolean detached = false;
     protected JButton detach;
-    protected XJWindow window;
+    protected XJDialog window;
     protected int tag;
 
     public DBDetachablePanel(String title, DBDetachablePanelDelegate delegate) {
@@ -93,14 +91,20 @@ public class DBDetachablePanel extends JPanel implements XJFrameDelegate {
         box.add(detach = createDetachButton());
 
         titlePanel = new TitlePanel();
+        titlePanel.setPreferredSize(new Dimension(0, 15));
+        titlePanel.setMinimumSize(new Dimension(0, 15));
+        titlePanel.setMaximumSize(new Dimension(0, 15));
         titlePanel.add(box);
+
         super.add(titlePanel, BorderLayout.NORTH);
     }
 
     public JButton createDetachButton() {
-        JButton detach = new JButton(IconManager.shared().getIconExpand());
+        JButton detach = new JButton(IconManager.shared().getIconDetach());
         detach.setBorderPainted(false);
+        detach.setBorder(null);
         detach.setOpaque(false);
+
         detach.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(detached)
@@ -163,14 +167,13 @@ public class DBDetachablePanel extends JPanel implements XJFrameDelegate {
 
         delegate.panelDoDetach(this);
 
-        detach.setIcon(IconManager.shared().getIconCollapse());
+        detach.setIcon(IconManager.shared().getIconAttach());
 
-        window = new XJWindow();
+        window = new DetachableWindow(delegate.panelParentContainer());
         window.setTitle(title);
         window.setPosition(p.x, p.y);
         window.setSize(getWidth(), getHeight());
 
-        window.setDelegate(this);
         window.getContentPane().add(this);
 
         window.setVisible(true);
@@ -178,19 +181,10 @@ public class DBDetachablePanel extends JPanel implements XJFrameDelegate {
 
     public void attach() {
         detached = false;
-        window.getRootPane().remove(0);
-        window.close(); // will invoke frameDidClose()
-        detach.setIcon(IconManager.shared().getIconExpand());
+        window.getContentPane().remove(0);
+        window.close();
+        detach.setIcon(IconManager.shared().getIconDetach());
         delegate.panelDoAttach(this);
-    }
-
-    public void frameDidClose(XJFrame frame) {
-        if(detached) {
-            detached = false;
-            setVisible(false);
-            detach.setIcon(IconManager.shared().getIconExpand());
-            delegate.panelDoClose(this);
-        }
     }
 
     public class TitlePanel extends JPanel {
@@ -199,7 +193,6 @@ public class DBDetachablePanel extends JPanel implements XJFrameDelegate {
 
         public TitlePanel() {
             super(new BorderLayout());
-            setBorder(BorderFactory.createLineBorder(Color.lightGray));
         }
 
         public void setFocused(boolean flag) {
@@ -211,8 +204,8 @@ public class DBDetachablePanel extends JPanel implements XJFrameDelegate {
             Color startColor;
             Color endColor;
             if(focused) {
-                startColor = new Color(0.0f, 0.6f, 1.0f);
-                endColor = new Color(0.5f, 0.9f, 1.0f);
+                startColor = new Color(0.1f, 0.6f, 0.9f);
+                endColor = new Color(0.8f, 0.9f, 1.0f);
             } else {
                 startColor = new Color(0.7f, 0.7f, 0.7f);
                 endColor = new Color(0.9f, 0.9f, 0.9f);
@@ -226,6 +219,20 @@ public class DBDetachablePanel extends JPanel implements XJFrameDelegate {
             Graphics2D g2d = (Graphics2D)g;
             g2d.setPaint(gradient);
             g2d.fillRect(0, 0, x, y);
+        }
+    }
+
+    public class DetachableWindow extends XJDialog {
+
+        public DetachableWindow(Container container) {
+            super(container, false);
+        }
+
+        public void dialogWillCloseCancel() {
+            if(detached) {
+                DBDetachablePanel.this.setVisible(false);
+                delegate.panelDoClose(DBDetachablePanel.this);
+            }
         }
     }
 }

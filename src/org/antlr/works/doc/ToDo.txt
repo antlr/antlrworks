@@ -1,10 +1,9 @@
 
 * Prio 1
 
-- detachable: name of the panel in the window menu (prefix with project's name)
 - detachable: resizable corner is over button
 - detachable: attach when other is visible in splitter does not reset button
-- detachable: close when parent window is closed
+- make dbsplitter aware of the size in % not absolute
 
 - splitter should have default width on Windows/Linux
 - handle out of memory when running on Windows (debugging)

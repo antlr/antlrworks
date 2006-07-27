@@ -708,4 +708,9 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
         DBToggleButton button = (DBToggleButton) components2toggle.get(panel);
         button.setSelected(false);
     }
+
+    public Container panelParentContainer() {
+        return editor.getJavaContainer();
+    }
+
 }

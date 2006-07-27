@@ -128,6 +128,14 @@ public class IconManager {
         return createImageIcon(path+"run.png");
     }
 
+    public ImageIcon getIconAttach() {
+        return createImageIcon(path+"attach.png");
+    }
+
+    public ImageIcon getIconDetach() {
+        return createImageIcon(path+"detach.png");
+    }
+
     public ImageIcon getIconExpandAll() {
         return createImageIcon(path+"expandall.png");
     }

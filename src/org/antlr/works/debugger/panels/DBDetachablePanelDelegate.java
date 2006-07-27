@@ -1,4 +1,6 @@
 package org.antlr.works.debugger.panels;
+
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -34,4 +36,5 @@ public interface DBDetachablePanelDelegate {
     public void panelDoDetach(DBDetachablePanel panel);
     public void panelDoAttach(DBDetachablePanel panel);
     public void panelDoClose(DBDetachablePanel panel);
+    public Container panelParentContainer();
 }
