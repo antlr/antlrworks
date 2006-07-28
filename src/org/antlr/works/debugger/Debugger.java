@@ -701,6 +701,14 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
     }
 
     public void panelDoAttach(DBDetachablePanel panel) {
+        Component c = splitPanel.getComponentAtIndex(panel.getTag());
+        if(c != null) {
+            c.setVisible(false);
+            splitPanel.setComponent(null, panel.getTag());
+
+            DBToggleButton button = (DBToggleButton) components2toggle.get(c);
+            button.setSelected(false);
+        }
         splitPanel.setComponent(panel, panel.getTag());
     }
 

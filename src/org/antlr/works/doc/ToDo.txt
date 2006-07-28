@@ -1,10 +1,7 @@
 
 * Prio 1
 
-- detachable: resizable corner is over button
-- detachable: attach when other is visible in splitter does not reset button
 - make dbsplitter aware of the size in % not absolute
-
 - splitter should have default width on Windows/Linux
 - handle out of memory when running on Windows (debugging)
 - rule FloatingPointLiteral of java.g is not displayed correctly (ANTLR optimization problem)

@@ -172,10 +172,12 @@ public class AWTreePanel extends JPanel {
         graphScrollPane.setWheelScrollingEnabled(true);
 
         Box box = Box.createHorizontalBox();
+        box.add(Box.createHorizontalStrut(15));
         box.add(new JLabel("Zoom"));
         box.add(createZoomSlider());
         box.add(Box.createHorizontalGlue());
         box.add(createDisplayAsListButton());
+        box.add(Box.createHorizontalStrut(15));
 
         panel.add(graphScrollPane, BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);

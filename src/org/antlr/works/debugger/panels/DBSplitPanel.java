@@ -110,6 +110,15 @@ public class DBSplitPanel extends JPanel {
         }
     }
 
+    public Component getComponentAtIndex(int index) {
+        switch(index) {
+            case LEFT_INDEX: return left;
+            case MIDDLE_INDEX: return middle;
+            case RIGHT_INDEX: return right;
+        }
+        return null;
+    }
+
     public void setLeftComponent(Component c) {
         if(c == null) {
             removeLeftComponent();
