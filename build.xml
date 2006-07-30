@@ -1,0 +1,91 @@
+<?xml version='1.0'?>
+<project default="main">
+	
+	<property name="src" location="src"/>
+	<property name="build" location="bin"/>
+	<property name="doc" location="doc"/>
+	<property name="lib" location="lib"/>
+	<property name="deploy" location="deploy"/>
+
+	<property name="xj.src" location="../../../usf/xj/main/src/"/>
+	<property name="antlr.src" location="../../antlr/main/src/"/>
+
+	<property name="main.class" value="org.antlr.works.IDE"/>
+
+	<condition property="MacOS">
+		<os family="mac"/>
+	</condition>
+	
+    <path id="classpath">
+        <pathelement location="${lib}/jgoodies.jar"/>
+    </path>
+
+	<target name="main" depends="init, compile, prepare, compress" description="Compile and jar the project">
+		<echo>Building the .jar file</echo>
+	</target>
+
+	<target name="init">
+		<tstamp prefix="time"/>
+		<mkdir dir="${build}"/>
+		<mkdir dir="${deploy}"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build}"/>
+	</target>
+		
+	<target name="compile" depends="compileGeneric, compileNonMacOS">
+	</target>
+	
+	<target name="compileNonMacOS" unless="MacOS">
+		<javac destdir="${build}" excludes="**/MacOS/*">
+            <classpath refid="classpath"/>
+			<src>
+				<pathelement path="${src}"/>
+				<pathelement path="${antlr.src}"/>
+				<pathelement path="${xj.src}"/>
+			</src>
+		</javac>
+	</target>
+
+	<target name="compileGeneric" if="MacOS">
+		<javac destdir="${build}">
+            <classpath refid="classpath"/>
+			<src>
+				<pathelement path="${src}"/>
+				<pathelement path="${antlr.src}"/>
+				<pathelement path="${xj.src}"/>
+			</src>
+		</javac>
+	</target>
+
+	<!-- Prepare the update.xml file -->
+	<target name="prepare">
+		<loadfile property="readme" srcfile="${doc}/readme.txt"></loadfile>		
+		<!--<copy file="${src}/update.xml" toFile="${output}/update.xml">
+			<filterset begintoken="%" endtoken="%">
+				<filter token="VERSION" value="${time.TODAY}"/>
+				<filter token="README" value="${readme}"/>
+			</filterset>
+		</copy>-->
+	</target>
+	
+	<!-- Create the jar file-->	
+	<target name="compress">
+		<jar jarfile="${deploy}/antlrworks.jar">
+			<zipfileset src="${lib}/jgoodies.jar" includes="**/*"/>
+			<zipfileset src="${lib}/antlr-2.7.6.jar" includes="**/*"/>
+			<zipfileset src="${lib}/stringtemplate.jar" includes="**/*"/>
+			
+			<fileset dir="${src}" includes="**/*.properties, **/*.png, **/*.st"/>
+			<fileset dir="${xj.src}" includes="**/*.properties, **/*.png"/>
+			<fileset dir="${antlr.src}" includes="**/*.stg, **/*.st, **/*.sti"/>						
+			<fileset dir="${build}" includes="**/*.class"/>
+			
+			<manifest>
+				<attribute name="Main-Class" value="${main.class}" />
+			</manifest>
+		</jar>
+	</target>
+	
+</project>
