@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.components.grammar;
 
-import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import edu.usfca.xj.appkit.frame.XJWindow;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
@@ -101,7 +101,7 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
         return editor;
     }
 
-    public XJFrame getXJFrame() {
+    public XJFrameInterface getXJFrame() {
         return this;
     }
 

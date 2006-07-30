@@ -84,7 +84,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     }
 
     public void awake() {
-        progress = new XJDialogProgress(editor.getJFrame());
+        progress = new XJDialogProgress(editor.getXJFrame());
 
         panel = new JPanel(new BorderLayout());
 

@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.generate;
 
-import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.prefs.AWPrefs;
@@ -44,7 +44,7 @@ public class CodeDisplay extends EditorTab {
     protected ATEPanel textEditor;
     protected String title;
 
-    public CodeDisplay(XJFrame parentFrame) {
+    public CodeDisplay(XJFrameInterface parentFrame) {
         textEditor = new ATEPanel(parentFrame);
         //textEditor.setParserEngine(new ATEJavaSyntaxEngine());
         textEditor.setSyntaxColoring(false);

@@ -1,14 +1,12 @@
-package org.antlr.works.components;
+package org.antlr.works.plugin.intellij;
 
-import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
-import edu.usfca.xj.appkit.menu.XJMainMenuBar;
+import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 
-import java.util.Map;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,22 +34,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface ComponentContainer {
-    public ComponentEditor getEditor();
+public class AWApplicationComponent implements ApplicationComponent {
 
-    public XJDocument getDocument();
-    public XJFrameInterface getXJFrame();
-    public XJMainMenuBar getMainMenuBar();
+    public AWApplicationComponent() {
+    }
 
-    public void loadText(String text);
-    public String getText();
+    public void initComponent() {
+        System.out.println("AWPlugIn: initComponent");
+        FileTypeManager.getInstance().registerFileType(new AWFileType(), new String[] { "g" });
+    }
 
-    public boolean willSaveDocument();
+    public void disposeComponent() {
+    }
 
-    public void close();
-
-    public void setDirty();
-
-    public void setPersistentData(Map data);
-    public Map getPersistentData();
+    public String getComponentName() {
+        return "AWApplicationComponent";
+    }
 }

@@ -1,14 +1,12 @@
-package org.antlr.works.components;
+package org.antlr.works.plugin.intellij;
 
-import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
-import edu.usfca.xj.appkit.menu.XJMainMenuBar;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 
-import java.util.Map;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,22 +34,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface ComponentContainer {
-    public ComponentEditor getEditor();
+public class AWNewGrammarFile extends AnAction {
 
-    public XJDocument getDocument();
-    public XJFrameInterface getXJFrame();
-    public XJMainMenuBar getMainMenuBar();
-
-    public void loadText(String text);
-    public String getText();
-
-    public boolean willSaveDocument();
-
-    public void close();
-
-    public void setDirty();
-
-    public void setPersistentData(Map data);
-    public Map getPersistentData();
+    public void actionPerformed(AnActionEvent e) {
+        System.err.println("Create new grammar file!");
+    }
 }

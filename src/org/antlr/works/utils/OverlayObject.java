@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.utils;
 
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -45,11 +47,11 @@ public abstract class OverlayObject {
     public static final int ALIGN_CENTER = 1;
     public static final int ALIGN_CUSTOM = 2;
 
-    protected JFrame parentFrame;
+    protected XJFrameInterface parentFrame;
     protected JComponent parentComponent;
     protected JComponent content;
 
-    public OverlayObject(JFrame parentFrame, JComponent parentComponent) {
+    public OverlayObject(XJFrameInterface parentFrame, JComponent parentComponent) {
 
         this.parentFrame = parentFrame;
         this.parentComponent = parentComponent;
@@ -64,7 +66,7 @@ public abstract class OverlayObject {
     }
 
     private void createListeners() {
-        parentFrame.addComponentListener(new ComponentAdapter() {
+        parentFrame.getJavaContainer().addComponentListener(new ComponentAdapter() {
             public void componentHidden(ComponentEvent e) {
                 if(content.isVisible())
                     content.setVisible(false);
@@ -115,7 +117,7 @@ public abstract class OverlayObject {
     public void hide() {
         if(content.isVisible()) {
             content.setVisible(false);
-            parentComponent.requestFocus();            
+            parentComponent.requestFocus();
         }
     }
 

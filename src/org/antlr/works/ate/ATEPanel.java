@@ -1,6 +1,6 @@
 package org.antlr.works.ate;
 
-import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import edu.usfca.xj.appkit.undo.XJUndo;
 import edu.usfca.xj.appkit.utils.XJSmoothScrolling;
 import org.antlr.works.ate.analysis.ATEAnalysisColumn;
@@ -62,7 +62,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDelegate {
 
-    protected XJFrame parentFrame;
+    protected XJFrameInterface parentFrame;
     protected XJSmoothScrolling smoothScrolling;
 
     protected ATEPanelDelegate delegate;
@@ -89,7 +89,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected static final String unixEndOfLine = "\n";
     protected static int ANALYSIS_COLUMN_WIDTH = 18;
 
-    public ATEPanel(XJFrame parentFrame) {
+    public ATEPanel(XJFrameInterface parentFrame) {
         super(new BorderLayout());
         this.parentFrame = parentFrame;
         colorize = new ATEColoring(this);
@@ -98,8 +98,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         createTextPane();
     }
 
-    public JFrame getParentFrame() {
-        return parentFrame.getJFrame();
+    public XJFrameInterface getParentFrame() {
+        return parentFrame;
     }
 
     public void setParserEngine(ATESyntaxEngine engine) {

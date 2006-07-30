@@ -52,7 +52,7 @@ public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
 
     public void awake() {
         ideaManager = new IdeaManager();
-        ideaManager.setOverlay(new IdeaOverlay(editor, editor.getJFrame(), editor.getTextPane()));
+        ideaManager.setOverlay(new IdeaOverlay(editor, editor.getXJFrame(), editor.getTextPane()));
         ideaManager.addProvider(this);
         ideaManager.setDelegate(this);
     }

@@ -1,7 +1,7 @@
 package org.antlr.works.components.project;
 
 import edu.usfca.xj.appkit.frame.XJDialog;
-import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import edu.usfca.xj.appkit.frame.XJWindow;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
@@ -148,7 +148,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
         if(getXJFrame().getMainMenuBar() != null)
             getXJFrame().getMainMenuBar().refreshState();
     }
-    
+
     public void setTitle(String title) {
         super.setTitle(title+" - [Project]");
     }
@@ -171,7 +171,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
         }
     }
 
-    public XJFrame getXJFrame() {
+    public XJFrameInterface getXJFrame() {
         return this;
     }
 

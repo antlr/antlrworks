@@ -1,14 +1,10 @@
-package org.antlr.works.components;
+package org.antlr.works.plugin;
 
-import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
-import edu.usfca.xj.appkit.menu.XJMainMenuBar;
-
-import java.util.Map;
+import javax.swing.*;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,22 +32,30 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface ComponentContainer {
-    public ComponentEditor getEditor();
+public class PluginTester {
 
-    public XJDocument getDocument();
-    public XJFrameInterface getXJFrame();
-    public XJMainMenuBar getMainMenuBar();
+    public PluginContainer container;
 
-    public void loadText(String text);
-    public String getText();
+    private void createAndShowGUI() {
+        container = new PluginContainer();
 
-    public boolean willSaveDocument();
+        JFrame.setDefaultLookAndFeelDecorated(true);
 
-    public void close();
+        JFrame frame = new JFrame("Plugin Tester");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    public void setDirty();
+        frame.add(container);
+        
+        frame.pack();
+        frame.setVisible(true);
+    }
 
-    public void setPersistentData(Map data);
-    public Map getPersistentData();
+    public static void main(String[] args) {
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new PluginTester().createAndShowGUI();
+            }
+        });
+    }
+
 }

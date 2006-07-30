@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.completion;
 
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.OverlayObject;
@@ -64,7 +65,7 @@ public class AutoCompletionMenu extends OverlayObject {
 
     public static final int VISIBLE_MATCHING_RULES = 15;
 
-    public AutoCompletionMenu(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, JFrame frame) {
+    public AutoCompletionMenu(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, XJFrameInterface frame) {
         super(frame, textComponent);
         this.delegate = delegate;
     }

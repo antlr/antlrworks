@@ -53,7 +53,7 @@ public class EditorTips implements TipsProvider {
 
     public void awake() {
         tipsManager = new TipsManager();
-        tipsManager.setOverlay(new TipsOverlay(editor.getJFrame(), editor.getTextPane()));
+        tipsManager.setOverlay(new TipsOverlay(editor.getXJFrame(), editor.getTextPane()));
         tipsManager.addProvider(this);
     }
 
@@ -81,7 +81,7 @@ public class EditorTips implements TipsProvider {
                 Rectangle r1 = editor.getTextPane().modelToView(token.getStartIndex());
                 Rectangle r2 = editor.getTextPane().modelToView(token.getEndIndex());
                 if(r1.union(r2).contains(relativePoint)) {
-                    p = SwingUtilities.convertPoint(editor.getTextPane(), new Point(relativePoint.x+2, r2.y-5), editor.getJFrame());
+                    p = SwingUtilities.convertPoint(editor.getTextPane(), new Point(relativePoint.x+2, r2.y-5), editor.getXJFrame().getJavaContainer());
                 }
             }
         } catch (BadLocationException e) {

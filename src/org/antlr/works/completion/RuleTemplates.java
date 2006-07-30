@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.completion;
 
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
+
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.event.*;
@@ -42,7 +44,7 @@ public class RuleTemplates extends AutoCompletionMenu {
     private List templateRuleNames = new ArrayList();
     private List templateRuleTexts = new ArrayList();
 
-    public RuleTemplates(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, JFrame frame) {
+    public RuleTemplates(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, XJFrameInterface frame) {
         super(delegate, textComponent, frame);
 
         this.list.addMouseMotionListener(new ListMouseMotionAdapter());

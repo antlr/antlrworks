@@ -2,7 +2,7 @@ package org.antlr.works.components.project.file;
 
 import edu.usfca.xj.appkit.document.XJDataPlainText;
 import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import edu.usfca.xj.appkit.menu.*;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentDocument;
@@ -101,7 +101,7 @@ public abstract class CContainerProjectFile implements ComponentContainer, XJMen
         return document;
     }
 
-    public XJFrame getXJFrame() {
+    public XJFrameInterface getXJFrame() {
         return project.getXJFrame();
     }
 

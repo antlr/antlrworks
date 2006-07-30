@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.navigation;
 
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.OverlayObject;
@@ -56,7 +57,7 @@ public class GoToRule extends OverlayObject {
 
     public static final int VISIBLE_MATCHING_RULES = 15;
 
-    public GoToRule(CEditorGrammar editor, JFrame parentFrame, JComponent parentComponent) {
+    public GoToRule(CEditorGrammar editor, XJFrameInterface parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
         this.editor = editor;
     }
@@ -128,7 +129,7 @@ public class GoToRule extends OverlayObject {
             ruleNameField.setForeground(Color.red);
             return;
         } else {
-            ruleNameField.setForeground(Color.black);            
+            ruleNameField.setForeground(Color.black);
         }
 
         for(Iterator iter = rules.iterator(); iter.hasNext(); ) {

@@ -1,5 +1,6 @@
 package org.antlr.works.idea;
 
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.OverlayObject;
@@ -54,7 +55,7 @@ public class IdeaOverlay extends OverlayObject {
 
     protected List ideas;
 
-    public IdeaOverlay(CEditorGrammar editor, JFrame parentFrame, JComponent parentComponent) {
+    public IdeaOverlay(CEditorGrammar editor, XJFrameInterface parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
         this.editor = editor;
     }

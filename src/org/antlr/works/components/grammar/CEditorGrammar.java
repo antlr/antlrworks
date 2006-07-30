@@ -199,14 +199,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     protected void initTools() {
-        goToRule = new GoToRule(this, getJFrame(), getTextPane());
+        goToRule = new GoToRule(this, getXJFrame(), getTextPane());
         goToHistory = new GoToHistory();
         findAndReplace = new FindAndReplace(this);
     }
 
     protected void initAutoCompletion() {
-        autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), getJFrame());
-        ruleTemplates = new RuleTemplates(this, getTextPane(), getJFrame());
+        autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), getXJFrame());
+        ruleTemplates = new RuleTemplates(this, getTextPane(), getXJFrame());
     }
 
     protected void initCore() {
@@ -260,7 +260,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         debugger.awake();
 
         toolbar.awake();
-        
+
         rules.setKeyBindings(textEditor.getKeyBindings());
 
         textEditor.setParserEngine(parserEngine);
@@ -656,7 +656,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public Container getWindowContainer() {
-        return getJFrame();
+        return getXJFrame().getJavaContainer();
     }
 
     public GrammarSyntaxEngine getParserEngine() {
@@ -783,7 +783,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
                 visual.setPlaceholder("Select a rule to display its syntax diagram");
             } else {
                 if(r.hasErrors() && r.needsToBuildErrors()) {
-                    engineGrammar.computeRuleErrors(r);                    
+                    engineGrammar.computeRuleErrors(r);
                 }
 
                 visual.setRule(r, immediate);

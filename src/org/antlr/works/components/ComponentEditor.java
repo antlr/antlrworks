@@ -1,7 +1,7 @@
 package org.antlr.works.components;
 
 import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.appkit.frame.XJFrame;
+import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
@@ -99,12 +99,8 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         return container.getDocument();
     }
 
-    public XJFrame getXJFrame() {
+    public XJFrameInterface getXJFrame() {
         return container.getXJFrame();
-    }
-
-    public JFrame getJFrame() {
-        return getXJFrame().getJFrame();
     }
 
     public Container getJavaContainer() {

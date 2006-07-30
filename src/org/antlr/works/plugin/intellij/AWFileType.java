@@ -1,16 +1,19 @@
-package org.antlr.works.ate.analysis;
+package org.antlr.works.plugin.intellij;
 
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
-import org.antlr.works.tooltip.ToolTipList;
-import org.antlr.works.tooltip.ToolTipListDelegate;
-import org.antlr.works.utils.OverlayObject;
+import com.intellij.ide.structureView.StructureViewBuilder;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.SyntaxHighlighter;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,45 +41,51 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-/** This class handles the overlay used by the ATEAnalysisColumn class to display
- * information about the current errors/warnings located under the mouse location.
- */
+public class AWFileType implements FileType {
 
-public class ATEAnalysisColumnOverlay extends OverlayObject implements ToolTipListDelegate {
-
-    public ToolTipList toolTip;
-    public Point location;
-
-    public ATEAnalysisColumnOverlay(XJFrameInterface parentFrame, JComponent parentComponent) {
-        super(parentFrame, parentComponent);
+    @NotNull
+    @NonNls
+    public String getName() {
+        return "ANTLR Grammar";
     }
 
-    public void setLocation(Point location) {
-        this.location = SwingUtilities.convertPoint(parentComponent, location, parentFrame.getJavaContainer());
-        resize();
+    @NotNull
+    public String getDescription() {
+        return "ANTLR Grammar File";
     }
 
-    public void setText(String text) {
-        toolTip.setText(text);
+    @NotNull
+    @NonNls
+    public String getDefaultExtension() {
+        return "g";
     }
 
-    public void resize() {
-        toolTip.resize();
-        if(location != null)
-            content.setBounds(location.x-toolTip.getWidth(),  location.y, toolTip.getWidth(), toolTip.getHeight());
+    @Nullable
+    public Icon getIcon() {
+        return null;
     }
 
-    public JComponent overlayCreateInterface() {
-        toolTip = new ToolTipList(this);
-        return toolTip;
+    public boolean isBinary() {
+        return false;
     }
 
-    public boolean overlayWillDisplay() {
-        return true;
+    public boolean isReadOnly() {
+        return false;
     }
 
-    public void toolTipListHide() {
-        hide();
+    @Nullable
+    @NonNls
+    public String getCharset(@NotNull VirtualFile file) {
+        return null;
     }
 
+    @Nullable
+    public SyntaxHighlighter getHighlighter(@Nullable Project project) {
+        return null;
+    }
+
+    @Nullable
+    public StructureViewBuilder getStructureViewBuilder(@NotNull VirtualFile file, @NotNull Project project) {
+        return null;
+    }
 }
