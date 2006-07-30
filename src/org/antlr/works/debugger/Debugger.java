@@ -60,6 +60,9 @@ import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.swing.CustomSplitPanel;
+import org.antlr.works.swing.CustomToggleButton;
+import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -103,7 +106,7 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
 
     protected DBControlPanel controlPanel;
 
-    protected DBSplitPanel splitPanel;
+    protected CustomSplitPanel splitPanel;
     protected Map components2toggle;
 
     protected CEditorGrammar editor;
@@ -125,28 +128,28 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
 
     public void awake() {
         panel = new JPanel(new BorderLayout());
-        splitPanel = new DBSplitPanel();
+        splitPanel = new CustomSplitPanel();
         components2toggle = new HashMap();
 
         controlPanel = new DBControlPanel(this);
 
         inputPanel = new DBInputPanel(this);
-        inputPanel.setTag(DBSplitPanel.LEFT_INDEX);
+        inputPanel.setTag(CustomSplitPanel.LEFT_INDEX);
         outputPanel = new DBOutputPanel(this);
-        outputPanel.setTag(DBSplitPanel.LEFT_INDEX);
+        outputPanel.setTag(CustomSplitPanel.LEFT_INDEX);
 
         parseTreePanel = new DBParseTreePanel(this);
-        parseTreePanel.setTag(DBSplitPanel.MIDDLE_INDEX);
+        parseTreePanel.setTag(CustomSplitPanel.MIDDLE_INDEX);
         parseTreeModel = parseTreePanel.getModel();
 
         astPanel = new DBASTPanel(this);
-        astPanel.setTag(DBSplitPanel.MIDDLE_INDEX);
+        astPanel.setTag(CustomSplitPanel.MIDDLE_INDEX);
         astModel = astPanel.getModel();
 
         stackPanel = new DBStackPanel(this);
-        stackPanel.setTag(DBSplitPanel.RIGHT_INDEX);
+        stackPanel.setTag(CustomSplitPanel.RIGHT_INDEX);
         eventsPanel = new DBEventsPanel(this);
-        eventsPanel.setTag(DBSplitPanel.RIGHT_INDEX);
+        eventsPanel.setTag(CustomSplitPanel.RIGHT_INDEX);
 
         panel.add(controlPanel, BorderLayout.NORTH);
         panel.add(splitPanel, BorderLayout.CENTER);
@@ -186,12 +189,12 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
     }
 
     public JToggleButton createToggleButton(String title, int tag, Component c) {
-        DBToggleButton b = new DBToggleButton(title);
+        CustomToggleButton b = new CustomToggleButton(title);
         b.setTag(tag);
         b.setFocusable(false);
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                performToggleButtonAction((DBToggleButton)e.getSource());
+                performToggleButtonAction((CustomToggleButton)e.getSource());
             }
 
         });
@@ -224,27 +227,27 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
         b.setSelected(flag);
     }
 
-    public void performToggleButtonAction(DBToggleButton button) {
+    public void performToggleButtonAction(CustomToggleButton button) {
         switch(button.getTag()) {
             case TOGGLE_INPUT:
-                toggleComponents(inputPanel, outputPanel, DBSplitPanel.LEFT_INDEX);
+                toggleComponents(inputPanel, outputPanel, CustomSplitPanel.LEFT_INDEX);
                 break;
             case TOGGLE_OUTPUT:
-                toggleComponents(outputPanel, inputPanel, DBSplitPanel.LEFT_INDEX);
+                toggleComponents(outputPanel, inputPanel, CustomSplitPanel.LEFT_INDEX);
                 break;
 
             case TOGGLE_PTREE:
-                toggleComponents(parseTreePanel, astPanel, DBSplitPanel.MIDDLE_INDEX);
+                toggleComponents(parseTreePanel, astPanel, CustomSplitPanel.MIDDLE_INDEX);
                 break;
             case TOGGLE_AST:
-                toggleComponents(astPanel, parseTreePanel, DBSplitPanel.MIDDLE_INDEX);
+                toggleComponents(astPanel, parseTreePanel, CustomSplitPanel.MIDDLE_INDEX);
                 break;
 
             case TOGGLE_STACK:
-                toggleComponents(stackPanel, eventsPanel, DBSplitPanel.RIGHT_INDEX);
+                toggleComponents(stackPanel, eventsPanel, CustomSplitPanel.RIGHT_INDEX);
                 break;
             case TOGGLE_EVENTS:
-                toggleComponents(eventsPanel, stackPanel, DBSplitPanel.RIGHT_INDEX);
+                toggleComponents(eventsPanel, stackPanel, CustomSplitPanel.RIGHT_INDEX);
                 break;
         }
     }
@@ -635,20 +638,21 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
     }
 
     public boolean canExportToBitmap() {
-        return true;
+        return getExportableGView() != null;
     }
 
     public boolean canExportToEPS() {
-        return true;
+        return getExportableGView() != null;
     }
 
     public GView getExportableGView() {
-        // @todo finish
-        /*if(treeTabbedPane.getSelectedComponent() == parseTreePanel)
+        Component c = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
+        if(Utils.isComponentChildOf(c, parseTreePanel))
             return parseTreePanel.getGraphView();
+        else if(Utils.isComponentChildOf(c, astPanel))
+            return astPanel.getGraphView();
         else
-            return astPanel.getGraphView();*/
-        return null;
+            return null;
     }
 
     public String getTabName() {
@@ -706,14 +710,14 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
             c.setVisible(false);
             splitPanel.setComponent(null, panel.getTag());
 
-            DBToggleButton button = (DBToggleButton) components2toggle.get(c);
+            CustomToggleButton button = (CustomToggleButton) components2toggle.get(c);
             button.setSelected(false);
         }
         splitPanel.setComponent(panel, panel.getTag());
     }
 
     public void panelDoClose(DBDetachablePanel panel) {
-        DBToggleButton button = (DBToggleButton) components2toggle.get(panel);
+        CustomToggleButton button = (CustomToggleButton) components2toggle.get(panel);
         button.setSelected(false);
     }
 

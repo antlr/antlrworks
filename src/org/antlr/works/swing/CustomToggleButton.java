@@ -1,4 +1,4 @@
-package org.antlr.works.debugger.panels;
+package org.antlr.works.swing;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,14 +35,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBToggleButton extends JToggleButton {
+public class CustomToggleButton extends JToggleButton {
 
     public int tag;
     public final int round = 4;
     public final int height = 22;
     public final float fontSize = 12f;
 
-    public DBToggleButton(String title) {
+    public CustomToggleButton(String title) {
         super(title);
         setBorderPainted(false);
         setMaximumSize(new Dimension(0, height));

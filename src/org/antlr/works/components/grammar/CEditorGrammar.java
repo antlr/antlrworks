@@ -10,7 +10,6 @@ import edu.usfca.xj.appkit.text.XJURLLabel;
 import edu.usfca.xj.appkit.undo.XJUndo;
 import edu.usfca.xj.appkit.undo.XJUndoDelegate;
 import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.foundation.XJSystem;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
@@ -345,11 +344,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         toolbar = new EditorToolbar(this);
 
         mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
-
-        if(!XJSystem.isMacOS()) {
-            rulesTextSplitPane.setDividerSize(10);
-            upDownSplitPane.setDividerSize(10);
-        }
     }
 
     protected void awakeInterface() {

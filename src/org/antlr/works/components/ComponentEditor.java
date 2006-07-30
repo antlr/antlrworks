@@ -15,6 +15,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Map;
 
 /*
@@ -66,6 +68,18 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
         XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
         XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STOPPED);
+
+        KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        focusManager.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public void propertyChange(PropertyChangeEvent e) {
+                        String prop = e.getPropertyName();
+                        if(prop.equals("permanentFocusOwner"))
+                            XJMainMenuBar.refreshAllMenuBars();
+                    }
+                }
+        );
+
     }
 
     public void refreshMainMenuBar() {
@@ -122,7 +136,7 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         s.setMaximumSize(d);
         return s;
     }
-                 
+
     /** For subclass only
      *
      */

@@ -1,4 +1,4 @@
-package org.antlr.works.debugger.panels;
+package org.antlr.works.swing;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,7 +35,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBSplitPanel extends JPanel {
+public class CustomSplitPanel extends JPanel {
 
     public static final int LEFT_INDEX = 0;
     public static final int MIDDLE_INDEX = 1;
@@ -47,7 +47,7 @@ public class DBSplitPanel extends JPanel {
     public Component left, middle, right;
     public Map widths = new HashMap();
 
-    public DBSplitPanel() {
+    public CustomSplitPanel() {
         super(new BorderLayout());
         leftSplitPane = createSplitPane();
         rightSplitPane = createSplitPane();
@@ -77,8 +77,8 @@ public class DBSplitPanel extends JPanel {
 
     public void resize() {
         if(left != null && middle != null && right != null) {
-            setDividerLocationToComponentWidth(leftSplitPane, getWidth(left));
             setDividerLocationToComponentWidth(rightSplitPane, getWidth(left)+getWidth(middle));
+            setDividerLocationToComponentWidth(leftSplitPane, getWidth(left));
         } else if(left != null && middle != null) {
             setDividerLocationToComponentWidth(rightSplitPane, getWidth(left));
         } else if(left != null && right != null) {
@@ -90,8 +90,7 @@ public class DBSplitPanel extends JPanel {
     }
 
     public void setDividerLocationToComponentWidth(JSplitPane splitPane, int width) {
-        if(width > 0)
-            splitPane.setDividerLocation(width);
+        splitPane.setDividerLocation(width);
     }
 
     public int getWidth(Component c) {

@@ -1,5 +1,6 @@
 package org.antlr.works.utils;
 
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 /*
@@ -40,7 +41,7 @@ public class Utils {
         int x= fis.available();
         if(x > 0) {
             byte b[]= new byte[x];
-            int count = fis.read(b);
+            fis.read(b);
             return new String(b);
         } else
             return null;
@@ -72,5 +73,15 @@ public class Utils {
         else
             return s.substring(a, b+1);
     }
+
+    public static boolean isComponentChildOf(Component child, Component parent) {
+        if(child == null)
+            return false;
+        else if(child == parent)
+            return true;
+        else
+            return isComponentChildOf(child.getParent(), parent);
+    }
+
 
 }
