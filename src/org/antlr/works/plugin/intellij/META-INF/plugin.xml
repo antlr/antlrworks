@@ -1,0 +1,23 @@
+<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
+<idea-plugin>
+    <name>ANTLRWorks</name>
+    <description>Visual editor and debugger for ANTLR 3 Grammar</description>
+    <version>1.0</version>
+    <vendor>ANTLR Project</vendor>
+    <idea-version since-build="3000"/>
+
+    <application-components>
+        <component>
+            <implementation-class>org.antlr.works.plugin.intellij.AWApplicationComponent</implementation-class>
+        </component>
+        <component>
+            <implementation-class>org.antlr.works.plugin.intellij.AWEditorProvider</implementation-class>
+        </component>
+    </application-components>
+    <actions>
+        <action id="NewGrammarFile" class="org.antlr.works.plugin.intellij.AWNewGrammarFile" text="Grammar File"
+                description="Create New ANTLR 3 Grammar File">
+            <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="after"/>
+        </action>
+    </actions>
+</idea-plugin>
