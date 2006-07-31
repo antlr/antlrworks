@@ -145,15 +145,8 @@ public class DBDetachablePanel extends JPanel {
 
     public void setVisible(boolean flag) {
         super.setVisible(flag);
-        if(flag) {
-            if(detached) {
-                window.setVisible(true);
-            }
-        } else {
-            if(detached) {
-                window.setVisible(false);
-            }
-        }
+        if(detached)
+            window.setVisible(flag);
     }
 
     public boolean isDetached() {

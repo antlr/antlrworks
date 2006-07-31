@@ -64,6 +64,7 @@ public abstract class CContainerProjectFile implements ComponentContainer, XJMen
 
         editor = createEditor();
         editor.create();
+        editor.assemble();
         editor.componentDidAwake();
 
         item.setComponentContainer(this);

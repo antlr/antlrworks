@@ -1,18 +1,23 @@
 package org.antlr.works.plugin;
 
 import edu.usfca.xj.appkit.app.XJApplication;
+import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.app.XJApplicationInterface;
 import edu.usfca.xj.appkit.app.XJPreferences;
+import edu.usfca.xj.appkit.document.XJDataPlainText;
 import edu.usfca.xj.appkit.document.XJDocument;
+import edu.usfca.xj.appkit.frame.XJFrame;
 import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import edu.usfca.xj.appkit.frame.XJWindow;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
+import edu.usfca.xj.appkit.menu.XJMenuBarCustomizer;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import edu.usfca.xj.appkit.undo.XJUndo;
 import edu.usfca.xj.appkit.undo.XJUndoDelegate;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.components.grammar.CDocumentGrammar;
 import org.antlr.works.components.grammar.CEditorGrammar;
 
 import javax.swing.*;
@@ -51,29 +56,72 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class PluginContainer extends JPanel implements ComponentContainer, XJApplicationInterface, XJFrameInterface {
-
-    protected ComponentEditor editor;
-    protected JLayeredPane layeredPane;
+public class PluginContainer implements ComponentContainer,
+        XJApplicationInterface,
+        XJMenuBarCustomizer,
+        XJFrameInterface
+{
+    protected JRootPane rootPane;
+    protected CEditorGrammar editor;
 
     protected XJPreferences prefs;
-    protected XJDocument document;
+    protected CDocumentGrammar document;
+    protected XJMainMenuBar mainMenuBar;
 
     public PluginContainer() {
-        super(new BorderLayout());
-
         XJApplication.setShared(this);
+        XJApplication.setDelegate(new AppDelegate());
 
-        layeredPane = new JLayeredPane();
+        /** Make sure the frame do not create menu bar when
+         * they are created (which is the default behavior)
+         */
+        XJFrame._defaultShouldDisplayMenuBar = false;
+
+        rootPane = new JRootPane();
+
         prefs = new XJPreferences(getClass());
-        document = new XJDocument();
+        document = new CDocumentGrammar();
+        document.setComponentContainer(this);
+        document.setDocumentData(new XJDataPlainText());
 
         editor = new CEditorGrammar(this);
         editor.create();
 
-        add(editor.getToolbar(), BorderLayout.NORTH);
-        add(editor.getPanel(), BorderLayout.CENTER);
-        add(editor.getStatusBar(), BorderLayout.SOUTH);
+        mainMenuBar = new XJMainMenuBar();
+        mainMenuBar.setCustomizer(this);
+        mainMenuBar.createMenuBar();
+    }
+
+    public JRootPane getRootPane() {
+        return rootPane;
+    }
+
+    public JComponent getEditorComponent() {
+        return editor.getTextEditor();
+    }
+
+    public JComponent getRulesComponent() {
+        return editor.getRulesComponent();
+    }
+
+    public JComponent getTabbedComponent() {
+        return editor.getTabbedComponent();
+    }
+
+    public JComponent getMenubarComponent() {
+        return mainMenuBar.getJMenuBar();
+    }
+
+    public JComponent getToolbarComponent() {
+        return editor.getToolbarComponent();
+    }
+
+    public JComponent getStatusComponent() {
+        return editor.getStatusComponent();
+    }
+
+    public void load(String file) {
+        document.performLoad(file);
     }
 
     public void loadText(String text) {
@@ -101,7 +149,7 @@ public class PluginContainer extends JPanel implements ComponentContainer, XJApp
 
     public void becomingVisibleForTheFirstTime() {
         editor.componentDidAwake();
-        editor.componentShouldLayout(getSize());
+        editor.componentShouldLayout(rootPane.getSize());
     }
 
     public ComponentEditor getEditor() {
@@ -122,15 +170,19 @@ public class PluginContainer extends JPanel implements ComponentContainer, XJApp
     }
 
     public XJMainMenuBar getMainMenuBar() {
-        return null;
+        return mainMenuBar;
     }
 
     public Container getJavaContainer() {
-        return this;
+        return rootPane.getContentPane();
     }
 
     public JLayeredPane getLayeredPane() {
-        return layeredPane;
+        return rootPane.getLayeredPane();
+    }
+
+    public Container getContentPane() {
+        return rootPane.getContentPane();
     }
 
     // *******************************
@@ -148,6 +200,10 @@ public class PluginContainer extends JPanel implements ComponentContainer, XJApp
 
     public void customizeFileMenu(XJMenu menu) {
         editor.customizeFileMenu(menu);
+    }
+
+    public void customizeEditMenu(XJMenu menu) {
+        editor.customizeEditMenu(menu);
     }
 
     public void customizeWindowMenu(XJMenu menu) {
@@ -272,4 +328,8 @@ public class PluginContainer extends JPanel implements ComponentContainer, XJApp
     public XJWindow getActiveWindow() {
         return null;
     }
+
+    public class AppDelegate extends XJApplicationDelegate {
+    }
+
 }

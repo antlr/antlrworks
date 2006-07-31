@@ -50,11 +50,12 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
     public CContainerGrammar() {
         editor = new CEditorGrammar(this);
         editor.create();
+        editor.assemble();
 
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(editor.getToolbar(), BorderLayout.NORTH);
+        panel.add(editor.getToolbarComponent(), BorderLayout.NORTH);
         panel.add(editor.getPanel(), BorderLayout.CENTER);
-        panel.add(editor.getStatusBar(), BorderLayout.SOUTH);
+        panel.add(editor.getStatusComponent(), BorderLayout.SOUTH);
 
         getContentPane().add(panel);
 

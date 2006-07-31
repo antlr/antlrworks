@@ -1,8 +1,11 @@
 package org.antlr.works.plugin.intellij;
 
-import com.intellij.openapi.components.ApplicationComponent;
-import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.ide.structureView.StructureView;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.project.Project;
+import org.antlr.works.plugin.PluginContainer;
 
+import javax.swing.*;
 /*
 
 [The "BSD licence"]
@@ -34,19 +37,37 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AWApplicationComponent implements ApplicationComponent {
+public class AWStructureView implements StructureView {
 
-    public AWApplicationComponent() {
+    public FileEditor fileEditor;
+    public PluginContainer container;
+
+    public AWStructureView(FileEditor fileEditor, Project project, PluginContainer container) {
+        this.fileEditor = fileEditor;
+        this.container = container;
     }
 
-    public void initComponent() {
-        FileTypeManager.getInstance().registerFileType(new AWFileType(), new String[] { "g" });
+    public FileEditor getFileEditor() {
+        return fileEditor;
     }
 
-    public void disposeComponent() {
+    public boolean navigateToSelectedElement(boolean requestFocus) {
+        return false;
     }
 
-    public String getComponentName() {
-        return "AWApplicationComponent";
+    public JComponent getComponent() {
+        return container.getRulesComponent();
+    }
+
+    public void dispose() {
+    }
+
+    public void centerSelectedRow() {
+    }
+
+    public void restoreState() {
+    }
+
+    public void storeState() {
     }
 }

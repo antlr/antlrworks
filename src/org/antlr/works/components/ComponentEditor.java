@@ -87,11 +87,11 @@ public abstract class ComponentEditor implements XJNotificationObserver {
             getXJFrame().getMainMenuBar().refreshState();
     }
 
-    public JComponent getToolbar() {
+    public JComponent getToolbarComponent() {
         return null;
     }
 
-    public JComponent getStatusBar() {
+    public JComponent getStatusComponent() {
         return statusBar;
     }
 
@@ -138,6 +138,7 @@ public abstract class ComponentEditor implements XJNotificationObserver {
      */
 
     public abstract void create();
+    public abstract void assemble();
 
     public abstract void loadText(String text);
 

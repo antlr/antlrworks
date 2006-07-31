@@ -1,6 +1,7 @@
 package org.antlr.works.plugin;
 
 import javax.swing.*;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -35,19 +36,51 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class PluginTester {
 
     public PluginContainer container;
+    protected JSplitPane vertical;
 
     private void createAndShowGUI() {
         container = new PluginContainer();
+        container.load("/Users/bovet/Desktop/TestAW.g");
+        assemble();
 
         JFrame.setDefaultLookAndFeelDecorated(true);
 
         JFrame frame = new JFrame("Plugin Tester");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        frame.add(container);
-        
+        frame.add(container.getRootPane());
+
         frame.pack();
         frame.setVisible(true);
+        container.becomingVisibleForTheFirstTime();
+        vertical.setDividerLocation((int)(container.getContentPane().getHeight()*0.5));
+    }
+
+    public void assemble() {
+        JSplitPane horizontal = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        horizontal.setLeftComponent(container.getRulesComponent());
+        horizontal.setRightComponent(container.getEditorComponent());
+        horizontal.setBorder(null);
+        horizontal.setContinuousLayout(true);
+        horizontal.setOneTouchExpandable(true);
+
+        vertical = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        vertical.setTopComponent(horizontal);
+        vertical.setBottomComponent(container.getTabbedComponent());
+        vertical.setBorder(null);
+        vertical.setContinuousLayout(true);
+        vertical.setOneTouchExpandable(true);
+
+        JPanel upperPanel = new JPanel(new BorderLayout());
+        upperPanel.add(container.getMenubarComponent(), BorderLayout.NORTH);
+        upperPanel.add(container.getToolbarComponent(), BorderLayout.CENTER);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(upperPanel, BorderLayout.NORTH);
+        panel.add(vertical, BorderLayout.CENTER);
+        panel.add(container.getStatusComponent(), BorderLayout.SOUTH);
+
+        container.getContentPane().add(panel);
     }
 
     public static void main(String[] args) {

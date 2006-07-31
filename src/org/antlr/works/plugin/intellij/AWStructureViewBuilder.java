@@ -1,8 +1,10 @@
 package org.antlr.works.plugin.intellij;
 
-import com.intellij.openapi.components.ApplicationComponent;
-import com.intellij.openapi.fileTypes.FileTypeManager;
-
+import com.intellij.ide.structureView.StructureView;
+import com.intellij.ide.structureView.StructureViewBuilder;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.project.Project;
+import org.antlr.works.plugin.PluginContainer;
 /*
 
 [The "BSD licence"]
@@ -34,19 +36,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AWApplicationComponent implements ApplicationComponent {
+public class AWStructureViewBuilder implements StructureViewBuilder {
 
-    public AWApplicationComponent() {
+    public PluginContainer container;
+
+    public AWStructureViewBuilder(PluginContainer container) {
+        this.container = container;
     }
 
-    public void initComponent() {
-        FileTypeManager.getInstance().registerFileType(new AWFileType(), new String[] { "g" });
+    public StructureView createStructureView(FileEditor fileEditor, Project project) {
+        return new AWStructureView(fileEditor, project, container);
     }
 
-    public void disposeComponent() {
-    }
-
-    public String getComponentName() {
-        return "AWApplicationComponent";
-    }
 }

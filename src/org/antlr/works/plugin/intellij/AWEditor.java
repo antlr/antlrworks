@@ -2,10 +2,10 @@ package org.antlr.works.plugin.intellij;
 
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.structureView.StructureViewBuilder;
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.fileEditor.FileEditorLocation;
-import com.intellij.openapi.fileEditor.FileEditorState;
-import com.intellij.openapi.fileEditor.FileEditorStateLevel;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -13,6 +13,11 @@ import org.antlr.works.plugin.PluginContainer;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeListener;
 
 /*
@@ -48,23 +53,106 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class AWEditor implements FileEditor {
 
-    public PluginContainer container;
-    public Project project;
-    public VirtualFile file;
+    protected PluginContainer container;
+    protected Project project;
+    protected VirtualFile file;
+
+    protected JSplitPane vertical;
+    protected Timer synchronizeTimer;
 
     public AWEditor(Project project, VirtualFile file) {
         this.project = project;
         this.file = file;
 
+
         container = new PluginContainer();
+        container.load(file.getPath());
+        assemble();
+        startTimer();
+    }
+
+    public void assemble() {
+        vertical = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        vertical.setTopComponent(container.getEditorComponent());
+        vertical.setBottomComponent(container.getTabbedComponent());
+        vertical.setBorder(null);
+        vertical.setContinuousLayout(true);
+        vertical.setOneTouchExpandable(true);
+
+        JPanel upperPanel = new JPanel(new BorderLayout());
+        upperPanel.add(container.getMenubarComponent(), BorderLayout.NORTH);
+        upperPanel.add(container.getToolbarComponent(), BorderLayout.CENTER);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(upperPanel, BorderLayout.NORTH);
+        panel.add(vertical, BorderLayout.CENTER);
+        panel.add(container.getStatusComponent(), BorderLayout.SOUTH);
+
+        container.getContentPane().add(panel);
+
+        container.getContentPane().addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                layout();
+            }
+        });
+
+        FileDocumentManager.getInstance().addFileDocumentManagerListener(new FileDocumentManagerAdapter() {
+            public void fileContentReloaded(VirtualFile file, Document document) {
+                if(file.equals(AWEditor.this.file))
+                    load(file.getPath());
+            }
+
+            public void fileContentLoaded(VirtualFile file, Document document) {
+                if(file.equals(AWEditor.this.file))
+                    load(file.getPath());
+            }
+        });
+    }
+
+    public void startTimer() {
+        synchronizeTimer = new Timer(1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(container.getDocument().isDirty()) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            synchronizeDocuments();
+                        }
+                    });
+                }
+            }
+        });
+        synchronizeTimer.start();
+    }
+
+    public void stopTimer() {
+        synchronizeTimer.stop();
+    }
+
+    public void load(String file) {
+        container.load(file);
+    }
+
+    public void synchronizeDocuments() {
+        CommandProcessor.getInstance().executeCommand(project, new SynchronizeDocumentsCommand(), null, null);
+    }
+
+    public class SynchronizeDocumentsCommand implements Runnable {
+        public void run() {
+            ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                public void run() {
+                    Document doc = FileDocumentManager.getInstance().getDocument(AWEditor.this.file);
+                    doc.replaceString(0, doc.getTextLength()-1, container.getText());
+                }
+            });
+        }
     }
 
     public JComponent getComponent() {
-        return container;
+        return container.getRootPane();
     }
 
     public JComponent getPreferredFocusedComponent() {
-        return container;
+        return container.getEditorComponent();
     }
 
     @NonNls
@@ -84,15 +172,23 @@ public class AWEditor implements FileEditor {
     }
 
     public boolean isModified() {
-        return false;
+        return container.getDocument().isDirty();
     }
 
     public boolean isValid() {
         return true;
     }
 
+    public boolean layout = false;
+    public void layout() {
+        if(!layout) {
+            vertical.setDividerLocation((int)(container.getContentPane().getHeight()*0.5));
+            container.becomingVisibleForTheFirstTime();
+            layout = true;
+        }
+    }
+
     public void selectNotify() {
-        System.out.println("Editor selected");
     }
 
     public void deselectNotify() {
@@ -113,7 +209,7 @@ public class AWEditor implements FileEditor {
     }
 
     public StructureViewBuilder getStructureViewBuilder() {
-        return null;
+        return new AWStructureViewBuilder(container);
     }
 
     public <T> T getUserData(Key<T> key) {
@@ -122,4 +218,5 @@ public class AWEditor implements FileEditor {
 
     public <T> void putUserData(Key<T> key, T value) {
     }
+
 }

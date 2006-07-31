@@ -69,7 +69,9 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
         statusBar.add(cursorLabel);
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(createSeparator());
+    }
 
+    public void assemble() {
         mainPanel.add(textEditor, BorderLayout.CENTER);
     }
 

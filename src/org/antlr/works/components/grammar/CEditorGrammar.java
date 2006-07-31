@@ -186,6 +186,26 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         register();
     }
 
+    public void assemble() {
+        rulesTextSplitPane = new JSplitPane();
+        rulesTextSplitPane.setBorder(null);
+        rulesTextSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        rulesTextSplitPane.setLeftComponent(rulesScrollPane);
+        rulesTextSplitPane.setRightComponent(textEditor);
+        rulesTextSplitPane.setContinuousLayout(true);
+        rulesTextSplitPane.setOneTouchExpandable(true);
+
+        upDownSplitPane = new JSplitPane();
+        upDownSplitPane.setBorder(null);
+        upDownSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        upDownSplitPane.add(rulesTextSplitPane, JSplitPane.TOP);
+        upDownSplitPane.add(tabbedPane, JSplitPane.BOTTOM);
+        upDownSplitPane.setContinuousLayout(true);
+        upDownSplitPane.setOneTouchExpandable(true);
+
+        mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
+    }
+
     protected void initComponents() {
         parserEngine = new GrammarSyntaxEngine();
 
@@ -266,12 +286,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         textEditor.setParserEngine(parserEngine);
     }
 
-    protected void createInterface() {
+    protected void createTextEditor() {
         textEditor = new ATEPanel(getXJFrame());
         textEditor.setSyntaxColoring(true);
         textEditor.setDelegate(this);
         applyPrefs();
+    }
 
+    protected void createRulesPane() {
         rulesTree = new XJTree() {
             public String getToolTipText(MouseEvent e) {
                 TreePath path = getPathForLocation(e.getX(), e.getY());
@@ -297,30 +319,28 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
         rulesScrollPane = new JScrollPane(rulesTree);
         rulesScrollPane.setWheelScrollingEnabled(true);
+    }
 
-        // Assemble
+    public JComponent getRulesComponent() {
+        return rulesScrollPane;
+    }
 
+    protected void createTabbedPane() {
         tabbedPane = new JTabbedPane();
         tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
         tabbedPane.addMouseListener(new TabbedPaneMouseListener());
         tabbedPane.addChangeListener(new TabbedPaneChangeListener());
+    }
 
-        rulesTextSplitPane = new JSplitPane();
-        rulesTextSplitPane.setBorder(null);
-        rulesTextSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        rulesTextSplitPane.setLeftComponent(rulesScrollPane);
-        rulesTextSplitPane.setRightComponent(textEditor);
-        rulesTextSplitPane.setContinuousLayout(true);
-        rulesTextSplitPane.setOneTouchExpandable(true);
+    public JComponent getTabbedComponent() {
+        return tabbedPane;
+    }
 
-        upDownSplitPane = new JSplitPane();
-        upDownSplitPane.setBorder(null);
-        upDownSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        upDownSplitPane.add(rulesTextSplitPane, JSplitPane.TOP);
-        upDownSplitPane.add(tabbedPane, JSplitPane.BOTTOM);
-        upDownSplitPane.setContinuousLayout(true);
-        upDownSplitPane.setOneTouchExpandable(true);
+    protected void createToolbar() {
+        toolbar = new EditorToolbar(this);
+    }
 
+    protected void createStatusBar() {
         infoLabel = new JLabel();
         cursorLabel = new JLabel();
         scmLabel = new JLabel();
@@ -340,10 +360,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         statusBar.add(createSeparator());
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(scmLabel);
+    }
 
-        toolbar = new EditorToolbar(this);
-
-        mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
+    protected void createInterface() {
+        createTextEditor();
+        createRulesPane();
+        createTabbedPane();
+        createToolbar();
+        createStatusBar();
     }
 
     protected void awakeInterface() {
@@ -459,7 +483,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return upDownSplitPane.getBottomComponent().getHeight() != 0;
     }
 
-    public JComponent getToolbar() {
+    public JComponent getToolbarComponent() {
         return toolbar.getToolbar();
     }
 
@@ -941,8 +965,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void componentShouldLayout(Dimension size) {
-        rulesTextSplitPane.setDividerLocation((int)(size.width*0.2));
-        upDownSplitPane.setDividerLocation((int)(size.height*0.5));
+        if(rulesTextSplitPane != null)
+            rulesTextSplitPane.setDividerLocation((int)(size.width*0.2));
+        if(upDownSplitPane != null)
+            upDownSplitPane.setDividerLocation((int)(size.height*0.5));
 
         interpreter.componentShouldLayout();
         debugger.componentShouldLayout(size);

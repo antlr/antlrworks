@@ -113,8 +113,8 @@ public class ProjectEditorZone {
             return;
                 
         project.setMainMenuBar(item.getComponentContainer().getMainMenuBar());
-        project.setToolBar(item.getComponentContainer().getEditor().getToolbar());
-        project.setStatusBar(item.getComponentContainer().getEditor().getStatusBar());
+        project.setToolBar(item.getComponentContainer().getEditor().getToolbarComponent());
+        project.setStatusBar(item.getComponentContainer().getEditor().getStatusComponent());
 
         /** Tell the editor that is has been select. Do that later in order to avoid
          * another component to request the focus after the editor.
