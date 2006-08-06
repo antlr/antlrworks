@@ -222,7 +222,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         if(url == null) {
             // url can be null in some situation (i.e. plugin in IntelliJ). Let's try another
             // way using getResource().
-            String name = c.getName().replace(".", File.separator).concat(".class");
+            String name = c.getName().replace('.', File.separatorChar).concat(".class");
             url = c.getClassLoader().getResource(name);
             if(url == null) {
                 System.err.println("IDE: unable to get the location of the XJApplicationDelegate");
