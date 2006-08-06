@@ -1,6 +1,7 @@
 package org.antlr.works.debugger.panels;
 
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.swing.DetachablePanel;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -38,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBStackPanel extends DBDetachablePanel {
+public class DBStackPanel extends DetachablePanel {
 
     public static final int INFO_COLUMN_COUNT = 0;
     public static final int INFO_COLUMN_RULE = 1;

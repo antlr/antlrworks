@@ -84,8 +84,6 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     }
 
     public void awake() {
-        progress = new XJDialogProgress(editor.getXJFrame());
-
         panel = new JPanel(new BorderLayout());
 
         textPane = new JTextPane();
@@ -219,6 +217,9 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
     public void interpret() {
         editor.console.makeCurrent();
+
+        if(progress == null)
+            progress = new XJDialogProgress(editor.getXJFrame());
 
         if(editor.getEngineGrammar().isDirty()) {
             progress.setInfo("Preparing...");

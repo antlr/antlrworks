@@ -1,4 +1,4 @@
-package org.antlr.works.debugger.panels;
+package org.antlr.works.swing;
 
 import edu.usfca.xj.appkit.frame.XJDialog;
 import org.antlr.works.utils.IconManager;
@@ -40,9 +40,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBDetachablePanel extends JPanel {
+public class DetachablePanel extends JPanel {
 
-    protected DBDetachablePanelDelegate delegate;
+    protected DetachablePanelDelegate delegate;
     protected JPanel mainPanel;
     protected TitlePanel titlePanel;
     protected String title;
@@ -52,7 +52,7 @@ public class DBDetachablePanel extends JPanel {
     protected XJDialog window;
     protected int tag;
 
-    public DBDetachablePanel(String title, DBDetachablePanelDelegate delegate) {
+    public DetachablePanel(String title, DetachablePanelDelegate delegate) {
         super(new BorderLayout());
 
         this.delegate = delegate;
@@ -223,8 +223,8 @@ public class DBDetachablePanel extends JPanel {
 
         public void dialogWillCloseCancel() {
             if(detached) {
-                DBDetachablePanel.this.setVisible(false);
-                delegate.panelDoClose(DBDetachablePanel.this);
+                DetachablePanel.this.setVisible(false);
+                delegate.panelDoClose(DetachablePanel.this);
             }
         }
     }

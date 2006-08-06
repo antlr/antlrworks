@@ -216,10 +216,28 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public static String getApplicationPath() {
-        URL url = XJApplication.getAppDelegate().getClass().getProtectionDomain().getCodeSource().getLocation();
-        URI uri = URI.create(url.toString());
+        Class c = XJApplication.getAppDelegate().getClass();
+        URL url = c.getProtectionDomain().getCodeSource().getLocation();
+        String p;
+        if(url == null) {
+            // url can be null in some situation (i.e. plugin in IntelliJ). Let's try another
+            // way using getResource().
+            String name = c.getName().replace(".", File.separator).concat(".class");
+            url = c.getClassLoader().getResource(name);
+            if(url == null) {
+                System.err.println("IDE: unable to get the location of the XJApplicationDelegate");
+                return "";
+            } else {
+                // Remove the class fully qualified path from the path
+                URI uri = URI.create(url.toString());
+                p = uri.getPath();
+                p = p.substring(0, p.length()-name.length());
+            }
+        } else {
+            URI uri = URI.create(url.toString());
+            p = uri.getPath();
+        }
 
-        String p = uri.getPath();
         if(p.startsWith("file:"))
             p = p.substring("file:".length());
 

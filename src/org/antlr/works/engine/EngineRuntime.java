@@ -64,6 +64,8 @@ public class EngineRuntime {
     }
 
     public static String getClassPath(String outputPath) {
+        // Need to include the path of the application in order to be able
+        // to compile the parser if the system classpath doesn't have ANTLR or ST
         String classPath = outputPath;
         classPath += File.pathSeparatorChar+IDE.getApplicationPath();
         classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
@@ -221,8 +223,10 @@ public class EngineRuntime {
 
         } catch(Error e) {
             error = "Compiler error:\n"+e.getLocalizedMessage();
+            e.printStackTrace();
         } catch(Exception e) {
             error = "Compiler exception:\n"+e.getLocalizedMessage();
+            e.printStackTrace();
         } finally {
             removeProcess();
         }

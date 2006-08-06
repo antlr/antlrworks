@@ -19,6 +19,7 @@ import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.components.grammar.CDocumentGrammar;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.grammar.CEditorGrammarDefaultDelegate;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,7 +57,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class PluginContainer implements ComponentContainer,
+public class PluginContainer extends XJApplicationDelegate
+        implements ComponentContainer,
         XJApplicationInterface,
         XJMenuBarCustomizer,
         XJFrameInterface
@@ -70,7 +72,7 @@ public class PluginContainer implements ComponentContainer,
 
     public PluginContainer() {
         XJApplication.setShared(this);
-        XJApplication.setDelegate(new AppDelegate());
+        XJApplication.setDelegate(this);
 
         /** Make sure the frame do not create menu bar when
          * they are created (which is the default behavior)
@@ -89,7 +91,12 @@ public class PluginContainer implements ComponentContainer,
 
         mainMenuBar = new XJMainMenuBar();
         mainMenuBar.setCustomizer(this);
-        mainMenuBar.createMenuBar();
+        mainMenuBar.createMenuBar(XJMainMenuBar.IGNORE_FILEMENU |
+        XJMainMenuBar.IGNORE_WINDOWMENU | XJMainMenuBar.IGNORE_HELPMENU);
+    }
+
+    public void setEditorGrammarDelegate(CEditorGrammarDefaultDelegate delegate) {
+        editor.setDelegate(delegate);
     }
 
     public JRootPane getRootPane() {
@@ -327,9 +334,6 @@ public class PluginContainer implements ComponentContainer,
 
     public XJWindow getActiveWindow() {
         return null;
-    }
-
-    public class AppDelegate extends XJApplicationDelegate {
     }
 
 }

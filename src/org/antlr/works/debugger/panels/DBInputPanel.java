@@ -5,6 +5,7 @@ import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.input.DBInputProcessor;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
 import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.swing.DetachablePanel;
 
 import java.awt.*;
 /*
@@ -38,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBInputPanel extends DBDetachablePanel {
+public class DBInputPanel extends DetachablePanel {
 
     protected Debugger debugger;
 

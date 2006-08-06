@@ -1,14 +1,6 @@
-package org.antlr.works.debugger.panels;
-
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.swing.DetachablePanel;
-import org.antlr.works.utils.StreamWatcherDelegate;
-import org.antlr.works.utils.TextPane;
-import org.antlr.works.utils.TextUtils;
+package org.antlr.works.components.grammar;
 
 import javax.swing.*;
-import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -40,41 +32,27 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBOutputPanel extends DetachablePanel implements StreamWatcherDelegate {
+public class CEditorGrammarDefaultDelegate implements CEditorGrammarDelegate {
 
-    protected TextPane outputTextPane;
-    protected Debugger debugger;
+    public JSplitPane splitPane;
 
-    public DBOutputPanel(Debugger debugger) {
-        super("Output", debugger);
-
-        this.debugger = debugger;
-
-        outputTextPane = new TextPane();
-        outputTextPane.setBackground(Color.white);
-        outputTextPane.setBorder(null);
-        outputTextPane.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        outputTextPane.setText("");
-        outputTextPane.setEditable(false);
-
-        TextUtils.createTabs(outputTextPane);
-
-        JScrollPane textScrollPane = new JScrollPane(outputTextPane);
-        textScrollPane.setWheelScrollingEnabled(true);
-
-        mainPanel.add(textScrollPane, BorderLayout.CENTER);
+    public CEditorGrammarDefaultDelegate(JSplitPane splitPane) {
+        this.splitPane = splitPane;
     }
 
-    public void streamWatcherDidStarted() {
-        outputTextPane.setText("");
+    public void setBottomComponentVisible(boolean visible) {
+        if(visible) {
+            splitPane.setDividerLocation(splitPane.getLastDividerLocation());
+            // It may happen that the last divider location is already collapsed!
+            // In this case, we use the relative divider location.
+            if(!isBottomComponentVisible())
+                splitPane.setDividerLocation(0.6f);
+        } else {
+            splitPane.setDividerLocation(1.0f);
+        }
     }
 
-    public void streamWatcherDidReceiveString(String string) {
-        outputTextPane.setText(outputTextPane.getText()+string);
+    public boolean isBottomComponentVisible() {
+        return splitPane.getBottomComponent().getHeight() != 0;
     }
-
-    public void streamWatcherException(Exception e) {
-        debugger.getConsole().print(e);
-    }
-
 }

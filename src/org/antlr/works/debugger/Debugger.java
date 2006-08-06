@@ -62,6 +62,8 @@ import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.swing.CustomSplitPanel;
 import org.antlr.works.swing.CustomToggleButton;
+import org.antlr.works.swing.DetachablePanel;
+import org.antlr.works.swing.DetachablePanelDelegate;
 import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
@@ -77,7 +79,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
+public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
 
@@ -252,7 +254,7 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
         }
     }
 
-    public void toggleComponents(DBDetachablePanel c, DBDetachablePanel other, int index) {
+    public void toggleComponents(DetachablePanel c, DetachablePanel other, int index) {
         c.setVisible(!c.isVisible());
         if(c.isVisible()) {
             if(!other.isDetached())
@@ -700,11 +702,11 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
         return new HashMap();
     }
 
-    public void panelDoDetach(DBDetachablePanel panel) {
+    public void panelDoDetach(DetachablePanel panel) {
         splitPanel.setComponent(null, panel.getTag());
     }
 
-    public void panelDoAttach(DBDetachablePanel panel) {
+    public void panelDoAttach(DetachablePanel panel) {
         Component c = splitPanel.getComponentAtIndex(panel.getTag());
         if(c != null) {
             c.setVisible(false);
@@ -716,7 +718,7 @@ public class Debugger extends EditorTab implements DBDetachablePanelDelegate {
         splitPanel.setComponent(panel, panel.getTag());
     }
 
-    public void panelDoClose(DBDetachablePanel panel) {
+    public void panelDoClose(DetachablePanel panel) {
         CustomToggleButton button = (CustomToggleButton) components2toggle.get(panel);
         button.setSelected(false);
     }

@@ -11,6 +11,8 @@ Version 1.0ea12 -
 - resize view when graphic elements are moved (DFA decision, etc)
 - fixed a bug that would prevent small error paths from being displayed in the syntax diagram
 - fixed a bug where performing some menu commands would failed on Windows/Linux (mostly cut and paste)
+- fixed a bug where dialogs would not be displayed in the same screen as the parent frame
+  in multi-screen environment
 
 Version 1.0ea11 - 07/05/06
 

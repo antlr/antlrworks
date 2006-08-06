@@ -1,4 +1,4 @@
-package org.antlr.works.debugger.panels;
+package org.antlr.works.swing;
 
 import java.awt.*;
 /*
@@ -32,9 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface DBDetachablePanelDelegate {
-    public void panelDoDetach(DBDetachablePanel panel);
-    public void panelDoAttach(DBDetachablePanel panel);
-    public void panelDoClose(DBDetachablePanel panel);
+public interface DetachablePanelDelegate {
+    public void panelDoDetach(DetachablePanel panel);
+    public void panelDoAttach(DetachablePanel panel);
+    public void panelDoClose(DetachablePanel panel);
     public Container panelParentContainer();
 }

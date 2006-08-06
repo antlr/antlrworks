@@ -5,7 +5,7 @@ import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.debugger.Debugger;
-import org.antlr.works.debugger.panels.DBDetachablePanel;
+import org.antlr.works.swing.DetachablePanel;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
@@ -42,7 +42,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBParseTreePanel extends DBDetachablePanel implements DBParseTreeModelListener, AWTreePanelDelegate {
+public class DBParseTreePanel extends DetachablePanel implements DBParseTreeModelListener, AWTreePanelDelegate {
 
     protected Debugger debugger;
     protected DBParseTreeModel model;

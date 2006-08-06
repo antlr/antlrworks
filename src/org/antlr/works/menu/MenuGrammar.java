@@ -54,7 +54,6 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
 
     public MenuGrammar(CEditorGrammar editor) {
         super(editor);
-        progress = new XJDialogProgress(editor.getWindowContainer());
         checkGrammar = new CheckGrammar(editor, this);
     }
 
@@ -187,6 +186,8 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     protected void showProgress(String title) {
+        if(progress == null)
+            progress = new XJDialogProgress(editor.getWindowContainer());        
         progress.setInfo(title);
         progress.setCancellable(true);
         progress.setIndeterminate(true);

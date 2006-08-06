@@ -93,7 +93,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     public DBLocal(Debugger debugger) {
         this.debugger = debugger;
         this.codeGenerator = new CodeGenerate(debugger.getProvider(), null);
-        this.progress = new XJDialogProgress(debugger.getWindowComponent());
     }
 
     public void setOutputPath(String path) {
@@ -130,6 +129,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     public void showProgress() {
+        if(progress == null)
+            progress = new XJDialogProgress(debugger.getWindowComponent());
         progress.setInfo("Preparing...");
         progress.setIndeterminate(false);
         progress.setProgress(0);
@@ -402,6 +403,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         if(!checkForLaunch())
             return false;
 
+        // Need to include the path of the application in order to be able
+        // to compile the parser if the system classpath doesn't have ANTLR or ST
         String classPath = outputFileDir;
         classPath += File.pathSeparatorChar+ IDE.getApplicationPath();
         classPath += File.pathSeparatorChar+System.getProperty("java.class.path");

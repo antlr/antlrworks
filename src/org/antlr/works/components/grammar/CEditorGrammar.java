@@ -156,6 +156,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     protected boolean windowFirstDisplay = true;
     protected String lastSelectedRule;
+    protected CEditorGrammarDelegate delegate;
 
     protected List tabs = new ArrayList();
 
@@ -166,6 +167,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public CEditorGrammar(ComponentContainer container) {
         super(container);
+    }
+
+    public void setDelegate(CEditorGrammarDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public void create() {
@@ -202,6 +207,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         upDownSplitPane.add(tabbedPane, JSplitPane.BOTTOM);
         upDownSplitPane.setContinuousLayout(true);
         upDownSplitPane.setOneTouchExpandable(true);
+
+        delegate = new CEditorGrammarDefaultDelegate(upDownSplitPane);
 
         mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
     }
@@ -468,19 +475,15 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void setBottomComponentVisible(boolean visible) {
-        if(visible) {
-            upDownSplitPane.setDividerLocation(upDownSplitPane.getLastDividerLocation());
-            // It may happen that the last divider location is already collapsed!
-            // In this case, we use the relative divider location.
-            if(!isBottomComponentVisible())
-                upDownSplitPane.setDividerLocation(0.6f);
-        } else {
-            upDownSplitPane.setDividerLocation(1.0f);
-        }
+        if(delegate != null)
+            delegate.setBottomComponentVisible(visible);
     }
 
     public boolean isBottomComponentVisible() {
-        return upDownSplitPane.getBottomComponent().getHeight() != 0;
+        if(delegate != null)
+            return delegate.isBottomComponentVisible();
+        else
+            return false;
     }
 
     public JComponent getToolbarComponent() {
@@ -1193,11 +1196,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             return;
 
         Integer i = (Integer)data.get(KEY_SPLITPANE_A);
-        if(i != null)
+        if(i != null && rulesTextSplitPane != null)
             rulesTextSplitPane.setDividerLocation(i.intValue());
 
         i = (Integer)data.get(KEY_SPLITPANE_B);
-        if(i != null)
+        if(i != null && upDownSplitPane != null)
             upDownSplitPane.setDividerLocation(i.intValue());
 
         interpreter.setPersistentData((Map) data.get(KEY_INTERPRETER));
@@ -1206,8 +1209,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public Map getPersistentData() {
         Map data = new HashMap();
-        data.put(KEY_SPLITPANE_A, new Integer(rulesTextSplitPane.getDividerLocation()));
-        data.put(KEY_SPLITPANE_B, new Integer(upDownSplitPane.getDividerLocation()));
+        if(rulesTextSplitPane != null)
+            data.put(KEY_SPLITPANE_A, new Integer(rulesTextSplitPane.getDividerLocation()));
+        if(upDownSplitPane != null)
+            data.put(KEY_SPLITPANE_B, new Integer(upDownSplitPane.getDividerLocation()));
         data.put(KEY_INTERPRETER, interpreter.getPersistentData());
         data.put(KEY_DEBUGGER, debugger.getPersistentData());
         return data;

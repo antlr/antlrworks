@@ -2,6 +2,7 @@ package org.antlr.works.awtree;
 
 import edu.usfca.xj.appkit.gview.object.GElement;
 import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.foundation.XJSystem;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TreeUtilities;
 
@@ -113,7 +114,9 @@ public class AWTreePanel extends JPanel {
         box.add(createCollapseAllButton());
         box.add(Box.createHorizontalGlue());
         box.add(createDisplayAsGraphButton());
-
+        if(XJSystem.isMacOS())
+            box.add(Box.createHorizontalStrut(15));
+                                                
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);
 
@@ -172,12 +175,12 @@ public class AWTreePanel extends JPanel {
         graphScrollPane.setWheelScrollingEnabled(true);
 
         Box box = Box.createHorizontalBox();
-        box.add(Box.createHorizontalStrut(15));
         box.add(new JLabel("Zoom"));
         box.add(createZoomSlider());
         box.add(Box.createHorizontalGlue());
         box.add(createDisplayAsListButton());
-        box.add(Box.createHorizontalStrut(15));
+        if(XJSystem.isMacOS())
+            box.add(Box.createHorizontalStrut(15));
 
         panel.add(graphScrollPane, BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);

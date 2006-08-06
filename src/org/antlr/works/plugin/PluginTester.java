@@ -1,5 +1,7 @@
 package org.antlr.works.plugin;
 
+import org.antlr.works.components.grammar.CEditorGrammarDefaultDelegate;
+
 import javax.swing.*;
 import java.awt.*;
 /*
@@ -40,6 +42,7 @@ public class PluginTester {
 
     private void createAndShowGUI() {
         container = new PluginContainer();
+        //container.load("/Users/bovet/Desktop/Java/java.g");
         container.load("/Users/bovet/Desktop/TestAW.g");
         assemble();
 
@@ -47,6 +50,7 @@ public class PluginTester {
 
         JFrame frame = new JFrame("Plugin Tester");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(900, 600);
 
         frame.add(container.getRootPane());
 
@@ -79,6 +83,8 @@ public class PluginTester {
         panel.add(upperPanel, BorderLayout.NORTH);
         panel.add(vertical, BorderLayout.CENTER);
         panel.add(container.getStatusComponent(), BorderLayout.SOUTH);
+
+        container.setEditorGrammarDelegate(new CEditorGrammarDefaultDelegate(vertical));
 
         container.getContentPane().add(panel);
     }

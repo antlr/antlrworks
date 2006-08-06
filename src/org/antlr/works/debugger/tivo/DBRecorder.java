@@ -95,11 +95,12 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public DBRecorder(Debugger debugger) {
         this.debugger = debugger;
-        this.progress = new XJDialogProgress(debugger.getWindowComponent());
         reset();
     }
 
     public void showProgress() {
+        if(progress == null)
+            progress = new XJDialogProgress(debugger.getWindowComponent());
         progress.setInfo("Connecting...");
         progress.setIndeterminate(true);
         progress.setDelegate(this);
@@ -388,7 +389,8 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
             }
         }
 
-        hideProgress();
+        if(showProgress)
+            hideProgress();
 
         if(cancelled) {
             setStatus(STATUS_STOPPED);

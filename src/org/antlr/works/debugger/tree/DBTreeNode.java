@@ -82,8 +82,18 @@ public class DBTreeNode extends AWTreeNode {
     }
 
     public DBTreeNode findNodeWithToken(Token t) {
+        return findNodeWithToken(t, null);
+    }
+
+    /** Find the last node corresponding to the given token. Because multiple node
+     * can contains the same token (backtracking nodes for example), we always want
+     * to select the most recent one in the tree (the selection will come from the
+     * input panel)
+     */
+
+    public DBTreeNode findNodeWithToken(Token t, DBTreeNode lastNodeSoFar) {
         if(t == null)
-            return null;
+            return lastNodeSoFar;
 
         if(token != null) {
             /** Little hack here. If the token is of type DBTreeToken (tree grammar), then
@@ -94,19 +104,19 @@ public class DBTreeNode extends AWTreeNode {
                 DBTreeToken t1 = (DBTreeToken)token;
                 DBTreeToken t2 = (DBTreeToken)t;
                 if(t1.ID == t2.ID)
-                    return this;
+                    lastNodeSoFar = this;
             } else if(t.getTokenIndex() == token.getTokenIndex())
-                return this;
+                lastNodeSoFar = this;
         }
 
         for(Enumeration childrenEnumerator = children(); childrenEnumerator.hasMoreElements(); ) {
             DBTreeNode node = (DBTreeNode) childrenEnumerator.nextElement();
-            DBTreeNode candidate = node.findNodeWithToken(t);
+            DBTreeNode candidate = node.findNodeWithToken(t, lastNodeSoFar);
             if(candidate != null)
-                return candidate;
+                lastNodeSoFar = candidate;
         }
 
-        return null;
+        return lastNodeSoFar;
     }
 
     public String toString() {

@@ -1,7 +1,7 @@
 
 * Prio 1
 
-- test detachable panels on Windows/Linux
+- detachable panel should not be children of the project window by default: make a pref
 - handle out of memory when running on Windows (debugging)
 - windows: offset of +1 when highliting tokens in debugger input pane
 - windows: make background of list white on Windows/Linux

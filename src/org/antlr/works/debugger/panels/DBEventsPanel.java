@@ -3,6 +3,7 @@ package org.antlr.works.debugger.panels;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
+import org.antlr.works.swing.DetachablePanel;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -40,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBEventsPanel extends DBDetachablePanel {
+public class DBEventsPanel extends DetachablePanel {
 
     public static final int INFO_COLUMN_COUNT = 0;
     public static final int INFO_COLUMN_EVENT = 1;

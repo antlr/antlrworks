@@ -54,7 +54,6 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
 
     public void awake() {
         scm = new P4(this, editor.console);
-        progress = new XJDialogProgress(editor.getWindowContainer());
     }
 
     public void setSilent(boolean silent) {
@@ -139,6 +138,9 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     }
 
     protected void showProgress(String title) {
+        if(progress == null)
+            progress = new XJDialogProgress(editor.getWindowContainer());
+        
         progress.setInfo(title);
         progress.setCancellable(false);
         progress.setIndeterminate(true);
