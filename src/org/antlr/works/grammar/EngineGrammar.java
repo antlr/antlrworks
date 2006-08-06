@@ -36,10 +36,7 @@ import antlr.RecognitionException;
 import antlr.TokenStreamException;
 import org.antlr.Tool;
 import org.antlr.analysis.NFAState;
-import org.antlr.tool.ErrorManager;
-import org.antlr.tool.Grammar;
-import org.antlr.tool.GrammarNonDeterminismMessage;
-import org.antlr.tool.GrammarUnreachableAltsMessage;
+import org.antlr.tool.*;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.GrammarSyntaxName;
@@ -315,13 +312,20 @@ public class EngineGrammar {
     protected void buildNonDeterministicErrors() {
         errors.clear();
         for (Iterator iterator = ErrorListener.shared().warnings.iterator(); iterator.hasNext();) {
-            Object o = iterator.next();
-
-            if(o instanceof GrammarUnreachableAltsMessage)
-                errors.add(buildUnreachableAltsError((GrammarUnreachableAltsMessage)o));
-            else if(o instanceof GrammarNonDeterminismMessage)
-                errors.add(buildNonDeterministicError((GrammarNonDeterminismMessage)o));
+            buildError(iterator.next());
         }
+        for (Iterator iterator = ErrorListener.shared().errors.iterator(); iterator.hasNext();) {
+            buildError(iterator.next());
+        }
+    }
+
+    protected void buildError(Object o) {
+        if(o instanceof GrammarUnreachableAltsMessage)
+            errors.add(buildUnreachableAltsError((GrammarUnreachableAltsMessage)o));
+        else if(o instanceof GrammarNonDeterminismMessage)
+            errors.add(buildNonDeterministicError((GrammarNonDeterminismMessage)o));
+        else if(o instanceof NonRegularDecisionMessage)
+            errors.add(buildNonRegularDecisionError((NonRegularDecisionMessage)o));
     }
 
     protected EngineGrammarError buildNonDeterministicError(GrammarNonDeterminismMessage message) {
@@ -343,6 +347,16 @@ public class EngineGrammar {
 
         error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
         error.setMessageText("The following alternatives are unreachable: "+message.alts);
+        error.setMessage(message);
+
+        return error;
+    }
+
+    protected EngineGrammarError buildNonRegularDecisionError(NonRegularDecisionMessage message) {
+        EngineGrammarError error = new EngineGrammarError();
+
+        error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
+        error.setMessageText(message.toString());
         error.setMessage(message);
 
         return error;
@@ -383,6 +397,8 @@ public class EngineGrammar {
                 computeRuleError(rule, error, (GrammarUnreachableAltsMessage)o);
             else if(o instanceof GrammarNonDeterminismMessage)
                 computeRuleError(rule, error, (GrammarNonDeterminismMessage)o);
+            else if(o instanceof NonRegularDecisionMessage)
+                computeRuleError(rule, error, (NonRegularDecisionMessage)o);
         }
 
         try {
@@ -428,6 +444,17 @@ public class EngineGrammar {
         NFAState state = message.probe.dfa.getNFADecisionStartState();
         for(int alt=0; alt<message.alts.size(); alt++) {
             error.addUnreachableAlt(state, (Integer)message.alts.get(alt));
+            error.addStates(state);
+            error.addRule(state.getEnclosingRule());
+        }
+    }
+
+    public void computeRuleError(GrammarSyntaxRule rule, EngineGrammarError error, NonRegularDecisionMessage message) {
+        NFAState state = message.probe.dfa.getNFADecisionStartState();
+        for (Iterator iterator = message.altsWithRecursion.iterator(); iterator.hasNext();) {
+            Object alt = iterator.next();
+            // Use currently the unreachable alt for display purpose only
+            error.addUnreachableAlt(state, (Integer)alt);
             error.addStates(state);
             error.addRule(state.getEnclosingRule());
         }

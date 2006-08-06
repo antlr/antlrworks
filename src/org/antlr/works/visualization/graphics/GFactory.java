@@ -35,11 +35,11 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.Grammar;
 import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.grammar.EngineGrammarError;
+import org.antlr.works.utils.Console;
 import org.antlr.works.visualization.fa.FAFactory;
 import org.antlr.works.visualization.fa.FAState;
 import org.antlr.works.visualization.graphics.graph.GGraph;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;
-import org.antlr.works.utils.Console;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,7 +101,6 @@ public class GFactory {
 
     private GGraphGroup buildGraphGroup(Grammar grammar, EngineGrammarError error) {
         // Create one GGraph for each error rules
-
         List graphs = new ArrayList();
         FAFactory factory = new FAFactory(grammar);
         for (int i = 0; i < error.rules.size(); i++) {
@@ -118,7 +117,6 @@ public class GFactory {
         // For example, the statement rule of the java.g grammar produces
         // states that do not exist in the graph (they are after the accepted state
         // and are ignored by the FAFactory)
-
         GGraphGroup gg = new GGraphGroup();
         for (Iterator graphIterator = graphs.iterator(); graphIterator.hasNext();) {
             GGraph graph = (GGraph) graphIterator.next();
@@ -146,7 +144,7 @@ public class GFactory {
             gg.addUnreachableAlt((NFAState)unreachableAlt[0], (Integer)unreachableAlt[1]);
         }
 
-        if(error.paths.size()>0)
+        if(error.paths.size() > 0)
             gg.pathGroup.setPathVisible(0, true);
 
         return gg;

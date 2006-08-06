@@ -410,7 +410,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
         classPath += File.pathSeparatorChar+".";
 
-        debugger.getConsole().println("Launch with path ="+classPath);
+        IDE.debugVerbose(getClass(), "Launch with path: "+classPath);
 
         try {
             // Use an array rather than a single string because white-space
