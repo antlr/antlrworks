@@ -10,7 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.antlr.works.plugin.PluginContainer;
-import org.jetbrains.annotations.NonNls;
+import org.antlr.works.components.grammar.CEditorGrammarDefaultDelegate;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,7 +64,6 @@ public class AWEditor implements FileEditor {
         this.project = project;
         this.file = file;
 
-
         container = new PluginContainer();
         container.load(file.getPath());
         assemble();
@@ -88,6 +87,7 @@ public class AWEditor implements FileEditor {
         panel.add(vertical, BorderLayout.CENTER);
         panel.add(container.getStatusComponent(), BorderLayout.SOUTH);
 
+        container.setEditorGrammarDelegate(new CEditorGrammarDefaultDelegate(vertical));
         container.getContentPane().add(panel);
 
         container.getContentPane().addComponentListener(new ComponentAdapter() {
@@ -155,7 +155,6 @@ public class AWEditor implements FileEditor {
         return container.getEditorComponent();
     }
 
-    @NonNls
     public String getName() {
         return file.getName();
     }
@@ -212,11 +211,11 @@ public class AWEditor implements FileEditor {
         return new AWStructureViewBuilder(container);
     }
 
-    public <T> T getUserData(Key<T> key) {
+    public Object getUserData(Key key) {
         return null;
     }
 
-    public <T> void putUserData(Key<T> key, T value) {
+    public void putUserData(Key key, Object value) {
     }
 
 }
