@@ -67,6 +67,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.awt.*;
 
 public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
@@ -277,26 +278,46 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
         switch(item.getTag()) {
             case EditorMenu.MI_SUBMIT_STATS:
-                HelpManager.submitStats(XJApplication.shared().getActiveWindow().getJavaContainer());
+                submitStats(getDefaultParent());
                 break;
             case EditorMenu.MI_SEND_FEEDBACK:
-                HelpManager.sendFeedback(XJApplication.shared().getActiveWindow().getJavaContainer());
+                submitFeedback(getDefaultParent());
                 break;
             case EditorMenu.MI_CHECK_UPDATES:
-                StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CHECK_FOR_UPDATES);
-                HelpManager.checkUpdates(XJApplication.shared().getActiveWindow().getJavaContainer(), false);
+                checkUpdates(getDefaultParent());
                 break;
         }
     }
 
-    public void appShowHelp() {
+    public Container getDefaultParent() {
+        return XJApplication.shared().getActiveWindow().getJavaContainer();
+    }
+
+    public static void checkUpdates(Container parent) {
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CHECK_FOR_UPDATES);
+        HelpManager.checkUpdates(parent, false);
+    }
+
+    public static void submitFeedback(Container parent) {
+        HelpManager.sendFeedback(parent);
+    }
+
+    public static void submitStats(Container parent) {
+        HelpManager.submitStats(parent);
+    }
+
+    public static void showHelp(Container parent) {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_HELP);
         String url = Localizable.getLocalizedString(Localizable.DOCUMENTATION_URL);
         try {
             BrowserLauncher.openURL(url);
         } catch (IOException e) {
-            XJAlert.display(null, "Cannot access the online help file", "Browse "+url+" to download the PDF manual.");
+            XJAlert.display(parent, "Cannot access the online help file", "Browse "+url+" to download the PDF manual.");
         }
+    }
+
+    public void appShowHelp() {
+        showHelp(getDefaultParent());
     }
 
     public void appWillTerminate() {
@@ -337,4 +358,14 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     public static ResourceBundle getMenusResourceBundle() {
         return resourceMenusBundle;
     }
+
+    /** Returns true if AW is running as a plugin */
+
+    public static boolean _isPlugin = false;
+
+    public static boolean isPlugin() {
+        return _isPlugin;
+    }
+
+
 }

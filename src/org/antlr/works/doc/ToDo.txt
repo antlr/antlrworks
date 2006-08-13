@@ -1,6 +1,11 @@
 
 * Prio 1
 
+- plugin: test debugger
+- plugin: plugin descriptor with correct value for version
+- plugin: menu help with about (modified about dialog)
+- plugin: remove menu SCM (from prefs also)
+
 - detachable panel should not be children of the project window by default: make a pref
 - handle out of memory when running on Windows (debugging)
 - windows: offset of +1 when highliting tokens in debugger input pane

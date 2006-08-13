@@ -35,11 +35,14 @@ package org.antlr.works.find;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJPanel;
+import edu.usfca.xj.foundation.XJSystem;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import org.antlr.works.IDE;
 
 public class FindAndReplaceDialog extends XJPanel {
 
@@ -119,6 +122,10 @@ public class FindAndReplaceDialog extends XJPanel {
                 delegate.setOptions(optionsCombo.getSelectedIndex());
             }
         });
+    }
+
+    public boolean shouldDisplayMainMenuBar() {
+        return super.shouldDisplayMainMenuBar() && !IDE.isPlugin();
     }
 
     private void initComponents() {

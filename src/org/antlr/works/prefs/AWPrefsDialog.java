@@ -40,9 +40,12 @@ import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import edu.usfca.xj.foundation.XJSystem;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.HelpManager;
+import org.antlr.works.utils.Utils;
+import org.antlr.works.IDE;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -61,7 +64,7 @@ public class AWPrefsDialog extends XJPanel {
         super();
 
         initComponents();
-        setSize(700, 360);
+        setSize(getDefaultSize());
 
         prepareGeneralTab();
         prepareEditorTab();
@@ -76,6 +79,10 @@ public class AWPrefsDialog extends XJPanel {
                 apply();
             }
         });
+    }
+
+    public Dimension getDefaultSize() {
+        return new Dimension(700, 360);
     }
 
     public void prepareGeneralTab() {
@@ -93,6 +100,7 @@ public class AWPrefsDialog extends XJPanel {
         for (int i=0; i<info.length; i++) {
             lafCombo.addItem(info[i].getName());
         }
+        lafCombo.setEnabled(!IDE.isPlugin());
 
         getPreferences().bindToPreferences(startupActionCombo, AWPrefs.PREF_STARTUP_ACTION, AWPrefs.STARTUP_OPEN_LAST_DOC);
         getPreferences().bindToPreferences(lafCombo, AWPrefs.PREF_LOOK_AND_FEEL, XJLookAndFeel.getDefaultLookAndFeelName());
@@ -269,12 +277,17 @@ public class AWPrefsDialog extends XJPanel {
         XJApplication.setAutoSave(AWPrefs.getAutoSaveEnabled(), AWPrefs.getAutoSaveDelay());
     }
 
-    private void apply() {
+    public JComponent getComponent() {
+        return tabbedPane1;
+    }
+
+    public void apply() {
         dialogPane.requestFocus();
         getPreferences().applyPreferences();
         if(lafIndex != lafCombo.getSelectedIndex()) {
             lafIndex = lafCombo.getSelectedIndex();
-            changeLookAndFeel();
+            if(!IDE.isPlugin())
+                changeLookAndFeel();
         }
         applyCommonPrefs();
         XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_PREFS_APPLIED);
@@ -286,6 +299,10 @@ public class AWPrefsDialog extends XJPanel {
 
     private static XJPreferences getPreferences() {
         return XJApplication.shared().getPreferences();
+    }
+
+    public boolean shouldDisplayMainMenuBar() {
+        return super.shouldDisplayMainMenuBar() && !IDE.isPlugin();
     }
 
     private void initComponents() {

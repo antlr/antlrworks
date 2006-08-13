@@ -64,6 +64,14 @@ public class IconManager {
         return createImageIcon(path+"app.png");
     }
 
+    public ImageIcon getIconApplication32x32() {
+        return createImageIcon(path+"app_32x32.png");
+    }
+
+    public ImageIcon getIconApplication16x16() {
+        return createImageIcon(path+"app_16x16.png");
+    }
+
     public ImageIcon getIconHiddenAction() {
         return createImageIcon(path+"hidden_action.png");
     }
