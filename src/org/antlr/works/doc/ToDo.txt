@@ -3,14 +3,11 @@
 
 - plugin: test debugger
 - plugin: plugin descriptor with correct value for version
-- plugin: menu help with about (modified about dialog)
-- plugin: remove menu SCM (from prefs also)
 - plugin: implement undo in PluginXJFrameInterface
+- show/hide tokens in debug menu is not reflected (at least in plugin)
+- pref: detachable panel should not be children of the project window by default: make a pref
 
-- detachable panel should not be children of the project window by default: make a pref
-- handle out of memory when running on Windows (debugging)
 - windows: offset of +1 when highliting tokens in debugger input pane
-- windows: make background of list white on Windows/Linux
 
 * Prio 2
 - optimize tree drawing using incremental model (see AWTreeGraphView)

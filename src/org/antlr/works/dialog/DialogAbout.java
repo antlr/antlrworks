@@ -38,6 +38,7 @@ import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.foundation.XJLib;
 import org.antlr.Tool;
 import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.works.IDE;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
@@ -60,6 +61,9 @@ public class DialogAbout extends XJPanel {
 
         infoTable.setModel(tableModel);
         tableModel.addInfo("ANTLRWorks", XJApplication.getAppVersionShort());
+        if(IDE.isPlugin()) {
+            tableModel.addInfo("ANTLRWorks Plugin", IDE.getPluginVersionShort());
+        }
         tableModel.addInfo("ANTLR", Tool.VERSION);
         tableModel.addInfo("StringTemplate", StringTemplate.VERSION);
         tableModel.addInfo("XJLibrary", XJLib.stringVersion());

@@ -43,6 +43,7 @@ import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.BrowserLauncher;
 import edu.usfca.xj.appkit.utils.XJAlert;
+import edu.usfca.xj.appkit.utils.XJLocalizable;
 import edu.usfca.xj.foundation.XJSystem;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
@@ -63,11 +64,11 @@ import org.antlr.works.utils.Localizable;
 import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.awt.*;
 
 public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
@@ -364,10 +365,14 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     /** Returns true if AW is running as a plugin */
 
     public static boolean _isPlugin = false;
+    public static final String PLUGIN_PROPERTIES_PATH = "org/antlr/works/plugin/properties/strings";
 
     public static boolean isPlugin() {
         return _isPlugin;
     }
 
+    public static String getPluginVersionShort() {
+        return XJLocalizable.getStringFromPath(PLUGIN_PROPERTIES_PATH, "VERSION_SHORT");
+    }
 
 }

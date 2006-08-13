@@ -40,12 +40,10 @@ import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.swing.XJLookAndFeel;
 import edu.usfca.xj.appkit.utils.XJFileChooser;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.works.IDE;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.HelpManager;
-import org.antlr.works.utils.Utils;
-import org.antlr.works.IDE;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
