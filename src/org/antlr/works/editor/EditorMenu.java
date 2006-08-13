@@ -173,7 +173,8 @@ public class EditorMenu implements XJMenuItemDelegate {
         createRefactorMenu(menubar);
         createGenerateMenu(menubar);
         createRunMenu(menubar);
-        createSCMMenu(menubar);
+        if(!IDE.isPlugin())
+            createSCMMenu(menubar);
         createPrivateMenu(menubar);
     }
 

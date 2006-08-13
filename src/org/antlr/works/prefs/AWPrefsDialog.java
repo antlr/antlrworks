@@ -74,6 +74,9 @@ public class AWPrefsDialog extends XJPanel {
         prepareSCMTab();
         prepareUpdateTab();
 
+        if(IDE.isPlugin())
+            tabbedPane1.remove(tabSCM);
+
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 apply();

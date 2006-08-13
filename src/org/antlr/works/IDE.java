@@ -71,6 +71,8 @@ import java.awt.*;
 
 public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
+    public static final String PROPERTIES_PATH = "org/antlr/works/properties/";
+
     public static SplashScreen sc;
 
     public static void main(String[] args) {
@@ -79,7 +81,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         // because we are instanciating a SplashScreen before it)
 
         XJSystem.setSystemProperties();
-        XJApplication.setPropertiesPath("org/antlr/works/properties/");
+        XJApplication.setPropertiesPath(PROPERTIES_PATH);
 
         if(args.length >= 1 && args[0].equals("-stats")) {
             XJApplication.run(new Statistics(), args, "Statistics");
