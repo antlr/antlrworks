@@ -127,7 +127,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
 
             setProgressStepInfo("Generating \""+ XJUtils.getLastPathComponent(file)+"\"...");
 
-            String error = EngineRuntime.runANTLR(file, libPath, outputPath, this);
+            String error = EngineRuntime.runANTLR(null, file, libPath, outputPath, this);
             if(error != null) {
                 project.buildReportError(error);
                 return false;
@@ -141,7 +141,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
 
     public boolean compileFile(String file) {
         String outputPath = project.getSourcePath();
-        String error = EngineRuntime.compileFiles(new String[] { file }, outputPath, this);
+        String error = EngineRuntime.compileFiles(null, new String[] { file }, outputPath, this);
         if(error != null) {
             project.buildReportError(error);
             return false;
@@ -265,7 +265,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     }
 
     public void performRun() {
-        String error = EngineRuntime.runJava(project.getSourcePath(), project.getRunParameters(), ProjectBuilder.this);
+        String error = EngineRuntime.runJava(null, project.getSourcePath(), project.getRunParameters(), ProjectBuilder.this);
         if(error != null) {
             project.buildReportError(error);
         }

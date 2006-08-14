@@ -1,6 +1,7 @@
 package org.antlr.works.swing;
 
 import edu.usfca.xj.appkit.frame.XJDialog;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
@@ -162,7 +163,10 @@ public class DetachablePanel extends JPanel {
 
         detach.setIcon(IconManager.shared().getIconAttach());
 
-        window = new DetachableWindow(delegate.panelParentContainer());
+        if(AWPrefs.getDetachableChildren())
+            window = new DetachableWindow(delegate.panelParentContainer());
+        else
+            window = new DetachableWindow(null);
         window.setTitle(title);
         window.setPosition(p.x, p.y);
         window.setSize(getWidth(), getHeight());

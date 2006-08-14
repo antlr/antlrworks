@@ -155,12 +155,18 @@ public class AWPrefs {
     public static final String PREF_JAVAC_CUSTOM_PATH = "PREF_JAVAC_CUSTOM_PATH";
     public static final String PREF_JAVAC_PATH = "PREF_JAVAC_PATH";
     public static final String PREF_JIKES_PATH = "PREF_JIKES_PATH";
+    public static final String PREF_ANTLR3_PATH = "PREF_ANTLR3_PATH";
     public static final String PREF_COMPILER = "PREF_COMPILER";
+    public static final String PREF_CLASSPATH_SYSTEM = "PREF_CLASSPATH_SYSTEM";
+    public static final String PREF_CLASSPATH_CUSTOM = "PREF_CLASSPATH_CUSTOM";
 
     public static final boolean DEFAULT_JAVAC_CUSTOM_PATH = false;
     public static final String DEFAULT_JAVAC_PATH = "";
     public static final String DEFAULT_JIKES_PATH = "";
+    public static final String DEFAULT_ANTLR3_PATH = "";
     public static final String DEFAULT_COMPILER = "javac";
+    public static final boolean DEFAULT_CLASSPATH_SYSTEM = true;
+    public static final boolean DEFAULT_CLASSPATH_CUSTOM = false;
 
     public static final String COMPILER_JAVAC = "javac";
     public static final String COMPILER_JIKES = "jikes";
@@ -201,6 +207,9 @@ public class AWPrefs {
 
     public static final String PREF_DEBUG_LAUNCHTIMEOUT = "PREF_DEBUG_LAUNCHTIMEOUT";
     public static final int DEFAULT_DEBUG_LAUNCHTIMEOUT = 5;
+
+    public static final String PREF_DETACHABLE_CHILDREN = "PREF_DETACHABLE_CHILDREN";
+    public static final boolean DEFAULT_DETACHABLE_CHILDREN = true;
 
     // Other
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
@@ -393,8 +402,24 @@ public class AWPrefs {
         return getPreferences().getString(PREF_JIKES_PATH, DEFAULT_JIKES_PATH);
     }
 
+    public static void setANTLR3Path(String path) {
+        getPreferences().setString(PREF_ANTLR3_PATH, path);
+    }
+
+    public static String getANTLR3Path() {
+        return getPreferences().getString(PREF_ANTLR3_PATH, DEFAULT_ANTLR3_PATH);
+    }
+
     public static String getCompiler() {
         return getPreferences().getString(PREF_COMPILER, DEFAULT_COMPILER);
+    }
+
+    public static boolean getUseSystemClassPath() {
+        return getPreferences().getBoolean(PREF_CLASSPATH_SYSTEM, DEFAULT_CLASSPATH_SYSTEM);
+    }
+
+    public static boolean getUseCustomClassPath() {
+        return getPreferences().getBoolean(PREF_CLASSPATH_CUSTOM, DEFAULT_CLASSPATH_CUSTOM);
     }
 
     public static int getUpdateType() {
@@ -467,6 +492,10 @@ public class AWPrefs {
 
     public static Color getLookaheadTokenColor() {
         return getPreferences().getColor(PREF_LOOKAHEAD_TOKEN_COLOR, DEFAULT_LOOKAHEAD_TOKEN_COLOR);
+    }
+
+    public static boolean getDetachableChildren() {
+        return getPreferences().getBoolean(PREF_DETACHABLE_CHILDREN, DEFAULT_DETACHABLE_CHILDREN);
     }
 
     public static boolean getEnableProjectDocument() {

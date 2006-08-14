@@ -58,6 +58,8 @@ public class CustomToggleButton extends JToggleButton {
     }
 
     public void paintComponent(Graphics g) {
+        g.setColor(getBackground());
+        g.fillRect(0, 0, getWidth(), getHeight());
         paintButton((Graphics2D)g, 0, 0, getWidth()-2, getHeight()-1, isSelected());
     }
 

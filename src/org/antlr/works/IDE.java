@@ -59,6 +59,7 @@ import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.utils.Console;
 import org.antlr.works.utils.HelpManager;
 import org.antlr.works.utils.Localizable;
 import org.antlr.works.utils.Utils;
@@ -230,7 +231,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
             url = c.getClassLoader().getResource(name);
             if(url == null) {
                 System.err.println("IDE: unable to get the location of the XJApplicationDelegate");
-                return "";
+                return null;
             } else {
                 // Remove the class fully qualified path from the path
                 URI uri = URI.create(url.toString());
@@ -266,9 +267,13 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         return p;
     }
 
-    public static void debugVerbose(Class c, String s) {
-        if(AWPrefs.getDebugVerbose())
-            System.out.println(c.getName()+": "+s);
+    public static void debugVerbose(Console console, Class c, String s) {
+        if(AWPrefs.getDebugVerbose()) {
+            String message = c.getName()+": "+s;
+            if(console != null)
+                console.println(message);
+            System.out.println(message);
+        }
     }
 
     public void customizeHelpMenu(XJMenu menu) {

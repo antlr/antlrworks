@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger.input;
 
+import edu.usfca.xj.foundation.XJSystem;
 import edu.usfca.xj.foundation.notification.XJNotificationCenter;
 import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
@@ -126,12 +127,15 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     }
 
     public void consumeToken(Token token, int flavor) {
+        if(ignoreToken(token))
+            return;
+
         SimpleAttributeSet attr = null;
         switch(flavor) {
             case TOKEN_NORMAL: attr = attributeConsume; break;
             case TOKEN_HIDDEN: attr = attributeConsumeHidden; break;
             case TOKEN_DEAD: attr = attributeConsumeDead; break;
-        }
+        }        
         addToken(token);
         addConsumeAttribute(token, attr);
         removeTokenLT(token);
@@ -140,6 +144,21 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     public void LT(Token token) {
         addToken(token);
         addTokenLT(token);
+    }
+
+    /** On Windows, ignore the LF token following a CR because each
+     * end of line is represented by two characters while Swing
+     * renders the text using only LF (normalized).
+     */
+    public boolean ignoreToken(Token t) {
+        if(!XJSystem.isWindows())
+            return false;
+
+        Token ct = getCurrentToken();
+        if(ct == null)
+            return false;
+
+        return ct.getText().equals("\r") && t.getText().equals("\n");
     }
 
     public void addConsumeAttribute(Token token, AttributeSet attribute) {
@@ -225,6 +244,14 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
          */
 
         indexToTokenInfoMap.put(idx, new DBInputTextTokenInfo(token, locationLine, locationCharInLine));
+    }
+
+    public Token getCurrentToken() {
+        DBInputTextTokenInfo info = (DBInputTextTokenInfo) indexToTokenInfoMap.get(new Integer(getCurrentTokenIndex()));
+        if(info == null)
+            return null;
+        else
+            return info.token;
     }
 
     public String renderTokensText() {

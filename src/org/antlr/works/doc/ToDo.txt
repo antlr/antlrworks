@@ -1,13 +1,10 @@
 
 * Prio 1
 
-- plugin: test debugger
-- plugin: plugin descriptor with correct value for version
 - plugin: implement undo in PluginXJFrameInterface
-- show/hide tokens in debug menu is not reflected (at least in plugin)
-- pref: detachable panel should not be children of the project window by default: make a pref
+- plugin: put strings in properties file
 
-- windows: offset of +1 when highliting tokens in debugger input pane
+- windows: attach icon is too small (header is too small)
 
 * Prio 2
 - optimize tree drawing using incremental model (see AWTreeGraphView)

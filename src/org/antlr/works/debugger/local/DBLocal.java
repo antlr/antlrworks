@@ -368,7 +368,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     protected void compileFiles(String[] files) {
-        String error = EngineRuntime.compileFiles(files, outputFileDir, this);
+        String error = EngineRuntime.compileFiles(debugger.getConsole(), files, outputFileDir, this);
         if(error != null)
             reportError(error);
     }
@@ -403,14 +403,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         if(!checkForLaunch())
             return false;
 
-        // Need to include the path of the application in order to be able
-        // to compile the parser if the system classpath doesn't have ANTLR or ST
-        String classPath = outputFileDir;
-        classPath += File.pathSeparatorChar+ IDE.getApplicationPath();
-        classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
-        classPath += File.pathSeparatorChar+".";
-
-        IDE.debugVerbose(getClass(), "Launch with path: "+classPath);
+        String classPath = EngineRuntime.getClassPath(outputFileDir);        
+        IDE.debugVerbose(debugger.getConsole(), getClass(), "Launch with path: "+classPath);
 
         try {
             // Use an array rather than a single string because white-space

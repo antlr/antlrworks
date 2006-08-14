@@ -83,7 +83,7 @@ public class AWPrefsDialog extends XJPanel {
     }
 
     public Dimension getDefaultSize() {
-        return new Dimension(700, 360);
+        return new Dimension(700, 400);
     }
 
     public void prepareGeneralTab() {
@@ -199,6 +199,22 @@ public class AWPrefsDialog extends XJPanel {
             }
         });
 
+        classpathCustomButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                antlr3ClasspathField.setEnabled(classpathCustomButton.isSelected());
+                browseANTLR3ClassPathButton.setEnabled(classpathCustomButton.isSelected());
+            }
+        });
+
+        browseANTLR3ClassPathButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
+                    antlr3ClasspathField.setText(XJFileChooser.shared().getSelectedFilePath());
+                    AWPrefs.setANTLR3Path(antlr3ClasspathField.getText());
+                }
+            }
+        });
+
         compilerRadioButtonGroup = new ButtonGroup();
         compilerRadioButtonGroup.add(jikesRadio);
         compilerRadioButtonGroup.add(integratedRadio);
@@ -212,6 +228,10 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(javacPathField, AWPrefs.PREF_JAVAC_PATH, AWPrefs.DEFAULT_JAVAC_PATH);
         getPreferences().bindToPreferences(jikesPathField, AWPrefs.PREF_JIKES_PATH, AWPrefs.DEFAULT_JIKES_PATH);
         getPreferences().bindToPreferences(compilerRadioButtonGroup, AWPrefs.PREF_COMPILER, AWPrefs.DEFAULT_COMPILER);
+
+        getPreferences().bindToPreferences(classpathSystemButton, AWPrefs.PREF_CLASSPATH_SYSTEM, AWPrefs.DEFAULT_CLASSPATH_SYSTEM);
+        getPreferences().bindToPreferences(classpathCustomButton, AWPrefs.PREF_CLASSPATH_CUSTOM, AWPrefs.DEFAULT_CLASSPATH_CUSTOM);
+        getPreferences().bindToPreferences(antlr3ClasspathField, AWPrefs.PREF_ANTLR3_PATH, AWPrefs.DEFAULT_ANTLR3_PATH);
     }
 
     public void prepareDebuggerTab() {
@@ -223,6 +243,8 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(debugHiddenColorPanel, AWPrefs.PREF_HIDDEN_TOKEN_COLOR, AWPrefs.DEFAULT_HIDDEN_TOKEN_COLOR);
         getPreferences().bindToPreferences(debugDeadColorPanel, AWPrefs.PREF_DEAD_TOKEN_COLOR, AWPrefs.DEFAULT_DEAD_TOKEN_COLOR);
         getPreferences().bindToPreferences(debugLTColorPanel, AWPrefs.PREF_LOOKAHEAD_TOKEN_COLOR, AWPrefs.DEFAULT_LOOKAHEAD_TOKEN_COLOR);
+
+        getPreferences().bindToPreferences(detachablePanelChildrenButton, AWPrefs.PREF_DETACHABLE_CHILDREN, AWPrefs.DEFAULT_DETACHABLE_CHILDREN);
     }
 
     public void prepareSCMTab() {
@@ -258,6 +280,8 @@ public class AWPrefsDialog extends XJPanel {
         lafIndex = lafCombo.getSelectedIndex();
         javacPathField.setEnabled(javacCustomPathButton.isSelected());
         browseJavacPath.setEnabled(javacCustomPathButton.isSelected());
+        antlr3ClasspathField.setEnabled(classpathCustomButton.isSelected());
+        browseANTLR3ClassPathButton.setEnabled(classpathCustomButton.isSelected());
         actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_PREFERENCES);
     }
@@ -315,10 +339,10 @@ public class AWPrefsDialog extends XJPanel {
         label2 = new JLabel();
         label5 = new JLabel();
         lafCombo = new JComboBox();
-        startupActionCombo = new JComboBox();
         label24 = new JLabel();
-        dotToolPathField = new JTextField();
+        startupActionCombo = new JComboBox();
         browseDotToolPathButton = new JButton();
+        dotToolPathField = new JTextField();
         label25 = new JLabel();
         debugVerboseButton = new JCheckBox();
         debugDontOptimizeNFA = new JCheckBox();
@@ -378,6 +402,12 @@ public class AWPrefsDialog extends XJPanel {
         label4 = new JLabel();
         jikesPathField = new JTextField();
         browseJikesPath = new JButton();
+        label8 = new JLabel();
+        antlr3ClasspathField = new JTextField();
+        label9 = new JLabel();
+        classpathSystemButton = new JCheckBox();
+        classpathCustomButton = new JCheckBox();
+        browseANTLR3ClassPathButton = new JButton();
         tabDebugger = new JPanel();
         label33 = new JLabel();
         debugDefaultLocalPortField = new JTextField();
@@ -394,6 +424,8 @@ public class AWPrefsDialog extends XJPanel {
         debugDeadColorPanel = new JPanel();
         label16 = new JLabel();
         debugLTColorPanel = new JPanel();
+        label36 = new JLabel();
+        detachablePanelChildrenButton = new JCheckBox();
         tabSCM = new JPanel();
         enablePerforceCheckBox = new JCheckBox();
         label18 = new JLabel();
@@ -463,6 +495,8 @@ public class AWPrefsDialog extends XJPanel {
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
+                                new RowSpec(Sizes.dluY(10)),
+                                FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
@@ -479,6 +513,10 @@ public class AWPrefsDialog extends XJPanel {
                         tabGeneral.add(label5, cc.xy(3, 5));
                         tabGeneral.add(lafCombo, cc.xywh(5, 5, 3, 1));
 
+                        //---- label24 ----
+                        label24.setText("DOT path:");
+                        tabGeneral.add(label24, cc.xy(3, 7));
+
                         //---- startupActionCombo ----
                         startupActionCombo.setModel(new DefaultComboBoxModel(new String[] {
                             "Create a new document",
@@ -486,29 +524,25 @@ public class AWPrefsDialog extends XJPanel {
                         }));
                         tabGeneral.add(startupActionCombo, cc.xywh(5, 3, 3, 1));
 
-                        //---- label24 ----
-                        label24.setText("DOT path:");
-                        tabGeneral.add(label24, cc.xy(3, 7));
+                        //---- browseDotToolPathButton ----
+                        browseDotToolPathButton.setText("Browse...");
+                        tabGeneral.add(browseDotToolPathButton, cc.xy(9, 7));
 
                         //---- dotToolPathField ----
                         dotToolPathField.setToolTipText("Absolute path to the DOT command-line tool");
                         tabGeneral.add(dotToolPathField, cc.xywh(5, 7, 3, 1));
 
-                        //---- browseDotToolPathButton ----
-                        browseDotToolPathButton.setText("Browse...");
-                        tabGeneral.add(browseDotToolPathButton, cc.xy(9, 7));
-
                         //---- label25 ----
                         label25.setText("Debug:");
-                        tabGeneral.add(label25, cc.xy(3, 9));
+                        tabGeneral.add(label25, cc.xy(3, 11));
 
                         //---- debugVerboseButton ----
                         debugVerboseButton.setText("Verbose");
-                        tabGeneral.add(debugVerboseButton, cc.xywh(5, 9, 3, 1));
+                        tabGeneral.add(debugVerboseButton, cc.xywh(5, 11, 3, 1));
 
                         //---- debugDontOptimizeNFA ----
                         debugDontOptimizeNFA.setText("Don't optimize NFA");
-                        tabGeneral.add(debugDontOptimizeNFA, cc.xywh(5, 11, 3, 1));
+                        tabGeneral.add(debugDontOptimizeNFA, cc.xywh(5, 13, 3, 1));
                     }
                     tabbedPane1.addTab("General", tabGeneral);
 
@@ -832,7 +866,7 @@ public class AWPrefsDialog extends XJPanel {
                             new ColumnSpec[] {
                                 new ColumnSpec(Sizes.dluX(10)),
                                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(20)),
+                                FormFactory.DEFAULT_COLSPEC,
                                 FormFactory.DEFAULT_COLSPEC,
                                 new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
                                 FormFactory.DEFAULT_COLSPEC,
@@ -842,6 +876,16 @@ public class AWPrefsDialog extends XJPanel {
                                 new RowSpec(Sizes.dluY(10)),
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                new RowSpec(Sizes.dluY(10)),
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
@@ -869,7 +913,7 @@ public class AWPrefsDialog extends XJPanel {
                         //---- javacCustomPathButton ----
                         javacCustomPathButton.setText("Path:");
                         javacCustomPathButton.setToolTipText("Check to specify a custom path if the default system path doesn't include javac");
-                        tabCompiler.add(javacCustomPathButton, cc.xy(4, 5));
+                        tabCompiler.add(javacCustomPathButton, cc.xywh(4, 5, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
                         tabCompiler.add(javacPathField, cc.xy(5, 5));
 
                         //---- browseJavacPath ----
@@ -884,6 +928,27 @@ public class AWPrefsDialog extends XJPanel {
                         //---- browseJikesPath ----
                         browseJikesPath.setText("Browse...");
                         tabCompiler.add(browseJikesPath, cc.xy(6, 9));
+
+                        //---- label8 ----
+                        label8.setText("ANTLR 3:");
+                        tabCompiler.add(label8, cc.xywh(4, 19, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+                        tabCompiler.add(antlr3ClasspathField, cc.xy(5, 19));
+
+                        //---- label9 ----
+                        label9.setText("Classpath:");
+                        tabCompiler.add(label9, cc.xy(3, 15));
+
+                        //---- classpathSystemButton ----
+                        classpathSystemButton.setText("System");
+                        tabCompiler.add(classpathSystemButton, cc.xy(4, 15));
+
+                        //---- classpathCustomButton ----
+                        classpathCustomButton.setText("Custom");
+                        tabCompiler.add(classpathCustomButton, cc.xy(5, 15));
+
+                        //---- browseANTLR3ClassPathButton ----
+                        browseANTLR3ClassPathButton.setText("Browse...");
+                        tabCompiler.add(browseANTLR3ClassPathButton, cc.xy(6, 19));
                     }
                     tabbedPane1.addTab("Compiler", tabCompiler);
 
@@ -913,6 +978,10 @@ public class AWPrefsDialog extends XJPanel {
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 new RowSpec(Sizes.dluY(10)),
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
@@ -1021,6 +1090,14 @@ public class AWPrefsDialog extends XJPanel {
                             debugLTColorPanel.setLayout(new FlowLayout());
                         }
                         tabDebugger.add(debugLTColorPanel, cc.xy(5, 15));
+
+                        //---- label36 ----
+                        label36.setText("Detachable panels:");
+                        tabDebugger.add(label36, cc.xy(3, 19));
+
+                        //---- detachablePanelChildrenButton ----
+                        detachablePanelChildrenButton.setText("Children of project's window");
+                        tabDebugger.add(detachablePanelChildrenButton, cc.xywh(5, 19, 5, 1));
                     }
                     tabbedPane1.addTab("Debugger", tabDebugger);
 
@@ -1180,10 +1257,10 @@ public class AWPrefsDialog extends XJPanel {
     private JLabel label2;
     private JLabel label5;
     private JComboBox lafCombo;
-    private JComboBox startupActionCombo;
     private JLabel label24;
-    private JTextField dotToolPathField;
+    private JComboBox startupActionCombo;
     private JButton browseDotToolPathButton;
+    private JTextField dotToolPathField;
     private JLabel label25;
     private JCheckBox debugVerboseButton;
     private JCheckBox debugDontOptimizeNFA;
@@ -1243,6 +1320,12 @@ public class AWPrefsDialog extends XJPanel {
     private JLabel label4;
     private JTextField jikesPathField;
     private JButton browseJikesPath;
+    private JLabel label8;
+    private JTextField antlr3ClasspathField;
+    private JLabel label9;
+    private JCheckBox classpathSystemButton;
+    private JCheckBox classpathCustomButton;
+    private JButton browseANTLR3ClassPathButton;
     private JPanel tabDebugger;
     private JLabel label33;
     private JTextField debugDefaultLocalPortField;
@@ -1259,6 +1342,8 @@ public class AWPrefsDialog extends XJPanel {
     private JPanel debugDeadColorPanel;
     private JLabel label16;
     private JPanel debugLTColorPanel;
+    private JLabel label36;
+    private JCheckBox detachablePanelChildrenButton;
     private JPanel tabSCM;
     private JCheckBox enablePerforceCheckBox;
     private JLabel label18;

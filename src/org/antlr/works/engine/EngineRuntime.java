@@ -3,6 +3,7 @@ package org.antlr.works.engine;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.IDE;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.utils.Console;
 import org.antlr.works.utils.StreamWatcher;
 import org.antlr.works.utils.StreamWatcherDelegate;
 import org.antlr.works.utils.Utils;
@@ -64,15 +65,26 @@ public class EngineRuntime {
     }
 
     public static String getClassPath(String outputPath) {
+        String appPath = IDE.getApplicationPath();
+
         // Need to include the path of the application in order to be able
         // to compile the parser if the system classpath doesn't have ANTLR or ST
         String classPath = outputPath;
-        classPath += File.pathSeparatorChar+IDE.getApplicationPath();
-        classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
+        if(appPath != null)
+            classPath += File.pathSeparatorChar+appPath;
+
+        if(AWPrefs.getUseSystemClassPath())
+            classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
+
+        if(AWPrefs.getUseCustomClassPath())
+            classPath += File.pathSeparatorChar+AWPrefs.getANTLR3Path();
+
+        classPath += File.pathSeparatorChar+".";
+
         return classPath;
     }
 
-    public static String runANTLR(String file, String libPath, String outputPath, StreamWatcherDelegate delegate) {
+    public static String runANTLR(Console console, String file, String libPath, String outputPath, StreamWatcherDelegate delegate) {
         String error = null;
         StreamWatcher esw = null;
         int result = 0;
@@ -88,7 +100,7 @@ public class EngineRuntime {
             args[7] = libPath;
             args[8] = file;
 
-            IDE.debugVerbose(EngineRuntime.class, "Run ANTLR: "+Utils.toString(args));
+            IDE.debugVerbose(console, EngineRuntime.class, "Run ANTLR: "+Utils.toString(args));
 
             Process p = Runtime.getRuntime().exec(args);
             setProcess(p);
@@ -127,7 +139,7 @@ public class EngineRuntime {
         return error;
     }
 
-    public static String runJava(String currentPath, String[] params, StreamWatcherDelegate delegate) {
+    public static String runJava(Console console, String currentPath, String[] params, StreamWatcherDelegate delegate) {
         String error = null;
         int result = 0;
         try {
@@ -138,7 +150,7 @@ public class EngineRuntime {
             for(int i=0; i<params.length; i++)
                 args[3+i] = params[i];
 
-            IDE.debugVerbose(EngineRuntime.class, "Run Java: "+Utils.toString(args));
+            IDE.debugVerbose(console, EngineRuntime.class, "Run Java: "+Utils.toString(args));
 
             Process p = Runtime.getRuntime().exec(args, null, new File(currentPath));
             setProcess(p);
@@ -158,7 +170,7 @@ public class EngineRuntime {
         return error;
     }
 
-    public static String compileFiles(String[] files, String outputFileDir, StreamWatcherDelegate delegate) {
+    public static String compileFiles(Console console, String[] files, String outputFileDir, StreamWatcherDelegate delegate) {
         String error = null;
 
         int result = 0;
@@ -179,7 +191,7 @@ public class EngineRuntime {
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
 
-                IDE.debugVerbose(EngineRuntime.class, "Compile: "+Utils.toString(args));
+                IDE.debugVerbose(console, EngineRuntime.class, "Compile: "+Utils.toString(args));
 
                 Process p = Runtime.getRuntime().exec(args);
                 setProcess(p);
@@ -198,7 +210,7 @@ public class EngineRuntime {
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
 
-                IDE.debugVerbose(EngineRuntime.class, "Compile: "+Utils.toString(args));
+                IDE.debugVerbose(console, EngineRuntime.class, "Compile: "+Utils.toString(args));
 
                 Process p = Runtime.getRuntime().exec(args);
                 setProcess(p);
