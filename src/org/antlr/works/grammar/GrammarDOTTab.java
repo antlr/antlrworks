@@ -11,6 +11,7 @@ import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -74,7 +75,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
     }
 
     public String getDOTToolPath() {
-        return AWPrefs.getDOTToolPath();
+        return Utils.quotePath(AWPrefs.getDOTToolPath());
     }
 
     public static final String dotInfo = "The 'dot' tool is used to render directed graph. It can be downloaded from www.graphviz.org.";
@@ -164,7 +165,9 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
     }
 
     protected void generatePlainTextFile() throws Exception {
-        String[] args = new String[] { getDOTToolPath(), "-Tdot", "-o", tempOutputFile, tempInputFile };
+        String[] args = new String[] { getDOTToolPath(), "-Tdot", "-o",
+                Utils.quotePath(tempOutputFile),
+                Utils.quotePath(tempInputFile) };
         Process p = Runtime.getRuntime().exec(args);
 
         new StreamWatcher(p.getErrorStream(), "DecisionDFA").start();

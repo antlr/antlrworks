@@ -72,7 +72,7 @@ public class ATELabelView extends LabelView {
     }
 
     public float getInvisibleSpan(int axis) {
-        if(getStartOffset() == getEntity().foldingEntityGetStartIndex() && isTopMostInvisible()) {
+        if(getEntity() != null && getStartOffset() == getEntity().foldingEntityGetStartIndex() && isTopMostInvisible()) {
             // This view is the first paragraph view for the collapsed rule.
             // We adjust its size to display the placeholder.
             if(axis == X_AXIS)

@@ -52,11 +52,7 @@ public class EditorMenu implements XJMenuItemDelegate {
 
     // View
     public static final int MI_EXPAND_COLLAPSE_RULE = 20;
-    public static final int MI_EXPAND_ALL_RULES = 21;
-    public static final int MI_COLLAPSE_ALL_RULES = 22;
-    public static final int MI_EXPAND_COLLAPSE_ACTION = 23;
-    public static final int MI_EXPAND_ALL_ACTIONS = 24;
-    public static final int MI_COLLAPSE_ALL_ACTIONS = 25;
+    public static final int MI_EXPAND_COLLAPSE_ACTION = 21;
 
     // Find
     public static final int MI_FIND = 30;
@@ -305,12 +301,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu folding = new XJMenu();
         folding.setTitle(resourceBundle.getString("menu.title.folding"));
         folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.toggleRule"), KeyEvent.VK_PERIOD, MI_EXPAND_COLLAPSE_RULE, this));
-        folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.expandAllRules"), KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_EXPAND_ALL_RULES, this));
-        folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.collapseAllRules"), KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_COLLAPSE_ALL_RULES, this));
-        folding.addSeparator();
         folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.toggleAction"), KeyEvent.VK_MINUS, MI_EXPAND_COLLAPSE_ACTION, this));
-        folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.expandAllActions"), KeyEvent.VK_PLUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_EXPAND_ALL_ACTIONS, this));
-        folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.collapseAllActions"), KeyEvent.VK_MINUS, XJMenuItem.getKeyModifier() | Event.ALT_MASK, MI_COLLAPSE_ALL_ACTIONS, this));
 
         menu.addSeparator();
         menu.addItem(rules);
@@ -476,11 +467,7 @@ public class EditorMenu implements XJMenuItemDelegate {
             case MI_GROUP_RULE:
             case MI_UNGROUP_RULE:
             case MI_EXPAND_COLLAPSE_RULE:
-            case MI_EXPAND_ALL_RULES:
-            case MI_COLLAPSE_ALL_RULES:
             case MI_EXPAND_COLLAPSE_ACTION:
-            case MI_EXPAND_ALL_ACTIONS:
-            case MI_COLLAPSE_ALL_ACTIONS:
             case MI_CHECK_GRAMMAR:
             case MI_FIND:
             case MI_RUN_INTERPRETER:
@@ -552,24 +539,8 @@ public class EditorMenu implements XJMenuItemDelegate {
                 editor.menuFolding.expandCollapseRule();
                 break;
 
-            case MI_EXPAND_ALL_RULES:
-                editor.menuFolding.expandAllRules();
-                break;
-
-            case MI_COLLAPSE_ALL_RULES:
-                editor.menuFolding.collapseAllRules();
-                break;
-
             case MI_EXPAND_COLLAPSE_ACTION:
                 editor.menuFolding.expandCollapseAction();
-                break;
-
-            case MI_EXPAND_ALL_ACTIONS:
-                editor.menuFolding.expandAllActions();
-                break;
-
-            case MI_COLLAPSE_ALL_ACTIONS:
-                editor.menuFolding.collapseAllActions();
                 break;
         }
     }

@@ -41,7 +41,7 @@ public class Utils {
         int x= fis.available();
         if(x > 0) {
             byte b[]= new byte[x];
-            fis.read(b);
+            int c = fis.read(b);
             return new String(b);
         } else
             return null;
@@ -83,5 +83,41 @@ public class Utils {
             return isComponentChildOf(child.getParent(), parent);
     }
 
+    /** Quote a path if needed (i.e. white space detected)
+     *
+     * @param path The path to quote
+     * @return The quoted path if needed
+     */
+    public static String quotePath(String path) {
+        if(path == null || path.length() == 0)
+            return path;
+
+        path = unquotePath(path);
+
+        if(path.indexOf(' ') != -1) {
+            path = "\""+path+"\"";
+        }
+
+        return path;
+    }
+
+    /** Unquote a path if it has quote (") at the beginning or at the end
+     * of it.
+     * @param path The path to unquote
+     * @return The unquoted path
+     */
+    public static String unquotePath(String path) {
+        if(path == null || path.length() == 0)
+            return path;
+
+        if(path.charAt(0) == '"') {
+            path = path.substring(1);
+        }
+        if(path.charAt(path.length()-1) == '"') {
+            path = path.substring(0, path.length()-1);
+        }
+
+        return path;
+    }
 
 }

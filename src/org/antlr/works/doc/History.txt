@@ -15,6 +15,7 @@ Version 1.0ea12 -
   in multi-screen environment
 - fixed a bug that would prevent decision DFA to be displayed if the first token of a rule was
   not in the same line as the colon
+- fixed a bug where a path with white space in it could make the compilation failed
 
 Version 1.0ea11 - 07/05/06
 

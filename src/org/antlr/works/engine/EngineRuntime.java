@@ -71,17 +71,17 @@ public class EngineRuntime {
         // to compile the parser if the system classpath doesn't have ANTLR or ST
         String classPath = outputPath;
         if(appPath != null)
-            classPath += File.pathSeparatorChar+appPath;
+            classPath += File.pathSeparatorChar+Utils.unquotePath(appPath);
 
         if(AWPrefs.getUseSystemClassPath())
-            classPath += File.pathSeparatorChar+System.getProperty("java.class.path");
+            classPath += File.pathSeparatorChar+Utils.unquotePath(System.getProperty("java.class.path"));
 
         if(AWPrefs.getUseCustomClassPath())
-            classPath += File.pathSeparatorChar+AWPrefs.getANTLR3Path();
+            classPath += File.pathSeparatorChar+Utils.unquotePath(AWPrefs.getANTLR3Path());
 
         classPath += File.pathSeparatorChar+".";
 
-        return classPath;
+        return Utils.quotePath(classPath);
     }
 
     public static String runANTLR(Console console, String file, String libPath, String outputPath, StreamWatcherDelegate delegate) {
@@ -95,9 +95,9 @@ public class EngineRuntime {
             args[2] = getClassPath(outputPath);
             args[3] = "org.antlr.Tool";
             args[4] = "-o";
-            args[5] = outputPath;
+            args[5] = Utils.quotePath(outputPath);
             args[6] = "-lib";
-            args[7] = libPath;
+            args[7] = Utils.quotePath(libPath);
             args[8] = file;
 
             IDE.debugVerbose(console, EngineRuntime.class, "Run ANTLR: "+Utils.toString(args));
@@ -187,7 +187,7 @@ public class EngineRuntime {
                 args[1] = "-classpath";
                 args[2] = classPath;
                 args[3] = "-d";
-                args[4] = outputFileDir;
+                args[4] = Utils.quotePath(outputFileDir);
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
 
@@ -206,7 +206,7 @@ public class EngineRuntime {
                 args[1] = "-classpath";
                 args[2] = classPath;
                 args[3] = "-d";
-                args[4] = outputFileDir;
+                args[4] = Utils.quotePath(outputFileDir);
                 for(int i=0; i<files.length; i++)
                     args[5+i] = files[i];
 

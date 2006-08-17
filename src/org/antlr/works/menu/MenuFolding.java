@@ -1,10 +1,6 @@
 package org.antlr.works.menu;
 
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.syntax.GrammarSyntaxAction;
-import org.antlr.works.syntax.GrammarSyntaxRule;
-
-import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -48,48 +44,6 @@ public class MenuFolding extends MenuAbstract {
 
     public void expandCollapseRule() {
         editor.foldingManager.toggleFolding(editor.getCurrentRule());
-    }
-
-    public void expandAllRules() {
-        expandCollapseAllRules(true);
-    }
-
-    public void collapseAllRules() {
-        expandCollapseAllRules(false);
-    }
-
-    public void expandCollapseAllRules(boolean expand) {
-        List rules = editor.rules.getRules();
-        if(rules == null)
-            return;
-
-        for(int i = 0; i<rules.size(); i++) {
-            GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(i);
-            if(rule.foldingEntityIsExpanded() != expand) {
-                editor.foldingManager.toggleFolding(rule);
-            }
-        }
-    }
-
-    public void expandAllActions() {
-        expandCollapseAllActions(true);
-    }
-
-    public void collapseAllActions() {
-        expandCollapseAllActions(false);
-    }
-
-    public void expandCollapseAllActions(boolean expand) {
-        List actions = editor.getActions();
-        if(actions == null)
-            return;
-
-        for(int i = 0; i<actions.size(); i++) {
-            GrammarSyntaxAction action = (GrammarSyntaxAction)actions.get(i);
-            if(action.foldingEntityIsExpanded() != expand) {
-                editor.foldingManager.toggleFolding(action);
-            }
-        }
     }
 
 }

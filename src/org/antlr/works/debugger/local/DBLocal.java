@@ -407,8 +407,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         IDE.debugVerbose(debugger.getConsole(), getClass(), "Launch with path: "+classPath);
 
         try {
-            // Use an array rather than a single string because white-space
-            // are not correctly handled in a single string (why?)
             remoteParserProcess = Runtime.getRuntime().exec(new String[] { "java", "-classpath", classPath, remoteParserClassName});
             new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher", debugger.getOutputPanel()).start();
             new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher", debugger.getOutputPanel()).start();
