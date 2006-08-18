@@ -109,7 +109,7 @@ public class EngineRuntime {
             new StreamWatcher(p.getInputStream(), "ANTLR[stdout]", delegate).start();
             result = p.waitFor();
         } catch(Exception e) {
-            error = "Failed to run ANTLR with exception:\n"+e.getLocalizedMessage();
+            error = "Failed to run ANTLR with exception:\n"+e.toString();
         } finally {
             removeProcess();
         }
@@ -158,7 +158,7 @@ public class EngineRuntime {
             new StreamWatcher(p.getInputStream(), "Java[stdout]", delegate).start();
             result = p.waitFor();
         } catch(Exception e) {
-            error = "Failed to run Java with exception:\n"+e.getLocalizedMessage();
+            error = "Failed to run Java with exception:\n"+e.toString();
         } finally {
             removeProcess();
         }
@@ -234,10 +234,10 @@ public class EngineRuntime {
             }
 
         } catch(Error e) {
-            error = "Compiler error:\n"+e.getLocalizedMessage();
+            error = "Compiler error:\n"+e.toString();
             e.printStackTrace();
         } catch(Exception e) {
-            error = "Compiler exception:\n"+e.getLocalizedMessage();
+            error = "Compiler exception:\n"+e.toString();
             e.printStackTrace();
         } finally {
             removeProcess();

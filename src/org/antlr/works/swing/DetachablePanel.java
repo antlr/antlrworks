@@ -92,9 +92,9 @@ public class DetachablePanel extends JPanel {
         box.add(detach = createDetachButton());
 
         titlePanel = new TitlePanel();
-        titlePanel.setPreferredSize(new Dimension(0, 15));
         titlePanel.setMinimumSize(new Dimension(0, 15));
         titlePanel.setMaximumSize(new Dimension(0, 15));
+        titlePanel.setPreferredSize(new Dimension(0, 15));
         titlePanel.add(box);
 
         super.add(titlePanel, BorderLayout.NORTH);

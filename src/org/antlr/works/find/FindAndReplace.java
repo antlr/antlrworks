@@ -73,7 +73,7 @@ public class FindAndReplace implements XJFrameDelegate {
         try {
             p = Pattern.compile(getCompilableString(), flags);
         } catch(Exception e) {
-            XJAlert.display(dialog.getJFrame(), "Regex Find", "Pattern error:\n"+e.getLocalizedMessage());
+            XJAlert.display(dialog.getJFrame(), "Regex Find", "Pattern error:\n"+e.toString());
         }
         return p;
     }

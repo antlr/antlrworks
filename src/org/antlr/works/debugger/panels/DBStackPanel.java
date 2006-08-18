@@ -60,6 +60,7 @@ public class DBStackPanel extends DetachablePanel {
 
         JScrollPane infoScrollPane = new JScrollPane(infoTable);
         infoScrollPane.setWheelScrollingEnabled(true);
+        infoTable.getParent().setBackground(Color.white);
 
         mainPanel.add(infoScrollPane, BorderLayout.CENTER);
     }

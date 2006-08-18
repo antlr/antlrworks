@@ -60,6 +60,8 @@ public class DialogAbout extends XJPanel {
         versionLabel.setText("Version "+XJApplication.getAppVersionLong());
 
         infoTable.setModel(tableModel);
+        infoTable.getParent().setBackground(Color.white);
+        
         tableModel.addInfo("ANTLRWorks", XJApplication.getAppVersionShort());
         if(IDE.isPlugin()) {
             tableModel.addInfo("ANTLRWorks Plugin", IDE.getPluginVersionShort());

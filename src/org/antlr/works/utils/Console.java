@@ -43,5 +43,5 @@ public interface Console {
 
     public void println(String s);
     public void println(String s, int level);
-    public void print(Exception e);
+    public void print(Throwable e);
 }

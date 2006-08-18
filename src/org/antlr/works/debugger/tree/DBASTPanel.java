@@ -87,10 +87,12 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
 
         JScrollPane rulesScrollPane = new JScrollPane(rulesTable);
         rulesScrollPane.setWheelScrollingEnabled(true);
+        rulesTable.getParent().setBackground(Color.white);
         tablesSplitPane.setLeftComponent(rulesScrollPane);
 
         JScrollPane rootsScrollPane = new JScrollPane(rootsTable);
         rootsScrollPane.setWheelScrollingEnabled(true);
+        rootsTable.getParent().setBackground(Color.white);
         tablesSplitPane.setRightComponent(rootsScrollPane);
 
         tableTreeSplitPane.setLeftComponent(tablesSplitPane);

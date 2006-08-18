@@ -316,7 +316,10 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
                 errorMessage = codeGenerator.getLastError();
         } catch (Exception e) {
             debugger.getConsole().print(e);
-            errorMessage = e.getLocalizedMessage();
+            errorMessage = e.toString();
+        } catch (OutOfMemoryError e) {
+            debugger.getConsole().print(e);
+            errorMessage = e.toString();
         }
 
         if(errorMessage != null) {
@@ -359,7 +362,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
         } catch(Exception e) {
             debugger.getConsole().print(e);
-            reportError("Error while generating the glue-code:\n"+e.getLocalizedMessage());
+            reportError("Error while generating the glue-code:\n"+e.toString());
         }
     }
 
@@ -378,7 +381,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             XJUtils.writeStringToFile(getInputText(), fileRemoteParserInputText);
         } catch (IOException e) {
             debugger.getConsole().print(e);
-            reportError("Error while generating the input text:\n"+e.getLocalizedMessage());
+            reportError("Error while generating the input text:\n"+e.toString());
         }
     }
 
@@ -403,7 +406,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         if(!checkForLaunch())
             return false;
 
-        String classPath = EngineRuntime.getClassPath(outputFileDir);        
+        String classPath = EngineRuntime.getClassPath(outputFileDir);
         IDE.debugVerbose(debugger.getConsole(), getClass(), "Launch with path: "+classPath);
 
         try {
@@ -411,7 +414,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher", debugger.getOutputPanel()).start();
             new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher", debugger.getOutputPanel()).start();
         } catch (IOException e) {
-            reportError("Cannot launch the remote parser:\n"+e.getLocalizedMessage());
+            reportError("Cannot launch the remote parser:\n"+e.toString());
             return false;
         }
 

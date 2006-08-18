@@ -1,14 +1,18 @@
 
 Version 1.0ea12 - 
 
+- IntelliJ plugin integration
 - improved debugger UI with detachable panels
 - improved speed when checking grammar (delay creation of error paths when the user clicks on a rule)
 - prefs: can specify now ANTLR 3 classpath
 - handle NonRegularDecisionMessage errors
+- display Out Of Memory error
 - rules are sorted in the debugger input dialog
 - do not analyze the grammar when debugging remotely
 - mark the grammar as dirty if the file is modified outside ANTLRWorks
 - resize view when graphic elements are moved (DFA decision, etc)
+- toggle buttons in toolbar are now correctly selected/deselected
+- list have now a white background on Windows/Linux
 - fixed a bug that would prevent small error paths from being displayed in the syntax diagram
 - fixed a bug where performing some menu commands would failed on Windows/Linux (mostly cut and paste)
 - fixed a bug where dialogs would not be displayed in the same screen as the parent frame

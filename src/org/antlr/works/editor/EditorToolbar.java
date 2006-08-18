@@ -50,9 +50,9 @@ public class EditorToolbar implements XJNotificationObserver {
     public JButton forward;
 
     public JToggleButton sort;
-    public JButton sd;
-    public JButton coloring;
-    public JButton ideas;
+    public JToggleButton sd;
+    public JToggleButton coloring;
+    public JToggleButton ideas;
 
     public JButton find;
 
@@ -88,9 +88,9 @@ public class EditorToolbar implements XJNotificationObserver {
         toolbar = Box.createHorizontalBox();
         toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
         toolbar.add(Box.createHorizontalStrut(5));
-        toolbar.add(sd = (JButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Toggle Syntax diagram", false));
-        toolbar.add(coloring = (JButton)createNewButton(IconManager.shared().getIconColoring(), "Toggle Syntax coloring", false));
-        toolbar.add(ideas = (JButton)createNewButton(IconManager.shared().getIconIdea(), "Toggle Syntax ideas", false));
+        toolbar.add(sd = (JToggleButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Toggle Syntax diagram", true));
+        toolbar.add(coloring = (JToggleButton)createNewButton(IconManager.shared().getIconColoring(), "Toggle Syntax coloring", true));
+        toolbar.add(ideas = (JToggleButton)createNewButton(IconManager.shared().getIconIdea(), "Toggle Syntax ideas", true));
         toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(sort = (JToggleButton)createNewButton(IconManager.shared().getIconSort(), "Toggle Sort rules", true));
         toolbar.add(find = (JButton)createNewButton(IconManager.shared().getIconFind(), "Find text", false));
@@ -103,6 +103,9 @@ public class EditorToolbar implements XJNotificationObserver {
 
     public void awake() {
         editor.rules.setSorted(AWPrefs.getPreferences().getBoolean(AWPrefs.PREF_TOOLBAR_SORT, false));
+        sd.setSelected(true);
+        coloring.setSelected(true);
+        ideas.setSelected(true);
     }
 
     public void addActions() {

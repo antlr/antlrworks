@@ -108,6 +108,7 @@ public class AWTreePanel extends JPanel {
 
         JScrollPane scrollPane = new JScrollPane(tree);
         scrollPane.setWheelScrollingEnabled(true);
+        scrollPane.setBackground(Color.white);
 
         Box box = Box.createHorizontalBox();
         box.add(createExpandAllButton());

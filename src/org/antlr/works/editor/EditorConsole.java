@@ -132,7 +132,7 @@ public class EditorConsole extends EditorTab implements Console {
             editor.consolePrint(s, level);
     }
 
-    public synchronized void print(Exception e) {
+    public synchronized void print(Throwable e) {
         println(XJUtils.stackTrace(e), Console.LEVEL_ERROR);
     }
 
