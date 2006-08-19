@@ -102,9 +102,9 @@ public class DetachablePanel extends JPanel {
 
     public JButton createDetachButton() {
         JButton detach = new JButton(IconManager.shared().getIconDetach());
-        detach.setBorderPainted(false);
         detach.setBorder(null);
         detach.setOpaque(false);
+        detach.setFocusable(false);
 
         detach.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

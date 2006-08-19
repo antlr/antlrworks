@@ -1,5 +1,6 @@
 package org.antlr.works.engine;
 
+import edu.usfca.xj.foundation.XJSystem;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.IDE;
 import org.antlr.works.prefs.AWPrefs;
@@ -81,7 +82,13 @@ public class EngineRuntime {
 
         classPath += File.pathSeparatorChar+".";
 
-        return Utils.quotePath(classPath);
+        // On Mac OS X, quoting the path works fine except within IntelliJ when
+        // AW is working as a plugin. Without quoting, it works everywhere in Mac
+        // OS X so I decided to quote only on Windows.
+        if(XJSystem.isWindows())
+            return Utils.quotePath(classPath);
+        else
+            return classPath;
     }
 
     public static String runANTLR(Console console, String file, String libPath, String outputPath, StreamWatcherDelegate delegate) {

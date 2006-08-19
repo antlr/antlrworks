@@ -4,7 +4,6 @@
 - plugin: implement undo in PluginXJFrameInterface
 - plugin: put strings in properties file
 - new icon for syntax coloring
-- windows: attach icon is too small (header is too small)
 
 * Prio 2
 - optimize tree drawing using incremental model (see AWTreeGraphView)

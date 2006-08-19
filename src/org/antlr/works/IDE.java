@@ -67,7 +67,6 @@ import org.antlr.works.utils.Utils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -234,14 +233,15 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
                 return null;
             } else {
                 // Remove the class fully qualified path from the path
-                URI uri = URI.create(url.toString());
-                p = uri.getPath();
+                p = url.getPath();
                 p = p.substring(0, p.length()-name.length());
             }
         } else {
-            URI uri = URI.create(url.toString());
-            p = uri.getPath();
+            p = url.getPath();
         }
+
+        if(p.startsWith("jar:"))
+            p = p.substring("jar:".length());
 
         if(p.startsWith("file:"))
             p = p.substring("file:".length());
