@@ -1,7 +1,6 @@
 
 * Prio 1
 
-- new icon for syntax coloring
 - plugin: implement undo in PluginXJFrameInterface
 - plugin: put strings in properties file
 

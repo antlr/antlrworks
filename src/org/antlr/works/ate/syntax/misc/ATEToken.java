@@ -44,8 +44,7 @@ public class ATEToken implements Comparable {
     /** These two fiels are public because ATEPanel needs to access them
      * really quickly without using accessors. If anything needs to be changed,
      * modify the adjustTokens() method of ATEPanel.
-     */
-    
+     */    
     public int start;
     public int end;
 

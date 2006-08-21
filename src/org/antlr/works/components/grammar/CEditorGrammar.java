@@ -896,7 +896,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     /** Parser delegate methods
      */
-    public void ateParserWillParse() {
+    public void ateParserWillParse() {                  
         persistence.store();
     }
 

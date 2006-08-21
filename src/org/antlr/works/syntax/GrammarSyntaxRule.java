@@ -54,8 +54,11 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
     public boolean breakpoint = false;
 
     public boolean lexer = false;
+
     // Flag if a rule has a single left recursion that can be removed by ANTLRWorks
     public boolean hasLeftRecursion = false;
+    public boolean leftRecursionAnalyzed = false;
+
     // Set of rules that are mutually left recursive (cannot be fixed by ANTLRWorks)
     public Set leftRecursiveRulesSet;
 
@@ -83,7 +86,8 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
 
     public void completed() {
         // Called when the rule has been completely parsed
-        this.hasLeftRecursion = detectLeftRecursion();
+        // Do not analyze the left recursion now, but on-demand.
+        leftRecursionAnalyzed = false;
     }
 
     public void setReferencesIndexes(int startIndex, int endIndex) {
@@ -207,6 +211,10 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
     }
 
     public boolean hasLeftRecursion() {
+        if(!leftRecursionAnalyzed) {
+            leftRecursionAnalyzed = true;
+            hasLeftRecursion = detectLeftRecursion();
+        }
         return hasLeftRecursion;
     }
 

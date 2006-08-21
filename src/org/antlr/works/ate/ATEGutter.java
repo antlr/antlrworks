@@ -46,30 +46,31 @@ import java.util.List;
 
 public class ATEGutter extends JComponent {
 
-    public static final int BREAKPOINT_WIDTH = 9;
-    public static final int BREAKPOINT_HEIGHT = 9;
-    public static final int FOLDING_ICON_WIDTH = 9;
-    public static final int FOLDING_ICON_HEIGHT = 9;
+    private static final int BREAKPOINT_WIDTH = 9;
+    private static final int BREAKPOINT_HEIGHT = 9;
+    private static final int FOLDING_ICON_WIDTH = 9;
+    private static final int FOLDING_ICON_HEIGHT = 9;
 
-    public static final int OFFSET_FROM_TEXT = 2;
+    private static final int OFFSET_FROM_TEXT = 2;
 
-    protected static final Color BACKGROUND_COLOR = new Color(240,240,240);
-    protected static final Stroke FOLDING_DASHED_STROKE = new BasicStroke(0.0f, BasicStroke.CAP_BUTT,
+    private static final Color BACKGROUND_COLOR = new Color(240,240,240);
+    private static final Stroke FOLDING_DASHED_STROKE = new BasicStroke(0.0f, BasicStroke.CAP_BUTT,
                                                     BasicStroke.JOIN_MITER, 1.0f, new float[] { 1.0f}, 0.0f);
 
-    protected ATEPanel textEditor;
+    private ATEPanel textEditor;
 
-    protected List breakpoints = new ArrayList();
+    private List breakpoints = new ArrayList();
 
-    protected List foldingInfos = new ArrayList();
-    protected boolean foldingEnabled = false;
+    private List foldingInfos = new ArrayList();
+    private boolean foldingEnabled = false;
 
-    protected Image collapseDown;
-    protected Image collapseUp;
-    protected Image collapse;
-    protected Image expand;
-
-    protected boolean dirty = true;
+    private Image collapseDown;
+    private Image collapseUp;
+    private Image collapse;
+    private Image expand;
+    private Image delimiter;
+    private Image delimiterUp;
+    private Image delimiterDown;
 
     public ATEGutter(ATEPanel textEditor) {
         this.textEditor = textEditor;
@@ -78,6 +79,9 @@ public class ATEGutter extends JComponent {
         collapseUp = IconManager.shared().getIconCollapseUp().getImage();
         collapse = IconManager.shared().getIconCollapse().getImage();
         expand = IconManager.shared().getIconExpand().getImage();
+        delimiter = IconManager.shared().getIconDelimiter().getImage();
+        delimiterUp = IconManager.shared().getIconDelimiterUp().getImage();
+        delimiterDown = IconManager.shared().getIconDelimiterDown().getImage();
 
         addMouseListener(new MyMouseAdapter());
         addMouseMotionListener(new MyMouseMotionAdapter());
@@ -89,7 +93,6 @@ public class ATEGutter extends JComponent {
     }
 
     public void markDirty() {
-        dirty = true;
         repaint();
     }
 
@@ -199,10 +202,7 @@ public class ATEGutter extends JComponent {
 
         paintGutter(g, r);
 
-        if(dirty) {
-            updateInfo(r);
-            //dirty = false;
-        }
+        updateInfo(r);
 
         paintFolding((Graphics2D)g, r);
         paintBreakpoints((Graphics2D)g, r);
@@ -261,15 +261,12 @@ public class ATEGutter extends JComponent {
             } else {
                 drawFoldingLine(g, top, bottom);
 
-                g.setColor(Color.white);
-                g.fill(info.top_r);
-                g.setColor(Color.lightGray);
-                g.draw(info.top_r);
-
-                g.setColor(Color.white);
-                g.fill(info.bottom_r);
-                g.setColor(Color.lightGray);
-                g.draw(info.bottom_r);
+                if(top.equals(bottom)) {
+                    drawCenteredImageAtPoint(g, delimiter, top);
+                } else {
+                    drawCenteredImageAtPoint(g, delimiterUp, top);
+                    drawCenteredImageAtPoint(g, delimiterDown, bottom);
+                }
             }
         }
     }

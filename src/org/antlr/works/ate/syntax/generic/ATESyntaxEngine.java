@@ -32,15 +32,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.ate.syntax.generic;
 
 import org.antlr.works.ate.ATEPanel;
-import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
-import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ATESyntaxEngine extends ATEThread {
+public abstract class ATESyntaxEngine {
 
     protected ATEPanel textEditor;
 
@@ -54,8 +52,6 @@ public abstract class ATESyntaxEngine extends ATEThread {
     public ATESyntaxEngine() {
         lexer = createLexer();
         parser = createParser();
-
-        start();
     }
 
     public void setTextEditor(ATEPanel textEditor) {
@@ -76,10 +72,6 @@ public abstract class ATESyntaxEngine extends ATEThread {
 
     public synchronized int getMaxLines() {
         return lexer.getLineNumber();
-    }
-
-    public void parse() {
-        awakeThread(delay);
     }
 
     protected synchronized void lexerDidRun(ATESyntaxLexer lexer) {
@@ -113,18 +105,6 @@ public abstract class ATESyntaxEngine extends ATEThread {
         textEditor.ateEngineWillParse();
         processSyntax();
         textEditor.ateEngineDidParse();
-    }
-
-    public void threadRun() throws Exception {
-        textEditor.ateEngineWillParse();
-
-        processSyntax();
-        
-        SwingUtilities.invokeAndWait(new Runnable() {
-            public void run() {
-                textEditor.ateEngineDidParse();
-            }
-        });
     }
 
 }

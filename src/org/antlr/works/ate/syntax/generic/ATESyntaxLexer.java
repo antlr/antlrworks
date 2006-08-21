@@ -192,13 +192,6 @@ public class ATESyntaxLexer {
         return valid;
     }
 
-    private char getChar(int index) {
-        if(position+index<text.length())
-            return text.charAt(position+index);
-        else
-            return 0;
-    }
-
     public boolean matchNewLine() {
         if(c0 == '\n') return true;    // Unix style
         else if(c0 == '\r' && c1 == '\n') return true;    // Windows style

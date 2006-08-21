@@ -38,10 +38,10 @@ import java.util.Map;
 public class IconManager {
 
     // @todo replace this with run-time location ?
-    public static final String path = "org/antlr/works/icons/";
+    private static final String path = "org/antlr/works/icons/";
 
-    protected static IconManager shared = null;
-    protected static Map cache = new HashMap();
+    private static IconManager shared = null;
+    private static Map cache = new HashMap();
 
     public static synchronized IconManager shared() {
         if(shared == null)
@@ -72,10 +72,6 @@ public class IconManager {
         return createImageIcon(path+"app_16x16.png");
     }
 
-    public ImageIcon getIconHiddenAction() {
-        return createImageIcon(path+"hidden_action.png");
-    }
-
     public ImageIcon getIconWarning() {
         return createImageIcon(path+"warning.png");
     }
@@ -102,18 +98,6 @@ public class IconManager {
 
     public ImageIcon getIconIdea() {
         return createImageIcon(path+"warning.png");
-    }
-
-    public ImageIcon getIconTips() {
-        return createImageIcon(path+"tips.png");
-    }
-
-    public ImageIcon getIconUnderlying() {
-        return createImageIcon(path+"underlying.png");
-    }
-
-    public ImageIcon getIconAnalysis() {
-        return createImageIcon(path+"analysis.png");
     }
 
     public ImageIcon getIconFind() {
@@ -168,6 +152,18 @@ public class IconManager {
         return createImageIcon(path+"expand.png");
     }
 
+    public ImageIcon getIconDelimiter() {
+        return createImageIcon(path+"delimiter.png");
+    }
+
+    public ImageIcon getIconDelimiterUp() {
+        return createImageIcon(path+"delimiterup.png");
+    }
+
+    public ImageIcon getIconDelimiterDown() {
+        return createImageIcon(path+"delimiterdown.png");
+    }
+
     public ImageIcon getIconStop() {
         return createImageIcon(path+"stop.png");
     }
@@ -194,10 +190,6 @@ public class IconManager {
 
     public ImageIcon getIconFastForward() {
         return createImageIcon(path+"fastforward.png");
-    }
-
-    public ImageIcon getIconTokens() {
-        return createImageIcon(path+"tokens.png");
     }
 
     public ImageIcon getIconParser() {
