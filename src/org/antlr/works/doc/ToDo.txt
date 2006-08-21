@@ -1,11 +1,16 @@
 
 * Prio 1
 
+- new icon for syntax coloring
 - plugin: implement undo in PluginXJFrameInterface
 - plugin: put strings in properties file
-- new icon for syntax coloring
+
+not used, to delete later:
+- ATELabelView
+- ATEParagraphView
 
 * Prio 2
+- visualdrawing: exception display in console configurable in prefs?
 - optimize tree drawing using incremental model (see AWTreeGraphView)
 - make breakpoint in grammar and stop around this location (line, column)
 - be able to search the generated grammar too

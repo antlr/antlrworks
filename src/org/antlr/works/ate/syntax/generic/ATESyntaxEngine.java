@@ -32,7 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.ate.syntax.generic;
 
 import org.antlr.works.ate.ATEPanel;
-import org.antlr.works.ate.swing.ATEStyledDocument;
 import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
@@ -97,12 +96,6 @@ public abstract class ATESyntaxEngine extends ATEThread {
 
     }
 
-    public void colorizeToken(ATEToken token, ATEStyledDocument doc) {
-        AttributeSet attr = getAttributeForToken(token);
-        if(attr != null)
-            doc.setCharacterAttributes(token.getStartIndex(), token.getEndIndex()-token.getStartIndex(), attr, false);
-    }
-
     public void processSyntax() {
         // First run the lexer
         lexer.tokenize(textEditor.getTextPane().getText());
@@ -114,6 +107,12 @@ public abstract class ATESyntaxEngine extends ATEThread {
             parser.parse(tokens);
             parserDidRun(parser);
         }
+    }
+
+    public void process() {
+        textEditor.ateEngineWillParse();
+        processSyntax();
+        textEditor.ateEngineDidParse();
     }
 
     public void threadRun() throws Exception {

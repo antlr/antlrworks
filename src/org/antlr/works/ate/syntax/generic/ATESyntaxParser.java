@@ -36,9 +36,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public abstract class ATESyntaxParser {
 
-    protected List tokens;
-    protected int position;
-    protected int mark;
+    private List tokens;
+    private int position;
+    private int mark;
+
+    private ATEToken t0;
+    private ATEToken t1;
 
     public ATESyntaxParser() {
     }
@@ -47,6 +50,7 @@ public abstract class ATESyntaxParser {
         position = -1;
         mark = -1;
         this.tokens = tokens;
+        clearTokenCache();
         parseTokens();
     }
 
@@ -62,15 +66,18 @@ public abstract class ATESyntaxParser {
 
     public void rewind() {
         position = mark;
+        clearTokenCache();
     }
 
     public boolean previousToken() {
         position--;
+        clearTokenCache();
         return position >= 0;
     }
 
     public boolean nextToken() {
         position++;
+        clearTokenCache();
         return position<tokens.size();
     }
 
@@ -81,10 +88,28 @@ public abstract class ATESyntaxParser {
     }
     
     public ATEToken T(int index) {
+        if(index == 0) {
+            if(t0 == null)
+                t0 = getToken(0);
+            return t0;
+        } else if(index == 1) {
+            if(t1 == null)
+                t1 = getToken(1);
+            return t1;
+        } else
+            return getToken(index);
+    }
+
+    public ATEToken getToken(int index) {
         if(position+index >= 0 && position+index < tokens.size())
             return (ATEToken)tokens.get(position+index);
         else
             return null;
+    }
+
+    private void clearTokenCache() {
+        t0 = null;
+        t1 = null;
     }
 
     public boolean isChar(int index, String c) {

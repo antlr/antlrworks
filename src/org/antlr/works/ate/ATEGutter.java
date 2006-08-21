@@ -84,7 +84,8 @@ public class ATEGutter extends JComponent {
     }
 
     public void setFoldingEnabled(boolean foldingEnabled) {
-        this.foldingEnabled = foldingEnabled;
+        // @todo currently disabled
+        //this.foldingEnabled = foldingEnabled;
     }
 
     public void markDirty() {
@@ -246,14 +247,7 @@ public class ATEGutter extends JComponent {
             Point bottom = info.bottom;
             if(foldingEnabled && info.entity.foldingEntityCanBeCollapsed()) {
                 if(info.entity.foldingEntityIsExpanded()) {
-                    g.setColor(Color.white);
-                    g.drawLine(top.x, top.y, bottom.x, bottom.y);
-
-                    Stroke s = g.getStroke();
-                    g.setStroke(FOLDING_DASHED_STROKE);
-                    g.setColor(Color.black);
-                    g.drawLine(top.x, top.y, bottom.x, bottom.y);
-                    g.setStroke(s);
+                    drawFoldingLine(g, top, bottom);
 
                     if(top.equals(bottom)) {
                         drawCenteredImageAtPoint(g, collapse, top);
@@ -265,12 +259,30 @@ public class ATEGutter extends JComponent {
                     drawCenteredImageAtPoint(g, expand, top);
                 }
             } else {
+                drawFoldingLine(g, top, bottom);
+
                 g.setColor(Color.white);
                 g.fill(info.top_r);
                 g.setColor(Color.lightGray);
                 g.draw(info.top_r);
+
+                g.setColor(Color.white);
+                g.fill(info.bottom_r);
+                g.setColor(Color.lightGray);
+                g.draw(info.bottom_r);
             }
         }
+    }
+
+    private void drawFoldingLine(Graphics2D g, Point top, Point bottom) {
+        g.setColor(Color.white);
+        g.drawLine(top.x, top.y, bottom.x, bottom.y);
+
+        Stroke s = g.getStroke();
+        g.setStroke(FOLDING_DASHED_STROKE);
+        g.setColor(Color.black);
+        g.drawLine(top.x, top.y, bottom.x, bottom.y);
+        g.setStroke(s);
     }
 
     public Dimension getPreferredSize() {
@@ -335,6 +347,9 @@ public class ATEGutter extends JComponent {
 
     protected class MyMouseMotionAdapter extends MouseMotionAdapter {
         public void mouseMoved(MouseEvent e) {
+            if(!foldingEnabled)
+                return;
+
             FoldingInfo info = getFoldingInfoAtPoint(e.getPoint());
             if(info != null && info.entity.foldingEntityCanBeCollapsed())
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

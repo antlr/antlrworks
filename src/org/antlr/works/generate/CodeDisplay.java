@@ -33,6 +33,7 @@ package org.antlr.works.generate;
 
 import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.TextUtils;
@@ -46,11 +47,12 @@ public class CodeDisplay extends EditorTab {
 
     public CodeDisplay(XJFrameInterface parentFrame) {
         textEditor = new ATEPanel(parentFrame);
-        //textEditor.setParserEngine(new ATEJavaSyntaxEngine());
-        textEditor.setSyntaxColoring(false);
+        textEditor.setParserEngine(new ATEJavaSyntaxEngine());
+        textEditor.setSyntaxColoring(true);
         textEditor.setAnalysisColumnVisible(false);
-        //textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
+        textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
         textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
+        textEditor.setEditable(false);
         applyFont();
     }
 

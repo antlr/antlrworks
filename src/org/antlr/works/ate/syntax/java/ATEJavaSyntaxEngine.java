@@ -37,8 +37,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ATEJavaSyntaxEngine extends ATELanguageSyntaxEngine {
 
-    public Set getKeywords() {
-        Set s = new HashSet();
+    private static final Set s;
+
+    static {
+        s = new HashSet();
         s.add("package");
         s.add("import");
         s.add("synchronized");
@@ -77,6 +79,9 @@ public class ATEJavaSyntaxEngine extends ATELanguageSyntaxEngine {
         s.add("break");
         s.add("finally");
         s.add("do");
+    }
+
+    public Set getKeywords() {
         return s;
     }
 

@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.syntax;
 
-import org.antlr.works.ate.swing.ATEStyledDocument;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
@@ -89,6 +88,14 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         StyleConstants.setItalic(attr, AWPrefs.getSyntaxItalic(identifier));
     }
 
+    public ATESyntaxLexer createLexer() {
+        return new GrammarSyntaxLexer();
+    }
+
+    public ATESyntaxParser createParser() {
+        return new GrammarSyntaxParser();
+    }
+
     public void refreshColoring() {
         super.refreshColoring();
 
@@ -96,14 +103,6 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         applyAttribute(lexerRefAttr, AWPrefs.PREF_SYNTAX_LEXER);
         applyAttribute(labelAttr, AWPrefs.PREF_SYNTAX_LABEL);
         applyAttribute(actionRefAttr, AWPrefs.PREF_SYNTAX_REFS);
-    }
-
-    public ATESyntaxLexer createLexer() {
-        return new GrammarSyntaxLexer();
-    }
-
-    public ATESyntaxParser createParser() {
-        return new GrammarSyntaxParser();
     }
 
     public AttributeSet getAttributeForToken(ATEToken token) {
@@ -122,39 +121,6 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
                 break;
         }
         return attr;
-    }
-
-    public void colorizeToken(ATEToken token, ATEStyledDocument doc) {
-        super.colorizeToken(token, doc);
-
-        /** Colorize now all internal tokens of a block. We have to do
-         * the colorization here by hand because they are internal tokens
-         * not included in the global stream of tokens.
-         */
-
-        if(token.type != GrammarSyntaxLexer.TOKEN_BLOCK)
-            return;
-
-        GrammarSyntaxToken t = (GrammarSyntaxToken)token;
-        List internalTokens = t.internalTokens;
-        if(internalTokens == null || internalTokens.isEmpty())
-            return;
-
-        for(int i=0; i<internalTokens.size(); i++) {
-            ATEToken it = (ATEToken)internalTokens.get(i);
-
-            AttributeSet attr;
-            if(it.getAttribute().equals("$") || it.getAttribute().equals("%"))
-                attr = actionRefAttr;
-            else
-                attr = getAttributeForToken(it);
-
-            if(attr != null)
-                doc.setCharacterAttributes(it.getStartIndex(),
-                                            it.getEndIndex()-it.getStartIndex(),
-                                            attr, false);
-        }
-
     }
 
     public static void setDelay(int delay) {

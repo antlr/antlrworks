@@ -127,6 +127,10 @@ public class AWPrefsDialog extends XJPanel {
             editorFontCombo.addItem(fontNames[i]);
         }
 
+        // @todo currently disabled because of the new syntax coloring mechanism (ATEColoringView)
+        foldingButton.setEnabled(false);
+        actionsFoldingAnchorsButton.setEnabled(false);
+
         getPreferences().bindToPreferences(autoSaveButton, AWPrefs.PREF_AUTOSAVE_ENABLED, false);
         getPreferences().bindToPreferences(autoSaveDelayField, AWPrefs.PREF_AUTOSAVE_DELAY, 5);
         getPreferences().bindToPreferences(highlightCursorLineButton, AWPrefs.PREF_HIGHLIGHTCURSORLINE, true);
@@ -633,7 +637,7 @@ public class AWPrefsDialog extends XJPanel {
                         tabEditor.add(tabWidthField, cc.xy(5, 15));
 
                         //---- label22 ----
-                        label22.setText("Parser delay:");
+                        label22.setText("Update delay:");
                         tabEditor.add(label22, cc.xy(3, 17));
 
                         //---- parserDelayField ----

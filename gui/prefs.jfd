@@ -774,7 +774,7 @@
                 <string>javax.swing.JLabel</string> 
                 <void method="setProperty"> 
                  <string>text</string> 
-                 <string>Parser delay:</string> 
+                 <string>Update delay:</string> 
                 </void> 
                 <void property="name"> 
                  <string>label22</string> 

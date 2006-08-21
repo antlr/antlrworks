@@ -9,12 +9,9 @@ import org.antlr.works.ate.breakpoint.ATEBreakpointManager;
 import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
 import org.antlr.works.ate.folding.ATEFoldingManager;
 import org.antlr.works.ate.swing.ATEAutoIndentation;
-import org.antlr.works.ate.swing.ATEImmediateColoring;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
-import org.antlr.works.ate.syntax.misc.ATEColoring;
 import org.antlr.works.ate.syntax.misc.ATELine;
-import org.antlr.works.ate.syntax.misc.ATEToken;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -76,14 +73,13 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected ATEUnderlyingManager underlyingManager;
     protected ATEAnalysisManager analysisManager;
 
-    protected ATEColoring colorize;
     protected ATESyntaxEngine engine;
     protected ATEAutoIndentation autoIndent;
-    protected ATEImmediateColoring immediateSyntaxColoring;
 
     protected TextPaneListener textPaneListener;
 
     protected boolean isTyping = false;
+    protected boolean syntaxColoring = false;
     protected int caretPosition;
 
     protected static final String unixEndOfLine = "\n";
@@ -92,9 +88,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     public ATEPanel(XJFrameInterface parentFrame) {
         super(new BorderLayout());
         this.parentFrame = parentFrame;
-        colorize = new ATEColoring(this);
         autoIndent = new ATEAutoIndentation(this);
-        immediateSyntaxColoring = new ATEImmediateColoring(this);
         createTextPane();
     }
 
@@ -105,7 +99,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     public void setParserEngine(ATESyntaxEngine engine) {
         this.engine = engine;
         this.engine.setTextEditor(this);
-        this.colorize.setSyntaxEngine(engine);
+        this.engine.refreshColoring();
     }
 
     public ATESyntaxEngine getParserEngine() {
@@ -134,6 +128,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public ATEAnalysisManager getAnalysisManager() {
         return analysisManager;
+    }
+
+    public void setEditable(boolean flag) {
+        textPane.setEditable(flag);
     }
 
     public void setAutoIndent(boolean flag) {
@@ -230,16 +228,13 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         setAnalysisColumnVisible(!isAnalysisColumnVisible());
     }
 
-    public void resetColoring() {
-        colorize.reset();
-    }
-
     public void setSyntaxColoring(boolean flag) {
-        colorize.setEnable(flag);
+        this.syntaxColoring = flag;
+        textPane.repaint();
     }
 
     public boolean isSyntaxColoring() {
-        return colorize.isEnable();
+        return syntaxColoring;
     }
 
     public ATEKeyBindings getKeyBindings() {
@@ -248,21 +243,21 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public void toggleSyntaxColoring() {
         setSyntaxColoring(!isSyntaxColoring());
-        if(colorize.isEnable()) {
-            colorize.reset();
-            colorize.colorize();
-        } else
-            colorize.removeColorization();
+    }
+
+    public void damage() {
+        if(underlyingManager != null)
+            underlyingManager.reset();
+
+        if(gutter != null)
+            gutter.markDirty();
     }
 
     public void refresh() {
-        if(underlyingManager != null)
-            underlyingManager.reset();
-        
-        if(gutter != null)
-            gutter.markDirty();
+        damage();
 
-        colorize.refresh();
+        if(engine != null)
+            engine.refreshColoring();
 
         repaint();
     }
@@ -359,7 +354,6 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             textPane.setText(text);
             if(engine != null)
                 engine.processSyntax();
-            colorize.processColorize(true);
 
             textPane.setCaretPosition(0);
             textPane.moveCaretPosition(0);
@@ -468,7 +462,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public void parse() {
         if(engine != null)
-            engine.parse();
+            engine.process();
     }
 
     public void ateEngineWillParse() {
@@ -477,7 +471,6 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public void ateEngineDidParse() {
-        colorize.colorize();
         if(delegate != null)
             delegate.ateParserDidParse();
     }
@@ -542,40 +535,6 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             return enable == 0;
         }
 
-        /** This method shifts every offset past the location in order
-         *  for collapsed view to be correctly rendered (the rule has to be
-         *  immediately at the correct position and cannot wait for the
-         *  parser to finish)
-         *  We are also accessing the Token start and end field directly in
-         *  order to avoid the overhead of method calling.
-         */
-
-        protected void adjustTokens(int location, int length) {
-            if(location == -1)
-                return;
-
-            List tokens = getTokens();
-            if(tokens == null)
-                return;
-
-            int max = tokens.size();
-            for(int t=0; t<max; t++) {
-                ATEToken token = (ATEToken) tokens.get(t);
-
-                /** Mark as modified the token at the current modification location. See comments
-                 * in ATEColoring about this modified field.
-                 */
-
-                if(location >= token.start && location <= token.end)
-                    token.modified = true;
-
-                if(token.start > location) {
-                    token.start += length;
-                    token.end += length;
-                }
-            }
-        }
-
         public void changeUpdate(int offset, int length, boolean insert) {
             if(isEnable()) {
                 if(delegate != null)
@@ -583,12 +542,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
                 if(insert) {
                     autoIndent.indent(offset, length);
-                    if(colorize.isEnable())
-                        immediateSyntaxColoring.colorize(offset, length);
                 }
 
-                adjustTokens(offset, length);
-                colorize.setColorizeLocation(offset, length);
                 changeOccurred();
             }
         }

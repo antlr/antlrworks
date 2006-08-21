@@ -1,5 +1,6 @@
 package org.antlr.works.ate.swing;
 
+import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATETextPane;
 
 import javax.swing.text.*;
@@ -36,10 +37,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ATECustomEditorKit extends StyledEditorKit implements ViewFactory {
 
-    public ATETextPane textPane;
+    private ATETextPane textPane;
+    private ATEPanel textEditor;
 
-    public ATECustomEditorKit(ATETextPane textPane) {
+    public ATECustomEditorKit(ATETextPane textPane, ATEPanel textEditor) {
         this.textPane = textPane;
+        this.textEditor = textEditor;
     }
 
     public ViewFactory getViewFactory() {
@@ -51,7 +54,7 @@ public class ATECustomEditorKit extends StyledEditorKit implements ViewFactory {
     }
 
     public View create(Element elem) {
-        String kind = elem.getName();
+        /*String kind = elem.getName();
         
         if(AbstractDocument.ParagraphElementName.equals(kind))
             return new ATEParagraphView(elem, textPane);
@@ -59,6 +62,7 @@ public class ATECustomEditorKit extends StyledEditorKit implements ViewFactory {
         if(AbstractDocument.ContentElementName.equals(kind))
             return new ATELabelView(elem, textPane);
 
-        return super.getViewFactory().create(elem);
+        return super.getViewFactory().create(elem);*/
+        return new ATERenderingView(elem, textEditor);
     }
 }

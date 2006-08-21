@@ -35,6 +35,7 @@ public abstract class ATEThread implements Runnable {
 
     protected int threadSleep = 100;
     protected int threshold = 0;
+    protected int default_threshold = 250;
     protected boolean running = false;
     protected boolean run = false;
     protected Thread thread = null;
@@ -42,6 +43,10 @@ public abstract class ATEThread implements Runnable {
     protected boolean skip = false;
 
     public ATEThread() {
+    }
+
+    public void setDefaultThreshold(int threshold) {
+        this.default_threshold = threshold;
     }
 
     public synchronized void setRunning(boolean flag) {
@@ -89,6 +94,9 @@ public abstract class ATEThread implements Runnable {
      * additionnal 'threshold' ms until no other awakeThread() is called
      * before trying to compute something.
      */
+    public synchronized void awakeThread() {
+        awakeThread(default_threshold);
+    }
 
     public synchronized void awakeThread(int threshold) {
         resetSkip();

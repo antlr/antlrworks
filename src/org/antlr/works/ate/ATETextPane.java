@@ -33,10 +33,7 @@ package org.antlr.works.ate;
 
 import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
-import org.antlr.works.ate.swing.ATECustomEditorKit;
-import org.antlr.works.ate.swing.ATELabelView;
-import org.antlr.works.ate.swing.ATEParagraphView;
-import org.antlr.works.ate.swing.ATEStyledDocument;
+import org.antlr.works.ate.swing.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -57,7 +54,7 @@ public class ATETextPane extends JTextPane
     public ATETextPane(ATEPanel textEditor) {
         super(new ATEStyledDocument());
         setCaret(new ATECaret());
-        setEditorKit(new ATECustomEditorKit(this));
+        setEditorKit(new ATECustomEditorKit(this, textEditor));
         this.textEditor = textEditor;
     }
 
@@ -80,16 +77,22 @@ public class ATETextPane extends JTextPane
     /** Override setText() in order to reset the colorization
      *
      */
-
     public void setText(String text) {
         super.setText(text);
-        textEditor.resetColoring();
+    }
+
+    /** Override setFont() to apply the font to the coloring view
+     *
+     * @param f The font
+     */
+    public void setFont(Font f) {
+        super.setFont(f);
+        ATERenderingView.DEFAULT_FONT = f;
     }
 
     /** The method isViewVisible used the same code but inlined
      * for speed improvement (modify it if this one gets modified)
      */
-
     public List getAttributesFromElement(Element e, String key) {
         List attributes = new ArrayList();
         Object o;

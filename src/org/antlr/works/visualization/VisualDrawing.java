@@ -106,7 +106,8 @@ public class VisualDrawing extends ATEThread {
         try {
             visual.getEngineGrammar().createGrammars();
         } catch (Exception e) {
-            visual.editor.console.print(e);
+            // @todo ignore for now but later with prefs?
+            //visual.editor.console.print(e);
         } finally {
             // Flush all caches in cache because the grammar has changed
             clearCacheGraphs();
@@ -128,7 +129,8 @@ public class VisualDrawing extends ATEThread {
                    // System.out.println(g.getTokenDisplayName(g.getTokenType("T"+i)));
                 } */
             } catch (Exception e) {
-                visual.editor.console.print(e);
+                // @todo ignore for now but later with prefs?                
+                //visual.editor.console.print(e);
             }
             if(startState == null)
                 error = "Cannot display rule \"" + threadRule + "\" because start state not found";

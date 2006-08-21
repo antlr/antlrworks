@@ -37,8 +37,8 @@ public class ATEToken implements Comparable {
 
     public int startLineNumber; // starting line number
     public int endLineNumber; // ending line number
-    protected int startLineIndex; // starting line character index
-    protected int endLineIndex; // ending line character index
+    public int startLineIndex; // starting line character index
+    public int endLineIndex; // ending line character index
     protected String text; // the text containing this token
 
     /** These two fiels are public because ATEPanel needs to access them

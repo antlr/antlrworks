@@ -38,25 +38,32 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorPersistence {
 
-    public static final String KEY_RULES = "rules";
-    public static final String KEY_ACTIONS = "actions";
+    private static final String KEY_RULES = "rules";
+    private static final String KEY_ACTIONS = "actions";
 
-    public Map persistence = new HashMap();
-
-    public CEditorGrammar editor;
+    private Map persistence = new HashMap();
+    private boolean stored = false;
+    private CEditorGrammar editor;
 
     public EditorPersistence(CEditorGrammar editor) {
         this.editor = editor;
     }
 
     public void store() {
+        if(stored)
+            return;
+
+        stored = true;
         store(editor.parserEngine.getRules(), KEY_RULES);
         store(editor.parserEngine.getActions(), KEY_ACTIONS);
     }
 
     public void restore() {
-        restore(editor.parserEngine.getRules(), KEY_RULES);
-        restore(editor.parserEngine.getActions(), KEY_ACTIONS);
+        if(stored) {
+            stored = false;
+            restore(editor.parserEngine.getRules(), KEY_RULES);
+            restore(editor.parserEngine.getActions(), KEY_ACTIONS);
+        }
     }
     
     public void store(List objects, String key) {
@@ -85,7 +92,7 @@ public class EditorPersistence {
             return;
 
         for(int index=0; index<objects.size(); index++) {
-            EditorPersistentObject o = (EditorPersistentObject)objects.get(index);
+            EditorPersistentObject o = (EditorPersistentObject) objects.get(index);
             EditorPersistentObject oldObject = (EditorPersistentObject) m.get(o.getPersistentID());
             if(oldObject != null)
                 o.persistentAssign(oldObject);

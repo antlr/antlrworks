@@ -9,7 +9,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
-import java.util.HashSet;
 import java.util.Set;
 /*
 
@@ -84,8 +83,13 @@ public class ATELanguageSyntaxEngine extends ATESyntaxEngine {
         return null;
     }
 
+    /** Returns the set of keyword for the language.
+     * Note: this method is called very often
+     *
+     * @return The set of keywords
+     */
     public Set getKeywords() {
-        return new HashSet();
+        return null;
     }
 
     public AttributeSet getAttributeForToken(ATEToken token) {
@@ -100,7 +104,8 @@ public class ATELanguageSyntaxEngine extends ATESyntaxEngine {
                 attr = stringAttr;
                 break;
             default:
-                if(getKeywords().contains(token.getAttribute()))
+                Set s = getKeywords();
+                if(s != null && s.contains(token.getAttribute()))
                     attr = keywordAttr;
                 break;
         }

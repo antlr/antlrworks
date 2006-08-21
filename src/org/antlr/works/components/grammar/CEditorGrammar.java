@@ -15,6 +15,7 @@ import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
+import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.completion.AutoCompletionMenu;
 import org.antlr.works.completion.AutoCompletionMenuDelegate;
@@ -116,7 +117,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public EditorConsole console;
     public EditorToolbar toolbar;
-    public EditorCache editorCache;
     public EditorMenu editorMenu;
     public EditorIdeas editorIdeas;
     public EditorTips editorTips;
@@ -159,6 +159,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     protected CEditorGrammarDelegate delegate;
 
     protected List tabs = new ArrayList();
+    protected AfterParseOperations afterParserOp;
 
     /* Grammar */
 
@@ -167,6 +168,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public CEditorGrammar(ComponentContainer container) {
         super(container);
+        afterParserOp = new AfterParseOperations();
     }
 
     public void setDelegate(CEditorGrammarDelegate delegate) {
@@ -240,7 +242,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         console = new EditorConsole(this);
         console.makeCurrent();
 
-        editorCache = new EditorCache();
         editorMenu = new EditorMenu(this);
         editorIdeas = new EditorIdeas(this);
         editorTips = new EditorTips(this);
@@ -391,6 +392,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void applyPrefs() {
+        afterParserOp.setDefaultThreshold(AWPrefs.getParserDelay());
         textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
         textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
         textEditor.refresh();
@@ -569,7 +571,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public void endGroupChange() {
         endTextPaneUndoGroup();
         enableTextPane(false);
-        textEditor.resetColoring();
         textEditor.parse();
         changeDone();
     }
@@ -637,9 +638,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public synchronized String getText() {
-        if(editorCache.getString(EditorCache.CACHE_TEXT) == null)
-            editorCache.setObject(EditorCache.CACHE_TEXT, getTextPane().getText());
-        return editorCache.getString(EditorCache.CACHE_TEXT);
+        return getTextPane().getText();
     }
 
     public void replaceText(int leftIndex, int rightIndex, String text) {
@@ -897,24 +896,35 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     /** Parser delegate methods
      */
-
     public void ateParserWillParse() {
         persistence.store();
     }
 
     public void ateParserDidParse() {
-        persistence.restore();
-
         textEditor.setIsTyping(false);
-        textEditor.refresh();
+
         updateInformation();
         updateCursorInfo();
 
-        visual.setText(getText(), getFileName());
-        updateVisualization(false);
+        if(windowFirstDisplay) {
+            windowFirstDisplay = false;
+            afterParseOperations();
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    updateVisualization(true);
+                    executeFirstOpeningOperations();
+                    findTokensToIgnore();
+                }
+            });
+        } else {
+            afterParserOp.awakeThread();
+        }
+    }
+
+    public void afterParseOperations() {
+        persistence.restore();
 
         interpreter.setRules(getRules());
-
         rules.parserDidParse();
         grammarSyntax.parserDidParse();
 
@@ -923,23 +933,16 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         // be done inside rules.parserDidParse()
         editorIdeas.display(getCaretPosition());
 
-        if(windowFirstDisplay) {
-            windowFirstDisplay = false;
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    // Don't select the first rule for now ;-)
-                    //rules.selectFirstRule();
-                    updateVisualization(true);
-                    executeFirstOpeningOperations();
-                    findTokensToIgnore();
-                }
-            });
-        }
+        visual.setText(getText(), getFileName());
+        updateVisualization(false);
+
+        // Damage the editor and repaint it
+        textEditor.damage();
+        textEditor.repaint();
     }
 
     public void changeDone() {
         grammarChanged();
-        editorCache.invalidate();
         getDocument().changeDone();
     }
 
@@ -1114,7 +1117,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         // is deleted (for example), the idea might be displayed before
         // the parser was able to complete
         // display(e.getDot());
-
         GrammarSyntaxRule rule = rules.selectRuleInTreeAtPosition(index);
         if(rule == null || rule.name == null) {
             updateVisualization(false);
@@ -1216,6 +1218,20 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         data.put(KEY_INTERPRETER, interpreter.getPersistentData());
         data.put(KEY_DEBUGGER, debugger.getPersistentData());
         return data;
+    }
+
+    /** This class is used to perform after parsing operations in another
+     * thread than the main event thread.
+     */
+    protected class AfterParseOperations extends ATEThread {
+
+        public AfterParseOperations() {
+            start();
+        }
+
+        protected void threadRun() throws Exception {
+            afterParseOperations();
+        }
     }
 
     protected class ConsoleStatus {

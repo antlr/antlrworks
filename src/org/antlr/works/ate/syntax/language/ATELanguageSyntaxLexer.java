@@ -43,13 +43,13 @@ public class ATELanguageSyntaxLexer extends ATESyntaxLexer {
         while(nextCharacter()) {
             ATEToken token = null;
 
-            if(C(0) == '\'')
+            if(c0 == '\'')
                 token = matchSingleQuoteString();
-            else if(C(0) == '\"')
+            else if(c0 == '\"')
                 token = matchDoubleQuoteString();
-            else if(C(0) == '/' && C(1) == '/')
+            else if(c0 == '/' && c1 == '/')
                 token = matchSingleComment();
-            else if(C(0) == '/' && C(1) == '*')
+            else if(c0 == '/' && c1 == '*')
                 token = matchComplexComment();
             else if(isLetter())
                 token = matchID();

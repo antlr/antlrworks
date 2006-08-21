@@ -55,6 +55,12 @@ public class ATESyntaxLexer {
     protected int lineIndex;    // position of the line in characters
     protected List lines;
 
+    /** c0 and c1 are character cache for quick access to the current
+     * character (c0) and the next character (c1)
+     */
+    protected char c0;
+    protected char c1;
+
     public ATESyntaxLexer() {
         lines = new ArrayList();
         tokens = new ArrayList();
@@ -88,13 +94,13 @@ public class ATESyntaxLexer {
         while(nextCharacter()) {
             ATEToken token = null;
 
-            if(C(0) == '\'')
+            if(c0 == '\'')
                 token = matchSingleQuoteString();
-            else if(C(0) == '\"')
+            else if(c0 == '\"')
                 token = matchDoubleQuoteString();
-            else if(C(0) == '/' && C(1) == '/')
+            else if(c0 == '/' && c1 == '/')
                 token = matchSingleComment();
-            else if(C(0) == '/' && C(1) == '*')
+            else if(c0 == '/' && c1 == '*')
                 token = matchComplexComment();
             else if(isLetter())
                 token = matchID();
@@ -114,7 +120,7 @@ public class ATESyntaxLexer {
 
     public ATEToken matchID() {
         int sp = position;
-        while(isID(C(1)) && nextCharacter()) {
+        while(isID(c1) && nextCharacter()) {
         }
         return createNewToken(TOKEN_ID, sp);
     }
@@ -122,7 +128,7 @@ public class ATESyntaxLexer {
     public ATEToken matchSingleQuoteString() {
         int sp = position;
         while(nextCharacter()) {
-            if(C(0) == '\'' || matchNewLine())
+            if(c0 == '\'' || matchNewLine())
                 return createNewToken(TOKEN_SINGLE_QUOTE_STRING, sp);
         }
         return null;
@@ -131,7 +137,7 @@ public class ATESyntaxLexer {
     public ATEToken matchDoubleQuoteString() {
         int sp = position;
         while(nextCharacter()) {
-            if(C(0) == '\"' || matchNewLine())
+            if(c0 == '\"' || matchNewLine())
                 return createNewToken(TOKEN_DOUBLE_QUOTE_STRING, sp);
         }
         return null;
@@ -149,7 +155,7 @@ public class ATESyntaxLexer {
     public ATEToken matchComplexComment() {
         int sp = position;
         while(nextCharacter()) {
-            if(C(0) == '*' && C(1) == '/') {
+            if(c0 == '*' && c1 == '/') {
                 // Don't forget to eat the next character ;-)
                 nextCharacter();
                 return createNewToken(TOKEN_COMPLEX_COMMENT, sp, position+2);
@@ -160,23 +166,33 @@ public class ATESyntaxLexer {
     }
 
     public boolean nextCharacter() {
+        boolean valid = false;
+        final int length = text.length();
+
+        c0 = c1 = 0;
         position++;
-        if(position<text.length()) {
+        if(position < length) {
             // Skip control character
-            if(C(0) == '\\')
+            if(text.charAt(position) == '\\')
                 position += 2;
+
+            valid = position < length;
+            if(valid) {
+                c0 = text.charAt(position);
+                if(position + 1 < length)
+                    c1 = text.charAt(position+1);
+            }
 
             if(matchNewLine()) {
                 lineNumber++;
                 lineIndex = position+1;
                 lines.add(new ATELine(lineIndex));
             }
-            return position<text.length();
-        } else
-            return false;
+        }
+        return valid;
     }
 
-    public char C(int index) {
+    private char getChar(int index) {
         if(position+index<text.length())
             return text.charAt(position+index);
         else
@@ -184,23 +200,22 @@ public class ATESyntaxLexer {
     }
 
     public boolean matchNewLine() {
-        if(C(0) == '\n') return true;    // Unix style
-        else if(C(0) == '\r' && C(1) == '\n') return true;    // Windows style
-        else if(C(0) == '\r' && C(1) != '\n') return true;    // Mac style
-
-        return false;
+        if(c0 == '\n') return true;    // Unix style
+        else if(c0 == '\r' && c1 == '\n') return true;    // Windows style
+        else if(c0 == '\r' && c1 != '\n') return true;    // Mac style
+        else return false;
     }
 
     public boolean isWhitespace() {
-        return Character.isWhitespace(C(0));
+        return Character.isWhitespace(c0);
     }
 
     public boolean isLetter() {
-        return Character.isLetter(C(0));
+        return Character.isLetter(c0);
     }
 
     public boolean isLetterOrDigit() {
-        return isLetterOrDigit(C(0));
+        return isLetterOrDigit(c0);
     }
 
     public boolean isLetterOrDigit(char c) {

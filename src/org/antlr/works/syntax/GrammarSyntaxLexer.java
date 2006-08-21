@@ -52,27 +52,27 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
         while(nextCharacter()) {
             ATEToken token = null;
 
-            if(C(0) == '\'')
+            if(c0 == '\'')
                 token = matchSingleQuoteString();
-            else if(C(0) == '\"')
+            else if(c0 == '\"')
                 token = matchDoubleQuoteString();
-            else if(C(0) == '/' && C(1) == '/')
+            else if(c0 == '/' && c1 == '/')
                 token = matchSingleComment();
-            else if(C(0) == '/' && C(1) == '*')
+            else if(c0 == '/' && c1 == '*')
                 token = matchComplexComment();
-            else if(C(0) == '{')
+            else if(c0 == '{')
                 token = matchBlock('{', '}');
-            else if(C(0) == '[')
+            else if(c0 == '[')
                 token = matchBlock('[', ']');
-            else if(C(0) == ':')
+            else if(c0 == ':')
                 token = createNewToken(TOKEN_COLON);
-            else if(C(0) == ';')
+            else if(c0 == ';')
                 token = createNewToken(TOKEN_SEMI);
-            else if(isLetter() || C(0) == '@')
+            else if(isLetter() || c0 == '@')
                 token = matchID();
-            else if(C(0) == '(')
+            else if(c0 == '(')
                 token = createNewToken(TOKEN_LPAREN);
-            else if(C(0) == ')')
+            else if(c0 == ')')
                 token = createNewToken(TOKEN_RPAREN);
             else if(!isWhitespace())
                 token = createNewToken(TOKEN_CHAR);
@@ -93,17 +93,17 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
         while(nextCharacter()) {
             ATEToken token = null;
 
-            if(C(0) == '\'') {
+            if(c0 == '\'') {
                 token = matchSingleQuoteString();
-            } else if(C(0) == '\"') {
+            } else if(c0 == '\"') {
                 token = matchDoubleQuoteString();
-            } else if(C(0) == '/' && C(1) == '/') {
+            } else if(c0 == '/' && c1 == '/') {
                 token = matchSingleComment();
-            } else if(C(0) == '/' && C(1) == '*') {
+            } else if(c0 == '/' && c1 == '*') {
                 token = matchComplexComment();
-            } else if(C(0) == start) {
+            } else if(c0 == start) {
                 embedded++;
-            } else if(C(0) == end) {
+            } else if(c0 == end) {
                 if(embedded == 0) {
                     GrammarSyntaxToken t = (GrammarSyntaxToken)createNewToken(GrammarSyntaxLexer.TOKEN_BLOCK, sp, position+1, startLineNumber, lineNumber, startLineIndex, lineIndex);
                     t.setInternalTokens(internalTokens);
@@ -111,7 +111,7 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
                 }
                 else
                     embedded--;
-            } else if(C(0) == '$' || C(0) == '%') {
+            } else if(c0 == '$' || c0 == '%') {
                 /** Parse also all internal action references */
                 token = createNewToken(TOKEN_CHAR);
             }
