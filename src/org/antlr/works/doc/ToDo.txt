@@ -1,9 +1,6 @@
 
 * Prio 1
 
-- plugin: implement undo in PluginXJFrameInterface
-- plugin: put strings in properties file
-
 not used, to delete later:
 - ATELabelView
 - ATEParagraphView
