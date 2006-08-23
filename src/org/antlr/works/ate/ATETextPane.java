@@ -31,16 +31,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate;
 
-import org.antlr.works.ate.folding.ATEFoldingEntity;
-import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
-import org.antlr.works.ate.swing.*;
+import org.antlr.works.ate.swing.ATECustomEditorKit;
+import org.antlr.works.ate.swing.ATERenderingView;
+import org.antlr.works.ate.swing.ATEStyledDocument;
 
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ATETextPane extends JTextPane
 {
@@ -74,13 +73,6 @@ public class ATETextPane extends JTextPane
         return highlightCursorLine;
     }
 
-    /** Override setText() in order to reset the colorization
-     *
-     */
-    public void setText(String text) {
-        super.setText(text);
-    }
-
     /** Override setFont() to apply the font to the coloring view
      *
      * @param f The font
@@ -90,88 +82,8 @@ public class ATETextPane extends JTextPane
         ATERenderingView.DEFAULT_FONT = f;
     }
 
-    /** The method isViewVisible used the same code but inlined
-     * for speed improvement (modify it if this one gets modified)
-     */
-    public List getAttributesFromElement(Element e, String key) {
-        List attributes = new ArrayList();
-        Object o;
-        for(int level=0; level<=1; level++) {
-            o = e.getAttributes().getAttribute(key+level);
-            if(o instanceof ATEFoldingEntityProxy)
-                attributes.add(o);
-        }
-        return attributes;
-    }
-
-    public ATEFoldingEntityProxy getTopLevelEntityProxy(Element e) {
-        List attributes = getAttributesFromElement(e, ATTRIBUTE_CHARACTER_FOLDING_PROXY);
-        if(attributes.isEmpty())
-            return null;
-        else
-            return (ATEFoldingEntityProxy)attributes.get(attributes.size()-1);
-    }
-
-    public String getKeyForView(View v) {
-        if(v instanceof ATELabelView)
-            return ATTRIBUTE_CHARACTER_FOLDING_PROXY;
-        else if(v instanceof ATEParagraphView)
-            return ATTRIBUTE_PARAGRAPH_FOLDING_PROXY;
-        return null;
-    }
-
-    public ATEFoldingEntity getEntity(View v) {
-        List attributes = getAttributesFromElement(v.getElement(), getKeyForView(v));
-        if(!attributes.isEmpty()) {
-            ATEFoldingEntityProxy proxy = (ATEFoldingEntityProxy)attributes.get(attributes.size()-1);
-            return proxy.getEntity();
-        } else
-            return null;
-    }
-
-    public boolean isTopMostInvisible(View v) {
-        List attributes = getAttributesFromElement(v.getElement(), getKeyForView(v));
-        boolean hidden = false;
-        for(int index=0; index<attributes.size(); index++) {
-            ATEFoldingEntityProxy proxy = (ATEFoldingEntityProxy)attributes.get(index);
-            if(proxy.getEntity() == null)
-                continue;
-
-            if(index == attributes.size()-1)
-                return !hidden;
-
-            if(!proxy.getEntity().foldingEntityIsExpanded())
-                hidden = true;
-        }
-        return false;
-    }
-
-    /** This methods is called *very* frequently so the code is duplicated
-     * from getAttributesFromElement to speed up
-     */
-
-    public boolean isViewVisible(View v) {
-        Element e = v.getElement();
-        String key = getKeyForView(v);
-
-        for(int level=0; level<=1; level++) {
-            Object o = e.getAttributes().getAttribute(key+level);
-            if(o instanceof ATEFoldingEntityProxy) {
-                ATEFoldingEntityProxy proxy =  (ATEFoldingEntityProxy)o;
-                if(proxy.getEntity() == null)
-                    continue;
-
-                if(!proxy.getEntity().foldingEntityIsExpanded())
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
     public boolean getScrollableTracksViewportWidth() {
-        if (!wrap)
-        {
+        if (!wrap) {
             Component parent = getParent();
             return parent == null || getUI().getPreferredSize(this).width < parent.getSize().width;
         } else
@@ -191,72 +103,6 @@ public class ATETextPane extends JTextPane
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         textEditor.textPaneDidPaint(g);
-    }
-
-    /** This method returns true if the view visibility has changed. This is currently
-     * working only for ATELabelView. ATEParagraphView doesn't slow too much the typing
-     * so it was not worth optimizing its visibility state. Also, ATEParagraphView is much
-     * harder to deal with because it doesn't call this method in increasing order, like
-     * ATELabelView, but in any order. We would have to maintain an interval-set to keep
-     * track of which interval remain to be asked - use Terence ANTLR interval set in the future?
-     */
-
-    public int visibilityChangedStartIndex = -1;
-    public int visibilityChangedEndIndex = -1;
-
-    public boolean isViewVisibilityDirty(View view) {
-        /** WARNING: for performance reason, ATELabelView is computing the following test
-         * inline. Any modification here should be reflected in ATELabelView.isVisible().
-         */
-        if(visibilityChangedEndIndex-visibilityChangedStartIndex <= 0)
-            return false;
-
-        int viewStartOffset = view.getStartOffset();
-        int viewEndOffset = view.getEndOffset();
-
-        if(viewStartOffset >= visibilityChangedEndIndex)
-            return false;
-        if(viewEndOffset <= visibilityChangedStartIndex)
-            return false;
-
-        // Reduce the interval of dirty visibility index. We assume
-        // that the view are calling this method in order (which is the case now).
-        visibilityChangedStartIndex = viewEndOffset;
-
-        return true;
-    }
-
-    public void toggleFolding(ATEFoldingEntityProxy proxy) {
-        if(proxy == null)
-            return;
-
-        ATEFoldingEntity entity = proxy.getEntity();
-        int start = entity.foldingEntityGetStartIndex();
-        int startPara = entity.foldingEntityGetStartParagraphIndex();
-        int end = entity.foldingEntityGetEndIndex();
-        int level = entity.foldingEntityLevel();
-        entity.foldingEntitySetExpanded(!entity.foldingEntityIsExpanded());
-
-        SimpleAttributeSet paraAttr = new SimpleAttributeSet();
-        paraAttr.addAttribute(ATTRIBUTE_PARAGRAPH_FOLDING_PROXY+level, proxy);
-
-        SimpleAttributeSet charAttr = new SimpleAttributeSet();
-        charAttr.addAttribute(ATTRIBUTE_CHARACTER_FOLDING_PROXY+level, proxy);
-
-        textEditor.foldingManager.textPaneWillFold();
-
-        visibilityChangedStartIndex = Math.min(start, startPara);
-        visibilityChangedEndIndex = end;
-
-        ((ATEStyledDocument)getDocument()).setParagraphAttributes(startPara, end-startPara, paraAttr, false);
-        ((ATEStyledDocument)getDocument()).setCharacterAttributes(start, end-start, charAttr, false);
-
-        // Make sure to move the caret out of the collapsed zone
-        if(!proxy.getEntity().foldingEntityIsExpanded()
-                && getCaretPosition() >= start && getCaretPosition() <= end)
-            setCaretPosition(start-1);
-
-        textEditor.foldingManager.textPaneDidFold();
     }
 
     protected class ATECaret extends DefaultCaret {

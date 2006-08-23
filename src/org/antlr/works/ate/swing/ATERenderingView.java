@@ -47,7 +47,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class ATERenderingView extends PlainView {
 
-    public static final Color highlightColor = new Color(1.0f, 1.0f, 0.5f, 0.3f);
+    public static final Color BACKGROUND_HIGHLIGHT_COLOR = new Color(1.0f, 1.0f, 0.5f, 0.3f);
     public static Font DEFAULT_FONT;
 
     private ATEPanel textEditor;
@@ -72,8 +72,36 @@ public class ATERenderingView extends PlainView {
      * @return the X location of the end of the range >= 0
      * @throws javax.swing.text.BadLocationException
      *          if the range is invalid
-     */
+     */   
+
     protected int drawUnselectedText(Graphics g, int x, int y, int p0, int p1) throws BadLocationException {
+        return renderText(g, x, y, p0, p1);
+    }
+
+    /**
+     * Renders the given range in the model as selected text.  This
+     * is implemented to render the text in the color specified in
+     * the hosting component.  It assumes the highlighter will render
+     * the selected background.
+     *
+     * @param g  the graphics context
+     * @param x  the starting X coordinate >= 0
+     * @param y  the starting Y coordinate >= 0
+     * @param p0 the beginning position in the model >= 0
+     * @param p1 the ending position in the model >= 0
+     * @return the location of the end of the range
+     * @throws javax.swing.text.BadLocationException
+     *          if the range is invalid
+     */
+    protected int drawSelectedText(Graphics g, int x, int y, int p0, int p1) throws BadLocationException {
+        return renderText(g, x, y, p0, p1);
+    }
+
+    /** This method renders the text using the token information to set up the display attribute
+     * of each token.
+     *
+     */
+    private int renderText(Graphics g, int x, int y, int p0, int p1) throws BadLocationException {
         if(p0 == p1)
             return x;
 
@@ -84,7 +112,7 @@ public class ATERenderingView extends PlainView {
         // Highlight the background where the cursor is located
         final int cursorPosition = textPane.getCaretPosition()+1;
         if(cursorPosition > p0 && cursorPosition <= p1) {
-            g.setColor(highlightColor);
+            g.setColor(BACKGROUND_HIGHLIGHT_COLOR);
             final int fontHeight = metrics.getHeight();
             g.fillRect(x, y-fontHeight+metrics.getDescent(), textPane.getWidth(), fontHeight);
         }
@@ -146,7 +174,11 @@ public class ATERenderingView extends PlainView {
         }
     }
 
-    private int drawText(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute) throws BadLocationException
+    /** This method draws some text using a specific attribute
+     *
+     */
+    private int drawText(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute)
+            throws BadLocationException
     {
         int length = end - start;
         if(start + length > max)
@@ -159,6 +191,11 @@ public class ATERenderingView extends PlainView {
         return Utilities.drawTabbedText(text, x, y, g, this, start);
     }
 
+    /** This method applies an AttributeSet to a Graphics context
+     *
+     * @param g The graphic context
+     * @param attribute The attribute to apply
+     */
     private void applyAttribute(Graphics g, AttributeSet attribute) {
         if(attribute == null) {
             g.setColor(Color.black);
@@ -178,26 +215,6 @@ public class ATERenderingView extends PlainView {
             g.setColor(Color.black);
         else
             g.setColor(c);
-    }
-
-    /**
-     * Renders the given range in the model as selected text.  This
-     * is implemented to render the text in the color specified in
-     * the hosting component.  It assumes the highlighter will render
-     * the selected background.
-     *
-     * @param g  the graphics context
-     * @param x  the starting X coordinate >= 0
-     * @param y  the starting Y coordinate >= 0
-     * @param p0 the beginning position in the model >= 0
-     * @param p1 the ending position in the model >= 0
-     * @return the location of the end of the range
-     * @throws javax.swing.text.BadLocationException
-     *          if the range is invalid
-     */
-    protected int drawSelectedText(Graphics g, int x, int y, int p0, int p1) throws BadLocationException {
-        g.setColor(Color.black);
-        return super.drawSelectedText(g, x, y, p0, p1);
     }
 
 }

@@ -6,7 +6,6 @@ import edu.usfca.xj.appkit.utils.XJSmoothScrolling;
 import org.antlr.works.ate.analysis.ATEAnalysisColumn;
 import org.antlr.works.ate.analysis.ATEAnalysisManager;
 import org.antlr.works.ate.breakpoint.ATEBreakpointManager;
-import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
 import org.antlr.works.ate.folding.ATEFoldingManager;
 import org.antlr.works.ate.swing.ATEAutoIndentation;
 import org.antlr.works.ate.swing.ATEKeyBindings;
@@ -20,7 +19,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.Element;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -568,15 +566,6 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             // Update the cursor highligthing
             if(textPane.highlightCursorLine)
                 textPane.repaint();
-
-            // Expand any collapsed rule if the caret
-            // has been placed in the placeholder zone
-            Element elem = textPane.getStyledDocument().getCharacterElement(getCaretPosition());
-            ATEFoldingEntityProxy proxy = textPane.getTopLevelEntityProxy(elem);
-            if(proxy != null && !proxy.getEntity().foldingEntityIsExpanded()) {
-                textPane.toggleFolding(proxy);
-                gutter.markDirty();
-            }
 
             checkForPopupTrigger(e);
 

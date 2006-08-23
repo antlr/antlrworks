@@ -80,7 +80,7 @@ public abstract class ATEFoldingManager {
     public abstract void provideFoldingEntities();
     
     public void toggleFolding(ATEFoldingEntity entity) {
-        textEditor.getTextPane().toggleFolding(createEntityProxy(entity));
+        //textEditor.getTextPane().toggleFolding(createEntityProxy(entity));
     }
 
 }
