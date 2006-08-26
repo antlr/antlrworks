@@ -1,6 +1,9 @@
 
 * Prio 1
 
+- plugin: hook undo, copy, paste from IntelliJ menu
+- plugin: generate code in default project output directory
+
 not used, to delete later:
 - ATELabelView
 - ATEParagraphView

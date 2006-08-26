@@ -67,10 +67,6 @@ import org.antlr.works.swing.DetachablePanelDelegate;
 import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -112,8 +108,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     protected Map components2toggle;
 
     protected CEditorGrammar editor;
-    protected AttributeSet previousGrammarAttributeSet;
-    protected int previousGrammarPosition;
 
     protected Set breakpoints;
 
@@ -123,6 +117,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     protected boolean running;
     protected long dateOfModificationOnDisk = 0;
+
+    protected int debuggerCursorIndex = -1;
 
     public Debugger(CEditorGrammar editor) {
         this.editor = editor;
@@ -399,14 +395,18 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     public void markLocationInGrammar(int index) {
         try {
             editor.setCaretPosition(index);
-            storeGrammarAttributeSet(index);
-
-            StyleContext sc = StyleContext.getDefaultStyleContext();
-            AttributeSet attr = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Background, Color.red);
-            editor.getTextPane().getStyledDocument().setCharacterAttributes(index, 1, attr, false);
+            debuggerCursorIndex = index;
         } catch(Exception e) {
             getConsole().print(e);
         }
+    }
+
+    public void resetMarkLocationInGrammar() {
+        debuggerCursorIndex = -1;
+    }
+    
+    public int getDebuggerCursorIndex() {
+        return debuggerCursorIndex;
     }
 
     public List getRules() {
@@ -488,7 +488,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         editor.getTextPane().setEditable(false);
         editor.getTextPane().requestFocus(false);
         
-        previousGrammarAttributeSet = null;
         player.resetPlayEvents(true);
     }
 
@@ -529,18 +528,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         eventsPanel.clear();
         parseTreePanel.clear();
         astPanel.clear();
-    }
-
-    public void storeGrammarAttributeSet(int index) {
-        previousGrammarPosition = index;
-        previousGrammarAttributeSet = editor.getTextPane().getStyledDocument().getCharacterElement(index+1).getAttributes();
-    }
-
-    public void restorePreviousGrammarAttributeSet() {
-        if(previousGrammarAttributeSet != null) {
-            editor.getTextPane().getStyledDocument().setCharacterAttributes(previousGrammarPosition, 1, previousGrammarAttributeSet, true);
-            previousGrammarAttributeSet = null;
-        }
     }
 
     public int computeAbsoluteGrammarIndex(int lineIndex, int pos) {
@@ -628,9 +615,9 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     public void recorderDidStop() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                restorePreviousGrammarAttributeSet();
+                resetMarkLocationInGrammar();
                 editor.getTextPane().setEditable(true);
-                editor.getTextPane().requestFocus();
+                editor.getTextPane().requestFocusInWindow();
                 inputPanel.stop();
                 running = false;
                 editor.refreshMainMenuBar();

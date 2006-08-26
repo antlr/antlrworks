@@ -31,13 +31,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate;
 
-import org.antlr.works.ate.swing.ATECustomEditorKit;
+import org.antlr.works.ate.swing.ATEEditorKit;
 import org.antlr.works.ate.swing.ATERenderingView;
 import org.antlr.works.ate.swing.ATEStyledDocument;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.StyledEditorKit;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
@@ -50,10 +51,10 @@ public class ATETextPane extends JTextPane
     protected boolean wrap = false;
     protected boolean highlightCursorLine = false;
 
-    public ATETextPane(ATEPanel textEditor) {
+    public ATETextPane(ATEPanel textEditor, StyledEditorKit editorKit) {
         super(new ATEStyledDocument());
         setCaret(new ATECaret());
-        setEditorKit(new ATECustomEditorKit(this, textEditor));
+        setEditorKit(editorKit==null?new ATEEditorKit(textEditor):editorKit);
         this.textEditor = textEditor;
     }
 

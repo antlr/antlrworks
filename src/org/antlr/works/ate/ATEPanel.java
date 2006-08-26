@@ -19,6 +19,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.StyledEditorKit;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -76,7 +77,6 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     protected TextPaneListener textPaneListener;
 
-    protected boolean isTyping = false;
     protected boolean syntaxColoring = false;
     protected int caretPosition;
 
@@ -84,10 +84,14 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected static int ANALYSIS_COLUMN_WIDTH = 18;
 
     public ATEPanel(XJFrameInterface parentFrame) {
+        this(parentFrame, null);
+    }
+
+    public ATEPanel(XJFrameInterface parentFrame, StyledEditorKit editorKit) {
         super(new BorderLayout());
         this.parentFrame = parentFrame;
         autoIndent = new ATEAutoIndentation(this);
-        createTextPane();
+        createTextPane(editorKit);
     }
 
     public XJFrameInterface getParentFrame() {
@@ -138,14 +142,6 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public boolean autoIndent() {
         return autoIndent.enabled();
-    }
-
-    public void setIsTyping(boolean flag) {
-        isTyping = flag;
-    }
-
-    public boolean isTyping() {
-        return isTyping;
     }
 
     public void setCaretPosition(int position) {
@@ -241,6 +237,13 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public void toggleSyntaxColoring() {
         setSyntaxColoring(!isSyntaxColoring());
+    }
+
+    public void setEditorKit(StyledEditorKit editorKit) {
+        textPane.setEditorKit(editorKit);
+        textPane.getDocument().addDocumentListener(textPaneListener = new TextPaneListener());
+        // Set by default the end of line property in order to always use the Unix style
+        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, unixEndOfLine);
     }
 
     public void damage() {
@@ -408,8 +411,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             delegate.ateInvokePopUp(component, x, y);
     }
 
-    protected void createTextPane() {
-        textPane = new ATETextPane(this);
+    protected void createTextPane(StyledEditorKit editorKit) {
+        textPane = new ATETextPane(this, editorKit);
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
 
@@ -547,12 +550,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         }
 
         public void insertUpdate(DocumentEvent e) {
-            setIsTyping(true);
             changeUpdate(e.getOffset(), e.getLength(), true);
         }
 
         public void removeUpdate(DocumentEvent e) {
-            setIsTyping(true);
             changeUpdate(e.getOffset(), -e.getLength(), false);
         }
 

@@ -304,7 +304,7 @@ public class DBPlayer {
     }
 
     public void playLocation() {
-        debugger.restorePreviousGrammarAttributeSet();
+        debugger.resetMarkLocationInGrammar();
 
         int index = debugger.computeAbsoluteGrammarIndex(lastLocationLine, lastLocationPos);
         if(index < 0)

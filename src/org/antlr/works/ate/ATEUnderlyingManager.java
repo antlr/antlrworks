@@ -69,9 +69,6 @@ public abstract class ATEUnderlyingManager {
             return;
         }
 
-        if(textEditor.isTyping())
-            return;
-
         underlyingShape.begin();
 
         render(g);

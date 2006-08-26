@@ -145,7 +145,7 @@ public class DBControlPanel extends JPanel {
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                debugger.restorePreviousGrammarAttributeSet();
+                debugger.resetMarkLocationInGrammar();
                 debugger.getRecorder().goToStart();
                 updateInterfaceLater();
                 StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_GOTO_START);

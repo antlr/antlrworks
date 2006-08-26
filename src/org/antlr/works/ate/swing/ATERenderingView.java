@@ -50,12 +50,12 @@ public class ATERenderingView extends PlainView {
     public static final Color BACKGROUND_HIGHLIGHT_COLOR = new Color(1.0f, 1.0f, 0.5f, 0.3f);
     public static Font DEFAULT_FONT;
 
-    private ATEPanel textEditor;
-    private ATETextPane textPane;
-    private List tokens;
+    protected ATEPanel textEditor;
+    protected ATETextPane textPane;
+    protected List tokens;
 
     public ATERenderingView(Element elem, ATEPanel textEditor) {
-      super(elem);
+        super(elem);
         this.textEditor = textEditor;
         this.textPane = textEditor.getTextPane();
     }
@@ -72,7 +72,7 @@ public class ATERenderingView extends PlainView {
      * @return the X location of the end of the range >= 0
      * @throws javax.swing.text.BadLocationException
      *          if the range is invalid
-     */   
+     */
 
     protected int drawUnselectedText(Graphics g, int x, int y, int p0, int p1) throws BadLocationException {
         return renderText(g, x, y, p0, p1);
@@ -101,7 +101,7 @@ public class ATERenderingView extends PlainView {
      * of each token.
      *
      */
-    private int renderText(Graphics g, int x, int y, int p0, int p1) throws BadLocationException {
+    protected int renderText(Graphics g, int x, int y, int p0, int p1) throws BadLocationException {
         if(p0 == p1)
             return x;
 
@@ -114,7 +114,7 @@ public class ATERenderingView extends PlainView {
         if(cursorPosition > p0 && cursorPosition <= p1) {
             g.setColor(BACKGROUND_HIGHLIGHT_COLOR);
             final int fontHeight = metrics.getHeight();
-            g.fillRect(x, y-fontHeight+metrics.getDescent(), textPane.getWidth(), fontHeight);
+            g.fillRect(0, y-fontHeight+metrics.getDescent(), textPane.getWidth(), fontHeight);
         }
 
         // Note: the tokens are not contiguous (e.g. white spaces are ignored)
@@ -177,7 +177,7 @@ public class ATERenderingView extends PlainView {
     /** This method draws some text using a specific attribute
      *
      */
-    private int drawText(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute)
+    protected int drawText(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute)
             throws BadLocationException
     {
         int length = end - start;
@@ -196,7 +196,7 @@ public class ATERenderingView extends PlainView {
      * @param g The graphic context
      * @param attribute The attribute to apply
      */
-    private void applyAttribute(Graphics g, AttributeSet attribute) {
+    protected void applyAttribute(Graphics g, AttributeSet attribute) {
         if(attribute == null) {
             g.setColor(Color.black);
             g.setFont(DEFAULT_FONT);

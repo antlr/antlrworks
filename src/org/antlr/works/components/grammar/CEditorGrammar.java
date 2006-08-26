@@ -296,6 +296,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     protected void createTextEditor() {
         textEditor = new ATEPanel(getXJFrame());
+        textEditor.setEditorKit(new EditorATEEditorKit(this));
         textEditor.setSyntaxColoring(true);
         textEditor.setDelegate(this);
         applyPrefs();
@@ -506,6 +507,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public ATEPanel getTextEditor() {
         return textEditor;
+    }
+
+    public Debugger getDebugger() {
+        return debugger;
     }
 
     public GrammarSyntax getSyntax() {
@@ -901,8 +906,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void ateParserDidParse() {
-        textEditor.setIsTyping(false);
-
         updateInformation();
         updateCursorInfo();
 
@@ -1106,7 +1109,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         updateCursorInfo();
         if(getTextPane().hasFocus()) {
             editorIdeas.hide();
-            if(!textEditor.isTyping() && !debugger.isRunning())
+            if(!debugger.isRunning())
                 editorIdeas.display(getCaretPosition());
         }
 
