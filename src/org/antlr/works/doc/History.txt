@@ -1,10 +1,10 @@
 
-Version 1.0ea12 - 
+Version 1.0b1 - 08/26/06
 
+- new real-time syntax coloring
 - IntelliJ plugin integration
-- new improved syntax coloring process
 - improved debugger UI with detachable panels
-- improved speed when checking grammar (delay creation of error paths when the user clicks on a rule)
+- improved speed when checking grammar (delay creation of error paths)
 - prefs: can specify now ANTLR 3 classpath
 - handle NonRegularDecisionMessage errors
 - display Out Of Memory error
@@ -14,13 +14,12 @@ Version 1.0ea12 -
 - resize view when graphic elements are moved (DFA decision, etc)
 - toggle buttons in toolbar are now correctly selected/deselected
 - list have now a white background on Windows/Linux
+- source code available (BSD license)
 - fixed a bug that would prevent small error paths from being displayed in the syntax diagram
 - fixed a bug where performing some menu commands would failed on Windows/Linux (mostly cut and paste)
-- fixed a bug where dialogs would not be displayed in the same screen as the parent frame
-  in multi-screen environment
-- fixed a bug that would prevent decision DFA to be displayed if the first token of a rule was
-  not in the same line as the colon
-- fixed a bug where a path with white space in it could make the compilation failed
+- fixed a bug where dialogs would not be displayed in the same screen as the parent frame in multi-screen environment
+- fixed a bug that would prevent decision DFA to be displayed if the first token of a rule was not in the same line as the colon
+- fixed a bug where a path with white space in it could make the compilation to fail
 
 Version 1.0ea11 - 07/05/06
 

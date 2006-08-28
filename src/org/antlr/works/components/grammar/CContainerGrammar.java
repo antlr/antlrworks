@@ -66,6 +66,8 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
         Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         r.width *= 0.8;
         r.height *= 0.8;
+        //r.width = 940;
+        //r.height = 700;
         getRootPane().setPreferredSize(r.getSize());
     }
 

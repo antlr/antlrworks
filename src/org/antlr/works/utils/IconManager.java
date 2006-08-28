@@ -37,7 +37,6 @@ import java.util.Map;
 
 public class IconManager {
 
-    // @todo replace this with run-time location ?
     private static final String path = "org/antlr/works/icons/";
 
     private static IconManager shared = null;

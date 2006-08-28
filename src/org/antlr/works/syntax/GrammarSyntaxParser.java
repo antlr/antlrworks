@@ -231,17 +231,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             GrammarSyntaxBlock block = new GrammarSyntaxBlock(start.getAttribute(), start, T(0));
             if(blockName.equals(TOKENS_BLOCK_NAME)) {
                 block.isTokenBlock = true;
-                // @todo DEBUG
-                /*tokens.remove(position);
-                for (Iterator iterator = block.getInternalTokens().iterator(); iterator.hasNext();) {
-                    ATEToken token = (ATEToken) iterator.next();
-                    token.type = GrammarSyntaxLexer.TOKEN_REFERENCE;
-                    token.start += block.start.end+2;
-                    token.end += block.start.end+2;
-                    tokens.add(position++, token);
-                    //references.add(new GrammarSyntaxReference(null, token));
-                } */
-
             } else if(blockName.equals(OPTIONS_BLOCK_NAME)) {
                 block.isOptionsBlock = true;
                 block.parseOptionsBlock();

@@ -4,11 +4,8 @@
 - plugin: hook undo, copy, paste from IntelliJ menu
 - plugin: generate code in default project output directory
 
-not used, to delete later:
-- ATELabelView
-- ATEParagraphView
-
 * Prio 2
+
 - visualdrawing: exception display in console configurable in prefs?
 - optimize tree drawing using incremental model (see AWTreeGraphView)
 - make breakpoint in grammar and stop around this location (line, column)
@@ -25,11 +22,11 @@ not used, to delete later:
 
 - DFA decision for lexer tokens (see with Terence) - position in lexer grammar
 - prefs: customizable list of "Insert Rule From Template" - or read from a file ?
-- extract all strings into properties
 - jump into source when navigating grammar text (in generated code)
 - display current token in syntax diagram
 - handle "header with package" option (see with Terence for line numbering between files)
 - lexical ambiguities (ask Terence)
+- extract all strings into properties
 
 * Check-list *
 

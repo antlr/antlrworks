@@ -286,7 +286,8 @@ public class AWPrefsDialog extends XJPanel {
         browseJavacPath.setEnabled(javacCustomPathButton.isSelected());
         antlr3ClasspathField.setEnabled(classpathCustomButton.isSelected());
         browseANTLR3ClassPathButton.setEnabled(classpathCustomButton.isSelected());
-        actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
+        // @todo disable for now
+        //actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_PREFERENCES);
     }
 

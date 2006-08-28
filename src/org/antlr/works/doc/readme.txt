@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0 early access 11
-July 5, 2006
+Version 1.0b1
+August 26, 2006
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -34,7 +34,7 @@ Download the complete antlrworks.jar at
 	http://www.antlr.org/works/index.html
 
 This archive contains everything needed to work with ANTLRWorks (it
-includes ANTLR 3, StringTemplate, XJLibrary, ANTLR 2.7.5, etc.).
+includes ANTLR 3.x, StringTemplate, XJLibrary, ANTLR 2.x, etc.).
 
 To run ANTLRWorks, simply double-click on the antlrworks.jar
 file.  From the command line, type "java -jar antlrworks.jar".
@@ -48,10 +48,10 @@ will have to expand the antlrworks.jar archive to overwrite ANTLR 3.
 To expand the archive, type "jar -xj antlrworks.jar".  The following
 directories will be expanded:
 
-	antlr/...			ANTLR 2.7.6
+	antlr/...			ANTLR 2.x
 	com/jgoodies/forms/...		JGoodies
 	edu/usfca/xj/...		XJLibrary
-	org/antlr/...			ANTLR v3
+	org/antlr/...			ANTLR 3.x
 	org/antlr/stringtemplate/...	StringTemplate
 	org/antlr/works/...		ANTLRWorks
 
@@ -72,6 +72,28 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+08/26/06 - Version 1.0b1
+
+- new real-time syntax coloring
+- IntelliJ plugin integration
+- improved debugger UI with detachable panels
+- improved speed when checking grammar (delay creation of error paths)
+- prefs: can specify now ANTLR 3 classpath
+- handle NonRegularDecisionMessage errors
+- display Out Of Memory error
+- rules are sorted in the debugger input dialog
+- do not analyze the grammar when debugging remotely
+- mark the grammar as dirty if the file is modified outside ANTLRWorks
+- resize view when graphic elements are moved (DFA decision, etc)
+- toggle buttons in toolbar are now correctly selected/deselected
+- list have now a white background on Windows/Linux
+- source code available (BSD license)
+- fixed a bug that would prevent small error paths from being displayed in the syntax diagram
+- fixed a bug where performing some menu commands would failed on Windows/Linux (mostly cut and paste)
+- fixed a bug where dialogs would not be displayed in the same screen as the parent frame in multi-screen environment
+- fixed a bug that would prevent decision DFA to be displayed if the first token of a rule was not in the same line as the colon
+- fixed a bug where a path with white space in it could make the compilation to fail
 
 07/05/06 - Version 1.0ea11
 

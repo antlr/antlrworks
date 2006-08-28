@@ -57,7 +57,6 @@ import java.net.ServerSocket;
 public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatcherDelegate {
 
     public static final String remoteParserClassName = "__Test__";
-    // @todo put this in the check-list
     public static final String parserGlueCodeTemplatePath = "org/antlr/works/debugger/local/";
     public static final String parserGlueCodeTemplateName = "DBParserGlueCode";
 

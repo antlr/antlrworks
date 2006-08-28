@@ -1,6 +1,0 @@
-
-Questions
-
-- how to update when pasting a large text which should not wrap ?
-- problem of memory leak in GView paintComponent()
-- auto-scrolling works on Windows when dragging rules but not on Mac OS X (have to move the mouse to continue to scroll)
