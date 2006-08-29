@@ -44,48 +44,52 @@ public class EditorATERenderingView extends ATERenderingView {
     public EditorATERenderingView(Element elem, ATEPanel textEditor, Debugger debugger) {
         super(elem, textEditor);
         this.debugger = debugger;
+        displayOp = new EditorDisplayOperation();
     }
 
-    /** This method draws some text using a specific attribute
-     *
-     */
-    protected int drawText(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute)
-            throws BadLocationException
-    {
-        if(debugger == null) {
-            return super.drawText(g, x, y, start, end, max, doc, attribute);
-        }
+    public class EditorDisplayOperation extends DisplayOperation {
 
-        final int debuggerCursorIndex = debugger.getDebuggerCursorIndex();
-        if(debuggerCursorIndex == -1) {
-            return super.drawText(g, x, y, start, end, max, doc, attribute);
-        }
-
-        int length = end - start;
-        if(start + length > max)
-            length = max - start;
-
-        if(debuggerCursorIndex >= start && debuggerCursorIndex < start+length) {
-            final Segment text = getLineBuffer();
-            doc.getText(debuggerCursorIndex, 1, text);
-            final char c = text.first();
-
-            if(debuggerCursorIndex == start) {
-                drawDebuggerCursor(g, x, y, c);
-                return super.drawText(g, x, y, start, end, max, doc, attribute);
-            } else {
-                x = super.drawText(g, x, y, start, debuggerCursorIndex-1, max, doc, attribute);
-                drawDebuggerCursor(g, x, y, c);
-                return super.drawText(g, x, y, debuggerCursorIndex-1, end, max, doc, attribute);
+        public int renderTextPortion(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute)
+                throws BadLocationException
+        {
+            if(debugger == null) {
+                return super.renderTextPortion(g, x, y, start, end, max, doc, attribute);
             }
-        } else {
-            return super.drawText(g, x, y, start, end, max, doc, attribute);
-        }
-    }
 
-    private void drawDebuggerCursor(Graphics g, int x, int y, char c) {
-        g.setColor(Color.red);
-        final int fontHeight = metrics.getHeight();
-        g.fillRect(x, y-fontHeight+metrics.getDescent(), metrics.charWidth(c), fontHeight);
+            final int debuggerCursorIndex = debugger.getDebuggerCursorIndex();
+            if(debuggerCursorIndex == -1) {
+                return super.renderTextPortion(g, x, y, start, end, max, doc, attribute);
+            }
+
+            int length = end - start;
+            if(start + length > max)
+                length = max - start;
+
+            if(debuggerCursorIndex >= start && debuggerCursorIndex < start+length) {
+                final Segment text = getLineBuffer();
+                doc.getText(debuggerCursorIndex, 1, text);
+                final char c = text.first();
+
+                if(debuggerCursorIndex == start) {
+                    drawDebuggerCursor(g, x, y, c);
+                    return super.renderTextPortion(g, x, y, start, end, max, doc, attribute);
+                } else {
+                    x = super.renderTextPortion(g, x, y, start, debuggerCursorIndex-1, max, doc, attribute);
+                    drawDebuggerCursor(g, x, y, c);
+                    return super.renderTextPortion(g, x, y, debuggerCursorIndex-1, end, max, doc, attribute);
+                }
+            } else {
+                return super.renderTextPortion(g, x, y, start, end, max, doc, attribute);
+            }
+        }
+
+        private void drawDebuggerCursor(Graphics g, int x, int y, char c) {
+            saveColor(g);
+            g.setColor(Color.red);
+            final int fontHeight = metrics.getHeight();
+            g.fillRect(x, y-fontHeight+metrics.getDescent(), metrics.charWidth(c), fontHeight);
+            restore(g);
+        }
+
     }
 }

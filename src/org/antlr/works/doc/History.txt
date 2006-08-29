@@ -1,4 +1,9 @@
 
+Version 1.0b2 -
+
+- fixed a bug in text rendering that prevented the cursor to be positioned at the correct location
+- fixed a bug in the text rendering that prevented the selected text to be highlighted correctly
+
 Version 1.0b1 - 08/26/06
 
 - new real-time syntax coloring
