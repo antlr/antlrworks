@@ -103,7 +103,8 @@ public class AWPrefsDialog extends XJPanel {
         }
         lafCombo.setEnabled(!IDE.isPlugin());
 
-        getPreferences().bindToPreferences(startupActionCombo, AWPrefs.PREF_STARTUP_ACTION, AWPrefs.STARTUP_OPEN_LAST_DOC);
+        getPreferences().bindToPreferences(startupActionCombo, AWPrefs.PREF_STARTUP_ACTION, AWPrefs.STARTUP_OPEN_LAST_OPENED_DOC);
+        getPreferences().bindToPreferences(restoreWindowsBoundButton, AWPrefs.PREF_RESTORE_WINDOWS, AWPrefs.DEFAULT_RESTORE_WINDOWS);
         getPreferences().bindToPreferences(lafCombo, AWPrefs.PREF_LOOK_AND_FEEL, XJLookAndFeel.getDefaultLookAndFeelName());
         getPreferences().bindToPreferences(dotToolPathField, AWPrefs.PREF_DOT_TOOL_PATH, AWPrefs.DEFAULT_DOT_TOOL_PATH);
 
@@ -346,6 +347,7 @@ public class AWPrefsDialog extends XJPanel {
         lafCombo = new JComboBox();
         label24 = new JLabel();
         startupActionCombo = new JComboBox();
+        restoreWindowsBoundButton = new JCheckBox();
         browseDotToolPathButton = new JButton();
         dotToolPathField = new JTextField();
         label25 = new JLabel();
@@ -500,6 +502,8 @@ public class AWPrefsDialog extends XJPanel {
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
                                 FormFactory.LINE_GAP_ROWSPEC,
+                                FormFactory.DEFAULT_ROWSPEC,
+                                FormFactory.LINE_GAP_ROWSPEC,
                                 new RowSpec(Sizes.dluY(10)),
                                 FormFactory.LINE_GAP_ROWSPEC,
                                 FormFactory.DEFAULT_ROWSPEC,
@@ -515,39 +519,45 @@ public class AWPrefsDialog extends XJPanel {
 
                         //---- label5 ----
                         label5.setText("Look and feel:");
-                        tabGeneral.add(label5, cc.xy(3, 5));
-                        tabGeneral.add(lafCombo, cc.xywh(5, 5, 3, 1));
+                        tabGeneral.add(label5, cc.xy(3, 7));
+                        tabGeneral.add(lafCombo, cc.xywh(5, 7, 3, 1));
 
                         //---- label24 ----
                         label24.setText("DOT path:");
-                        tabGeneral.add(label24, cc.xy(3, 7));
+                        tabGeneral.add(label24, cc.xy(3, 9));
 
                         //---- startupActionCombo ----
                         startupActionCombo.setModel(new DefaultComboBoxModel(new String[] {
                             "Create a new document",
-                            "Open the last used document"
+                            "Open the last opened document",
+                            "Open the last saved document",
+                            "Open all opened documents when ANTLRWorks was closed"
                         }));
                         tabGeneral.add(startupActionCombo, cc.xywh(5, 3, 3, 1));
 
+                        //---- restoreWindowsBoundButton ----
+                        restoreWindowsBoundButton.setText("Restore project's windows position and size");
+                        tabGeneral.add(restoreWindowsBoundButton, cc.xywh(5, 5, 3, 1));
+
                         //---- browseDotToolPathButton ----
                         browseDotToolPathButton.setText("Browse...");
-                        tabGeneral.add(browseDotToolPathButton, cc.xy(9, 7));
+                        tabGeneral.add(browseDotToolPathButton, cc.xy(9, 9));
 
                         //---- dotToolPathField ----
                         dotToolPathField.setToolTipText("Absolute path to the DOT command-line tool");
-                        tabGeneral.add(dotToolPathField, cc.xywh(5, 7, 3, 1));
+                        tabGeneral.add(dotToolPathField, cc.xywh(5, 9, 3, 1));
 
                         //---- label25 ----
                         label25.setText("Debug:");
-                        tabGeneral.add(label25, cc.xy(3, 11));
+                        tabGeneral.add(label25, cc.xy(3, 13));
 
                         //---- debugVerboseButton ----
                         debugVerboseButton.setText("Verbose");
-                        tabGeneral.add(debugVerboseButton, cc.xywh(5, 11, 3, 1));
+                        tabGeneral.add(debugVerboseButton, cc.xywh(5, 13, 3, 1));
 
                         //---- debugDontOptimizeNFA ----
                         debugDontOptimizeNFA.setText("Don't optimize NFA");
-                        tabGeneral.add(debugDontOptimizeNFA, cc.xywh(5, 13, 3, 1));
+                        tabGeneral.add(debugDontOptimizeNFA, cc.xywh(5, 15, 3, 1));
                     }
                     tabbedPane1.addTab("General", tabGeneral);
 
@@ -1264,6 +1274,7 @@ public class AWPrefsDialog extends XJPanel {
     private JComboBox lafCombo;
     private JLabel label24;
     private JComboBox startupActionCombo;
+    private JCheckBox restoreWindowsBoundButton;
     private JButton browseDotToolPathButton;
     private JTextField dotToolPathField;
     private JLabel label25;

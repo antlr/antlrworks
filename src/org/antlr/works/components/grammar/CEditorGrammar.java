@@ -964,6 +964,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         consoleStatus.showLevel(level);
     }
 
+    public void clearConsoleStatus() {
+        consoleStatus.clearMessage();
+    }
+
     public void notificationPrefsChanged() {
         applyPrefs();
         updateSCMStatus(null);
@@ -1171,6 +1175,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public boolean wasSaving = false;
 
     public boolean componentDocumentWillSave() {
+        AWPrefs.setLastSavedDocument(getFilePath());
+
         if(menuSCM.isFileWritable())
             return true;
 

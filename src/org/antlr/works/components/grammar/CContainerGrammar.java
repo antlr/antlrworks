@@ -38,6 +38,7 @@ import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -60,6 +61,13 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
         getContentPane().add(panel);
 
         getJFrame().pack();
+    }
+
+    public String autosaveName() {
+        if(AWPrefs.getRestoreWindows())
+            return getDocument().getDocumentPath();
+        else
+            return null;
     }
 
     public void setDefaultSize() {

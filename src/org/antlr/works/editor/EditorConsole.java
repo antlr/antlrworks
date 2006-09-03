@@ -112,6 +112,7 @@ public class EditorConsole extends EditorTab implements Console {
 
     public void clear() {
         textArea.setText("");
+        editor.clearConsoleStatus();
     }
 
     public synchronized void println(String s) {

@@ -1,6 +1,11 @@
 
 Version 1.0b2 -
 
+- clear console status message when console is cleared
+- save automatically the position and size of each project's window
+- new startup option: open last saved document, open all opened documents when ANTLRWorks was closed
+
+- fixed a bug where the cursor highlighting couldn't be turned off
 - fixed a bug in text rendering that prevented the cursor to be positioned at the correct location
 - fixed a bug in the text rendering that prevented the selected text to be highlighted correctly
 

@@ -1,8 +1,6 @@
 
 * Prio 1
 
-- aterenderingview: disable cursor line highlight if disabled in prefs
-
 - plugin: hook undo, copy, paste from IntelliJ menu
 - plugin: generate code in default project output directory
 

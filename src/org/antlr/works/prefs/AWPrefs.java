@@ -38,24 +38,33 @@ import edu.usfca.xj.foundation.XJSystem;
 import java.awt.*;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AWPrefs {
 
     // General
     public static final String PREF_STARTUP_ACTION = "PREF_STARTUP_ACTION";
+    public static final String PREF_LAST_SAVED_DOCUMENT = "PREF_LAST_SAVED_DOCUMENT";
+    public static final String PREF_ALL_OPENED_DOCUMENTS = "PREF_ALL_OPENED_DOCUMENTS";
+
+    public static final String PREF_RESTORE_WINDOWS = "PREF_RESTORE_WINDOWS";
     public static final String PREF_LOOK_AND_FEEL = "PREF_LOOK_AND_FEEL";
 
     public static final String PREF_DEBUG_VERBOSE = "PREF_DEBUG_VERBOSE";
     public static final String PREF_DEBUG_DONT_OPTIMIZE_NFA = "PREF_DONT_OPTIMIZE_NFA";
 
     public static final String PREF_DOT_TOOL_PATH = "PREF_DOT_TOOL_PATH";
-    
+
     public static final String PREF_TOOLBAR_SORT = "PREF_TOOLBAR_SORT";
 
     public static final int STARTUP_NEW_DOC = 0;
-    public static final int STARTUP_OPEN_LAST_DOC = 1;
+    public static final int STARTUP_OPEN_LAST_OPENED_DOC = 1;
+    public static final int STARTUP_OPEN_LAST_SAVED_DOC = 2;
+    public static final int STARTUP_OPEN_ALL_OPENED_DOC = 3;
+
     public static final String DEFAULT_DOT_TOOL_PATH;
+    public static final boolean DEFAULT_RESTORE_WINDOWS = true;
 
     // Editor
     public static final String PREF_TAB_WIDTH = "PREF_TAB_WIDTH";
@@ -229,7 +238,7 @@ public class AWPrefs {
     public static final String PREF_PRIVATE_MENU = "PREF_PRIVATE_MENU";
 
     public static final String PREF_PROJET_DOCUMENT = "PREF_PROJET_DOCUMENT";
-    
+
     public static final String DEFAULT_OUTPUT_PATH;
 
     static {
@@ -299,7 +308,11 @@ public class AWPrefs {
     }
 
     public static int getStartupAction() {
-        return getPreferences().getInt(PREF_STARTUP_ACTION, STARTUP_OPEN_LAST_DOC);
+        return getPreferences().getInt(PREF_STARTUP_ACTION, STARTUP_OPEN_LAST_OPENED_DOC);
+    }
+
+    public static boolean getRestoreWindows() {
+        return getPreferences().getBoolean(PREF_RESTORE_WINDOWS, DEFAULT_RESTORE_WINDOWS);
     }
 
     public static boolean getAutoSaveEnabled() {
@@ -506,4 +519,27 @@ public class AWPrefs {
         return XJApplication.shared().getPreferences();
     }
 
+    public static void setWindowFrame(String path, Rectangle bounds) {
+        getPreferences().setObject(path, bounds);
+    }
+
+    public static Rectangle getWindowFrame(String path) {
+        return (Rectangle) getPreferences().getObject(path, null);
+    }
+
+    public static void setLastSavedDocument(String filePath) {
+        getPreferences().setString(PREF_LAST_SAVED_DOCUMENT, filePath);
+    }
+
+    public static String getLastSavedDocument() {
+        return getPreferences().getString(PREF_LAST_SAVED_DOCUMENT, null);
+    }
+
+    public static void setAllOpenedDocuments(List documents) {
+        getPreferences().setObject(PREF_ALL_OPENED_DOCUMENTS, documents);
+    }
+
+    public static List getAllOpenedDocuments() {
+        return (List) getPreferences().getObject(PREF_ALL_OPENED_DOCUMENTS, null);
+    }
 }

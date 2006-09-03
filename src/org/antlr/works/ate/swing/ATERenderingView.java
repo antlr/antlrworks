@@ -58,7 +58,7 @@ public class ATERenderingView extends PlainView {
     protected DisplayOperation displayOp = new DisplayOperation();
     protected ModelToViewOperation modelToViewOp = new ModelToViewOperation();
     protected ViewToModel viewToModelOp = new ViewToModel();
-    
+
     protected Graphics currentGraphics;
     protected Color savedColor;
 
@@ -83,18 +83,20 @@ public class ATERenderingView extends PlainView {
      * @see #drawSelectedText
      */
     protected void drawLine(int lineIndex, Graphics g, int x, int y) {
-        Element line = getElement().getElement(lineIndex);
-        int p0 = line.getStartOffset();
-        int p1 = line.getEndOffset();
-
         // Highlight the background where the cursor is located
-        final int cursorPosition = textPane.getCaretPosition()+1;
-        if(cursorPosition > p0 && cursorPosition <= p1) {
-            saveColor(g);
-            g.setColor(BACKGROUND_HIGHLIGHT_COLOR);
-            final int fontHeight = metrics.getHeight();
-            g.fillRect(0, y-fontHeight+metrics.getDescent(), textPane.getWidth(), fontHeight);
-            restore(g);
+        if(textPane.highlightCursorLine()) {
+            Element line = getElement().getElement(lineIndex);
+            int p0 = line.getStartOffset();
+            int p1 = line.getEndOffset();
+
+            final int cursorPosition = textPane.getCaretPosition()+1;
+            if(cursorPosition > p0 && cursorPosition <= p1) {
+                saveColor(g);
+                g.setColor(BACKGROUND_HIGHLIGHT_COLOR);
+                final int fontHeight = metrics.getHeight();
+                g.fillRect(0, y-fontHeight+metrics.getDescent(), textPane.getWidth(), fontHeight);
+                restore(g);
+            }
         }
 
         super.drawLine(lineIndex, g, x, y);

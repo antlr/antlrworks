@@ -35,6 +35,7 @@ import edu.usfca.xj.appkit.app.XJApplication;
 import edu.usfca.xj.appkit.app.XJApplicationDelegate;
 import edu.usfca.xj.appkit.document.XJDataPlainText;
 import edu.usfca.xj.appkit.document.XJDataXML;
+import edu.usfca.xj.appkit.document.XJDocument;
 import edu.usfca.xj.appkit.frame.XJPanel;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
@@ -68,6 +69,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
@@ -125,13 +129,28 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
                     sc.setVisible(false);
                     XJApplication.shared().newDocument();
                     break;
-                case AWPrefs.STARTUP_OPEN_LAST_DOC:
+
+                case AWPrefs.STARTUP_OPEN_LAST_OPENED_DOC:
                     if (XJApplication.shared().getDocuments().size() == 0) {
                         if (!XJApplication.shared().openLastUsedDocument()) {
                             sc.setVisible(false);
                             XJApplication.shared().newDocument();
                         }
                     }
+                    break;
+
+                case AWPrefs.STARTUP_OPEN_LAST_SAVED_DOC:
+                    if (XJApplication.shared().getDocuments().size() == 0) {
+                        if(!XJApplication.shared().openDocument(AWPrefs.getLastSavedDocument())) {
+                            sc.setVisible(false);
+                            XJApplication.shared().newDocument();
+                        }
+                    }
+                    break;
+
+                case AWPrefs.STARTUP_OPEN_ALL_OPENED_DOC:
+                    sc.setVisible(false);
+                    restoreAllOpenedDocuments();
                     break;
             }
         }
@@ -329,6 +348,8 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public void appWillTerminate() {
+        saveAllOpenedDocuments();
+
         StatisticsAW.shared().close();
     }
 
@@ -358,6 +379,28 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
     public String appVersionLong() {
         return Localizable.getLocalizedString(Localizable.APP_VERSION_LONG);
+    }
+
+    private void restoreAllOpenedDocuments() {
+        List documents = AWPrefs.getAllOpenedDocuments();
+        if(documents == null)
+            return;
+
+        for (Iterator iterator = documents.iterator(); iterator.hasNext();) {
+            String docPath = (String) iterator.next();
+            XJApplication.shared().openDocument(docPath);
+        }
+    }
+
+    private void saveAllOpenedDocuments() {
+        List docPath = new ArrayList();
+        for (Iterator iterator = XJApplication.shared().getDocuments().iterator(); iterator.hasNext();) {
+            XJDocument document = (XJDocument) iterator.next();
+            if(document instanceof CDocumentGrammar) {
+                docPath.add(document.getDocumentPath());
+            }
+        }
+        AWPrefs.setAllOpenedDocuments(docPath);
     }
 
     /** Localized resource bundle */
