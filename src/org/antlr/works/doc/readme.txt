@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0b1
-August 26, 2006
+Version 1.0b2
+September 3, 2006
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -72,6 +72,16 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+09/03/06 - Version 1.0b2
+
+- clear console status message when console is cleared
+- save automatically the position and size of each project's window
+- new startup option: open last saved document, open all opened documents when ANTLRWorks was closed
+
+- fixed a bug where the cursor highlighting couldn't be turned off
+- fixed a bug in text rendering that prevented the cursor to be positioned at the correct location
+- fixed a bug in the text rendering that prevented the selected text to be highlighted correctly
 
 08/26/06 - Version 1.0b1
 

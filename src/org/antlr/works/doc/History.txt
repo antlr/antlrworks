@@ -1,5 +1,5 @@
 
-Version 1.0b2 -
+Version 1.0b2 - 09/03/06
 
 - clear console status message when console is cleared
 - save automatically the position and size of each project's window
