@@ -519,16 +519,9 @@ public class AWPrefs {
         return XJApplication.shared().getPreferences();
     }
 
-    public static void setWindowFrame(String path, Rectangle bounds) {
-        getPreferences().setObject(path, bounds);
-    }
-
-    public static Rectangle getWindowFrame(String path) {
-        return (Rectangle) getPreferences().getObject(path, null);
-    }
-
     public static void setLastSavedDocument(String filePath) {
-        getPreferences().setString(PREF_LAST_SAVED_DOCUMENT, filePath);
+        if(filePath != null)
+            getPreferences().setString(PREF_LAST_SAVED_DOCUMENT, filePath);
     }
 
     public static String getLastSavedDocument() {
@@ -536,7 +529,8 @@ public class AWPrefs {
     }
 
     public static void setAllOpenedDocuments(List documents) {
-        getPreferences().setObject(PREF_ALL_OPENED_DOCUMENTS, documents);
+        if(documents != null)
+            getPreferences().setObject(PREF_ALL_OPENED_DOCUMENTS, documents);
     }
 
     public static List getAllOpenedDocuments() {

@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0b2
-September 3, 2006
+Version 1.0b3
+September 13, 2006
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -72,6 +72,11 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+09/13/06 - Version 1.0b3
+
+- fixed a bug where checking the DOT tool existence would fail with white space in the path
+- fixed a bug where saving a document without path would fail
 
 09/03/06 - Version 1.0b2
 

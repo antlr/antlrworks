@@ -74,18 +74,14 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
         return panel;
     }
 
-    public String getDOTToolPath() {
-        return Utils.quotePath(AWPrefs.getDOTToolPath());
-    }
-
     public static final String dotInfo = "The 'dot' tool is used to render directed graph. It can be downloaded from www.graphviz.org.";
 
     public boolean launch() {
-        if(getDOTToolPath() == null) {
+        if(AWPrefs.getDOTToolPath() == null) {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the graph because the 'dot' tool path is not defined. The path can be set in the Preferences.\n"+dotInfo);
             return false;
         }
-        if(!new File(getDOTToolPath()).exists()) {
+        if(!new File(AWPrefs.getDOTToolPath()).exists()) {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the graph because the 'dot' tool does not exist at the specified path. Check the tool path in the Preferences.\n"+dotInfo);
             return false;
         }
@@ -165,7 +161,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
     }
 
     protected void generatePlainTextFile() throws Exception {
-        String[] args = new String[] { getDOTToolPath(), "-Tdot", "-o",
+        String[] args = new String[] { Utils.quotePath(AWPrefs.getDOTToolPath()), "-Tdot", "-o",
                 Utils.quotePath(tempOutputFile),
                 Utils.quotePath(tempInputFile) };
         Process p = Runtime.getRuntime().exec(args);

@@ -1,4 +1,9 @@
 
+Version 1.0b3 - 09/13/06
+
+- fixed a bug where checking the DOT tool existence would fail with white space in the path
+- fixed a bug where saving a document without path would fail
+
 Version 1.0b2 - 09/03/06
 
 - clear console status message when console is cleared
