@@ -85,9 +85,9 @@ public class ATERenderingView extends PlainView {
     protected void drawLine(int lineIndex, Graphics g, int x, int y) {
         // Highlight the background where the cursor is located
         if(textPane.highlightCursorLine()) {
-            Element line = getElement().getElement(lineIndex);
-            int p0 = line.getStartOffset();
-            int p1 = line.getEndOffset();
+            final Element line = getElement().getElement(lineIndex);
+            final int p0 = line.getStartOffset();
+            final int p1 = line.getEndOffset();
 
             final int cursorPosition = textPane.getCaretPosition()+1;
             if(cursorPosition > p0 && cursorPosition <= p1) {
@@ -119,13 +119,13 @@ public class ATERenderingView extends PlainView {
         }
 
         // line coordinates
-        Element map = getElement();
-        int lineIndex = map.getElementIndex(pos);
-        Rectangle lineArea = lineToRect(a, lineIndex);
+        final Element map = getElement();
+        final int lineIndex = map.getElementIndex(pos);
+        final Rectangle lineArea = lineToRect(a, lineIndex);
 
         // determine span from the start of the line
-        Element line = map.getElement(lineIndex);
-        int p0 = line.getStartOffset();
+        final Element line = map.getElement(lineIndex);
+        final int p0 = line.getStartOffset();
 
         // fill in the results and return
         lineArea.x += renderText(modelToViewOp, currentGraphics, 0, 0, p0, pos);
@@ -261,7 +261,7 @@ public class ATERenderingView extends PlainView {
         final ATESyntaxEngine engine = textEditor.getParserEngine();
         tokens = engine.getTokens();
         int p = p0;
-        int start = findStartingTokenIndex(p0, 0, tokens.size(), 0);
+        final int start = findStartingTokenIndex(p0, 0, tokens.size(), 0);
         for (int i = start; i < tokens.size(); i++) {
             ATEToken t = (ATEToken) tokens.get(i);
             AttributeSet attribute = engine.getAttributeForToken(t);
@@ -301,8 +301,8 @@ public class ATERenderingView extends PlainView {
         if(Math.abs(high-low) <= 1)
             return Math.min(candidate, low);
 
-        int middle = low + (high-low) / 2;
-        ATEToken t = (ATEToken) tokens.get(middle);
+        final int middle = low + (high-low) / 2;
+        final ATEToken t = (ATEToken) tokens.get(middle);
         if(p0 >= t.startLineIndex && p0 <= t.endLineIndex) {
             return findStartingTokenIndex(p0, low, middle, middle);
         } else {
@@ -327,7 +327,7 @@ public class ATERenderingView extends PlainView {
 
         g.setFont(getFontForAttribute(attribute));
 
-        Color c = StyleConstants.getForeground(attribute);
+        final Color c = StyleConstants.getForeground(attribute);
         if(c == null)
             g.setColor(Color.black);
         else

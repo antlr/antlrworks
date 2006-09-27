@@ -33,12 +33,9 @@ package org.antlr.works.ate;
 
 import org.antlr.works.ate.swing.ATEEditorKit;
 import org.antlr.works.ate.swing.ATERenderingView;
-import org.antlr.works.ate.swing.ATEStyledDocument;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultCaret;
-import javax.swing.text.StyledEditorKit;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
@@ -52,7 +49,7 @@ public class ATETextPane extends JTextPane
     protected boolean highlightCursorLine = false;
 
     public ATETextPane(ATEPanel textEditor, StyledEditorKit editorKit) {
-        super(new ATEStyledDocument());
+        super(new DefaultStyledDocument());
         setCaret(new ATECaret());
         setEditorKit(editorKit==null?new ATEEditorKit(textEditor):editorKit);
         this.textEditor = textEditor;
@@ -81,6 +78,10 @@ public class ATETextPane extends JTextPane
     public void setFont(Font f) {
         super.setFont(f);
         ATERenderingView.DEFAULT_FONT = f;
+    }
+
+    public void setTabSize(int size) {
+        getDocument().putProperty(PlainDocument.tabSizeAttribute, new Integer(size));
     }
 
     public boolean getScrollableTracksViewportWidth() {

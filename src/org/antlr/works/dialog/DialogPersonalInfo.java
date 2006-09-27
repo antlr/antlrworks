@@ -212,7 +212,6 @@ public class DialogPersonalInfo extends XJDialog {
                 iconButton.setEnabled(true);
                 iconButton.setFocusPainted(false);
                 iconButton.setFocusable(false);
-                iconButton.setIcon(new ImageIcon("/Users/bovet/Dev/Projects/ANTLRWorks/classes/org/antlr/works/icons/app.png"));
                 iconButton.setOpaque(false);
                 iconButton.setRequestFocusEnabled(false);
                 iconButton.setVerifyInputWhenFocusTarget(false);

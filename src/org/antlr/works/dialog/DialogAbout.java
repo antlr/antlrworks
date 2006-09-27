@@ -187,7 +187,6 @@ public class DialogAbout extends XJPanel {
         appIconButton.setEnabled(true);
         appIconButton.setFocusPainted(false);
         appIconButton.setFocusable(false);
-        appIconButton.setIcon(new ImageIcon("/Users/bovet/Dev/Projects/ANTLRWorks/classes/org/antlr/works/icons/app.png"));
         appIconButton.setMaximumSize(new Dimension(136, 144));
         appIconButton.setMinimumSize(new Dimension(136, 144));
         appIconButton.setPreferredSize(new Dimension(124, 144));

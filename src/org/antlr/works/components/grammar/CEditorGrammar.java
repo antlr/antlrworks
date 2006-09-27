@@ -34,7 +34,6 @@ import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.*;
 import org.antlr.works.utils.Console;
-import org.antlr.works.utils.TextUtils;
 import org.antlr.works.visualization.Visual;
 
 import javax.swing.*;
@@ -402,7 +401,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public void applyFont() {
         getTextPane().setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        TextUtils.createTabs(getTextPane());
+        getTextPane().setTabSize(AWPrefs.getEditorTabSize());
     }
 
     public void close() {

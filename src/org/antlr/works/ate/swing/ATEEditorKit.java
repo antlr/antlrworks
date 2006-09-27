@@ -47,7 +47,7 @@ public class ATEEditorKit extends StyledEditorKit implements ViewFactory {
     }
 
     public Document createDefaultDocument() {
-        return new ATEStyledDocument();
+        return new DefaultStyledDocument();
     }
 
     public View create(Element elem) {

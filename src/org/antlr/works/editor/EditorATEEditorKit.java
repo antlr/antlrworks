@@ -1,6 +1,5 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.ate.swing.ATEStyledDocument;
 import org.antlr.works.components.grammar.CEditorGrammar;
 
 import javax.swing.text.*;
@@ -48,7 +47,7 @@ public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory {
     }
 
     public Document createDefaultDocument() {
-        return new ATEStyledDocument();
+        return new DefaultStyledDocument();
     }
 
     public View create(Element elem) {

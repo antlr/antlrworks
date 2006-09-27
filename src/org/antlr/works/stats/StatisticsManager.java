@@ -96,11 +96,11 @@ public class StatisticsManager {
     }
 
     protected boolean loadGrammar() {
-        return loadFromFile(GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME));
+        return loadFromFile(getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME));
     }
 
     protected boolean loadRuntime() {
-        return loadFromFile(GrammarReport.getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME));
+        return loadFromFile(getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME));
     }
 
     protected boolean loadFromFile(String file) {
@@ -138,12 +138,19 @@ public class StatisticsManager {
 
     public static void reset(String type) {
         if(type.equals(StatisticsReporter.TYPE_GRAMMAR)) {
-            String file = GrammarReport.getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME);
+            String file = getAbsoluteFileName(GrammarReport.GRAMMAR_STATS_FILENAME);
             new File(file).delete();
         } else if(type.equals(StatisticsReporter.TYPE_RUNTIME)) {
-            String file = GrammarReport.getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME);
+            String file = getAbsoluteFileName(Profiler.RUNTIME_STATS_FILENAME);
             new File(file).delete();
         } else if(type.equals(StatisticsReporter.TYPE_GUI))
             StatisticsAW.shared().reset();
     }
+
+    public static String getAbsoluteFileName(String filename) {
+        return System.getProperty("user.home")+File.separator+
+                    GrammarReport.ANTLRWORKS_DIR+File.separator+
+                    filename;
+    }
+
 }

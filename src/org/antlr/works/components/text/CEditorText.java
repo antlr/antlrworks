@@ -7,7 +7,6 @@ import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.utils.TextUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -88,7 +87,7 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
 
     public void applyFont() {
         getTextPane().setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        TextUtils.createTabs(getTextPane());
+        getTextPane().setTabSize(AWPrefs.getEditorTabSize());
     }
 
     public void loadText(String text) {

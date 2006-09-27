@@ -224,7 +224,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle(resourceBundle.getString("menu.title.generate"));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.generateCode"), MI_GENERATE_CODE, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.generateCode"), KeyEvent.VK_F10, MI_GENERATE_CODE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showParserCode"), MI_SHOW_GENERATED_PARSER_CODE, this));
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showLexerCode"), MI_SHOW_GENERATED_LEXER_CODE, this));

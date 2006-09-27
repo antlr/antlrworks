@@ -1,4 +1,10 @@
 
+Version 1.0b4 -
+
+- added menu shortcut for Generate Code
+- fixed a bug where the tab settings were ignored in the editor
+- fixed a bug that would prevent AW to run on Fedora Core 5
+
 Version 1.0b3 - 09/13/06
 
 - fixed a bug where checking the DOT tool existence would fail with white space in the path

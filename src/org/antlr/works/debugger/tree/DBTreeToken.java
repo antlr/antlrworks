@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBTreeToken extends Token {
+public class DBTreeToken implements Token {
 
     public int ID;
     public String text;
@@ -46,6 +46,10 @@ public class DBTreeToken extends Token {
 
     public String getText() {
         return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public int getType() {

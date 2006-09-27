@@ -36,7 +36,6 @@ import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.utils.TextUtils;
 
 import java.awt.*;
 
@@ -58,7 +57,7 @@ public class CodeDisplay extends EditorTab {
 
     public void applyFont() {
         textEditor.getTextPane().setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        TextUtils.createTabs(textEditor.getTextPane());
+        textEditor.getTextPane().setTabSize(AWPrefs.getEditorTabSize());
     }
 
     public void setText(String text) {
