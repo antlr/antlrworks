@@ -222,10 +222,10 @@ public class IdeaOverlay extends OverlayObject {
         }
 
         public void keyPressed(KeyEvent e) {
-            if (e.isConsumed())
+            if(e.isConsumed())
                 return;
 
-            if (!content.isVisible())
+            if(!content.isVisible())
                 return;
 
             switch(e.getKeyCode()) {

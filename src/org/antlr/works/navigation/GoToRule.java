@@ -167,10 +167,10 @@ public class GoToRule extends OverlayObject {
     public class ListKeyAdapter extends KeyAdapter {
 
         public void keyPressed(KeyEvent e) {
-            if (e.isConsumed())
+            if(e.isConsumed())
                 return;
 
-            if (!content.isVisible())
+            if(!content.isVisible())
                 return;
 
             switch(e.getKeyCode()) {
@@ -201,10 +201,10 @@ public class GoToRule extends OverlayObject {
     public class TextFieldKeyAdapter extends KeyAdapter {
 
         public void keyPressed(KeyEvent e) {
-            if (e.isConsumed())
+            if(e.isConsumed())
                 return;
 
-            if (!content.isVisible())
+            if(!content.isVisible())
                 return;
 
             switch(e.getKeyCode()) {

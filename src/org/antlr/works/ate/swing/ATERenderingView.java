@@ -106,102 +106,96 @@ public class ATERenderingView extends PlainView {
      * Provides a mapping from the document model coordinate space
      * to the coordinate space of the view mapped to it.
      *
-     * @param pos the position to convert >= 0
-     * @param a the allocated region to render into
-     * @return the bounding box of the given position
-     * @exception BadLocationException  if the given position does not
-     *   represent a valid location in the associated document
-     * @see View#modelToView
      */
     public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
         if(!textEditor.isSyntaxColoring()) {
             return super.modelToView(pos, a, b);
         }
 
-        // line coordinates
-        final Element map = getElement();
-        final int lineIndex = map.getElementIndex(pos);
-        final Rectangle lineArea = lineToRect(a, lineIndex);
+        // Fetch the line index closest to the given position
+        final Element element = getElement();
+        // Fetch the element for the current view
+        final int lineIndex = element.getElementIndex(pos);
 
-        // determine span from the start of the line
-        final Element line = map.getElement(lineIndex);
+        // Fetch the element located at the beginning of the line
+        final Element line = element.getElement(lineIndex);
+        // Fetch the index of this element
         final int p0 = line.getStartOffset();
 
-        // fill in the results and return
-        lineArea.x += renderText(modelToViewOp, currentGraphics, 0, 0, p0, pos);
-        lineArea.width = 1;
-        lineArea.height = metrics.getHeight();
-        return lineArea;
+        // Fetch the rectangle of the line
+        final Rectangle posRect = lineToRect(a, lineIndex);
+
+        // Compute the location of the specified position using our renderText() method:
+        // it will take care of all characters attributes.
+        posRect.x += renderText(modelToViewOp, currentGraphics, 0, 0, p0, pos);
+
+        // Default width
+        posRect.width = 1;
+        // The height of a line is considered as fix
+        posRect.height = metrics.getHeight();
+
+        // Return the rectangle representing the specified position
+        return posRect;
     }
 
     /**
      * Provides a mapping from the view coordinate space to the logical
      * coordinate space of the model.
      *
-     * @param fx the X coordinate >= 0
-     * @param fy the Y coordinate >= 0
-     * @param a the allocated region to render into
-     * @return the location within the model that best represents the
-     *  given point in the view >= 0
-     * @see View#viewToModel
      */
-    public int viewToModel(float fx, float fy, Shape a, Position.Bias[] bias) {
+    public int viewToModel(float fx, float fy, Shape a, Position.Bias[] biasReturn) {
         if(!textEditor.isSyntaxColoring()) {
-            return super.viewToModel(fx, fy, a, bias);
+            return super.viewToModel(fx, fy, a, biasReturn);
         }
 
-        // PENDING(prinz) properly calculate bias
-        bias[0] = Position.Bias.Forward;
+        // Currently we don't compute the exact bias. We take the default one (forward).
+        biasReturn[0] = Position.Bias.Forward;
 
-        Rectangle alloc = a.getBounds();
-        Document doc = getDocument();
-        int x = (int) fx;
-        int y = (int) fy;
-        if (y < alloc.y) {
-            // above the area covered by this icon, so the the position
-            // is assumed to be the start of the coverage for this view.
+        // Fetch the allocated region bounds in which to render
+        final Rectangle bounds = a.getBounds();
+        if(fy < bounds.y) {
+            // The y coordinate is below the allocated region in which to render.
+            // Return the start offset of the view.
             return getStartOffset();
-        } else if (y > alloc.y + alloc.height) {
-            // below the area covered by this icon, so the the position
-            // is assumed to be the end of the coverage for this view.
+        } else if(fy > bounds.y + bounds.height) {
+            // The y coordinate is above the allocated region in which to render.
+            // Return the end offset of the view.
             return getEndOffset() - 1;
-        } else {
-            // positioned within the coverage of this view vertically,
-            // so we figure out which line the point corresponds to.
-            // if the line is greater than the number of lines contained, then
-            // simply use the last line as it represents the last possible place
-            // we can position to.
-            Element map = doc.getDefaultRootElement();
-            int lineIndex = Math.abs((y - alloc.y) / metrics.getHeight() );
-            if (lineIndex >= map.getElementCount()) {
-                return getEndOffset() - 1;
-            }
-            Element line = map.getElement(lineIndex);
-            final int firstLineOffset = 0; // jbovet: see comment in PlainView
-            if (lineIndex == 0) {
-                alloc.x += firstLineOffset;
-                alloc.width -= firstLineOffset;
-            }
-            if (x < alloc.x) {
-                // point is to the left of the line
-                return line.getStartOffset();
-            } else if (x > alloc.x + alloc.width) {
-                // point is to the right of the line
-                return line.getEndOffset() - 1;
-            } else {
-                // Determine the offset into the text
-                try {
-                    int p0 = line.getStartOffset();
-                    int p1 = line.getEndOffset() - 1;
+        }
 
-                    viewToModelOp.setParameters(x, p0);
-                    renderText(viewToModelOp, currentGraphics, alloc.x, y, p0, p1);
-                    return viewToModelOp.modelPos;
-                } catch (BadLocationException e) {
-                    // should not happen
-                    return -1;
-                }
-            }
+        // Now compute the location of line the position corresponds to. It is possible
+        // that the position, while in the allocated region, can be located after the
+        // last line of the document.
+        Element element = getElement();
+
+        // Again consider each line as having a fixed height
+        final int lineIndex = Math.abs(((int)fy - bounds.y) / metrics.getHeight() );
+        if(lineIndex >= element.getElementCount()) {
+            // Past the last line of the document, return the last index of the view
+            return getEndOffset() - 1;
+        }
+
+        // OK. Now let's see if the x coordinate is past the left or right edge of the line
+        final Element line = element.getElement(lineIndex);
+        if(fx < bounds.x) {
+            // The x coordinate is past the left edge of the line. Return the start offset of the line.
+            return line.getStartOffset();
+        } else if(fx > bounds.x + bounds.width) {
+            // The x coordinate is past the right edge of the line. Return the end offset of the line.
+            return line.getEndOffset() - 1;
+        }
+
+        // Fine. Now let's compute the exact location by using our custom rendering method
+        // that will take care of each token attribute.
+        final int p0 = line.getStartOffset();
+        final int p1 = line.getEndOffset() - 1;
+        try {
+            viewToModelOp.setParameters((int)fx, p0);
+            renderText(viewToModelOp, currentGraphics, bounds.x, (int)fy, p0, p1);
+            return viewToModelOp.modelPos;
+        } catch (BadLocationException e) {
+            // What should we do? Currently nothing because it should not happen.
+            return -1;
         }
     }
 

@@ -185,7 +185,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     public void scrollCenterToPosition(int position, boolean animate) {
         try {
             Rectangle r = textPane.modelToView(position);
-            if (r != null) {
+            if(r != null) {
                 Rectangle vis = getVisibleRect();
                 r.y -= (vis.height / 2);
                 r.height = vis.height;

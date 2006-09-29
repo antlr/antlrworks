@@ -421,7 +421,7 @@ public class EngineGrammar {
             NFAState nfaStart = message.probe.dfa.getNFADecisionStartState();
 
             int tracePathAlt = nfaStart.translateDisplayAltToWalkAlt(message.probe.dfa, displayAltI.intValue());
-            if ( firstAlt == 0 )
+            if( firstAlt == 0 )
                 firstAlt = tracePathAlt;
 
             List path =

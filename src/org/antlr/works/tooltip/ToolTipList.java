@@ -136,7 +136,7 @@ public class ToolTipList extends JPanel {
         }
 
         public void keyPressed(KeyEvent e) {
-            if (e.isConsumed())
+            if(e.isConsumed())
                 return;
 
             switch(e.getKeyCode()) {

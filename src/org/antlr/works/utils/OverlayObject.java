@@ -88,14 +88,14 @@ public abstract class OverlayObject {
         parentComponent.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (content.isVisible()) {
+                if(content.isVisible()) {
                     hide();
                 }
             }
 
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                if (content.isVisible()) {
+                if(content.isVisible()) {
                     hide();
                 }
             }

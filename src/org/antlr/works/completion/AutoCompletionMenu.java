@@ -197,7 +197,7 @@ public class AutoCompletionMenu extends OverlayObject {
             e.printStackTrace();
         }
 
-        if (rect == null)
+        if(rect == null)
             return;
 
         Point p = SwingUtilities.convertPoint(getTextComponent(), new Point(rect.x, rect.y), parentFrame.getRootPane());
@@ -242,10 +242,10 @@ public class AutoCompletionMenu extends OverlayObject {
         }
 
         public void keyPressed(KeyEvent e) {
-            if (e.isConsumed())
+            if(e.isConsumed())
                 return;
 
-            if (!content.isVisible())
+            if(!content.isVisible())
                 return;
 
             switch(e.getKeyCode()) {

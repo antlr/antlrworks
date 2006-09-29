@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0b3
-September 13, 2006
+Version 1.0b4
+September 28, 2006
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -72,6 +72,12 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+09/28/06 - Version 1.0b4
+
+- added menu shortcut for Generate Code
+- fixed a bug where the tab settings were ignored in the editor
+- fixed a bug that would prevent AW to run on Fedora Core 5
 
 09/13/06 - Version 1.0b3
 

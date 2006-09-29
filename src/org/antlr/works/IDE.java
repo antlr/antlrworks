@@ -131,8 +131,8 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
                     break;
 
                 case AWPrefs.STARTUP_OPEN_LAST_OPENED_DOC:
-                    if (XJApplication.shared().getDocuments().size() == 0) {
-                        if (!XJApplication.shared().openLastUsedDocument()) {
+                    if(XJApplication.shared().getDocuments().size() == 0) {
+                        if(!XJApplication.shared().openLastUsedDocument()) {
                             sc.setVisible(false);
                             XJApplication.shared().newDocument();
                         }
@@ -140,7 +140,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
                     break;
 
                 case AWPrefs.STARTUP_OPEN_LAST_SAVED_DOC:
-                    if (XJApplication.shared().getDocuments().size() == 0) {
+                    if(XJApplication.shared().getDocuments().size() == 0) {
                         if(!XJApplication.shared().openDocument(AWPrefs.getLastSavedDocument())) {
                             sc.setVisible(false);
                             XJApplication.shared().newDocument();

@@ -52,7 +52,7 @@ public class TextPane extends JTextPane {
     }
 
     public boolean getScrollableTracksViewportWidth() {
-        if (!wrap)
+        if(!wrap)
         {
             Component parent = getParent();
             return parent == null || getUI().getPreferredSize(this).width < parent.getSize().width;
@@ -61,7 +61,7 @@ public class TextPane extends JTextPane {
     }
 
     public void setBounds(int x, int y, int width, int height) {
-        if (!wrap) {
+        if(!wrap) {
             Dimension size = this.getPreferredSize();
             super.setBounds(x, y,
                     Math.max(size.width, width), Math.max(size.height, height));

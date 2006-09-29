@@ -85,7 +85,7 @@ public class ATETextPane extends JTextPane
     }
 
     public boolean getScrollableTracksViewportWidth() {
-        if (!wrap) {
+        if(!wrap) {
             Component parent = getParent();
             return parent == null || getUI().getPreferredSize(this).width < parent.getSize().width;
         } else
@@ -93,7 +93,7 @@ public class ATETextPane extends JTextPane
     }
 
     public void setBounds(int x, int y, int width, int height) {
-        if (!wrap) {
+        if(!wrap) {
             Dimension size = this.getPreferredSize();
             super.setBounds(x, y,
                     Math.max(size.width, width), Math.max(size.height, height));
@@ -118,7 +118,7 @@ public class ATETextPane extends JTextPane
         }
 
         public void paint(Graphics g) {
-            if (!isVisible())
+            if(!isVisible())
                 return;
 
             try {
@@ -133,7 +133,7 @@ public class ATETextPane extends JTextPane
         }
 
         protected synchronized void damage(Rectangle r) {
-            if (r == null)
+            if(r == null)
                 return;
 
             x = r.x;
@@ -155,7 +155,7 @@ public class ATETextPane extends JTextPane
 
             selectingWord = false;
 
-            if (SwingUtilities.isLeftMouseButton(e)) {
+            if(SwingUtilities.isLeftMouseButton(e)) {
                 if(e.getClickCount() == 2) {
                     selectWord();
                     selectingWord = true;
