@@ -89,7 +89,7 @@ public class AWPrefsDialog extends XJPanel {
     public void prepareGeneralTab() {
         browseDotToolPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
+                if(XJFileChooser.shared().displayOpenDialog(getJavaContainer(), false)) {
                     dotToolPathField.setText(XJFileChooser.shared().getSelectedFilePath());
                     AWPrefs.setDOTToolPath(dotToolPathField.getText());
                 }

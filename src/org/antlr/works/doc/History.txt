@@ -1,6 +1,7 @@
 
 Version 1.0b5 -
 
+- allow traversal of bundle on Mac OS X when choosing files
 - fixed bug in syntax coloring with escape character
 
 Version 1.0b4 - 09/28/06
