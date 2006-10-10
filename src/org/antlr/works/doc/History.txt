@@ -1,4 +1,8 @@
 
+Version 1.0b5 -
+
+- fixed bug in syntax coloring with escape character
+
 Version 1.0b4 - 09/28/06
 
 - added menu shortcut for Generate Code

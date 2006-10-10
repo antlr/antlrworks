@@ -1,6 +1,7 @@
 
 * Prio 1
 
+- plugin: handle clear read-only flag from ATE and other document-related operations
 - plugin: hook undo, copy, paste from IntelliJ menu
 - plugin: generate code in default project output directory
 

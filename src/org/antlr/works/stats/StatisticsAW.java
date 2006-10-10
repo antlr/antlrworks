@@ -38,7 +38,7 @@ import java.util.*;
 
 public class StatisticsAW {
 
-    protected static StatisticsAW shared = null;
+    protected static StatisticsAW shared = new StatisticsAW();
 
     /* Last change: version 1.0ea9 */
     protected static final String PREF_KEY = "CURSOR_BLINK_2";
@@ -227,9 +227,7 @@ public class StatisticsAW {
 
     protected Map events = null;
 
-    public static synchronized StatisticsAW shared() {
-        if(shared == null)
-            shared = new StatisticsAW();
+    public static StatisticsAW shared() {
         return shared;
     }
 

@@ -1,0 +1,4 @@
+
+Version 1.0b3 -
+
+- now clear the read-only status

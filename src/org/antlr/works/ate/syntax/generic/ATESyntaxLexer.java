@@ -55,6 +55,9 @@ public class ATESyntaxLexer {
     protected int lineIndex;    // position of the line in characters
     protected List lines;
 
+    /** True if the current character is a control character (that is preceeded by a \) */
+    protected boolean controlCharacter;
+
     /** c0 and c1 are character cache for quick access to the current
      * character (c0) and the next character (c1)
      */
@@ -128,8 +131,9 @@ public class ATESyntaxLexer {
     public ATEToken matchSingleQuoteString() {
         int sp = position;
         while(nextCharacter()) {
-            if(c0 == '\'' || matchNewLine())
+            if((c0 == '\'' || matchNewLine()) && !controlCharacter) {
                 return createNewToken(TOKEN_SINGLE_QUOTE_STRING, sp);
+            }
         }
         return null;
     }
@@ -137,8 +141,9 @@ public class ATESyntaxLexer {
     public ATEToken matchDoubleQuoteString() {
         int sp = position;
         while(nextCharacter()) {
-            if(c0 == '\"' || matchNewLine())
+            if((c0 == '\"' || matchNewLine()) && !controlCharacter) {
                 return createNewToken(TOKEN_DOUBLE_QUOTE_STRING, sp);
+            }
         }
         return null;
     }
@@ -146,8 +151,9 @@ public class ATESyntaxLexer {
     public ATEToken matchSingleComment() {
         int sp = position;
         while(nextCharacter()) {
-            if(matchNewLine())
+            if(matchNewLine()) {
                 return createNewToken(TOKEN_SINGLE_COMMENT, sp);
+            }
         }
         return createNewToken(TOKEN_SINGLE_COMMENT, sp, position);
     }
@@ -168,13 +174,16 @@ public class ATESyntaxLexer {
     public boolean nextCharacter() {
         boolean valid = false;
         final int length = text.length();
+        controlCharacter = false;
 
         c0 = c1 = 0;
         position++;
         if(position < length) {
             // Skip control character
-            if(text.charAt(position) == '\\')
-                position += 2;
+            if(text.charAt(position) == '\\') {
+                controlCharacter = true;
+                position += 1;
+            }
 
             valid = position < length;
             if(valid) {

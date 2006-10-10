@@ -39,12 +39,10 @@ public class IconManager {
 
     private static final String path = "org/antlr/works/icons/";
 
-    private static IconManager shared = null;
+    private static IconManager shared = new IconManager();
     private static Map cache = new HashMap();
 
-    public static synchronized IconManager shared() {
-        if(shared == null)
-            shared = new IconManager();
+    public static IconManager shared() {
         return shared;
     }
 
