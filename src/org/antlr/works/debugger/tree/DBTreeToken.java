@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBTreeToken extends Token {
+public class DBTreeToken implements Token {
 
     public int ID;
     public String text;
