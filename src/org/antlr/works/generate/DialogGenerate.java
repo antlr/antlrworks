@@ -54,7 +54,17 @@ public class DialogGenerate extends XJDialog {
 
         initComponents();
         setSize(612, 145);
-        
+
+        if(XJSystem.isMacOS()) {
+            CellConstraints cc = new CellConstraints();
+
+            buttonBar.remove(cancelButton);
+            buttonBar.remove(okButton);
+
+            buttonBar.add(cancelButton, cc.xy(2, 1));
+            buttonBar.add(okButton, cc.xy(4, 1));
+        }
+
         setDefaultButton(okButton);
         setOKButton(okButton);
         setCancelButton(cancelButton);
@@ -87,10 +97,9 @@ public class DialogGenerate extends XJDialog {
         return outputPathField.getText();
     }
 
-    // !!! BUTTONS OS SENSITIVE !!!
-
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
         dialogPane = new JPanel();
         contentPane = new JPanel();
         label1 = new JLabel();
@@ -109,74 +118,70 @@ public class DialogGenerate extends XJDialog {
 
         //======== dialogPane ========
         {
-            dialogPane.setBorder(Borders.DIALOG_BORDER);
-            dialogPane.setLayout(new BorderLayout());
+        	dialogPane.setBorder(Borders.DIALOG_BORDER);
+        	dialogPane.setLayout(new BorderLayout());
 
-            //======== contentPane ========
-            {
-                contentPane.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.DEFAULT_COLSPEC,
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec("max(min;200dlu):grow"),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.DEFAULT_COLSPEC
-                    },
-                    new RowSpec[] {
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC
-                    }));
+        	//======== contentPane ========
+        	{
+        		contentPane.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				FormFactory.DEFAULT_COLSPEC,
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec("max(min;200dlu):grow"),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				FormFactory.DEFAULT_COLSPEC
+        			},
+        			new RowSpec[] {
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC
+        			}));
 
-                //---- label1 ----
-                label1.setHorizontalAlignment(SwingConstants.RIGHT);
-                label1.setText("Output path:");
-                contentPane.add(label1, cc.xy(1, 1));
-                contentPane.add(outputPathField, cc.xy(3, 1));
+        		//---- label1 ----
+        		label1.setText("Output path:");
+        		label1.setHorizontalAlignment(SwingConstants.RIGHT);
+        		contentPane.add(label1, cc.xy(1, 1));
+        		contentPane.add(outputPathField, cc.xy(3, 1));
 
-                //---- browseButton ----
-                browseButton.setText("Browse...");
-                contentPane.add(browseButton, cc.xy(5, 1));
+        		//---- browseButton ----
+        		browseButton.setText("Browse...");
+        		contentPane.add(browseButton, cc.xy(5, 1));
 
-                //---- debugInfoButton ----
-                debugInfoButton.setText("Debug information");
-                contentPane.add(debugInfoButton, cc.xy(3, 3));
-            }
-            dialogPane.add(contentPane, BorderLayout.CENTER);
+        		//---- debugInfoButton ----
+        		debugInfoButton.setText("Debug information");
+        		contentPane.add(debugInfoButton, cc.xy(3, 3));
+        	}
+        	dialogPane.add(contentPane, BorderLayout.CENTER);
 
-            //======== buttonBar ========
-            {
-                buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
-                buttonBar.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.GLUE_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC,
-                        FormFactory.RELATED_GAP_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC
-                    },
-                    RowSpec.decodeSpecs("pref")));
+        	//======== buttonBar ========
+        	{
+        		buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
+        		buttonBar.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				FormFactory.GLUE_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC,
+        				FormFactory.RELATED_GAP_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC
+        			},
+        			RowSpec.decodeSpecs("pref")));
 
-                //---- okButton ----
-                okButton.setText("OK");
+        		//---- okButton ----
+        		okButton.setText("OK");
+        		buttonBar.add(okButton, cc.xy(2, 1));
 
-                //---- cancelButton ----
-                cancelButton.setText("Cancel");
-
-                if(XJSystem.isMacOS()) {
-                    buttonBar.add(cancelButton, cc.xy(2, 1));
-                    buttonBar.add(okButton, cc.xy(4, 1));
-                } else {
-                    buttonBar.add(okButton, cc.xy(2, 1));
-                    buttonBar.add(cancelButton, cc.xy(4, 1));
-                }
-            }
-            dialogPane.add(buttonBar, BorderLayout.SOUTH);
+        		//---- cancelButton ----
+        		cancelButton.setText("Cancel");
+        		buttonBar.add(cancelButton, cc.xy(4, 1));
+        	}
+        	dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
+        pack();
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
     private JPanel dialogPane;
     private JPanel contentPane;
     private JLabel label1;

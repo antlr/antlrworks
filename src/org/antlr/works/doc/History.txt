@@ -1,8 +1,14 @@
 
-Version 1.0b5 -
+Version 1.0b6 -
+
+- output path is now specified in the preferences
+- alert after checking grammar
+
+Version 1.0b5 - 10/22/06
 
 - allow traversal of bundle on Mac OS X when choosing files
 - fixed bug in syntax coloring with escape character
+- plugin: now clear the read-only status
 
 Version 1.0b4 - 09/28/06
 

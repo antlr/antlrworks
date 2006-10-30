@@ -128,6 +128,7 @@ public class FindAndReplaceDialog extends XJPanel {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
         label1 = new JLabel();
         findField = new JTextField();
         label2 = new JLabel();
@@ -145,38 +146,38 @@ public class FindAndReplaceDialog extends XJPanel {
         //======== this ========
         Container contentPane = getContentPane();
         contentPane.setLayout(new FormLayout(
-            new ColumnSpec[] {
-                new ColumnSpec(Sizes.DLUX5),
-                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
-                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                FormFactory.DEFAULT_COLSPEC,
-                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                FormFactory.DEFAULT_COLSPEC,
-                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                FormFactory.DEFAULT_COLSPEC,
-                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                FormFactory.DEFAULT_COLSPEC,
-                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                new ColumnSpec(Sizes.DLUX5)
-            },
-            new RowSpec[] {
-                new RowSpec(Sizes.DLUY5),
-                FormFactory.LINE_GAP_ROWSPEC,
-                FormFactory.DEFAULT_ROWSPEC,
-                FormFactory.LINE_GAP_ROWSPEC,
-                FormFactory.DEFAULT_ROWSPEC,
-                FormFactory.LINE_GAP_ROWSPEC,
-                FormFactory.DEFAULT_ROWSPEC,
-                FormFactory.LINE_GAP_ROWSPEC,
-                new RowSpec(RowSpec.CENTER, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                FormFactory.LINE_GAP_ROWSPEC,
-                FormFactory.DEFAULT_ROWSPEC,
-                FormFactory.LINE_GAP_ROWSPEC,
-                new RowSpec(Sizes.DLUY5)
-            }));
+        	new ColumnSpec[] {
+        		new ColumnSpec(Sizes.DLUX5),
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		FormFactory.DEFAULT_COLSPEC,
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		FormFactory.DEFAULT_COLSPEC,
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		FormFactory.DEFAULT_COLSPEC,
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		FormFactory.DEFAULT_COLSPEC,
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		new ColumnSpec(Sizes.DLUX5)
+        	},
+        	new RowSpec[] {
+        		new RowSpec(Sizes.DLUY5),
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		FormFactory.DEFAULT_ROWSPEC,
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		FormFactory.DEFAULT_ROWSPEC,
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		FormFactory.DEFAULT_ROWSPEC,
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		new RowSpec(RowSpec.CENTER, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		FormFactory.DEFAULT_ROWSPEC,
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		new RowSpec(Sizes.DLUY5)
+        	}));
 
         //---- label1 ----
         label1.setText("Find:");
@@ -198,10 +199,10 @@ public class FindAndReplaceDialog extends XJPanel {
 
         //---- optionsCombo ----
         optionsCombo.setModel(new DefaultComboBoxModel(new String[] {
-            "Contains",
-            "Starts with",
-            "Whole words",
-            "Ends with"
+        	"Contains",
+        	"Starts with",
+        	"Whole words",
+        	"Ends with"
         }));
         contentPane.add(optionsCombo, cc.xywh(11, 7, 3, 1));
 
@@ -224,10 +225,12 @@ public class FindAndReplaceDialog extends XJPanel {
         //---- nextButton ----
         nextButton.setText("Next");
         contentPane.add(nextButton, cc.xy(13, 11));
+        pack();
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
     private JLabel label1;
     private JTextField findField;
     private JLabel label2;

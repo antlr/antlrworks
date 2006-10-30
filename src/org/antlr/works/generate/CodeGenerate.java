@@ -124,7 +124,7 @@ public class CodeGenerate implements Runnable {
         if(lexer)
             name = provider.getEngineGrammar().getParserGrammar().name+"Lexer";
         else
-            name = provider.getEngineGrammar().getParserGrammar().name;
+            name = provider.getEngineGrammar().getParserGrammar().name+"Parser";
         return name;
     }
 

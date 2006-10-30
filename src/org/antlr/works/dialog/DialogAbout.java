@@ -137,6 +137,7 @@ public class DialogAbout extends XJPanel {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
         appIconButton = new JButton();
         descriptionLabel = new JLabel();
         titleLabel = new JLabel();
@@ -155,54 +156,55 @@ public class DialogAbout extends XJPanel {
         setTitle("About");
         Container contentPane = getContentPane();
         contentPane.setLayout(new FormLayout(
-            new ColumnSpec[] {
-                new ColumnSpec(Sizes.dluX(10)),
-                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                FormFactory.DEFAULT_COLSPEC,
-                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                new ColumnSpec(Sizes.dluX(10))
-            },
-            new RowSpec[] {
-                new RowSpec(Sizes.dluY(10)),
-                FormFactory.LINE_GAP_ROWSPEC,
-                new RowSpec(RowSpec.BOTTOM, Sizes.DEFAULT, FormSpec.NO_GROW),
-                FormFactory.LINE_GAP_ROWSPEC,
-                new RowSpec("top:max(default;20dlu)"),
-                FormFactory.LINE_GAP_ROWSPEC,
-                new RowSpec("bottom:max(default;15dlu)"),
-                FormFactory.LINE_GAP_ROWSPEC,
-                new RowSpec("top:max(default;15dlu)"),
-                FormFactory.LINE_GAP_ROWSPEC,
-                new RowSpec("fill:max(default;60dlu):grow"),
-                FormFactory.LINE_GAP_ROWSPEC,
-                new RowSpec(Sizes.dluY(10))
-            }));
+        	new ColumnSpec[] {
+        		new ColumnSpec(Sizes.dluX(10)),
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		FormFactory.DEFAULT_COLSPEC,
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		new ColumnSpec(Sizes.dluX(10))
+        	},
+        	new RowSpec[] {
+        		new RowSpec(Sizes.dluY(10)),
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		new RowSpec(RowSpec.BOTTOM, Sizes.DEFAULT, FormSpec.NO_GROW),
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		new RowSpec("top:max(default;20dlu)"),
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		new RowSpec("bottom:max(default;15dlu)"),
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		new RowSpec("top:max(default;15dlu)"),
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		new RowSpec("fill:max(default;60dlu):grow"),
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		new RowSpec(Sizes.dluY(10))
+        	}));
 
         //---- appIconButton ----
+        appIconButton.setIcon(new ImageIcon("/Users/bovet/Dev/Projects/ANTLRWorks/classes/org/antlr/works/icons/app.png"));
         appIconButton.setBorderPainted(false);
         appIconButton.setContentAreaFilled(false);
         appIconButton.setDefaultCapable(false);
         appIconButton.setEnabled(true);
-        appIconButton.setFocusPainted(false);
         appIconButton.setFocusable(false);
+        appIconButton.setFocusPainted(false);
+        appIconButton.setPreferredSize(new Dimension(124, 144));
         appIconButton.setMaximumSize(new Dimension(136, 144));
         appIconButton.setMinimumSize(new Dimension(136, 144));
-        appIconButton.setPreferredSize(new Dimension(124, 144));
         contentPane.add(appIconButton, cc.xywh(3, 3, 1, 8));
 
         //---- descriptionLabel ----
+        descriptionLabel.setText("A graphical development environment for developing and debugging ANTLR v3 grammars");
         descriptionLabel.setHorizontalAlignment(SwingConstants.LEFT);
         descriptionLabel.setHorizontalTextPosition(SwingConstants.LEFT);
-        descriptionLabel.setText("A graphical development environment for developing and debugging ANTLR v3 grammars");
-        descriptionLabel.setVerticalAlignment(SwingConstants.TOP);
         descriptionLabel.setVerticalTextPosition(SwingConstants.TOP);
+        descriptionLabel.setVerticalAlignment(SwingConstants.TOP);
         contentPane.add(descriptionLabel, cc.xywh(5, 7, 1, 2));
 
         //---- titleLabel ----
-        titleLabel.setFont(new Font("Lucida Grande", Font.BOLD, 36));
         titleLabel.setText("ANTLRWorks");
+        titleLabel.setFont(new Font("Lucida Grande", Font.BOLD, 36));
         contentPane.add(titleLabel, cc.xy(5, 3));
 
         //---- versionLabel ----
@@ -216,84 +218,88 @@ public class DialogAbout extends XJPanel {
         //======== tabbedPane1 ========
         {
 
-            //======== panel2 ========
-            {
-                panel2.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        new ColumnSpec(Sizes.dluX(10)),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec(Sizes.dluX(10))
-                    },
-                    new RowSpec[] {
-                        new RowSpec(Sizes.dluY(10)),
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.NO_GROW),
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        new RowSpec(Sizes.dluY(10))
-                    }));
+        	//======== panel2 ========
+        	{
+        		panel2.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				new ColumnSpec(Sizes.dluX(10)),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec(Sizes.dluX(10))
+        			},
+        			new RowSpec[] {
+        				new RowSpec(Sizes.dluY(10)),
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.NO_GROW),
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				new RowSpec(Sizes.dluY(10))
+        			}));
 
-                //---- acknowledgeTextArea ----
-                acknowledgeTextArea.setBackground(SystemColor.window);
-                acknowledgeTextArea.setEditable(false);
-                acknowledgeTextArea.setText("ANTLR and StringTemplate are (c) 1989-2005 Terence Parr\nXJLibrary is (c) 2004-2005 Jean Bovet\nPortion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch\nPortion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber\nBrowserLauncher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>\nApplication icon is (c) Matthew McClintock <matthew@mc.clintock.com>\n");
-                panel2.add(acknowledgeTextArea, cc.xy(3, 3));
-            }
-            tabbedPane1.addTab("Acknowledgment", panel2);
+        		//---- acknowledgeTextArea ----
+        		acknowledgeTextArea.setText("ANTLR and StringTemplate are (c) 1989-2005 Terence Parr\nXJLibrary is (c) 2004-2005 Jean Bovet\nPortion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch\nPortion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber\nBrowserLauncher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>\nApplication icon is (c) Matthew McClintock <matthew@mc.clintock.com>\n");
+        		acknowledgeTextArea.setEditable(false);
+        		acknowledgeTextArea.setBackground(SystemColor.window);
+        		panel2.add(acknowledgeTextArea, cc.xy(3, 3));
+        	}
+        	tabbedPane1.addTab("Acknowledgment", panel2);
 
-            //======== panel1 ========
-            {
-                panel1.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        new ColumnSpec(Sizes.dluX(10)),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec(Sizes.dluX(10))
-                    },
-                    new RowSpec[] {
-                        new RowSpec(Sizes.dluY(10)),
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        new RowSpec(RowSpec.FILL, Sizes.dluY(10), FormSpec.DEFAULT_GROW),
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        new RowSpec(Sizes.dluY(10))
-                    }));
 
-                //======== scrollPane1 ========
-                {
+        	//======== panel1 ========
+        	{
+        		panel1.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				new ColumnSpec(Sizes.dluX(10)),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec(Sizes.dluX(10))
+        			},
+        			new RowSpec[] {
+        				new RowSpec(Sizes.dluY(10)),
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				new RowSpec(RowSpec.FILL, Sizes.dluY(10), FormSpec.DEFAULT_GROW),
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				new RowSpec(Sizes.dluY(10))
+        			}));
 
-                    //---- infoTable ----
-                    infoTable.setModel(new DefaultTableModel(
-                        new Object[][] {
-                            {null, null},
-                            {null, null},
-                            {null, null},
-                            {null, null},
-                        },
-                        new String[] {
-                            "Name", "Version"
-                        }
-                    ) {
-                        boolean[] columnEditable = new boolean[] {
-                            false, false
-                        };
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-                            return columnEditable[columnIndex];
-                        }
-                    });
-                    infoTable.setShowVerticalLines(true);
-                    scrollPane1.setViewportView(infoTable);
-                }
-                panel1.add(scrollPane1, cc.xy(3, 3));
-            }
-            tabbedPane1.addTab("Information", panel1);
+        		//======== scrollPane1 ========
+        		{
+
+        			//---- infoTable ----
+        			infoTable.setModel(new DefaultTableModel(
+        				new Object[][] {
+        					{null, null},
+        					{null, null},
+        					{null, null},
+        					{null, null},
+        				},
+        				new String[] {
+        					"Name", "Version"
+        				}
+        			) {
+        				boolean[] columnEditable = new boolean[] {
+        					false, false
+        				};
+        				public boolean isCellEditable(int rowIndex, int columnIndex) {
+        					return columnEditable[columnIndex];
+        				}
+        			});
+        			infoTable.setShowVerticalLines(true);
+        			scrollPane1.setViewportView(infoTable);
+        		}
+        		panel1.add(scrollPane1, cc.xy(3, 3));
+        	}
+        	tabbedPane1.addTab("Information", panel1);
+
         }
         contentPane.add(tabbedPane1, cc.xywh(3, 11, 3, 1));
+        pack();
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
     private JButton appIconButton;
     private JLabel descriptionLabel;
     private JLabel titleLabel;

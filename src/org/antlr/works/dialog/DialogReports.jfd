@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <java version="1.5.0_06" class="java.beans.XMLDecoder"> 
- <object class="com.ktauber.form.model.FormModel"> 
+ <object class="com.jformdesigner.model.FormModel"> 
   <void property="contentType"> 
    <string>form/swing</string> 
   </void> 
   <void property="root"> 
-   <object class="com.ktauber.form.model.FormRoot"> 
+   <object class="com.jformdesigner.model.FormRoot"> 
     <void method="add"> 
-     <object class="com.ktauber.form.model.FormWindow"> 
+     <object class="com.jformdesigner.model.FormWindow"> 
       <string>javax.swing.JDialog</string> 
-      <object class="com.ktauber.form.model.FormLayoutManager"> 
+      <object class="com.jformdesigner.model.FormLayoutManager"> 
        <class>java.awt.BorderLayout</class> 
       </object> 
-      <void method="setProperty"> 
-       <string>$size</string> 
-       <object class="java.awt.Dimension"> 
-        <int>586</int> 
-        <int>300</int> 
-       </object> 
-      </void> 
       <void method="setProperty"> 
        <string>title</string> 
        <string>Review reports before submission</string> 
       </void> 
+      <void method="setProperty"> 
+       <string>$locationPolicy</string> 
+       <int>2</int> 
+      </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormContainer"> 
+       <object class="com.jformdesigner.model.FormContainer"> 
         <string>javax.swing.JPanel</string> 
-        <object class="com.ktauber.form.model.FormLayoutManager"> 
+        <object class="com.jformdesigner.model.FormLayoutManager"> 
          <class>java.awt.BorderLayout</class> 
         </object> 
         <void method="setProperty"> 
@@ -44,9 +41,9 @@
          <string>dialogPane</string> 
         </void> 
         <void method="add"> 
-         <object class="com.ktauber.form.model.FormContainer"> 
+         <object class="com.jformdesigner.model.FormContainer"> 
           <string>javax.swing.JPanel</string> 
-          <object class="com.ktauber.form.model.FormLayoutManager"> 
+          <object class="com.jformdesigner.model.FormLayoutManager"> 
            <class>com.jgoodies.forms.layout.FormLayout</class> 
            <void method="setProperty"> 
             <string>$columnSpecs</string> 
@@ -61,7 +58,7 @@
            <string>contentPane</string> 
           </void> 
           <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
             <string>javax.swing.JLabel</string> 
             <void method="setProperty"> 
              <string>text</string> 
@@ -75,7 +72,7 @@
              <string>label1</string> 
             </void> 
            </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
@@ -88,7 +85,7 @@
            </object> 
           </void> 
           <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
             <string>javax.swing.JComboBox</string> 
             <void method="setProperty"> 
              <string>model</string> 
@@ -111,7 +108,7 @@
              <string>typeCombo</string> 
             </void> 
            </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
@@ -124,7 +121,7 @@
            </object> 
           </void> 
           <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
             <string>javax.swing.JLabel</string> 
             <void method="setProperty"> 
              <string>text</string> 
@@ -138,7 +135,7 @@
              <string>label22</string> 
             </void> 
            </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
@@ -151,7 +148,7 @@
            </object> 
           </void> 
           <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
             <string>javax.swing.JCheckBox</string> 
             <void method="setProperty"> 
              <string>text</string> 
@@ -165,7 +162,7 @@
              <string>humanFormatCheck</string> 
             </void> 
            </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
@@ -182,7 +179,7 @@
            </object> 
           </void> 
           <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
             <string>javax.swing.JSpinner</string> 
             <void method="setProperty"> 
              <string>model</string> 
@@ -199,7 +196,7 @@
              <string>currentSpinner</string> 
             </void> 
            </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
@@ -216,7 +213,7 @@
            </object> 
           </void> 
           <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
             <string>javax.swing.JLabel</string> 
             <void method="setProperty"> 
              <string>text</string> 
@@ -230,7 +227,7 @@
              <string>label2</string> 
             </void> 
            </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
@@ -243,7 +240,7 @@
            </object> 
           </void> 
           <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
             <string>javax.swing.JLabel</string> 
             <void method="setProperty"> 
              <string>text</string> 
@@ -253,7 +250,7 @@
              <string>infoLabel</string> 
             </void> 
            </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
@@ -270,16 +267,16 @@
            </object> 
           </void> 
           <void method="add"> 
-           <object class="com.ktauber.form.model.FormContainer"> 
+           <object class="com.jformdesigner.model.FormContainer"> 
             <string>javax.swing.JScrollPane</string> 
-            <object class="com.ktauber.form.model.FormLayoutManager"> 
+            <object class="com.jformdesigner.model.FormLayoutManager"> 
              <class>javax.swing.JScrollPane</class> 
             </object> 
             <void property="name"> 
              <string>scrollPane1</string> 
             </void> 
             <void method="add"> 
-             <object class="com.ktauber.form.model.FormComponent"> 
+             <object class="com.jformdesigner.model.FormComponent"> 
               <string>javax.swing.JTextArea</string> 
               <void method="setProperty"> 
                <string>editable</string> 
@@ -303,7 +300,7 @@
              </object> 
             </void> 
            </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridY</string> 
@@ -320,7 +317,7 @@
            </object> 
           </void> 
          </object> 
-         <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+         <object class="com.jformdesigner.model.FormLayoutConstraints"> 
           <class>java.lang.String</class> 
           <void method="setProperty"> 
            <string>value</string> 
@@ -329,9 +326,9 @@
          </object> 
         </void> 
         <void method="add"> 
-         <object class="com.ktauber.form.model.FormContainer"> 
+         <object class="com.jformdesigner.model.FormContainer"> 
           <string>javax.swing.JPanel</string> 
-          <object class="com.ktauber.form.model.FormLayoutManager"> 
+          <object class="com.jformdesigner.model.FormLayoutManager"> 
            <class>com.jgoodies.forms.layout.FormLayout</class> 
            <void method="setProperty"> 
             <string>$columnSpecs</string> 
@@ -350,7 +347,7 @@
            <string>buttonBar</string> 
           </void> 
           <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
             <string>javax.swing.JButton</string> 
             <void method="setProperty"> 
              <string>text</string> 
@@ -360,7 +357,7 @@
              <string>submitButton</string> 
             </void> 
            </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
@@ -373,7 +370,7 @@
            </object> 
           </void> 
           <void method="add"> 
-           <object class="com.ktauber.form.model.FormComponent"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
             <string>javax.swing.JButton</string> 
             <void method="setProperty"> 
              <string>text</string> 
@@ -383,7 +380,7 @@
              <string>cancelButton</string> 
             </void> 
            </object> 
-           <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
             <class>com.jgoodies.forms.layout.CellConstraints</class> 
             <void method="setProperty"> 
              <string>gridX</string> 
@@ -396,7 +393,7 @@
            </object> 
           </void> 
          </object> 
-         <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+         <object class="com.jformdesigner.model.FormLayoutConstraints"> 
           <class>java.lang.String</class> 
           <void method="setProperty"> 
            <string>value</string> 
@@ -405,7 +402,7 @@
          </object> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>java.lang.String</class> 
         <void method="setProperty"> 
          <string>value</string> 
@@ -417,12 +414,39 @@
        <string>this</string> 
       </void> 
      </object> 
+     <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+      <null/> 
+      <void method="setProperty"> 
+       <string>size</string> 
+       <object class="java.awt.Dimension"> 
+        <int>586</int> 
+        <int>300</int> 
+       </object> 
+      </void> 
+      <void method="setProperty"> 
+       <string>location</string> 
+       <object class="java.awt.Point"> 
+        <int>0</int> 
+        <int>0</int> 
+       </object> 
+      </void> 
+     </object> 
     </void> 
     <void method="add"> 
-     <object class="com.ktauber.form.model.FormNonVisual"> 
+     <object class="com.jformdesigner.model.FormNonVisual"> 
       <string>javax.swing.ButtonGroup</string> 
       <void property="name"> 
        <string>buttonGroup1</string> 
+      </void> 
+     </object> 
+     <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+      <null/> 
+      <void method="setProperty"> 
+       <string>location</string> 
+       <object class="java.awt.Point"> 
+        <int>0</int> 
+        <int>310</int> 
+       </object> 
       </void> 
      </object> 
     </void> 

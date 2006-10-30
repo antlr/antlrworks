@@ -52,6 +52,15 @@ public class DebuggerInputDialog extends XJDialog {
         initComponents();
         setSize(600, 400);
 
+        if(XJSystem.isMacOS()) {
+            buttonBar.remove(okButton);
+            buttonBar.remove(cancelButton);
+
+            CellConstraints cc = new CellConstraints();            
+            buttonBar.add(cancelButton, cc.xy(2, 1));
+            buttonBar.add(okButton, cc.xy(4, 1));
+        }
+
         setDefaultButton(okButton);
         setOKButton(okButton);
         setCancelButton(cancelButton);
@@ -87,11 +96,9 @@ public class DebuggerInputDialog extends XJDialog {
         return (String)rulesCombo.getSelectedItem();
     }
 
-    // Note: put 500 for the width of the scrollpane
-    // Also copy the line for button OS sensitive location
-
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
         dialogPane = new JPanel();
         contentPane = new JPanel();
         scrollPane1 = new JScrollPane();
@@ -111,83 +118,72 @@ public class DebuggerInputDialog extends XJDialog {
 
         //======== dialogPane ========
         {
-            dialogPane.setBorder(Borders.DIALOG_BORDER);
-            dialogPane.setLayout(new BorderLayout());
+        	dialogPane.setBorder(Borders.DIALOG_BORDER);
+        	dialogPane.setLayout(new BorderLayout());
 
-            //======== contentPane ========
-            {
-                contentPane.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.DEFAULT_COLSPEC,
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.DEFAULT_COLSPEC
-                    },
-                    new RowSpec[] {
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC
-                    }));
+        	//======== contentPane ========
+        	{
+        		contentPane.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				FormFactory.DEFAULT_COLSPEC,
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
+        			},
+        			new RowSpec[] {
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC
+        			}));
 
-                //======== scrollPane1 ========
-                {
-                    scrollPane1.setPreferredSize(new Dimension(300, 200));
+        		//======== scrollPane1 ========
+        		{
+        			scrollPane1.setPreferredSize(new Dimension(300, 200));
+        			scrollPane1.setViewportView(inputTextArea);
+        		}
+        		contentPane.add(scrollPane1, cc.xywh(1, 3, 3, 1));
 
-                    //---- inputTextArea ----
-                    //inputTextArea.setLineWrap(false);
-                    scrollPane1.setViewportView(inputTextArea);
-                }
-                contentPane.add(scrollPane1, cc.xywh(1, 3, 5, 1));
+        		//---- label2 ----
+        		label2.setText("Start Rule:");
+        		contentPane.add(label2, cc.xy(1, 5));
+        		contentPane.add(rulesCombo, cc.xy(3, 5));
 
-                //---- label2 ----
-                label2.setText("Start Rule:");
-                contentPane.add(label2, cc.xy(1, 5));
-                contentPane.add(rulesCombo, cc.xy(3, 5));
+        		//---- label1 ----
+        		label1.setText("Input text:");
+        		contentPane.add(label1, cc.xywh(1, 1, 3, 1));
+        	}
+        	dialogPane.add(contentPane, BorderLayout.CENTER);
 
-                //---- label1 ----
-                label1.setText("Input text:");
-                contentPane.add(label1, cc.xywh(1, 1, 3, 1));
-            }
-            dialogPane.add(contentPane, BorderLayout.CENTER);
+        	//======== buttonBar ========
+        	{
+        		buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
+        		buttonBar.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				FormFactory.GLUE_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC,
+        				FormFactory.RELATED_GAP_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC
+        			},
+        			RowSpec.decodeSpecs("pref")));
 
-            //======== buttonBar ========
-            {
-                buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
-                buttonBar.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.GLUE_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC,
-                        FormFactory.RELATED_GAP_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC
-                    },
-                    RowSpec.decodeSpecs("pref")));
+        		//---- okButton ----
+        		okButton.setText("OK");
+        		buttonBar.add(okButton, cc.xy(2, 1));
 
-                //---- okButton ----
-                okButton.setText("OK");
-
-                //---- cancelButton ----
-                cancelButton.setText("Cancel");
-
-                if(XJSystem.isMacOS()) {
-                    buttonBar.add(cancelButton, cc.xy(2, 1));
-                    buttonBar.add(okButton, cc.xy(4, 1));
-                } else {
-                    buttonBar.add(okButton, cc.xy(2, 1));
-                    buttonBar.add(cancelButton, cc.xy(4, 1));
-                }
-            }
-            dialogPane.add(buttonBar, BorderLayout.SOUTH);
+        		//---- cancelButton ----
+        		cancelButton.setText("Cancel");
+        		buttonBar.add(cancelButton, cc.xy(4, 1));
+        	}
+        	dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
+        pack();
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
     private JPanel dialogPane;
     private JPanel contentPane;
     private JScrollPane scrollPane1;

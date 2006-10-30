@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0b4
-September 28, 2006
+Version 1.0b5
+October 22, 2006
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -72,6 +72,12 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+10/22/06 - Version 1.0b5
+
+- allow traversal of bundle on Mac OS X when choosing files
+- fixed bug in syntax coloring with escape character
+- plugin: now clear the read-only status
 
 09/28/06 - Version 1.0b4
 

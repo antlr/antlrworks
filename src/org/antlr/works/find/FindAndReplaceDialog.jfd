@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<java version="1.4.2_09" class="java.beans.XMLDecoder"> 
- <object class="com.ktauber.form.model.FormModel"> 
+<java version="1.5.0_06" class="java.beans.XMLDecoder"> 
+ <object class="com.jformdesigner.model.FormModel"> 
   <void property="contentType"> 
    <string>form/swing</string> 
   </void> 
   <void property="root"> 
-   <object class="com.ktauber.form.model.FormRoot"> 
+   <object class="com.jformdesigner.model.FormRoot"> 
     <void method="add"> 
-     <object class="com.ktauber.form.model.FormWindow"> 
+     <object class="com.jformdesigner.model.FormWindow"> 
       <string>javax.swing.JFrame</string> 
-      <object class="com.ktauber.form.model.FormLayoutManager"> 
+      <object class="com.jformdesigner.model.FormLayoutManager"> 
        <class>com.jgoodies.forms.layout.FormLayout</class> 
        <void method="setProperty"> 
         <string>$columnSpecs</string> 
@@ -21,14 +21,11 @@
        </void> 
       </object> 
       <void method="setProperty"> 
-       <string>$size</string> 
-       <object class="java.awt.Dimension"> 
-        <int>595</int> 
-        <int>186</int> 
-       </object> 
+       <string>$locationPolicy</string> 
+       <int>2</int> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JLabel</string> 
         <void method="setProperty"> 
          <string>text</string> 
@@ -38,7 +35,7 @@
          <string>label1</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -51,13 +48,13 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JTextField</string> 
         <void property="name"> 
          <string>findField</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -74,7 +71,7 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JLabel</string> 
         <void method="setProperty"> 
          <string>text</string> 
@@ -84,7 +81,7 @@
          <string>label2</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -97,13 +94,13 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JTextField</string> 
         <void property="name"> 
          <string>replaceField</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -120,7 +117,7 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JCheckBox</string> 
         <void method="setProperty"> 
          <string>text</string> 
@@ -137,7 +134,7 @@
          <string>ignoreCaseButton</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -150,7 +147,7 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JCheckBox</string> 
         <void method="setProperty"> 
          <string>text</string> 
@@ -160,7 +157,7 @@
          <string>regexButton</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -173,7 +170,7 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JComboBox</string> 
         <void method="setProperty"> 
          <string>model</string> 
@@ -199,7 +196,7 @@
          <string>optionsCombo</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -216,7 +213,7 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JButton</string> 
         <void method="setProperty"> 
          <string>text</string> 
@@ -226,7 +223,7 @@
          <string>replaceAllButton</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -239,7 +236,7 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JButton</string> 
         <void method="setProperty"> 
          <string>text</string> 
@@ -249,7 +246,7 @@
          <string>replaceButton</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -262,7 +259,7 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JButton</string> 
         <void method="setProperty"> 
          <string>text</string> 
@@ -272,7 +269,7 @@
          <string>replaceAndFindButton</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -285,7 +282,7 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JButton</string> 
         <void method="setProperty"> 
          <string>text</string> 
@@ -295,7 +292,7 @@
          <string>previousButton</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -308,7 +305,7 @@
        </object> 
       </void> 
       <void method="add"> 
-       <object class="com.ktauber.form.model.FormComponent"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JButton</string> 
         <void method="setProperty"> 
          <string>text</string> 
@@ -318,7 +315,7 @@
          <string>nextButton</string> 
         </void> 
        </object> 
-       <object class="com.ktauber.form.model.FormLayoutConstraints"> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
@@ -332,6 +329,23 @@
       </void> 
       <void property="name"> 
        <string>this</string> 
+      </void> 
+     </object> 
+     <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+      <null/> 
+      <void method="setProperty"> 
+       <string>size</string> 
+       <object class="java.awt.Dimension"> 
+        <int>595</int> 
+        <int>186</int> 
+       </object> 
+      </void> 
+      <void method="setProperty"> 
+       <string>location</string> 
+       <object class="java.awt.Point"> 
+        <int>0</int> 
+        <int>0</int> 
+       </object> 
       </void> 
      </object> 
     </void> 

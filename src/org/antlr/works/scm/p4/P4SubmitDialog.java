@@ -51,6 +51,16 @@ public class P4SubmitDialog extends XJDialog {
         initComponents();
         setSize(550, 500);
 
+        if(XJSystem.isMacOS()) {
+            CellConstraints cc = new CellConstraints();
+
+            buttonBar.remove(cancelButton);
+            buttonBar.remove(submitButton);
+
+            buttonBar.add(cancelButton, cc.xy(2, 1));
+            buttonBar.add(submitButton, cc.xy(4, 1));
+        }
+
         setDefaultButton(submitButton);
         setOKButton(submitButton);
         setCancelButton(cancelButton);
@@ -86,6 +96,7 @@ public class P4SubmitDialog extends XJDialog {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
         dialogPane = new JPanel();
         contentPane = new JPanel();
         label1 = new JLabel();
@@ -103,75 +114,70 @@ public class P4SubmitDialog extends XJDialog {
 
         //======== dialogPane ========
         {
-            dialogPane.setBorder(Borders.DIALOG_BORDER);
-            dialogPane.setMinimumSize(new Dimension(300, 300));
-            dialogPane.setPreferredSize(new Dimension(500, 300));
-            dialogPane.setLayout(new BorderLayout());
+        	dialogPane.setBorder(Borders.DIALOG_BORDER);
+        	dialogPane.setPreferredSize(new Dimension(500, 300));
+        	dialogPane.setMinimumSize(new Dimension(300, 300));
+        	dialogPane.setLayout(new BorderLayout());
 
-            //======== contentPane ========
-            {
-                contentPane.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.DEFAULT_COLSPEC
-                    },
-                    new RowSpec[] {
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC
-                    }));
+        	//======== contentPane ========
+        	{
+        		contentPane.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				FormFactory.DEFAULT_COLSPEC
+        			},
+        			new RowSpec[] {
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC
+        			}));
 
-                //---- label1 ----
-                label1.setText("Enter a description:");
-                contentPane.add(label1, cc.xy(1, 1));
+        		//---- label1 ----
+        		label1.setText("Enter a description:");
+        		contentPane.add(label1, cc.xy(1, 1));
 
-                //---- description ----
-                description.setBorder(new LineBorder(Color.black));
-                contentPane.add(description, cc.xywh(1, 3, 3, 1));
+        		//---- description ----
+        		description.setBorder(LineBorder.createBlackLineBorder());
+        		contentPane.add(description, cc.xywh(1, 3, 3, 1));
 
-                //---- keepOpenButton ----
-                keepOpenButton.setText("Keep file open after submit");
-                contentPane.add(keepOpenButton, cc.xy(1, 5));
-            }
-            dialogPane.add(contentPane, BorderLayout.CENTER);
+        		//---- keepOpenButton ----
+        		keepOpenButton.setText("Keep file open after submit");
+        		contentPane.add(keepOpenButton, cc.xy(1, 5));
+        	}
+        	dialogPane.add(contentPane, BorderLayout.CENTER);
 
-            //======== buttonBar ========
-            {
-                buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
-                buttonBar.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.GLUE_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC,
-                        FormFactory.RELATED_GAP_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC
-                    },
-                    RowSpec.decodeSpecs("pref")));
+        	//======== buttonBar ========
+        	{
+        		buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
+        		buttonBar.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				FormFactory.GLUE_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC,
+        				FormFactory.RELATED_GAP_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC
+        			},
+        			RowSpec.decodeSpecs("pref")));
 
-                //---- submitButton ----
-                submitButton.setText("Submit");
+        		//---- submitButton ----
+        		submitButton.setText("Submit");
+        		buttonBar.add(submitButton, cc.xy(2, 1));
 
-                //---- cancelButton ----
-                cancelButton.setText("Cancel");
-
-                if(XJSystem.isMacOS()) {
-                    buttonBar.add(cancelButton, cc.xy(2, 1));
-                    buttonBar.add(submitButton, cc.xy(4, 1));
-                } else {
-                    buttonBar.add(submitButton, cc.xy(4, 1));
-                    buttonBar.add(cancelButton, cc.xy(2, 1));
-                }
-
-            }
-            dialogPane.add(buttonBar, BorderLayout.SOUTH);
+        		//---- cancelButton ----
+        		cancelButton.setText("Cancel");
+        		buttonBar.add(cancelButton, cc.xy(4, 1));
+        	}
+        	dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
+        pack();
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
     private JPanel dialogPane;
     private JPanel contentPane;
     private JLabel label1;

@@ -73,6 +73,16 @@ public class DialogReports extends XJDialog {
         initComponents();
         setSize(550, 500);
 
+        if(XJSystem.isMacOS()) {
+            CellConstraints cc = new CellConstraints();
+
+            buttonBar.remove(cancelButton);
+            buttonBar.remove(submitButton);
+
+            buttonBar.add(cancelButton, cc.xy(3, 1));
+            buttonBar.add(submitButton, cc.xy(5, 1));
+        }
+
         setDefaultButton(submitButton);
         setOKButton(submitButton);
         setCancelButton(cancelButton);
@@ -283,12 +293,9 @@ public class DialogReports extends XJDialog {
         }
     }
 
-    /** WARNING: buttons are Mac OS X sensitive. Don't forget to copy these lines back
-     * if the interface is modified!
-     */
-
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
         dialogPane = new JPanel();
         contentPane = new JPanel();
         label1 = new JLabel();
@@ -312,120 +319,116 @@ public class DialogReports extends XJDialog {
 
         //======== dialogPane ========
         {
-            dialogPane.setBorder(Borders.DIALOG_BORDER);
-            dialogPane.setPreferredSize(new Dimension(500, 500));
-            dialogPane.setLayout(new BorderLayout());
+        	dialogPane.setBorder(Borders.DIALOG_BORDER);
+        	dialogPane.setPreferredSize(new Dimension(500, 500));
+        	dialogPane.setLayout(new BorderLayout());
 
-            //======== contentPane ========
-            {
-                contentPane.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.DEFAULT_COLSPEC,
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec("max(min;30dlu)"),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.RELATED_GAP_COLSPEC,
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec("max(min;30dlu):grow"),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
-                    },
-                    new RowSpec[] {
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        new RowSpec(RowSpec.CENTER, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
-                    }));
+        	//======== contentPane ========
+        	{
+        		contentPane.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				FormFactory.DEFAULT_COLSPEC,
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec("max(min;30dlu)"),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				FormFactory.RELATED_GAP_COLSPEC,
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec("max(min;30dlu):grow"),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
+        			},
+        			new RowSpec[] {
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				new RowSpec(RowSpec.CENTER, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
+        			}));
 
-                //---- label1 ----
-                label1.setHorizontalAlignment(SwingConstants.RIGHT);
-                label1.setText("View report for:");
-                contentPane.add(label1, cc.xy(1, 1));
+        		//---- label1 ----
+        		label1.setText("View report for:");
+        		label1.setHorizontalAlignment(SwingConstants.RIGHT);
+        		contentPane.add(label1, cc.xy(1, 1));
 
-                //---- typeCombo ----
-                typeCombo.setModel(new DefaultComboBoxModel(new String[] {
-                    "ANTLRWorks",
-                    "ANTLR - grammar",
-                    "ANTLR - runtime"
-                }));
-                contentPane.add(typeCombo, cc.xywh(3, 1, 5, 1));
+        		//---- typeCombo ----
+        		typeCombo.setModel(new DefaultComboBoxModel(new String[] {
+        			"ANTLRWorks",
+        			"ANTLR - grammar",
+        			"ANTLR - runtime"
+        		}));
+        		contentPane.add(typeCombo, cc.xywh(3, 1, 5, 1));
 
-                //---- label22 ----
-                label22.setHorizontalAlignment(SwingConstants.RIGHT);
-                label22.setText("Format:");
-                contentPane.add(label22, cc.xy(1, 3));
+        		//---- label22 ----
+        		label22.setText("Format:");
+        		label22.setHorizontalAlignment(SwingConstants.RIGHT);
+        		contentPane.add(label22, cc.xy(1, 3));
 
-                //---- humanFormatCheck ----
-                humanFormatCheck.setSelected(true);
-                humanFormatCheck.setText("Human readable");
-                contentPane.add(humanFormatCheck, cc.xywh(3, 3, 7, 1));
+        		//---- humanFormatCheck ----
+        		humanFormatCheck.setText("Human readable");
+        		humanFormatCheck.setSelected(true);
+        		contentPane.add(humanFormatCheck, cc.xywh(3, 3, 7, 1));
 
-                //---- currentSpinner ----
-                currentSpinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
-                contentPane.add(currentSpinner, cc.xywh(3, 5, 2, 1));
+        		//---- currentSpinner ----
+        		currentSpinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+        		contentPane.add(currentSpinner, cc.xywh(3, 5, 2, 1));
 
-                //---- label2 ----
-                label2.setHorizontalAlignment(SwingConstants.RIGHT);
-                label2.setText("Report:");
-                contentPane.add(label2, cc.xy(1, 5));
+        		//---- label2 ----
+        		label2.setText("Report:");
+        		label2.setHorizontalAlignment(SwingConstants.RIGHT);
+        		contentPane.add(label2, cc.xy(1, 5));
 
-                //---- infoLabel ----
-                infoLabel.setText("of 999");
-                contentPane.add(infoLabel, cc.xywh(7, 5, 3, 1));
+        		//---- infoLabel ----
+        		infoLabel.setText("of 999");
+        		contentPane.add(infoLabel, cc.xywh(7, 5, 3, 1));
 
-                //======== scrollPane1 ========
-                {
+        		//======== scrollPane1 ========
+        		{
 
-                    //---- statsTextArea ----
-                    statsTextArea.setEditable(false);
-                    statsTextArea.setLineWrap(false);
-                    statsTextArea.setTabSize(2);
-                    statsTextArea.setWrapStyleWord(false);
-                    scrollPane1.setViewportView(statsTextArea);
-                }
-                contentPane.add(scrollPane1, cc.xywh(1, 7, 9, 3));
-            }
-            dialogPane.add(contentPane, BorderLayout.CENTER);
+        			//---- statsTextArea ----
+        			statsTextArea.setEditable(false);
+        			statsTextArea.setLineWrap(false);
+        			statsTextArea.setWrapStyleWord(false);
+        			statsTextArea.setTabSize(2);
+        			scrollPane1.setViewportView(statsTextArea);
+        		}
+        		contentPane.add(scrollPane1, cc.xywh(1, 7, 9, 3));
+        	}
+        	dialogPane.add(contentPane, BorderLayout.CENTER);
 
-            //======== buttonBar ========
-            {
-                buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
-                buttonBar.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC,
-                        FormFactory.RELATED_GAP_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC
-                    },
-                    RowSpec.decodeSpecs("pref")));
+        	//======== buttonBar ========
+        	{
+        		buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
+        		buttonBar.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC,
+        				FormFactory.RELATED_GAP_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC
+        			},
+        			RowSpec.decodeSpecs("pref")));
 
-                //---- submitButton ----
-                submitButton.setText("Submit");
+        		//---- submitButton ----
+        		submitButton.setText("Submit");
+        		buttonBar.add(submitButton, cc.xy(3, 1));
 
-                //---- cancelButton ----
-                cancelButton.setText("Cancel");
-
-                if(XJSystem.isMacOS()) {
-                    buttonBar.add(cancelButton, cc.xy(3, 1));
-                    buttonBar.add(submitButton, cc.xy(5, 1));
-                } else {
-                    buttonBar.add(submitButton, cc.xy(3, 1));
-                    buttonBar.add(cancelButton, cc.xy(5, 1));
-                }
-            }
-            dialogPane.add(buttonBar, BorderLayout.SOUTH);
+        		//---- cancelButton ----
+        		cancelButton.setText("Cancel");
+        		buttonBar.add(cancelButton, cc.xy(5, 1));
+        	}
+        	dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
+        pack();
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
     private JPanel dialogPane;
     private JPanel contentPane;
     private JLabel label1;

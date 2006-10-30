@@ -53,6 +53,16 @@ public class ProjectSettingsDialog extends XJDialog {
         initComponents();
         setSize(600, 160);
 
+        if(XJSystem.isMacOS()) {
+            CellConstraints cc = new CellConstraints();
+
+            buttonBar.remove(cancelButton);
+            buttonBar.remove(okButton);
+
+            buttonBar.add(cancelButton, cc.xy(2, 1));
+            buttonBar.add(okButton, cc.xy(4, 1));
+        }
+
         setDefaultButton(okButton);
         setOKButton(okButton);
         setCancelButton(cancelButton);
@@ -79,6 +89,7 @@ public class ProjectSettingsDialog extends XJDialog {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
         dialogPane = new JPanel();
         contentPane = new JPanel();
         label1 = new JLabel();
@@ -97,81 +108,74 @@ public class ProjectSettingsDialog extends XJDialog {
 
         //======== dialogPane ========
         {
-            dialogPane.setBorder(Borders.DIALOG_BORDER);
-            dialogPane.setLayout(new BorderLayout());
+        	dialogPane.setBorder(Borders.DIALOG_BORDER);
+        	dialogPane.setLayout(new BorderLayout());
 
-            //======== contentPane ========
-            {
-                contentPane.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.DEFAULT_COLSPEC,
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec("max(min;200dlu):grow"),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.DEFAULT_COLSPEC
-                    },
-                    new RowSpec[] {
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC
-                    }));
+        	//======== contentPane ========
+        	{
+        		contentPane.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				FormFactory.DEFAULT_COLSPEC,
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec("max(min;200dlu):grow"),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				FormFactory.DEFAULT_COLSPEC
+        			},
+        			new RowSpec[] {
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC
+        			}));
 
-                //---- label1 ----
-                label1.setText("Source:");
-                contentPane.add(label1, cc.xy(1, 3));
-                contentPane.add(sourceField, cc.xy(3, 3));
+        		//---- label1 ----
+        		label1.setText("Source:");
+        		contentPane.add(label1, cc.xy(1, 3));
+        		contentPane.add(sourceField, cc.xy(3, 3));
 
-                //---- sourceChooseButton ----
-                sourceChooseButton.setText("Choose...");
-                contentPane.add(sourceChooseButton, cc.xy(5, 3));
+        		//---- sourceChooseButton ----
+        		sourceChooseButton.setText("Choose...");
+        		contentPane.add(sourceChooseButton, cc.xy(5, 3));
 
-                //---- label2 ----
-                label2.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
-                label2.setText("Specify the source directory of the project");
-                contentPane.add(label2, cc.xy(3, 5));
-            }
-            dialogPane.add(contentPane, BorderLayout.CENTER);
+        		//---- label2 ----
+        		label2.setText("Specify the source directory of the project");
+        		label2.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
+        		contentPane.add(label2, cc.xy(3, 5));
+        	}
+        	dialogPane.add(contentPane, BorderLayout.CENTER);
 
-            //======== buttonBar ========
-            {
-                buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
-                buttonBar.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.GLUE_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC,
-                        FormFactory.RELATED_GAP_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC
-                    },
-                    RowSpec.decodeSpecs("pref")));
+        	//======== buttonBar ========
+        	{
+        		buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
+        		buttonBar.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				FormFactory.GLUE_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC,
+        				FormFactory.RELATED_GAP_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC
+        			},
+        			RowSpec.decodeSpecs("pref")));
 
-                //---- okButton ----
-                okButton.setText("OK");
-                buttonBar.add(okButton, cc.xy(2, 1));
+        		//---- okButton ----
+        		okButton.setText("OK");
+        		buttonBar.add(okButton, cc.xy(2, 1));
 
-                //---- cancelButton ----
-                cancelButton.setText("Cancel");
-                buttonBar.add(cancelButton, cc.xy(4, 1));
-
-                if(XJSystem.isMacOS()) {
-                    buttonBar.add(cancelButton, cc.xy(2, 1));
-                    buttonBar.add(okButton, cc.xy(4, 1));
-                } else {
-                    buttonBar.add(okButton, cc.xy(2, 1));
-                    buttonBar.add(cancelButton, cc.xy(4, 1));
-                }
-
-            }
-            dialogPane.add(buttonBar, BorderLayout.SOUTH);
+        		//---- cancelButton ----
+        		cancelButton.setText("Cancel");
+        		buttonBar.add(cancelButton, cc.xy(4, 1));
+        	}
+        	dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
+        pack();
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
     private JPanel dialogPane;
     private JPanel contentPane;
     private JLabel label1;

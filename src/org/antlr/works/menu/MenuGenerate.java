@@ -31,13 +31,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.generate.CodeDisplay;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
-import org.antlr.works.generate.DialogGenerate;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 
 public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
@@ -67,14 +66,15 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
         if(!checkLanguage())
             return;
 
-        DialogGenerate dialog = new DialogGenerate(editor.getWindowContainer());
-        if(dialog.runModal() == XJDialog.BUTTON_OK) {
-            editor.getDocument().performAutoSave();
+        //DialogGenerate dialog = new DialogGenerate(editor.getWindowContainer());
+        //if(dialog.runModal() == XJDialog.BUTTON_OK) {
+        editor.getDocument().performAutoSave();
 
-            generateCode.setDebug(dialog.generateDebugInformation());
-            generateCode.setOutputPath(dialog.getOutputPath());
-            generateCode.generateInThread(editor.getJavaContainer());
-        }
+        //generateCode.setDebug(dialog.generateDebugInformation());
+        generateCode.setDebug(false);
+        generateCode.setOutputPath(AWPrefs.getOutputPath());
+        generateCode.generateInThread(editor.getJavaContainer());
+        //}
     }
 
     public boolean checkLanguage() {
@@ -130,11 +130,14 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
         }
 
         CodeDisplay dc = new CodeDisplay(editor.getXJFrame());
-        String name = generateCode.getGrammarName();
-        if(lexer)
-            name += "Lexer";
+        String title;
+        try {
+            title = generateCode.getGeneratedClassName(lexer)+".java";
+        } catch (Exception e) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot cannot get the name of the generated file:\n"+e.toString());
+            return;
+        }
 
-        String title = name+".java";
         String text = generateCode.getGeneratedText(lexer);
         if(rule != null) {
             int startIndex = text.indexOf("$ANTLR start "+rule);

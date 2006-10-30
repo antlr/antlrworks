@@ -87,6 +87,15 @@ public class AWPrefsDialog extends XJPanel {
     }
 
     public void prepareGeneralTab() {
+        browseOutputPathButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if(XJFileChooser.shared().displayOpenDialog(getJavaContainer(), false)) {
+                    outputPathField.setText(XJFileChooser.shared().getSelectedFilePath());
+                    AWPrefs.setOutputPath(outputPathField.getText());
+                }
+            }
+        });
+
         browseDotToolPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if(XJFileChooser.shared().displayOpenDialog(getJavaContainer(), false)) {
@@ -106,19 +115,20 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(startupActionCombo, AWPrefs.PREF_STARTUP_ACTION, AWPrefs.STARTUP_OPEN_LAST_OPENED_DOC);
         getPreferences().bindToPreferences(restoreWindowsBoundButton, AWPrefs.PREF_RESTORE_WINDOWS, AWPrefs.DEFAULT_RESTORE_WINDOWS);
         getPreferences().bindToPreferences(lafCombo, AWPrefs.PREF_LOOK_AND_FEEL, XJLookAndFeel.getDefaultLookAndFeelName());
+        getPreferences().bindToPreferences(outputPathField, AWPrefs.PREF_OUTPUT_PATH, AWPrefs.DEFAULT_OUTPUT_PATH);
         getPreferences().bindToPreferences(dotToolPathField, AWPrefs.PREF_DOT_TOOL_PATH, AWPrefs.DEFAULT_DOT_TOOL_PATH);
 
         // General - debug only
-        getPreferences().bindToPreferences(debugVerboseButton, AWPrefs.PREF_DEBUG_VERBOSE, false);
-        getPreferences().bindToPreferences(debugDontOptimizeNFA, AWPrefs.PREF_DEBUG_DONT_OPTIMIZE_NFA, false);
+        //getPreferences().bindToPreferences(debugVerboseButton, AWPrefs.PREF_DEBUG_VERBOSE, false);
+        //getPreferences().bindToPreferences(debugDontOptimizeNFA, AWPrefs.PREF_DEBUG_DONT_OPTIMIZE_NFA, false);
     }
 
     public void prepareEditorTab() {
-        foldingButton.addActionListener(new ActionListener() {
+        /*foldingButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
             }
-        });
+        }); */
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         String fontNames[] = ge.getAvailableFontFamilyNames();
@@ -128,10 +138,6 @@ public class AWPrefsDialog extends XJPanel {
             editorFontCombo.addItem(fontNames[i]);
         }
 
-        // @todo currently disabled because of the new syntax coloring mechanism (ATEColoringView)
-        foldingButton.setEnabled(false);
-        actionsFoldingAnchorsButton.setEnabled(false);
-
         getPreferences().bindToPreferences(autoSaveButton, AWPrefs.PREF_AUTOSAVE_ENABLED, false);
         getPreferences().bindToPreferences(autoSaveDelayField, AWPrefs.PREF_AUTOSAVE_DELAY, 5);
         getPreferences().bindToPreferences(highlightCursorLineButton, AWPrefs.PREF_HIGHLIGHTCURSORLINE, true);
@@ -139,8 +145,8 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(editorFontCombo, AWPrefs.PREF_EDITOR_FONT, AWPrefs.DEFAULT_EDITOR_FONT);
         getPreferences().bindToPreferences(editorFontSizeSpinner, AWPrefs.PREF_EDITOR_FONT_SIZE, AWPrefs.DEFAULT_EDITOR_FONT_SIZE);
         getPreferences().bindToPreferences(parserDelayField, AWPrefs.PREF_PARSER_DELAY, AWPrefs.DEFAULT_PARSER_DELAY);
-        getPreferences().bindToPreferences(foldingButton, AWPrefs.PREF_EDITOR_FOLDING, AWPrefs.DEFAULT_EDITOR_FOLDING);
-        getPreferences().bindToPreferences(actionsFoldingAnchorsButton, AWPrefs.PREF_ACTIONS_ANCHORS_FOLDING, AWPrefs.DEFAULT_ACTIONS_ANCHORS_FOLDING);
+//        getPreferences().bindToPreferences(foldingButton, AWPrefs.PREF_EDITOR_FOLDING, AWPrefs.DEFAULT_EDITOR_FOLDING);
+//        getPreferences().bindToPreferences(actionsFoldingAnchorsButton, AWPrefs.PREF_ACTIONS_ANCHORS_FOLDING, AWPrefs.DEFAULT_ACTIONS_ANCHORS_FOLDING);
         getPreferences().bindToPreferences(smoothScrollingButton, AWPrefs.PREF_SMOOTH_SCROLLING, AWPrefs.DEFAULT_SMOOTH_SCROLLING);
     }
 
@@ -338,6 +344,7 @@ public class AWPrefsDialog extends XJPanel {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
         dialogPane = new JPanel();
         contentPane = new JPanel();
         tabbedPane1 = new JTabbedPane();
@@ -345,14 +352,14 @@ public class AWPrefsDialog extends XJPanel {
         label2 = new JLabel();
         label5 = new JLabel();
         lafCombo = new JComboBox();
-        label24 = new JLabel();
         startupActionCombo = new JComboBox();
         restoreWindowsBoundButton = new JCheckBox();
-        browseDotToolPathButton = new JButton();
-        dotToolPathField = new JTextField();
         label25 = new JLabel();
-        debugVerboseButton = new JCheckBox();
-        debugDontOptimizeNFA = new JCheckBox();
+        outputPathField = new JTextField();
+        browseOutputPathButton = new JButton();
+        label24 = new JLabel();
+        dotToolPathField = new JTextField();
+        browseDotToolPathButton = new JButton();
         tabEditor = new JPanel();
         label3 = new JLabel();
         editorFontCombo = new JComboBox();
@@ -362,8 +369,6 @@ public class AWPrefsDialog extends XJPanel {
         label11 = new JLabel();
         highlightCursorLineButton = new JCheckBox();
         smoothScrollingButton = new JCheckBox();
-        foldingButton = new JCheckBox();
-        actionsFoldingAnchorsButton = new JCheckBox();
         label1 = new JLabel();
         tabWidthField = new JTextField();
         label22 = new JLabel();
@@ -463,808 +468,800 @@ public class AWPrefsDialog extends XJPanel {
 
         //======== dialogPane ========
         {
-            dialogPane.setBorder(Borders.DIALOG_BORDER);
-            dialogPane.setMinimumSize(new Dimension(540, 350));
-            dialogPane.setPreferredSize(new Dimension(600, 380));
-            dialogPane.setLayout(new BorderLayout());
-
-            //======== contentPane ========
-            {
-                contentPane.setLayout(new FormLayout(
-                    "default, default:grow",
-                    "fill:default:grow"));
-
-                //======== tabbedPane1 ========
-                {
-
-                    //======== tabGeneral ========
-                    {
-                        tabGeneral.setLayout(new FormLayout(
-                            new ColumnSpec[] {
-                                new ColumnSpec(Sizes.dluX(10)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec("max(min;20dlu)"),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec("max(min;40dlu)"),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(10))
-                            },
-                            new RowSpec[] {
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC
-                            }));
-
-                        //---- label2 ----
-                        label2.setText("At startup:");
-                        tabGeneral.add(label2, cc.xy(3, 3));
-
-                        //---- label5 ----
-                        label5.setText("Look and feel:");
-                        tabGeneral.add(label5, cc.xy(3, 7));
-                        tabGeneral.add(lafCombo, cc.xywh(5, 7, 3, 1));
-
-                        //---- label24 ----
-                        label24.setText("DOT path:");
-                        tabGeneral.add(label24, cc.xy(3, 9));
-
-                        //---- startupActionCombo ----
-                        startupActionCombo.setModel(new DefaultComboBoxModel(new String[] {
-                            "Create a new document",
-                            "Open the last opened document",
-                            "Open the last saved document",
-                            "Open all opened documents when ANTLRWorks was closed"
-                        }));
-                        tabGeneral.add(startupActionCombo, cc.xywh(5, 3, 3, 1));
-
-                        //---- restoreWindowsBoundButton ----
-                        restoreWindowsBoundButton.setText("Restore project's windows position and size");
-                        tabGeneral.add(restoreWindowsBoundButton, cc.xywh(5, 5, 3, 1));
-
-                        //---- browseDotToolPathButton ----
-                        browseDotToolPathButton.setText("Browse...");
-                        tabGeneral.add(browseDotToolPathButton, cc.xy(9, 9));
-
-                        //---- dotToolPathField ----
-                        dotToolPathField.setToolTipText("Absolute path to the DOT command-line tool");
-                        tabGeneral.add(dotToolPathField, cc.xywh(5, 9, 3, 1));
-
-                        //---- label25 ----
-                        label25.setText("Debug:");
-                        tabGeneral.add(label25, cc.xy(3, 13));
-
-                        //---- debugVerboseButton ----
-                        debugVerboseButton.setText("Verbose");
-                        tabGeneral.add(debugVerboseButton, cc.xywh(5, 13, 3, 1));
-
-                        //---- debugDontOptimizeNFA ----
-                        debugDontOptimizeNFA.setText("Don't optimize NFA");
-                        tabGeneral.add(debugDontOptimizeNFA, cc.xywh(5, 15, 3, 1));
-                    }
-                    tabbedPane1.addTab("General", tabGeneral);
-
-                    //======== tabEditor ========
-                    {
-                        tabEditor.setLayout(new FormLayout(
-                            new ColumnSpec[] {
-                                new ColumnSpec(Sizes.dluX(10)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(20)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec("max(default;45dlu)"),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(20)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(30)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(10))
-                            },
-                            new RowSpec[] {
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                new RowSpec(Sizes.dluY(10))
-                            }));
-
-                        //---- label3 ----
-                        label3.setText("Font:");
-                        tabEditor.add(label3, cc.xy(3, 3));
-
-                        //---- editorFontCombo ----
-                        editorFontCombo.setActionCommand("editorFontCombo");
-                        tabEditor.add(editorFontCombo, cc.xywh(5, 3, 5, 1));
-
-                        //---- editorFontSizeSpinner ----
-                        editorFontSizeSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(8), null, new Integer(1)));
-                        tabEditor.add(editorFontSizeSpinner, cc.xy(11, 3));
-
-                        //---- autoSaveButton ----
-                        autoSaveButton.setText("Auto-save every");
-                        tabEditor.add(autoSaveButton, cc.xywh(5, 5, 3, 1));
-                        tabEditor.add(autoSaveDelayField, cc.xy(9, 5));
-
-                        //---- label11 ----
-                        label11.setText("minutes");
-                        tabEditor.add(label11, cc.xy(11, 5));
-
-                        //---- highlightCursorLineButton ----
-                        highlightCursorLineButton.setText("Highlight cursor line");
-                        tabEditor.add(highlightCursorLineButton, cc.xywh(5, 7, 5, 1));
-
-                        //---- smoothScrollingButton ----
-                        smoothScrollingButton.setText("Smooth scrolling");
-                        tabEditor.add(smoothScrollingButton, cc.xywh(5, 9, 3, 1));
-
-                        //---- foldingButton ----
-                        foldingButton.setText("Enable folding");
-                        tabEditor.add(foldingButton, cc.xywh(5, 11, 3, 1));
-
-                        //---- actionsFoldingAnchorsButton ----
-                        actionsFoldingAnchorsButton.setText("Display actions anchors");
-                        tabEditor.add(actionsFoldingAnchorsButton, cc.xy(7, 13));
-
-                        //---- label1 ----
-                        label1.setHorizontalAlignment(SwingConstants.RIGHT);
-                        label1.setText("Tab width:");
-                        tabEditor.add(label1, cc.xy(3, 15));
-
-                        //---- tabWidthField ----
-                        tabWidthField.setText("8");
-                        tabEditor.add(tabWidthField, cc.xy(5, 15));
-
-                        //---- label22 ----
-                        label22.setText("Update delay:");
-                        tabEditor.add(label22, cc.xy(3, 17));
-
-                        //---- parserDelayField ----
-                        parserDelayField.setText("250");
-                        tabEditor.add(parserDelayField, cc.xy(5, 17));
-
-                        //---- label23 ----
-                        label23.setText("ms");
-                        tabEditor.add(label23, cc.xy(7, 17));
-                    }
-                    tabbedPane1.addTab("Editor", tabEditor);
-
-                    //======== tabSyntax ========
-                    {
-                        tabSyntax.setLayout(new FormLayout(
-                            new ColumnSpec[] {
-                                new ColumnSpec(Sizes.dluX(10)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(20)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
-                            },
-                            new RowSpec[] {
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC
-                            }));
-
-                        //---- label26 ----
-                        label26.setText("Parser References:");
-                        tabSyntax.add(label26, cc.xywh(3, 3, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-
-                        //======== parserColorPanel ========
-                        {
-                            parserColorPanel.setBackground(new Color(255, 255, 51));
-                            parserColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            parserColorPanel.setForeground(Color.black);
-                            parserColorPanel.setPreferredSize(new Dimension(70, 20));
-                            parserColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabSyntax.add(parserColorPanel, cc.xy(5, 3));
-
-                        //---- parserBoldButton ----
-                        parserBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-                        parserBoldButton.setText("Bold");
-                        tabSyntax.add(parserBoldButton, cc.xy(7, 3));
-
-                        //---- parserItalicButton ----
-                        parserItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-                        parserItalicButton.setText("Italic");
-                        tabSyntax.add(parserItalicButton, cc.xy(9, 3));
-
-                        //---- label27 ----
-                        label27.setText("Lexer References:");
-                        tabSyntax.add(label27, cc.xy(3, 5));
-
-                        //======== lexerColorPanel ========
-                        {
-                            lexerColorPanel.setBackground(new Color(255, 255, 51));
-                            lexerColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            lexerColorPanel.setForeground(Color.black);
-                            lexerColorPanel.setPreferredSize(new Dimension(70, 20));
-                            lexerColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabSyntax.add(lexerColorPanel, cc.xy(5, 5));
-
-                        //---- lexerBoldButton ----
-                        lexerBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-                        lexerBoldButton.setText("Bold");
-                        tabSyntax.add(lexerBoldButton, cc.xy(7, 5));
-
-                        //---- lexerItalicButton ----
-                        lexerItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-                        lexerItalicButton.setText("Italic");
-                        tabSyntax.add(lexerItalicButton, cc.xy(9, 5));
-
-                        //---- label28 ----
-                        label28.setText("Labels:");
-                        tabSyntax.add(label28, cc.xy(3, 7));
-
-                        //======== labelColorPanel ========
-                        {
-                            labelColorPanel.setBackground(new Color(255, 255, 51));
-                            labelColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            labelColorPanel.setForeground(Color.black);
-                            labelColorPanel.setPreferredSize(new Dimension(70, 20));
-                            labelColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabSyntax.add(labelColorPanel, cc.xy(5, 7));
-
-                        //---- labelsBoldButton ----
-                        labelsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-                        labelsBoldButton.setText("Bold");
-                        tabSyntax.add(labelsBoldButton, cc.xy(7, 7));
-
-                        //---- labelsItalicButton ----
-                        labelsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-                        labelsItalicButton.setText("Italic");
-                        tabSyntax.add(labelsItalicButton, cc.xy(9, 7));
-
-                        //---- label29 ----
-                        label29.setText("References in action:");
-                        tabSyntax.add(label29, cc.xy(3, 9));
-
-                        //======== refsActionColorPanel ========
-                        {
-                            refsActionColorPanel.setBackground(new Color(255, 255, 51));
-                            refsActionColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            refsActionColorPanel.setForeground(Color.black);
-                            refsActionColorPanel.setPreferredSize(new Dimension(70, 20));
-                            refsActionColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabSyntax.add(refsActionColorPanel, cc.xy(5, 9));
-
-                        //---- refsActionBoldButton ----
-                        refsActionBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-                        refsActionBoldButton.setText("Bold");
-                        tabSyntax.add(refsActionBoldButton, cc.xy(7, 9));
-
-                        //---- refsActionItalicButton ----
-                        refsActionItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-                        refsActionItalicButton.setText("Italic");
-                        tabSyntax.add(refsActionItalicButton, cc.xy(9, 9));
-
-                        //---- label30 ----
-                        label30.setText("Comments:");
-                        tabSyntax.add(label30, cc.xy(3, 11));
-
-                        //======== commentsColorPanel ========
-                        {
-                            commentsColorPanel.setBackground(new Color(255, 255, 51));
-                            commentsColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            commentsColorPanel.setForeground(Color.black);
-                            commentsColorPanel.setPreferredSize(new Dimension(70, 20));
-                            commentsColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabSyntax.add(commentsColorPanel, cc.xy(5, 11));
-
-                        //---- commentsBoldButton ----
-                        commentsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-                        commentsBoldButton.setText("Bold");
-                        tabSyntax.add(commentsBoldButton, cc.xy(7, 11));
-
-                        //---- commentsItalicButton ----
-                        commentsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-                        commentsItalicButton.setText("Italic");
-                        tabSyntax.add(commentsItalicButton, cc.xy(9, 11));
-
-                        //---- label31 ----
-                        label31.setText("Strings:");
-                        tabSyntax.add(label31, cc.xy(3, 13));
-
-                        //======== stringsColorPanel ========
-                        {
-                            stringsColorPanel.setBackground(new Color(255, 255, 51));
-                            stringsColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            stringsColorPanel.setForeground(Color.black);
-                            stringsColorPanel.setPreferredSize(new Dimension(70, 20));
-                            stringsColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabSyntax.add(stringsColorPanel, cc.xy(5, 13));
-
-                        //---- stringsBoldButton ----
-                        stringsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-                        stringsBoldButton.setText("Bold");
-                        tabSyntax.add(stringsBoldButton, cc.xy(7, 13));
-
-                        //---- stringsItalicButton ----
-                        stringsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-                        stringsItalicButton.setText("Italic");
-                        tabSyntax.add(stringsItalicButton, cc.xy(9, 13));
-
-                        //---- label32 ----
-                        label32.setText("Keywords:");
-                        tabSyntax.add(label32, cc.xy(3, 15));
-
-                        //======== keywordsColorPanel ========
-                        {
-                            keywordsColorPanel.setBackground(new Color(255, 255, 51));
-                            keywordsColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            keywordsColorPanel.setForeground(Color.black);
-                            keywordsColorPanel.setPreferredSize(new Dimension(70, 20));
-                            keywordsColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabSyntax.add(keywordsColorPanel, cc.xy(5, 15));
-
-                        //---- keywordsBoldButton ----
-                        keywordsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-                        keywordsBoldButton.setText("Bold");
-                        tabSyntax.add(keywordsBoldButton, cc.xy(7, 15));
-
-                        //---- syntaxDefaultButton ----
-                        syntaxDefaultButton.setText("Default");
-                        tabSyntax.add(syntaxDefaultButton, cc.xy(13, 15));
-
-                        //---- keywordsItalicButton ----
-                        keywordsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-                        keywordsItalicButton.setText("Italic");
-                        tabSyntax.add(keywordsItalicButton, cc.xy(9, 15));
-                    }
-                    tabbedPane1.addTab("Syntax", tabSyntax);
-
-                    //======== tabCompiler ========
-                    {
-                        tabCompiler.setLayout(new FormLayout(
-                            new ColumnSpec[] {
-                                new ColumnSpec(Sizes.dluX(10)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                                FormFactory.DEFAULT_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(10))
-                            },
-                            new RowSpec[] {
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC
-                            }));
-
-                        //---- jikesRadio ----
-                        jikesRadio.setText("jikes");
-                        tabCompiler.add(jikesRadio, cc.xywh(3, 7, 2, 1));
-
-                        //---- integratedRadio ----
-                        integratedRadio.setActionCommand("integrated");
-                        integratedRadio.setText("com.sun.tools.javac");
-                        tabCompiler.add(integratedRadio, cc.xywh(3, 11, 3, 1));
-
-                        //---- javacRadio ----
-                        javacRadio.setSelected(true);
-                        javacRadio.setText("javac");
-                        tabCompiler.add(javacRadio, cc.xywh(3, 3, 2, 1));
-
-                        //---- javacCustomPathButton ----
-                        javacCustomPathButton.setText("Path:");
-                        javacCustomPathButton.setToolTipText("Check to specify a custom path if the default system path doesn't include javac");
-                        tabCompiler.add(javacCustomPathButton, cc.xywh(4, 5, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-                        tabCompiler.add(javacPathField, cc.xy(5, 5));
-
-                        //---- browseJavacPath ----
-                        browseJavacPath.setText("Browse...");
-                        tabCompiler.add(browseJavacPath, cc.xy(6, 5));
-
-                        //---- label4 ----
-                        label4.setText("Path:");
-                        tabCompiler.add(label4, cc.xywh(4, 9, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-                        tabCompiler.add(jikesPathField, cc.xy(5, 9));
-
-                        //---- browseJikesPath ----
-                        browseJikesPath.setText("Browse...");
-                        tabCompiler.add(browseJikesPath, cc.xy(6, 9));
-
-                        //---- label8 ----
-                        label8.setText("ANTLR 3:");
-                        tabCompiler.add(label8, cc.xywh(4, 19, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-                        tabCompiler.add(antlr3ClasspathField, cc.xy(5, 19));
-
-                        //---- label9 ----
-                        label9.setText("Classpath:");
-                        tabCompiler.add(label9, cc.xy(3, 15));
-
-                        //---- classpathSystemButton ----
-                        classpathSystemButton.setText("System");
-                        tabCompiler.add(classpathSystemButton, cc.xy(4, 15));
-
-                        //---- classpathCustomButton ----
-                        classpathCustomButton.setText("Custom");
-                        tabCompiler.add(classpathCustomButton, cc.xy(5, 15));
-
-                        //---- browseANTLR3ClassPathButton ----
-                        browseANTLR3ClassPathButton.setText("Browse...");
-                        tabCompiler.add(browseANTLR3ClassPathButton, cc.xy(6, 19));
-                    }
-                    tabbedPane1.addTab("Compiler", tabCompiler);
-
-                    //======== tabDebugger ========
-                    {
-                        tabDebugger.setLayout(new FormLayout(
-                            new ColumnSpec[] {
-                                new ColumnSpec(Sizes.dluX(10)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(10)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec("max(default;20dlu)"),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(10))
-                            },
-                            new RowSpec[] {
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC
-                            }));
-
-                        //---- label33 ----
-                        label33.setText("Default local port:");
-                        tabDebugger.add(label33, cc.xy(3, 3));
-
-                        //---- debugDefaultLocalPortField ----
-                        debugDefaultLocalPortField.setText("0xC001");
-                        tabDebugger.add(debugDefaultLocalPortField, cc.xy(5, 3));
-
-                        //---- label34 ----
-                        label34.setText("Remote parser launch time-out:");
-                        tabDebugger.add(label34, cc.xy(9, 3));
-
-                        //---- debugLaunchTimeoutField ----
-                        debugLaunchTimeoutField.setText("5");
-                        tabDebugger.add(debugLaunchTimeoutField, cc.xy(11, 3));
-
-                        //---- label35 ----
-                        label35.setText("seconds");
-                        tabDebugger.add(label35, cc.xy(13, 3));
-
-                        //---- label12 ----
-                        label12.setHorizontalAlignment(SwingConstants.RIGHT);
-                        label12.setText("Non-consumed token:");
-                        tabDebugger.add(label12, cc.xy(3, 7));
-
-                        //======== debugNonConsumedColorPanel ========
-                        {
-                            debugNonConsumedColorPanel.setBackground(new Color(255, 255, 51));
-                            debugNonConsumedColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            debugNonConsumedColorPanel.setForeground(Color.black);
-                            debugNonConsumedColorPanel.setPreferredSize(new Dimension(70, 20));
-                            debugNonConsumedColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabDebugger.add(debugNonConsumedColorPanel, cc.xy(5, 7));
-
-                        //---- label13 ----
-                        label13.setHorizontalAlignment(SwingConstants.RIGHT);
-                        label13.setText("Consumed token:");
-                        tabDebugger.add(label13, cc.xy(3, 9));
-
-                        //======== debugConsumedColorPanel ========
-                        {
-                            debugConsumedColorPanel.setBackground(new Color(255, 255, 51));
-                            debugConsumedColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            debugConsumedColorPanel.setForeground(Color.black);
-                            debugConsumedColorPanel.setPreferredSize(new Dimension(70, 20));
-                            debugConsumedColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabDebugger.add(debugConsumedColorPanel, cc.xy(5, 9));
-
-                        //---- label14 ----
-                        label14.setHorizontalAlignment(SwingConstants.RIGHT);
-                        label14.setText("Hidden token:");
-                        tabDebugger.add(label14, cc.xy(3, 11));
-
-                        //======== debugHiddenColorPanel ========
-                        {
-                            debugHiddenColorPanel.setBackground(new Color(255, 255, 51));
-                            debugHiddenColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            debugHiddenColorPanel.setForeground(Color.black);
-                            debugHiddenColorPanel.setPreferredSize(new Dimension(70, 20));
-                            debugHiddenColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabDebugger.add(debugHiddenColorPanel, cc.xy(5, 11));
-
-                        //---- label15 ----
-                        label15.setHorizontalAlignment(SwingConstants.RIGHT);
-                        label15.setText("Dead token:");
-                        tabDebugger.add(label15, cc.xy(3, 13));
-
-                        //======== debugDeadColorPanel ========
-                        {
-                            debugDeadColorPanel.setBackground(new Color(255, 255, 51));
-                            debugDeadColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            debugDeadColorPanel.setForeground(Color.black);
-                            debugDeadColorPanel.setPreferredSize(new Dimension(70, 20));
-                            debugDeadColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabDebugger.add(debugDeadColorPanel, cc.xy(5, 13));
-
-                        //---- label16 ----
-                        label16.setHorizontalAlignment(SwingConstants.RIGHT);
-                        label16.setText("Lookahead token:");
-                        tabDebugger.add(label16, cc.xy(3, 15));
-
-                        //======== debugLTColorPanel ========
-                        {
-                            debugLTColorPanel.setBackground(new Color(255, 255, 51));
-                            debugLTColorPanel.setBorder(LineBorder.createBlackLineBorder());
-                            debugLTColorPanel.setForeground(Color.black);
-                            debugLTColorPanel.setPreferredSize(new Dimension(70, 20));
-                            debugLTColorPanel.setLayout(new FlowLayout());
-                        }
-                        tabDebugger.add(debugLTColorPanel, cc.xy(5, 15));
-
-                        //---- label36 ----
-                        label36.setText("Detachable panels:");
-                        tabDebugger.add(label36, cc.xy(3, 19));
-
-                        //---- detachablePanelChildrenButton ----
-                        detachablePanelChildrenButton.setText("Children of project's window");
-                        tabDebugger.add(detachablePanelChildrenButton, cc.xywh(5, 19, 5, 1));
-                    }
-                    tabbedPane1.addTab("Debugger", tabDebugger);
-
-                    //======== tabSCM ========
-                    {
-                        tabSCM.setLayout(new FormLayout(
-                            new ColumnSpec[] {
-                                new ColumnSpec(Sizes.dluX(10)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(10))
-                            },
-                            new RowSpec[] {
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                new RowSpec(Sizes.DLUY5),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                new RowSpec(Sizes.DLUY5),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                new RowSpec(Sizes.dluY(10))
-                            }));
-
-                        //---- enablePerforceCheckBox ----
-                        enablePerforceCheckBox.setText("Enable Perforce");
-                        tabSCM.add(enablePerforceCheckBox, cc.xy(5, 3));
-
-                        //---- label18 ----
-                        label18.setText("Port:");
-                        tabSCM.add(label18, cc.xy(3, 7));
-                        tabSCM.add(p4PortField, cc.xy(5, 7));
-
-                        //---- label19 ----
-                        label19.setText("User:");
-                        tabSCM.add(label19, cc.xy(3, 9));
-                        tabSCM.add(p4UserField, cc.xy(5, 9));
-
-                        //---- label21 ----
-                        label21.setText("Password:");
-                        tabSCM.add(label21, cc.xy(3, 11));
-                        tabSCM.add(p4PasswordField, cc.xy(5, 11));
-
-                        //---- label20 ----
-                        label20.setText("Client:");
-                        tabSCM.add(label20, cc.xy(3, 13));
-                        tabSCM.add(p4ClientField, cc.xy(5, 13));
-
-                        //---- label17 ----
-                        label17.setText("P4 executable path:");
-                        tabSCM.add(label17, cc.xy(3, 17));
-                        tabSCM.add(p4ExecPathField, cc.xy(5, 17));
-                    }
-                    tabbedPane1.addTab("SCM", tabSCM);
-
-                    //======== tabUpdates ========
-                    {
-                        tabUpdates.setLayout(new FormLayout(
-                            new ColumnSpec[] {
-                                new ColumnSpec(Sizes.dluX(10)),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                FormFactory.DEFAULT_COLSPEC,
-                                FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                                new ColumnSpec(Sizes.dluX(10))
-                            },
-                            new RowSpec[] {
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                new RowSpec(Sizes.dluY(10)),
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC,
-                                FormFactory.LINE_GAP_ROWSPEC,
-                                FormFactory.DEFAULT_ROWSPEC
-                            }));
-
-                        //---- label7 ----
-                        label7.setHorizontalAlignment(SwingConstants.LEFT);
-                        label7.setText("Check for ANTLRWorks updates:");
-                        tabUpdates.add(label7, cc.xy(3, 3));
-
-                        //---- updateTypeCombo ----
-                        updateTypeCombo.setModel(new DefaultComboBoxModel(new String[] {
-                            "Manually",
-                            "At startup",
-                            "Daily",
-                            "Weekly"
-                        }));
-                        tabUpdates.add(updateTypeCombo, cc.xywh(3, 5, 4, 1));
-
-                        //---- checkForUpdatesButton ----
-                        checkForUpdatesButton.setText("Check Now");
-                        tabUpdates.add(checkForUpdatesButton, cc.xy(7, 5));
-
-                        //---- label10 ----
-                        label10.setHorizontalAlignment(SwingConstants.LEFT);
-                        label10.setText("Download path:");
-                        tabUpdates.add(label10, cc.xy(3, 9));
-                        tabUpdates.add(downloadPathField, cc.xywh(3, 11, 3, 1));
-
-                        //---- browseUpdateDownloadPathButton ----
-                        browseUpdateDownloadPathButton.setActionCommand("Browse");
-                        browseUpdateDownloadPathButton.setText("Browse...");
-                        tabUpdates.add(browseUpdateDownloadPathButton, cc.xy(7, 11));
-                    }
-                    tabbedPane1.addTab("Updates", tabUpdates);
-                }
-                contentPane.add(tabbedPane1, cc.xywh(1, 1, 2, 1));
-            }
-            dialogPane.add(contentPane, BorderLayout.CENTER);
-
-            //======== buttonBar ========
-            {
-                buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
-                buttonBar.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.GLUE_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC
-                    },
-                    RowSpec.decodeSpecs("pref")));
-
-                //---- applyButton ----
-                applyButton.setText("Apply");
-                buttonBar.add(applyButton, cc.xy(2, 1));
-            }
-            dialogPane.add(buttonBar, BorderLayout.SOUTH);
+        	dialogPane.setBorder(Borders.DIALOG_BORDER);
+        	dialogPane.setPreferredSize(new Dimension(600, 380));
+        	dialogPane.setMinimumSize(new Dimension(540, 350));
+        	dialogPane.setLayout(new BorderLayout());
+
+        	//======== contentPane ========
+        	{
+        		contentPane.setLayout(new FormLayout(
+        			"default, default:grow",
+        			"fill:default:grow"));
+
+        		//======== tabbedPane1 ========
+        		{
+
+        			//======== tabGeneral ========
+        			{
+        				tabGeneral.setLayout(new FormLayout(
+        					new ColumnSpec[] {
+        						new ColumnSpec(Sizes.dluX(10)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec("max(min;20dlu)"),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec("max(min;40dlu)"),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(10))
+        					},
+        					new RowSpec[] {
+        						new RowSpec(Sizes.dluY(10)),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC
+        					}));
+
+        				//---- label2 ----
+        				label2.setText("At startup:");
+        				tabGeneral.add(label2, cc.xy(3, 3));
+
+        				//---- label5 ----
+        				label5.setText("Look and feel:");
+        				tabGeneral.add(label5, cc.xy(3, 7));
+        				tabGeneral.add(lafCombo, cc.xywh(5, 7, 3, 1));
+
+        				//---- startupActionCombo ----
+        				startupActionCombo.setModel(new DefaultComboBoxModel(new String[] {
+        					"Create a new document",
+        					"Open the last opened document",
+        					"Open the last saved document",
+        					"Open all opened documents when ANTLRWorks was closed"
+        				}));
+        				tabGeneral.add(startupActionCombo, cc.xywh(5, 3, 3, 1));
+
+        				//---- restoreWindowsBoundButton ----
+        				restoreWindowsBoundButton.setText("Restore project's windows position and size");
+        				tabGeneral.add(restoreWindowsBoundButton, cc.xywh(5, 5, 3, 1));
+
+        				//---- label25 ----
+        				label25.setText("Output path:");
+        				tabGeneral.add(label25, cc.xy(3, 11));
+        				tabGeneral.add(outputPathField, cc.xywh(5, 11, 3, 1));
+
+        				//---- browseOutputPathButton ----
+        				browseOutputPathButton.setText("Browse...");
+        				tabGeneral.add(browseOutputPathButton, cc.xy(9, 11));
+
+        				//---- label24 ----
+        				label24.setText("DOT path:");
+        				tabGeneral.add(label24, cc.xy(3, 13));
+
+        				//---- dotToolPathField ----
+        				dotToolPathField.setToolTipText("Absolute path to the DOT command-line tool");
+        				tabGeneral.add(dotToolPathField, cc.xywh(5, 13, 3, 1));
+
+        				//---- browseDotToolPathButton ----
+        				browseDotToolPathButton.setText("Browse...");
+        				tabGeneral.add(browseDotToolPathButton, cc.xy(9, 13));
+        			}
+        			tabbedPane1.addTab("General", tabGeneral);
+
+
+        			//======== tabEditor ========
+        			{
+        				tabEditor.setLayout(new FormLayout(
+        					new ColumnSpec[] {
+        						new ColumnSpec(Sizes.dluX(10)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(20)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec("max(default;45dlu)"),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(20)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(30)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(10))
+        					},
+        					new RowSpec[] {
+        						new RowSpec(Sizes.dluY(10)),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						new RowSpec(Sizes.dluY(10))
+        					}));
+
+        				//---- label3 ----
+        				label3.setText("Font:");
+        				tabEditor.add(label3, cc.xy(3, 3));
+
+        				//---- editorFontCombo ----
+        				editorFontCombo.setActionCommand("editorFontCombo");
+        				tabEditor.add(editorFontCombo, cc.xywh(5, 3, 5, 1));
+
+        				//---- editorFontSizeSpinner ----
+        				editorFontSizeSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(8), null, new Integer(1)));
+        				tabEditor.add(editorFontSizeSpinner, cc.xy(11, 3));
+
+        				//---- autoSaveButton ----
+        				autoSaveButton.setText("Auto-save every");
+        				tabEditor.add(autoSaveButton, cc.xywh(5, 5, 3, 1));
+        				tabEditor.add(autoSaveDelayField, cc.xy(9, 5));
+
+        				//---- label11 ----
+        				label11.setText("minutes");
+        				tabEditor.add(label11, cc.xy(11, 5));
+
+        				//---- highlightCursorLineButton ----
+        				highlightCursorLineButton.setText("Highlight cursor line");
+        				tabEditor.add(highlightCursorLineButton, cc.xywh(5, 7, 5, 1));
+
+        				//---- smoothScrollingButton ----
+        				smoothScrollingButton.setText("Smooth scrolling");
+        				tabEditor.add(smoothScrollingButton, cc.xywh(5, 9, 3, 1));
+
+        				//---- label1 ----
+        				label1.setText("Tab width:");
+        				label1.setHorizontalAlignment(SwingConstants.RIGHT);
+        				tabEditor.add(label1, cc.xy(3, 11));
+
+        				//---- tabWidthField ----
+        				tabWidthField.setText("8");
+        				tabEditor.add(tabWidthField, cc.xy(5, 11));
+
+        				//---- label22 ----
+        				label22.setText("Update delay:");
+        				tabEditor.add(label22, cc.xy(3, 13));
+
+        				//---- parserDelayField ----
+        				parserDelayField.setText("250");
+        				tabEditor.add(parserDelayField, cc.xy(5, 13));
+
+        				//---- label23 ----
+        				label23.setText("ms");
+        				tabEditor.add(label23, cc.xy(7, 13));
+        			}
+        			tabbedPane1.addTab("Editor", tabEditor);
+
+
+        			//======== tabSyntax ========
+        			{
+        				tabSyntax.setLayout(new FormLayout(
+        					new ColumnSpec[] {
+        						new ColumnSpec(Sizes.dluX(10)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(20)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
+        					},
+        					new RowSpec[] {
+        						new RowSpec(Sizes.dluY(10)),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC
+        					}));
+
+        				//---- label26 ----
+        				label26.setText("Parser References:");
+        				tabSyntax.add(label26, cc.xywh(3, 3, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+
+        				//======== parserColorPanel ========
+        				{
+        					parserColorPanel.setForeground(Color.black);
+        					parserColorPanel.setPreferredSize(new Dimension(70, 20));
+        					parserColorPanel.setBackground(new Color(255, 255, 51));
+        					parserColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					parserColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabSyntax.add(parserColorPanel, cc.xy(5, 3));
+
+        				//---- parserBoldButton ----
+        				parserBoldButton.setText("Bold");
+        				parserBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+        				tabSyntax.add(parserBoldButton, cc.xy(7, 3));
+
+        				//---- parserItalicButton ----
+        				parserItalicButton.setText("Italic");
+        				parserItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+        				tabSyntax.add(parserItalicButton, cc.xy(9, 3));
+
+        				//---- label27 ----
+        				label27.setText("Lexer References:");
+        				tabSyntax.add(label27, cc.xy(3, 5));
+
+        				//======== lexerColorPanel ========
+        				{
+        					lexerColorPanel.setForeground(Color.black);
+        					lexerColorPanel.setPreferredSize(new Dimension(70, 20));
+        					lexerColorPanel.setBackground(new Color(255, 255, 51));
+        					lexerColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					lexerColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabSyntax.add(lexerColorPanel, cc.xy(5, 5));
+
+        				//---- lexerBoldButton ----
+        				lexerBoldButton.setText("Bold");
+        				lexerBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+        				tabSyntax.add(lexerBoldButton, cc.xy(7, 5));
+
+        				//---- lexerItalicButton ----
+        				lexerItalicButton.setText("Italic");
+        				lexerItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+        				tabSyntax.add(lexerItalicButton, cc.xy(9, 5));
+
+        				//---- label28 ----
+        				label28.setText("Labels:");
+        				tabSyntax.add(label28, cc.xy(3, 7));
+
+        				//======== labelColorPanel ========
+        				{
+        					labelColorPanel.setForeground(Color.black);
+        					labelColorPanel.setPreferredSize(new Dimension(70, 20));
+        					labelColorPanel.setBackground(new Color(255, 255, 51));
+        					labelColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					labelColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabSyntax.add(labelColorPanel, cc.xy(5, 7));
+
+        				//---- labelsBoldButton ----
+        				labelsBoldButton.setText("Bold");
+        				labelsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+        				tabSyntax.add(labelsBoldButton, cc.xy(7, 7));
+
+        				//---- labelsItalicButton ----
+        				labelsItalicButton.setText("Italic");
+        				labelsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+        				tabSyntax.add(labelsItalicButton, cc.xy(9, 7));
+
+        				//---- label29 ----
+        				label29.setText("References in action:");
+        				tabSyntax.add(label29, cc.xy(3, 9));
+
+        				//======== refsActionColorPanel ========
+        				{
+        					refsActionColorPanel.setForeground(Color.black);
+        					refsActionColorPanel.setPreferredSize(new Dimension(70, 20));
+        					refsActionColorPanel.setBackground(new Color(255, 255, 51));
+        					refsActionColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					refsActionColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabSyntax.add(refsActionColorPanel, cc.xy(5, 9));
+
+        				//---- refsActionBoldButton ----
+        				refsActionBoldButton.setText("Bold");
+        				refsActionBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+        				tabSyntax.add(refsActionBoldButton, cc.xy(7, 9));
+
+        				//---- refsActionItalicButton ----
+        				refsActionItalicButton.setText("Italic");
+        				refsActionItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+        				tabSyntax.add(refsActionItalicButton, cc.xy(9, 9));
+
+        				//---- label30 ----
+        				label30.setText("Comments:");
+        				tabSyntax.add(label30, cc.xy(3, 11));
+
+        				//======== commentsColorPanel ========
+        				{
+        					commentsColorPanel.setForeground(Color.black);
+        					commentsColorPanel.setPreferredSize(new Dimension(70, 20));
+        					commentsColorPanel.setBackground(new Color(255, 255, 51));
+        					commentsColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					commentsColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabSyntax.add(commentsColorPanel, cc.xy(5, 11));
+
+        				//---- commentsBoldButton ----
+        				commentsBoldButton.setText("Bold");
+        				commentsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+        				tabSyntax.add(commentsBoldButton, cc.xy(7, 11));
+
+        				//---- commentsItalicButton ----
+        				commentsItalicButton.setText("Italic");
+        				commentsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+        				tabSyntax.add(commentsItalicButton, cc.xy(9, 11));
+
+        				//---- label31 ----
+        				label31.setText("Strings:");
+        				tabSyntax.add(label31, cc.xy(3, 13));
+
+        				//======== stringsColorPanel ========
+        				{
+        					stringsColorPanel.setForeground(Color.black);
+        					stringsColorPanel.setPreferredSize(new Dimension(70, 20));
+        					stringsColorPanel.setBackground(new Color(255, 255, 51));
+        					stringsColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					stringsColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabSyntax.add(stringsColorPanel, cc.xy(5, 13));
+
+        				//---- stringsBoldButton ----
+        				stringsBoldButton.setText("Bold");
+        				stringsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+        				tabSyntax.add(stringsBoldButton, cc.xy(7, 13));
+
+        				//---- stringsItalicButton ----
+        				stringsItalicButton.setText("Italic");
+        				stringsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+        				tabSyntax.add(stringsItalicButton, cc.xy(9, 13));
+
+        				//---- label32 ----
+        				label32.setText("Keywords:");
+        				tabSyntax.add(label32, cc.xy(3, 15));
+
+        				//======== keywordsColorPanel ========
+        				{
+        					keywordsColorPanel.setForeground(Color.black);
+        					keywordsColorPanel.setPreferredSize(new Dimension(70, 20));
+        					keywordsColorPanel.setBackground(new Color(255, 255, 51));
+        					keywordsColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					keywordsColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabSyntax.add(keywordsColorPanel, cc.xy(5, 15));
+
+        				//---- keywordsBoldButton ----
+        				keywordsBoldButton.setText("Bold");
+        				keywordsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+        				tabSyntax.add(keywordsBoldButton, cc.xy(7, 15));
+
+        				//---- syntaxDefaultButton ----
+        				syntaxDefaultButton.setText("Default");
+        				tabSyntax.add(syntaxDefaultButton, cc.xy(13, 15));
+
+        				//---- keywordsItalicButton ----
+        				keywordsItalicButton.setText("Italic");
+        				keywordsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+        				tabSyntax.add(keywordsItalicButton, cc.xy(9, 15));
+        			}
+        			tabbedPane1.addTab("Syntax", tabSyntax);
+
+
+        			//======== tabCompiler ========
+        			{
+        				tabCompiler.setLayout(new FormLayout(
+        					new ColumnSpec[] {
+        						new ColumnSpec(Sizes.dluX(10)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        						FormFactory.DEFAULT_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(10))
+        					},
+        					new RowSpec[] {
+        						new RowSpec(Sizes.dluY(10)),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						new RowSpec(Sizes.dluY(10)),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC
+        					}));
+
+        				//---- jikesRadio ----
+        				jikesRadio.setText("jikes");
+        				tabCompiler.add(jikesRadio, cc.xywh(3, 7, 2, 1));
+
+        				//---- integratedRadio ----
+        				integratedRadio.setText("com.sun.tools.javac");
+        				integratedRadio.setActionCommand("integrated");
+        				tabCompiler.add(integratedRadio, cc.xywh(3, 11, 3, 1));
+
+        				//---- javacRadio ----
+        				javacRadio.setText("javac");
+        				javacRadio.setSelected(true);
+        				tabCompiler.add(javacRadio, cc.xywh(3, 3, 2, 1));
+
+        				//---- javacCustomPathButton ----
+        				javacCustomPathButton.setText("Path:");
+        				javacCustomPathButton.setToolTipText("Check to specify a custom path if the default system path doesn't include javac");
+        				tabCompiler.add(javacCustomPathButton, cc.xywh(4, 5, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+        				tabCompiler.add(javacPathField, cc.xy(5, 5));
+
+        				//---- browseJavacPath ----
+        				browseJavacPath.setText("Browse...");
+        				tabCompiler.add(browseJavacPath, cc.xy(6, 5));
+
+        				//---- label4 ----
+        				label4.setText("Path:");
+        				tabCompiler.add(label4, cc.xywh(4, 9, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+        				tabCompiler.add(jikesPathField, cc.xy(5, 9));
+
+        				//---- browseJikesPath ----
+        				browseJikesPath.setText("Browse...");
+        				tabCompiler.add(browseJikesPath, cc.xy(6, 9));
+
+        				//---- label8 ----
+        				label8.setText("ANTLR 3:");
+        				tabCompiler.add(label8, cc.xywh(4, 19, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+        				tabCompiler.add(antlr3ClasspathField, cc.xy(5, 19));
+
+        				//---- label9 ----
+        				label9.setText("Classpath:");
+        				tabCompiler.add(label9, cc.xy(3, 15));
+
+        				//---- classpathSystemButton ----
+        				classpathSystemButton.setText("System");
+        				tabCompiler.add(classpathSystemButton, cc.xy(4, 15));
+
+        				//---- classpathCustomButton ----
+        				classpathCustomButton.setText("Custom");
+        				tabCompiler.add(classpathCustomButton, cc.xy(5, 15));
+
+        				//---- browseANTLR3ClassPathButton ----
+        				browseANTLR3ClassPathButton.setText("Browse...");
+        				tabCompiler.add(browseANTLR3ClassPathButton, cc.xy(6, 19));
+        			}
+        			tabbedPane1.addTab("Compiler", tabCompiler);
+
+
+        			//======== tabDebugger ========
+        			{
+        				tabDebugger.setLayout(new FormLayout(
+        					new ColumnSpec[] {
+        						new ColumnSpec(Sizes.dluX(10)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(10)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec("max(default;20dlu)"),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(10))
+        					},
+        					new RowSpec[] {
+        						new RowSpec(Sizes.dluY(10)),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						new RowSpec(Sizes.dluY(10)),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC
+        					}));
+
+        				//---- label33 ----
+        				label33.setText("Default local port:");
+        				tabDebugger.add(label33, cc.xy(3, 3));
+
+        				//---- debugDefaultLocalPortField ----
+        				debugDefaultLocalPortField.setText("0xC001");
+        				tabDebugger.add(debugDefaultLocalPortField, cc.xy(5, 3));
+
+        				//---- label34 ----
+        				label34.setText("Remote parser launch time-out:");
+        				tabDebugger.add(label34, cc.xy(9, 3));
+
+        				//---- debugLaunchTimeoutField ----
+        				debugLaunchTimeoutField.setText("5");
+        				tabDebugger.add(debugLaunchTimeoutField, cc.xy(11, 3));
+
+        				//---- label35 ----
+        				label35.setText("seconds");
+        				tabDebugger.add(label35, cc.xy(13, 3));
+
+        				//---- label12 ----
+        				label12.setText("Non-consumed token:");
+        				label12.setHorizontalAlignment(SwingConstants.RIGHT);
+        				tabDebugger.add(label12, cc.xy(3, 7));
+
+        				//======== debugNonConsumedColorPanel ========
+        				{
+        					debugNonConsumedColorPanel.setForeground(Color.black);
+        					debugNonConsumedColorPanel.setPreferredSize(new Dimension(70, 20));
+        					debugNonConsumedColorPanel.setBackground(new Color(255, 255, 51));
+        					debugNonConsumedColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					debugNonConsumedColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabDebugger.add(debugNonConsumedColorPanel, cc.xy(5, 7));
+
+        				//---- label13 ----
+        				label13.setText("Consumed token:");
+        				label13.setHorizontalAlignment(SwingConstants.RIGHT);
+        				tabDebugger.add(label13, cc.xy(3, 9));
+
+        				//======== debugConsumedColorPanel ========
+        				{
+        					debugConsumedColorPanel.setForeground(Color.black);
+        					debugConsumedColorPanel.setPreferredSize(new Dimension(70, 20));
+        					debugConsumedColorPanel.setBackground(new Color(255, 255, 51));
+        					debugConsumedColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					debugConsumedColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabDebugger.add(debugConsumedColorPanel, cc.xy(5, 9));
+
+        				//---- label14 ----
+        				label14.setText("Hidden token:");
+        				label14.setHorizontalAlignment(SwingConstants.RIGHT);
+        				tabDebugger.add(label14, cc.xy(3, 11));
+
+        				//======== debugHiddenColorPanel ========
+        				{
+        					debugHiddenColorPanel.setForeground(Color.black);
+        					debugHiddenColorPanel.setPreferredSize(new Dimension(70, 20));
+        					debugHiddenColorPanel.setBackground(new Color(255, 255, 51));
+        					debugHiddenColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					debugHiddenColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabDebugger.add(debugHiddenColorPanel, cc.xy(5, 11));
+
+        				//---- label15 ----
+        				label15.setText("Dead token:");
+        				label15.setHorizontalAlignment(SwingConstants.RIGHT);
+        				tabDebugger.add(label15, cc.xy(3, 13));
+
+        				//======== debugDeadColorPanel ========
+        				{
+        					debugDeadColorPanel.setForeground(Color.black);
+        					debugDeadColorPanel.setPreferredSize(new Dimension(70, 20));
+        					debugDeadColorPanel.setBackground(new Color(255, 255, 51));
+        					debugDeadColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					debugDeadColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabDebugger.add(debugDeadColorPanel, cc.xy(5, 13));
+
+        				//---- label16 ----
+        				label16.setText("Lookahead token:");
+        				label16.setHorizontalAlignment(SwingConstants.RIGHT);
+        				tabDebugger.add(label16, cc.xy(3, 15));
+
+        				//======== debugLTColorPanel ========
+        				{
+        					debugLTColorPanel.setForeground(Color.black);
+        					debugLTColorPanel.setPreferredSize(new Dimension(70, 20));
+        					debugLTColorPanel.setBackground(new Color(255, 255, 51));
+        					debugLTColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					debugLTColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabDebugger.add(debugLTColorPanel, cc.xy(5, 15));
+
+        				//---- label36 ----
+        				label36.setText("Detachable panels:");
+        				tabDebugger.add(label36, cc.xy(3, 19));
+
+        				//---- detachablePanelChildrenButton ----
+        				detachablePanelChildrenButton.setText("Children of project's window");
+        				tabDebugger.add(detachablePanelChildrenButton, cc.xywh(5, 19, 5, 1));
+        			}
+        			tabbedPane1.addTab("Debugger", tabDebugger);
+
+
+        			//======== tabSCM ========
+        			{
+        				tabSCM.setLayout(new FormLayout(
+        					new ColumnSpec[] {
+        						new ColumnSpec(Sizes.dluX(10)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(10))
+        					},
+        					new RowSpec[] {
+        						new RowSpec(Sizes.dluY(10)),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						new RowSpec(Sizes.DLUY5),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						new RowSpec(Sizes.DLUY5),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						new RowSpec(Sizes.dluY(10))
+        					}));
+
+        				//---- enablePerforceCheckBox ----
+        				enablePerforceCheckBox.setText("Enable Perforce");
+        				tabSCM.add(enablePerforceCheckBox, cc.xy(5, 3));
+
+        				//---- label18 ----
+        				label18.setText("Port:");
+        				tabSCM.add(label18, cc.xy(3, 7));
+        				tabSCM.add(p4PortField, cc.xy(5, 7));
+
+        				//---- label19 ----
+        				label19.setText("User:");
+        				tabSCM.add(label19, cc.xy(3, 9));
+        				tabSCM.add(p4UserField, cc.xy(5, 9));
+
+        				//---- label21 ----
+        				label21.setText("Password:");
+        				tabSCM.add(label21, cc.xy(3, 11));
+        				tabSCM.add(p4PasswordField, cc.xy(5, 11));
+
+        				//---- label20 ----
+        				label20.setText("Client:");
+        				tabSCM.add(label20, cc.xy(3, 13));
+        				tabSCM.add(p4ClientField, cc.xy(5, 13));
+
+        				//---- label17 ----
+        				label17.setText("P4 executable path:");
+        				tabSCM.add(label17, cc.xy(3, 17));
+        				tabSCM.add(p4ExecPathField, cc.xy(5, 17));
+        			}
+        			tabbedPane1.addTab("SCM", tabSCM);
+
+
+        			//======== tabUpdates ========
+        			{
+        				tabUpdates.setLayout(new FormLayout(
+        					new ColumnSpec[] {
+        						new ColumnSpec(Sizes.dluX(10)),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						new ColumnSpec(Sizes.dluX(10))
+        					},
+        					new RowSpec[] {
+        						new RowSpec(Sizes.dluY(10)),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						new RowSpec(Sizes.dluY(10)),
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC
+        					}));
+
+        				//---- label7 ----
+        				label7.setText("Check for ANTLRWorks updates:");
+        				label7.setHorizontalAlignment(SwingConstants.LEFT);
+        				tabUpdates.add(label7, cc.xy(3, 3));
+
+        				//---- updateTypeCombo ----
+        				updateTypeCombo.setModel(new DefaultComboBoxModel(new String[] {
+        					"Manually",
+        					"At startup",
+        					"Daily",
+        					"Weekly"
+        				}));
+        				tabUpdates.add(updateTypeCombo, cc.xywh(3, 5, 4, 1));
+
+        				//---- checkForUpdatesButton ----
+        				checkForUpdatesButton.setText("Check Now");
+        				tabUpdates.add(checkForUpdatesButton, cc.xy(7, 5));
+
+        				//---- label10 ----
+        				label10.setText("Download path:");
+        				label10.setHorizontalAlignment(SwingConstants.LEFT);
+        				tabUpdates.add(label10, cc.xy(3, 9));
+        				tabUpdates.add(downloadPathField, cc.xywh(3, 11, 3, 1));
+
+        				//---- browseUpdateDownloadPathButton ----
+        				browseUpdateDownloadPathButton.setText("Browse...");
+        				browseUpdateDownloadPathButton.setActionCommand("Browse");
+        				tabUpdates.add(browseUpdateDownloadPathButton, cc.xy(7, 11));
+        			}
+        			tabbedPane1.addTab("Updates", tabUpdates);
+
+        		}
+        		contentPane.add(tabbedPane1, cc.xywh(1, 1, 2, 1));
+        	}
+        	dialogPane.add(contentPane, BorderLayout.CENTER);
+
+        	//======== buttonBar ========
+        	{
+        		buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
+        		buttonBar.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				FormFactory.GLUE_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC
+        			},
+        			RowSpec.decodeSpecs("pref")));
+
+        		//---- applyButton ----
+        		applyButton.setText("Apply");
+        		buttonBar.add(applyButton, cc.xy(2, 1));
+        	}
+        	dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
+        pack();
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
     private JPanel dialogPane;
     private JPanel contentPane;
     private JTabbedPane tabbedPane1;
@@ -1272,14 +1269,14 @@ public class AWPrefsDialog extends XJPanel {
     private JLabel label2;
     private JLabel label5;
     private JComboBox lafCombo;
-    private JLabel label24;
     private JComboBox startupActionCombo;
     private JCheckBox restoreWindowsBoundButton;
-    private JButton browseDotToolPathButton;
-    private JTextField dotToolPathField;
     private JLabel label25;
-    private JCheckBox debugVerboseButton;
-    private JCheckBox debugDontOptimizeNFA;
+    private JTextField outputPathField;
+    private JButton browseOutputPathButton;
+    private JLabel label24;
+    private JTextField dotToolPathField;
+    private JButton browseDotToolPathButton;
     private JPanel tabEditor;
     private JLabel label3;
     private JComboBox editorFontCombo;
@@ -1289,8 +1286,6 @@ public class AWPrefsDialog extends XJPanel {
     private JLabel label11;
     private JCheckBox highlightCursorLineButton;
     private JCheckBox smoothScrollingButton;
-    private JCheckBox foldingButton;
-    private JCheckBox actionsFoldingAnchorsButton;
     private JLabel label1;
     private JTextField tabWidthField;
     private JLabel label22;

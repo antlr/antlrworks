@@ -55,7 +55,6 @@ import org.antlr.works.editor.EditorConsole;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorProvider;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.generate.DialogGenerate;
 import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
@@ -404,7 +403,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     public void resetMarkLocationInGrammar() {
         debuggerCursorIndex = -1;
     }
-    
+
     public int getDebuggerCursorIndex() {
         return debuggerCursorIndex;
     }
@@ -431,14 +430,14 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
             return;
 
         if(buildAndDebug || !local.isRequiredFilesExisting()) {
-            DialogGenerate dialog = new DialogGenerate(getWindowComponent());
-            dialog.setDebugOnly();
-            if(dialog.runModal() == XJDialog.BUTTON_OK) {
-                local.setOutputPath(dialog.getOutputPath());
-                local.prepareAndLaunch(BUILD_AND_DEBUG);
+            //DialogGenerate dialog = new DialogGenerate(getWindowComponent());
+            //dialog.setDebugOnly();
+            //if(dialog.runModal() == XJDialog.BUTTON_OK) {
+            local.setOutputPath(AWPrefs.getOutputPath());
+            local.prepareAndLaunch(BUILD_AND_DEBUG);
 
-                grammarGenerated();
-            }
+            grammarGenerated();
+            //}
         } else {
             local.prepareAndLaunch(DEBUG);
         }
@@ -487,7 +486,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
         editor.getTextPane().setEditable(false);
         editor.getTextPane().requestFocus(false);
-        
+
         player.resetPlayEvents(true);
     }
 
