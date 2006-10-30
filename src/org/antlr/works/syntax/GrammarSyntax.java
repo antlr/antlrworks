@@ -3,6 +3,7 @@ package org.antlr.works.syntax;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.prefs.AWPrefs;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,25 +106,30 @@ public class GrammarSyntax {
 
         try {
             String filePath = editor.getFileFolder();
-            if(filePath == null)
-                // May be null if the file hasn't been saved
-                return tokenVocabNames;
-
-            filePath = XJUtils.concatPath(filePath, tokenVocabName +".tokens");
-            if(new File(filePath).exists()) {
-                // Read the tokens from the file if it exists
-                List tokens = GrammarSyntaxParser.parsePropertiesString(XJUtils.getStringFromFile(filePath));
-                // Add each token name to the list of tokenVocabNames
-                for(int index=0; index<tokens.size(); index++) {
-                    ATEToken t = (ATEToken)tokens.get(index);
-                    tokenVocabNames.add(t.getAttribute());
-                }
+            if(filePath == null || !readTokenVocabFromFile(XJUtils.concatPath(filePath, tokenVocabName +".tokens"))) {
+                // No token vocab file in the default directory. Try in the output path.
+                readTokenVocabFromFile(XJUtils.concatPath(AWPrefs.getOutputPath(), tokenVocabName +".tokens"));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return tokenVocabNames;
+    }
+
+    private boolean readTokenVocabFromFile(String filePath) throws IOException {
+        if(!new File(filePath).exists())
+            return false;
+
+        // Read the tokens from the file if it exists
+        List tokens = GrammarSyntaxParser.parsePropertiesString(XJUtils.getStringFromFile(filePath));
+        // Add each token name to the list of tokenVocabNames
+        for(int index=0; index<tokens.size(); index++) {
+            ATEToken t = (ATEToken)tokens.get(index);
+            tokenVocabNames.add(t.getAttribute());
+        }
+
+        return true;
     }
 
     public void rebuildHasLeftRecursionRulesList() {

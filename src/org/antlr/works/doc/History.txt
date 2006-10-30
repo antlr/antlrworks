@@ -1,6 +1,7 @@
 
 Version 1.0b6 -
 
+- read now the token vocab file from the output path (in addition to the default grammar location)
 - output path is now specified in the preferences
 - alert after checking grammar
 
