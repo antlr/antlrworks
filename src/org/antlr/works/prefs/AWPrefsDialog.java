@@ -83,13 +83,13 @@ public class AWPrefsDialog extends XJPanel {
     }
 
     public Dimension getDefaultSize() {
-        return new Dimension(700, 400);
+        return new Dimension(650, 310);
     }
 
     public void prepareGeneralTab() {
         browseOutputPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if(XJFileChooser.shared().displayOpenDialog(getJavaContainer(), false)) {
+                if(XJFileChooser.shared().displayChooseDirectory(getJavaContainer())) {
                     outputPathField.setText(XJFileChooser.shared().getSelectedFilePath());
                     AWPrefs.setOutputPath(outputPathField.getText());
                 }

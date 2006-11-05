@@ -115,7 +115,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
         view.setBackground(Color.white);
         view.setDrawBorder(false);
         view.setDelegate(this);
-
+        
         Box b = Box.createHorizontalBox();
         b.add(new JLabel("Zoom"));
         b.add(createZoomSlider());

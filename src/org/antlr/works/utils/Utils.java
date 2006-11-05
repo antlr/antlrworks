@@ -1,5 +1,6 @@
 package org.antlr.works.utils;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -118,6 +119,25 @@ public class Utils {
         }
 
         return path;
+    }
+
+    public static void fillComboWithEOL(JComboBox combo) {
+        combo.addItem("Unix (LF)");
+        combo.addItem("Mac (CR)");
+        combo.addItem("Windows (CRLF)");
+    }
+
+    public static String convertRawTextWithEOL(String rawText, JComboBox eolCombo) {
+        return rawText.replaceAll("\n", getEOL(eolCombo));
+    }
+    
+    private static String getEOL(JComboBox eolCombo) {
+        switch(eolCombo.getSelectedIndex()) {
+            case 0: return "\n";
+            case 1: return "\r";
+            case 2: return "\r\n";
+        }
+        return "\n";
     }
 
 }

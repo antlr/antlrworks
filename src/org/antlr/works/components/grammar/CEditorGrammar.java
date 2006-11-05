@@ -973,6 +973,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void notificationDebuggerStarted() {
+        refreshMainMenuBar();
         editorIdeas.hide();
     }
 

@@ -53,6 +53,7 @@ import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TextUtils;
+import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
@@ -71,6 +72,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     protected EditorInterpreterTreeModel treeModel;
     protected AWTreePanel awTreePanel;
     protected JComboBox rulesCombo;
+    protected JComboBox eolCombo;
     protected JLabel tokensToIgnoreLabel;
 
     protected XJDialogProgress progress;
@@ -124,6 +126,9 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         box.add(createRunButton());
         box.add(createRulesPopUp());
         box.add(Box.createHorizontalStrut(20));
+        box.add(new JLabel("Line Endings:"));
+        box.add(createEOLCombo());
+        box.add(Box.createHorizontalStrut(20));
         box.add(createTokensToIgnoreField());
         return box;
     }
@@ -142,6 +147,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
     public JComboBox createRulesPopUp() {
         rulesCombo = new JComboBox();
+        rulesCombo.setFocusable(false);
         rulesCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 String rule = (String)rulesCombo.getSelectedItem();
@@ -150,6 +156,13 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
             }
         });
         return rulesCombo;
+    }
+
+    public JComboBox createEOLCombo() {
+        eolCombo = new JComboBox();
+        eolCombo.setFocusable(false);
+        Utils.fillComboWithEOL(eolCombo);
+        return eolCombo;
     }
 
     public Box createTokensToIgnoreField() {
@@ -162,6 +175,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         box.add(tokensToIgnoreLabel);
 
         JButton button = new JButton("Guess");
+        button.setFocusable(false);
         button.setToolTipText("Find the name of all rules containing an action with channel=99");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -260,7 +274,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         progress.setInfo("Interpreting...");
         editor.console.println("Interpreting...");
 
-        CharStream input = new ANTLRStringStream(textPane.getText());
+        CharStream input = new ANTLRStringStream(Utils.convertRawTextWithEOL(textPane.getText(), eolCombo));
 
         Grammar parser;
         Grammar lexer;

@@ -227,6 +227,7 @@ public class AWPrefs {
     public static final String PREF_OUTPUT_PATH = "PREF_OUTPUT_PATH";
     public static final String PREF_START_SYMBOL = "PREF_START_SYMBOL";
     public static final String PREF_DEBUGGER_INPUT_TEXT = "PREF_DEBUGGER_INPUT_TEXT";
+    public static final String PREF_DEBUGGER_EOL = "PREF_DEBUGGER_EOL";
 
     public static final String PREF_DEBUG_BREAK_ALL = "PREF_DEBUG_BREAK_ALL";
     public static final String PREF_DEBUG_BREAK_LOCATION = "PREF_DEBUG_BREAK_LOCATION";
@@ -535,5 +536,13 @@ public class AWPrefs {
 
     public static List getAllOpenedDocuments() {
         return (List) getPreferences().getObject(PREF_ALL_OPENED_DOCUMENTS, null);
+    }
+
+    public static void setDebuggerEOL(int index) {
+        getPreferences().setInt(PREF_DEBUGGER_EOL, index);
+    }
+
+    public static int getDebuggerEOL() {
+        return getPreferences().getInt(PREF_DEBUGGER_EOL, 0); 
     }
 }

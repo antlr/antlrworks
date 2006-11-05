@@ -1,7 +1,9 @@
 
 * Prio 1
 
+- input dialog for debugger: pop-up to select the kind of EOL to choose from (Mac, Windows, Unix)
 - plugin: hook undo, copy, paste from IntelliJ menu
+- click on input token should display token type
 
 * Prio 2
 

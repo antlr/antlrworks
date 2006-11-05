@@ -85,6 +85,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected Debugger debugger;
 
     protected String inputText;
+    protected String rawInputText;
 
     protected XJDialogProgress progress;
     protected ErrorReporter error = new ErrorReporter();
@@ -108,10 +109,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     public void dialogDidCancel() {
         cancel();
-    }
-
-    public String getInputText() {
-        return inputText;
     }
 
     public void forceStop() {
@@ -197,8 +194,9 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
                     hideProgress();
 
                     DebuggerInputDialog dialog = new DebuggerInputDialog(debugger, debugger.getWindowComponent());
-                    dialog.setInputText(inputText);
+                    dialog.setInputText(rawInputText);
                     if(dialog.runModal() == XJDialog.BUTTON_OK) {
+                        rawInputText = dialog.getRawInputText();
                         inputText = dialog.getInputText();
                         setStartRule(dialog.getRule());
                         showProgress();
@@ -377,7 +375,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected void generateInputText() {
         try {
-            XJUtils.writeStringToFile(getInputText(), fileRemoteParserInputText);
+            XJUtils.writeStringToFile(inputText, fileRemoteParserInputText);
         } catch (IOException e) {
             debugger.getConsole().print(e);
             reportError("Error while generating the input text:\n"+e.toString());

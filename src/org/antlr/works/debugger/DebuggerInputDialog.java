@@ -39,6 +39,7 @@ import edu.usfca.xj.foundation.XJSystem;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.TextUtils;
+import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -76,20 +77,29 @@ public class DebuggerInputDialog extends XJDialog {
             rulesCombo.addItem(rule.name);
         }
         rulesCombo.setSelectedItem(AWPrefs.getStartSymbol());
+
+        Utils.fillComboWithEOL(eolCombo);
+        eolCombo.setSelectedIndex(AWPrefs.getDebuggerEOL());
     }
 
     public void dialogWillCloseOK() {
         AWPrefs.setStartSymbol(getRule());
-        AWPrefs.setDebuggerInputText(getInputText());
+        AWPrefs.setDebuggerInputText(getRawInputText());
+        AWPrefs.setDebuggerEOL(eolCombo.getSelectedIndex());
     }
 
     public void setInputText(String text) {
-        if(text != null)
+        if(text != null) {
             inputTextArea.setText(text);
+        }
+    }
+
+    public String getRawInputText() {
+        return inputTextArea.getText();
     }
 
     public String getInputText() {
-        return inputTextArea.getText();
+        return Utils.convertRawTextWithEOL(getRawInputText(), eolCombo);
     }
 
     public String getRule() {
@@ -103,9 +113,11 @@ public class DebuggerInputDialog extends XJDialog {
         contentPane = new JPanel();
         scrollPane1 = new JScrollPane();
         inputTextArea = new JTextPane();
+        label1 = new JLabel();
         label2 = new JLabel();
         rulesCombo = new JComboBox();
-        label1 = new JLabel();
+        label3 = new JLabel();
+        eolCombo = new JComboBox();
         buttonBar = new JPanel();
         okButton = new JButton();
         cancelButton = new JButton();
@@ -127,12 +139,16 @@ public class DebuggerInputDialog extends XJDialog {
         			new ColumnSpec[] {
         				FormFactory.DEFAULT_COLSPEC,
         				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				FormFactory.DEFAULT_COLSPEC,
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
         				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
         			},
         			new RowSpec[] {
         				FormFactory.DEFAULT_ROWSPEC,
         				FormFactory.LINE_GAP_ROWSPEC,
         				new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC,
         				FormFactory.LINE_GAP_ROWSPEC,
         				FormFactory.DEFAULT_ROWSPEC
         			}));
@@ -142,16 +158,28 @@ public class DebuggerInputDialog extends XJDialog {
         			scrollPane1.setPreferredSize(new Dimension(300, 200));
         			scrollPane1.setViewportView(inputTextArea);
         		}
-        		contentPane.add(scrollPane1, cc.xywh(1, 3, 3, 1));
-
-        		//---- label2 ----
-        		label2.setText("Start Rule:");
-        		contentPane.add(label2, cc.xy(1, 5));
-        		contentPane.add(rulesCombo, cc.xy(3, 5));
+        		contentPane.add(scrollPane1, cc.xywh(1, 3, 5, 1));
 
         		//---- label1 ----
         		label1.setText("Input text:");
-        		contentPane.add(label1, cc.xywh(1, 1, 3, 1));
+        		contentPane.add(label1, cc.xywh(1, 1, 5, 1));
+
+        		//---- label2 ----
+        		label2.setText("Start Rule:");
+        		contentPane.add(label2, cc.xywh(1, 5, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+        		contentPane.add(rulesCombo, cc.xywh(3, 5, 3, 1));
+
+        		//---- label3 ----
+        		label3.setText("Line Endings:");
+        		contentPane.add(label3, cc.xywh(1, 7, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+
+        		//---- eolCombo ----
+        		eolCombo.setModel(new DefaultComboBoxModel(new String[] {
+        			"Unix (LF)",
+        			"Mac (CR)",
+        			"Windows (CRLF)"
+        		}));
+        		contentPane.add(eolCombo, cc.xy(3, 7));
         	}
         	dialogPane.add(contentPane, BorderLayout.CENTER);
 
@@ -188,9 +216,11 @@ public class DebuggerInputDialog extends XJDialog {
     private JPanel contentPane;
     private JScrollPane scrollPane1;
     private JTextPane inputTextArea;
+    private JLabel label1;
     private JLabel label2;
     private JComboBox rulesCombo;
-    private JLabel label1;
+    private JLabel label3;
+    private JComboBox eolCombo;
     private JPanel buttonBar;
     private JButton okButton;
     private JButton cancelButton;

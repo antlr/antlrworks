@@ -42,6 +42,7 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 public class ATEKeyBindings {
@@ -67,6 +68,11 @@ public class ATEKeyBindings {
         // END to move cursor to end of line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_END, 0);
         inputMap.put(key, DefaultEditorKit.endLineAction);
+
+        // Add shift-delete to act as the standard delete key
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.SHIFT_MASK);
+        inputMap.put(key, DefaultEditorKit.deleteNextCharAction);
+
     }
 
     public void addEmacsKeyBindings() {
@@ -145,7 +151,7 @@ public class ATEKeyBindings {
 
                 if(p < 1 || p >= doc.getLength())
                     return;
-                
+
                 try {
                     String before = doc.getText(p-1, 1);
                     doc.remove(p-1, 1);
