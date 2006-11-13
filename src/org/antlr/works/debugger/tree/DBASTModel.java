@@ -196,7 +196,7 @@ public class DBASTModel {
         public int id;
         public boolean nil = false;
 
-        public ASTNode parent = null;
+        public ASTNode parentNode = null;
 
         public ASTNode(int id) {
             this.id = id;
@@ -210,11 +210,11 @@ public class DBASTModel {
                 /** If the child node is a nil node, add its children only */
                 for (int i = 0; i < node.children.size(); i++) {
                     ASTNode child = (ASTNode) node.children.get(i);
-                    child.parent = this;
+                    child.parentNode = this;
                     children.add(child);
                 }
             } else {
-                node.parent = this;
+                node.parentNode = this;
                 children.add(node);
             }
         }
@@ -227,14 +227,13 @@ public class DBASTModel {
         /** Replace the current parent node with another one */
         public void becomeParent(ASTNode node) {
             node.detach();
-            if(parent != null)
-                parent.replaceChild(this, node);
+            if(parentNode != null) {
+                // If a node has a parent, replace itself by the new parent node
+                // in the list of its parent's children
+                parentNode.replaceChild(this, node);
+            }
 
-            /** Do not add a nil node to the new parent: the nil
-             * node is removed from the tree
-             */
-            if(!nil)
-                node.addChild(this);
+            node.addChild(this);
         }
 
         /** Replace a child with another one */
@@ -250,9 +249,9 @@ public class DBASTModel {
 
         /** Detach this node from its parent */
         public void detach() {
-            if(parent != null) {
-                parent.removeChild(this);
-                parent = null;
+            if(parentNode != null) {
+                parentNode.removeChild(this);
+                parentNode = null;
             }
         }
 

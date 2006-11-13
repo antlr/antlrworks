@@ -35,6 +35,7 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import edu.usfca.xj.appkit.frame.XJDialog;
+import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJSystem;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.GrammarSyntaxRule;
@@ -44,6 +45,7 @@ import org.antlr.works.utils.Utils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Iterator;
+import java.util.prefs.Preferences;
 
 public class DebuggerInputDialog extends XJDialog {
 
@@ -57,7 +59,7 @@ public class DebuggerInputDialog extends XJDialog {
             buttonBar.remove(okButton);
             buttonBar.remove(cancelButton);
 
-            CellConstraints cc = new CellConstraints();            
+            CellConstraints cc = new CellConstraints();
             buttonBar.add(cancelButton, cc.xy(2, 1));
             buttonBar.add(okButton, cc.xy(4, 1));
         }
@@ -83,8 +85,13 @@ public class DebuggerInputDialog extends XJDialog {
     }
 
     public void dialogWillCloseOK() {
+        String text = getRawInputText();
+        if(text.length() > Preferences.MAX_VALUE_LENGTH) {
+            XJAlert.display(getJavaComponent(), "Error", "The input text is too large: "+text.length()+" bytes but preferences can only hold "+Preferences.MAX_VALUE_LENGTH+" bytes. It will be truncated.");
+            text = text.substring(0, Preferences.MAX_VALUE_LENGTH-1);
+        }
         AWPrefs.setStartSymbol(getRule());
-        AWPrefs.setDebuggerInputText(getRawInputText());
+        AWPrefs.setDebuggerInputText(text);
         AWPrefs.setDebuggerEOL(eolCombo.getSelectedIndex());
     }
 
@@ -130,80 +137,80 @@ public class DebuggerInputDialog extends XJDialog {
 
         //======== dialogPane ========
         {
-        	dialogPane.setBorder(Borders.DIALOG_BORDER);
-        	dialogPane.setLayout(new BorderLayout());
+            dialogPane.setBorder(Borders.DIALOG_BORDER);
+            dialogPane.setLayout(new BorderLayout());
 
-        	//======== contentPane ========
-        	{
-        		contentPane.setLayout(new FormLayout(
-        			new ColumnSpec[] {
-        				FormFactory.DEFAULT_COLSPEC,
-        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        				FormFactory.DEFAULT_COLSPEC,
-        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
-        			},
-        			new RowSpec[] {
-        				FormFactory.DEFAULT_ROWSPEC,
-        				FormFactory.LINE_GAP_ROWSPEC,
-        				new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-        				FormFactory.LINE_GAP_ROWSPEC,
-        				FormFactory.DEFAULT_ROWSPEC,
-        				FormFactory.LINE_GAP_ROWSPEC,
-        				FormFactory.DEFAULT_ROWSPEC
-        			}));
+            //======== contentPane ========
+            {
+                contentPane.setLayout(new FormLayout(
+                    new ColumnSpec[] {
+                        FormFactory.DEFAULT_COLSPEC,
+                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                        FormFactory.DEFAULT_COLSPEC,
+                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
+                    },
+                    new RowSpec[] {
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC
+                    }));
 
-        		//======== scrollPane1 ========
-        		{
-        			scrollPane1.setPreferredSize(new Dimension(300, 200));
-        			scrollPane1.setViewportView(inputTextArea);
-        		}
-        		contentPane.add(scrollPane1, cc.xywh(1, 3, 5, 1));
+                //======== scrollPane1 ========
+                {
+                    scrollPane1.setPreferredSize(new Dimension(300, 200));
+                    scrollPane1.setViewportView(inputTextArea);
+                }
+                contentPane.add(scrollPane1, cc.xywh(1, 3, 5, 1));
 
-        		//---- label1 ----
-        		label1.setText("Input text:");
-        		contentPane.add(label1, cc.xywh(1, 1, 5, 1));
+                //---- label1 ----
+                label1.setText("Input text:");
+                contentPane.add(label1, cc.xywh(1, 1, 5, 1));
 
-        		//---- label2 ----
-        		label2.setText("Start Rule:");
-        		contentPane.add(label2, cc.xywh(1, 5, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-        		contentPane.add(rulesCombo, cc.xywh(3, 5, 3, 1));
+                //---- label2 ----
+                label2.setText("Start Rule:");
+                contentPane.add(label2, cc.xywh(1, 5, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+                contentPane.add(rulesCombo, cc.xywh(3, 5, 3, 1));
 
-        		//---- label3 ----
-        		label3.setText("Line Endings:");
-        		contentPane.add(label3, cc.xywh(1, 7, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+                //---- label3 ----
+                label3.setText("Line Endings:");
+                contentPane.add(label3, cc.xywh(1, 7, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 
-        		//---- eolCombo ----
-        		eolCombo.setModel(new DefaultComboBoxModel(new String[] {
-        			"Unix (LF)",
-        			"Mac (CR)",
-        			"Windows (CRLF)"
-        		}));
-        		contentPane.add(eolCombo, cc.xy(3, 7));
-        	}
-        	dialogPane.add(contentPane, BorderLayout.CENTER);
+                //---- eolCombo ----
+                eolCombo.setModel(new DefaultComboBoxModel(new String[] {
+                    "Unix (LF)",
+                    "Mac (CR)",
+                    "Windows (CRLF)"
+                }));
+                contentPane.add(eolCombo, cc.xy(3, 7));
+            }
+            dialogPane.add(contentPane, BorderLayout.CENTER);
 
-        	//======== buttonBar ========
-        	{
-        		buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
-        		buttonBar.setLayout(new FormLayout(
-        			new ColumnSpec[] {
-        				FormFactory.GLUE_COLSPEC,
-        				FormFactory.BUTTON_COLSPEC,
-        				FormFactory.RELATED_GAP_COLSPEC,
-        				FormFactory.BUTTON_COLSPEC
-        			},
-        			RowSpec.decodeSpecs("pref")));
+            //======== buttonBar ========
+            {
+                buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
+                buttonBar.setLayout(new FormLayout(
+                    new ColumnSpec[] {
+                        FormFactory.GLUE_COLSPEC,
+                        FormFactory.BUTTON_COLSPEC,
+                        FormFactory.RELATED_GAP_COLSPEC,
+                        FormFactory.BUTTON_COLSPEC
+                    },
+                    RowSpec.decodeSpecs("pref")));
 
-        		//---- okButton ----
-        		okButton.setText("OK");
-        		buttonBar.add(okButton, cc.xy(2, 1));
+                //---- okButton ----
+                okButton.setText("OK");
+                buttonBar.add(okButton, cc.xy(2, 1));
 
-        		//---- cancelButton ----
-        		cancelButton.setText("Cancel");
-        		buttonBar.add(cancelButton, cc.xy(4, 1));
-        	}
-        	dialogPane.add(buttonBar, BorderLayout.SOUTH);
+                //---- cancelButton ----
+                cancelButton.setText("Cancel");
+                buttonBar.add(cancelButton, cc.xy(4, 1));
+            }
+            dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
         pack();

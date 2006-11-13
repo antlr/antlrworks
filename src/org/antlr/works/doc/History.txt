@@ -6,9 +6,12 @@ Version 1.0b6 -
 - output path is now specified in the preferences
 - alert after checking grammar
 - added shift-delete to behave like delete when typing with the shift key pressed
+
+- fixed a bug when storing strings greated than 8KB (it is now truncated and an alert is displayed)
 - fixed a bug that prevented some DFA diagram from being completely displayed (scrollable zone too small)
 - fixed a bug in the syntax coloring parser when a multi-line comment where located at the end of file
 - fixed a bug where some menu items were not disabled in debug mode
+- fixed a bug where AST node where not correctly added when a node became parent (nil node)
 
 Version 1.0b5 - 10/22/06
 

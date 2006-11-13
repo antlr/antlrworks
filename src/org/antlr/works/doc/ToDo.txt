@@ -1,12 +1,13 @@
 
 * Prio 1
 
-- input dialog for debugger: pop-up to select the kind of EOL to choose from (Mac, Windows, Unix)
-- plugin: hook undo, copy, paste from IntelliJ menu
-- click on input token should display token type
+- make a little tutorial with calc_1.g
+- be able to read file for debugger input instead of text in dialog (useful for long input)
 
 * Prio 2
 
+- plugin: hook undo, copy, paste from IntelliJ menu
+- click on input token should display token type
 - visualdrawing: exception display in console configurable in prefs?
 - optimize tree drawing using incremental model (see AWTreeGraphView)
 - make breakpoint in grammar and stop around this location (line, column)
@@ -37,6 +38,7 @@
 - optimize imports
 - check update.xml file
 - tests: check grammar, interpreter, debugger
+- rebuild plug-in for IntelliJ
 
 - package for Mac OS X
 - upload antlrworks.pdf
