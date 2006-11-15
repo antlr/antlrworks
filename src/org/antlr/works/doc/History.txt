@@ -12,6 +12,7 @@ Version 1.0b6 -
 - fixed a bug in the syntax coloring parser when a multi-line comment where located at the end of file
 - fixed a bug where some menu items were not disabled in debug mode
 - fixed a bug where AST node where not correctly added when a node became parent (nil node)
+- fixed a bug where errors in the grammar where not reported when checking or generating the grammar
 
 Version 1.0b5 - 10/22/06
 

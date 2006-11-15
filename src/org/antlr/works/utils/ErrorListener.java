@@ -77,6 +77,14 @@ public class ErrorListener implements ANTLRErrorListener {
         return errors.size() > 0;
     }
 
+    public String getFirstErrorMessage() {
+        if(hasErrors()) {
+            return errors.get(0).toString();
+        } else {
+            return null;
+        }
+    }
+
     public void info(String msg) {
         infos.add(msg);
         if(forwardListener != null)

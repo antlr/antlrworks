@@ -216,7 +216,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     public void addToken(Token token) {
         int index = token.getTokenIndex();
         if(index == -1) {
-            System.err.println("Negative index in DBInputText.addToken() for token "+token);
+            // Ignore this index (it is used, for example, for EOF)
             return;
         }
 

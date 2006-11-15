@@ -33,6 +33,7 @@ package org.antlr.works.grammar;
 
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.utils.Console;
+import org.antlr.works.utils.ErrorListener;
 
 public class CheckGrammar implements Runnable {
 
@@ -53,14 +54,17 @@ public class CheckGrammar implements Runnable {
     }
 
     public void run() {
+        String errorMsg = null;
+
         editor.getConsole().setMode(Console.MODE_VERBOSE);
         delegate.checkGrammarDidBegin();
         try {
             editor.getEngineGrammar().analyze();
         } catch (Exception e) {
             editor.getConsole().print(e);
+            errorMsg = ErrorListener.shared().getFirstErrorMessage();
         }
-        delegate.checkGrammarDidEnd();
+        delegate.checkGrammarDidEnd(errorMsg);
     }
 
 }

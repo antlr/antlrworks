@@ -93,10 +93,7 @@ public class CodeGenerate implements Runnable {
     }
 
     public String getLastError() {
-        if(errorListener.errors.isEmpty())
-            return null;
-        else
-            return errorListener.errors.get(0).toString();
+        return errorListener.getFirstErrorMessage();
     }
 
     public boolean generate() throws Exception {

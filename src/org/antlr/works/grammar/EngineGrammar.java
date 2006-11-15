@@ -254,6 +254,8 @@ public class EngineGrammar {
     }
 
     public void analyze() throws Exception {
+        createGrammars();
+
         Grammar g = getANTLRGrammar();
         if(g == null)
             return;
@@ -266,8 +268,6 @@ public class EngineGrammar {
 
         if(ErrorManager.doNotAttemptAnalysis())
             return;
-
-        createGrammars();
 
         if(!grammarAnalyzeDirty)
             return;

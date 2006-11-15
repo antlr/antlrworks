@@ -46,6 +46,7 @@ import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
+import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.StreamWatcher;
 import org.antlr.works.utils.StreamWatcherDelegate;
 
@@ -253,7 +254,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected boolean prepare() {
         try {
-
             setOutputPath(AWPrefs.getOutputPath());
             setStartRule(AWPrefs.getStartSymbol());
 
@@ -267,7 +267,14 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             new File(outputFileDir).mkdirs();
         } catch(Exception e) {
             debugger.getConsole().print(e);
-            reportError("Error while preparing the grammar:\n"+e.toString());
+            String msg = ErrorListener.shared().getFirstErrorMessage();
+            StringBuffer sb = new StringBuffer("Error while preparing the grammar:\n");
+            if(msg != null) {
+                sb.append(msg);
+                sb.append("\n");
+            }
+            sb.append(e.toString());
+            reportError(sb.toString());
             return false;
         }
         return true;

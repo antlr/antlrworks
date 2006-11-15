@@ -36,12 +36,15 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.generate.CodeDisplay;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
+import org.antlr.works.grammar.CheckGrammar;
+import org.antlr.works.grammar.CheckGrammarDelegate;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 
-public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
+public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, CheckGrammarDelegate {
 
     public CodeGenerate generateCode = null;
+    protected CheckGrammar checkGrammar;
 
     protected String actionShowCodeRule;
     protected boolean actionShowCodeLexer;
@@ -50,6 +53,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
     public MenuGenerate(CEditorGrammar editor) {
         super(editor);
         generateCode = new CodeGenerate(editor, this);
+        checkGrammar = new CheckGrammar(editor, this);
     }
 
     public void generateCode() {
@@ -63,18 +67,18 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
         if(!editor.ensureDocumentSaved())
             return;
 
+        checkGrammar.check();
+    }
+
+    protected void generateCodeProcessContinued() {
         if(!checkLanguage())
             return;
 
-        //DialogGenerate dialog = new DialogGenerate(editor.getWindowContainer());
-        //if(dialog.runModal() == XJDialog.BUTTON_OK) {
         editor.getDocument().performAutoSave();
 
-        //generateCode.setDebug(dialog.generateDebugInformation());
         generateCode.setDebug(false);
         generateCode.setOutputPath(AWPrefs.getOutputPath());
         generateCode.generateInThread(editor.getJavaContainer());
-        //}
     }
 
     public boolean checkLanguage() {
@@ -172,4 +176,15 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate {
         }
     }
 
+    public void checkGrammarDidBegin() {
+        // do nothing
+    }
+
+    public void checkGrammarDidEnd(String errorMsg) {
+        if(editor.console.isErrorReported()) {
+            XJAlert.display(editor.getWindowContainer(), "Failure", "Check Grammar failed:\n"+errorMsg+"\nConsult the console for more information.");
+        } else {
+            generateCodeProcessContinued();
+        }        
+    }
 }
