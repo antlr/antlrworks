@@ -1,5 +1,5 @@
 
-Version 1.0b6 -
+Version 1.0b6 - 11/18/06
 
 - added line endings preferences in debugger input text dialog and interpreter panel
 - read now the token vocab file from the output path (in addition to the default grammar location)
