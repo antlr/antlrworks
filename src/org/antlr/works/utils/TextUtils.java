@@ -3,10 +3,7 @@ package org.antlr.works.utils;
 import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.*;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.TabSet;
-import javax.swing.text.TabStop;
+import javax.swing.text.*;
 import java.awt.*;
 /*
 
@@ -63,4 +60,9 @@ public class TextUtils {
         }
     }
 
+    public static void setDefaultTextPaneProperties(JTextPane textPane) {
+        // Set by default the end of line property in order to always use the Unix style
+        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
+    }
+    
 }

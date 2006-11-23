@@ -95,6 +95,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
         textPane.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
         TextUtils.createTabs(textPane);
+        TextUtils.setDefaultTextPaneProperties(textPane);
 
         textScrollPane = new JScrollPane(textPane);
         textScrollPane.setWheelScrollingEnabled(true);

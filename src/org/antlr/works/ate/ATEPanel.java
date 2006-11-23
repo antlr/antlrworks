@@ -352,7 +352,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         try {
             ateEngineWillParse();
 
-            textPane.setText(text);
+            textPane.setText(normalizeText(text));
             if(engine != null)
                 engine.processSyntax();
 
@@ -370,7 +370,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public void insertText(int index, String text) {
         try {
-            textPane.getDocument().insertString(index, text, null);
+            textPane.getDocument().insertString(index, normalizeText(text), null);
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
@@ -383,10 +383,14 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     public void replaceText(int start, int end, String text) {
         try {
             textPane.getDocument().remove(start, end-start);
-            textPane.getDocument().insertString(start, text, null);
+            textPane.getDocument().insertString(start, normalizeText(text), null);
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String normalizeText(String text) {
+        return text.replaceAll(System.getProperty("line.separator"), "\n");
     }
 
     public void selectTextRange(int start, int end) {
@@ -433,7 +437,6 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
         // Key bindings
         keyBindings = new ATEKeyBindings(getTextPane());
-
 
         // Scroll pane
         JScrollPane textScrollPane = new JScrollPane(textPane);

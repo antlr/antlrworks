@@ -69,6 +69,8 @@ public class DebuggerInputDialog extends XJDialog {
         setCancelButton(cancelButton);
 
         TextUtils.createTabs(inputTextArea);
+        TextUtils.setDefaultTextPaneProperties(inputTextArea);
+        
         inputTextArea.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
         inputTextArea.requestFocus();
         inputTextArea.setText(AWPrefs.getDebuggerInputText());
