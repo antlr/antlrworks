@@ -135,7 +135,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     /** This method iterates over all rules and all blocks inside each rule to
-     * find a sequence of token equals to "channel=99".
+     * find a sequence of token equals to "$channel=HIDDEN".
      */
 
     public void findTokensToIgnore() {
@@ -162,14 +162,10 @@ public class EditorRules implements XJTreeDelegate {
                     if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("channel") && t+3 < tokens.size()) {
                         ATEToken t1 = (ATEToken)tokens.get(t+1);
                         ATEToken t2 = (ATEToken)tokens.get(t+2);
-                        ATEToken t3 = (ATEToken)tokens.get(t+3);
                         if(t1.type != ATESyntaxLexer.TOKEN_CHAR || !t1.getAttribute().equals("="))
                             continue;
 
-                        if(t2.type != ATESyntaxLexer.TOKEN_CHAR || !t2.getAttribute().equals("9"))
-                            continue;
-
-                        if(t3.type != ATESyntaxLexer.TOKEN_CHAR || !t3.getAttribute().equals("9"))
+                        if(t2.type != ATESyntaxLexer.TOKEN_ID || !t2.getAttribute().equals("HIDDEN"))
                             continue;
 
                         rule.ignored = true;

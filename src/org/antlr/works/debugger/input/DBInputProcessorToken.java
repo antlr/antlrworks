@@ -146,7 +146,8 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
         addTokenLT(token);
     }
 
-    /** On Windows, ignore the LF token following a CR because each
+    /**
+     * On Windows, ignore the LF token following a CR because each
      * end of line is represented by two characters while Swing
      * renders the text using only LF (normalized).
      */

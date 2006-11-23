@@ -202,10 +202,18 @@ public class ATESyntaxLexer {
     }
 
     public boolean matchNewLine() {
-        if(c0 == '\n') return true;    // Unix style
-        else if(c0 == '\r' && c1 == '\n') return true;    // Windows style
-        else if(c0 == '\r' && c1 != '\n') return true;    // Mac style
-        else return false;
+        if(c0 == '\n') {
+            // Unix
+            return true;
+        } else if(c0 == '\r' && c1 == '\n') {
+            // Windows
+            return true;
+        } else if(c0 == '\r') {
+            // Mac
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean isWhitespace() {
@@ -244,8 +252,8 @@ public class ATESyntaxLexer {
     }
 
     public ATEToken createNewToken(int type, int start, int end,
-                                int startLineNumber, int endLineNumber,
-                                int startLineIndex, int endLineIndex) {
+                                   int startLineNumber, int endLineNumber,
+                                   int startLineIndex, int endLineIndex) {
         return new ATEToken(type, start, end, startLineNumber, endLineNumber, startLineIndex, endLineIndex, text);
     }
 

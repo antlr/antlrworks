@@ -1,10 +1,11 @@
 
 * Prio 1
 
-- make a little tutorial with calc_1.g
+- deal with package in header
 - make grammar name if there are not matching the file case
 - rewrite the lexer/parser
 - be able to read file for debugger input instead of text in dialog (useful for long input)
+- make a little tutorial with calc_1.g
 
 * Prio 2
 

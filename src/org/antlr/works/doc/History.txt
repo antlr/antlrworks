@@ -1,4 +1,9 @@
 
+Version 1.0b7
+
+- fixed a bug where the end of line pop-up menu in the debugger input dialog would be populated twice
+- fixed a bug in the interpreter where the "guess" button would not work properly
+
 Version 1.0b6 - 11/18/06
 
 - added line endings preferences in debugger input text dialog and interpreter panel

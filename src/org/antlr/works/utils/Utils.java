@@ -122,6 +122,7 @@ public class Utils {
     }
 
     public static void fillComboWithEOL(JComboBox combo) {
+        combo.removeAllItems();
         combo.addItem("Unix (LF)");
         combo.addItem("Mac (CR)");
         combo.addItem("Windows (CRLF)");

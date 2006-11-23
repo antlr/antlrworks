@@ -53,8 +53,29 @@ public class DBInputTextTokenInfo {
         this.end = start+getText().length();
     }
 
-    public String getText() {
+    /**
+     * Returns the raw text.
+     * 
+     * @return The raw text
+     */
+    public String getRawText() {
         return token.getText();
+    }
+
+    /**
+     * Returns the normalized text representation of this token. Because Swing represents
+     * internally newline by \n no matter which OS is used, we normalize the text of the token
+     * to be also \n all the time.
+     *
+     * @return The normalized text used for display purpose
+     */
+    public String getText() {
+        String t = getRawText();
+        if(t.equals("\r\n") || t.equals("\r")) {
+            return "\n";
+        } else {
+            return t;
+        }
     }
 
 }

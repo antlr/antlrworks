@@ -49,7 +49,6 @@ public class DBInputTokenPanel implements DBInputConcretePanel {
     protected DBInputProcessorToken processorToken;
 
     public DBInputTokenPanel(Debugger debugger) {
-
         inputTextPane = new TextPane();
         inputTextPane.setBackground(Color.white);
         inputTextPane.setBorder(null);
