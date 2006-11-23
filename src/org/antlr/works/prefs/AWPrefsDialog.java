@@ -83,7 +83,7 @@ public class AWPrefsDialog extends XJPanel {
     }
 
     public Dimension getDefaultSize() {
-        return new Dimension(650, 310);
+        return new Dimension(650, 410);
     }
 
     public void prepareGeneralTab() {

@@ -1,10 +1,12 @@
 package org.antlr.works.editor;
 
+import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.idea.IdeaAction;
 import org.antlr.works.idea.IdeaActionDelegate;
+import org.antlr.works.syntax.GrammarSyntaxName;
 import org.antlr.works.syntax.GrammarSyntaxReference;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.syntax.GrammarSyntaxToken;
@@ -54,6 +56,7 @@ public class EditorInspector {
 
     public List getErrors() {
         List errors = new ArrayList();
+        discoverInvalidGrammarName(errors);
         discoverInvalidCharLiteralTokens(errors);
         discoverUndefinedReferences(errors);
         discoverDuplicateRules(errors);
@@ -90,6 +93,31 @@ public class EditorInspector {
                 filteredItems.add(item);
         }
         return filteredItems;
+    }
+
+    protected void discoverInvalidGrammarName(List items) {
+        GrammarSyntaxName n = getGrammarName();
+        String grammarFileName = getGrammarNameFromFile();
+        if(n != null && grammarFileName != null && !grammarFileName.equals(n.getName())) {
+            ATEToken t = n.name;
+            Item item = new ItemInvalidGrammarName();
+            item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
+                    t.startLineNumber, Color.red,
+                    "Invalid grammar name '"+t.getAttribute()+"'");
+            items.add(item);
+        }
+    }
+
+    private GrammarSyntaxName getGrammarName() {
+        return editor.getParserEngine().getName();
+    }
+
+    private String getGrammarNameFromFile() {
+        String filename = editor.getFileName();
+        if(filename == null) {
+            return null;
+        }
+        return XJUtils.getPathByDeletingPathExtension(filename);
     }
 
     protected void discoverInvalidCharLiteralTokens(List items) {
@@ -209,6 +237,7 @@ public class EditorInspector {
         public static final int IDEA_CREATE_RULE = 1;
         public static final int IDEA_REMOVE_LEFT_RECURSION = 2;
         public static final int IDEA_CONVERT_TO_SINGLE_QUOTE = 3;
+        public static final int IDEA_FIX_GRAMMAR_NAME = 4;
 
         public ATEToken token;
         public int startIndex;
@@ -299,6 +328,25 @@ public class EditorInspector {
             switch(actionID) {
                 case IDEA_CONVERT_TO_SINGLE_QUOTE:
                     editor.menuRefactor.convertLiteralsToSingleQuote();
+                    break;
+            }
+        }
+    }
+
+    public class ItemInvalidGrammarName extends Item {
+
+        public List getIdeaActions() {
+            List actions = new ArrayList();
+            actions.add(new IdeaAction("Change grammar name to '"+getGrammarNameFromFile()+"'", this, IDEA_FIX_GRAMMAR_NAME, token));
+            return actions;
+        }
+
+        public void ideaActionFire(IdeaAction action, int actionID) {
+            switch(actionID) {
+                case IDEA_FIX_GRAMMAR_NAME:
+                    GrammarSyntaxName n = getGrammarName();
+                    ATEToken name = n.name;
+                    editor.replaceText(name.start, name.end, getGrammarNameFromFile());
                     break;
             }
         }

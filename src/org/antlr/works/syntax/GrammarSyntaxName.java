@@ -44,7 +44,7 @@ public class GrammarSyntaxName {
     public static final int LEXER = 2;
     public static final int TREEPARSER = 3;
 
-    public String name;
+    public ATEToken name;
     public ATEToken start;
     public ATEToken end;
     public ATEToken type;
@@ -57,7 +57,7 @@ public class GrammarSyntaxName {
         types.add("tree");
     }
 
-    public GrammarSyntaxName(String name, ATEToken start, ATEToken end, ATEToken type) {
+    public GrammarSyntaxName(ATEToken name, ATEToken start, ATEToken end, ATEToken type) {
         this.name = name;
         this.start = type==null?start:type;
         this.end = end;
@@ -71,6 +71,10 @@ public class GrammarSyntaxName {
             return COMBINED;
     }
 
+    public String getName() {
+        return name.getAttribute();
+    }
+    
     public static boolean isKnownType(String type) {
         return types.indexOf(type) != -1;
     }

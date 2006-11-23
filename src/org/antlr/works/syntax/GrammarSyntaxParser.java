@@ -181,7 +181,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
             while(nextToken()) {
                 if(isSEMI(0))
-                    return new GrammarSyntaxName(name.getAttribute(), start, T(0), type);
+                    return new GrammarSyntaxName(name, start, T(0), type);
             }
             return null;
         } else

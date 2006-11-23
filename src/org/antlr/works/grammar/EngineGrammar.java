@@ -150,7 +150,7 @@ public class EngineGrammar {
         if(name == null)
             return null;
         else
-            return name.name;
+            return name.getName();
     }
 
     public int getType() {
