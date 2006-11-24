@@ -405,6 +405,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void close() {
+        afterParserOp.stop();
         toolbar.close();
         editorIdeas.close();
         editorMenu.close();

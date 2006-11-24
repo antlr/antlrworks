@@ -1,9 +1,11 @@
 
 * Prio 1
 
+- make a little tutorial with calc_1.g
+- button to autofit any syntax diagram/other to the size of visible area
+
 - deal with package in header
 - be able to read file for debugger input instead of text in dialog (useful for long input)
-- make a little tutorial with calc_1.g
 - rewrite the lexer/parser
 
 * Prio 2

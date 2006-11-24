@@ -152,7 +152,7 @@ public class DBEventsPanel extends DetachablePanel {
                 case INFO_COLUMN_COUNT: return "#";
                 case INFO_COLUMN_EVENT: return "Event";
                 case INFO_COLUMN_SUBRULE: return "SR";
-                case INFO_COLUMN_DECISION: return "DEC";
+                case INFO_COLUMN_DECISION: return "DC";
                 case INFO_COLUMN_MARK: return "MK";
                 case INFO_COLUMN_BACKTRACK: return "BK";
             }

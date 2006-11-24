@@ -54,17 +54,14 @@ public class CheckGrammar implements Runnable {
     }
 
     public void run() {
-        String errorMsg = null;
-
         editor.getConsole().setMode(Console.MODE_VERBOSE);
         delegate.checkGrammarDidBegin();
         try {
             editor.getEngineGrammar().analyze();
         } catch (Exception e) {
             editor.getConsole().print(e);
-            errorMsg = ErrorListener.shared().getFirstErrorMessage();
         }
-        delegate.checkGrammarDidEnd(errorMsg);
+        delegate.checkGrammarDidEnd(ErrorListener.shared().getFirstErrorMessage());
     }
 
 }

@@ -4,6 +4,7 @@ Version 1.0b7
 - new idea to convert invalid grammar name
 - fixed the default size of the preferences window that was too small
 - fixed various end of line problem on Windows causing syntax coloring and debugger token highlighting to fail
+- fixed a bug where an editor thread would not be stopped when a document was closed
 - fixed a bug where the end of line pop-up menu in the debugger input dialog would be populated twice
 - fixed a bug in the interpreter where the "guess" button would not work properly
 
