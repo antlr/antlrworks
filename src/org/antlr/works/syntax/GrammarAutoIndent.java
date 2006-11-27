@@ -100,7 +100,7 @@ public class GrammarAutoIndent {
                     break;
                 }
             }
-            if(beginningOfRule) {
+            if(beginningOfRule && AWPrefs.autoIndentColonInRule()) {
                 int lengthOfRule = originalOffset-offset;
                 int tabSize = AWPrefs.getEditorTabSize();
 

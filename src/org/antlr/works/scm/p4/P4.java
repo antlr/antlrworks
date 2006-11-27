@@ -178,11 +178,11 @@ public class P4 implements SCM {
             }
 
             synchronized(lock) {
-                if(scheduledCommands.size() > 0) {
+                if(scheduledCommands.isEmpty()) {
+                    runningCommand = null;
+                } else {
                     runningCommand = (P4Command)scheduledCommands.get(0);
                     scheduledCommands.remove(0);
-                } else {
-                    runningCommand = null;
                 }
             }
 

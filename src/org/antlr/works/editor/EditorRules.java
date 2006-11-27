@@ -285,15 +285,17 @@ public class EditorRules implements XJTreeDelegate {
 
         List sortedRules = new ArrayList(rules);
         Collections.sort(sortedRules);
-        GrammarSyntaxRule firstRule = (GrammarSyntaxRule)sortedRules.get(0);
-        if(firstRule.lexer) {
-            for(int index=0; index<sortedRules.size(); index++) {
-                GrammarSyntaxRule rule = (GrammarSyntaxRule)sortedRules.get(0);
-                if(!rule.lexer)
-                    break;
+        if(!sortedRules.isEmpty()) {
+            GrammarSyntaxRule firstRule = (GrammarSyntaxRule)sortedRules.get(0);
+            if(firstRule.lexer) {
+                for(int index=0; index<sortedRules.size(); index++) {
+                    GrammarSyntaxRule rule = (GrammarSyntaxRule)sortedRules.get(0);
+                    if(!rule.lexer)
+                        break;
 
-                sortedRules.add(rule);
-                sortedRules.remove(0);
+                    sortedRules.add(rule);
+                    sortedRules.remove(0);
+                }
             }
         }
         return sortedRules;

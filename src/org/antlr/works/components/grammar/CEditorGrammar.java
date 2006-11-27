@@ -175,9 +175,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void create() {
+        initCore();
+
         createInterface();
 
-        initCore();
+        initEditor();
         initMenus();
 
         initManagers();
@@ -215,15 +217,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     protected void initComponents() {
-        parserEngine = new GrammarSyntaxEngine();
-
         rules = new EditorRules(this, rulesTree);
-
-        grammarSyntax = new GrammarSyntax(this);
         visual = new Visual(this);
-
-        interpreter = new EditorInterpreter(this);
-        debugger = new Debugger(this);
     }
 
     protected void initTools() {
@@ -238,6 +233,13 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     protected void initCore() {
+        parserEngine = new GrammarSyntaxEngine();
+        grammarSyntax = new GrammarSyntax(this);
+        interpreter = new EditorInterpreter(this);
+        debugger = new Debugger(this);                   
+    }
+
+    protected void initEditor() {
         console = new EditorConsole(this);
         console.makeCurrent();
 

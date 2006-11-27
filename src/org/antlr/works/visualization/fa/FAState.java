@@ -102,10 +102,10 @@ public class FAState {
     }
 
     public FATransition getFirstTransition() {
-        if(transitions.size()>0)
-            return (FATransition)transitions.get(0);
-        else
+        if(transitions.isEmpty())
             return null;
+        else
+            return (FATransition)transitions.get(0);
     }
 
     public FATransition transition(int index) {

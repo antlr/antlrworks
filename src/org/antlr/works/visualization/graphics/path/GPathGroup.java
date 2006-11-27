@@ -157,7 +157,7 @@ public class GPathGroup extends GObject implements GTimerDelegate {
 
     public void selectPath(Point p) {
         List paths = getPathsAtPoint(p);
-        if(paths.size() == 0)
+        if(paths.isEmpty())
             return;
 
         GPath selectPath = (GPath)paths.get(0);

@@ -75,6 +75,7 @@ public class AWPrefs {
     public static final String PREF_EDITOR_FONT_SIZE = "PREF_EDITOR_FONT_SIZE";
     public static final String PREF_EDITOR_FOLDING = "PREF_EDITOR_FOLDING";
     public static final String PREF_ACTIONS_ANCHORS_FOLDING = "PREF_ACTIONS_ANCHORS_FOLDING";
+    public static final String PREF_AUTO_IDENT_COLON_RULE = "PREF_AUTO_IDENT_COLON_RULE";
     public static final String PREF_PARSER_DELAY = "PREF_PARSER_DELAY";
     public static final String PREF_SMOOTH_SCROLLING = "PREF_SMOOTH_SCROLLING";
 
@@ -83,6 +84,7 @@ public class AWPrefs {
     public static final int DEFAULT_EDITOR_FONT_SIZE = 12;
     public static final boolean DEFAULT_EDITOR_FOLDING = true;
     public static final boolean DEFAULT_ACTIONS_ANCHORS_FOLDING = true;
+    public static final boolean DEFAULT_AUTO_INDENT_COLON_RULE = true;
     public static final int DEFAULT_PARSER_DELAY = 250;
     public static final boolean DEFAULT_SMOOTH_SCROLLING = true;
 
@@ -352,6 +354,10 @@ public class AWPrefs {
         return getPreferences().getBoolean(PREF_ACTIONS_ANCHORS_FOLDING, DEFAULT_ACTIONS_ANCHORS_FOLDING);
     }
 
+    public static boolean autoIndentColonInRule() {
+        return getPreferences().getBoolean(PREF_AUTO_IDENT_COLON_RULE, true);
+    }
+    
     public static int getParserDelay() {
         return getPreferences().getInt(PREF_PARSER_DELAY, DEFAULT_PARSER_DELAY);
     }
@@ -545,4 +551,5 @@ public class AWPrefs {
     public static int getDebuggerEOL() {
         return getPreferences().getInt(PREF_DEBUGGER_EOL, 0); 
     }
+
 }

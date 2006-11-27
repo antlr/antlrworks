@@ -3,7 +3,7 @@
 
 - make a little tutorial with calc_1.g
 - button to autofit any syntax diagram/other to the size of visible area
-
+- config file per grammar file for various parameters (i.e. output path?)
 - deal with package in header
 - be able to read file for debugger input instead of text in dialog (useful for long input)
 - rewrite the lexer/parser
