@@ -135,7 +135,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     /** This method iterates over all rules and all blocks inside each rule to
-     * find a sequence of token equals to "$channel=HIDDEN".
+     * find a sequence of token equals to "$channel=HIDDEN" or "skip()".
      */
 
     public void findTokensToIgnore() {
@@ -170,6 +170,10 @@ public class EditorRules implements XJTreeDelegate {
 
                         rule.ignored = true;
                         break;
+                    }
+                    if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("skip")) {
+                        rule.ignored = true;
+                        break;                        
                     }
                 }
             }

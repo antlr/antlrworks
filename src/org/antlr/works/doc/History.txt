@@ -2,11 +2,14 @@
 Version 1.0b7
 
 - new idea to convert invalid grammar name
+- prefs: auto-indent on colon in rule can be disabled now
+- interpreter now correctly identify rules to ignore when using skip() in action
 - fixed the default size of the preferences window that was too small
 - fixed various end of line problem on Windows causing syntax coloring and debugger token highlighting to fail
 - fixed a bug where an editor thread would not be stopped when a document was closed
 - fixed a bug where the end of line pop-up menu in the debugger input dialog would be populated twice
 - fixed a bug in the interpreter where the "guess" button would not work properly
+- fixed a bug in the debugger where the red cursor would not be displayed on Java 1.4
 
 Version 1.0b6 - 11/18/06
 

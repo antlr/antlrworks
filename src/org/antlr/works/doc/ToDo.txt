@@ -1,6 +1,9 @@
 
 * Prio 1
 
+- window size/position not working on Windows
+- prefs to display output dir dialog before generating grammar
+
 - make a little tutorial with calc_1.g
 - button to autofit any syntax diagram/other to the size of visible area
 - config file per grammar file for various parameters (i.e. output path?)
