@@ -45,6 +45,10 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
     public static final String TOKENS_BLOCK_NAME = "tokens";
     public static final String OPTIONS_BLOCK_NAME = "options";
+    public static final String PARSER_HEADER_BLOCK_NAME = "@header";
+    public static final String LEXER_HEADER_BLOCK_NAME = "@lexer::header";
+    public static final String PARSER_MEMBERS_BLOCK_NAME = "@members";
+    public static final String LEXER_MEMBERS_BLOCK_NAME = "@lexer::members";
 
     public static final List blockIdentifiers;
     public static final List ruleModifiers;
@@ -62,6 +66,10 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         blockIdentifiers = new ArrayList();
         blockIdentifiers.add(OPTIONS_BLOCK_NAME);
         blockIdentifiers.add(TOKENS_BLOCK_NAME);
+        blockIdentifiers.add(PARSER_HEADER_BLOCK_NAME);
+        blockIdentifiers.add(LEXER_HEADER_BLOCK_NAME);
+        blockIdentifiers.add(PARSER_MEMBERS_BLOCK_NAME);
+        blockIdentifiers.add(LEXER_MEMBERS_BLOCK_NAME);
 
         ruleModifiers = new ArrayList();
         ruleModifiers.add("protected");
@@ -94,9 +102,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             if(tryMatchName())
                 continue;
 
-            if(tryMatchPlainAction())
-                continue;
-
             if(tryMatchBlock())
                 continue;
 
@@ -123,16 +128,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             name = n;
             return true;
         } else {
-            rewind();
-            return false;
-        }
-    }
-
-    public boolean tryMatchPlainAction() {
-        mark();
-        if(matchPlainAction() != null)
-            return true;
-        else {
             rewind();
             return false;
         }
@@ -219,16 +214,15 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     public GrammarSyntaxBlock matchBlock() {
         ATEToken start = T(0);
 
-        if(!isID(0))
+        boolean isTokenBlockID = isTokenType(0, GrammarSyntaxLexer.TOKEN_BLOCK_ID) && isBLOCK(1);
+        boolean isBlockID = isID(0) && isBLOCK(1);
+        if(!isTokenBlockID && !isBlockID)
             return null;
 
         String blockName = start.getAttribute().toLowerCase();
         if(blockIdentifiers.contains(blockName)) {
-            if(!isBLOCK(1))
-                return null;
-
             nextToken();
-            GrammarSyntaxBlock block = new GrammarSyntaxBlock(start.getAttribute(), start, T(0));
+            GrammarSyntaxBlock block = new GrammarSyntaxBlock(blockName, start, T(0));
             if(blockName.equals(TOKENS_BLOCK_NAME)) {
                 block.isTokenBlock = true;
             } else if(blockName.equals(OPTIONS_BLOCK_NAME)) {

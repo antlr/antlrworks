@@ -74,7 +74,8 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
         if(!checkLanguage())
             return;
 
-        editor.getDocument().performAutoSave();
+        if(!editor.getDocument().performAutoSave())
+            return;
 
         generateCode.setDebug(false);
         generateCode.setOutputPath(AWPrefs.getOutputPath());

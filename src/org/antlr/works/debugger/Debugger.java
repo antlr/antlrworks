@@ -296,6 +296,10 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         return editor.getConsole();
     }
 
+    public List getBlocks() {
+        return editor.getBlocks();
+    }
+
     public EditorProvider getProvider() {
         return editor;
     }

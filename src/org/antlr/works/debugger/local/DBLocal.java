@@ -40,11 +40,16 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.antlr.works.IDE;
+import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
+import org.antlr.works.ate.syntax.java.ATEJavaSyntaxLexer;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.DebuggerInputDialog;
 import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.GrammarSyntaxBlock;
+import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.StreamWatcher;
@@ -54,6 +59,10 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatcherDelegate {
 
@@ -61,6 +70,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     public static final String parserGlueCodeTemplatePath = "org/antlr/works/debugger/local/";
     public static final String parserGlueCodeTemplateName = "DBParserGlueCode";
 
+    public static final String ST_ATTR_IMPORT = "import";
     public static final String ST_ATTR_CLASSNAME = "class_name";
     public static final String ST_ATTR_INPUT_FILE = "input_file";
     public static final String ST_ATTR_JAVA_PARSER = "java_parser";
@@ -264,6 +274,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             fileRemoteParserInputText = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
 
             outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
+            XJUtils.deleteDirectory(outputFileDir);
             new File(outputFileDir).mkdirs();
         } catch(Exception e) {
             debugger.getConsole().print(e);
@@ -357,6 +368,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         try {
             StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup", DefaultTemplateLexer.class);
             StringTemplate glueCode = group.getInstanceOf(parserGlueCodeTemplatePath +parserGlueCodeTemplateName);
+            glueCode.setAttribute(ST_ATTR_IMPORT, getCustomImports());
             glueCode.setAttribute(ST_ATTR_CLASSNAME, remoteParserClassName);
             glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(fileRemoteParserInputText));
             glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(false));
@@ -368,6 +380,55 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             debugger.getConsole().print(e);
             reportError("Error while generating the glue-code:\n"+e.toString());
         }
+    }
+
+    /**
+     * Returns a string of import statement based on the package declaration inside any @header block
+     */
+    private String getCustomImports() {
+        List blocks = debugger.getBlocks();
+        if(blocks == null || blocks.isEmpty()) {
+            return "";
+        }
+
+        Set imports = new HashSet();
+        for (int i = 0; i < blocks.size(); i++) {
+            GrammarSyntaxBlock block = (GrammarSyntaxBlock) blocks.get(i);
+            if(!block.name.equals(GrammarSyntaxParser.PARSER_HEADER_BLOCK_NAME) && !block.name.equals(GrammarSyntaxParser.LEXER_HEADER_BLOCK_NAME)) {
+                continue;
+            }
+
+            String javaText = block.end.getAttribute();
+            if(javaText == null || javaText.length() == 0) {
+                continue;
+            }
+
+            ATEJavaSyntaxLexer engine = new ATEJavaSyntaxLexer();
+            engine.tokenize(javaText);
+            List tokens = engine.getTokens();
+            for (int j = 0; j < tokens.size(); j++) {
+                ATEToken token = (ATEToken) tokens.get(j);
+                if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("package")) {
+                    if(j+1 < tokens.size()) {
+                        ATEToken importNameToken = (ATEToken) tokens.get(j+1);
+                        imports.add(importNameToken.getAttribute());
+                    }
+                }
+            }
+        }
+
+        if(imports.isEmpty()) {
+            return "";
+        }
+
+        StringBuffer importLines = new StringBuffer();
+        for (Iterator iterator = imports.iterator(); iterator.hasNext();) {
+            String importName = (String) iterator.next();
+            importLines.append("import ");
+            importLines.append(importName);
+            importLines.append(".*;\n");
+        }
+        return importLines.toString();
     }
 
     protected void compileGlueCode() {

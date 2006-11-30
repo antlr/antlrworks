@@ -1,7 +1,7 @@
 
 * Prio 1
 
-- window size/position not working on Windows
+- if doc is read-only, make the grammar text zone also read-only
 - prefs to display output dir dialog before generating grammar
 
 - make a little tutorial with calc_1.g

@@ -68,8 +68,10 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
                 token = createNewToken(TOKEN_COLON);
             else if(c0 == ';')
                 token = createNewToken(TOKEN_SEMI);
-            else if(isLetter() || c0 == '@')
+            else if(isLetter())
                 token = matchID();
+            else if(c0 == '@')
+                token = matchBlockID();
             else if(c0 == '(')
                 token = createNewToken(TOKEN_LPAREN);
             else if(c0 == ')')

@@ -1,5 +1,8 @@
+
 import java.io.*;
 import org.antlr.runtime.*;
+
+$import$
 
 public class $class_name$ {
 

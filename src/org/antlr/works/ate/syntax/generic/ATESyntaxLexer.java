@@ -46,6 +46,7 @@ public class ATESyntaxLexer {
     public static final int TOKEN_ID = 5;
     public static final int TOKEN_CHAR = 6;
     public static final int TOKEN_OTHER = 7;
+    public static final int TOKEN_BLOCK_ID = 8;
 
     protected List tokens;
     protected String text;
@@ -126,6 +127,16 @@ public class ATESyntaxLexer {
         while(isID(c1) && nextCharacter()) {
         }
         return createNewToken(TOKEN_ID, sp);
+    }
+
+    public ATEToken matchBlockID() {
+        int sp = position;
+        while(nextCharacter()) {
+            if(!isID(c1) && c1 != ':') {
+                return createNewToken(TOKEN_BLOCK_ID, sp);
+            }
+        }
+        return null;
     }
 
     public ATEToken matchSingleQuoteString() {
