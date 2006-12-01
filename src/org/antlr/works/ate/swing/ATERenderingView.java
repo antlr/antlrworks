@@ -238,7 +238,8 @@ public class ATERenderingView extends PlainView {
         return renderText(displayOp, g, x, y, p0, p1);
     }
 
-    /** This method renders the text using the token information to set up the display attribute
+    /**
+     * This method renders the text using the token information to set up the display attribute
      * of each token.
      *
      */

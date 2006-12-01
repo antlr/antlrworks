@@ -274,7 +274,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             fileRemoteParserInputText = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
 
             outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
-            XJUtils.deleteDirectory(outputFileDir);
             new File(outputFileDir).mkdirs();
         } catch(Exception e) {
             debugger.getConsole().print(e);
@@ -343,6 +342,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     protected void compileGrammar() {
+        XJUtils.deleteDirectory(outputFileDir);                
         new File(outputFileDir).mkdirs();
         compileFiles(new String[] { fileParser, fileLexer });
     }

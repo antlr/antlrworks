@@ -8,6 +8,7 @@ Version 1.0b7
 
 - fixed the default size of the preferences window that was too small
 - fixed various end of line problem on Windows causing syntax coloring and debugger token highlighting to fail
+- fixed a bug where the AST/Parse tree contextual menu would not work when the focus was not in the panel
 - fixed a bug where generating code for a read-only grammar could result in an infinite loop
 - fixed a bug where the window size/position would not be recorded when AW is closed
 - fixed a bug where an editor thread would not be stopped when a document was closed

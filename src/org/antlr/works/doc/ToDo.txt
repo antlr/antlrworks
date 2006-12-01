@@ -1,6 +1,8 @@
 
 * Prio 1
 
+- skip() only if alone in action
+- background color for block?
 - if doc is read-only, make the grammar text zone also read-only
 - prefs to display output dir dialog before generating grammar
 
