@@ -123,7 +123,7 @@ public class GPath extends GObject {
     }
 
     public void drawElements(float width, List ignoreElements, boolean ruleLink) {
-        context.nodeColor = disabled?Color.red:Color.green;
+        context.nodeColor = disabled?Color.red:Color.green.darker();
         context.linkColor = context.nodeColor;
         context.setLineWidth(width);
 
@@ -146,7 +146,7 @@ public class GPath extends GObject {
         if(currentIndex == -1)
             return;
 
-        context.nodeColor = disabled?Color.red:Color.green;
+        context.nodeColor = disabled?Color.red:Color.green.darker();
         context.linkColor = context.nodeColor;
         context.setLineWidth(currentLineWidth);
         GPathElement element = (GPathElement)elements.get(currentIndex);

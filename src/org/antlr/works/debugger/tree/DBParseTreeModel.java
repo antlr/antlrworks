@@ -91,7 +91,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
     public void clear() {
         super.clear();
-        
+
         initRules();
         backtrackStack.clear();
 
@@ -247,7 +247,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
         }
 
         protected Color getColor(boolean success) {
-            Color c = success?Color.green:Color.red;
+            Color c = success?Color.green.darker():Color.red;
             for(int i=1; i<level; i++) {
                 c = c.darker().darker();
             }
