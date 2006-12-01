@@ -61,6 +61,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     public DBParseTreeModel(Debugger debugger) {
         this.debugger = debugger;
         initRules();
+        initColors();
         XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
     }
 
@@ -82,6 +83,10 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     public void initRules() {
         rules.clear();
         rules.push(new ParseTreeNode("root"));
+    }
+
+    public void initColors() {
+        lookaheadTokenColor = AWPrefs.getLookaheadTokenColor();
     }
 
     public void clear() {
@@ -175,7 +180,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
     public void notificationFire(Object source, String name) {
         if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
-            lookaheadTokenColor = AWPrefs.getLookaheadTokenColor();
+            initColors();
         }
     }
 
