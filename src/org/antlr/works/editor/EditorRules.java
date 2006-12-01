@@ -686,7 +686,7 @@ public class EditorRules implements XJTreeDelegate {
         if(!selRules.isEmpty()) {
             goToRule((GrammarSyntaxRule)selRules.get(0));
             // Request focus because it was lost when moving the caret in the document
-            rulesTree.requestFocus();
+            rulesTree.requestFocusInWindow();
         }
     }
 

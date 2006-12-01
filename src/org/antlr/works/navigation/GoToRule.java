@@ -93,7 +93,7 @@ public class GoToRule extends OverlayObject {
         // Invoke focus later because otherwise it fails on Windows
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                ruleNameField.requestFocus();
+                ruleNameField.requestFocusInWindow();
             }
         });
         updateAutoCompletionList();

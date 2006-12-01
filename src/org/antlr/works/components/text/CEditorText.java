@@ -113,7 +113,7 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
     }
 
     public void componentIsSelected() {
-        getTextPane().requestFocus();
+        getTextPane().requestFocusInWindow();
     }
     
     public ATETextPane getTextPane() {

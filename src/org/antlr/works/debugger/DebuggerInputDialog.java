@@ -72,7 +72,8 @@ public class DebuggerInputDialog extends XJDialog {
         TextUtils.setDefaultTextPaneProperties(inputTextArea);
         
         inputTextArea.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        inputTextArea.requestFocus();
+        inputTextArea.setFocusable(true);
+        inputTextArea.requestFocusInWindow();
         inputTextArea.setText(AWPrefs.getDebuggerInputText());
 
         rulesCombo.removeAllItems();

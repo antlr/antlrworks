@@ -117,7 +117,7 @@ public abstract class OverlayObject {
     public void hide() {
         if(content.isVisible()) {
             content.setVisible(false);
-            parentComponent.requestFocus();
+            parentComponent.requestFocusInWindow();
         }
     }
 

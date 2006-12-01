@@ -417,6 +417,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     protected void createTextPane(StyledEditorKit editorKit) {
         textPane = new ATETextPane(this, editorKit);
+        textPane.setFocusable(true);
         textPane.setBackground(Color.white);
         textPane.setBorder(null);
 

@@ -489,7 +489,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         editor.console.makeCurrent();
 
         editor.getTextPane().setEditable(false);
-        editor.getTextPane().requestFocus(false);
+        editor.getTextPane().getCaret().setVisible(false);
 
         player.resetPlayEvents(true);
     }
@@ -621,6 +621,15 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
                 resetMarkLocationInGrammar();
                 editor.getTextPane().setEditable(true);
                 editor.getTextPane().requestFocusInWindow();
+
+                // Tells the caret to be visible a little bit later
+                // to let Swing focus the component
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        editor.getTextPane().getCaret().setVisible(true);
+                    }
+                });
+
                 inputPanel.stop();
                 running = false;
                 editor.refreshMainMenuBar();

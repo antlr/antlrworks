@@ -405,7 +405,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
 
         public void mousePressed(MouseEvent e) {
             if(!isFocusOwner())
-                requestFocus();
+                requestFocusInWindow();
 
             setCacheEnabled(false);
             prev_offset_x = offset_x;

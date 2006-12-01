@@ -320,7 +320,7 @@ public class AWPrefsDialog extends XJPanel {
     }
 
     public void apply() {
-        dialogPane.requestFocus();
+        dialogPane.requestFocusInWindow();
         getPreferences().applyPreferences();
         if(lafIndex != lafCombo.getSelectedIndex()) {
             lafIndex = lafCombo.getSelectedIndex();

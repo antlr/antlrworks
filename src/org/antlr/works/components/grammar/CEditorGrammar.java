@@ -1001,7 +1001,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         menuSCM.queryFileStatus();
 
         // Request focus in the text pane
-        getTextPane().requestFocus();
+        getTextPane().requestFocusInWindow();
     }
 
     public void componentActivated() {
@@ -1018,7 +1018,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void componentIsSelected() {
-        getTextPane().requestFocus();
+        getTextPane().requestFocusInWindow();
     }
 
     public void componentDocumentContentChanged() {
