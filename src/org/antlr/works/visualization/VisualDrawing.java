@@ -81,10 +81,19 @@ public class VisualDrawing extends ATEThread {
         cacheGraphs.clear();
     }
 
-    public synchronized void refresh() {
-        visual.panel.setRule(threadLastProcessedRule);
-        visual.panel.setGraphs((List)cacheGraphs.get(threadLastProcessedRule));
-        visual.panel.update();
+    /**
+     * Tries to refresh the current graph in cache. If the graphs are not in cache, return false.
+     */
+    public synchronized boolean refresh() {
+        List graphs = (List)cacheGraphs.get(threadLastProcessedRule);
+        if(graphs == null || graphs.isEmpty()) {
+            return false;
+        } else {
+            visual.panel.setRule(threadLastProcessedRule);
+            visual.panel.setGraphs(graphs);
+            visual.panel.update();
+            return true;
+        }
     }
 
     public synchronized boolean threadShouldProcess() {

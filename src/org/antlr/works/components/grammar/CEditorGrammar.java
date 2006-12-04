@@ -841,12 +841,15 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         }
     }
 
-    /** This method gets called by EngineGrammar once the grammar has been analyzed. It has
+    /**
+     * This method gets called by EngineGrammar once the grammar has been analyzed. It has
      * to update the syntax diagram and the rule information to reflect any error detected.
      */
-
     public void engineGrammarDidAnalyze() {
-        visual.update();
+        // Try to update the graph first and if they cannot be updated (i.e. the cache is empty), draw them again.
+        if(!visual.update()) {
+            updateVisualization(true);
+        }
         updateInformation();
     }
 

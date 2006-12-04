@@ -144,9 +144,9 @@ public class Visual extends EditorTab implements GContextProvider {
         drawing.createGraphsForRule(rule);
     }
 
-    public void update() {
+    public boolean update() {
         panel.createPanel();
-        drawing.refresh();
+        return drawing.refresh();
     }
     
     public EngineGrammar getEngineGrammar() {

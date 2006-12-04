@@ -1,4 +1,9 @@
 
+Version 1.0b8 -
+
+- fixed a bug where checking the grammar would make the current syntax diagram go away
+- fixed a bug where checking twice a grammar containing one or more errors would fail to report the errors the second time
+
 Version 1.0b7 - 12/03/06
 
 - handles now the "package" statement found in the @header block (both parser and lexer)

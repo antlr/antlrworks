@@ -300,7 +300,11 @@ public class EngineGrammar {
             });
         }
 
-        grammarAnalyzeDirty = false;
+        // Only reset the dirty flag when the grammar has no errors (otherwise the next time the grammar is checked
+        // it will appear to be OK)
+        if(!ErrorListener.shared().hasErrors()) {
+            grammarAnalyzeDirty = false;
+        }
     }
 
     public void cancel() {
