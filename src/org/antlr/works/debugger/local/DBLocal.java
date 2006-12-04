@@ -409,10 +409,17 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             for (int j = 0; j < tokens.size(); j++) {
                 ATEToken token = (ATEToken) tokens.get(j);
                 if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("package")) {
-                    if(j+1 < tokens.size()) {
-                        ATEToken importNameToken = (ATEToken) tokens.get(j+1);
-                        imports.add(importNameToken.getAttribute());
+                    StringBuffer sb = new StringBuffer();
+                    j++;
+                    while(j < tokens.size()) {
+                        ATEToken t = (ATEToken) tokens.get(j);
+                        String at = t.getAttribute();
+                        if(at.equals(";"))
+                            break;
+                        sb.append(at);
+                        j++;
                     }
+                    imports.add(sb.toString());
                 }
             }
         }

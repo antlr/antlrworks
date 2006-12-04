@@ -1,6 +1,8 @@
 
-Version 1.0b8 -
+Version 1.0b8 - 12/04/06
 
+- fixed a bug where package name with dot would fail to be correctly parsed
+- fixed a bug where creating a new document would fail
 - fixed a bug where checking the grammar would make the current syntax diagram go away
 - fixed a bug where checking twice a grammar containing one or more errors would fail to report the errors the second time
 

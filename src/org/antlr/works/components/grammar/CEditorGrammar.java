@@ -684,7 +684,17 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public synchronized boolean isFileWritable() {
-        return new File(getFilePath()).canWrite();
+        String path = getFilePath();
+        if(path == null) {
+            return true;
+        } else {
+            File f = new File(path);
+            if(f.exists()) {
+                return f.canWrite();
+            } else {
+                return true;
+            }            
+        }
     }
 
     public synchronized String getFileFolder() {
