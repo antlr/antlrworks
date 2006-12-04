@@ -1,17 +1,13 @@
 
 * Prio 1
 
-- skip() only if alone in action
-- background color for block?
-- if doc is read-only, make the grammar text zone also read-only
+- button to autofit any syntax diagram/other to the size of visible area
 - prefs to display output dir dialog before generating grammar
+- config file per grammar file for various parameters (i.e. output path?)
+- color prefs for tree nodes
 
 - make a little tutorial with calc_1.g
-- button to autofit any syntax diagram/other to the size of visible area
-- config file per grammar file for various parameters (i.e. output path?)
-- deal with package in header
 - be able to read file for debugger input instead of text in dialog (useful for long input)
-- rewrite the lexer/parser
 
 * Prio 2
 

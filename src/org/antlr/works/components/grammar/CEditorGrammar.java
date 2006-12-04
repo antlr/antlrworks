@@ -47,6 +47,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 /*
@@ -145,6 +146,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     protected JLabel infoLabel;
     protected JLabel cursorLabel;
+    protected JLabel writableLabel;
     protected JLabel scmLabel;
     protected ConsoleStatus consoleStatus;
 
@@ -353,6 +355,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     protected void createStatusBar() {
         infoLabel = new JLabel();
         cursorLabel = new JLabel();
+        writableLabel = new JLabel();
         scmLabel = new JLabel();
         consoleStatus = new ConsoleStatus();
 
@@ -362,6 +365,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         statusBar.add(createSeparator());
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(cursorLabel);
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(createSeparator());
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(writableLabel);
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(createSeparator());
         statusBar.add(Box.createHorizontalStrut(5));
@@ -676,6 +683,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             return t.getEndIndex();
     }
 
+    public synchronized boolean isFileWritable() {
+        return new File(getFilePath()).canWrite();
+    }
+
     public synchronized String getFileFolder() {
         return XJUtils.getPathByDeletingLastComponent(getFilePath());
     }
@@ -861,6 +872,12 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             t += " ("+warnings+" warning"+(warnings>0?"s":"")+")";
 
         infoLabel.setText(t);
+
+        if(isFileWritable()) {
+            writableLabel.setText("Writable");
+        } else {
+            writableLabel.setText("Read-only");
+        }
     }
 
     public void updateCursorInfo() {
@@ -1007,7 +1024,9 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public void componentActivated() {
         grammarSyntax.resetTokenVocab();
         grammarSyntax.rebuildAll();
+        textEditor.getTextPane().setEditable(isFileWritable());
         textEditor.refresh();
+        updateInformation();
     }
 
     public void componentDidHide() {

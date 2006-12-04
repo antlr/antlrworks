@@ -172,8 +172,11 @@ public class EditorRules implements XJTreeDelegate {
                         break;
                     }
                     if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("skip")) {
-                        rule.ignored = true;
-                        break;                        
+                        // Take skip() into account only if it is the only token in the block
+                        if(tokens.size() == 6 && t == 1) {
+                            rule.ignored = true;
+                            break;                                                    
+                        }
                     }
                 }
             }

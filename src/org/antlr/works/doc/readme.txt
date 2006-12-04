@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0b6
-November 18, 2006
+Version 1.0b7
+December 03, 2006
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -72,6 +72,24 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+12/03/06 - Version 1.0b7
+
+- handles now the "package" statement found in the @header block (both parser and lexer)
+- new idea to convert invalid grammar name
+- prefs: auto-indent on colon in rule can be disabled now
+- interpreter now correctly identify rules to ignore when using skip() in action
+- display the read/write state of each grammar document (disable editing if grammar is read-only)
+
+- fixed the default size of the preferences window that was too small
+- fixed various end of line problem on Windows causing syntax coloring and debugger token highlighting to fail
+- fixed a bug where the AST/Parse tree contextual menu would not work when the focus was not in the panel
+- fixed a bug where generating code for a read-only grammar could result in an infinite loop
+- fixed a bug where the window size/position would not be recorded when AW is closed
+- fixed a bug where an editor thread would not be stopped when a document was closed
+- fixed a bug where the end of line pop-up menu in the debugger input dialog would be populated twice
+- fixed a bug in the interpreter where the "guess" button would not work properly
+- fixed a bug in the debugger where the red cursor would not be displayed on Java 1.4
 
 11/18/06 - Version 1.0b6
 

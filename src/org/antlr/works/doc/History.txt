@@ -1,10 +1,11 @@
 
-Version 1.0b7
+Version 1.0b7 - 12/03/06
 
 - handles now the "package" statement found in the @header block (both parser and lexer)
 - new idea to convert invalid grammar name
 - prefs: auto-indent on colon in rule can be disabled now
 - interpreter now correctly identify rules to ignore when using skip() in action
+- display the read/write state of each grammar document (disable editing if grammar is read-only)
 
 - fixed the default size of the preferences window that was too small
 - fixed various end of line problem on Windows causing syntax coloring and debugger token highlighting to fail
