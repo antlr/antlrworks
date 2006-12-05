@@ -38,9 +38,7 @@
 
 * Check-list *
 
-- version in about.properties
 - version in strings.properties
-- remove private menu
 - optimize imports
 - check update.xml file
 - tests: check grammar, interpreter, debugger

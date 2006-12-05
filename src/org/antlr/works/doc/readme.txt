@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0b7
-December 03, 2006
+Version 1.0b8
+December 04, 2006
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -72,6 +72,13 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+12/04/06 - Version 1.0b8
+
+- fixed a bug where package name with dot would fail to be correctly parsed
+- fixed a bug where creating a new document would fail
+- fixed a bug where checking the grammar would make the current syntax diagram go away
+- fixed a bug where checking twice a grammar containing one or more errors would fail to report the errors the second time
 
 12/03/06 - Version 1.0b7
 
