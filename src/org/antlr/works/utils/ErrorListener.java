@@ -42,20 +42,16 @@ import java.util.List;
 
 public class ErrorListener implements ANTLRErrorListener {
 
-    protected static ErrorListener shared = null;
+    protected static ErrorListener shared = new ErrorListener();
 
     public List infos = new LinkedList();
     public List errors = new LinkedList();
     public List warnings = new LinkedList();
 
-    public boolean printToConsole = false;
+    public boolean printToConsole = true;
     public ErrorListener forwardListener = null;
 
-    public static synchronized ErrorListener shared() {
-        if(shared == null) {
-            shared = new ErrorListener();
-            shared.setPrintToConsole(true);
-        }
+    public static ErrorListener shared() {
         return shared;
     }
 

@@ -49,12 +49,14 @@ public class CheckGrammar implements Runnable {
         new Thread(this).start();
     }
 
-    public void cancel() {
+    public void cancel() {        
         editor.getEngineGrammar().cancel();
     }
 
     public void run() {
         editor.getConsole().setMode(Console.MODE_VERBOSE);
+        ErrorListener.shared().setPrintToConsole(true);
+
         delegate.checkGrammarDidBegin();
         try {
             editor.getEngineGrammar().analyze();

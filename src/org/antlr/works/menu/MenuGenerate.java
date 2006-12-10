@@ -182,7 +182,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     }
 
     public void checkGrammarDidEnd(String errorMsg) {
-        if(editor.console.isErrorReported()) {
+        if(errorMsg != null) {
             XJAlert.display(editor.getWindowContainer(), "Failure", "Check Grammar failed:\n"+errorMsg+"\nConsult the console for more information.");
         } else {
             generateCodeProcessContinued();

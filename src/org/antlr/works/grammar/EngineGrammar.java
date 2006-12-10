@@ -161,11 +161,12 @@ public class EngineGrammar {
             return name.getType();
     }
 
-    public void createGrammars() throws Exception {
+    public boolean createGrammars() throws Exception {
         if(!grammarDirty)
-            return;
+            return true;
 
         ErrorManager.setErrorListener(ErrorListener.shared());
+        ErrorListener.shared().clear();
 
         switch(getType()) {
             case GrammarSyntaxName.COMBINED:
@@ -180,7 +181,12 @@ public class EngineGrammar {
                 break;
         }
 
-        grammarDirty = false;
+        if(!ErrorListener.shared().hasErrors()) {
+            grammarDirty = false;
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public String getFileName() {
@@ -254,11 +260,14 @@ public class EngineGrammar {
     }
 
     public void analyze() throws Exception {
-        createGrammars();
+        if(!createGrammars()) {
+            return;
+        }
 
         Grammar g = getANTLRGrammar();
-        if(g == null)
+        if(g == null) {
             return;
+        }
 
         List rules = g.checkAllRulesForLeftRecursion();
         if(!rules.isEmpty()) {
@@ -266,16 +275,18 @@ public class EngineGrammar {
             markLeftRecursiveRules(rules);
         }
 
-        if(ErrorManager.doNotAttemptAnalysis())
+        if(ErrorManager.doNotAttemptAnalysis()) {
             return;
+        }
 
-        if(!grammarAnalyzeDirty)
+        if(!grammarAnalyzeDirty) {
             return;
+        }
 
         ErrorManager.setErrorListener(ErrorListener.shared());
+        //ErrorListener.shared().clear();
 
         try {
-            ErrorListener.shared().clear();
             g.createLookaheadDFAs();
             if(getType() == GrammarSyntaxName.COMBINED) {
                 // If the grammar is combined, analyze also the lexer
@@ -310,7 +321,7 @@ public class EngineGrammar {
     public void cancel() {
         Grammar g = getANTLRGrammar();
         if(g != null)
-            g.abortNFAToDFAConversion();
+            g.externallyAbortNFAToDFAConversion();
     }
 
     protected void buildNonDeterministicErrors() {

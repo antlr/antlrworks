@@ -56,8 +56,6 @@ public class EditorConsole extends EditorTab implements Console {
 
     protected static EditorConsole current = null;
 
-    protected boolean errorReported = false;
-
     public static synchronized void setCurrent(EditorConsole console) {
         current = console;
     }
@@ -101,14 +99,6 @@ public class EditorConsole extends EditorTab implements Console {
         EditorConsole.setCurrent(this);
     }
 
-    public void resetErrorReported() {
-        errorReported = false;
-    }
-
-    public boolean isErrorReported() {
-        return errorReported;
-    }
-
     public Container getContainer() {
         return panel;
     }
@@ -143,11 +133,9 @@ public class EditorConsole extends EditorTab implements Console {
         textArea.setCaretPosition(textArea.getText().length());
         System.out.println(s);
 
-        if(level == Console.LEVEL_ERROR)
-            errorReported = true;
-
-        if(getMode() == Console.MODE_VERBOSE)
-            editor.consolePrint(s, level);
+        if(getMode() == Console.MODE_VERBOSE) {
+            editor.consolePrint(s, level);            
+        }
     }
 
     public String getTabName() {

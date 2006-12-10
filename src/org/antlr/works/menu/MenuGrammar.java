@@ -178,13 +178,12 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
 
     public void checkGrammarDidBegin() {
         checkingGrammar = true;
-        editor.console.resetErrorReported();
     }
 
     public void checkGrammarDidEnd(String errorMsg) {
         checkingGrammar = false;
         hideProgress();
-        if(editor.console.isErrorReported()) {
+        if(errorMsg != null) {
             XJAlert.display(editor.getWindowContainer(), "Failure", "Check Grammar failed:\n"+errorMsg+"\nConsult the console for more information.");
         } else {
             XJAlert.display(editor.getWindowContainer(), "Success", "Check Grammar succeeded.");
@@ -196,6 +195,7 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
             progress = new XJDialogProgress(editor.getWindowContainer());        
         progress.setInfo(title);
         progress.setCancellable(true);
+        progress.setDelegate(this);
         progress.setIndeterminate(true);
         progress.display();
     }

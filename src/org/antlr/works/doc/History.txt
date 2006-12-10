@@ -1,4 +1,10 @@
 
+Version 1.0b9 -
+
+- removed message to console when trying to create the syntax diagram
+- improved ability to cancel the grammar checking operation
+- fixed a bug where error reporting was not working properly if generating a grammar after checking it
+
 Version 1.0b8 - 12/04/06
 
 - fixed a bug where package name with dot would fail to be correctly parsed

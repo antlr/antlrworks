@@ -36,6 +36,7 @@ import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.Console;
+import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.visualization.graphics.GFactory;
 
 import java.util.HashMap;
@@ -108,12 +109,13 @@ public class VisualDrawing extends ATEThread {
         rule = null;
     }
 
-    private void threadProcessText() {
+    private boolean threadProcessText() {
         if(threadText == null)
-            return;
+            return false;
 
+        ErrorListener.shared().setPrintToConsole(false);
         try {
-            visual.getEngineGrammar().createGrammars();
+            return visual.getEngineGrammar().createGrammars();
         } catch (Exception e) {
             // @todo ignore for now but later with prefs?
             //visual.editor.console.print(e);
@@ -121,6 +123,7 @@ public class VisualDrawing extends ATEThread {
             // Flush all caches in cache because the grammar has changed
             clearCacheGraphs();
         }
+        return false;
     }
 
     private void threadProcessRule() throws Exception {
@@ -128,6 +131,8 @@ public class VisualDrawing extends ATEThread {
             return;
 
         String error = null;
+
+        ErrorListener.shared().setPrintToConsole(false);
 
         if(visual.getEngineGrammar().hasGrammar()) {
             NFAState startState = null;
@@ -182,8 +187,9 @@ public class VisualDrawing extends ATEThread {
 
         if(threadShouldProcess()) {
             threadPrepareProcess();
-            threadProcessText();
-            threadProcessRule();
+            if(threadProcessText()) {
+                threadProcessRule();
+            }
         }
     }
 

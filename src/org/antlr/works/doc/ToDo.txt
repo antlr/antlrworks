@@ -1,7 +1,6 @@
 
 * Prio 1
 
-- check long package name like "foo.com.bar;"
 - button to autofit any syntax diagram/other to the size of visible area
 - prefs to display output dir dialog before generating grammar
 - config file per grammar file for various parameters (i.e. output path?)
