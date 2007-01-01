@@ -109,13 +109,13 @@ public class VisualDrawing extends ATEThread {
         rule = null;
     }
 
-    private boolean threadProcessText() {
+    private void threadProcessText() {
         if(threadText == null)
-            return false;
+            return;
 
         ErrorListener.shared().setPrintToConsole(false);
         try {
-            return visual.getEngineGrammar().createGrammars();
+            visual.getEngineGrammar().createGrammars();
         } catch (Exception e) {
             // @todo ignore for now but later with prefs?
             //visual.editor.console.print(e);
@@ -123,7 +123,6 @@ public class VisualDrawing extends ATEThread {
             // Flush all caches in cache because the grammar has changed
             clearCacheGraphs();
         }
-        return false;
     }
 
     private void threadProcessRule() throws Exception {
@@ -187,9 +186,12 @@ public class VisualDrawing extends ATEThread {
 
         if(threadShouldProcess()) {
             threadPrepareProcess();
-            if(threadProcessText()) {
-                threadProcessRule();
-            }
+            
+            // Process any text
+            threadProcessText();
+
+            // Process any rule
+            threadProcessRule();
         }
     }
 

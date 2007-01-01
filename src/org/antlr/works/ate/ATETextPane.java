@@ -37,6 +37,7 @@ import org.antlr.works.ate.swing.ATERenderingView;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class ATETextPane extends JTextPane
@@ -45,6 +46,9 @@ public class ATETextPane extends JTextPane
     public static final String ATTRIBUTE_PARAGRAPH_FOLDING_PROXY = "para_folding_proxy";
 
     protected ATEPanel textEditor;
+
+    private boolean writable = true;
+
     protected boolean wrap = false;
     protected boolean highlightCursorLine = false;
 
@@ -53,6 +57,10 @@ public class ATETextPane extends JTextPane
         setCaret(new ATECaret());
         setEditorKit(editorKit==null?new ATEEditorKit(textEditor):editorKit);
         this.textEditor = textEditor;
+    }
+
+    public void setWritable(boolean flag) {
+        this.writable = flag;
     }
 
     public void setWordWrap(boolean flag) {
@@ -105,6 +113,16 @@ public class ATETextPane extends JTextPane
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         textEditor.textPaneDidPaint(g);
+    }
+
+    protected void processKeyEvent(KeyEvent keyEvent) {
+        // If the document is not writable, emits a beep
+        // if the key event is not an action key
+        if(writable || keyEvent.isActionKey()) {
+            super.processKeyEvent(keyEvent);
+        } else {
+            Toolkit.getDefaultToolkit().beep();
+        }
     }
 
     protected class ATECaret extends DefaultCaret {

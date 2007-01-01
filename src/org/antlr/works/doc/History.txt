@@ -3,6 +3,7 @@ Version 1.0b9 -
 
 - removed message to console when trying to create the syntax diagram
 - improved ability to cancel the grammar checking operation
+- fixed a bug introduced in b8 that prevented syntax diagram from being displayed when moving the caret in the text pane
 - fixed a bug where error reporting was not working properly if generating a grammar after checking it
 
 Version 1.0b8 - 12/04/06
