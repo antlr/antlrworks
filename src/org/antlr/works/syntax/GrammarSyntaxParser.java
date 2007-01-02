@@ -381,10 +381,32 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         }
 
         if(isID(0) && isLPAREN(1)) {
-            // -> foo(...)
-            skip(1);
-            matchBalancedToken("(", ")");
-            return;
+            if(isID(0, "template")) {
+                // -> template(...) ["asd" | << asd >>]
+                skip(1);
+                matchBalancedToken("(", ")");
+
+                skip(1);
+                if(isTokenType(0, ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING)) {
+                    // case with "asd"
+
+                    // Set the token type to ST_STRING in order to avoid confusion between this type of string
+                    // and the normal string in the grammar (ANTLR 3 does not like double-quote string in grammar
+                    // except for inline template).
+                    T(0).type = GrammarSyntaxLexer.TOKEN_ST_STRING;
+                } else {
+                    // try to match case with << asd >>
+                    if(isChar(0, "<") && isChar(1, "<")) {
+                        matchBalancedToken("<", ">");
+                    }
+                }
+                return;
+            } else {
+                // -> foo(...)
+                skip(1);
+                matchBalancedToken("(", ")");
+                return;
+            }
         }
 
         if(isBLOCK(0)) {

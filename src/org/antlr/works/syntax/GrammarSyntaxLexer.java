@@ -47,6 +47,7 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
     public static final int TOKEN_REFERENCE = 105;
     public static final int TOKEN_RULE = 106;
     public static final int TOKEN_LABEL = 107;
+    public static final int TOKEN_ST_STRING = 108;
 
     protected void tokenize() {
         while(nextCharacter()) {
