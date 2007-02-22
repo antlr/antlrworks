@@ -1,5 +1,5 @@
 
-Version 1.0b9 -
+Version 1.0b9 - 02/20/07
 
 - removed message to console when trying to create the syntax diagram
 - improved ability to cancel the grammar checking operation

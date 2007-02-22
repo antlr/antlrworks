@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0b8
-December 04, 2006
+Version 1.0b9
+February 20, 2007
 
 (c) 2005-2006 Jean Bovet & Terence Parr
 University of San Francisco
@@ -72,6 +72,15 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+02/20/07 - Version 1.0b9
+
+- removed message to console when trying to create the syntax diagram
+- improved ability to cancel the grammar checking operation
+- can open now files with extension g, gl, gp and gtp.
+- fixed a bug where inline template where incorrectly flagged as "syntax error"
+- fixed a bug introduced in b8 that prevented syntax diagram from being displayed when moving the caret in the text pane
+- fixed a bug where error reporting was not working properly if generating a grammar after checking it
 
 12/04/06 - Version 1.0b8
 

@@ -46,7 +46,6 @@ import edu.usfca.xj.appkit.utils.BrowserLauncher;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.appkit.utils.XJLocalizable;
 import edu.usfca.xj.foundation.XJSystem;
-import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.works.components.grammar.CContainerGrammar;
@@ -63,7 +62,6 @@ import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.HelpManager;
 import org.antlr.works.utils.Localizable;
-import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -194,48 +192,67 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public void checkEnvironment() {
-        String tempFile = XJUtils.concatPath(XJSystem.getTempDir(), "redirect.err");
-
-        // Make sure the temporary directory exists
-        File f = new File(XJSystem.getTempDir());
-        if(!f.exists())
-            f.mkdirs();
-
-        PrintStream originalErr = System.err;
-        PrintStream ps = null;
+        // todo give a hint in the message - like "check that no previous version of ANTLR is in your classpath..."
+        // todo message for first-time user to go to tutorial
+        CheckStream bos = new CheckStream(System.err);
+        PrintStream ps = new PrintStream(bos);
+        PrintStream os = System.err;
+        System.setErr(ps);
         try {
-            try {
-                ps = new PrintStream(new FileOutputStream(tempFile));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                // Give up if we cannot open the redirect file
-                System.err.println("Cannot check if ANTLR is correctly installed. Continue...");
-                return;
-            }
-            System.setErr(ps);
             ErrorManager.setTool(new Tool());
             ErrorManager.setErrorListener(ErrorManager.getErrorListener());
-        } catch(Error error) {
-            String s = null;
-            try {
-                s = Utils.stringFromFile(tempFile);
-            } catch (IOException e) {
-                XJAlert.display(null, "Fatal Error", "ANTLRWorks will quit now because the installation of ANTLR is corrupted.");
-                System.exit(0);
-            }
-            XJAlert.display(null, "Fatal Error", "ANTLRWorks will quit now because ANTLR has the following problem:\n"+s);
+        } catch (Throwable e) {
+            XJAlert.display(null, "Fatal Error", "ANTLRWorks will quit now because ANTLR reported an error:\n"+bos.getMessage());
             System.exit(0);
         }
 
-        // Restore the original output stream
-        System.setErr(originalErr);
+        if(bos.getMessage().length() > 0) {
+            XJAlert.display(null, "Fatal Error", "ANTLRWorks will quit now because ANTLR reported an error:\n"+bos.getMessage());
+            System.exit(0);
+        }
 
-        // Close the previous one
-        if(ps != null)
-            ps.close();
+        System.setErr(os);
+        ps.close();
+    }
 
-        // Delete the redirect.err file
-        new File(tempFile).delete();
+    private class CheckStream extends ByteArrayOutputStream {
+
+        private PrintStream errorStream;
+        private StringBuffer sb = new StringBuffer();
+
+        public CheckStream(PrintStream errorStream) {
+            this.errorStream = errorStream;
+        }
+
+        public synchronized void write(int b) {
+            super.write(b);
+            record();
+        }
+
+        public synchronized void write(byte b[], int off, int len) {
+            super.write(b, off, len);
+            record();
+        }
+
+        public synchronized void writeTo(OutputStream out) throws IOException {
+            super.writeTo(out);
+            record();
+        }
+
+        public void write(byte b[]) throws IOException {
+            super.write(b);
+            record();
+        }
+
+        private void record() {
+            errorStream.println(toString());
+            sb.append(toString());
+            reset();
+        }
+
+        public String getMessage() {
+            return sb.toString();
+        }
     }
 
     public static String getApplicationPath() {
