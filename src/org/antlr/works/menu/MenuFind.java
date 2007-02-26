@@ -4,7 +4,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.find.Usages;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementRule;
 
 import java.util.Iterator;
 /*
@@ -79,7 +79,7 @@ public class MenuFind extends MenuAbstract {
         while(iterator.hasNext()) {
             ATEToken candidate = (ATEToken)iterator.next();
             if(candidate.getAttribute().equals(token.getAttribute())) {
-                GrammarSyntaxRule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStartIndex());
+                ElementRule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStartIndex());
                 if(matchedRule != null)
                     usage.addMatch(matchedRule, candidate);
             }

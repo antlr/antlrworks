@@ -35,7 +35,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarSyntaxName {
+public class ElementGrammarName {
 
     public static final List<String> types;
 
@@ -57,7 +57,7 @@ public class GrammarSyntaxName {
         types.add("tree");
     }
 
-    public GrammarSyntaxName(ATEToken name, ATEToken start, ATEToken end, ATEToken type) {
+    public ElementGrammarName(ATEToken name, ATEToken start, ATEToken end, ATEToken type) {
         this.name = name;
         this.start = type==null?start:type;
         this.end = end;

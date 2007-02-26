@@ -3,9 +3,9 @@ package org.antlr.works.grammar;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.syntax.GrammarSyntaxName;
-import org.antlr.works.syntax.GrammarSyntaxReference;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementGrammarName;
+import org.antlr.works.syntax.ElementReference;
+import org.antlr.works.syntax.ElementRule;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -58,7 +58,7 @@ public class RulesDependency extends GrammarDOTTab {
         if(!checkForCurrentRule())
             return false;
 
-        GrammarSyntaxRule rule = editor.getCurrentRule();
+        ElementRule rule = editor.getCurrentRule();
         List refs = editor.rules.getReferencesInRule(rule);
         if(refs == null || refs.isEmpty()) {
             XJAlert.display(editor.getWindowContainer(), "Error", "The selected rule doesn't contain any references");
@@ -66,7 +66,7 @@ public class RulesDependency extends GrammarDOTTab {
         }
 
         includeLexerRefs = true;
-        if(!rule.lexer && editor.getEngineGrammar().getType() == GrammarSyntaxName.COMBINED) {
+        if(!rule.lexer && editor.getEngineGrammar().getType() == ElementGrammarName.COMBINED) {
             includeLexerRefs = XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Rule Dependency Graph", "Do you want to include lexer references ?") == XJAlert.YES;
         }
 
@@ -74,7 +74,7 @@ public class RulesDependency extends GrammarDOTTab {
     }
 
     public String getDOTString() throws Exception {
-        GrammarSyntaxRule rule = editor.getCurrentRule();
+        ElementRule rule = editor.getCurrentRule();
 
         visitedRules.clear();
         visitedRefs.clear();
@@ -87,7 +87,7 @@ public class RulesDependency extends GrammarDOTTab {
         return dependency.toString();
     }
 
-    protected void buildGraph(GrammarSyntaxRule rule) {
+    protected void buildGraph(ElementRule rule) {
         if(rule == null)
             return;
 
@@ -98,7 +98,7 @@ public class RulesDependency extends GrammarDOTTab {
             return;
 
         for (Iterator iterator = refs.iterator(); iterator.hasNext();) {
-            GrammarSyntaxReference reference = (GrammarSyntaxReference) iterator.next();
+            ElementReference reference = (ElementReference) iterator.next();
             String refRuleName = reference.token.getAttribute();
             String visitedRef = rule.name+" -> "+refRuleName;
 

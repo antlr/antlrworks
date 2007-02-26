@@ -10,7 +10,7 @@ import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
@@ -56,7 +56,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
     protected JPanel panel;
     protected GView view;
 
-    protected GrammarSyntaxRule rule;
+    protected ElementRule rule;
 
     protected String tempInputFile;
     protected String tempOutputFile;
@@ -98,7 +98,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
     }
 
     protected boolean checkForCurrentRule() {
-        GrammarSyntaxRule rule = editor.getCurrentRule();
+        ElementRule rule = editor.getCurrentRule();
         if(rule == null) {
             XJAlert.display(editor.getWindowContainer(), "Error", "The cursor must be inside a rule");
             return false;

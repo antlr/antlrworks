@@ -38,7 +38,7 @@ import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.works.editor.EditorProvider;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.GrammarSyntaxName;
+import org.antlr.works.syntax.ElementGrammarName;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 
@@ -144,12 +144,12 @@ public class CodeGenerate implements Runnable {
 
     public boolean supportsLexer() {
         int type = provider.getEngineGrammar().getType();
-        return type == GrammarSyntaxName.COMBINED || type == GrammarSyntaxName.LEXER;
+        return type == ElementGrammarName.COMBINED || type == ElementGrammarName.LEXER;
     }
 
     public boolean supportsParser() {
         int type = provider.getEngineGrammar().getType();
-        return type == GrammarSyntaxName.COMBINED || type == GrammarSyntaxName.PARSER || type == GrammarSyntaxName.TREEPARSER;
+        return type == ElementGrammarName.COMBINED || type == ElementGrammarName.PARSER || type == ElementGrammarName.TREEPARSER;
     }
 
     public String getGeneratedText(boolean lexer) {

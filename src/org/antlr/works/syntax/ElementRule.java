@@ -41,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarSyntaxRule extends GSScopable implements Comparable, EditorPersistentObject, ATEFoldingEntity, ATEBreakpointEntity {
+public class ElementRule extends ElementScopable implements Comparable, EditorPersistentObject, ATEFoldingEntity, ATEBreakpointEntity {
 
     public String name;
     public ATEToken start;
@@ -69,12 +69,12 @@ public class GrammarSyntaxRule extends GSScopable implements Comparable, EditorP
     protected int refsStartIndex = -1;
     protected int refsEndIndex = -1;
 
-    public GrammarSyntaxRule(String name) {
+    public ElementRule(String name) {
         this.name = name;
         this.lexer = ATEToken.isLexerName(name);
     }
 
-    public GrammarSyntaxRule(GrammarSyntaxParser parser, String name, ATEToken start, ATEToken colon, ATEToken end) {
+    public ElementRule(GrammarSyntaxParser parser, String name, ATEToken start, ATEToken colon, ATEToken end) {
         this.parser = parser;
         this.name = name;
         this.start = start;
@@ -309,7 +309,7 @@ public class GrammarSyntaxRule extends GSScopable implements Comparable, EditorP
     }
     
     public int compareTo(Object o) {
-        GrammarSyntaxRule otherRule = (GrammarSyntaxRule) o;
+        ElementRule otherRule = (ElementRule) o;
         return this.name.compareTo(otherRule.name);
     }
 
@@ -390,7 +390,7 @@ public class GrammarSyntaxRule extends GSScopable implements Comparable, EditorP
     }
 
     public void persistentAssign(EditorPersistentObject otherObject) {
-        GrammarSyntaxRule oldRule = (GrammarSyntaxRule)otherObject;
+        ElementRule oldRule = (ElementRule)otherObject;
         this.ignored = oldRule.ignored;
         this.expanded = oldRule.expanded;
         this.breakpoint = oldRule.breakpoint;

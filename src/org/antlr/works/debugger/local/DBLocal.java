@@ -48,7 +48,7 @@ import org.antlr.works.debugger.DebuggerInputDialog;
 import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.GrammarSyntaxBlock;
+import org.antlr.works.syntax.ElementBlock;
 import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
@@ -393,7 +393,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
         Set imports = new HashSet();
         for (int i = 0; i < blocks.size(); i++) {
-            GrammarSyntaxBlock block = (GrammarSyntaxBlock) blocks.get(i);
+            ElementBlock block = (ElementBlock) blocks.get(i);
             if(!block.name.equals(GrammarSyntaxParser.PARSER_HEADER_BLOCK_NAME) && !block.name.equals(GrammarSyntaxParser.LEXER_HEADER_BLOCK_NAME)) {
                 continue;
             }

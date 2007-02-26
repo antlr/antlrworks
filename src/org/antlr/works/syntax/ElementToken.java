@@ -4,7 +4,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,22 +32,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarSyntaxReference implements Comparable {
+public class ElementToken extends ATEToken {
 
-    public GrammarSyntaxRule rule;
-    public ATEToken token;
+    public boolean lexer;
 
-    public GrammarSyntaxReference(GrammarSyntaxRule rule, ATEToken token) {
-        this.rule = rule;
-        this.token = token;
+    public ElementToken(int type, int start, int end,
+                        int startLineNumber, int endLineNumber,
+                        int startLineIndex, int endLineIndex,
+                        String text)
+    {
+        super(type, start, end, startLineNumber,  endLineNumber, startLineIndex, endLineIndex, text);
+        this.lexer = isLexerName(attribute);
     }
 
-    public int compareTo(Object o) {
-        GrammarSyntaxReference otherRef = (GrammarSyntaxReference)o;
-        return token.compareTo(otherRef.token);
-    }
-
-    public boolean containsIndex(int index) {
-        return index >= token.getStartIndex() && index <= token.getEndIndex();
-    }
 }

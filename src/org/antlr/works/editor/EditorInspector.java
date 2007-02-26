@@ -2,6 +2,7 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
+import org.antlr.works.ate.syntax.misc.ATEScope;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.idea.IdeaAction;
@@ -93,7 +94,7 @@ public class EditorInspector {
     }
 
     protected void discoverInvalidGrammarName(List<Item> items) {
-        GrammarSyntaxName n = getGrammarName();
+        ElementGrammarName n = getGrammarName();
         String grammarFileName = getGrammarNameFromFile();
         if(n != null && grammarFileName != null && !grammarFileName.equals(n.getName())) {
             ATEToken t = n.name;
@@ -105,7 +106,7 @@ public class EditorInspector {
         }
     }
 
-    private GrammarSyntaxName getGrammarName() {
+    private ElementGrammarName getGrammarName() {
         return editor.getParserEngine().getName();
     }
 
@@ -125,7 +126,7 @@ public class EditorInspector {
         for(int index=0; index<tokens.size(); index++) {
             ATEToken t = tokens.get(index);
             if(t.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
-                if(t.scope != null && t.scope.getClass().equals(GrammarSyntaxAction.class)) continue;
+                if(ignoreScopeForDoubleQuoteLiteral(t.scope)) continue;
 
                 Item item = new ItemInvalidCharLiteral();
                 item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
@@ -136,13 +137,23 @@ public class EditorInspector {
         }
     }
 
+    /**
+     * Returns true if the scope should be ignored when checking for double-quote literal
+     */
+    private boolean ignoreScopeForDoubleQuoteLiteral(ATEScope scope) {
+        if(scope == null) return false;
+
+        Class c = scope.getClass();
+        return c.equals(ElementAction.class) || c.equals(ElementBlock.class);
+    }
+
     protected void discoverUndefinedReferences(List<Item> items) {
-        List<GrammarSyntaxReference> undefinedRefs = editor.getSyntax().getUndefinedReferences();
+        List<ElementReference> undefinedRefs = editor.getSyntax().getUndefinedReferences();
         if(undefinedRefs == null)
             return;
 
         for(int index=0; index<undefinedRefs.size(); index++) {
-            GrammarSyntaxReference ref = undefinedRefs.get(index);
+            ElementReference ref = undefinedRefs.get(index);
             Item item = new ItemUndefinedReference();
             item.setAttributes(ref.token, ref.token.getStartIndex(), ref.token.getEndIndex(),
                     ref.token.startLineNumber, Color.red,
@@ -152,12 +163,12 @@ public class EditorInspector {
     }
 
     protected void discoverDuplicateRules(List<Item> items) {
-        List<GrammarSyntaxRule> rules = editor.getSyntax().getDuplicateRules();
+        List<ElementRule> rules = editor.getSyntax().getDuplicateRules();
         if(rules == null)
             return;
 
         for(int index=0; index<rules.size(); index++) {
-            GrammarSyntaxRule rule = rules.get(index);
+            ElementRule rule = rules.get(index);
             Item item = new ItemDuplicateRule();
             item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
                     rule.start.startLineNumber, Color.red,
@@ -172,7 +183,7 @@ public class EditorInspector {
             return;
 
         for(int index=0; index<rules.size(); index++) {
-            GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
+            ElementRule rule = (ElementRule)rules.get(index);
             if(!rule.hasLeftRecursion())
                 continue;
 
@@ -190,7 +201,7 @@ public class EditorInspector {
             return;
 
         for(int index=0; index<rules.size(); index++) {
-            GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
+            ElementRule rule = (ElementRule)rules.get(index);
             Set rulesSet = rule.getLeftRecursiveRulesSet();
             if(rulesSet == null || rulesSet.size() < 2)
                 continue;
@@ -247,7 +258,7 @@ public class EditorInspector {
         public void ideaActionFire(IdeaAction action, int actionID) {
             switch(actionID) {
                 case IDEA_CREATE_RULE:
-                    editor.menuRefactor.createRuleAtIndex(((GrammarSyntaxToken)action.token).lexer, action.token.getAttribute(), null);
+                    editor.menuRefactor.createRuleAtIndex(((ElementToken)action.token).lexer, action.token.getAttribute(), null);
                     break;
             }
         }
@@ -316,7 +327,7 @@ public class EditorInspector {
         public void ideaActionFire(IdeaAction action, int actionID) {
             switch(actionID) {
                 case IDEA_FIX_GRAMMAR_NAME:
-                    GrammarSyntaxName n = getGrammarName();
+                    ElementGrammarName n = getGrammarName();
                     ATEToken name = n.name;
                     editor.replaceText(name.start, name.end, getGrammarNameFromFile());
                     break;

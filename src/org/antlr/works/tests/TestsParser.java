@@ -7,10 +7,10 @@ import junit.textui.TestRunner;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.RefactorEngine;
 import org.antlr.works.grammar.RefactorMutator;
-import org.antlr.works.syntax.GrammarSyntaxBlock;
+import org.antlr.works.syntax.ElementBlock;
+import org.antlr.works.syntax.ElementReference;
 import org.antlr.works.syntax.GrammarSyntaxLexer;
 import org.antlr.works.syntax.GrammarSyntaxParser;
-import org.antlr.works.syntax.GrammarSyntaxReference;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,10 +61,10 @@ public class TestsParser extends TestCase {
 
         assertEquals("grammar name", "demo", parser.name.getName());
 
-        GrammarSyntaxBlock tokensBlock = parser.blocks.get(0);
+        ElementBlock tokensBlock = parser.blocks.get(0);
         assertEquals("tokens block", Arrays.asList("FOO", "OTHER", "LAST"), tokensBlock.getDeclaredTokensAsString());
 
-        GrammarSyntaxBlock optionsBlock = parser.blocks.get(1);
+        ElementBlock optionsBlock = parser.blocks.get(1);
         assertEquals("tokenVocab", "DataViewExpressions", optionsBlock.getTokenVocab());
     }
 
@@ -117,9 +117,9 @@ public class TestsParser extends TestCase {
         return names;
     }
 
-    private List<String> getRefsAsString(List<GrammarSyntaxReference> tokens) {
+    private List<String> getRefsAsString(List<ElementReference> tokens) {
         List<String> names = new ArrayList<String>();
-        for(GrammarSyntaxReference token : tokens) {
+        for(ElementReference token : tokens) {
             names.add(token.token.getAttribute());
         }
         return names;

@@ -37,7 +37,7 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
@@ -67,7 +67,7 @@ public class GPanel implements XJNotificationObserver {
     protected GView view;
     protected JScrollPane viewScrollPane;
 
-    protected GrammarSyntaxRule rule;
+    protected ElementRule rule;
     protected CEditorGrammar editor;
 
     public GPanel(CEditorGrammar editor, GContext context) {
@@ -90,7 +90,7 @@ public class GPanel implements XJNotificationObserver {
         updateCurrentAlternative();
     }
 
-    public void setRule(GrammarSyntaxRule rule) {
+    public void setRule(ElementRule rule) {
         if(view != null)
             view.setEnable(false);
 

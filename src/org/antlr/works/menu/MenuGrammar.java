@@ -39,9 +39,9 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.*;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.GrammarSyntaxGroup;
+import org.antlr.works.syntax.ElementGroup;
+import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.syntax.GrammarSyntaxParser;
-import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import javax.swing.*;
 import java.util.List;
@@ -59,7 +59,7 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
 
     public void showTokensSD() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_TOKENS_SD);
-        editor.visual.setRule(new GrammarSyntaxRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);
+        editor.visual.setRule(new ElementRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);
         editor.makeBottomComponentVisible();
     }
 
@@ -112,8 +112,8 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
             if(!rules.isEmpty()) {
                 editor.beginGroupChange("Group");
 
-                GrammarSyntaxRule firstRule = (GrammarSyntaxRule) rules.get(0);
-                GrammarSyntaxRule lastRule = (GrammarSyntaxRule) rules.get(rules.size()-1);
+                ElementRule firstRule = (ElementRule) rules.get(0);
+                ElementRule lastRule = (ElementRule) rules.get(rules.size()-1);
 
                 int end = lastRule.getEndIndex();
                 editor.textEditor.insertText(end+1, "\n"+GrammarSyntaxParser.END_GROUP+"\n");
@@ -129,7 +129,7 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     public void ungroup() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_RULE_UNGROUP);
 
-        GrammarSyntaxGroup openGroup = editor.rules.getSelectedGroup();
+        ElementGroup openGroup = editor.rules.getSelectedGroup();
         if(openGroup == null) {
             // No open group selected in the tree. Try to find the closest open group
             // by moving backward
@@ -141,7 +141,7 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
             }
         }
 
-        GrammarSyntaxGroup closingGroup = editor.rules.findClosingGroupForGroup(openGroup);
+        ElementGroup closingGroup = editor.rules.findClosingGroupForGroup(openGroup);
 
         editor.beginGroupChange("Ungroup");
 

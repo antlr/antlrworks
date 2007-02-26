@@ -5,7 +5,7 @@ import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementRule;
 
 import java.util.List;
 /*
@@ -98,7 +98,7 @@ public class DecisionDFA extends GrammarDOTTab {
     public String getDOTString() throws Exception {
         Grammar g;
 
-        GrammarSyntaxRule rule = editor.getCurrentRule();
+        ElementRule rule = editor.getCurrentRule();
         if(rule.lexer)
             g = editor.getEngineGrammar().getLexerGrammar();
         else

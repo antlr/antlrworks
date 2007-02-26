@@ -1,12 +1,10 @@
 package org.antlr.works.syntax;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-
-import java.util.List;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,25 +32,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarSyntaxToken extends ATEToken {
+public class ElementReference implements Comparable {
 
-    public boolean lexer;
-    public List internalTokens;
+    public ElementRule rule;
+    public ATEToken token;
 
-    public GrammarSyntaxToken(int type, int start, int end,
-                    int startLineNumber, int endLineNumber,
-                    int startLineIndex, int endLineIndex,
-                    String text)
-    {
-        super(type, start, end, startLineNumber,  endLineNumber, startLineIndex, endLineIndex, text);
-        this.lexer = isLexerName(attribute);
+    public ElementReference(ElementRule rule, ATEToken token) {
+        this.rule = rule;
+        this.token = token;
     }
 
-    /** List of action references inside an action.
-     * Example: $ID.text or $expr
-     */
+    public int compareTo(Object o) {
+        ElementReference otherRef = (ElementReference)o;
+        return token.compareTo(otherRef.token);
+    }
 
-    public void setInternalTokens(List internalTokens) {
-        this.internalTokens = internalTokens;
+    public boolean containsIndex(int index) {
+        return index >= token.getStartIndex() && index <= token.getEndIndex();
     }
 }

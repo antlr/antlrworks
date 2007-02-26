@@ -51,14 +51,14 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     public static final Color COLOR_ACTION_REF = new Color(1.0f, 0.0f, 0.0f);
     public static final Color COLOR_BLOCK_LABEL = new Color(1.0f, 0.0f, 0.0f);
 
-    protected List<GrammarSyntaxRule> rules;
-    protected List<GrammarSyntaxGroup> groups;
-    protected List<GrammarSyntaxBlock> blocks;
-    protected List<GrammarSyntaxAction> actions;
-    protected List<GrammarSyntaxReference> references;
+    protected List<ElementRule> rules;
+    protected List<ElementGroup> groups;
+    protected List<ElementBlock> blocks;
+    protected List<ElementAction> actions;
+    protected List<ElementReference> references;
     protected List<ATEToken> decls;
 
-    protected GrammarSyntaxName name;
+    protected ElementGrammarName name;
 
     protected SimpleAttributeSet parserRefAttr;
     protected SimpleAttributeSet lexerRefAttr;
@@ -118,7 +118,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         switch(token.type) {
             case GrammarSyntaxLexer.TOKEN_DECL:
             case GrammarSyntaxLexer.TOKEN_REFERENCE:
-                if(((GrammarSyntaxToken)token).lexer)
+                if(((ElementToken)token).lexer)
                     attr = lexerRefAttr;
                 else
                     attr = parserRefAttr;
@@ -140,23 +140,23 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         GrammarSyntaxEngine.delay = delay;
     }
 
-    public synchronized List<GrammarSyntaxRule> getRules() {
+    public synchronized List<ElementRule> getRules() {
         return rules;
     }
 
-    public synchronized List<GrammarSyntaxGroup> getGroups() {
+    public synchronized List<ElementGroup> getGroups() {
         return groups;
     }
 
-    public synchronized List<GrammarSyntaxBlock> getBlocks() {
+    public synchronized List<ElementBlock> getBlocks() {
         return blocks;
     }
 
-    public synchronized List<GrammarSyntaxAction> getActions() {
+    public synchronized List<ElementAction> getActions() {
         return actions;
     }
 
-    public synchronized List<GrammarSyntaxReference> getReferences() {
+    public synchronized List<ElementReference> getReferences() {
         return references;
     }
 
@@ -164,7 +164,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         return decls;
     }
 
-    public synchronized GrammarSyntaxName getName() {
+    public synchronized ElementGrammarName getName() {
         return name;
     }
 
@@ -172,7 +172,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         List<String> names = new ArrayList<String>();
         if(blocks != null) {
             for(int index=0; index<blocks.size(); index++) {
-                GrammarSyntaxBlock block = blocks.get(index);
+                ElementBlock block = blocks.get(index);
                 if(block.isTokenBlock) {
                     names.addAll(block.getDeclaredTokensAsString());
                 }
@@ -190,7 +190,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
             return null;
 
         for(int index=0; index<blocks.size(); index++) {
-            GrammarSyntaxBlock block = blocks.get(index);
+            ElementBlock block = blocks.get(index);
             if(block.isOptionsBlock)
                 return block.getTokenVocab();
         }
@@ -201,14 +201,14 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         List<String> names = new ArrayList<String>();
         if(rules != null) {
             for (int index=0; index<rules.size(); index++) {
-                GrammarSyntaxRule rule = rules.get(index);
+                ElementRule rule = rules.get(index);
                 names.add(rule.name);
             }
         }
         return names;
     }
 
-    public synchronized GrammarSyntaxRule getRuleAtIndex(int index) {
+    public synchronized ElementRule getRuleAtIndex(int index) {
         if(index < 0 || index >= rules.size())
             return null;
         else
@@ -221,11 +221,11 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
     protected synchronized void parserDidRun(ATESyntaxParser parser) {
         GrammarSyntaxParser gp = (GrammarSyntaxParser)parser;
-        this.rules = new ArrayList<GrammarSyntaxRule>(gp.rules);
-        this.groups = new ArrayList<GrammarSyntaxGroup>(gp.groups);
-        this.blocks = new ArrayList<GrammarSyntaxBlock>(gp.blocks);
-        this.actions = new ArrayList<GrammarSyntaxAction>(gp.actions);
-        this.references = new ArrayList<GrammarSyntaxReference>(gp.references);
+        this.rules = new ArrayList<ElementRule>(gp.rules);
+        this.groups = new ArrayList<ElementGroup>(gp.groups);
+        this.blocks = new ArrayList<ElementBlock>(gp.blocks);
+        this.actions = new ArrayList<ElementAction>(gp.actions);
+        this.references = new ArrayList<ElementReference>(gp.references);
         this.decls = new ArrayList<ATEToken>(gp.decls);
         this.name = gp.name;
     }

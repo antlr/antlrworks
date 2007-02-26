@@ -5,8 +5,8 @@ import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
 import org.antlr.works.ate.folding.ATEFoldingManager;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.GrammarSyntaxAction;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementAction;
+import org.antlr.works.syntax.ElementRule;
 
 import java.util.List;
 /*
@@ -66,9 +66,9 @@ public class EditorFoldingManager extends ATEFoldingManager {
 
     public ATEFoldingEntityProxy createEntityProxy(ATEFoldingEntity entity) {
         int tag;
-        if(entity instanceof GrammarSyntaxRule)
+        if(entity instanceof ElementRule)
             tag = TAG_RULES;
-        else if(entity instanceof GrammarSyntaxAction)
+        else if(entity instanceof ElementAction)
             tag = TAG_ACTIONS;
         else
             return null;
@@ -80,7 +80,7 @@ public class EditorFoldingManager extends ATEFoldingManager {
         List rules = editor.parserEngine.getRules();
         if(rules != null) {
             for(int index=0; index<rules.size(); index++) {
-                GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
+                ElementRule rule = (ElementRule)rules.get(index);
                 addEntity(rule);
             }
         }
@@ -90,7 +90,7 @@ public class EditorFoldingManager extends ATEFoldingManager {
             List actions = editor.parserEngine.getActions();
             if(actions != null) {
                 for(int index=0; index<actions.size(); index++) {
-                    GrammarSyntaxAction action = (GrammarSyntaxAction)actions.get(index);
+                    ElementAction action = (ElementAction)actions.get(index);
                     if(action.rule.isExpanded())
                         addEntity(action);
                 }

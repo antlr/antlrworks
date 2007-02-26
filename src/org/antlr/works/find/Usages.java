@@ -34,7 +34,7 @@ package org.antlr.works.find;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementRule;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -108,7 +108,7 @@ public class Usages extends EditorTab {
         return panel;
     }
 
-    public void addMatch(GrammarSyntaxRule rule, ATEToken token) {
+    public void addMatch(ElementRule rule, ATEToken token) {
         if(lastRule == null || !lastRule.equals(rule.name)) {
             node = new DefaultMutableTreeNode();
             node.setUserObject(rule.name);
@@ -137,11 +137,11 @@ public class Usages extends EditorTab {
     }
 
     public class UsageMatch {
-        public GrammarSyntaxRule rule;
+        public ElementRule rule;
         public ATEToken token;
         public String contextualText;
 
-        public UsageMatch(GrammarSyntaxRule rule, ATEToken token) {
+        public UsageMatch(ElementRule rule, ATEToken token) {
             this.rule = rule;
             this.token = token;
             createContextString();

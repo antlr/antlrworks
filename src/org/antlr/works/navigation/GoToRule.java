@@ -34,7 +34,7 @@ package org.antlr.works.navigation;
 
 import edu.usfca.xj.appkit.frame.XJFrameInterface;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.utils.OverlayObject;
 
 import javax.swing.*;
@@ -156,7 +156,7 @@ public class GoToRule extends OverlayObject {
 
         int index = matchingRuleList.getSelectedIndex();
         if(index >= 0) {
-            GrammarSyntaxRule rule = editor.rules.selectRuleNameInTree((String)matchingRuleListModel.get(index));
+            ElementRule rule = editor.rules.selectRuleNameInTree((String)matchingRuleListModel.get(index));
             if(rule != null) {
                 editor.goToHistoryRememberCurrentPosition();
                 editor.rules.goToRule(rule);

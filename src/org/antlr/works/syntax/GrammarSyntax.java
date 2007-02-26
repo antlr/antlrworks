@@ -48,9 +48,9 @@ public class GrammarSyntax {
 
     protected CEditorGrammar editor;
 
-    protected List<GrammarSyntaxRule> duplicateRules;
-    protected List<GrammarSyntaxReference> undefinedReferences;
-    protected List<GrammarSyntaxRule> hasLeftRecursionRules;
+    protected List<ElementRule> duplicateRules;
+    protected List<ElementReference> undefinedReferences;
+    protected List<ElementRule> hasLeftRecursionRules;
 
     protected List<String> tokenVocabNames;
     protected String tokenVocabName;
@@ -58,9 +58,9 @@ public class GrammarSyntax {
     public GrammarSyntax(CEditorGrammar editor) {
         this.editor = editor;
 
-        duplicateRules = new ArrayList<GrammarSyntaxRule>();
-        undefinedReferences = new ArrayList<GrammarSyntaxReference>();
-        hasLeftRecursionRules = new ArrayList<GrammarSyntaxRule>();
+        duplicateRules = new ArrayList<ElementRule>();
+        undefinedReferences = new ArrayList<ElementReference>();
+        hasLeftRecursionRules = new ArrayList<ElementRule>();
         tokenVocabNames = new ArrayList<String>();
     }
 
@@ -71,8 +71,8 @@ public class GrammarSyntax {
     public int getNumberOfRulesWithErrors() {
         int count = 0;
         if(getParserEngine().getRules() != null) {
-            for (Iterator<GrammarSyntaxRule> iterator = getParserEngine().getRules().iterator(); iterator.hasNext();) {
-                GrammarSyntaxRule rule = iterator.next();
+            for (Iterator<ElementRule> iterator = getParserEngine().getRules().iterator(); iterator.hasNext();) {
+                ElementRule rule = iterator.next();
                 if(rule.hasErrors())
                     count++;
             }
@@ -80,11 +80,11 @@ public class GrammarSyntax {
         return count;
     }
 
-    public List<GrammarSyntaxRule> getDuplicateRules() {
+    public List<ElementRule> getDuplicateRules() {
         return duplicateRules;
     }
 
-    public List<GrammarSyntaxReference> getUndefinedReferences() {
+    public List<ElementReference> getUndefinedReferences() {
         return undefinedReferences;
     }
 
@@ -165,25 +165,25 @@ public class GrammarSyntax {
             return;
 
         hasLeftRecursionRules.clear();
-        for(Iterator<GrammarSyntaxRule> iter = getParserEngine().getRules().iterator(); iter.hasNext();) {
-            GrammarSyntaxRule r = iter.next();
+        for(Iterator<ElementRule> iter = getParserEngine().getRules().iterator(); iter.hasNext();) {
+            ElementRule r = iter.next();
             if(r.hasLeftRecursion())
                 hasLeftRecursionRules.add(r);
         }
     }
 
     public void rebuildDuplicateRulesList() {
-        List<GrammarSyntaxRule> rules = getParserEngine().getRules();
+        List<ElementRule> rules = getParserEngine().getRules();
         if(rules == null)
             return;
 
-        List<GrammarSyntaxRule> sortedRules = Collections.list(Collections.enumeration(rules));
+        List<ElementRule> sortedRules = Collections.list(Collections.enumeration(rules));
         Collections.sort(sortedRules);
         Iterator iter = sortedRules.iterator();
-        GrammarSyntaxRule currentRule = null;
+        ElementRule currentRule = null;
         duplicateRules.clear();
         while(iter.hasNext()) {
-            GrammarSyntaxRule nextRule = (GrammarSyntaxRule) iter.next();
+            ElementRule nextRule = (ElementRule) iter.next();
             if(currentRule != null && currentRule.name.equals(nextRule.name) && !duplicateRules.contains(currentRule)) {
                 duplicateRules.add(currentRule);
                 duplicateRules.add(nextRule);
@@ -199,12 +199,12 @@ public class GrammarSyntax {
         existingReferences.addAll(getTokenVocabNames());
 
         undefinedReferences.clear();
-        List<GrammarSyntaxReference> references = getParserEngine().getReferences();
+        List<ElementReference> references = getParserEngine().getReferences();
         if(references == null)
             return;
 
         for(int index=0; index<references.size(); index++) {
-            GrammarSyntaxReference ref = references.get(index);
+            ElementReference ref = references.get(index);
             if(!existingReferences.contains(ref.token.getAttribute()))
                 undefinedReferences.add(ref);
         }

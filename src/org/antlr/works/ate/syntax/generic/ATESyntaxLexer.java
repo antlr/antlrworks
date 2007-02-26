@@ -45,7 +45,11 @@ public class ATESyntaxLexer {
     public static final int TOKEN_COMPLEX_COMMENT = 4;
     public static final int TOKEN_ID = 5;
     public static final int TOKEN_CHAR = 6;
-    public static final int TOKEN_OTHER = 7;
+    public static final int TOKEN_LPAREN = 7;
+    public static final int TOKEN_RPAREN = 8;
+    public static final int TOKEN_COLON = 9;
+    public static final int TOKEN_SEMI = 10;
+    public static final int TOKEN_OTHER = 11;
 
     protected List<ATEToken> tokens;
     protected String text;
@@ -95,9 +99,11 @@ public class ATESyntaxLexer {
 
     protected void tokenize() {
         while(nextCharacter()) {
-            ATEToken token = null;
+            ATEToken token = customMatch();
 
-            if(c0 == '\'')
+            if(token != null) {
+                // custom match matched something
+            } else if(c0 == '\'')
                 token = matchSingleQuoteString();
             else if(c0 == '\"')
                 token = matchDoubleQuoteString();
@@ -107,11 +113,23 @@ public class ATESyntaxLexer {
                 token = matchComplexComment();
             else if(isLetter())
                 token = matchID();
+            else if(c0 == '(')
+                token = createNewToken(TOKEN_LPAREN);
+            else if(c0 == ')')
+                token = createNewToken(TOKEN_RPAREN);
+            else if(c0 == ':')
+                token = createNewToken(TOKEN_COLON);
+            else if(c0 == ';')
+                token = createNewToken(TOKEN_SEMI);
             else if(!isWhitespace())
                 token = createNewToken(TOKEN_CHAR);
 
             addToken(token);
         }
+    }
+
+    protected ATEToken customMatch() {
+        return null;
     }
 
     public void addToken(ATEToken token) {
@@ -121,7 +139,7 @@ public class ATESyntaxLexer {
         }
     }
 
-    public ATEToken matchID() {
+    protected ATEToken matchID() {
         int sp = position;
         while(isID(c1) && nextCharacter()) {
         }

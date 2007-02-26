@@ -49,7 +49,7 @@ import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TextUtils;
@@ -216,7 +216,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         StringBuffer sb = new StringBuffer();
         if(rules != null) {
             for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-                GrammarSyntaxRule r = (GrammarSyntaxRule) iterator.next();
+                ElementRule r = (ElementRule) iterator.next();
                 if(r.ignored) {
                     if(sb.length() > 0)
                         sb.append(" ");

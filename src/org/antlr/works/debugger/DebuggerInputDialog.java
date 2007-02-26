@@ -38,7 +38,7 @@ import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJSystem;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.utils.TextUtils;
 import org.antlr.works.utils.Utils;
 
@@ -78,7 +78,7 @@ public class DebuggerInputDialog extends XJDialog {
 
         rulesCombo.removeAllItems();
         for (Iterator iterator = debugger.getSortedRules().iterator(); iterator.hasNext();) {
-            GrammarSyntaxRule rule = (GrammarSyntaxRule)iterator.next();
+            ElementRule rule = (ElementRule)iterator.next();
             rulesCombo.addItem(rule.name);
         }
         rulesCombo.setSelectedItem(AWPrefs.getStartSymbol());

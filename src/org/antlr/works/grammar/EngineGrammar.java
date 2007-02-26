@@ -39,8 +39,8 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.*;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.syntax.GrammarSyntaxName;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementGrammarName;
+import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 
@@ -109,17 +109,17 @@ public class EngineGrammar {
     }
 
     public boolean isTreeParserGrammar() {
-        return getType() == GrammarSyntaxName.TREEPARSER;
+        return getType() == ElementGrammarName.TREEPARSER;
     }
 
     public boolean hasGrammar() {
         switch(getType()) {
-            case GrammarSyntaxName.COMBINED:
+            case ElementGrammarName.COMBINED:
                 return parserGrammar != null;
-            case GrammarSyntaxName.TREEPARSER:
-            case GrammarSyntaxName.PARSER:
+            case ElementGrammarName.TREEPARSER:
+            case ElementGrammarName.PARSER:
                 return parserGrammar != null;
-            case GrammarSyntaxName.LEXER:
+            case ElementGrammarName.LEXER:
                 return lexerGrammar != null;
         }
         return false;
@@ -127,12 +127,12 @@ public class EngineGrammar {
 
     public Grammar getANTLRGrammar() {
         switch(getType()) {
-            case GrammarSyntaxName.COMBINED:
+            case ElementGrammarName.COMBINED:
                 return parserGrammar;
-            case GrammarSyntaxName.TREEPARSER:
-            case GrammarSyntaxName.PARSER:
+            case ElementGrammarName.TREEPARSER:
+            case ElementGrammarName.PARSER:
                 return parserGrammar;
-            case GrammarSyntaxName.LEXER:
+            case ElementGrammarName.LEXER:
                 return lexerGrammar;
         }
         return null;
@@ -146,7 +146,7 @@ public class EngineGrammar {
     }
 
     public String getName() {
-        GrammarSyntaxName name = editor.parserEngine.getName();
+        ElementGrammarName name = editor.parserEngine.getName();
         if(name == null)
             return null;
         else
@@ -154,9 +154,9 @@ public class EngineGrammar {
     }
 
     public int getType() {
-        GrammarSyntaxName name = editor.parserEngine.getName();
+        ElementGrammarName name = editor.parserEngine.getName();
         if(name == null)
-            return GrammarSyntaxName.COMBINED;
+            return ElementGrammarName.COMBINED;
         else
             return name.getType();
     }
@@ -169,14 +169,14 @@ public class EngineGrammar {
         ErrorListener.shared().clear();
 
         switch(getType()) {
-            case GrammarSyntaxName.COMBINED:
+            case ElementGrammarName.COMBINED:
                 createCombinedGrammar();
                 break;
-            case GrammarSyntaxName.TREEPARSER:
-            case GrammarSyntaxName.PARSER:
+            case ElementGrammarName.TREEPARSER:
+            case ElementGrammarName.PARSER:
                 createParserGrammar();
                 break;
-            case GrammarSyntaxName.LEXER:
+            case ElementGrammarName.LEXER:
                 createLexerGrammar();
                 break;
         }
@@ -251,7 +251,7 @@ public class EngineGrammar {
             Set rulesSet = (Set) rules.get(i);
             for (Iterator iterator = rulesSet.iterator(); iterator.hasNext();) {
                 String name = (String) iterator.next();
-                GrammarSyntaxRule r = editor.rules.getRuleWithName(name);
+                ElementRule r = editor.rules.getRuleWithName(name);
                 if(r == null)
                     continue;
                 r.setLeftRecursiveRulesSet(rulesSet);
@@ -288,7 +288,7 @@ public class EngineGrammar {
 
         try {
             g.createLookaheadDFAs();
-            if(getType() == GrammarSyntaxName.COMBINED) {
+            if(getType() == ElementGrammarName.COMBINED) {
                 // If the grammar is combined, analyze also the lexer
                 Grammar lexer = getLexerGrammar();
                 if(lexer != null)
@@ -381,19 +381,19 @@ public class EngineGrammar {
         // Clear graphic cache because we have to redraw each rule again
         editor.visual.clearCacheGraphs();
         for (Iterator iterator = editor.getParserEngine().getRules().iterator(); iterator.hasNext();) {
-            GrammarSyntaxRule rule = (GrammarSyntaxRule)iterator.next();
+            ElementRule rule = (ElementRule)iterator.next();
             updateRuleWithErrors(rule, fetchErrorsForRule(rule));
         }
 
         editor.rules.refreshRules();
     }
 
-    protected void updateRuleWithErrors(GrammarSyntaxRule rule, List errors) throws Exception {
+    protected void updateRuleWithErrors(ElementRule rule, List errors) throws Exception {
         rule.setErrors(errors);
         rule.setNeedsToBuildErrors(true);
     }
 
-    protected List fetchErrorsForRule(GrammarSyntaxRule rule) {
+    protected List fetchErrorsForRule(ElementRule rule) {
         List errors = new ArrayList();
         for (Iterator iterator = getErrors().iterator(); iterator.hasNext();) {
             EngineGrammarError error = (EngineGrammarError) iterator.next();
@@ -403,7 +403,7 @@ public class EngineGrammar {
         return errors;
     }
 
-    public void computeRuleErrors(GrammarSyntaxRule rule) {
+    public void computeRuleErrors(ElementRule rule) {
         List errors = rule.getErrors();
         for (Iterator iterator = errors.iterator(); iterator.hasNext();) {
             EngineGrammarError error = (EngineGrammarError) iterator.next();
@@ -425,7 +425,7 @@ public class EngineGrammar {
         rule.setNeedsToBuildErrors(false);
     }
 
-    public void computeRuleError(GrammarSyntaxRule rule, EngineGrammarError error, GrammarNonDeterminismMessage message) {
+    public void computeRuleError(ElementRule rule, EngineGrammarError error, GrammarNonDeterminismMessage message) {
         List nonDetAlts = message.probe.getNonDeterministicAltsForState(message.problemState);
         Set disabledAlts = message.probe.getDisabledAlternatives(message.problemState);
 
@@ -455,7 +455,7 @@ public class EngineGrammar {
         }
     }
 
-    public void computeRuleError(GrammarSyntaxRule rule, EngineGrammarError error, GrammarUnreachableAltsMessage message) {
+    public void computeRuleError(ElementRule rule, EngineGrammarError error, GrammarUnreachableAltsMessage message) {
         NFAState state = message.probe.dfa.getNFADecisionStartState();
         for(int alt=0; alt<message.alts.size(); alt++) {
             error.addUnreachableAlt(state, (Integer)message.alts.get(alt));
@@ -464,7 +464,7 @@ public class EngineGrammar {
         }
     }
 
-    public void computeRuleError(GrammarSyntaxRule rule, EngineGrammarError error, NonRegularDecisionMessage message) {
+    public void computeRuleError(ElementRule rule, EngineGrammarError error, NonRegularDecisionMessage message) {
         NFAState state = message.probe.dfa.getNFADecisionStartState();
         for (Iterator iterator = message.altsWithRecursion.iterator(); iterator.hasNext();) {
             Object alt = iterator.next();

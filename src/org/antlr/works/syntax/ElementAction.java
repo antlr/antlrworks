@@ -34,15 +34,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarSyntaxAction extends GSScopable implements EditorPersistentObject, ATEFoldingEntity {
+public class ElementAction extends ElementScopable implements EditorPersistentObject, ATEFoldingEntity {
 
-    public GrammarSyntaxRule rule;
+    public ElementRule rule;
     private ATEToken start;
     public ATEToken end;
     public int actionNum;
     private boolean expanded = true;
 
-    public GrammarSyntaxAction(GrammarSyntaxRule rule, ATEToken start) {
+    public ElementAction(ElementRule rule, ATEToken start) {
         this.rule = rule;
         this.start = start;
     }
@@ -52,7 +52,7 @@ public class GrammarSyntaxAction extends GSScopable implements EditorPersistentO
     }
 
     public boolean equals(Object other) {
-        return getUniqueIdentifier() == ((GrammarSyntaxAction)other).getUniqueIdentifier();
+        return getUniqueIdentifier() == ((ElementAction)other).getUniqueIdentifier();
     }
 
     public int getUniqueIdentifier() {
@@ -109,7 +109,7 @@ public class GrammarSyntaxAction extends GSScopable implements EditorPersistentO
     }
 
     public void persistentAssign(EditorPersistentObject otherObject) {
-        GrammarSyntaxAction otherAction = (GrammarSyntaxAction)otherObject;
+        ElementAction otherAction = (ElementAction)otherObject;
         this.expanded = otherAction.expanded;
     }
 }

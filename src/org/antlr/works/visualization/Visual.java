@@ -36,8 +36,8 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
-import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GContextProvider;
@@ -122,7 +122,7 @@ public class Visual extends EditorTab implements GContextProvider {
             drawing.setText(text);
     }
 
-    public void setRule(GrammarSyntaxRule rule, boolean immediate) {
+    public void setRule(ElementRule rule, boolean immediate) {
         if(isEnable())
             drawing.setRule(rule, immediate);
     }
@@ -140,7 +140,7 @@ public class Visual extends EditorTab implements GContextProvider {
         drawing.clearCacheGraphs();
     }
 
-    public void createGraphsForRule(GrammarSyntaxRule rule) throws Exception {
+    public void createGraphsForRule(ElementRule rule) throws Exception {
         drawing.createGraphsForRule(rule);
     }
 

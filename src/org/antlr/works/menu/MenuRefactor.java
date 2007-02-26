@@ -9,8 +9,8 @@ import org.antlr.works.grammar.RefactorEngine;
 import org.antlr.works.grammar.RefactorMutator;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.GrammarSyntaxReference;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementReference;
+import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
@@ -235,7 +235,7 @@ public class MenuRefactor extends MenuAbstract {
     public void removeLeftRecursion() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOVE_LEFT_RECURSION);
 
-        GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
+        ElementRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {
             XJAlert.display(editor.getWindowContainer(), "Remove Left Recursion", "There is no rule at cursor position.");
             return;
@@ -258,7 +258,7 @@ public class MenuRefactor extends MenuAbstract {
         beginRefactor("Remove All Left Recursion");
         List rules = editor.rules.getRules();
         for(int index = rules.size()-1; index >= 0; index--) {
-            GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
+            ElementRule rule = (ElementRule)rules.get(index);
             if(rule.hasLeftRecursion()) {
                 String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
                 mutator.replace(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
@@ -311,7 +311,7 @@ public class MenuRefactor extends MenuAbstract {
     public void inlineRule() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INLINE_RULE);
 
-        GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
+        ElementRule rule = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
         if(rule == null) {
             XJAlert.display(editor.getWindowContainer(), "Inline Rule", "There is no rule at cursor position.");
             return;
@@ -320,7 +320,7 @@ public class MenuRefactor extends MenuAbstract {
         inlineRule(rule);
     }
 
-    protected void inlineRule(GrammarSyntaxRule rule) {
+    protected void inlineRule(ElementRule rule) {
         String oldContent = editor.getText();
 
         beginRefactor("Inline");
@@ -335,7 +335,7 @@ public class MenuRefactor extends MenuAbstract {
         }
 
         for(int r=rules.size()-1; r>=0; r--) {
-            GrammarSyntaxRule candidate = (GrammarSyntaxRule)rules.get(r);
+            ElementRule candidate = (ElementRule)rules.get(r);
             if(candidate == rule) {
                 mutator.delete(rule.getStartIndex(), rule.getEndIndex()+1);
             } else {
@@ -344,7 +344,7 @@ public class MenuRefactor extends MenuAbstract {
                     continue;
 
                 for(int index=references.size()-1; index>=0; index--) {
-                    GrammarSyntaxReference ref = (GrammarSyntaxReference)references.get(index);
+                    ElementReference ref = (ElementReference)references.get(index);
                     if(ref.token.getAttribute().equals(ruleName)) {
                         mutator.replace(ref.token.getStartIndex(), ref.token.getEndIndex(), ruleContent);
                     }
@@ -364,7 +364,7 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     public void deleteRuleAtIndex(int index) {
-        GrammarSyntaxRule r = editor.rules.getEnclosingRuleAtPosition(index);
+        ElementRule r = editor.rules.getEnclosingRuleAtPosition(index);
         if(r != null)
             editor.replaceText(r.getStartIndex(), r.getEndIndex(), "");
     }
@@ -374,7 +374,7 @@ public class MenuRefactor extends MenuAbstract {
         Point p = editor.getTextEditor().getLineTextPositionsAtTextPosition(getCaretPosition());
         int insertionIndex = p.y;
 
-        GrammarSyntaxRule rule = editor.rules.getEnclosingRuleAtPosition(getCaretPosition());
+        ElementRule rule = editor.rules.getEnclosingRuleAtPosition(getCaretPosition());
         if(rule != null) {
             if(rule.lexer) {
                 if(lexer) {
@@ -382,13 +382,13 @@ public class MenuRefactor extends MenuAbstract {
                     insertionIndex = rule.getEndIndex();
                 } else {
                     // Add new rule after the last parser rule
-                    GrammarSyntaxRule last = editor.rules.getLastParserRule();
+                    ElementRule last = editor.rules.getLastParserRule();
                     if(last != null) insertionIndex = last.getEndIndex();
                 }
             } else {
                 if(lexer) {
                     // Add new rule after the last lexer rule
-                    GrammarSyntaxRule last = editor.rules.getLastLexerRule();
+                    ElementRule last = editor.rules.getLastLexerRule();
                     if(last != null) {
                         insertionIndex = last.getEndIndex();
                     } else {

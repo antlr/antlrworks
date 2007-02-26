@@ -318,7 +318,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
                 if(n == null)
                     return "";
 
-                GrammarSyntaxRule r = n.rule;
+                ElementRule r = n.rule;
                 if(r == null || !r.hasErrors())
                     return "";
                 else
@@ -729,15 +729,15 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return rules.getSortedRules();
     }
 
-    public List<GrammarSyntaxBlock> getBlocks() {
+    public List<ElementBlock> getBlocks() {
         return parserEngine.getBlocks();
     }
 
-    public List<GrammarSyntaxAction> getActions() {
+    public List<ElementAction> getActions() {
         return parserEngine.getActions();
     }
 
-    public List<GrammarSyntaxReference> getReferences() {
+    public List<ElementReference> getReferences() {
         return parserEngine.getReferences();
     }
 
@@ -754,14 +754,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         refreshMainMenuBar();
     }
 
-    public GrammarSyntaxReference getCurrentReference() {
+    public ElementReference getCurrentReference() {
         return getReferenceAtPosition(getCaretPosition());
     }
 
-    public GrammarSyntaxReference getReferenceAtPosition(int pos) {
-        List<GrammarSyntaxReference> refs = getReferences();
+    public ElementReference getReferenceAtPosition(int pos) {
+        List<ElementReference> refs = getReferences();
         for(int index=0; index<refs.size(); index++) {
-            GrammarSyntaxReference ref = refs.get(index);
+            ElementReference ref = refs.get(index);
             if(ref.containsIndex(pos))
                 return ref;
         }
@@ -785,15 +785,15 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return null;
     }
 
-    public GrammarSyntaxRule getCurrentRule() {
+    public ElementRule getCurrentRule() {
         return rules.getEnclosingRuleAtPosition(getCaretPosition());
     }
 
-    public GrammarSyntaxAction getCurrentAction() {
-        List<GrammarSyntaxAction> actions = parserEngine.getActions();
+    public ElementAction getCurrentAction() {
+        List<ElementAction> actions = parserEngine.getActions();
         int position = getCaretPosition();
         for(int index=0; index<actions.size(); index++) {
-            GrammarSyntaxAction action = actions.get(index);
+            ElementAction action = actions.get(index);
             if(action.containsIndex(position))
                 return action;
         }
@@ -805,7 +805,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void setCaretPosition(int position, boolean animate) {
-        GrammarSyntaxRule rule = rules.getEnclosingRuleAtPosition(position);
+        ElementRule rule = rules.getEnclosingRuleAtPosition(position);
         if(rule != null && !rule.isExpanded()) {
             foldingManager.toggleFolding(rule);
         }
@@ -837,7 +837,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public void updateVisualization(boolean immediate) {
         if(visual.isEnable()) {
-            GrammarSyntaxRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
+            ElementRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
             if(r == null) {
                 visual.setPlaceholder("Select a rule to display its syntax diagram");
             } else {
@@ -1080,7 +1080,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             Collections.sort(sortedRules);
 
             for(Iterator iterator = sortedRules.iterator(); iterator.hasNext(); ) {
-                GrammarSyntaxRule rule = (GrammarSyntaxRule)iterator.next();
+                ElementRule rule = (ElementRule)iterator.next();
                 if(rule.name.toLowerCase().startsWith(partialWord) && !matchingRules.contains(rule.name))
                     matchingRules.add(rule.name);
             }
@@ -1091,7 +1091,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             Collections.sort(sortedUndefinedReferences);
 
             for(Iterator iterator = sortedUndefinedReferences.iterator(); iterator.hasNext(); ) {
-                GrammarSyntaxReference ref = (GrammarSyntaxReference)iterator.next();
+                ElementReference ref = (ElementReference)iterator.next();
                 String attr = ref.token.getAttribute();
                 if(attr.toLowerCase().startsWith(partialWord)
                         && !attr.equals(partialWord)
@@ -1164,7 +1164,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         // is deleted (for example), the idea might be displayed before
         // the parser was able to complete
         // display(e.getDot());
-        GrammarSyntaxRule rule = rules.selectRuleInTreeAtPosition(index);
+        ElementRule rule = rules.selectRuleInTreeAtPosition(index);
         if(rule == null || rule.name == null) {
             updateVisualization(false);
             lastSelectedRule = null;

@@ -34,7 +34,7 @@ package org.antlr.works.visualization;
 import org.antlr.analysis.NFAState;
 import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.GrammarSyntaxRule;
+import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.visualization.graphics.GFactory;
@@ -50,11 +50,11 @@ public class VisualDrawing extends ATEThread {
     protected GFactory factory = new GFactory();
 
     protected String text;
-    protected GrammarSyntaxRule rule;
+    protected ElementRule rule;
 
     protected String threadText;
-    protected GrammarSyntaxRule threadRule;
-    protected GrammarSyntaxRule threadLastProcessedRule;
+    protected ElementRule threadRule;
+    protected ElementRule threadLastProcessedRule;
 
     protected Map cacheGraphs = new HashMap();
 
@@ -73,7 +73,7 @@ public class VisualDrawing extends ATEThread {
         awakeThread(500);
     }
 
-    public synchronized void setRule(GrammarSyntaxRule rule, boolean immediate) {
+    public synchronized void setRule(ElementRule rule, boolean immediate) {
         this.rule = rule;
         awakeThread(immediate?0:500);
     }
@@ -166,7 +166,7 @@ public class VisualDrawing extends ATEThread {
         refresh();
     }
 
-    protected synchronized void createGraphsForRule(GrammarSyntaxRule rule) throws Exception {
+    protected synchronized void createGraphsForRule(ElementRule rule) throws Exception {
         List graphs = (List)cacheGraphs.get(rule);
         if(graphs == null) {
             factory.setOptimize(!AWPrefs.getDebugDontOptimizeNFA());

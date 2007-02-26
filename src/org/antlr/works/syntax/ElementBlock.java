@@ -51,7 +51,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *
  */
-public class GrammarSyntaxBlock {
+public class ElementBlock extends ElementScopable {
 
     public String name;
     public ATEToken start;
@@ -60,16 +60,14 @@ public class GrammarSyntaxBlock {
     public boolean isTokenBlock = false;
     public boolean isOptionsBlock = false;
 
-    private List<ATEToken> internalTokens;
+    public List<ATEToken> internalTokens;
     private List<ATEToken> declaredTokens;
 
     private String tokenVocab;
 
-    public GrammarSyntaxBlock(String name, ATEToken start, ATEToken end, List<ATEToken> tokens) {
+    public ElementBlock(String name, ATEToken start) {
         this.name = name;
         this.start = start;
-        this.end = end;
-        this.internalTokens = new ArrayList<ATEToken>(tokens);
     }
 
     /**

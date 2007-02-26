@@ -1,10 +1,10 @@
 package org.antlr.works.syntax;
 
-import org.antlr.works.ate.syntax.misc.ATEScope;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class GSScopable implements ATEScope {
+public class ElementGroup {
 
-    protected ATEScope scope;
+    public String name;
+    public int ruleIndex = -1;
+    public boolean openGroup = false;
+    public ATEToken token;
 
-    public void setScope(ATEScope scope) {
-        this.scope = scope;
+    public ElementGroup(String name, int ruleIndex, ATEToken token) {
+        this.name = name;
+        this.ruleIndex = ruleIndex;
+        this.token = token;
+        this.openGroup = true;
     }
 
-    public ATEScope getScope() {
-        return scope;
+    public ElementGroup(int ruleIndex, ATEToken token) {
+        this.ruleIndex = ruleIndex;
+        this.token = token;
+        this.openGroup = false;
     }
+
+    public String toString() {
+        return "Group "+name+", open ="+openGroup+", ruleIndex = "+ruleIndex;
+    }
+
 }

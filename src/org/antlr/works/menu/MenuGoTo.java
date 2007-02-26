@@ -35,7 +35,7 @@ import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.GrammarSyntaxReference;
+import org.antlr.works.syntax.ElementReference;
 
 import javax.swing.*;
 import java.util.Set;
@@ -54,7 +54,7 @@ public class MenuGoTo extends MenuAbstract {
     public void goToDeclaration() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_DECLARATION);
 
-        GrammarSyntaxReference ref = editor.getCurrentReference();
+        ElementReference ref = editor.getCurrentReference();
         if(ref == null) return;
 
         for(ATEToken decl : editor.parserEngine.getDecls()) {

@@ -36,121 +36,50 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class GrammarSyntaxLexer extends ATESyntaxLexer {
 
-    public static final int TOKEN_BLOCK = 100;
-    public static final int TOKEN_COLON = 101;
-    public static final int TOKEN_SEMI = 102;
-    public static final int TOKEN_LPAREN = 103;
-    public static final int TOKEN_RPAREN = 104;
-    public static final int TOKEN_REFERENCE = 105;
-    public static final int TOKEN_LABEL = 107;
-    public static final int TOKEN_ST_STRING = 108;
-    public static final int TOKEN_BLOCK_LABEL = 109;
-    public static final int TOKEN_BLOCK_LIMIT = 112;
-    public static final int TOKEN_REWRITE = 110;
-    public static final int TOKEN_DECL = 111;
+    public static final int TOKEN_REFERENCE = 100;
+    public static final int TOKEN_LABEL = 101;
+    public static final int TOKEN_ST_STRING = 102;
+    public static final int TOKEN_BLOCK_LABEL = 103;
+    public static final int TOKEN_BLOCK_LIMIT = 104;
+    public static final int TOKEN_REWRITE = 105;
+    public static final int TOKEN_DECL = 106;
 
-    protected void tokenize() {
-        while(nextCharacter()) {
-            ATEToken token = null;
-
-            if(c0 == '\'')
-                token = matchSingleQuoteString();
-            else if(c0 == '\"')
-                token = matchDoubleQuoteString();
-            else if(c0 == '/' && c1 == '/')
-                token = matchSingleComment();
-            else if(c0 == '/' && c1 == '*')
-                token = matchComplexComment();
-            else if(c0 == '-' && c1 == '>')
-                token = createNewToken(TOKEN_REWRITE, position, position+1);
-            /*else if(c0 == '{')
-                token = matchBlock('{', '}');
-            else if(c0 == '[')
-                token = matchBlock('[', ']');
-            else if(c0 == ':')
-                token = createNewToken(TOKEN_COLON);
-            else if(c0 == ';')
-                token = createNewToken(TOKEN_SEMI); */
-            else if(isLetter())
-                token = matchID();
-            else if(c0 == '@')
-                token = matchLabel();
-            /*else if(c0 == '(')
-                token = createNewToken(TOKEN_LPAREN);
-            else if(c0 == ')')
-                token = createNewToken(TOKEN_RPAREN); */
-            else if(!isWhitespace())
-                token = createNewToken(TOKEN_CHAR);
-
-            addToken(token);
+    @Override
+    protected ATEToken customMatch() {
+        if(c0 == '@') {
+            return matchID();
+        } else if(c0 == '-' && c1 == '>') {
+            return createNewToken(TOKEN_REWRITE, position, position+1);
+        } else {
+            return null;
         }
     }
 
-    /**
-     * Matches a label:
-     *
-     * @parser
-     * @lexer::header
-     *
-     */
-    private ATEToken matchLabel() {
+    @Override
+    protected ATEToken matchID() {
         int sp = position;
-        while(nextCharacter()) {
-            if(isID(c1) || c1 == ':') {
-                continue;
-            } else {
-                return createNewToken(TOKEN_BLOCK_LABEL, sp);
-            }
-        }
-        return null;
-    }
-
-    /*public ATEToken matchBlock(char start, char end) {
-        // Skip all strings, comments and embedded blocks
-        int sp = position;
-        int embedded = 0;
-        int startLineNumber = lineNumber;
-        int startLineIndex = lineIndex;
-
-        List internalTokens = new ArrayList();
-
-        while(nextCharacter()) {
-            ATEToken token = null;
-
-            if(c0 == '\'') {
-                token = matchSingleQuoteString();
-            } else if(c0 == '\"') {
-                token = matchDoubleQuoteString();
-            } else if(c0 == '/' && c1 == '/') {
-                token = matchSingleComment();
-            } else if(c0 == '/' && c1 == '*') {
-                token = matchComplexComment();
-            } else if(c0 == start) {
-                embedded++;
-            } else if(c0 == end) {
-                if(embedded == 0) {
-                    GrammarSyntaxToken t = (GrammarSyntaxToken)createNewToken(GrammarSyntaxLexer.TOKEN_BLOCK, sp, position+1, startLineNumber, lineNumber, startLineIndex, lineIndex);
-                    t.setInternalTokens(internalTokens);
-                    return t;
+        if(c0 == '@') {
+            // This kind of ID can contain ':', for example:
+            // @header::lexer
+            while(nextCharacter()) {
+                if(!isID(c0) && c0 != ':') {
+                    break;
                 }
-                else
-                    embedded--;
-            } else if(c0 == '$' || c0 == '%') {
-                // Parse also all internal action references
-                token = createNewToken(TOKEN_CHAR);
             }
-
-            if(token != null)
-                internalTokens.add(token);
+        } else {
+            // Match regular ID
+            while(isID(c1) && nextCharacter()) {
+            }
         }
-        return null;
-    }       */
+        return createNewToken(TOKEN_ID, sp);
+    }
 
+    @Override
     public ATEToken createNewToken(int type, int start, int end,
-                                int startLineNumber, int endLineNumber,
-                                int startLineIndex, int endLineIndex)
+                                   int startLineNumber, int endLineNumber,
+                                   int startLineIndex, int endLineIndex)
     {
-        return new GrammarSyntaxToken(type, start, end, startLineNumber, endLineNumber, startLineIndex, endLineIndex, text);
+        return new ElementToken(type, start, end, startLineNumber, endLineNumber, startLineIndex, endLineIndex, text);
     }
 
 
