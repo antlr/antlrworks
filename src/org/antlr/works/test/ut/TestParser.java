@@ -1,18 +1,13 @@
-package org.antlr.works.tests;
+package org.antlr.works.test.ut;
 
-import edu.usfca.xj.foundation.XJUtils;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.grammar.RefactorEngine;
-import org.antlr.works.grammar.RefactorMutator;
 import org.antlr.works.syntax.ElementBlock;
 import org.antlr.works.syntax.ElementReference;
-import org.antlr.works.syntax.GrammarSyntaxLexer;
-import org.antlr.works.syntax.GrammarSyntaxParser;
+import org.antlr.works.test.AbstractTest;
+import org.antlr.works.test.TestConstants;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,17 +42,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class TestsParser extends TestCase {
-
-    GrammarSyntaxLexer lexer = new GrammarSyntaxLexer();
-    GrammarSyntaxParser parser = new GrammarSyntaxParser();
+public class TestParser extends AbstractTest {
 
     public static void main(String[] args) {
-        new TestRunner().doRun(new TestSuite(TestsParser.class));
+        new TestRunner().doRun(new TestSuite(TestParser.class));
     }
 
-    public void testSyntaxBlock() throws IOException {
-        setup("blocks.txt");
+    public void testSyntaxBlock() throws Exception {
+        parseFile(TestConstants.BLOCKS);
 
         assertEquals("grammar name", "demo", parser.name.getName());
 
@@ -68,8 +60,8 @@ public class TestsParser extends TestCase {
         assertEquals("tokenVocab", "DataViewExpressions", optionsBlock.getTokenVocab());
     }
 
-    public void testReferences() throws IOException {
-        setup("references.txt");
+    public void testReferences() throws Exception {
+        parseFile(TestConstants.REFERENCES);
 
         assertEquals("grammar name", "references", parser.name.getName());
 
@@ -77,36 +69,44 @@ public class TestsParser extends TestCase {
         assertEquals("references", Arrays.asList("FOO", "BAR", "OTHER"), getRefsAsString(parser.references));
     }
 
-    public void testRenameReference() throws IOException {
-        setup("references.txt");
-
-        assertEquals("grammar name", "references", parser.name.getName());
-
-        String originalText = getTextFromFile("references.txt");
-
-        TestRefactorMutator mutator = new TestRefactorMutator();
-        RefactorEngine engine = new RefactorEngine();
-        engine.setMutator(mutator);
-        engine.setTokens(parser.getTokens());
-
-        mutator.setText(originalText);
-        engine.renameToken(parser.decls.get(1), "OTHER_2");
-
-        assertEquals("rename OTHER -> OTHER_2", getTextFromFile("rename_other.txt"), mutator.getText());
-
-        mutator.setText(originalText);
-        engine.renameToken(parser.decls.get(4), "RAB");
-
-        assertEquals("rename BAR -> RAB", getTextFromFile("rename_bar.txt"), mutator.getText());
+    public void testMantra() throws Exception {
+        parseFile(TestConstants.MANTRA);
+        assertParserProperties(65, 32, 28, 115, 230);
     }
 
-    private void setup(String fileName) throws IOException {
-        lexer.tokenize(getTextFromFile(fileName));
-        parser.parse(lexer.getTokens());
+    public void testCodeGenPhase() throws Exception {
+        parseFile(TestConstants.CODE_GEN_PHASE);
+        assertParserProperties(40, 18, 7, 40, 175);
     }
 
-    private String getTextFromFile(String fileName) throws IOException {
-        return XJUtils.getStringFromFile(getClass().getResource(fileName).getFile());
+    public void testResolvePhase() throws Exception {
+        parseFile(TestConstants.RESOLVE_PHASE);
+        assertParserProperties(36, 14, 7, 36, 160);
+    }
+
+    public void testSemanticPhase() throws Exception {
+        parseFile(TestConstants.SEMANTIC_PHASE);
+        assertParserProperties(36, 36, 23, 36, 156);
+
+//        printParserProperties();
+    }
+
+    /*********************** HELPER ***************************************/
+
+    private void printParserProperties() {
+        System.out.println("Rules="+parser.rules.size());
+        System.out.println("Actions="+parser.actions.size());
+        System.out.println("Blocks="+parser.blocks.size());
+        System.out.println("Decls="+parser.decls.size());
+        System.out.println("Refs="+parser.references.size());
+    }
+
+    private void assertParserProperties(int rules, int actions, int blocks, int decls, int references) {
+        assertEquals("Number of rules", rules, parser.rules.size());
+        assertEquals("Number of actions", actions, parser.actions.size());
+        assertEquals("Number of blocks", blocks, parser.blocks.size());
+        assertEquals("Number of declarations", decls, parser.decls.size());
+        assertEquals("Number of references", references, parser.references.size());
     }
 
     private List<String> getDeclsAsString(List<ATEToken> tokens) {
@@ -125,31 +125,4 @@ public class TestsParser extends TestCase {
         return names;
     }
 
-    private class TestRefactorMutator implements RefactorMutator {
-        public StringBuffer mutableText;
-
-        public TestRefactorMutator() {
-        }
-
-        public void replace(int start, int end, String s) {
-            mutableText.replace(start, end, s);
-        }
-
-        public void insert(int index, String s) {
-            mutableText.insert(index, s);
-        }
-
-        public void delete(int start, int end) {
-            mutableText.delete(start, end);
-        }
-
-        public void setText(String text) {
-            mutableText = new StringBuffer(text);
-        }
-
-        public String getText() {
-            return mutableText.toString();
-        }
-    }
-    
 }

@@ -137,7 +137,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         mark();
         ElementBlock block = matchBlock();
         if(block != null) {
-            blocks.add(block);
             return true;
         } else {
             rewind();
@@ -176,7 +175,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     private ElementGrammarName matchName() {
         if(isID(0, "grammar")) {
             ATEToken start = T(0);
-            nextToken(); // skip 'grammar'
+            if(!nextToken()) return null;
 
             // Check if the grammar has a type (e.g. lexer, parser, tree, etc)
             ATEToken type = null;
@@ -265,6 +264,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             beginBlock.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
             T(0).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
             start.type = GrammarSyntaxLexer.TOKEN_BLOCK_LABEL;
+            blocks.add(block);
         } else {
             return null;
         }

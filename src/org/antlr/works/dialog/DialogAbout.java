@@ -55,7 +55,7 @@ public class DialogAbout extends XJPanel {
         initComponents();
 
         appIconButton.setIcon(IconManager.shared().getIconApplication());
-        copyrightLabel.setText("Copyright (c) 2005-2006 Jean Bovet & Terence Parr");
+        copyrightLabel.setText("Copyright (c) 2005-2007 Jean Bovet & Terence Parr");
 
         versionLabel.setText("Version "+XJApplication.getAppVersionLong());
 
@@ -73,8 +73,8 @@ public class DialogAbout extends XJPanel {
         tableModel.fireTableDataChanged();
 
         resetAcknowledge();
-        addAcknowledge("ANTLR and StringTemplate are (c) 1989-2006 Terence Parr");
-        addAcknowledge("XJLibrary is (c) 2004-2006 Jean Bovet");
+        addAcknowledge("ANTLR and StringTemplate are (c) 1989-2007 Terence Parr");
+        addAcknowledge("XJLibrary is (c) 2004-2007 Jean Bovet");
         addAcknowledge("Portion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch");
         addAcknowledge("Portion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber");
         addAcknowledge("B-spline algorithm is (c) Leen Ammeraal <http://home.wxs.nl/~ammeraal/grjava.html>");
