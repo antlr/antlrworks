@@ -1,13 +1,10 @@
 package org.antlr.works.syntax;
 
-import org.antlr.works.ate.syntax.misc.ATEToken;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.antlr.works.ate.syntax.misc.ATEScope;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -35,48 +32,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarSyntaxName {
+public abstract class GSScopable implements ATEScope {
 
-    public static final List<String> types;
+    protected ATEScope scope;
 
-    public static final int COMBINED = 0;
-    public static final int PARSER = 1;
-    public static final int LEXER = 2;
-    public static final int TREEPARSER = 3;
-
-    public ATEToken name;
-    public ATEToken start;
-    public ATEToken end;
-    public ATEToken type;
-
-    static {
-        types = new ArrayList<String>();
-        types.add("combined");
-        types.add("parser");
-        types.add("lexer");
-        types.add("tree");
+    public void setScope(ATEScope scope) {
+        this.scope = scope;
     }
 
-    public GrammarSyntaxName(ATEToken name, ATEToken start, ATEToken end, ATEToken type) {
-        this.name = name;
-        this.start = type==null?start:type;
-        this.end = end;
-        this.type = type;
+    public ATEScope getScope() {
+        return scope;
     }
-
-    public int getType() {
-        if(type != null)
-            return types.indexOf(type.getAttribute());
-        else
-            return COMBINED;
-    }
-
-    public String getName() {
-        return name.getAttribute();
-    }
-    
-    public static boolean isKnownType(String type) {
-        return types.contains(type);
-    }
-    
 }

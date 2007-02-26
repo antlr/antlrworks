@@ -60,6 +60,7 @@ import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.Console;
+import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.HelpManager;
 import org.antlr.works.utils.Localizable;
 
@@ -200,15 +201,15 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         System.setErr(ps);
         try {
             ErrorManager.setTool(new Tool());
-            ErrorManager.setErrorListener(ErrorManager.getErrorListener());
+            //ErrorManager.setErrorListener(ErrorManager.getErrorListener());
+            ErrorManager.setErrorListener(ErrorListener.shared());
         } catch (Throwable e) {
             XJAlert.display(null, "Fatal Error", "ANTLRWorks will quit now because ANTLR reported an error:\n"+bos.getMessage());
             System.exit(0);
         }
 
-        if(bos.getMessage().length() > 0) {
-            XJAlert.display(null, "Fatal Error", "ANTLRWorks will quit now because ANTLR reported an error:\n"+bos.getMessage());
-            System.exit(0);
+        if(ErrorListener.shared().hasErrors()) {
+            XJAlert.display(null, "Error", "ANTLRWorks will continue to launch but ANTLR reported an error:\n"+bos.getMessage());
         }
 
         System.setErr(os);

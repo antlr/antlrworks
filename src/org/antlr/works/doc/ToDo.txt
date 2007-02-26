@@ -1,6 +1,8 @@
 
 * Prio 1
 
+- rewrite: check all "todo check"
+
 - prefs: backup file
 - button to autofit any syntax diagram/other to the size of visible area
 - prefs to display output dir dialog before generating grammar

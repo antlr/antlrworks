@@ -5,9 +5,10 @@ import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.grammar.RefactorEngine;
+import org.antlr.works.grammar.RefactorMutator;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.GrammarSyntaxLexer;
 import org.antlr.works.syntax.GrammarSyntaxReference;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 import org.antlr.works.utils.Utils;
@@ -49,10 +50,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class MenuRefactor extends MenuAbstract {
 
-    protected EditorTextMutator mutator;
+    private RefactorEngine engine;
+    private EditorTextMutator mutator;
 
     public MenuRefactor(CEditorGrammar editor) {
         super(editor);
+        engine = new RefactorEngine();
     }
 
     public void rename() {
@@ -66,27 +69,8 @@ public class MenuRefactor extends MenuAbstract {
                 JOptionPane.QUESTION_MESSAGE, null, null, token.getAttribute());
         if(s != null && !s.equals(token.getAttribute())) {
             beginRefactor("Rename");
-            renameToken(token, s);
+            engine.renameToken(token, s);
             endRefactor();
-        }
-    }
-
-    protected void renameToken(ATEToken t, String name) {
-        List tokens = editor.getTokens();
-        String attr = t.getAttribute();
-
-        boolean renameRefRule = t.type == GrammarSyntaxLexer.TOKEN_REFERENCE || t.type == GrammarSyntaxLexer.TOKEN_RULE;
-
-        for(int index = tokens.size()-1; index>0; index--) {
-            ATEToken token = (ATEToken) tokens.get(index);
-
-            if(token.getAttribute().equals(attr)) {
-                if(token.type == t.type || renameRefRule &&
-                        (token.type == GrammarSyntaxLexer.TOKEN_REFERENCE || token.type == GrammarSyntaxLexer.TOKEN_RULE))
-                {
-                    mutator.replace(token.getStartIndex(), token.getEndIndex(), name);
-                }
-            }
         }
     }
 
@@ -448,6 +432,8 @@ public class MenuRefactor extends MenuAbstract {
     protected void beginRefactor(String name) {
         editor.beginGroupChange(name);
         mutator = new EditorTextMutator();
+        engine.setMutator(mutator);
+        engine.setTokens(editor.getTokens());
     }
 
     protected void endRefactor() {
@@ -464,7 +450,7 @@ public class MenuRefactor extends MenuAbstract {
         editor.getTextEditor().setCaretPosition(Math.min(oldCaretPosition, text.length()), false, false);
     }
 
-    protected class EditorTextMutator {
+    public class EditorTextMutator implements RefactorMutator {
 
         public StringBuffer mutableText;
 

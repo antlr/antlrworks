@@ -34,21 +34,21 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarSyntaxAction implements EditorPersistentObject, ATEFoldingEntity {
+public class GrammarSyntaxAction extends GSScopable implements EditorPersistentObject, ATEFoldingEntity {
 
     public GrammarSyntaxRule rule;
-    public ATEToken token;
+    private ATEToken start;
+    public ATEToken end;
     public int actionNum;
-    public boolean expanded = true;
+    private boolean expanded = true;
 
-    public GrammarSyntaxAction(GrammarSyntaxRule rule, ATEToken token, int actionNum) {
+    public GrammarSyntaxAction(GrammarSyntaxRule rule, ATEToken start) {
         this.rule = rule;
-        this.token = token;
-        this.actionNum = actionNum;
+        this.start = start;
     }
 
     public boolean containsIndex(int index) {
-        return index >= token.getStartIndex() && index <= token.getEndIndex();
+        return index >= start.getStartIndex() && index <= end.getEndIndex();
     }
 
     public boolean equals(Object other) {
@@ -56,7 +56,8 @@ public class GrammarSyntaxAction implements EditorPersistentObject, ATEFoldingEn
     }
 
     public int getUniqueIdentifier() {
-        return (rule.name+token.getAttribute()+actionNum).hashCode();
+        String actionText = start.getText().substring(start.start, end.end);
+        return (rule.name+actionText+actionNum).hashCode();
     }
 
     public void foldingEntitySetExpanded(boolean expanded) {
@@ -72,23 +73,23 @@ public class GrammarSyntaxAction implements EditorPersistentObject, ATEFoldingEn
     }
 
     public int foldingEntityGetStartParagraphIndex() {
-        return token.getStartIndex();
+        return start.getStartIndex();
     }
 
     public int foldingEntityGetStartIndex() {
-        return token.getStartIndex();
+        return start.getStartIndex();
     }
 
     public int foldingEntityGetEndIndex() {
-        return token.getEndIndex();
+        return end.getEndIndex();
     }
 
     public int foldingEntityGetStartLine() {
-        return token.startLineNumber;
+        return start.startLineNumber;
     }
 
     public int foldingEntityGetEndLine() {
-        return token.endLineNumber;
+        return end.endLineNumber;
     }
 
     public String foldingEntityPlaceholderString() {
@@ -104,7 +105,7 @@ public class GrammarSyntaxAction implements EditorPersistentObject, ATEFoldingEn
     }
 
     public Object getPersistentID() {
-        return new Integer(getUniqueIdentifier());
+        return getUniqueIdentifier();
     }
 
     public void persistentAssign(EditorPersistentObject otherObject) {

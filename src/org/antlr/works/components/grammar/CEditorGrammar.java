@@ -15,6 +15,7 @@ import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
+import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.completion.AutoCompletionMenu;
@@ -159,7 +160,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     protected String lastSelectedRule;
     protected CEditorGrammarDelegate delegate;
 
-    protected List tabs = new ArrayList();
+    protected List<EditorTab> tabs = new ArrayList<EditorTab>();
     protected AfterParseOperations afterParserOp;
 
     /* Grammar */
@@ -462,7 +463,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public int getSimilarTab(EditorTab tab) {
         for (int i = 0; i < tabs.size(); i++) {
-            EditorTab t = (EditorTab) tabs.get(i);
+            EditorTab t = tabs.get(i);
             if(t.getTabName().equals(tab.getTabName()))
                 return i;
         }
@@ -470,7 +471,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public EditorTab getSelectedTab() {
-        return (EditorTab)tabs.get(tabbedPane.getSelectedIndex());
+        return tabs.get(tabbedPane.getSelectedIndex());
     }
 
     public void selectTab(Component c) {
@@ -728,23 +729,23 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return rules.getSortedRules();
     }
 
-    public List getBlocks() {
+    public List<GrammarSyntaxBlock> getBlocks() {
         return parserEngine.getBlocks();
     }
 
-    public List getActions() {
+    public List<GrammarSyntaxAction> getActions() {
         return parserEngine.getActions();
     }
 
-    public List getReferences() {
+    public List<GrammarSyntaxReference> getReferences() {
         return parserEngine.getReferences();
     }
 
-    public List getTokens() {
+    public List<ATEToken> getTokens() {
         return textEditor.getTokens();
     }
 
-    public List getLines() {
+    public List<ATELine> getLines() {
         return textEditor.getLines();
     }
 
@@ -758,9 +759,9 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public GrammarSyntaxReference getReferenceAtPosition(int pos) {
-        List refs = getReferences();
+        List<GrammarSyntaxReference> refs = getReferences();
         for(int index=0; index<refs.size(); index++) {
-            GrammarSyntaxReference ref = (GrammarSyntaxReference)refs.get(index);
+            GrammarSyntaxReference ref = refs.get(index);
             if(ref.containsIndex(pos))
                 return ref;
         }
@@ -772,12 +773,12 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public ATEToken getTokenAtPosition(int pos) {
-        List tokens = getTokens();
+        List<ATEToken> tokens = getTokens();
         if(tokens == null)
             return null;
 
         for(int index=0; index<tokens.size(); index++) {
-            ATEToken token = (ATEToken)tokens.get(index);
+            ATEToken token = tokens.get(index);
             if(token.containsIndex(pos))
                 return token;
         }
@@ -789,10 +790,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public GrammarSyntaxAction getCurrentAction() {
-        List actions = parserEngine.getActions();
+        List<GrammarSyntaxAction> actions = parserEngine.getActions();
         int position = getCaretPosition();
         for(int index=0; index<actions.size(); index++) {
-            GrammarSyntaxAction action = (GrammarSyntaxAction)actions.get(index);
+            GrammarSyntaxAction action = actions.get(index);
             if(action.containsIndex(position))
                 return action;
         }
@@ -1070,7 +1071,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             return null;
 
         partialWord = partialWord.toLowerCase();
-        List matchingRules = new ArrayList();
+        List<String> matchingRules = new ArrayList<String>();
 
         if(rules.isRuleAtIndex(getCaretPosition())) {
             // Inside a rule - show all rules in alphabetical order
@@ -1186,12 +1187,12 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         // means that the grammar is probably an ANTLR version 2 grammar.
 
         boolean version2 = false;
-        List tokens = parserEngine.getTokens();
+        List<ATEToken> tokens = parserEngine.getTokens();
         for(int index=0; index<tokens.size(); index++) {
-            ATEToken t = (ATEToken)tokens.get(index);
+            ATEToken t = tokens.get(index);
             if(t.type == ATESyntaxLexer.TOKEN_ID && t.getAttribute().equals("class")) {
                 if(index+2<tokens.size()) {
-                    ATEToken t2 = (ATEToken)tokens.get(index+2);
+                    ATEToken t2 = tokens.get(index+2);
                     if(t2.type == ATESyntaxLexer.TOKEN_ID && t2.getAttribute().equals("extends")) {
                         version2 = true;
                         break;
@@ -1258,7 +1259,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public Map getPersistentData() {
-        Map data = new HashMap();
+        Map<String,Object> data = new HashMap<String, Object>();
         if(rulesTextSplitPane != null)
             data.put(KEY_SPLITPANE_A, new Integer(rulesTextSplitPane.getDividerLocation()));
         if(upDownSplitPane != null)

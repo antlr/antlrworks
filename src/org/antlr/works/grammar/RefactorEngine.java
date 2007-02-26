@@ -1,10 +1,13 @@
-package org.antlr.works.syntax;
+package org.antlr.works.grammar;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.syntax.GrammarSyntaxLexer;
+
+import java.util.List;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,16 +35,35 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarSyntaxPlainAction {
+public class RefactorEngine {
 
-    public String name;
-    public ATEToken start;
-    public ATEToken end;
-    
-    public GrammarSyntaxPlainAction(String name, ATEToken start, ATEToken end) {
-        this.name = name;
-        this.start = start;
-        this.end = end;
+    private List<ATEToken> tokens;
+    private RefactorMutator mutator;
+
+    public void setTokens(List<ATEToken> tokens) {
+        this.tokens = tokens;
+    }
+
+    public void setMutator(RefactorMutator mutator) {
+        this.mutator = mutator;
+    }
+
+    public boolean renameToken(ATEToken t, String name) {
+        String attr = t.getAttribute();
+
+        boolean renameRefRule = t.type == GrammarSyntaxLexer.TOKEN_REFERENCE || t.type == GrammarSyntaxLexer.TOKEN_DECL;
+
+        for(int index = tokens.size()-1; index>0; index--) {
+            ATEToken token = tokens.get(index);
+            if(!token.getAttribute().equals(attr)) continue;
+
+            if(token.type == t.type ||
+               renameRefRule && (token.type == GrammarSyntaxLexer.TOKEN_REFERENCE || token.type == GrammarSyntaxLexer.TOKEN_DECL))
+            {
+                mutator.replace(token.getStartIndex(), token.getEndIndex(), name);
+            }
+        }
+        return true;
     }
 
 }

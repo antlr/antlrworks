@@ -44,7 +44,7 @@ public class ATEToken implements Comparable {
     /** These two fiels are public because ATEPanel needs to access them
      * really quickly without using accessors. If anything needs to be changed,
      * modify the adjustTokens() method of ATEPanel.
-     */    
+     */
     public int start;
     public int end;
 
@@ -52,6 +52,7 @@ public class ATEToken implements Comparable {
 
     public int index;   // index inside the tokens list
     public boolean modified;    // true if the token has been modified in the text editor
+    public ATEScope scope;
 
     public ATEToken(int type, int start, int end,
                     int startLineNumber, int endLineNumber,
@@ -109,7 +110,7 @@ public class ATEToken implements Comparable {
     }
 
     public String toString() {
-        return "{ "+getAttribute()+" = "+type+" ("+start+", "+end+") }";
+        return getAttribute()+" <type="+type+", start="+start+", end="+end+">";
     }
 
     public static boolean isLexerName(String name) {

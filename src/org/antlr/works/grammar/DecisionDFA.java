@@ -5,7 +5,6 @@ import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.syntax.GrammarSyntaxLexer;
 import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import java.util.List;
@@ -73,6 +72,8 @@ public class DecisionDFA extends GrammarDOTTab {
      * @return The closest token of a decision point
      */
     public ATEToken findClosestDecisionToken() {
+        // todo check
+        /*
         ATEToken ct = editor.getCurrentToken();
         ATEToken lastToken = ct;
         List tokens = editor.getTokens();
@@ -90,7 +91,7 @@ public class DecisionDFA extends GrammarDOTTab {
                     nestedParen--;
             }
             lastToken = t;
-        }
+        } */
         return null;
     }
 

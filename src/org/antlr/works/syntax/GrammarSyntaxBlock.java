@@ -1,7 +1,5 @@
 package org.antlr.works.syntax;
 
-import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
-import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
 import java.util.ArrayList;
@@ -38,6 +36,21 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+/** A block is, for example:
+ *
+ * tokens { FOO="a"; OTHER; }
+ *
+ * or
+ *
+ * options
+ * {
+ *	 tokenVocab=DataViewExpressions;
+ *	 output=AST;
+ *	 ASTLabelType=CommonTree;
+ * }
+ *
+ *
+ */
 public class GrammarSyntaxBlock {
 
     public String name;
@@ -47,60 +60,87 @@ public class GrammarSyntaxBlock {
     public boolean isTokenBlock = false;
     public boolean isOptionsBlock = false;
 
-    public List internalTokens;
-    public String tokenVocab;
+    private List<ATEToken> internalTokens;
+    private List<ATEToken> declaredTokens;
 
-    public GrammarSyntaxBlock(String name, ATEToken start, ATEToken end) {
+    private String tokenVocab;
+
+    public GrammarSyntaxBlock(String name, ATEToken start, ATEToken end, List<ATEToken> tokens) {
         this.name = name;
         this.start = start;
         this.end = end;
+        this.internalTokens = new ArrayList<ATEToken>(tokens);
     }
 
-    public List getInternalTokens() {
-        if(internalTokens == null) {
-            String content = end.getAttribute();
-            content = content.substring(1, content.length());
-
-            GrammarSyntaxLexer lexer = new GrammarSyntaxLexer();
-            lexer.tokenize(content);
-
-            ParseInternalTokens p = new ParseInternalTokens();
-            p.parse(lexer.getTokens());
-
-            internalTokens = p.internalTokens;
+    /**
+     * Parse the content of the block to extract information that will be reused later
+     */
+    public void parse() {
+        if(name.equals(GrammarSyntaxParser.OPTIONS_BLOCK_NAME)) {
+            // Look only for the tokenVocab key/value pair.
+            parseForTokenVocab();
+            isOptionsBlock = true;
+        } else if(name.equals(GrammarSyntaxParser.TOKENS_BLOCK_NAME)) {
+            // Look for tokens
+            parseForTokens();
+            isTokenBlock = true;
         }
-        return internalTokens;
     }
 
-    public void parseOptionsBlock() {
-        List tokens = getInternalTokens();
-        for(int index=0; index<tokens.size(); index++) {
-            ATEToken t = (ATEToken)tokens.get(index);
-            if(t.getAttribute().equals("tokenVocab") && index+1<tokens.size()) {
-                t = (ATEToken) tokens.get(index+1);
+    /**
+     * Parses for the tokenVocab key/value pair of a block of type 'options'
+     */
+    private void parseForTokenVocab() {
+        for(int index=0; index<internalTokens.size(); index++) {
+            ATEToken t = internalTokens.get(index);
+            if(t.getAttribute().equals("tokenVocab") && index+2<internalTokens.size()) {
+                t = internalTokens.get(index+2);
                 tokenVocab = t.getAttribute();
+                //System.out.println(">> tokenVocab = "+tokenVocab);
             }
         }
+    }
+
+    /**
+     * Parses the internal tokens of a block of type 'tokens'.
+     *
+     * The tokens are considered as the following:
+     * TOKEN_A="value";
+     * TOKEN_B;
+     * ...
+     */
+    private void parseForTokens() {
+        declaredTokens = new ArrayList<ATEToken>();
+        for(int index=0; index<internalTokens.size(); index++) {
+            ATEToken t = internalTokens.get(index);
+            if(t.getAttribute().equals("=")) {
+                declaredTokens.add(internalTokens.get(index-1));
+                // skip the value and the semi
+                index += 2;
+            } else if(t.getAttribute().equals(";")) {
+                declaredTokens.add(internalTokens.get(index-1));
+                // skip the semi
+                index++;
+
+            }
+        }
+        //System.out.println("Declared tokens="+declaredTokens);
     }
 
     public String getTokenVocab() {
         return tokenVocab;
     }
 
-    public class ParseInternalTokens extends ATESyntaxParser {
-
-        public List internalTokens;
-
-        public void parseTokens() {
-            internalTokens = new ArrayList();
-            
-            while(nextToken()) {
-                if(T(0).type == ATESyntaxLexer.TOKEN_ID) {
-                    if(isChar(1, "=") || isTokenType(1, GrammarSyntaxLexer.TOKEN_SEMI))
-                        internalTokens.add(T(0));
-                }
-            }
-        }
-
+    public List<ATEToken> getDeclaredTokens() {
+        return declaredTokens;
     }
+
+    public List<String> getDeclaredTokensAsString() {
+        List<String> names = new ArrayList();
+        for(int t=0; t<declaredTokens.size(); t++) {
+            names.add(declaredTokens.get(t).getAttribute());
+        }
+        return names;
+    }
+
 }

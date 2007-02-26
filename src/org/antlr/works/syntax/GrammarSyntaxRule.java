@@ -2,7 +2,6 @@ package org.antlr.works.syntax;
 
 import org.antlr.works.ate.breakpoint.ATEBreakpointEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
-import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.EditorPersistentObject;
 import org.antlr.works.grammar.EngineGrammarError;
@@ -42,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, ATEFoldingEntity, ATEBreakpointEntity {
+public class GrammarSyntaxRule extends GSScopable implements Comparable, EditorPersistentObject, ATEFoldingEntity, ATEBreakpointEntity {
 
     public String name;
     public ATEToken start;
@@ -126,13 +125,14 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
     }
 
     public int getInternalTokensEndIndex() {
-        ATEToken token = (ATEToken)parser.getTokens().get(end.index-1);
+        ATEToken token = parser.getTokens().get(end.index-1);
         return token.getEndIndex();
     }
 
     public List getBlocks() {
         List blocks = new ArrayList();
-        ATEToken lastToken = null;
+        // todo check
+/*        ATEToken lastToken = null;
         for(int index=start.index; index<end.index; index++) {
             ATEToken token = (ATEToken)parser.getTokens().get(index);
             if(token.type == GrammarSyntaxLexer.TOKEN_BLOCK) {
@@ -142,7 +142,7 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
                 blocks.add(token);
             }
             lastToken = token;
-        }
+        }                     */
         return blocks;
     }
 
@@ -159,7 +159,8 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
         List alt = null;
         boolean findColon = true;
         int level = 0;
-        for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
+        // todo check
+/*        for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
             ATEToken token = (ATEToken)iter.next();
             if(findColon) {
                 if(token.getAttribute().equals(":")) {
@@ -180,7 +181,7 @@ public class GrammarSyntaxRule implements Comparable, EditorPersistentObject, AT
                 }
                 alt.add(token);
             }
-        }
+        }*/
         if(alt != null && !alt.isEmpty())
             alts.add(alt);
         return alts;

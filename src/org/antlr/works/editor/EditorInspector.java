@@ -6,10 +6,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.idea.IdeaAction;
 import org.antlr.works.idea.IdeaActionDelegate;
-import org.antlr.works.syntax.GrammarSyntaxName;
-import org.antlr.works.syntax.GrammarSyntaxReference;
-import org.antlr.works.syntax.GrammarSyntaxRule;
-import org.antlr.works.syntax.GrammarSyntaxToken;
+import org.antlr.works.syntax.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -54,8 +51,8 @@ public class EditorInspector {
         this.editor = editor;
     }
 
-    public List getErrors() {
-        List errors = new ArrayList();
+    public List<Item> getErrors() {
+        List<Item> errors = new ArrayList<Item>();
         discoverInvalidGrammarName(errors);
         discoverInvalidCharLiteralTokens(errors);
         discoverUndefinedReferences(errors);
@@ -63,39 +60,39 @@ public class EditorInspector {
         return errors;
     }
 
-    public List getWarnings() {
-        List warnings = new ArrayList();
+    public List<Item> getWarnings() {
+        List<Item> warnings = new ArrayList<Item>();
         discoverLeftRecursionRules(warnings);
         discoverLeftRecursiveRulesSet(warnings);
         return warnings;
     }
 
-    public List getErrorsAtIndex(int index) {
+    public List<Item> getErrorsAtIndex(int index) {
         return getItemsAtIndex(getErrors(), index);
     }
 
-    public List getWarningsAtIndex(int index) {
+    public List<Item> getWarningsAtIndex(int index) {
         return getItemsAtIndex(getWarnings(), index);
     }
 
-    protected List getAllItemsAtIndex(int index) {
-        List items = new ArrayList();
+    protected List<Item> getAllItemsAtIndex(int index) {
+        List<Item> items = new ArrayList<Item>();
         items.addAll(getErrorsAtIndex(index));
         items.addAll(getWarningsAtIndex(index));
         return items;
     }
 
-    protected List getItemsAtIndex(List items, int index) {
-        List filteredItems = new ArrayList();
+    protected List<Item> getItemsAtIndex(List<Item> items, int index) {
+        List<Item> filteredItems = new ArrayList<Item>();
         for(int i=0; i<items.size(); i++) {
-            Item item = (Item)items.get(i);
+            Item item = items.get(i);
             if(index >= item.startIndex && index <= item.endIndex)
                 filteredItems.add(item);
         }
         return filteredItems;
     }
 
-    protected void discoverInvalidGrammarName(List items) {
+    protected void discoverInvalidGrammarName(List<Item> items) {
         GrammarSyntaxName n = getGrammarName();
         String grammarFileName = getGrammarNameFromFile();
         if(n != null && grammarFileName != null && !grammarFileName.equals(n.getName())) {
@@ -120,14 +117,16 @@ public class EditorInspector {
         return XJUtils.getPathByDeletingPathExtension(filename);
     }
 
-    protected void discoverInvalidCharLiteralTokens(List items) {
-        List tokens = editor.getTokens();
+    protected void discoverInvalidCharLiteralTokens(List<Item> items) {
+        List<ATEToken> tokens = editor.getTokens();
         if(tokens == null)
             return;
 
         for(int index=0; index<tokens.size(); index++) {
-            ATEToken t = (ATEToken)tokens.get(index);
+            ATEToken t = tokens.get(index);
             if(t.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
+                if(t.scope != null && t.scope.getClass().equals(GrammarSyntaxAction.class)) continue;
+
                 Item item = new ItemInvalidCharLiteral();
                 item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
                         t.startLineNumber, Color.red,
@@ -135,42 +134,15 @@ public class EditorInspector {
                 items.add(item);
             }
         }
-
-        // @todo re-introduce if needed
-        /*List tokens = editor.getTokens();
-        if(tokens == null)
-            return;
-
-        for(int index=0; index<tokens.size(); index++) {
-            Token t = (Token)tokens.get(index);
-            if(t.type == Lexer.TOKEN_SINGLE_QUOTE_STRING) {
-                String a = t.getAttribute();
-                String c = a.substring(1, a.length()-1);
-                if(c.length() <= 1)
-                    continue;
-
-                if(c.length() == 2 && c.charAt(0) == '\\')
-                    continue;
-
-                if(c.length() == 6 && c.charAt(0) == '\\' && c.charAt(1) == 'u')
-                    continue;
-
-                Item item = new Item();
-                item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
-                        t.startLineNumber, Color.red,
-                        "Invalid character literal '"+t.getAttribute()+"'");
-                items.add(item);
-            }
-        }    */
     }
 
-    protected void discoverUndefinedReferences(List items) {
-        List undefinedRefs = editor.getSyntax().getUndefinedReferences();
+    protected void discoverUndefinedReferences(List<Item> items) {
+        List<GrammarSyntaxReference> undefinedRefs = editor.getSyntax().getUndefinedReferences();
         if(undefinedRefs == null)
             return;
 
         for(int index=0; index<undefinedRefs.size(); index++) {
-            GrammarSyntaxReference ref = (GrammarSyntaxReference)undefinedRefs.get(index);
+            GrammarSyntaxReference ref = undefinedRefs.get(index);
             Item item = new ItemUndefinedReference();
             item.setAttributes(ref.token, ref.token.getStartIndex(), ref.token.getEndIndex(),
                     ref.token.startLineNumber, Color.red,
@@ -179,13 +151,13 @@ public class EditorInspector {
         }
     }
 
-    protected void discoverDuplicateRules(List items) {
-        List rules = editor.getSyntax().getDuplicateRules();
+    protected void discoverDuplicateRules(List<Item> items) {
+        List<GrammarSyntaxRule> rules = editor.getSyntax().getDuplicateRules();
         if(rules == null)
             return;
 
         for(int index=0; index<rules.size(); index++) {
-            GrammarSyntaxRule rule = (GrammarSyntaxRule)rules.get(index);
+            GrammarSyntaxRule rule = rules.get(index);
             Item item = new ItemDuplicateRule();
             item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
                     rule.start.startLineNumber, Color.red,
@@ -194,7 +166,7 @@ public class EditorInspector {
         }
     }
 
-    protected void discoverLeftRecursionRules(List items) {
+    protected void discoverLeftRecursionRules(List<Item> items) {
         List rules = editor.rules.getRules();
         if(rules == null)
             return;
@@ -212,7 +184,7 @@ public class EditorInspector {
         }
     }
 
-    protected void discoverLeftRecursiveRulesSet(List items) {
+    protected void discoverLeftRecursiveRulesSet(List<Item> items) {
         List rules = editor.rules.getRules();
         if(rules == null)
             return;
@@ -255,7 +227,7 @@ public class EditorInspector {
             this.description = description;
         }
 
-        public List getIdeaActions() {
+        public List<IdeaAction> getIdeaActions() {
             return null;
         }
 
@@ -266,8 +238,8 @@ public class EditorInspector {
 
     public class ItemUndefinedReference extends Item {
 
-        public List getIdeaActions() {
-            List actions = new ArrayList();
+        public List<IdeaAction> getIdeaActions() {
+            List<IdeaAction> actions = new ArrayList<IdeaAction>();
             actions.add(new IdeaAction("Create rule '"+token.getAttribute()+"'", this, IDEA_CREATE_RULE, token));
             return actions;
         }
@@ -284,8 +256,8 @@ public class EditorInspector {
 
     public class ItemDuplicateRule extends Item {
 
-        public List getIdeaActions() {
-            List actions = new ArrayList();
+        public List<IdeaAction> getIdeaActions() {
+            List<IdeaAction> actions = new ArrayList<IdeaAction>();
             actions.add(new IdeaAction("Delete rule '"+token.getAttribute()+"'", this, IDEA_DELETE_RULE, token));
             return actions;
         }
@@ -301,8 +273,8 @@ public class EditorInspector {
 
     public class ItemLeftRecursion extends Item {
 
-        public List getIdeaActions() {
-            List actions = new ArrayList();
+        public List<IdeaAction> getIdeaActions() {
+            List<IdeaAction> actions = new ArrayList<IdeaAction>();
             actions.add(new IdeaAction("Remove left recursion of rule '"+token.getAttribute()+"'", this, IDEA_REMOVE_LEFT_RECURSION, token));
             return actions;
         }
@@ -318,8 +290,8 @@ public class EditorInspector {
 
     public class ItemInvalidCharLiteral extends Item {
 
-        public List getIdeaActions() {
-            List actions = new ArrayList();
+        public List<IdeaAction> getIdeaActions() {
+            List<IdeaAction> actions = new ArrayList<IdeaAction>();
             actions.add(new IdeaAction("Convert literals to single quote", this, IDEA_CONVERT_TO_SINGLE_QUOTE, token));
             return actions;
         }
@@ -335,8 +307,8 @@ public class EditorInspector {
 
     public class ItemInvalidGrammarName extends Item {
 
-        public List getIdeaActions() {
-            List actions = new ArrayList();
+        public List<IdeaAction> getIdeaActions() {
+            List<IdeaAction> actions = new ArrayList<IdeaAction>();
             actions.add(new IdeaAction("Change grammar name to '"+getGrammarNameFromFile()+"'", this, IDEA_FIX_GRAMMAR_NAME, token));
             return actions;
         }

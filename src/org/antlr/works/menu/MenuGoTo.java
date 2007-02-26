@@ -32,10 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxReference;
-import org.antlr.works.syntax.GrammarSyntaxRule;
 
 import javax.swing.*;
 import java.util.Set;
@@ -55,15 +55,15 @@ public class MenuGoTo extends MenuAbstract {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_DECLARATION);
 
         GrammarSyntaxReference ref = editor.getCurrentReference();
-        if(ref == null)
-            return;
+        if(ref == null) return;
 
-        GrammarSyntaxRule rule = editor.rules.selectRuleNameInTree(ref.token.getAttribute());
-        if(rule == null)
-            return;
-
-        editor.goToHistoryRememberCurrentPosition();
-        editor.rules.goToRule(rule);
+        for(ATEToken decl : editor.parserEngine.getDecls()) {
+            if(decl.getAttribute().equals(ref.token.getAttribute())) {
+                editor.goToHistoryRememberCurrentPosition();
+                setCaretPosition(decl.start);
+                break;
+            }
+        }
     }
 
     public void goToBreakpoint(int direction) {
@@ -74,8 +74,7 @@ public class MenuGoTo extends MenuAbstract {
 
         Set breakpoints = editor.breakpointManager.getBreakpoints();
         int line = editor.getTextEditor().getLineIndexAtTextPosition(getCaretPosition());
-        if(line == -1)
-            return;
+        if(line == -1) return;
 
         while(true) {
             line += direction;
@@ -135,7 +134,7 @@ public class MenuGoTo extends MenuAbstract {
         if(lineIndex < 0 || lineIndex > editor.getLines().size()-1)
             return;
 
-        ATELine line = (ATELine)editor.getLines().get(lineIndex);
+        ATELine line = editor.getLines().get(lineIndex);
         editor.goToHistoryRememberCurrentPosition();
         setCaretPosition(line.position);
     }

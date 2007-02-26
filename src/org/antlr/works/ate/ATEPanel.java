@@ -11,6 +11,7 @@ import org.antlr.works.ate.swing.ATEAutoIndentation;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATELine;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -279,11 +280,11 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         return textPane.getSelectionEnd();
     }
 
-    public List getTokens() {
+    public List<ATEToken> getTokens() {
         return engine==null?null:engine.getTokens();
     }
 
-    public List getLines() {
+    public List<ATELine> getLines() {
         return engine==null?null:engine.getLines();
     }
 
@@ -309,12 +310,12 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public int getLineIndexAtTextPosition(int pos) {
-        List lines = getLines();
+        List<ATELine> lines = getLines();
         if(lines == null)
             return -1;
 
         for(int i=0; i<lines.size(); i++) {
-            ATELine line = (ATELine)lines.get(i);
+            ATELine line = lines.get(i);
             if(line.position > pos) {
                 return i-1;
             }
@@ -327,16 +328,16 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public Point getLineTextPositionsAtLineIndex(int lineIndex) {
-        List lines = getLines();
+        List<ATELine> lines = getLines();
         if(lineIndex == -1 || lines == null)
             return null;
 
-        ATELine startLine = (ATELine)lines.get(lineIndex);
+        ATELine startLine = lines.get(lineIndex);
         int start = startLine.position;
         if(lineIndex+1 >= lines.size()) {
             return new Point(start, getTextPane().getDocument().getLength()-1);
         } else {
-            ATELine endLine = (ATELine)lines.get(lineIndex+1);
+            ATELine endLine = lines.get(lineIndex+1);
             int end = endLine.position;
             return new Point(start, end-1);
         }

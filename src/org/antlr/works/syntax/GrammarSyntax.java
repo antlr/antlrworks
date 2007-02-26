@@ -1,6 +1,8 @@
 package org.antlr.works.syntax;
 
 import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
+import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
@@ -46,20 +48,20 @@ public class GrammarSyntax {
 
     protected CEditorGrammar editor;
 
-    protected List duplicateRules;
-    protected List undefinedReferences;
-    protected List hasLeftRecursionRules;
+    protected List<GrammarSyntaxRule> duplicateRules;
+    protected List<GrammarSyntaxReference> undefinedReferences;
+    protected List<GrammarSyntaxRule> hasLeftRecursionRules;
 
-    protected List tokenVocabNames;
+    protected List<String> tokenVocabNames;
     protected String tokenVocabName;
 
     public GrammarSyntax(CEditorGrammar editor) {
         this.editor = editor;
 
-        duplicateRules = new ArrayList();
-        undefinedReferences = new ArrayList();
-        hasLeftRecursionRules = new ArrayList();
-        tokenVocabNames = new ArrayList();
+        duplicateRules = new ArrayList<GrammarSyntaxRule>();
+        undefinedReferences = new ArrayList<GrammarSyntaxReference>();
+        hasLeftRecursionRules = new ArrayList<GrammarSyntaxRule>();
+        tokenVocabNames = new ArrayList<String>();
     }
 
     public GrammarSyntaxEngine getParserEngine() {
@@ -69,8 +71,8 @@ public class GrammarSyntax {
     public int getNumberOfRulesWithErrors() {
         int count = 0;
         if(getParserEngine().getRules() != null) {
-            for (Iterator iterator = getParserEngine().getRules().iterator(); iterator.hasNext();) {
-                GrammarSyntaxRule rule = (GrammarSyntaxRule) iterator.next();
+            for (Iterator<GrammarSyntaxRule> iterator = getParserEngine().getRules().iterator(); iterator.hasNext();) {
+                GrammarSyntaxRule rule = iterator.next();
                 if(rule.hasErrors())
                     count++;
             }
@@ -78,11 +80,11 @@ public class GrammarSyntax {
         return count;
     }
 
-    public List getDuplicateRules() {
+    public List<GrammarSyntaxRule> getDuplicateRules() {
         return duplicateRules;
     }
 
-    public List getUndefinedReferences() {
+    public List<GrammarSyntaxReference> getUndefinedReferences() {
         return undefinedReferences;
     }
 
@@ -91,7 +93,7 @@ public class GrammarSyntax {
         tokenVocabNames.clear();
     }
 
-    public List getTokenVocabNames() {
+    public List<String> getTokenVocabNames() {
         String tokenVocab = getParserEngine().getTokenVocab();
         if(tokenVocab == null) {
             tokenVocabNames.clear();
@@ -122,14 +124,40 @@ public class GrammarSyntax {
             return false;
 
         // Read the tokens from the file if it exists
-        List tokens = GrammarSyntaxParser.parsePropertiesString(XJUtils.getStringFromFile(filePath));
+        List<ATEToken> tokens = parsePropertiesString(XJUtils.getStringFromFile(filePath));
         // Add each token name to the list of tokenVocabNames
         for(int index=0; index<tokens.size(); index++) {
-            ATEToken t = (ATEToken)tokens.get(index);
+            ATEToken t = tokens.get(index);
             tokenVocabNames.add(t.getAttribute());
         }
 
         return true;
+    }
+
+    private static List<ATEToken> parsePropertiesString(final String content) {
+
+        class ParseProperties extends ATESyntaxParser {
+
+            public List<ATEToken> propertiesTokens;
+
+            public void parseTokens() {
+                propertiesTokens = new ArrayList<ATEToken>();
+                while(nextToken()) {
+                    if(T(0).type == ATESyntaxLexer.TOKEN_ID) {
+                        if(isChar(1, "=") || isChar(1, "\n"))
+                            propertiesTokens.add(T(0));
+                    }
+                }
+            }
+
+        }
+
+        GrammarSyntaxLexer lexer = new GrammarSyntaxLexer();
+        lexer.tokenize(content);
+
+        ParseProperties parser = new ParseProperties();
+        parser.parse(lexer.getTokens());
+        return parser.propertiesTokens;
     }
 
     public void rebuildHasLeftRecursionRulesList() {
@@ -137,19 +165,19 @@ public class GrammarSyntax {
             return;
 
         hasLeftRecursionRules.clear();
-        for(Iterator iter = getParserEngine().getRules().iterator(); iter.hasNext();) {
-            GrammarSyntaxRule r = (GrammarSyntaxRule)iter.next();
+        for(Iterator<GrammarSyntaxRule> iter = getParserEngine().getRules().iterator(); iter.hasNext();) {
+            GrammarSyntaxRule r = iter.next();
             if(r.hasLeftRecursion())
                 hasLeftRecursionRules.add(r);
         }
     }
 
     public void rebuildDuplicateRulesList() {
-        List rules = getParserEngine().getRules();
+        List<GrammarSyntaxRule> rules = getParserEngine().getRules();
         if(rules == null)
             return;
 
-        List sortedRules = Collections.list(Collections.enumeration(rules));
+        List<GrammarSyntaxRule> sortedRules = Collections.list(Collections.enumeration(rules));
         Collections.sort(sortedRules);
         Iterator iter = sortedRules.iterator();
         GrammarSyntaxRule currentRule = null;
@@ -165,18 +193,18 @@ public class GrammarSyntax {
     }
 
     public void rebuildUndefinedReferencesList() {
-        List existingReferences = getParserEngine().getRuleNames();
+        List<String> existingReferences = getParserEngine().getRuleNames();
         existingReferences.addAll(getParserEngine().getDeclaredTokenNames());
         existingReferences.addAll(getParserEngine().getPredefinedReferences());
         existingReferences.addAll(getTokenVocabNames());
 
         undefinedReferences.clear();
-        List references = getParserEngine().getReferences();
+        List<GrammarSyntaxReference> references = getParserEngine().getReferences();
         if(references == null)
             return;
 
         for(int index=0; index<references.size(); index++) {
-            GrammarSyntaxReference ref = (GrammarSyntaxReference)references.get(index);
+            GrammarSyntaxReference ref = references.get(index);
             if(!existingReferences.contains(ref.token.getAttribute()))
                 undefinedReferences.add(ref);
         }

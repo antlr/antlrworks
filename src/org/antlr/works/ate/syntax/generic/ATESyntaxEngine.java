@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.ate.syntax.generic;
 
 import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
 import javax.swing.text.AttributeSet;
@@ -45,7 +46,7 @@ public abstract class ATESyntaxEngine {
     protected ATESyntaxLexer lexer;
     protected ATESyntaxParser parser;
 
-    protected List tokens;
+    protected List<ATEToken> tokens;
 
     protected static int delay = 250;
 
@@ -62,11 +63,11 @@ public abstract class ATESyntaxEngine {
         ATESyntaxEngine.delay = delay;
     }
 
-    public synchronized List getTokens() {
+    public synchronized List<ATEToken> getTokens() {
         return tokens;
     }
 
-    public synchronized List getLines() {
+    public synchronized List<ATELine> getLines() {
         return lexer.getLines();
     }
 
@@ -91,7 +92,7 @@ public abstract class ATESyntaxEngine {
     public void processSyntax() {
         // First run the lexer
         lexer.tokenize(textEditor.getTextPane().getText());
-        tokens = new ArrayList(lexer.getTokens());
+        tokens = new ArrayList<ATEToken>(lexer.getTokens());
         lexerDidRun(lexer);
 
         // And then the parser if it exists

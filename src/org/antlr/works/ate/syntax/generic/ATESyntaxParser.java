@@ -36,7 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public abstract class ATESyntaxParser {
 
-    private List tokens;
+    private List<ATEToken> tokens;
     private int position;
     private int mark;
 
@@ -46,7 +46,7 @@ public abstract class ATESyntaxParser {
     public ATESyntaxParser() {
     }
 
-    public void parse(List tokens) {
+    public void parse(List<ATEToken> tokens) {
         position = -1;
         mark = -1;
         this.tokens = tokens;
@@ -56,8 +56,12 @@ public abstract class ATESyntaxParser {
 
     public abstract void parseTokens();
 
-    public List getTokens() {
+    public List<ATEToken> getTokens() {
         return tokens;
+    }
+
+    public int getPosition() {
+        return position;
     }
 
     public void mark() {
@@ -81,10 +85,15 @@ public abstract class ATESyntaxParser {
         return position<tokens.size();
     }
 
-    public void skip(int count) {
-        for(int i=0; i<count; i++) {
-            nextToken();
+    public boolean skip(int count) {
+        if(count == 1) {
+            return nextToken();
+        } else {
+            for(int i=0; i<count; i++) {
+                if(!nextToken()) return false;
+            }
         }
+        return true;
     }
     
     public ATEToken T(int index) {
@@ -102,7 +111,7 @@ public abstract class ATESyntaxParser {
 
     public ATEToken getToken(int index) {
         if(position+index >= 0 && position+index < tokens.size())
-            return (ATEToken)tokens.get(position+index);
+            return tokens.get(position+index);
         else
             return null;
     }
@@ -121,7 +130,7 @@ public abstract class ATESyntaxParser {
     }
 
     public boolean isComplexComment(int index) {
-        return isTokenType(index, ATESyntaxLexer.TOKEN_SINGLE_COMMENT);
+        return isTokenType(index, ATESyntaxLexer.TOKEN_COMPLEX_COMMENT);
     }
 
     public boolean isID(int index) {

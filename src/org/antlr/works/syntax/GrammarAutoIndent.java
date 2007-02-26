@@ -59,8 +59,10 @@ public class GrammarAutoIndent {
         } else if(c2 == ':') {
             // If we know we are in a block token ignore the auto-indent on ':'
             ATEToken token = editor.getCurrentToken();
+            // todo check
+            /*if(token != null && token.getContext())
             if(token != null && token.type == GrammarSyntaxLexer.TOKEN_BLOCK)
-                    return;
+                    return;*/
 
             // Try to reach the beginning of the line by parsing only an ID
             // (which is the rule name)

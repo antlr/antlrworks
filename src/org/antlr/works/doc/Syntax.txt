@@ -1,0 +1,14 @@
+
+* Unit tests to do:
+- finish the refactor menu
+
+* Grammar name
+
+grammar <modifier> <name>
+
+- always grammar at the beginning?
+
+* labels are scoped?
+ c=foo
+
+ and later $c

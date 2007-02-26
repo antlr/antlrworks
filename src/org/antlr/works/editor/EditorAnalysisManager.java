@@ -6,7 +6,6 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 /*
 
@@ -104,20 +103,18 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
         return sb.toString();
     }
 
-    public List getErrors() {
-        List errors = new ArrayList();
-        for(Iterator iter = editor.editorInspector.getErrors().iterator(); iter.hasNext(); ) {
-            EditorInspector.Item item = (EditorInspector.Item)iter.next();
+    public List<ATEAnalysisItem> getErrors() {
+        List<ATEAnalysisItem> errors = new ArrayList<ATEAnalysisItem>();
+        for (EditorInspector.Item item : editor.editorInspector.getErrors()) {
             errors.add(new ATEAnalysisItem(ANALYSIS_ITEM_ERROR, item.color, item.startLineNumber, item.startIndex, item.description));
         }
         numberOfErrors = errors.size();
         return errors;
     }
 
-    public List getWarnings() {
-        List warnings = new ArrayList();
-        for(Iterator iter = editor.editorInspector.getWarnings().iterator(); iter.hasNext(); ) {
-            EditorInspector.Item item = (EditorInspector.Item)iter.next();
+    public List<ATEAnalysisItem> getWarnings() {
+        List<ATEAnalysisItem> warnings = new ArrayList<ATEAnalysisItem>();
+        for (EditorInspector.Item item : editor.editorInspector.getWarnings()) {
             warnings.add(new ATEAnalysisItem(ANALYSIS_ITEM_WARNING, item.color, item.startLineNumber, item.startIndex, item.description));
         }
         numberOfWarnings = warnings.size();

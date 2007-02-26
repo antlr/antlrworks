@@ -3,9 +3,6 @@ package org.antlr.works.syntax;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /*
 
 [The "BSD licence"]
@@ -45,9 +42,12 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
     public static final int TOKEN_LPAREN = 103;
     public static final int TOKEN_RPAREN = 104;
     public static final int TOKEN_REFERENCE = 105;
-    public static final int TOKEN_RULE = 106;
     public static final int TOKEN_LABEL = 107;
     public static final int TOKEN_ST_STRING = 108;
+    public static final int TOKEN_BLOCK_LABEL = 109;
+    public static final int TOKEN_BLOCK_LIMIT = 112;
+    public static final int TOKEN_REWRITE = 110;
+    public static final int TOKEN_DECL = 111;
 
     protected void tokenize() {
         while(nextCharacter()) {
@@ -61,22 +61,24 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
                 token = matchSingleComment();
             else if(c0 == '/' && c1 == '*')
                 token = matchComplexComment();
-            else if(c0 == '{')
+            else if(c0 == '-' && c1 == '>')
+                token = createNewToken(TOKEN_REWRITE, position, position+1);
+            /*else if(c0 == '{')
                 token = matchBlock('{', '}');
             else if(c0 == '[')
                 token = matchBlock('[', ']');
             else if(c0 == ':')
                 token = createNewToken(TOKEN_COLON);
             else if(c0 == ';')
-                token = createNewToken(TOKEN_SEMI);
+                token = createNewToken(TOKEN_SEMI); */
             else if(isLetter())
                 token = matchID();
             else if(c0 == '@')
-                token = matchBlockID();
-            else if(c0 == '(')
+                token = matchLabel();
+            /*else if(c0 == '(')
                 token = createNewToken(TOKEN_LPAREN);
             else if(c0 == ')')
-                token = createNewToken(TOKEN_RPAREN);
+                token = createNewToken(TOKEN_RPAREN); */
             else if(!isWhitespace())
                 token = createNewToken(TOKEN_CHAR);
 
@@ -84,7 +86,26 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
         }
     }
 
-    public ATEToken matchBlock(char start, char end) {
+    /**
+     * Matches a label:
+     *
+     * @parser
+     * @lexer::header
+     *
+     */
+    private ATEToken matchLabel() {
+        int sp = position;
+        while(nextCharacter()) {
+            if(isID(c1) || c1 == ':') {
+                continue;
+            } else {
+                return createNewToken(TOKEN_BLOCK_LABEL, sp);
+            }
+        }
+        return null;
+    }
+
+    /*public ATEToken matchBlock(char start, char end) {
         // Skip all strings, comments and embedded blocks
         int sp = position;
         int embedded = 0;
@@ -115,7 +136,7 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
                 else
                     embedded--;
             } else if(c0 == '$' || c0 == '%') {
-                /** Parse also all internal action references */
+                // Parse also all internal action references
                 token = createNewToken(TOKEN_CHAR);
             }
 
@@ -123,7 +144,7 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
                 internalTokens.add(token);
         }
         return null;
-    }
+    }       */
 
     public ATEToken createNewToken(int type, int start, int end,
                                 int startLineNumber, int endLineNumber,

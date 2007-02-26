@@ -46,15 +46,14 @@ public class ATESyntaxLexer {
     public static final int TOKEN_ID = 5;
     public static final int TOKEN_CHAR = 6;
     public static final int TOKEN_OTHER = 7;
-    public static final int TOKEN_BLOCK_ID = 8;
 
-    protected List tokens;
+    protected List<ATEToken> tokens;
     protected String text;
     protected int position;
 
     protected int lineNumber;
     protected int lineIndex;    // position of the line in characters
-    protected List lines;
+    protected List<ATELine> lines;
 
     /** True if the current character is a control character (that is preceeded by a \) */
     protected boolean controlCharacter;
@@ -66,15 +65,15 @@ public class ATESyntaxLexer {
     protected char c1;
 
     public ATESyntaxLexer() {
-        lines = new ArrayList();
-        tokens = new ArrayList();
+        lines = new ArrayList<ATELine>();
+        tokens = new ArrayList<ATEToken>();
     }
 
-    public List getTokens() {
+    public List<ATEToken> getTokens() {
         return tokens;
     }
 
-    public List getLines() {
+    public List<ATELine> getLines() {
         return lines;
     }
 
@@ -127,16 +126,6 @@ public class ATESyntaxLexer {
         while(isID(c1) && nextCharacter()) {
         }
         return createNewToken(TOKEN_ID, sp);
-    }
-
-    public ATEToken matchBlockID() {
-        int sp = position;
-        while(nextCharacter()) {
-            if(!isID(c1) && c1 != ':') {
-                return createNewToken(TOKEN_BLOCK_ID, sp);
-            }
-        }
-        return null;
     }
 
     public ATEToken matchSingleQuoteString() {
