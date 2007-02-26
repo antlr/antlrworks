@@ -169,8 +169,6 @@ public class ATETextPane extends JTextPane
         }
 
         public void mousePressed(MouseEvent e) {
-            super.mousePressed(e);
-
             selectingWord = false;
 
             if(SwingUtilities.isLeftMouseButton(e)) {
@@ -180,8 +178,13 @@ public class ATETextPane extends JTextPane
                     selectingWordStart = getSelectionStart();
                     selectingWordEnd = getSelectionEnd();
                     e.consume();
+                    return;
                 }
             }
+
+            // Call super only after handling the double-click otherwise the current
+            // caret position will be already moved due to the super() selection.
+            super.mousePressed(e);
         }
 
         public void mouseDragged(MouseEvent e) {

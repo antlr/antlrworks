@@ -294,7 +294,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *  ARG = '[' Type arg... ']'
      *
      */
-    public ElementRule matchRule(List<ElementAction> actions, List<ElementReference> references) {
+    private ElementRule matchRule(List<ElementAction> actions, List<ElementReference> references) {
         ATEToken start = T(0);
 
         // Match any modifiers

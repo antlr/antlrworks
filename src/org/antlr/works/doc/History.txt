@@ -1,4 +1,10 @@
 
+Version 1.0b10 -
+
+- syntax coloring parser has been rewritten
+- ability to jump to tokens defined in the options block
+- fixed a bug when double-clicking a word: selection would be incorrect
+
 Version 1.0b9 - 02/20/07
 
 - removed message to console when trying to create the syntax diagram
