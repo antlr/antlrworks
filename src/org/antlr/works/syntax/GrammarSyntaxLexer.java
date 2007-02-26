@@ -49,7 +49,9 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
         if(c0 == '@') {
             return matchID();
         } else if(c0 == '-' && c1 == '>') {
-            return createNewToken(TOKEN_REWRITE, position, position+1);
+            int sp = position;
+            position++;
+            return createNewToken(TOKEN_REWRITE, sp, position);
         } else {
             return null;
         }

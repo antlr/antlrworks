@@ -40,6 +40,9 @@ import java.util.*;
 
 public class GrammarSyntaxParser extends ATESyntaxParser {
 
+    private static final ElementRewriteBlock REWRITE_BLOCK = new ElementRewriteBlock();
+    private static final ElementRewriteFunction REWRITE_FUNCTION = new ElementRewriteFunction();
+
     public static final String BEGIN_GROUP = "// $<";
     public static final String END_GROUP = "// $>";
 
@@ -388,11 +391,24 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             } else if(isID(0)) {
                 // Probably a reference inside the rule.
 
-                // Check for label first:
+                // Check for ST function
+                if(isLPAREN(1)) {
+                    if(!nextToken()) return null;
+                    if(matchBalancedToken("(", ")", REWRITE_FUNCTION)) continue;
+                    return null;
+                }
+
+                // Match any option block
+                // todo only allowed here?
+                if(T(0).getAttribute().equals(OPTIONS_BLOCK_NAME)) {
+                    if(matchBlock() != null) continue;
+                    return null;
+                }
+
+                // Check for label:
                 //   label=reference
                 //   label+=reference
                 //   label='string'
-
                 if(isChar(1, "=")) {
                     T(0).type = GrammarSyntaxLexer.TOKEN_LABEL;
                     labels.add(T(0).getAttribute());
@@ -409,8 +425,11 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
                 // Ignore reserved keywords
                 ATEToken refToken = T(0);
-                if(keywords.contains(refToken.getAttribute())) {
-                    continue;
+
+                // Match any field access, for example:
+                // foo.bar.boo
+                while(isChar(1, ".") && isID(2)) {
+                    if(!skip(2)) return null;
                 }
 
                 // Match any option arguments
@@ -446,9 +465,9 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 }
             } else if(isTokenType(0, GrammarSyntaxLexer.TOKEN_REWRITE)) {
                 // Match a rewrite syntax beginning with ->
-                if(!nextToken()) return null;
+            //    if(!nextToken()) return null;
 
-                matchRewriteSyntax();
+            //    matchRewriteSyntax();
             } else if(isLPAREN(0)) {
                 labels.begin();
             } else if(isRPAREN(0)) {
@@ -478,68 +497,71 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         }
     }
 
-    // @todo to terminate if needed
-    public void matchRewriteSyntax() {
-        /*  if(isOpenBLOCK(0) && isChar(1, "?") && isID(2) && isLPAREN(3)) {
-          // -> { condition }? foo()
-          skip(3);
-          matchBalancedToken("(", ")");
-          return;
-      }
+    /**
+     * Matches the rewrite syntax:
+     * -> { condition }? foo(...)
+     * -> { condition }? { ... }
+     * -> bar(...)
+     * -> ELIST
+     * -> $label
+     */
+    /*private boolean matchRewriteSyntax() {
+        if(isOpenBLOCK(0)) {
+            // Try to match the condition
+            if(matchBalancedToken("{", "}", REWRITE_BLOCK)) {
+                if(!nextToken()) return false;
 
-      if(isID(0) && isLPAREN(1)) {
-          if(isID(0, "template")) {
-              // -> template(...) ["asd" | << asd >>]
-              skip(1);
-              matchBalancedToken("(", ")");
+                // Match the '?'
+                if(matchChar("?")) {
+                    // a function follows
+                    if(matchSTFunction()) return true;
+                    //if(matchTreeSyntax()) return true;
+                    return matchBalancedToken("{", "}", REWRITE_BLOCK);
+                } else {
+                    // nothing follows
+                    // todo ugly -> think about general solution with nextToken
+                    previousToken();
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        } else {
+//            if(matchSTFunction()) return true;
+ //           if(matchTreeSyntax()) return true;
 
-              skip(1);
-              if(isTokenType(0, ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING)) {
-                  // case with "asd"
-
-                  // Set the token type to ST_STRING in order to avoid confusion between this type of string
-                  // and the normal string in the grammar (ANTLR 3 does not like double-quote string in grammar
-                  // except for inline template).
-                  T(0).type = GrammarSyntaxLexer.TOKEN_ST_STRING;
-              } else {
-                  // try to match case with << asd >>
-                  if(isChar(0, "<") && isChar(1, "<")) {
-                      matchBalancedToken("<", ">");
-                  }
-              }
-              return;
-          } else {
-              // -> foo(...)
-              skip(1);
-              matchBalancedToken("(", ")");
-              return;
-          }
-      }
-
-      if(isOpenBLOCK(0)) {
-          // -> { new StringTemplate() }
-          skip(0);
-          return;
-      }
-
-      if(isID(0)) {
-          // -> ASSIGN
-          // Rewind one token because the next ID should not be skipped
-          // otherwise it is not colored
-          previousToken();
-          return;
-      }
-
-      if(isChar(0, "$") && isID(1)) {
-          // -> $e
-          skip(1);
-          return;
-      }
-
-      // Fall back if there is nothing after the rewrite ->
-      previousToken();  */
+            System.out.println(T(0));
+            if(isTokenType(0, ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING)) {
+                return nextToken();
+            } else if(isChar(0, "$") && isID(1)) {
+                return skip(2);
+            } else if(isID(0)) {
+                return nextToken();
+            }
+        }
+        return false;
     }
 
+    private boolean matchSTFunction() {
+        if(!matchID(0)) return false;
+
+        if(!isLPAREN(0)) return false;
+
+        return matchBalancedToken("(", ")", REWRITE_FUNCTION);
+    }
+
+    private boolean matchTreeSyntax() {
+        if(!isChar(0, "^") && !isLPAREN(1)) return false;
+
+        skip(1);
+
+        return matchBalancedToken("(", ")");
+    } */
+
+    /**
+     * Matches the group token used to group rules in the rule lists
+     *
+     */
     private ElementGroup matchRuleGroup(List<ElementRule> rules) {
         ATEToken token = T(0);
         String comment = token.getAttribute();
@@ -589,6 +611,25 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             return false;
     }
 
+    // @todo refactor using this method?
+    private boolean matchChar(String c) {
+        if(isChar(0, c)) {
+            return nextToken();
+        } else {
+            return false;
+        }
+
+    }
+
+    // @todo refactor using this method?
+    private boolean matchID(int index) {
+        if(isID(index)) {
+            return nextToken();
+        } else {
+            return false;
+        }
+    }
+
     private boolean isLPAREN(int index) {
         return isTokenType(index, ATESyntaxLexer.TOKEN_LPAREN);
     }
@@ -606,11 +647,14 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     private boolean isOpenBLOCK(int index) {
-        // todo optimize
         return isChar(index, "{");
-//        return isTokenType(index, GrammarSyntaxLexer.TOKEN_BLOCK);
     }
 
+    /**
+     * Class used to keep track of the scope of the labels inside a rule.
+     *
+     */
+    // todo still need that?
     private class LabelScope {
 
         Stack<Set<String>> labels = new Stack<Set<String>>();

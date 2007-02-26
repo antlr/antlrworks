@@ -12,3 +12,6 @@ grammar <modifier> <name>
  c=foo
 
  and later $c
+
+* rewrite rule?
+	:	formalArg (',' formalArg)* -> formalArg+

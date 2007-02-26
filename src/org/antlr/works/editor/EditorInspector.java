@@ -144,7 +144,8 @@ public class EditorInspector {
         if(scope == null) return false;
 
         Class c = scope.getClass();
-        return c.equals(ElementAction.class) || c.equals(ElementBlock.class);
+        return c.equals(ElementAction.class) || c.equals(ElementBlock.class) || c.equals(ElementRewriteBlock.class)
+                || c.equals(ElementRewriteFunction.class);
     }
 
     protected void discoverUndefinedReferences(List<Item> items) {
