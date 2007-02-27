@@ -2,6 +2,7 @@ package org.antlr.works.syntax;
 
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.syntax.element.ElementToken;
 
 /*
 
@@ -43,6 +44,7 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
     public static final int TOKEN_BLOCK_LIMIT = 104;
     public static final int TOKEN_REWRITE = 105;
     public static final int TOKEN_DECL = 106;
+    public static final int TOKEN_FUNC = 107;
 
     @Override
     protected ATEToken customMatch() {
@@ -63,17 +65,20 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
         if(c0 == '@') {
             // This kind of ID can contain ':', for example:
             // @header::lexer
-            while(nextCharacter()) {
-                if(!isID(c0) && c0 != ':') {
-                    break;
-                }
+            while((isID(c1) || c1 == ':') && nextCharacter()) {
             }
         } else {
             // Match regular ID
             while(isID(c1) && nextCharacter()) {
             }
         }
-        return createNewToken(TOKEN_ID, sp);
+
+        // Catch function call
+        if(c1 == '(') {
+            return createNewToken(TOKEN_FUNC, sp);
+        } else {
+            return createNewToken(TOKEN_ID, sp);
+        }
     }
 
     @Override

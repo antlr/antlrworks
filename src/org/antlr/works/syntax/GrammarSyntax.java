@@ -6,6 +6,8 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.element.ElementReference;
+import org.antlr.works.syntax.element.ElementRule;
 
 import java.io.File;
 import java.io.IOException;

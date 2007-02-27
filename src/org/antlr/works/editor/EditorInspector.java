@@ -7,7 +7,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.idea.IdeaAction;
 import org.antlr.works.idea.IdeaActionDelegate;
-import org.antlr.works.syntax.*;
+import org.antlr.works.syntax.element.*;
 
 import java.awt.*;
 import java.util.ArrayList;

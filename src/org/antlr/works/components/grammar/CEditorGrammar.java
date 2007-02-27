@@ -33,7 +33,13 @@ import org.antlr.works.navigation.GoToHistory;
 import org.antlr.works.navigation.GoToRule;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.*;
+import org.antlr.works.syntax.GrammarAutoIndent;
+import org.antlr.works.syntax.GrammarSyntax;
+import org.antlr.works.syntax.GrammarSyntaxEngine;
+import org.antlr.works.syntax.element.ElementAction;
+import org.antlr.works.syntax.element.ElementBlock;
+import org.antlr.works.syntax.element.ElementReference;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.visualization.Visual;
 

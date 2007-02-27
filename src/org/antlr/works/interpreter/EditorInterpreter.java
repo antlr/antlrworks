@@ -49,7 +49,7 @@ import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TextUtils;

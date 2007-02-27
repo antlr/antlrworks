@@ -10,7 +10,7 @@ import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Utils;
 
 import javax.swing.*;

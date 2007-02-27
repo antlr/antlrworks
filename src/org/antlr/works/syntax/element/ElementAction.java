@@ -1,4 +1,4 @@
-package org.antlr.works.syntax;
+package org.antlr.works.syntax.element;
 
 import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.syntax.misc.ATEToken;

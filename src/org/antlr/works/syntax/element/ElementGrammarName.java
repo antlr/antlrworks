@@ -1,6 +1,9 @@
-package org.antlr.works.syntax;
+package org.antlr.works.syntax.element;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
+
+import java.util.ArrayList;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -32,22 +35,48 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ElementReference implements Comparable {
+public class ElementGrammarName {
 
-    public ElementRule rule;
-    public ATEToken token;
+    public static final List<String> types;
 
-    public ElementReference(ElementRule rule, ATEToken token) {
-        this.rule = rule;
-        this.token = token;
+    public static final int COMBINED = 0;
+    public static final int PARSER = 1;
+    public static final int LEXER = 2;
+    public static final int TREEPARSER = 3;
+
+    public ATEToken name;
+    public ATEToken start;
+    public ATEToken end;
+    public ATEToken type;
+
+    static {
+        types = new ArrayList<String>();
+        types.add("combined");
+        types.add("parser");
+        types.add("lexer");
+        types.add("tree");
     }
 
-    public int compareTo(Object o) {
-        ElementReference otherRef = (ElementReference)o;
-        return token.compareTo(otherRef.token);
+    public ElementGrammarName(ATEToken name, ATEToken start, ATEToken end, ATEToken type) {
+        this.name = name;
+        this.start = type==null?start:type;
+        this.end = end;
+        this.type = type;
     }
 
-    public boolean containsIndex(int index) {
-        return index >= token.getStartIndex() && index <= token.getEndIndex();
+    public int getType() {
+        if(type != null)
+            return types.indexOf(type.getAttribute());
+        else
+            return COMBINED;
     }
+
+    public String getName() {
+        return name.getAttribute();
+    }
+    
+    public static boolean isKnownType(String type) {
+        return types.contains(type);
+    }
+    
 }

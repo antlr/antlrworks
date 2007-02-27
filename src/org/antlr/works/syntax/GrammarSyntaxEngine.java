@@ -36,6 +36,7 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.element.*;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;

@@ -1,4 +1,4 @@
-package org.antlr.works.syntax;
+package org.antlr.works.syntax.element;
 /*
 
 [The "BSD licence"]
@@ -30,5 +30,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ElementRewriteFunction extends ElementScopable {
+public class ElementRewriteBlock extends ElementScopable {
 }

@@ -35,7 +35,7 @@ import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.ElementReference;
+import org.antlr.works.syntax.element.ElementReference;
 
 import javax.swing.*;
 import java.util.Set;

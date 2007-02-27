@@ -1,6 +1,7 @@
-package org.antlr.works.syntax;
+package org.antlr.works.syntax.element;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.syntax.GrammarSyntaxParser;
 
 import java.util.ArrayList;
 import java.util.List;

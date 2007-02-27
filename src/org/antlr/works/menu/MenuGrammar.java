@@ -39,9 +39,9 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.*;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.ElementGroup;
-import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.syntax.GrammarSyntaxParser;
+import org.antlr.works.syntax.element.ElementGroup;
+import org.antlr.works.syntax.element.ElementRule;
 
 import javax.swing.*;
 import java.util.List;

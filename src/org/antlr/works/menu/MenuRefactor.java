@@ -9,8 +9,8 @@ import org.antlr.works.grammar.RefactorEngine;
 import org.antlr.works.grammar.RefactorMutator;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.ElementReference;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementReference;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Utils;
 
 import javax.swing.*;

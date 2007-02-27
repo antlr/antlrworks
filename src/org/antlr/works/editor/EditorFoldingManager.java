@@ -5,8 +5,8 @@ import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
 import org.antlr.works.ate.folding.ATEFoldingManager;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.ElementAction;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementAction;
+import org.antlr.works.syntax.element.ElementRule;
 
 import java.util.List;
 /*

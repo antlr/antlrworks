@@ -5,7 +5,7 @@ import org.antlr.works.idea.IdeaManager;
 import org.antlr.works.idea.IdeaManagerDelegate;
 import org.antlr.works.idea.IdeaOverlay;
 import org.antlr.works.idea.IdeaProvider;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementRule;
 
 import java.awt.*;
 import java.util.ArrayList;

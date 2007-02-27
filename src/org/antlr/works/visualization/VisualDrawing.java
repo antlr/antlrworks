@@ -34,7 +34,7 @@ package org.antlr.works.visualization;
 import org.antlr.analysis.NFAState;
 import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.visualization.graphics.GFactory;

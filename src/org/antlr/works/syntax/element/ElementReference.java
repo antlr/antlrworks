@@ -1,10 +1,10 @@
-package org.antlr.works.syntax;
+package org.antlr.works.syntax.element;
 
-import org.antlr.works.ate.syntax.misc.ATEScope;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class ElementScopable implements ATEScope {
+public class ElementReference implements Comparable {
 
-    protected ATEScope scope;
+    public ElementRule rule;
+    public ATEToken token;
 
-    public void setScope(ATEScope scope) {
-        this.scope = scope;
+    public ElementReference(ElementRule rule, ATEToken token) {
+        this.rule = rule;
+        this.token = token;
     }
 
-    public ATEScope getScope() {
-        return scope;
+    public int compareTo(Object o) {
+        ElementReference otherRef = (ElementReference)o;
+        return token.compareTo(otherRef.token);
+    }
+
+    public boolean containsIndex(int index) {
+        return index >= token.getStartIndex() && index <= token.getEndIndex();
     }
 }

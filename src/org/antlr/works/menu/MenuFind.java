@@ -4,7 +4,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.find.Usages;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementRule;
 
 import java.util.Iterator;
 /*

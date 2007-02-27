@@ -38,10 +38,10 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.ElementGroup;
-import org.antlr.works.syntax.ElementReference;
-import org.antlr.works.syntax.ElementRule;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
+import org.antlr.works.syntax.element.ElementGroup;
+import org.antlr.works.syntax.element.ElementReference;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;

@@ -3,6 +3,7 @@ package org.antlr.works.ate.syntax.generic;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
 import java.util.List;
+import java.util.Stack;
 /*
 
 [The "BSD licence"]
@@ -37,8 +38,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public abstract class ATESyntaxParser {
 
     private List<ATEToken> tokens;
+    private Stack<Integer> marks = new Stack<Integer>();
     private int position;
-    private int mark;
 
     private ATEToken t0;
     private ATEToken t1;
@@ -47,9 +48,9 @@ public abstract class ATESyntaxParser {
     }
 
     public void parse(List<ATEToken> tokens) {
-        position = -1;
-        mark = -1;
         this.tokens = tokens;
+        marks.clear();
+        position = -1;
         clearTokenCache();
         parseTokens();
     }
@@ -65,11 +66,11 @@ public abstract class ATESyntaxParser {
     }
 
     public void mark() {
-        mark = position;
+        marks.push(position);
     }
 
     public void rewind() {
-        position = mark;
+        position = marks.pop();
         clearTokenCache();
     }
 
@@ -119,6 +120,24 @@ public abstract class ATESyntaxParser {
     private void clearTokenCache() {
         t0 = null;
         t1 = null;
+    }
+
+    public boolean matchSingleComment(int index) {
+        if(isSingleComment(index)) {
+            nextToken();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean matchComplexComment(int index) {
+        if(isComplexComment(index)) {
+            nextToken();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean isChar(int index, String c) {

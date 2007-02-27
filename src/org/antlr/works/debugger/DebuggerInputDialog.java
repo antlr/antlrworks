@@ -38,7 +38,7 @@ import edu.usfca.xj.appkit.frame.XJDialog;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import edu.usfca.xj.foundation.XJSystem;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.TextUtils;
 import org.antlr.works.utils.Utils;
 

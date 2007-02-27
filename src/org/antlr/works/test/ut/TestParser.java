@@ -3,8 +3,8 @@ package org.antlr.works.test.ut;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.syntax.ElementBlock;
-import org.antlr.works.syntax.ElementReference;
+import org.antlr.works.syntax.element.ElementBlock;
+import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.test.AbstractTest;
 import org.antlr.works.test.TestConstants;
 
@@ -86,7 +86,7 @@ public class TestParser extends AbstractTest {
 
     public void testSemanticPhase() throws Exception {
         parseFile(TestConstants.SEMANTIC_PHASE);
-        assertParserProperties(36, 36, 23, 36, 156);
+        assertParserProperties(36, 37, 23, 36, 156);
 
 //        printParserProperties();
     }

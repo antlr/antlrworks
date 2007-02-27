@@ -38,7 +38,7 @@ import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.works.editor.EditorProvider;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.ElementGrammarName;
+import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 

@@ -1,10 +1,11 @@
-package org.antlr.works.syntax;
+package org.antlr.works.syntax.element;
 
 import org.antlr.works.ate.breakpoint.ATEBreakpointEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.EditorPersistentObject;
 import org.antlr.works.grammar.EngineGrammarError;
+import org.antlr.works.syntax.GrammarSyntaxParser;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -39,8 +39,8 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.*;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.syntax.ElementGrammarName;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementGrammarName;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 

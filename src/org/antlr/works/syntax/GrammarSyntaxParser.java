@@ -35,6 +35,7 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEScope;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.syntax.element.*;
 
 import java.util.*;
 
@@ -104,65 +105,27 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         references.clear();
         decls.clear();
 
-        while(nextToken()) {
+        if(!nextToken()) return;
 
-            if(isComplexComment(0)) continue;
+        while(true) {
 
-            if(tryMatchName()) continue;
-            if(tryMatchScope()) continue; // scope before block
-            if(tryMatchBlock()) continue;
-            if(tryMatchRule()) continue;
+            if(matchSingleComment(0)) continue;
+            if(matchComplexComment(0)) continue;
 
-            if(isSingleComment(0)) {
+            if(matchName()) continue;
+            if(matchScope()) continue; // scope before block
+            if(matchBlock()) continue;
+            if(matchRule(actions, references)) continue;
+
+            // todo add back later on
+            /*if(isSingleComment(0)) {
                 ElementGroup group = matchRuleGroup(rules);
                 if(group != null)
                     groups.add(group);
-            }
-        }
-    }
+            }   */
 
-    private boolean tryMatchName() {
-        mark();
-        ElementGrammarName n = matchName();
-        if(n != null) {
-            name = n;
-            return true;
-        } else {
-            rewind();
-            return false;
-        }
-    }
-
-    private boolean tryMatchBlock() {
-        mark();
-        ElementBlock block = matchBlock();
-        if(block != null) {
-            return true;
-        } else {
-            rewind();
-            return false;
-        }
-    }
-
-    private boolean tryMatchScope() {
-        mark();
-        if(matchScope()) {
-            return true;
-        } else {
-            rewind();
-            return false;
-        }
-    }
-
-    private boolean tryMatchRule() {
-        mark();
-        ElementRule rule = matchRule(actions, references);
-        if(rule != null) {
-            rules.add(rule);
-            return true;
-        } else {
-            rewind();
-            return false;
+            // Nothing matches, go to next token
+            if(!nextToken()) break;
         }
     }
 
@@ -172,16 +135,18 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      * grammar lexer JavaLexer;
      *
      */
-    private ElementGrammarName matchName() {
-        if(isID(0, "grammar")) {
-            ATEToken start = T(0);
-            if(!nextToken()) return null;
+    private boolean matchName() {
+        mark();
+
+        ATEToken start = T(0);
+        if(matchID(0, "grammar")) {
 
             // Check if the grammar has a type (e.g. lexer, parser, tree, etc)
-            ATEToken type = null;
+            ATEToken type = T(0);
             if(ElementGrammarName.isKnownType(T(0).getAttribute())) {
-                type = T(0);
-                nextToken(); // skip the type
+                if(!nextToken()) return false;
+            } else {
+                type = null;
             }
 
             // After the type comes the name of the grammar
@@ -190,13 +155,17 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             // Loop until we find the semi colon
             while(nextToken()) {
                 if(isSEMI(0)) {
-                    // semi colon found, the grammar name is matched!
-                    return new ElementGrammarName(name, start, T(0), type);
+                    // semi colon found, the grammar name is matched.
+                    ATEToken end = T(0);
+                    nextToken();
+                    this.name = new ElementGrammarName(name, start, end, type);
+                    return true;
                 }
             }
         }
 
-        return null;
+        rewind();
+        return false;
     }
 
     /**
@@ -209,34 +178,30 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *
      */
     private boolean matchScope() {
+        mark();
+
         // Must begin with the keyword 'scope'
         ATEToken start = T(0);
-        if(isID(0, "scope")) {
-            if(!nextToken()) return false;
-        } else {
-            return false;
-        }
+        if(!matchID(0, "scope")) return false;
 
         // Match the optional name
-        if(isID(0)) {
-            if(!nextToken()) return false;
-        }
+        matchID(0);
 
         // Match either the block or the semi
         if(isOpenBLOCK(0)) {
             ATEToken beginBlock = T(0);
             if(matchBalancedToken("{", "}")) {
                 beginBlock.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
-                T(0).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
+                T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
                 start.type = GrammarSyntaxLexer.TOKEN_BLOCK_LABEL;
-            } else {
-                return false;
+                return true;
             }
         } else {
-            return isSEMI(0);
+            if(matchSEMI(0)) return true;
         }
 
-        return true;
+        rewind();
+        return false;
     }
 
     /**
@@ -249,38 +214,45 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *  BLOCK = { ... }
      *
      */
-    private ElementBlock matchBlock() {
+    private boolean matchBlock() {
+        return matchBlock(null);
+    }
+
+    private boolean matchBlock(String label) {
+        mark();
+
         ATEToken start = T(0);
         int startIndex = getPosition();
-        if(isID(0)) {
-            if(!nextToken()) return null;
+        if(label == null) {
+            if(!matchID(0)) return false;
         } else {
-            return null;
+            if(!matchID(0, label)) return false;
         }
 
         ElementBlock block = new ElementBlock(start.getAttribute().toLowerCase(), start);
         ATEToken beginBlock = T(0);
         if(matchBalancedToken("{", "}", block)) {
             beginBlock.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
-            T(0).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
+            T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
             start.type = GrammarSyntaxLexer.TOKEN_BLOCK_LABEL;
             blocks.add(block);
-        } else {
-            return null;
+
+            block.end = T(-1);
+            block.internalTokens = new ArrayList<ATEToken>(getTokens().subList(startIndex, getPosition()));
+            block.parse();
+            if(block.isTokenBlock) {
+                List<ATEToken> tokens = block.getDeclaredTokens();
+                for(int i=0; i<tokens.size(); i++) {
+                    ATEToken lexerToken = tokens.get(i);
+                    lexerToken.type = GrammarSyntaxLexer.TOKEN_DECL;
+                    decls.add(lexerToken);
+                }
+            }
+            return true;
         }
 
-        block.end = T(0);
-        block.internalTokens = new ArrayList<ATEToken>(getTokens().subList(startIndex, getPosition()));
-        block.parse();
-        if(block.isTokenBlock) {
-            List<ATEToken> tokens = block.getDeclaredTokens();
-            for(int i=0; i<tokens.size(); i++) {
-                ATEToken lexerToken = tokens.get(i);
-                lexerToken.type = GrammarSyntaxLexer.TOKEN_DECL;
-                decls.add(lexerToken);
-            }
-        }
-        return block;
+        rewind();
+        return false;
     }
 
     /**
@@ -294,83 +266,75 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *  ARG = '[' Type arg... ']'
      *
      */
-    private ElementRule matchRule(List<ElementAction> actions, List<ElementReference> references) {
+
+    private boolean matchRule(List<ElementAction> actions, List<ElementReference> references) {
+        mark();
+        if(tryMatchRule(actions, references)) {
+            return true;
+        } else {
+            rewind();
+            return false;
+        }
+    }
+
+    private boolean tryMatchRule(List<ElementAction> actions, List<ElementReference> references) {
         ATEToken start = T(0);
+        if(start == null) return false;
 
         // Match any modifiers
-        if(ruleModifiers.contains(T(0).getAttribute())) {
+        if(ruleModifiers.contains(start.getAttribute())) {
             // skip the modifier
-            if(!nextToken()) return null;
+            if(!nextToken()) return false;
         }
 
         // Match the name (it has to be an ID)
-        if(!isID(0)) return null;
-
         ElementToken tokenName = (ElementToken) T(0);
         String name = tokenName.getAttribute();
-        if(!nextToken()) return null;
+        if(!matchID(0)) return false;
 
-        // Match any argument
-        if(matchArguments()) {
-            if(!nextToken()) return null;
-        }
+        // Match any optional argument
+        matchArguments();
 
         // Match any returns
-        if(T(0).getAttribute().equals("returns")) {
-            if(!nextToken()) return null;
-            if(matchArguments()) {
-                if(!nextToken()) return null;
-            }
+        if(matchID(0, "returns")) {
+            matchArguments();
         }
 
         // Match any optional "!"
-        if(T(0).getAttribute().equals("!")) {
-            // skip it
-            if(!nextToken()) return null;
-        }
+        matchChar(0, "!");
 
-        // Match any comments
-        while(isSingleComment(0) || isComplexComment(0)) {
-            if(!nextToken()) return null;
-        }
-
-        // Matches any number of scopes and blocks
+        // Match any comments, scopes and blocks
         while(true) {
-            if(matchScope()) {
-                if(!nextToken()) return null;
-                continue;
-            }
-            if(matchBlock() != null) {
-                if(!nextToken()) return null;
-                continue;
-            }
-            if(isSingleComment(0) || isComplexComment(0)) {
-                if(!nextToken()) return null;
-                continue;
-            }
+            if(matchScope()) continue;
+            if(matchBlock()) continue;
+            if(matchSingleComment(0)) continue;
+            if(matchComplexComment(0)) continue;
 
             if(isCOLON(0)) {
                 // When a colon is matched, we are at the beginning of the content of the rule
+                // refactor inside matchColon
+                nextToken();
                 break;
             } else {
                 // Invalid rule matching
-                return null;
+                return false;
             }
         }
 
         // Parse the content of the rule (after the ':')
-        final ATEToken colonToken = T(0);
+        final ATEToken colonToken = T(-1);
         final ElementRule rule = new ElementRule(this, name, start, colonToken, null);
         final int refOldSize = references.size();
         final LabelScope labels = new LabelScope();
         labels.begin();
-        while(nextToken()) {
-            if(isSEMI(0)) {
+        while(true) {
+            if(matchSEMI(0)) {
                 // End of the rule.
-                matchRuleExceptionGroup();
+                // todo
+                //matchRuleExceptionGroup();
 
                 // Record the token that defines the end of the rule
-                rule.end = T(0);
+                rule.end = T(-1);
 
                 // Change the token type of the name
                 tokenName.type = GrammarSyntaxLexer.TOKEN_DECL;
@@ -387,59 +351,29 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 rule.completed();
 
                 // Return the rule
-                return rule;
-            } else if(isID(0)) {
-                // Probably a reference inside the rule.
-
-                // Check for ST function
-                if(isLPAREN(1)) {
-                    if(!nextToken()) return null;
-                    if(matchBalancedToken("(", ")", REWRITE_FUNCTION)) continue;
-                    return null;
-                }
-
+                rules.add(rule);
+                return true;
+            } else if(matchBlock(OPTIONS_BLOCK_NAME)) {
                 // Match any option block
-                // todo only allowed here?
-                if(T(0).getAttribute().equals(OPTIONS_BLOCK_NAME)) {
-                    if(matchBlock() != null) continue;
-                    return null;
-                }
-
-                // Check for label:
+            } else if(matchFunction(0)) {
+                // Match any ST function call
+            } else if(matchAssignment(labels)) {
+                // Match any assignment of type:
                 //   label=reference
                 //   label+=reference
                 //   label='string'
-                if(isChar(1, "=")) {
-                    T(0).type = GrammarSyntaxLexer.TOKEN_LABEL;
-                    labels.add(T(0).getAttribute());
-                    if(!skip(2)) return null;
-                } else if(isChar(1, "+") && isChar(2, "=")) {
-                    T(0).type = GrammarSyntaxLexer.TOKEN_LABEL;
-                    labels.add(T(0).getAttribute());
-                    if(!skip(3)) return null;
-                }
+            } else if(matchID(0)) {
+                // Probably a reference inside the rule.
 
-                // Skip if the operand is not an ID. Can be a string for example, as in:
-                // label='operand'
-                if(!isID(0)) continue;
-
-                // Ignore reserved keywords
-                ATEToken refToken = T(0);
-
+                ATEToken refToken = T(-1);
                 // Match any field access, for example:
                 // foo.bar.boo
-                while(isChar(1, ".") && isID(2)) {
-                    if(!skip(2)) return null;
+                while(isChar(0, ".") && isID(1)) {
+                    if(!skip(2)) return false;
                 }
 
                 // Match any option arguments
-                if(isChar(1, "[")) {
-                    if(!nextToken()) return null;
-                    if(matchArguments()) {
-                        // do not advance one token because we are at the end of parsing the reference
-                        //if(!nextToken()) return null;
-                    }
-                }
+                matchArguments();
 
                 // Now we have the reference token. Set the token flags
                 if(labels.lookup(refToken.getAttribute())) {
@@ -452,34 +386,70 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 }
             } else if(isOpenBLOCK(0)) {
                 // Match an action
-
                 ATEToken t0 = T(0);
                 ElementAction action = new ElementAction(rule, t0);
                 if(matchBalancedToken("{", "}", action)) {
                     t0.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
-                    T(0).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
-                    action.end = T(0);
+                    T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
+
+                    action.end = T(-1);
                     action.actionNum = actions.size();
                     action.setScope(rule);
                     actions.add(action);
                 }
             } else if(isTokenType(0, GrammarSyntaxLexer.TOKEN_REWRITE)) {
                 // Match a rewrite syntax beginning with ->
-            //    if(!nextToken()) return null;
+                //    if(!nextToken()) return null;
 
-            //    matchRewriteSyntax();
+                //    matchRewriteSyntax();
+                nextToken();
             } else if(isLPAREN(0)) {
                 labels.begin();
+                nextToken();
             } else if(isRPAREN(0)) {
                 labels.end();
+                nextToken();
+            } else {
+                if(!nextToken()) return false;
+            }
+        }
+    }
+
+    private boolean matchAssignment(LabelScope labels) {
+        mark();
+
+        ATEToken label = T(0);
+        if(matchID(0)) {
+            if(matchChar(0, "=")) {
+                label.type = GrammarSyntaxLexer.TOKEN_LABEL;
+                labels.add(label.getAttribute());
+                return true;
+            } else if(isChar(0, "+") && isChar(1, "=")) {
+                label.type = GrammarSyntaxLexer.TOKEN_LABEL;
+                labels.add(label.getAttribute());
+                skip(2);
+                return true;
             }
         }
 
-        return null;
+        rewind();
+        return false;
+    }
+
+    private boolean matchFunction(int index) {
+        mark();
+        if(isTokenType(index, GrammarSyntaxLexer.TOKEN_FUNC)) {
+            nextToken();
+            if(matchBalancedToken("(", ")", REWRITE_FUNCTION)) {
+                return true;
+            }
+        }
+        rewind();
+        return false;
     }
 
     private boolean matchArguments() {
-        return isChar(0, "[") && matchBalancedToken("[", "]");
+        return matchBalancedToken("[", "]");
     }
 
     // todo check and terminate
@@ -576,6 +546,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
     /**
      * Matches all tokens until the balanced token's attribute is equal to close.
+     * Expects the current token to be the open token (e.g. '{' whatever needs to be balanced)
      *
      * @param open The open attribute
      * @param close The close attribute
@@ -586,20 +557,25 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     private boolean matchBalancedToken(String open, String close, ATEScope scope) {
-        T(0).scope = scope;
+        if(T(0) == null || !T(0).getAttribute().equals(open)) return false;
+
+        mark();
         int balance = 0;
-        while(nextToken()) {
+        while(true) {
             String attr = T(0).getAttribute();
             T(0).scope = scope;
             if(attr.equals(open))
                 balance++;
             else if(attr.equals(close)) {
+                balance--;
                 if(balance == 0) {
+                    nextToken();
                     return true;
                 }
-                balance--;
             }
+            if(!nextToken()) break;
         }
+        rewind();
         return false;
     }
 
@@ -611,20 +587,38 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             return false;
     }
 
-    // @todo refactor using this method?
-    private boolean matchChar(String c) {
-        if(isChar(0, c)) {
-            return nextToken();
+    private boolean matchChar(int index, String c) {
+        if(isChar(index, c)) {
+            nextToken();
+            return true;
         } else {
             return false;
         }
 
     }
 
-    // @todo refactor using this method?
     private boolean matchID(int index) {
         if(isID(index)) {
-            return nextToken();
+            nextToken();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean matchID(int index, String text) {
+        if(isID(index, text)) {
+            nextToken();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean matchSEMI(int index) {
+        if(isSEMI(index)) {
+            nextToken();
+            return true;
         } else {
             return false;
         }

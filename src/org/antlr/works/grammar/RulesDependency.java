@@ -3,9 +3,9 @@ package org.antlr.works.grammar;
 import edu.usfca.xj.appkit.utils.XJAlert;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.syntax.ElementGrammarName;
-import org.antlr.works.syntax.ElementReference;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementGrammarName;
+import org.antlr.works.syntax.element.ElementReference;
+import org.antlr.works.syntax.element.ElementRule;
 
 import java.util.ArrayList;
 import java.util.Iterator;

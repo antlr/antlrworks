@@ -5,7 +5,7 @@ import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementRule;
 
 import java.util.List;
 /*

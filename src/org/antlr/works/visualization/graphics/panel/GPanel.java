@@ -37,7 +37,7 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.ElementRule;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
