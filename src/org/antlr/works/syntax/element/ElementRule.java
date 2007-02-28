@@ -70,6 +70,12 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     protected int refsStartIndex = -1;
     protected int refsEndIndex = -1;
 
+    protected int blocksStartIndex = -1;
+    protected int blocksEndIndex = -1;
+
+    protected int actionsStartIndex = -1;
+    protected int actionsEndIndex = -1;
+
     public ElementRule(String name) {
         this.name = name;
         this.lexer = ATEToken.isLexerName(name);
@@ -95,9 +101,33 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         this.refsEndIndex = endIndex;
     }
 
-    public List getReferences() {
+    public List<ElementReference> getReferences() {
         if(refsStartIndex != -1 && refsEndIndex != -1)
             return parser.references.subList(refsStartIndex, refsEndIndex+1);
+        else
+            return null;
+    }
+
+    public void setBlocksIndexes(int startIndex, int endIndex) {
+        this.blocksStartIndex = Math.max(0, startIndex);
+        this.blocksEndIndex = endIndex;
+    }
+
+    public List<ElementBlock> getBlocks() {
+        if(blocksStartIndex != -1 && blocksEndIndex != -1)
+            return parser.blocks.subList(blocksStartIndex, blocksEndIndex+1);
+        else
+            return null;
+    }
+
+    public void setActionsIndexes(int startIndex, int endIndex) {
+        this.actionsStartIndex = Math.max(0, startIndex);
+        this.actionsEndIndex = endIndex;
+    }
+
+    public List<ElementAction> getActions() {
+        if(actionsStartIndex != -1 && actionsEndIndex != -1)
+            return parser.actions.subList(actionsStartIndex, actionsEndIndex+1);
         else
             return null;
     }
@@ -115,10 +145,10 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public int getInternalTokensStartIndex() {
-        for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
-            ATEToken token = (ATEToken)iter.next();
+        for(Iterator<ATEToken> iter = getTokens().iterator(); iter.hasNext(); ) {
+            ATEToken token = iter.next();
             if(token.getAttribute().equals(":")) {
-                token = (ATEToken)iter.next();
+                token = iter.next();
                 return token.getStartIndex();
             }
         }
@@ -130,34 +160,17 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         return token.getEndIndex();
     }
 
-    public List getBlocks() {
-        List blocks = new ArrayList();
-        // todo check
-/*        ATEToken lastToken = null;
-        for(int index=start.index; index<end.index; index++) {
-            ATEToken token = (ATEToken)parser.getTokens().get(index);
-            if(token.type == GrammarSyntaxLexer.TOKEN_BLOCK) {
-                if(lastToken != null && lastToken.type == ATESyntaxLexer.TOKEN_ID && lastToken.getAttribute().equals("options"))
-                    continue;
-
-                blocks.add(token);
-            }
-            lastToken = token;
-        }                     */
-        return blocks;
-    }
-
-    public List getTokens() {
-        List t = new ArrayList();
+    public List<ATEToken> getTokens() {
+        List<ATEToken> t = new ArrayList<ATEToken>();
         for(int index=start.index; index<end.index; index++) {
             t.add(parser.getTokens().get(index));
         }
         return t;
     }
 
-    public List getAlternatives() {
-        List alts = new ArrayList();
-        List alt = null;
+    public List<List<ATEToken>> getAlternatives() {
+        List<List<ATEToken>> alts = new ArrayList<List<ATEToken>>();
+        List<ATEToken> alt = null;
         boolean findColon = true;
         int level = 0;
         // todo check
@@ -221,13 +234,12 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public boolean detectLeftRecursion() {
-        for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
-            List alts = (List)iter.next();
-            if(alts.isEmpty())
+        for (List<ATEToken> alts : getAlternatives()) {
+            if (alts.isEmpty())
                 continue;
 
-            ATEToken firstTokenInAlt = (ATEToken)alts.get(0);
-            if(firstTokenInAlt.getAttribute().equals(name))
+            ATEToken firstTokenInAlt = alts.get(0);
+            if (firstTokenInAlt.getAttribute().equals(name))
                 return true;
         }
         return false;
@@ -237,22 +249,21 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         StringBuffer head = new StringBuffer();
         StringBuffer star = new StringBuffer();
 
-        for(Iterator iter = getAlternatives().iterator(); iter.hasNext(); ) {
-            List alts = (List)iter.next();
-            ATEToken firstTokenInAlt = (ATEToken)alts.get(0);
-            if(firstTokenInAlt.getAttribute().equals(name)) {
-                if(alts.size() > 1) {
-                    if(star.length() > 0)
+        for (List<ATEToken> alts : getAlternatives()) {
+            ATEToken firstTokenInAlt = alts.get(0);
+            if (firstTokenInAlt.getAttribute().equals(name)) {
+                if (alts.size() > 1) {
+                    if (star.length() > 0)
                         star.append(" | ");
-                    int start = ((ATEToken)alts.get(1)).getStartIndex();
-                    int end = ((ATEToken)alts.get(alts.size()-1)).getEndIndex();
+                    int start = (alts.get(1)).getStartIndex();
+                    int end = (alts.get(alts.size() - 1)).getEndIndex();
                     star.append(firstTokenInAlt.getText().substring(start, end));
                 }
             } else {
-                if(head.length() > 0)
+                if (head.length() > 0)
                     head.append(" | ");
                 int start = firstTokenInAlt.getStartIndex();
-                int end = ((ATEToken)alts.get(alts.size()-1)).getEndIndex();
+                int end = (alts.get(alts.size() - 1)).getEndIndex();
                 head.append(firstTokenInAlt.getText().substring(start, end));
             }
         }
@@ -387,7 +398,7 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public Object getPersistentID() {
-        return new Integer(getUniqueIdentifier());
+        return getUniqueIdentifier();
     }
 
     public void persistentAssign(EditorPersistentObject otherObject) {

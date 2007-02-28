@@ -109,20 +109,15 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         while(true) {
 
-            if(matchSingleComment(0)) continue;
-            if(matchComplexComment(0)) continue;
-
             if(matchName()) continue;
             if(matchScope()) continue; // scope before block
             if(matchBlock()) continue;
-            if(matchRule(actions, references)) continue;
+            if(matchRule()) continue;
 
-            // todo add back later on
-            /*if(isSingleComment(0)) {
-                ElementGroup group = matchRuleGroup(rules);
-                if(group != null)
-                    groups.add(group);
-            }   */
+            if(matchRuleGroup()) continue; // before single comment
+
+            if(matchSingleComment(0)) continue;
+            if(matchComplexComment(0)) continue;
 
             // Nothing matches, go to next token
             if(!nextToken()) break;
@@ -136,6 +131,8 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *
      */
     private boolean matchName() {
+        if(!isID(0, "grammar")) return false;
+
         mark();
 
         ATEToken start = T(0);
@@ -178,6 +175,8 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *
      */
     private boolean matchScope() {
+        if(!isID(0, "scope")) return false;
+
         mark();
 
         // Must begin with the keyword 'scope'
@@ -219,6 +218,9 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     private boolean matchBlock(String label) {
+        if(label == null && !isID(0)) return false;
+        if(label != null && !isID(0, label)) return false;
+
         mark();
 
         ATEToken start = T(0);
@@ -267,9 +269,9 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *
      */
 
-    private boolean matchRule(List<ElementAction> actions, List<ElementReference> references) {
+    private boolean matchRule() {
         mark();
-        if(tryMatchRule(actions, references)) {
+        if(tryMatchRule()) {
             return true;
         } else {
             rewind();
@@ -277,7 +279,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         }
     }
 
-    private boolean tryMatchRule(List<ElementAction> actions, List<ElementReference> references) {
+    private boolean tryMatchRule() {
         ATEToken start = T(0);
         if(start == null) return false;
 
@@ -324,7 +326,9 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         // Parse the content of the rule (after the ':')
         final ATEToken colonToken = T(-1);
         final ElementRule rule = new ElementRule(this, name, start, colonToken, null);
-        final int refOldSize = references.size();
+        final int oldRefsSize = references.size();
+        final int oldBlocksSize = blocks.size();
+        final int oldActionsSize = actions.size();
         final LabelScope labels = new LabelScope();
         labels.begin();
         while(true) {
@@ -340,11 +344,16 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 tokenName.type = GrammarSyntaxLexer.TOKEN_DECL;
                 decls.add(tokenName);
 
-                // Each rule contains the index of its references. It is used when refactoring.
-                if(references.size() > refOldSize) {
-                    // If the size of the references array has changed, then we have some references
-                    // inside this rule. Sets the indexes into the rule.
-                    rule.setReferencesIndexes(refOldSize, references.size()-1);
+                if(references.size() > oldRefsSize) {
+                    rule.setReferencesIndexes(oldRefsSize, references.size()-1);
+                }
+
+                if(blocks.size() > oldBlocksSize) {
+                    rule.setBlocksIndexes(oldBlocksSize, blocks.size()-1);
+                }
+
+                if(actions.size() > oldActionsSize) {
+                    rule.setActionsIndexes(oldActionsSize, actions.size()-1);
                 }
 
                 // Indicate to the rule that is has been parsed completely.
@@ -354,17 +363,16 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 rules.add(rule);
                 return true;
             } else if(matchBlock(OPTIONS_BLOCK_NAME)) {
-                // Match any option block
+                // Matched any option block
             } else if(matchFunction(0)) {
-                // Match any ST function call
+                // Matched any ST function call
             } else if(matchAssignment(labels)) {
-                // Match any assignment of type:
+                // Matched any assignment of type:
                 //   label=reference
                 //   label+=reference
                 //   label='string'
             } else if(matchID(0)) {
                 // Probably a reference inside the rule.
-
                 ATEToken refToken = T(-1);
                 // Match any field access, for example:
                 // foo.bar.boo
@@ -489,7 +497,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                     return matchBalancedToken("{", "}", REWRITE_BLOCK);
                 } else {
                     // nothing follows
-                    // todo ugly -> think about general solution with nextToken
                     previousToken();
                     return true;
                 }
@@ -532,16 +539,20 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      * Matches the group token used to group rules in the rule lists
      *
      */
-    private ElementGroup matchRuleGroup(List<ElementRule> rules) {
+    private boolean matchRuleGroup() {
+        if(!isSingleComment(0)) return false;
+
         ATEToken token = T(0);
         String comment = token.getAttribute();
 
         if(comment.startsWith(BEGIN_GROUP)) {
-            return new ElementGroup(comment.substring(BEGIN_GROUP.length(), comment.length()-1), rules.size()-1, token);
+            groups.add(new ElementGroup(comment.substring(BEGIN_GROUP.length(), comment.length()-1), rules.size()-1, token));
+            return true;
         } else if(comment.startsWith(END_GROUP)) {
-            return new ElementGroup(rules.size()-1, token);
-        } else
-            return null;
+            groups.add(new ElementGroup(rules.size()-1, token));
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -648,7 +659,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      * Class used to keep track of the scope of the labels inside a rule.
      *
      */
-    // todo still need that?
     private class LabelScope {
 
         Stack<Set<String>> labels = new Stack<Set<String>>();

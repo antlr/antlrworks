@@ -3,6 +3,11 @@
 
 - rewrite: check all "todo check"
 
+- unit tests:
+  -> rule skipped for interpreter (with HIDDEN or skip())
+  -> bad grammar (when starting to write a new grammar, check for no exception in that case)
+  -> remove left recursion
+  
 - prefs: backup file
 - button to autofit any syntax diagram/other to the size of visible area
 - prefs to display output dir dialog before generating grammar

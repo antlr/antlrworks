@@ -5,6 +5,7 @@ import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.syntax.GrammarSyntaxLexer;
 import org.antlr.works.syntax.element.ElementRule;
 
 import java.util.List;
@@ -66,14 +67,13 @@ public class DecisionDFA extends GrammarDOTTab {
         }
     }
 
-    /** Find the closest decision token. We backup until we see a colon and then
+    /**
+     * Finds the closest decision token. We backup until we see a colon and then
      * use the last seen token (because the token in a rule can be in another line
      * than the colon)
      * @return The closest token of a decision point
      */
     public ATEToken findClosestDecisionToken() {
-        // todo check
-        /*
         ATEToken ct = editor.getCurrentToken();
         ATEToken lastToken = ct;
         List tokens = editor.getTokens();
@@ -91,7 +91,7 @@ public class DecisionDFA extends GrammarDOTTab {
                     nestedParen--;
             }
             lastToken = t;
-        } */
+        }
         return null;
     }
 
@@ -110,11 +110,11 @@ public class DecisionDFA extends GrammarDOTTab {
         int adjustedColumn = -1;
         for(int index = columns.size()-1; index >=0; index--) {
             Integer match = (Integer)columns.get(index);
-            if(match.intValue() <= column) {
-                adjustedColumn = match.intValue();
+            if(match <= column) {
+                adjustedColumn = match;
                 break;
             } else if(index == 0)
-                adjustedColumn = match.intValue();
+                adjustedColumn = match;
         }
 
         if(adjustedColumn == -1)

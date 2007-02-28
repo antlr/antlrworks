@@ -37,7 +37,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ElementAction extends ElementScopable implements EditorPersistentObject, ATEFoldingEntity {
 
     public ElementRule rule;
-    private ATEToken start;
+    public ATEToken start;
     public ATEToken end;
     public int actionNum;
     private boolean expanded = true;

@@ -115,7 +115,6 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
     public AttributeSet getAttributeForToken(ATEToken token) {
         AttributeSet attr = super.getAttributeForToken(token);
-        // todo check
         switch(token.type) {
             case GrammarSyntaxLexer.TOKEN_DECL:
             case GrammarSyntaxLexer.TOKEN_REFERENCE:

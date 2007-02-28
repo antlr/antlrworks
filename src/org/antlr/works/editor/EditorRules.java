@@ -39,6 +39,8 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
+import org.antlr.works.syntax.GrammarSyntaxLexer;
+import org.antlr.works.syntax.element.ElementAction;
 import org.antlr.works.syntax.element.ElementGroup;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.syntax.element.ElementRule;
@@ -74,7 +76,7 @@ public class EditorRules implements XJTreeDelegate {
     protected XJTree rulesTree;
     protected DefaultMutableTreeNode rulesTreeRootNode;
     protected DefaultTreeModel rulesTreeModel;
-    protected List rulesTreeExpandedNodes;
+    protected List<String> rulesTreeExpandedNodes;
     protected RuleTreeUserObject selectedObject;
 
     protected boolean sort;
@@ -88,7 +90,7 @@ public class EditorRules implements XJTreeDelegate {
 
         rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeUserObject((ElementRule)null));
         rulesTreeModel = new DefaultTreeModel(rulesTreeRootNode);
-        rulesTreeExpandedNodes = new ArrayList();
+        rulesTreeExpandedNodes = new ArrayList<String>();
 
         rulesTree.setModel(rulesTreeModel);
         rulesTree.addMouseListener(new RuleTreeMouseListener());
@@ -126,8 +128,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public void ignoreSelectedRules(boolean flag) {
-        for (Iterator iterator = getSelectedRules().iterator(); iterator.hasNext();) {
-            ElementRule r = (ElementRule) iterator.next();
+        for (ElementRule r : getSelectedRules()) {
             r.ignored = flag;
         }
         rulesTree.repaint();
@@ -139,43 +140,44 @@ public class EditorRules implements XJTreeDelegate {
      */
 
     public void findTokensToIgnore() {
-        List rules = getRules();
+        List<ElementRule> rules = getRules();
         if(rules == null || rules.isEmpty())
             return;
 
-        ATESyntaxLexer lexer = new ATESyntaxLexer();
-        for (Iterator ruleIter = rules.iterator(); ruleIter.hasNext();) {
-            ElementRule rule = (ElementRule) ruleIter.next();
-            List blocks = rule.getBlocks();
-            if(blocks == null || blocks.isEmpty())
+        for (ElementRule rule : rules) {
+            List<ElementAction> actions = rule.getActions();
+            if (actions == null || actions.isEmpty())
                 continue;
 
             rule.ignored = false;
 
-            for (Iterator blockIter = blocks.iterator(); blockIter.hasNext();) {
-                ATEToken block = (ATEToken) blockIter.next();
-                lexer.tokenize(block.getAttribute());
+            for (ElementAction action : actions) {
 
-                List tokens = lexer.getTokens();
-                for(int t=0; t<tokens.size(); t++) {
-                    ATEToken token = (ATEToken)tokens.get(t);
-                    if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("channel") && t+3 < tokens.size()) {
-                        ATEToken t1 = (ATEToken)tokens.get(t+1);
-                        ATEToken t2 = (ATEToken)tokens.get(t+2);
-                        if(t1.type != ATESyntaxLexer.TOKEN_CHAR || !t1.getAttribute().equals("="))
+                List<ATEToken> tokens = editor.getTokens();
+                int start = tokens.indexOf(action.start);
+                int end = tokens.indexOf(action.end);
+
+                tokens = tokens.subList(start, end);
+                for (int t = 0; t < tokens.size(); t++) {
+                    ATEToken token = tokens.get(t);
+                    if (token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("channel") && t + 3 < tokens.size())
+                    {
+                        ATEToken t1 = tokens.get(t + 1);
+                        ATEToken t2 = tokens.get(t + 2);
+                        if (t1.type != ATESyntaxLexer.TOKEN_CHAR || !t1.getAttribute().equals("="))
                             continue;
 
-                        if(t2.type != ATESyntaxLexer.TOKEN_ID || !t2.getAttribute().equals("HIDDEN"))
+                        if (t2.type != ATESyntaxLexer.TOKEN_ID || !t2.getAttribute().equals("HIDDEN"))
                             continue;
 
                         rule.ignored = true;
                         break;
                     }
-                    if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("skip")) {
+                    if (token.type == GrammarSyntaxLexer.TOKEN_FUNC && token.getAttribute().equals("skip")) {
                         // Take skip() into account only if it is the only token in the block
-                        if(tokens.size() == 6 && t == 1) {
+                        if (tokens.size() == 4 && t == 1) {
                             rule.ignored = true;
-                            break;                                                    
+                            break;
                         }
                     }
                 }
@@ -186,11 +188,11 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public boolean getFirstSelectedRuleIgnoredFlag() {
-        List selectedRules = getSelectedRules();
+        List<ElementRule> selectedRules = getSelectedRules();
         if(selectedRules == null || selectedRules.isEmpty())
             return false;
         else
-            return ((ElementRule)selectedRules.get(0)).ignored;
+            return (selectedRules.get(0)).ignored;
     }
 
     public class RuleMoveUpAction extends AbstractAction {
@@ -236,18 +238,17 @@ public class EditorRules implements XJTreeDelegate {
 
     public ElementGroup findOpenGroupClosestToLocation(int location) {
         // Look backward into the list of groups
-        List groups = getParserEngine().getGroups();
+        List<ElementGroup> groups = getParserEngine().getGroups();
         if(groups == null || groups.isEmpty())
             return null;
 
         ElementGroup previous = null;
-        for(int index = 0; index < groups.size(); index++) {
-            ElementGroup group = (ElementGroup)groups.get(index);
-            if(!group.openGroup)
+        for (ElementGroup group : groups) {
+            if (!group.openGroup)
                 continue;
 
             ATEToken t = group.token;
-            if(t.getStartIndex() > location)
+            if (t.getStartIndex() > location)
                 break;
 
             previous = group;
@@ -256,7 +257,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementGroup findClosingGroupForGroup(ElementGroup group) {
-        List groups = getParserEngine().getGroups();
+        List<ElementGroup> groups = getParserEngine().getGroups();
         if(groups == null || groups.isEmpty())
             return null;
 
@@ -266,7 +267,7 @@ public class EditorRules implements XJTreeDelegate {
 
         int open = 0;
         while(index < groups.size()) {
-            ElementGroup g = (ElementGroup) groups.get(index);
+            ElementGroup g = groups.get(index);
             if(g.openGroup)
                 open++;
             else if(open == 0)
@@ -278,25 +279,25 @@ public class EditorRules implements XJTreeDelegate {
         return null;
     }
 
-    public List getRules() {
+    public List<ElementRule> getRules() {
         return getParserEngine().getRules();
     }
 
-    public List getSortedRules() {
+    public List<ElementRule> getSortedRules() {
         return getSortedRules(getRules());
     }
     
-    public List getSortedRules(List rules) {
+    public List<ElementRule> getSortedRules(List<ElementRule> rules) {
         if(rules == null)
             return null;
 
-        List sortedRules = new ArrayList(rules);
+        List<ElementRule> sortedRules = new ArrayList<ElementRule>(rules);
         Collections.sort(sortedRules);
         if(!sortedRules.isEmpty()) {
-            ElementRule firstRule = (ElementRule)sortedRules.get(0);
+            ElementRule firstRule = sortedRules.get(0);
             if(firstRule.lexer) {
                 for(int index=0; index<sortedRules.size(); index++) {
-                    ElementRule rule = (ElementRule)sortedRules.get(0);
+                    ElementRule rule = sortedRules.get(0);
                     if(!rule.lexer)
                         break;
 
@@ -308,29 +309,29 @@ public class EditorRules implements XJTreeDelegate {
         return sortedRules;
     }
 
-    public List getSelectedRules() {
-        List rules = new ArrayList(); // GrammarSyntaxRule objects
-        for (Iterator iterator = rulesTree.getSelectedNodes().iterator(); iterator.hasNext();) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) iterator.next();
+    public List<ElementRule> getSelectedRules() {
+        List<ElementRule> rules = new ArrayList<ElementRule>(); // GrammarSyntaxRule objects
+        for (Object o1 : rulesTree.getSelectedNodes()) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) o1;
             RuleTreeUserObject o = (RuleTreeUserObject) node.getUserObject();
-            if(o.rule != null)
+            if (o.rule != null)
                 rules.add(o.rule);
         }
         return rules;
     }
 
     public ElementRule getLastRule() {
-        List rules = getParserEngine().getRules();
+        List<ElementRule> rules = getParserEngine().getRules();
         if(rules != null && !rules.isEmpty())
-            return (ElementRule)rules.get(rules.size()-1);
+            return rules.get(rules.size()-1);
         else
         return null;
     }
 
     public ElementRule getLastParserRule() {
-        List rules = getParserEngine().getRules();
+        List<ElementRule> rules = getParserEngine().getRules();
         for(int index = rules.size()-1; index>0; index--) {
-            ElementRule rule = (ElementRule)rules.get(index);
+            ElementRule rule = rules.get(index);
             if(!rule.lexer)
                 return rule;
         }
@@ -338,9 +339,9 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementRule getLastLexerRule() {
-        List rules = getParserEngine().getRules();
+        List<ElementRule> rules = getParserEngine().getRules();
         for(int index = rules.size()-1; index>0; index--) {
-            ElementRule rule = (ElementRule)rules.get(index);
+            ElementRule rule = rules.get(index);
             if(rule.lexer)
                 return rule;
         }
@@ -348,38 +349,35 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementRule getRuleWithName(String name) {
-        List rules = getParserEngine().getRules();
-        for(int index=0; index<rules.size(); index++) {
-            ElementRule r = (ElementRule)rules.get(index);
-            if(r.name.equals(name))
+        List<ElementRule> rules = getParserEngine().getRules();
+        for (ElementRule r : rules) {
+            if (r.name.equals(name))
                 return r;
         }
         return null;
     }
 
-    public List getRulesStartingWith(String match) {
-        List matches = new ArrayList();
+    public List<String> getRulesStartingWith(String match) {
+        List<String> matches = new ArrayList<String>();
         if(getParserEngine().getRules() == null)
             return matches;
 
-        List rules = getParserEngine().getRules();
-        for(int index=0; index<rules.size(); index++) {
-            ElementRule r = (ElementRule)rules.get(index);
+        List<ElementRule> rules = getParserEngine().getRules();
+        for (ElementRule r : rules) {
             String rname = r.name.toLowerCase();
-            if(rname.startsWith(match) && !matches.contains(r.name))
+            if (rname.startsWith(match) && !matches.contains(r.name))
                 matches.add(r.name);
         }
         return matches;
     }
 
-    public List getReferencesInRule(ElementRule rule) {
+    public List<ElementReference> getReferencesInRule(ElementRule rule) {
         if(getParserEngine().getRules() == null)
             return null;
 
-        List refs = new ArrayList();
-        for(Iterator iterator = getParserEngine().getReferences().iterator(); iterator.hasNext(); ) {
-            ElementReference r = (ElementReference)iterator.next();
-            if(r.rule == rule)
+        List<ElementReference> refs = new ArrayList<ElementReference>();
+        for (ElementReference r : getParserEngine().getReferences()) {
+            if (r.rule == rule)
                 refs.add(r);
         }
         return refs;
@@ -389,10 +387,8 @@ public class EditorRules implements XJTreeDelegate {
         if(getParserEngine().getRules() == null)
             return null;
 
-        Iterator iterator = getParserEngine().getRules().iterator();
-        while(iterator.hasNext()) {
-            ElementRule r = (ElementRule)iterator.next();
-            if(r.containsIndex(pos))
+        for (ElementRule r : getParserEngine().getRules()) {
+            if (r.containsIndex(pos))
                 return r;
         }
         return null;
@@ -415,10 +411,8 @@ public class EditorRules implements XJTreeDelegate {
 
         ElementRule rule = null;
         programmaticallySelectingRule = true;
-        Iterator iterator = getParserEngine().getRules().iterator();
-        while(iterator.hasNext()) {
-            ElementRule r = (ElementRule)iterator.next();
-            if(r.name.equals(name)) {
+        for (ElementRule r : getParserEngine().getRules()) {
+            if (r.name.equals(name)) {
                 selectRuleInTree(r);
                 rule = r;
                 break;
@@ -432,10 +426,8 @@ public class EditorRules implements XJTreeDelegate {
         if(getParserEngine().getRules() == null)
             return null;
 
-        Iterator iterator = getParserEngine().getRules().iterator();
-        while(iterator.hasNext()) {
-            ElementRule r = (ElementRule)iterator.next();
-            if(index >= r.getStartIndex() && index <= r.getEndIndex())
+        for (ElementRule r : getParserEngine().getRules()) {
+            if (index >= r.getStartIndex() && index <= r.getEndIndex())
                 return r;
         }
         return null;
@@ -482,22 +474,22 @@ public class EditorRules implements XJTreeDelegate {
 
         rulesTreeRootNode.removeAllChildren();
 
-        List rules = getParserEngine().getRules();
-        List groups = getParserEngine().getGroups();
+        List<ElementRule> rules = getParserEngine().getRules();
+        List<ElementGroup> groups = getParserEngine().getGroups();
         if(rules == null || groups == null)
             return;
 
         if(groups.isEmpty()) {
             buildTree(rulesTreeRootNode, rules, 0, rules.size()-1);
         } else {
-            Stack parentStack = new Stack();
+            Stack<DefaultMutableTreeNode> parentStack = new Stack<DefaultMutableTreeNode>();
             parentStack.add(rulesTreeRootNode);
 
             int ruleIndex = 0;
             for(int index=0; index<groups.size(); index++) {
-                ElementGroup group = (ElementGroup)groups.get(index);
+                ElementGroup group = groups.get(index);
 
-                DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode)parentStack.peek();
+                DefaultMutableTreeNode parentNode = parentStack.peek();
                 if(group.ruleIndex >= 0) {
                     buildTree(parentNode, rules, ruleIndex, group.ruleIndex);
                     ruleIndex = group.ruleIndex+1;
@@ -514,7 +506,7 @@ public class EditorRules implements XJTreeDelegate {
             }
 
             if(ruleIndex < rules.size()) {
-                DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode)parentStack.peek();
+                DefaultMutableTreeNode parentNode = parentStack.peek();
                 buildTree(parentNode, rules, ruleIndex, rules.size()-1);
             }
         }
@@ -560,11 +552,9 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public void restoreExpandedNodes() {
-        Iterator iterator = rulesTreeExpandedNodes.iterator();
-        while(iterator.hasNext()) {
-            String groupName = (String)iterator.next();
+        for (String groupName : rulesTreeExpandedNodes) {
             DefaultMutableTreeNode node = findNodeWithGroupName(groupName);
-            if(node != null)
+            if (node != null)
                 rulesTree.expandPath(new TreePath(node.getPath()));
         }
     }
@@ -591,16 +581,16 @@ public class EditorRules implements XJTreeDelegate {
         return null;
     }
 
-    protected void buildTree(DefaultMutableTreeNode parentNode, List rules, int from, int to) {
+    protected void buildTree(DefaultMutableTreeNode parentNode, List<ElementRule> rules, int from, int to) {
         // Sort the list of subrules
-        List subrules = rules.subList(from, to+1);
+        List<ElementRule> subrules = rules.subList(from, to+1);
         if(sort && !subrules.isEmpty()) {
             subrules = getSortedRules(subrules);
             Collections.sort(subrules);
-            ElementRule firstRule = (ElementRule)subrules.get(0);
+            ElementRule firstRule = subrules.get(0);
             if(firstRule.lexer) {
                 for(int index=0; index<subrules.size(); index++) {
-                    ElementRule rule = (ElementRule)subrules.get(0);
+                    ElementRule rule = subrules.get(0);
                     if(!rule.lexer)
                         break;
 
@@ -610,8 +600,7 @@ public class EditorRules implements XJTreeDelegate {
             }
         }
 
-        for(int index=0; index<subrules.size(); index++) {
-            ElementRule rule = (ElementRule) subrules.get(index);
+        for (ElementRule rule : subrules) {
             parentNode.add(new DefaultMutableTreeNode(new RuleTreeUserObject(rule)));
         }
     }
@@ -678,16 +667,16 @@ public class EditorRules implements XJTreeDelegate {
         if(selPath == null)
             return;
 
-        List selRules = new ArrayList();
-        for(int path=0; path<selPath.length; path++) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode)selPath[path].getLastPathComponent();
-            RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
-            if(n.rule != null)
+        List<ElementRule> selRules = new ArrayList<ElementRule>();
+        for (TreePath aSelPath : selPath) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) aSelPath.getLastPathComponent();
+            RuleTreeUserObject n = (RuleTreeUserObject) node.getUserObject();
+            if (n.rule != null)
                 selRules.add(n.rule);
         }
 
         if(!selRules.isEmpty()) {
-            goToRule((ElementRule)selRules.get(0));
+            goToRule(selRules.get(0));
             // Request focus because it was lost when moving the caret in the document
             rulesTree.requestFocusInWindow();
         }
@@ -775,9 +764,9 @@ public class EditorRules implements XJTreeDelegate {
             if(e.isPopupTrigger()) {
                 rulesTree.modifySelectionIfNecessary(e);
 
-                List selectedObjects = new ArrayList(); // RuleTreeUserObject objects
-                for (Iterator iterator = rulesTree.getSelectedNodes().iterator(); iterator.hasNext();) {
-                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) iterator.next();
+                List<Object> selectedObjects = new ArrayList<Object>(); // RuleTreeUserObject objects
+                for (Object o : rulesTree.getSelectedNodes()) {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
                     selectedObjects.add(node.getUserObject());
                 }
                 JPopupMenu menu = editor.rulesGetContextualMenu(selectedObjects);

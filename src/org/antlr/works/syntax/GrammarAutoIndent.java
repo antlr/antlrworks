@@ -6,8 +6,6 @@ import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import javax.swing.text.Segment;
-import java.text.CharacterIterator;
 /*
 
 [The "BSD licence"]
@@ -45,7 +43,7 @@ public class GrammarAutoIndent {
         String s = doc.getText(offset-1, length+1);
         if(s.length() < 2)
             return;
-        
+
         char c1 = s.charAt(0);
         char c2 = s.charAt(1);
         if(c1 == '\n' || c1 == '\r') {
@@ -57,12 +55,11 @@ public class GrammarAutoIndent {
                 doc.insertString(offset, "\t"+c2, null);
             }
         } else if(c2 == ':') {
-            // If we know we are in a block token ignore the auto-indent on ':'
+            // Disable the auto-indent on ':' if we are in a block, action, etc.
+            // This is indicated by the fact that the token has a scope.
             ATEToken token = editor.getCurrentToken();
-            // todo check
-            /*if(token != null && token.getContext())
-            if(token != null && token.type == GrammarSyntaxLexer.TOKEN_BLOCK)
-                    return;*/
+            if(token != null && token.scope != null)
+                return;
 
             // Try to reach the beginning of the line by parsing only an ID
             // (which is the rule name)
@@ -72,29 +69,6 @@ public class GrammarAutoIndent {
                 String t = doc.getText(offset, 1);
                 char c = t.charAt(0);
                 if(c == '\n' || c == '\r') {
-                    // beginning of line reached
-                    // Little hack: go back to see if
-                    // we see a '{' indicating that we are in an action and should not
-                    // perform auto-indenting - this is not a perfect solution,
-                    // only a hack until I find a better solution later ;-)
-                    Segment seg = new Segment();
-                    doc.getText(0, offset, seg);
-                    c = seg.last();
-                    while(c != CharacterIterator.DONE) {
-                        // If we see a '}', pretend that we are after
-                        // the end of an action - so break here
-                        if(c == '}')
-                            break;
-
-                        // If we see a '{', pretend that we are in an action
-                        // and so don't auto-indent
-                        if(c == '{') {
-                            beginningOfRule = false;
-                            break;
-                        }
-
-                        c = seg.previous();
-                    }
                     break;
                 }
                 if(c != ' ' && c != '_' && !Character.isLetterOrDigit(c)) {
