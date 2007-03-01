@@ -75,6 +75,14 @@ public abstract class ATESyntaxEngine {
         return lexer.getLineNumber();
     }
 
+    public ATESyntaxLexer getLexer() {
+        return lexer;
+    }
+
+    public ATESyntaxParser getParser() {
+        return parser;
+    }
+
     protected synchronized void lexerDidRun(ATESyntaxLexer lexer) {
     }
 

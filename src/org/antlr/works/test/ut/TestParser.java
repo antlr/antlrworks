@@ -8,9 +8,7 @@ import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.test.AbstractTest;
 import org.antlr.works.test.TestConstants;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 /*
 
 [The "BSD licence"]
@@ -72,14 +70,22 @@ public class TestParser extends AbstractTest {
     public void testMantra() throws Exception {
         parseFile(TestConstants.MANTRA);
         // these number have been verified by hand
-        assertParserProperties(65, 32, 28, 115, 261);
+        assertParserProperties(65, 32, 28, 115, 274);
     }
 
     public void testCodeGenPhase() throws Exception {
         parseFile(TestConstants.CODE_GEN_PHASE);
         printParserProperties();
-        // these number have been verified by hand
-        assertParserProperties(40, 22, 7, 40, 183);
+        assertParserProperties(40, 22, 7, 40, 199); // verified by hand
+
+        // now add the remaining token as if they were read from a tokenVocab file
+        Set<String> names = new HashSet<String>();
+        names.add("NUM_INT");
+        names.add("NUM_FLOAT");
+        names.add("STRING");
+        names.add("CHAR");
+        parser.resolveReferencesWithExternalNames(names);
+        assertParserProperties(40, 22, 7, 40, 199+4); // verified by hand
     }
 
 /*    public void testResolvePhase() throws Exception {

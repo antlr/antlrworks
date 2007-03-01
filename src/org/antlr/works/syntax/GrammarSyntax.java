@@ -11,10 +11,7 @@ import org.antlr.works.syntax.element.ElementRule;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 /*
 
 [The "BSD licence"]
@@ -54,7 +51,7 @@ public class GrammarSyntax {
     protected List<ElementReference> undefinedReferences;
     protected List<ElementRule> hasLeftRecursionRules;
 
-    protected List<String> tokenVocabNames;
+    protected Set<String> tokenVocabNames;
     protected String tokenVocabName;
 
     public GrammarSyntax(CEditorGrammar editor) {
@@ -63,7 +60,7 @@ public class GrammarSyntax {
         duplicateRules = new ArrayList<ElementRule>();
         undefinedReferences = new ArrayList<ElementReference>();
         hasLeftRecursionRules = new ArrayList<ElementRule>();
-        tokenVocabNames = new ArrayList<String>();
+        tokenVocabNames = new HashSet<String>();
     }
 
     public GrammarSyntaxEngine getParserEngine() {
@@ -95,7 +92,7 @@ public class GrammarSyntax {
         tokenVocabNames.clear();
     }
 
-    public List<String> getTokenVocabNames() {
+    public Set<String> getTokenVocabNames() {
         String tokenVocab = getParserEngine().getTokenVocab();
         if(tokenVocab == null) {
             tokenVocabNames.clear();
@@ -198,7 +195,10 @@ public class GrammarSyntax {
         List<String> existingReferences = getParserEngine().getRuleNames();
         existingReferences.addAll(getParserEngine().getDeclaredTokenNames());
         existingReferences.addAll(getParserEngine().getPredefinedReferences());
-        existingReferences.addAll(getTokenVocabNames());
+        
+        Set<String> tokenVocabNames = getTokenVocabNames();
+        existingReferences.addAll(tokenVocabNames);
+        editor.getParser().resolveReferencesWithExternalNames(tokenVocabNames);
 
         undefinedReferences.clear();
         List<ElementReference> references = getParserEngine().getReferences();

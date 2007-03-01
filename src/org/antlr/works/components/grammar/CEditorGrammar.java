@@ -36,6 +36,7 @@ import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarAutoIndent;
 import org.antlr.works.syntax.GrammarSyntax;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
+import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.syntax.element.ElementAction;
 import org.antlr.works.syntax.element.ElementBlock;
 import org.antlr.works.syntax.element.ElementReference;
@@ -531,6 +532,10 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public GrammarSyntax getSyntax() {
         return grammarSyntax;
+    }
+
+    public GrammarSyntaxParser getParser() {
+        return (GrammarSyntaxParser)parserEngine.getParser();
     }
 
     public void toggleAutoIndent() {
@@ -1082,27 +1087,24 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         if(rules.isRuleAtIndex(getCaretPosition())) {
             // Inside a rule - show all rules in alphabetical order
 
-            List sortedRules = Collections.list(Collections.enumeration(parserEngine.getRules()));
+            List<ElementRule> sortedRules = Collections.list(Collections.enumeration(parserEngine.getRules()));
             Collections.sort(sortedRules);
 
-            for(Iterator iterator = sortedRules.iterator(); iterator.hasNext(); ) {
-                ElementRule rule = (ElementRule)iterator.next();
-                if(rule.name.toLowerCase().startsWith(partialWord) && !matchingRules.contains(rule.name))
+            for (ElementRule rule : sortedRules) {
+                if (rule.name.toLowerCase().startsWith(partialWord) && !matchingRules.contains(rule.name))
                     matchingRules.add(rule.name);
             }
         } else {
             // Not inside rule - show only undefined rules
 
-            List sortedUndefinedReferences = Collections.list(Collections.enumeration(grammarSyntax.getUndefinedReferences()));
+            List<ElementReference> sortedUndefinedReferences = Collections.list(Collections.enumeration(grammarSyntax.getUndefinedReferences()));
             Collections.sort(sortedUndefinedReferences);
 
-            for(Iterator iterator = sortedUndefinedReferences.iterator(); iterator.hasNext(); ) {
-                ElementReference ref = (ElementReference)iterator.next();
+            for (ElementReference ref : sortedUndefinedReferences) {
                 String attr = ref.token.getAttribute();
-                if(attr.toLowerCase().startsWith(partialWord)
+                if (attr.toLowerCase().startsWith(partialWord)
                         && !attr.equals(partialWord)
-                        && !matchingRules.contains(attr))
-                {
+                        && !matchingRules.contains(attr)) {
                     matchingRules.add(attr);
                 }
             }
@@ -1267,9 +1269,9 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public Map getPersistentData() {
         Map<String,Object> data = new HashMap<String, Object>();
         if(rulesTextSplitPane != null)
-            data.put(KEY_SPLITPANE_A, new Integer(rulesTextSplitPane.getDividerLocation()));
+            data.put(KEY_SPLITPANE_A, rulesTextSplitPane.getDividerLocation());
         if(upDownSplitPane != null)
-            data.put(KEY_SPLITPANE_B, new Integer(upDownSplitPane.getDividerLocation()));
+            data.put(KEY_SPLITPANE_B, upDownSplitPane.getDividerLocation());
         data.put(KEY_INTERPRETER, interpreter.getPersistentData());
         data.put(KEY_DEBUGGER, debugger.getPersistentData());
         return data;

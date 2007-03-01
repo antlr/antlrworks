@@ -68,6 +68,13 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
     public ElementGrammarName name;
 
+    private LabelScope labels = new LabelScope();
+    private List<ATEToken> unresolvedReferences = new ArrayList<ATEToken>();
+    private Set<String> declaredReferenceNames = new HashSet<String>();
+    private Map<ATEToken,ElementRule> refsToRules = new HashMap<ATEToken,ElementRule>();
+
+    private ElementRule currentRule;
+
     static {
         blockIdentifiers = new ArrayList<String>();
         blockIdentifiers.add(OPTIONS_BLOCK_NAME);
@@ -104,6 +111,10 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         actions.clear();
         references.clear();
         decls.clear();
+        currentRule = null;
+        declaredReferenceNames.clear();
+        unresolvedReferences.clear();
+        refsToRules.clear();
 
         if(!nextToken()) return;
 
@@ -121,6 +132,40 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
             // Nothing matches, go to next token
             if(!nextToken()) break;
+        }
+
+        resolveReferences();
+    }
+
+    /**
+     * Resolves the unresolved references by using externally provided names. For example,
+     * reading a file of token using the option tokenVocab will invoke this method to solve
+     * any remaining references that are still unresolved.
+     *
+     * @param externalNames A list of string representing the external declared reference names
+     */
+    public void resolveReferencesWithExternalNames(Set<String> externalNames) {
+        for(int i=unresolvedReferences.size()-1; i >= 0; i--) {
+            ATEToken ref = unresolvedReferences.get(i);
+            if(externalNames.contains(ref.getAttribute())) {
+                ref.type = GrammarSyntaxLexer.TOKEN_REFERENCE;
+                references.add(new ElementReference(refsToRules.get(ref), ref));
+                unresolvedReferences.remove(i);
+            }
+        } 
+    }
+
+    /**
+     * Resolves the unresolved references by looking at the set of declared references
+     */
+    private void resolveReferences() {
+        for(int i=unresolvedReferences.size()-1; i >= 0; i--) {
+            ATEToken ref = unresolvedReferences.get(i);
+            if(declaredReferenceNames.contains(ref.getAttribute())) {
+                ref.type = GrammarSyntaxLexer.TOKEN_REFERENCE;
+                references.add(new ElementReference(refsToRules.get(ref), ref));
+                unresolvedReferences.remove(i);
+            }
         }
     }
 
@@ -189,7 +234,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         // Match either the block or the semi
         if(isOpenBLOCK(0)) {
             ATEToken beginBlock = T(0);
-            if(matchBalancedToken("{", "}")) {
+            if(matchBalancedToken("{", "}", null, true)) {
                 beginBlock.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
                 T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
                 start.type = GrammarSyntaxLexer.TOKEN_BLOCK_LABEL;
@@ -233,7 +278,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         ElementBlock block = new ElementBlock(start.getAttribute().toLowerCase(), start);
         ATEToken beginBlock = T(0);
-        if(matchBalancedToken("{", "}", block)) {
+        if(matchBalancedToken("{", "}", block, true)) {
             beginBlock.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
             T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
             start.type = GrammarSyntaxLexer.TOKEN_BLOCK_LABEL;
@@ -247,7 +292,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 for(int i=0; i<tokens.size(); i++) {
                     ATEToken lexerToken = tokens.get(i);
                     lexerToken.type = GrammarSyntaxLexer.TOKEN_DECL;
-                    decls.add(lexerToken);
+                    addDeclaration(lexerToken);
                 }
             }
             return true;
@@ -272,9 +317,11 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     private boolean matchRule() {
         mark();
         if(tryMatchRule()) {
+            currentRule = null;
             return true;
         } else {
             rewind();
+            currentRule = null;
             return false;
         }
     }
@@ -325,11 +372,11 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         // Parse the content of the rule (after the ':')
         final ATEToken colonToken = T(-1);
-        final ElementRule rule = new ElementRule(this, name, start, colonToken, null);
         final int oldRefsSize = references.size();
         final int oldBlocksSize = blocks.size();
         final int oldActionsSize = actions.size();
-        final LabelScope labels = new LabelScope();
+        currentRule = new ElementRule(this, name, start, colonToken, null);
+        labels.clear();
         labels.begin();
         while(true) {
             if(matchSEMI(0)) {
@@ -338,29 +385,29 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 //matchRuleExceptionGroup();
 
                 // Record the token that defines the end of the rule
-                rule.end = T(-1);
+                currentRule.end = T(-1);
 
                 // Change the token type of the name
                 tokenName.type = GrammarSyntaxLexer.TOKEN_DECL;
-                decls.add(tokenName);
+                addDeclaration(tokenName);
 
                 if(references.size() > oldRefsSize) {
-                    rule.setReferencesIndexes(oldRefsSize, references.size()-1);
+                    currentRule.setReferencesIndexes(oldRefsSize, references.size()-1);
                 }
 
                 if(blocks.size() > oldBlocksSize) {
-                    rule.setBlocksIndexes(oldBlocksSize, blocks.size()-1);
+                    currentRule.setBlocksIndexes(oldBlocksSize, blocks.size()-1);
                 }
 
                 if(actions.size() > oldActionsSize) {
-                    rule.setActionsIndexes(oldActionsSize, actions.size()-1);
+                    currentRule.setActionsIndexes(oldActionsSize, actions.size()-1);
                 }
 
                 // Indicate to the rule that is has been parsed completely.
-                rule.completed();
+                currentRule.completed();
 
                 // Return the rule
-                rules.add(rule);
+                rules.add(currentRule);
                 return true;
             } else if(matchBlock(OPTIONS_BLOCK_NAME)) {
                 // Matched any option block
@@ -380,29 +427,22 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                     if(!skip(2)) return false;
                 }
 
-                // Match any option arguments
+                // Match any optional arguments
                 matchArguments();
 
                 // Now we have the reference token. Set the token flags
-                if(labels.lookup(refToken.getAttribute())) {
-                    // Reference is to a label, not a lexer/parser rule
-                    refToken.type = GrammarSyntaxLexer.TOKEN_LABEL;
-                } else {
-                    refToken.type = GrammarSyntaxLexer.TOKEN_REFERENCE;
-                    // Create and add the new reference
-                    references.add(new ElementReference(rule, refToken));
-                }
+                addReference(refToken, false);
             } else if(isOpenBLOCK(0)) {
                 // Match an action
                 ATEToken t0 = T(0);
-                ElementAction action = new ElementAction(rule, t0);
-                if(matchBalancedToken("{", "}", action)) {
+                ElementAction action = new ElementAction(currentRule, t0);
+                if(matchBalancedToken("{", "}", action, true)) {
                     t0.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
                     T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
 
                     action.end = T(-1);
                     action.actionNum = actions.size();
-                    action.setScope(rule);
+                    action.setScope(currentRule);
                     actions.add(action);
                 }
             } else if(isTokenType(0, GrammarSyntaxLexer.TOKEN_REWRITE)) {
@@ -448,7 +488,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         mark();
         if(isTokenType(index, GrammarSyntaxLexer.TOKEN_FUNC)) {
             nextToken();
-            if(matchBalancedToken("(", ")", REWRITE_FUNCTION)) {
+            if(matchBalancedToken("(", ")", REWRITE_FUNCTION, true)) {
                 return true;
             }
         }
@@ -457,7 +497,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     private boolean matchArguments() {
-        return matchBalancedToken("[", "]");
+        return matchBalancedToken("[", "]", null, true);
     }
 
     // todo check and terminate
@@ -474,66 +514,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             nextToken();    // ACTION: { }
         }
     }
-
-    /**
-     * Matches the rewrite syntax:
-     * -> { condition }? foo(...)
-     * -> { condition }? { ... }
-     * -> bar(...)
-     * -> ELIST
-     * -> $label
-     */
-    /*private boolean matchRewriteSyntax() {
-        if(isOpenBLOCK(0)) {
-            // Try to match the condition
-            if(matchBalancedToken("{", "}", REWRITE_BLOCK)) {
-                if(!nextToken()) return false;
-
-                // Match the '?'
-                if(matchChar("?")) {
-                    // a function follows
-                    if(matchSTFunction()) return true;
-                    //if(matchTreeSyntax()) return true;
-                    return matchBalancedToken("{", "}", REWRITE_BLOCK);
-                } else {
-                    // nothing follows
-                    previousToken();
-                    return true;
-                }
-            } else {
-                return false;
-            }
-        } else {
-//            if(matchSTFunction()) return true;
- //           if(matchTreeSyntax()) return true;
-
-            System.out.println(T(0));
-            if(isTokenType(0, ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING)) {
-                return nextToken();
-            } else if(isChar(0, "$") && isID(1)) {
-                return skip(2);
-            } else if(isID(0)) {
-                return nextToken();
-            }
-        }
-        return false;
-    }
-
-    private boolean matchSTFunction() {
-        if(!matchID(0)) return false;
-
-        if(!isLPAREN(0)) return false;
-
-        return matchBalancedToken("(", ")", REWRITE_FUNCTION);
-    }
-
-    private boolean matchTreeSyntax() {
-        if(!isChar(0, "^") && !isLPAREN(1)) return false;
-
-        skip(1);
-
-        return matchBalancedToken("(", ")");
-    } */
 
     /**
      * Matches the group token used to group rules in the rule lists
@@ -556,18 +536,41 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     /**
+     * Adds a new reference
+     *
+     * @param ref The token representing the reference
+     * @return True if the reference is a label reference
+     */
+    private boolean addReference(ATEToken ref, boolean addOnlyIfKnownLabel) {
+        if(labels.lookup(ref.getAttribute())) {
+            // Reference is to a label, not a lexer/parser rule
+            ref.type = GrammarSyntaxLexer.TOKEN_LABEL;
+            return true;
+        } else {
+            if(!addOnlyIfKnownLabel) {
+                ref.type = GrammarSyntaxLexer.TOKEN_REFERENCE;
+                references.add(new ElementReference(refsToRules.get(ref), ref));
+            }
+            return false;
+        }
+    }
+
+    private void addDeclaration(ATEToken token) {
+        decls.add(token);
+        declaredReferenceNames.add(token.getAttribute());
+    }
+
+    /**
      * Matches all tokens until the balanced token's attribute is equal to close.
      * Expects the current token to be the open token (e.g. '{' whatever needs to be balanced)
      *
      * @param open The open attribute
      * @param close The close attribute
+     * @param scope The scope to assign to the tokens between the two balanced tokens
+     * @param matchInternalRef True if internal references need to be matched (i.e. $foo, $bar, etc)
      * @return true if the match succeeded
      */
-    private boolean matchBalancedToken(String open, String close) {
-        return matchBalancedToken(open, close, null);
-    }
-
-    private boolean matchBalancedToken(String open, String close, ATEScope scope) {
+    private boolean matchBalancedToken(String open, String close, ATEScope scope, boolean matchInternalRef) {
         if(T(0) == null || !T(0).getAttribute().equals(open)) return false;
 
         mark();
@@ -585,6 +588,22 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 }
             }
             if(!nextToken()) break;
+
+            if(matchInternalRef && isChar(0, "$") && isID(1)) {
+                // Look for internal references, that is any ID preceeded by a $
+                ATEToken ref = T(1);
+                if(!addReference(ref, true)) {
+                    // The reference is not a label but a global reference.
+                    // The only issue with these global references is that some are not lexer or parser rules
+                    // but declared variables or ANTLR internal stuff. To skip these references, we
+                    // add all the internal references to a list of unknown reference and we check
+                    // after parsing if they are listed as a lexer or parser declaration. Otherwise, we
+                    // skip these references.
+
+                    unresolvedReferences.add(ref);
+                    refsToRules.put(ref, currentRule);
+                }
+            }
         }
         rewind();
         return false;
@@ -662,6 +681,10 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     private class LabelScope {
 
         Stack<Set<String>> labels = new Stack<Set<String>>();
+
+        public void clear() {
+            labels.clear();
+        }
 
         public void begin() {
             labels.push(new HashSet<String>());
