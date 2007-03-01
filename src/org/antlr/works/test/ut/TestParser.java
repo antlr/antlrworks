@@ -75,7 +75,6 @@ public class TestParser extends AbstractTest {
 
     public void testCodeGenPhase() throws Exception {
         parseFile(TestConstants.CODE_GEN_PHASE);
-        printParserProperties();
         assertParserProperties(40, 22, 7, 40, 199); // verified by hand
 
         // now add the remaining token as if they were read from a tokenVocab file

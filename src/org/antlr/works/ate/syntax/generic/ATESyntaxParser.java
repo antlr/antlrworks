@@ -86,6 +86,10 @@ public abstract class ATESyntaxParser {
         return position<tokens.size();
     }
 
+    public boolean moreTokens() {
+        return position<tokens.size();
+    }
+
     public boolean skip(int count) {
         if(count == 1) {
             return nextToken();

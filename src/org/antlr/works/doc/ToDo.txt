@@ -6,10 +6,11 @@
 - unit tests:
   -> rule skipped for interpreter (with HIDDEN or skip())
   -> bad grammar (when starting to write a new grammar, check for no exception in that case)
+     -> with { not closed inside rule and nothing until the end (that is no })
   -> remove left recursion
   -> read tokenVocab
   -> rename internal tokens identified inside blocks with $
-  
+
 - prefs: backup file
 - button to autofit any syntax diagram/other to the size of visible area
 - prefs to display output dir dialog before generating grammar

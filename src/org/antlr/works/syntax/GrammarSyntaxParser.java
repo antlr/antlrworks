@@ -152,7 +152,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 references.add(new ElementReference(refsToRules.get(ref), ref));
                 unresolvedReferences.remove(i);
             }
-        } 
+        }
     }
 
     /**
@@ -185,6 +185,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
             // Check if the grammar has a type (e.g. lexer, parser, tree, etc)
             ATEToken type = T(0);
+            if(type == null) return false;
             if(ElementGrammarName.isKnownType(T(0).getAttribute())) {
                 if(!nextToken()) return false;
             } else {
@@ -313,7 +314,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *  ARG = '[' Type arg... ']'
      *
      */
-
     private boolean matchRule() {
         mark();
         if(tryMatchRule()) {
@@ -379,87 +379,108 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         labels.clear();
         labels.begin();
         while(true) {
-            if(matchSEMI(0)) {
-                // End of the rule.
-                // todo
-                //matchRuleExceptionGroup();
+            // Match the end of the rule
+            if(matchEndOfRule(tokenName, oldRefsSize, oldBlocksSize, oldActionsSize)) return true;
 
-                // Record the token that defines the end of the rule
-                currentRule.end = T(-1);
+            // Match any block
+            if(matchBlock(OPTIONS_BLOCK_NAME)) continue;
 
-                // Change the token type of the name
-                tokenName.type = GrammarSyntaxLexer.TOKEN_DECL;
-                addDeclaration(tokenName);
+            // Match any ST function call
+            if(matchFunction(0)) continue;
 
-                if(references.size() > oldRefsSize) {
-                    currentRule.setReferencesIndexes(oldRefsSize, references.size()-1);
-                }
+            // Match any assignment
+            if(matchAssignment(labels)) continue;
 
-                if(blocks.size() > oldBlocksSize) {
-                    currentRule.setBlocksIndexes(oldBlocksSize, blocks.size()-1);
-                }
+            // Match any internal reference
+            if(matchInternalRef()) continue;
 
-                if(actions.size() > oldActionsSize) {
-                    currentRule.setActionsIndexes(oldActionsSize, actions.size()-1);
-                }
+            // Match any action
+            if(matchAction()) continue;
 
-                // Indicate to the rule that is has been parsed completely.
-                currentRule.completed();
-
-                // Return the rule
-                rules.add(currentRule);
-                return true;
-            } else if(matchBlock(OPTIONS_BLOCK_NAME)) {
-                // Matched any option block
-            } else if(matchFunction(0)) {
-                // Matched any ST function call
-            } else if(matchAssignment(labels)) {
-                // Matched any assignment of type:
-                //   label=reference
-                //   label+=reference
-                //   label='string'
-            } else if(matchID(0)) {
-                // Probably a reference inside the rule.
-                ATEToken refToken = T(-1);
-                // Match any field access, for example:
-                // foo.bar.boo
-                while(isChar(0, ".") && isID(1)) {
-                    if(!skip(2)) return false;
-                }
-
-                // Match any optional arguments
-                matchArguments();
-
-                // Now we have the reference token. Set the token flags
-                addReference(refToken, false);
-            } else if(isOpenBLOCK(0)) {
-                // Match an action
-                ATEToken t0 = T(0);
-                ElementAction action = new ElementAction(currentRule, t0);
-                if(matchBalancedToken("{", "}", action, true)) {
-                    t0.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
-                    T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
-
-                    action.end = T(-1);
-                    action.actionNum = actions.size();
-                    action.setScope(currentRule);
-                    actions.add(action);
-                }
-            } else if(isTokenType(0, GrammarSyntaxLexer.TOKEN_REWRITE)) {
-                // Match a rewrite syntax beginning with ->
-                //    if(!nextToken()) return null;
-
-                //    matchRewriteSyntax();
-                nextToken();
-            } else if(isLPAREN(0)) {
+            if(matchLPAREN(0)) {
                 labels.begin();
-                nextToken();
-            } else if(isRPAREN(0)) {
-                labels.end();
-                nextToken();
-            } else {
-                if(!nextToken()) return false;
+                continue;
             }
+
+            if(matchRPAREN(0)) {
+                labels.end();
+                continue;
+            }
+
+            if(!nextToken()) return false;
+        }
+    }
+
+    private boolean matchEndOfRule(ElementToken tokenName, int oldRefsSize, int oldBlocksSize, int oldActionsSize) {
+        if(!matchSEMI(0)) return false;
+
+        // End of the rule.
+        // todo
+        //matchRuleExceptionGroup();
+
+        // Record the token that defines the end of the rule
+        currentRule.end = T(-1);
+
+        // Change the token type of the name
+        tokenName.type = GrammarSyntaxLexer.TOKEN_DECL;
+        addDeclaration(tokenName);
+
+        if(references.size() > oldRefsSize) {
+            currentRule.setReferencesIndexes(oldRefsSize, references.size()-1);
+        }
+
+        if(blocks.size() > oldBlocksSize) {
+            currentRule.setBlocksIndexes(oldBlocksSize, blocks.size()-1);
+        }
+
+        if(actions.size() > oldActionsSize) {
+            currentRule.setActionsIndexes(oldActionsSize, actions.size()-1);
+        }
+
+        // Indicate to the rule that is has been parsed completely.
+        currentRule.completed();
+
+        // Return the rule
+        rules.add(currentRule);
+        return true;
+    }
+
+    private boolean matchInternalRef() {
+        if(!matchID(0)) return false;
+
+        // Probably a reference inside the rule.
+        ATEToken refToken = T(-1);
+        // Match any field access, for example:
+        // foo.bar.boo
+        while(isChar(0, ".") && isID(1)) {
+            if(!skip(2)) return false;
+        }
+
+        // Match any optional arguments
+        matchArguments();
+
+        // Now we have the reference token. Set the token flags
+        addReference(refToken, false);
+        return true;
+    }
+
+    private boolean matchAction() {
+        if(!isOpenBLOCK(0)) return false;
+
+        // Match an action
+        ATEToken t0 = T(0);
+        ElementAction action = new ElementAction(currentRule, t0);
+        if(matchBalancedToken("{", "}", action, true)) {
+            t0.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
+            T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
+
+            action.end = T(-1);
+            action.actionNum = actions.size();
+            action.setScope(currentRule);
+            actions.add(action);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -647,6 +668,24 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
     private boolean matchSEMI(int index) {
         if(isSEMI(index)) {
+            nextToken();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean matchLPAREN(int index) {
+        if(isLPAREN(index)) {
+            nextToken();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean matchRPAREN(int index) {
+        if(isRPAREN(index)) {
             nextToken();
             return true;
         } else {
