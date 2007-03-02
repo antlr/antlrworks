@@ -107,9 +107,9 @@ public class GrammarSyntax {
 
         try {
             String filePath = editor.getFileFolder();
-            if(filePath == null || !readTokenVocabFromFile(XJUtils.concatPath(filePath, tokenVocabName +".tokens"))) {
+            if(filePath == null || !readTokenVocabFromFile(XJUtils.concatPath(filePath, tokenVocabName +".tokens"), tokenVocabNames)) {
                 // No token vocab file in the default directory. Try in the output path.
-                readTokenVocabFromFile(XJUtils.concatPath(AWPrefs.getOutputPath(), tokenVocabName +".tokens"));
+                readTokenVocabFromFile(XJUtils.concatPath(AWPrefs.getOutputPath(), tokenVocabName +".tokens"), tokenVocabNames);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -118,7 +118,7 @@ public class GrammarSyntax {
         return tokenVocabNames;
     }
 
-    private boolean readTokenVocabFromFile(String filePath) throws IOException {
+    public static boolean readTokenVocabFromFile(String filePath, Set<String> tokenNames) throws IOException {
         if(!new File(filePath).exists())
             return false;
 
@@ -127,7 +127,7 @@ public class GrammarSyntax {
         // Add each token name to the list of tokenVocabNames
         for(int index=0; index<tokens.size(); index++) {
             ATEToken t = tokens.get(index);
-            tokenVocabNames.add(t.getAttribute());
+            tokenNames.add(t.getAttribute());
         }
 
         return true;
@@ -195,7 +195,7 @@ public class GrammarSyntax {
         List<String> existingReferences = getParserEngine().getRuleNames();
         existingReferences.addAll(getParserEngine().getDeclaredTokenNames());
         existingReferences.addAll(getParserEngine().getPredefinedReferences());
-        
+
         Set<String> tokenVocabNames = getTokenVocabNames();
         existingReferences.addAll(tokenVocabNames);
         editor.getParser().resolveReferencesWithExternalNames(tokenVocabNames);

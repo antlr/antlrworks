@@ -3,6 +3,7 @@ package org.antlr.works.test.ut;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.syntax.GrammarSyntax;
 import org.antlr.works.syntax.element.ElementBlock;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.test.AbstractTest;
@@ -79,25 +80,33 @@ public class TestParser extends AbstractTest {
 
         // now add the remaining token as if they were read from a tokenVocab file
         Set<String> names = new HashSet<String>();
-        names.add("NUM_INT");
-        names.add("NUM_FLOAT");
-        names.add("STRING");
-        names.add("CHAR");
+        GrammarSyntax.readTokenVocabFromFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
         parser.resolveReferencesWithExternalNames(names);
         assertParserProperties(40, 22, 7, 40, 199+4); // verified by hand
     }
 
-/*    public void testResolvePhase() throws Exception {
+    public void testResolvePhase() throws Exception {
         parseFile(TestConstants.RESOLVE_PHASE);
-        assertParserProperties(36, 14, 7, 36, 160);
+
+        Set<String> names = new HashSet<String>();
+        GrammarSyntax.readTokenVocabFromFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        parser.resolveReferencesWithExternalNames(names);
+
+        printParserProperties();
+        assertParserProperties(36, 14, 7, 36, 170); // verified by hand
     }
 
     public void testSemanticPhase() throws Exception {
         parseFile(TestConstants.SEMANTIC_PHASE);
-        assertParserProperties(36, 37, 23, 36, 156);
 
-//        printParserProperties();
-    }*/
+        Set<String> names = new HashSet<String>();
+        GrammarSyntax.readTokenVocabFromFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        parser.resolveReferencesWithExternalNames(names);
+
+        printParserProperties();
+
+        assertParserProperties(36, 37, 23, 36, 177); // verified by hand
+    }
 
     /*********************** HELPER ***************************************/
 

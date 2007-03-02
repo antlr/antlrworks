@@ -415,8 +415,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         if(!matchSEMI(0)) return false;
 
         // End of the rule.
-        // todo
-        //matchRuleExceptionGroup();
+        matchRuleExceptionGroup();
 
         // Record the token that defines the end of the rule
         currentRule.end = T(-1);

@@ -47,8 +47,12 @@ public class AbstractTest extends TestCase {
         parser.parse(lexer.getTokens());
     }
 
+    protected String getResourceFile(String fileName) {
+        return getClass().getResource(fileName).getFile();
+    }
+
     protected String getTextFromFile(String fileName) throws IOException {
-        return XJUtils.getStringFromFile(getClass().getResource(fileName).getFile());
+        return XJUtils.getStringFromFile(getResourceFile(fileName));
     }
 
 }

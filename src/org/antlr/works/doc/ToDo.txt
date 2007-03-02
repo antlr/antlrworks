@@ -10,6 +10,9 @@
   -> remove left recursion
   -> read tokenVocab
   -> rename internal tokens identified inside blocks with $
+  -> double-quote string in ST, for example: write_to("<id>",<id>)  
+
+- review syntax color prefs to ensure it's up-to-date
 
 - prefs: backup file
 - button to autofit any syntax diagram/other to the size of visible area
