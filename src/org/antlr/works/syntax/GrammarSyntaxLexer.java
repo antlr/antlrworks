@@ -39,12 +39,12 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
 
     public static final int TOKEN_REFERENCE = 100;
     public static final int TOKEN_LABEL = 101;
-    public static final int TOKEN_ST_STRING = 102;
-    public static final int TOKEN_BLOCK_LABEL = 103;
-    public static final int TOKEN_BLOCK_LIMIT = 104;
-    public static final int TOKEN_REWRITE = 105;
-    public static final int TOKEN_DECL = 106;
-    public static final int TOKEN_FUNC = 107;
+    public static final int TOKEN_BLOCK_LABEL = 102;
+    public static final int TOKEN_BLOCK_LIMIT = 103;
+    public static final int TOKEN_REWRITE = 104;
+    public static final int TOKEN_DECL = 105;
+    public static final int TOKEN_OPEN_DOUBLE_ANGLE = 106;
+    public static final int TOKEN_CLOSE_DOUBLE_ANGLE = 107;
 
     @Override
     protected ATEToken customMatch() {
@@ -54,6 +54,14 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
             int sp = position;
             position++;
             return createNewToken(TOKEN_REWRITE, sp, position);
+        } else if(c0 == '<' && c1 == '<') {
+            int sp = position;
+            position++;
+            return createNewToken(TOKEN_OPEN_DOUBLE_ANGLE, sp, position);
+        } else if(c0 == '>' && c1 == '>') {
+            int sp = position;
+            position++;
+            return createNewToken(TOKEN_CLOSE_DOUBLE_ANGLE, sp, position);
         } else {
             return null;
         }
@@ -73,12 +81,7 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
             }
         }
 
-        // Catch function call
-        if(c1 == '(') {
-            return createNewToken(TOKEN_FUNC, sp);
-        } else {
-            return createNewToken(TOKEN_ID, sp);
-        }
+        return createNewToken(TOKEN_ID, sp);
     }
 
     @Override

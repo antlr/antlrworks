@@ -76,13 +76,13 @@ public class TestParser extends AbstractTest {
 
     public void testCodeGenPhase() throws Exception {
         parseFile(TestConstants.CODE_GEN_PHASE);
-        assertParserProperties(40, 22, 7, 40, 199); // verified by hand
+        assertParserProperties(40, 18, 7, 40, 199); // verified by hand
 
         // now add the remaining token as if they were read from a tokenVocab file
         Set<String> names = new HashSet<String>();
         GrammarSyntax.readTokenVocabFromFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
         parser.resolveReferencesWithExternalNames(names);
-        assertParserProperties(40, 22, 7, 40, 199+4); // verified by hand
+        assertParserProperties(40, 18, 7, 40, 199+4); // verified by hand
     }
 
     public void testResolvePhase() throws Exception {
@@ -92,7 +92,6 @@ public class TestParser extends AbstractTest {
         GrammarSyntax.readTokenVocabFromFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
         parser.resolveReferencesWithExternalNames(names);
 
-        printParserProperties();
         assertParserProperties(36, 14, 7, 36, 170); // verified by hand
     }
 
@@ -102,8 +101,6 @@ public class TestParser extends AbstractTest {
         Set<String> names = new HashSet<String>();
         GrammarSyntax.readTokenVocabFromFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
         parser.resolveReferencesWithExternalNames(names);
-
-        printParserProperties();
 
         assertParserProperties(36, 37, 23, 36, 177); // verified by hand
     }

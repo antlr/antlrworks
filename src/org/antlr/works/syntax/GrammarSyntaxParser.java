@@ -39,6 +39,11 @@ import org.antlr.works.syntax.element.*;
 
 import java.util.*;
 
+/**
+ * This class is the main ANTLRWorks parser for the ANTLR 3 grammar. Its purpose is to quickly parse the relevant
+ * information needed for the syntax (references, actions, blocks, etc) without spending too much time in parsing
+ * all details of the grammar.
+ */
 public class GrammarSyntaxParser extends ATESyntaxParser {
 
     private static final ElementRewriteBlock REWRITE_BLOCK = new ElementRewriteBlock();
@@ -68,7 +73,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
     public ElementGrammarName name;
 
-    private LabelScope labels = new LabelScope();
+    private LabelTable labels = new LabelTable();
     private List<ATEToken> unresolvedReferences = new ArrayList<ATEToken>();
     private Set<String> declaredReferenceNames = new HashSet<String>();
     private Map<ATEToken,ElementRule> refsToRules = new HashMap<ATEToken,ElementRule>();
@@ -235,7 +240,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         // Match either the block or the semi
         if(isOpenBLOCK(0)) {
             ATEToken beginBlock = T(0);
-            if(matchBalancedToken("{", "}", null, true)) {
+            if(matchBalancedToken(ATESyntaxLexer.TOKEN_LCURLY, ATESyntaxLexer.TOKEN_RCURLY, null, true)) {
                 beginBlock.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
                 T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
                 start.type = GrammarSyntaxLexer.TOKEN_BLOCK_LABEL;
@@ -279,7 +284,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         ElementBlock block = new ElementBlock(start.getAttribute().toLowerCase(), start);
         ATEToken beginBlock = T(0);
-        if(matchBalancedToken("{", "}", block, true)) {
+        if(matchBalancedToken(ATESyntaxLexer.TOKEN_LCURLY, ATESyntaxLexer.TOKEN_RCURLY, block, true)) {
             beginBlock.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
             T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
             start.type = GrammarSyntaxLexer.TOKEN_BLOCK_LABEL;
@@ -316,13 +321,15 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      */
     private boolean matchRule() {
         mark();
-        if(tryMatchRule()) {
+        try {
+            if(tryMatchRule()) {
+                return true;
+            } else {
+                rewind();
+                return false;
+            }
+        } finally {
             currentRule = null;
-            return true;
-        } else {
-            rewind();
-            currentRule = null;
-            return false;
         }
     }
 
@@ -377,7 +384,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         final int oldActionsSize = actions.size();
         currentRule = new ElementRule(this, name, start, colonToken, null);
         labels.clear();
-        labels.begin();
         while(true) {
             // Match the end of the rule
             if(matchEndOfRule(tokenName, oldRefsSize, oldBlocksSize, oldActionsSize)) return true;
@@ -385,28 +391,19 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             // Match any block
             if(matchBlock(OPTIONS_BLOCK_NAME)) continue;
 
-            // Match any ST function call
-            if(matchFunction(0)) continue;
+            // Match any ST rewrite template
+            if(matchRewriteTemplate()) continue;
 
             // Match any assignment
             if(matchAssignment(labels)) continue;
 
             // Match any internal reference
-            if(matchInternalRef()) continue;
+            if(matchInternalRefInRule()) continue;
 
             // Match any action
             if(matchAction()) continue;
 
-            if(matchLPAREN(0)) {
-                labels.begin();
-                continue;
-            }
-
-            if(matchRPAREN(0)) {
-                labels.end();
-                continue;
-            }
-
+            // Nothing matched, go to the next token
             if(!nextToken()) return false;
         }
     }
@@ -444,7 +441,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         return true;
     }
 
-    private boolean matchInternalRef() {
+    private boolean matchInternalRefInRule() {
         if(!matchID(0)) return false;
 
         // Probably a reference inside the rule.
@@ -469,7 +466,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         // Match an action
         ATEToken t0 = T(0);
         ElementAction action = new ElementAction(currentRule, t0);
-        if(matchBalancedToken("{", "}", action, true)) {
+        if(matchBalancedToken(ATESyntaxLexer.TOKEN_LCURLY, ATESyntaxLexer.TOKEN_RCURLY, action, true)) {
             t0.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
             T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
 
@@ -483,7 +480,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         }
     }
 
-    private boolean matchAssignment(LabelScope labels) {
+    private boolean matchAssignment(LabelTable labels) {
         mark();
 
         ATEToken label = T(0);
@@ -504,20 +501,190 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         return false;
     }
 
-    private boolean matchFunction(int index) {
+    /** Matches a rewrite template according to the following grammar:
+
+     Build a tree for a template rewrite:
+     ^(TEMPLATE (ID|ACTION) ^(ARGLIST ^(ARG ID ACTION) ...) )
+     where ARGLIST is always there even if no args exist.
+     ID can be "template" keyword.  If first child is ACTION then it's
+     an indirect template ref
+
+     -> foo(a={...}, b={...})
+     -> ({string-e})(a={...}, b={...})  // e evaluates to template name
+     -> {%{$ID.text}} // create literal template from string (done in ActionTranslator)
+     -> {st-expr} // st-expr evaluates to ST
+
+     rewrite_template
+     {Token st=null;}
+     :   // -> template(a={...},...) "..."
+     {LT(1).getText().equals("template")}? // inline
+     rewrite_template_head {st=LT(1);}
+     ( DOUBLE_QUOTE_STRING_LITERAL! | DOUBLE_ANGLE_STRING_LITERAL! )
+     {#rewrite_template.addChild(#[st]);}
+
+     |	// -> foo(a={...}, ...)
+     rewrite_template_head
+
+     |	// -> ({expr})(a={...}, ...)
+     rewrite_indirect_template_head
+
+     |	// -> {...}
+     ACTION
+     ;
+
+     // -> foo(a={...}, ...)
+     rewrite_template_head
+     :	id lp:LPAREN^ {#lp.setType(TEMPLATE); #lp.setText("TEMPLATE");}
+     rewrite_template_args
+     RPAREN!
+     ;
+
+     // -> ({expr})(a={...}, ...)
+     rewrite_indirect_template_head
+     :	lp:LPAREN^ {#lp.setType(TEMPLATE); #lp.setText("TEMPLATE");}
+     ACTION
+     RPAREN!
+     LPAREN! rewrite_template_args RPAREN!
+     ;
+
+     rewrite_template_args
+     :	rewrite_template_arg (COMMA! rewrite_template_arg)*
+     {#rewrite_template_args = #(#[ARGLIST,"ARGLIST"], rewrite_template_args);}
+     |	{#rewrite_template_args = #[ARGLIST,"ARGLIST"];}
+     ;
+
+     rewrite_template_arg
+     :   id a:ASSIGN^ {#a.setType(ARG); #a.setText("ARG");} ACTION
+     ;
+
+     */
+
+    private boolean matchRewriteTemplate() {
+        if(!isTokenType(0, GrammarSyntaxLexer.TOKEN_REWRITE)) return false;
+
+        if(!nextToken()) return false;
+
+        // Check first for any semantic predicate:
+        // e.g: -> {...}?
+
+        if(matchAction()) {
+            // If it is not a semantic predicate, it's an action
+            // like -> {...}
+            if(!matchChar(0, "?")) return true;
+
+            // Otherwise, it's a semantic predicate and we continue to match
+            // the rewrite as usual
+        }
+
+        // Check for -> template(...) ("..." | <<...>>)
+        if(isID(0, "template")) {
+            // inline template
+            if(!matchRewriteTemplateHead()) return false;
+
+            if(matchDoubleQuotedString()) return true;
+            if(matchDoubleAngleString()) return true;
+        } else if(matchRewriteTemplateHead()) {
+            // matched -> foo(...)
+        } else if(matchRewriteIndirectTemplateHead()) {
+            // matched -> ({expr})(...)
+        } else if(matchAction()) {
+            // matched -> {...}
+        } else {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean matchRewriteIndirectTemplateHead() {
+        if(!isLPAREN(0)) return false;
+
         mark();
-        if(isTokenType(index, GrammarSyntaxLexer.TOKEN_FUNC)) {
-            nextToken();
-            if(matchBalancedToken("(", ")", REWRITE_FUNCTION, true)) {
-                return true;
+        if(tryMatchRewriteIndirectTemplateHead()) {
+            return true;
+        } else {
+            rewind();
+            return false;
+        }
+    }
+
+    private boolean tryMatchRewriteIndirectTemplateHead() {
+        if(!matchLPAREN(0)) return false;
+        if(!matchAction()) return false;
+        if(!matchRPAREN(0)) return false;
+
+        if(!matchLPAREN(0)) return false;
+        if(!matchRewriteTemplateArgs()) return false;
+        return matchRPAREN(0);
+    }
+
+    private boolean matchRewriteTemplateHead() {
+        if(!isID(0)) return false;
+
+        mark();
+        if(tryMatchRewriteTemplateHead()) {
+            return true;
+        } else {
+            rewind();
+            return false;
+        }
+    }
+
+    private boolean tryMatchRewriteTemplateHead() {
+        if(!matchID(0)) return false;
+        if(!matchLPAREN(0)) return false;
+        if(!matchRewriteTemplateArgs()) return false;
+        return matchRPAREN(0);
+
+    }
+
+    private boolean matchRewriteTemplateArgs() {
+        if(matchRewriteTemplateArg()) {
+            while(matchChar(0, ",")) {
+                matchSingleComment(0);
+                matchComplexComment(0);
+                if(!matchRewriteTemplateArg()) return false;
             }
         }
-        rewind();
-        return false;
+        return true;
+    }
+
+    private boolean matchRewriteTemplateArg() {
+        if(!isID(0) && !isChar(1, "=")) return false;
+
+        mark();
+        if(tryMatchRewriteTemplateArg()) {
+            return true;
+        } else {
+            rewind();
+            return false;
+        }
+    }
+
+    private boolean tryMatchRewriteTemplateArg() {
+        if(!matchID(0)) return false;
+        if(!matchChar(0, "=")) return false;
+
+        return matchBalancedToken(ATESyntaxLexer.TOKEN_LCURLY, ATESyntaxLexer.TOKEN_RCURLY, REWRITE_FUNCTION, true);
+
+    }
+
+    private boolean matchDoubleQuotedString() {
+        if(isTokenType(0, ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING)) {
+            T(0).scope = REWRITE_BLOCK;
+            nextToken();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean matchDoubleAngleString() {
+        return matchBalancedToken(GrammarSyntaxLexer.TOKEN_OPEN_DOUBLE_ANGLE, GrammarSyntaxLexer.TOKEN_CLOSE_DOUBLE_ANGLE, REWRITE_BLOCK, false);
     }
 
     private boolean matchArguments() {
-        return matchBalancedToken("[", "]", null, true);
+        return matchBalancedToken(ATESyntaxLexer.TOKEN_LBRACK, ATESyntaxLexer.TOKEN_RBRACK, null, true);
     }
 
     // todo check and terminate
@@ -590,7 +757,31 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      * @param matchInternalRef True if internal references need to be matched (i.e. $foo, $bar, etc)
      * @return true if the match succeeded
      */
-    private boolean matchBalancedToken(String open, String close, ATEScope scope, boolean matchInternalRef) {
+    private boolean matchBalancedToken(int open, int close, ATEScope scope, boolean matchInternalRef) {
+        if(T(0) == null || T(0).type != open) return false;
+
+        mark();
+        int balance = 0;
+        while(true) {
+            T(0).scope = scope;
+            if(T(0).type == open)
+                balance++;
+            else if(T(0).type == close) {
+                balance--;
+                if(balance == 0) {
+                    nextToken();
+                    return true;
+                }
+            }
+            if(!nextToken()) break;
+
+            matchInternalRefInBalancedToken(matchInternalRef);
+        }
+        rewind();
+        return false;
+    }
+
+    /*private boolean matchBalancedToken(String open, String close, ATEScope scope, boolean matchInternalRef) {
         if(T(0) == null || !T(0).getAttribute().equals(open)) return false;
 
         mark();
@@ -609,24 +800,28 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             }
             if(!nextToken()) break;
 
-            if(matchInternalRef && isChar(0, "$") && isID(1)) {
-                // Look for internal references, that is any ID preceeded by a $
-                ATEToken ref = T(1);
-                if(!addReference(ref, true)) {
-                    // The reference is not a label but a global reference.
-                    // The only issue with these global references is that some are not lexer or parser rules
-                    // but declared variables or ANTLR internal stuff. To skip these references, we
-                    // add all the internal references to a list of unknown reference and we check
-                    // after parsing if they are listed as a lexer or parser declaration. Otherwise, we
-                    // skip these references.
-
-                    unresolvedReferences.add(ref);
-                    refsToRules.put(ref, currentRule);
-                }
-            }
+            matchInternalRefInBalancedToken(matchInternalRef);
         }
         rewind();
         return false;
+    }*/
+
+    private void matchInternalRefInBalancedToken(boolean matchInternalRef) {
+        if(matchInternalRef && isChar(0, "$") && isID(1)) {
+            // Look for internal references, that is any ID preceeded by a $
+            ATEToken ref = T(1);
+            if(!addReference(ref, true)) {
+                // The reference is not a label but a global reference.
+                // The only issue with these global references is that some are not lexer or parser rules
+                // but declared variables or ANTLR internal stuff. To skip these references, we
+                // add all the internal references to a list of unknown reference and we check
+                // after parsing if they are listed as a lexer or parser declaration. Otherwise, we
+                // skip these references.
+
+                unresolvedReferences.add(ref);
+                refsToRules.put(ref, currentRule);
+            }
+        }
     }
 
     private boolean matchOptional(String t) {
@@ -709,43 +904,23 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     private boolean isOpenBLOCK(int index) {
-        return isChar(index, "{");
+        return isTokenType(index, ATESyntaxLexer.TOKEN_LCURLY);
     }
 
-    /**
-     * Class used to keep track of the scope of the labels inside a rule.
-     *
-     */
-    private class LabelScope {
+    private class LabelTable {
 
-        Stack<Set<String>> labels = new Stack<Set<String>>();
+        Set<String> labels = new HashSet<String>();
 
         public void clear() {
             labels.clear();
         }
 
-        public void begin() {
-            labels.push(new HashSet<String>());
-        }
-
-        public void end() {
-            // todo ask Terence is label are scoped
-            //labels.pop();
-        }
-
         public void add(String label) {
-            if(labels.isEmpty()) {
-                System.err.println("[LabelScope] Stack is empty");
-                return;
-            }
-            labels.peek().add(label);
+            labels.add(label);
         }
 
         public boolean lookup(String label) {
-            for(int i=0; i<labels.size(); i++) {
-                if(labels.get(i).contains(label)) return true;
-            }
-            return false;
+            return labels.contains(label);
         }
     }
 

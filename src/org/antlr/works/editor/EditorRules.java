@@ -173,9 +173,10 @@ public class EditorRules implements XJTreeDelegate {
                         rule.ignored = true;
                         break;
                     }
-                    if (token.type == GrammarSyntaxLexer.TOKEN_FUNC && token.getAttribute().equals("skip")) {
+                    if (token.type == GrammarSyntaxLexer.TOKEN_ID && token.getAttribute().equals("skip")) {
                         // Take skip() into account only if it is the only token in the block
-                        if (tokens.size() == 4 && t == 1) {
+                        System.out.println(tokens.size());
+                        if (tokens.size() == 5 && t == 1) {
                             rule.ignored = true;
                             break;
                         }

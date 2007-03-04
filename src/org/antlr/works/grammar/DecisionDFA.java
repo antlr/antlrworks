@@ -1,6 +1,8 @@
 package org.antlr.works.grammar;
 
+import org.antlr.Tool;
 import org.antlr.analysis.DFA;
+import org.antlr.codegen.CodeGenerator;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
@@ -120,9 +122,13 @@ public class DecisionDFA extends GrammarDOTTab {
         if(adjustedColumn == -1)
             throw new Exception("No decision in the current line");
 
+        CodeGenerator generator = new CodeGenerator(new Tool(), g,
+                (String) editor.getEngineGrammar().getParserGrammar().getOption("language"));
+
         DFA dfa = g.getLookaheadDFAFromPositionInFile(line, adjustedColumn);
         decisionNumber = dfa.getDecisionNumber();
         DOTGenerator dg = new DOTGenerator(g);
+        g.setCodeGenerator(generator);
         dg.setArrowheadType("none");
         dg.setRankdir("LR");    // Left-to-right
         return dg.getDOT( dfa.startState );

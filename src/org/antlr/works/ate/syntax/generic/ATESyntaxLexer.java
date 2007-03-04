@@ -47,9 +47,13 @@ public class ATESyntaxLexer {
     public static final int TOKEN_CHAR = 6;
     public static final int TOKEN_LPAREN = 7;
     public static final int TOKEN_RPAREN = 8;
-    public static final int TOKEN_COLON = 9;
-    public static final int TOKEN_SEMI = 10;
-    public static final int TOKEN_OTHER = 11;
+    public static final int TOKEN_LCURLY = 9;
+    public static final int TOKEN_RCURLY = 10;
+    public static final int TOKEN_LBRACK = 11;
+    public static final int TOKEN_RBRACK = 12;
+    public static final int TOKEN_COLON = 13;
+    public static final int TOKEN_SEMI = 14;
+    public static final int TOKEN_OTHER = 15;
 
     protected List<ATEToken> tokens;
     protected String text;
@@ -117,6 +121,14 @@ public class ATESyntaxLexer {
                 token = createNewToken(TOKEN_LPAREN);
             else if(c0 == ')')
                 token = createNewToken(TOKEN_RPAREN);
+            else if(c0 == '{')
+                token = createNewToken(TOKEN_LCURLY);
+            else if(c0 == '}')
+                token = createNewToken(TOKEN_RCURLY);
+            else if(c0 == '[')
+                token = createNewToken(TOKEN_LBRACK);
+            else if(c0 == ']')
+                token = createNewToken(TOKEN_RBRACK);
             else if(c0 == ':')
                 token = createNewToken(TOKEN_COLON);
             else if(c0 == ';')

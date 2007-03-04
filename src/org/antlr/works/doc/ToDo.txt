@@ -2,6 +2,7 @@
 * Prio 1
 
 - rewrite: check all "todo check"
+- skip(); with ; following should also work!
 
 - unit tests:
   -> rule skipped for interpreter (with HIDDEN or skip())
@@ -10,7 +11,8 @@
   -> remove left recursion
   -> read tokenVocab
   -> rename internal tokens identified inside blocks with $
-  -> double-quote string in ST, for example: write_to("<id>",<id>)  
+  -> double-quote string in ST, for example: write_to("<id>",<id>)
+  -> check that no syntax error is reported with rewrite (and reported when it is a real problem)
 
 - review syntax color prefs to ensure it's up-to-date
 
