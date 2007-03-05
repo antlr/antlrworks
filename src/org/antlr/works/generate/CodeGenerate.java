@@ -152,12 +152,8 @@ public class CodeGenerate implements Runnable {
         return type == ElementGrammarName.COMBINED || type == ElementGrammarName.PARSER || type == ElementGrammarName.TREEPARSER;
     }
 
-    public String getGeneratedText(boolean lexer) {
-        try {
-            return XJUtils.getStringFromFile(getGeneratedTextFileName(lexer));
-        } catch (Exception e) {
-            return null;
-        }
+    public String getGeneratedText(boolean lexer) throws Exception {
+        return XJUtils.getStringFromFile(getGeneratedTextFileName(lexer));
     }
 
     public void generateInThread(Container parent) {

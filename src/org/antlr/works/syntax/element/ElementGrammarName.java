@@ -51,7 +51,6 @@ public class ElementGrammarName {
 
     static {
         types = new ArrayList<String>();
-        types.add("combined");
         types.add("parser");
         types.add("lexer");
         types.add("tree");

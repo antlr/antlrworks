@@ -106,7 +106,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
             return;
         }
 
-        showGeneratedCode(null, lexer);
+        checkAndShowGeneratedCode(null, lexer);
     }
 
     public void showRuleGeneratedCode() {
@@ -115,10 +115,10 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
         if(editor.getCurrentRule() == null)
             XJAlert.display(editor.getWindowContainer(), "Error", "A rule must be selected first.");
         else
-            showGeneratedCode(editor.getCurrentRule().name, false);
+            checkAndShowGeneratedCode(editor.getCurrentRule().name, false);
     }
 
-    public void showGeneratedCode(String rule, boolean lexer) {
+    public void checkAndShowGeneratedCode(String rule, boolean lexer) {
         if(!checkLanguage())
             return;
 
@@ -134,6 +134,10 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
             return;
         }
 
+        showGeneratedCode(rule, lexer);
+    }
+
+    private void showGeneratedCode(String rule, boolean lexer) {
         CodeDisplay dc = new CodeDisplay(editor.getXJFrame());
         String title;
         try {
@@ -143,7 +147,14 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
             return;
         }
 
-        String text = generateCode.getGeneratedText(lexer);
+        String text;
+        try {
+            text = generateCode.getGeneratedText(lexer);
+        } catch (Exception e) {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Exception while reading the generated file:\n"+e.toString());
+            return;
+        }
+
         if(rule != null) {
             int startIndex = text.indexOf("$ANTLR start "+rule);
             startIndex = text.indexOf("\n", startIndex)+1;
@@ -186,6 +197,6 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
             XJAlert.display(editor.getWindowContainer(), "Failure", "Check Grammar failed:\n"+errorMsg+"\nConsult the console for more information.");
         } else {
             generateCodeProcessContinued();
-        }        
+        }
     }
 }

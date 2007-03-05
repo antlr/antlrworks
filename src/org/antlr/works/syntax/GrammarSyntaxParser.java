@@ -177,43 +177,42 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     /**
      * Matches the name of the grammar:
      *
-     * grammar lexer JavaLexer;
+     * (lexer|parser|tree|) grammar JavaLexer;
      *
      */
     private boolean matchName() {
-        if(!isID(0, "grammar")) return false;
+        if(!isID(0)) return false;
 
         mark();
+        if(tryMatchName()) {
+            return true;
+        } else {
+            rewind();
+            return false;            
+        }
+    }
 
+    private boolean tryMatchName() {
         ATEToken start = T(0);
-        if(matchID(0, "grammar")) {
+        ATEToken type = null;
 
-            // Check if the grammar has a type (e.g. lexer, parser, tree, etc)
-            ATEToken type = T(0);
-            if(type == null) return false;
-            if(ElementGrammarName.isKnownType(T(0).getAttribute())) {
-                if(!nextToken()) return false;
-            } else {
-                type = null;
-            }
-
-            // After the type comes the name of the grammar
-            ATEToken name = T(0);
-
-            // Loop until we find the semi colon
-            while(nextToken()) {
-                if(isSEMI(0)) {
-                    // semi colon found, the grammar name is matched.
-                    ATEToken end = T(0);
-                    nextToken();
-                    this.name = new ElementGrammarName(name, start, end, type);
-                    return true;
-                }
-            }
+        // Check if the grammar has a type (e.g. lexer, parser, tree, etc)
+        if(ElementGrammarName.isKnownType(start.getAttribute())) {
+            if(!nextToken()) return false;
+            type = T(0);
         }
 
-        rewind();
-        return false;
+        if(!matchID(0, "grammar")) return false;
+
+        // After the type comes the name of the grammar
+        ATEToken name = T(0);
+        if(!nextToken()) return false;
+
+        // The next token must be a semi colon
+        if(!matchSEMI(0)) return false;
+
+        this.name = new ElementGrammarName(name, start, T(-1), type);
+        return true;
     }
 
     /**
