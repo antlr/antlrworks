@@ -1,17 +1,8 @@
-package org.antlr.works.test;
-
-import edu.usfca.xj.foundation.XJUtils;
-import junit.framework.TestCase;
-import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
-import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
-import org.antlr.works.syntax.GrammarSyntaxEngine;
-import org.antlr.works.syntax.GrammarSyntaxParser;
-
-import java.io.IOException;
+package org.antlr.works.syntax;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005-2007 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,42 +30,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate {
+public interface GrammarSyntaxDelegate {
 
-    protected GrammarSyntaxEngine engine = new GrammarSyntaxEngine();
-    protected String text;
+    String getTokenVocabFile(String tokenVocabName);
 
-    public void parseFile(String fileName) throws IOException {
-        this.text = getTextFromFile(fileName);
-
-        engine.setDelegate(this);
-        engine.process();
-    }
-
-    public ATESyntaxLexer getLexer() {
-        return engine.getLexer();
-    }
-
-    public GrammarSyntaxParser getParser() {
-        return (GrammarSyntaxParser) engine.getParser();
-    }
-
-    public String getResourceFile(String fileName) {
-        return getClass().getResource(fileName).getFile();
-    }
-
-    public String getTextFromFile(String fileName) throws IOException {
-        return XJUtils.getStringFromFile(getResourceFile(fileName));
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void ateEngineWillParse() {
-
-    }
-
-    public void ateEngineDidParse() {
-    }
+    GrammarSyntaxEngine getParserEngine();
+    GrammarSyntaxParser getParser();
 }

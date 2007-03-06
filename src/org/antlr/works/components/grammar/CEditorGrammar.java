@@ -33,10 +33,7 @@ import org.antlr.works.navigation.GoToHistory;
 import org.antlr.works.navigation.GoToRule;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.GrammarAutoIndent;
-import org.antlr.works.syntax.GrammarSyntax;
-import org.antlr.works.syntax.GrammarSyntaxEngine;
-import org.antlr.works.syntax.GrammarSyntaxParser;
+import org.antlr.works.syntax.*;
 import org.antlr.works.syntax.element.ElementAction;
 import org.antlr.works.syntax.element.ElementBlock;
 import org.antlr.works.syntax.element.ElementReference;
@@ -91,7 +88,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class CEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
         EditorProvider, ATEPanelDelegate,
-        XJUndoDelegate
+        XJUndoDelegate, InspectorDelegate,
+        GrammarSyntaxDelegate
 {
 
     /* Completion */
@@ -246,7 +244,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         parserEngine = new GrammarSyntaxEngine();
         grammarSyntax = new GrammarSyntax(this);
         interpreter = new EditorInterpreter(this);
-        debugger = new Debugger(this);                   
+        debugger = new Debugger(this);
     }
 
     protected void initEditor() {
@@ -256,7 +254,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         editorMenu = new EditorMenu(this);
         editorIdeas = new EditorIdeas(this);
         editorTips = new EditorTips(this);
-        editorInspector = new EditorInspector(this);
+        editorInspector = new EditorInspector(grammarSyntax, this);
 
         persistence = new EditorPersistence(this);
 
@@ -667,6 +665,22 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return getTextPane().getText();
     }
 
+    public void createRuleAtIndex(boolean lexer, String name, String content) {
+        menuRefactor.createRuleAtIndex(lexer, name, content);
+    }
+
+    public void deleteRuleAtCurrentPosition() {
+        menuRefactor.deleteRuleAtIndex(getCaretPosition());
+    }
+
+    public void removeLeftRecursion() {
+        menuRefactor.removeLeftRecursion();
+    }
+
+    public void convertLiteralsToSingleQuote() {
+        menuRefactor.convertLiteralsToSingleQuote();
+    }
+
     public void replaceText(int leftIndex, int rightIndex, String text) {
         textEditor.replaceText(leftIndex, rightIndex, text);
     }
@@ -705,12 +719,32 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
                 return f.canWrite();
             } else {
                 return true;
-            }            
+            }
         }
     }
 
     public synchronized String getFileFolder() {
         return XJUtils.getPathByDeletingLastComponent(getFilePath());
+    }
+
+    public String getTokenVocabFile(String tokenVocabName) {
+        String filePath = getFileFolder();
+        if(filePath == null) {
+            return null;
+        }
+
+        String path = XJUtils.concatPath(filePath, tokenVocabName);
+        if(new File(path).exists()) {
+            return path;
+        }
+
+        // No token vocab file in the default directory. Try in the output path.
+        path = XJUtils.concatPath(AWPrefs.getOutputPath(), tokenVocabName);
+        if(new File(path).exists()) {
+            return path;
+        }
+
+        return null;
     }
 
     public synchronized String getFilePath() {
@@ -949,7 +983,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     /** Parser delegate methods
      */
-    public void ateParserWillParse() {                  
+    public void ateParserWillParse() {
         persistence.store();
     }
 

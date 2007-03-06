@@ -4,12 +4,9 @@ import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.syntax.element.ElementRule;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 /*
@@ -45,34 +42,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class GrammarSyntax {
 
-    protected CEditorGrammar editor;
+    private List<ElementRule> duplicateRules = new ArrayList<ElementRule>();
+    private List<ElementReference> undefinedReferences = new ArrayList<ElementReference>();
+    private List<ElementRule> hasLeftRecursionRules = new ArrayList<ElementRule>();
 
-    protected List<ElementRule> duplicateRules;
-    protected List<ElementReference> undefinedReferences;
-    protected List<ElementRule> hasLeftRecursionRules;
+    private Set<String> tokenVocabNames = new HashSet<String>();
+    private String tokenVocabName;
 
-    protected Set<String> tokenVocabNames;
-    protected String tokenVocabName;
+    private GrammarSyntaxDelegate delegate;
 
-    public GrammarSyntax(CEditorGrammar editor) {
-        this.editor = editor;
-
-        duplicateRules = new ArrayList<ElementRule>();
-        undefinedReferences = new ArrayList<ElementReference>();
-        hasLeftRecursionRules = new ArrayList<ElementRule>();
-        tokenVocabNames = new HashSet<String>();
+    public GrammarSyntax(GrammarSyntaxDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public GrammarSyntaxEngine getParserEngine() {
-        return editor.getParserEngine();
+        return delegate.getParserEngine();
     }
 
     public int getNumberOfRulesWithErrors() {
         int count = 0;
         if(getParserEngine().getRules() != null) {
-            for (Iterator<ElementRule> iterator = getParserEngine().getRules().iterator(); iterator.hasNext();) {
-                ElementRule rule = iterator.next();
-                if(rule.hasErrors())
+            for (ElementRule rule : getParserEngine().getRules()) {
+                if (rule.hasErrors())
                     count++;
             }
         }
@@ -106,10 +97,9 @@ public class GrammarSyntax {
         tokenVocabNames.clear();
 
         try {
-            String filePath = editor.getFileFolder();
-            if(filePath == null || !readTokenVocabFromFile(XJUtils.concatPath(filePath, tokenVocabName +".tokens"), tokenVocabNames)) {
-                // No token vocab file in the default directory. Try in the output path.
-                readTokenVocabFromFile(XJUtils.concatPath(AWPrefs.getOutputPath(), tokenVocabName +".tokens"), tokenVocabNames);
+            String file = delegate.getTokenVocabFile(tokenVocabName+".tokens");
+            if(file != null) {
+                readTokenVocabFromFile(file, tokenVocabNames);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -119,9 +109,6 @@ public class GrammarSyntax {
     }
 
     public static boolean readTokenVocabFromFile(String filePath, Set<String> tokenNames) throws IOException {
-        if(!new File(filePath).exists())
-            return false;
-
         // Read the tokens from the file if it exists
         List<ATEToken> tokens = parsePropertiesString(XJUtils.getStringFromFile(filePath));
         // Add each token name to the list of tokenVocabNames
@@ -198,7 +185,7 @@ public class GrammarSyntax {
 
         Set<String> tokenVocabNames = getTokenVocabNames();
         existingReferences.addAll(tokenVocabNames);
-        editor.getParser().resolveReferencesWithExternalNames(tokenVocabNames);
+        delegate.getParser().resolveReferencesWithExternalNames(tokenVocabNames);
 
         undefinedReferences.clear();
         List<ElementReference> references = getParserEngine().getReferences();

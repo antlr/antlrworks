@@ -3,7 +3,10 @@ package org.antlr.works.test.ut;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.editor.EditorInspector;
 import org.antlr.works.syntax.GrammarSyntax;
+import org.antlr.works.syntax.GrammarSyntaxDelegate;
+import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.syntax.element.ElementBlock;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.test.AbstractTest;
@@ -41,7 +44,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class TestParser extends AbstractTest {
+public class TestParser extends AbstractTest implements GrammarSyntaxDelegate {
+
+    private String vocabFile;
 
     public static void main(String[] args) {
         new TestRunner().doRun(new TestSuite(TestParser.class));
@@ -49,78 +54,97 @@ public class TestParser extends AbstractTest {
 
     public void testSyntaxBlock() throws Exception {
         parseFile(TestConstants.BLOCKS);
+        assertInspector(0);
 
-        assertEquals("grammar name", "demo", parser.name.getName());
+        assertEquals("grammar name", "demo", getParser().name.getName());
 
-        ElementBlock tokensBlock = parser.blocks.get(0);
+        ElementBlock tokensBlock = getParser().blocks.get(0);
         assertEquals("tokens block", Arrays.asList("FOO", "OTHER", "LAST"), tokensBlock.getDeclaredTokensAsString());
 
-        ElementBlock optionsBlock = parser.blocks.get(1);
+        ElementBlock optionsBlock = getParser().blocks.get(1);
         assertEquals("tokenVocab", "DataViewExpressions", optionsBlock.getTokenVocab());
     }
 
     public void testReferences() throws Exception {
         parseFile(TestConstants.REFERENCES);
+        assertInspector(0);
 
-        assertEquals("grammar name", "references", parser.name.getName());
+        assertEquals("grammar name", "references", getParser().name.getName());
 
-        assertEquals("declarations", Arrays.asList("FOO", "OTHER", "LAST", "rule_a", "BAR"), getDeclsAsString(parser.decls));
-        assertEquals("references", Arrays.asList("FOO", "BAR", "OTHER"), getRefsAsString(parser.references));
+        assertEquals("declarations", Arrays.asList("FOO", "OTHER", "LAST", "rule_a", "BAR"), getDeclsAsString(getParser().decls));
+        assertEquals("references", Arrays.asList("FOO", "BAR", "OTHER"), getRefsAsString(getParser().references));
     }
 
     public void testMantra() throws Exception {
         parseFile(TestConstants.MANTRA);
-        // these number have been verified by hand
-        assertParserProperties(65, 32, 28, 115, 274);
+        assertInspector(0);
+
+        assertParserProperties(65, 32, 28, 115, 274); // verified by hand
     }
 
     public void testCodeGenPhase() throws Exception {
         parseFile(TestConstants.CODE_GEN_PHASE);
+        assertInspector(76);
+
         assertParserProperties(40, 18, 7, 40, 199); // verified by hand
 
         // now add the remaining token as if they were read from a tokenVocab file
         Set<String> names = new HashSet<String>();
-        GrammarSyntax.readTokenVocabFromFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
-        parser.resolveReferencesWithExternalNames(names);
+        GrammarSyntax.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        getParser().resolveReferencesWithExternalNames(names);
         assertParserProperties(40, 18, 7, 40, 199+4); // verified by hand
+
+        assertInspector(0);
     }
 
     public void testResolvePhase() throws Exception {
         parseFile(TestConstants.RESOLVE_PHASE);
+        assertInspector(69);
 
         Set<String> names = new HashSet<String>();
-        GrammarSyntax.readTokenVocabFromFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
-        parser.resolveReferencesWithExternalNames(names);
+        GrammarSyntax.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        getParser().resolveReferencesWithExternalNames(names);
 
         assertParserProperties(36, 14, 7, 36, 170); // verified by hand
+        assertInspector(0);
     }
 
     public void testSemanticPhase() throws Exception {
         parseFile(TestConstants.SEMANTIC_PHASE);
+        assertInspector(69);
 
         Set<String> names = new HashSet<String>();
-        GrammarSyntax.readTokenVocabFromFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
-        parser.resolveReferencesWithExternalNames(names);
+        //todo handle vocabfile in a better way
+        GrammarSyntax.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        getParser().resolveReferencesWithExternalNames(names);
 
         assertParserProperties(36, 37, 23, 36, 177); // verified by hand
+        assertInspector(0);
     }
 
     /*********************** HELPER ***************************************/
 
     private void printParserProperties() {
-        System.out.println("Rules="+parser.rules.size());
-        System.out.println("Actions="+parser.actions.size());
-        System.out.println("Blocks="+parser.blocks.size());
-        System.out.println("Decls="+parser.decls.size());
-        System.out.println("Refs="+parser.references.size());
+        System.out.println("Rules="+getParser().rules.size());
+        System.out.println("Actions="+getParser().actions.size());
+        System.out.println("Blocks="+getParser().blocks.size());
+        System.out.println("Decls="+getParser().decls.size());
+        System.out.println("Refs="+getParser().references.size());
     }
 
     private void assertParserProperties(int rules, int actions, int blocks, int decls, int references) {
-        assertEquals("Number of rules", rules, parser.rules.size());
-        assertEquals("Number of actions", actions, parser.actions.size());
-        assertEquals("Number of blocks", blocks, parser.blocks.size());
-        assertEquals("Number of declarations", decls, parser.decls.size());
-        assertEquals("Number of references", references, parser.references.size());
+        assertEquals("Number of rules", rules, getParser().rules.size());
+        assertEquals("Number of actions", actions, getParser().actions.size());
+        assertEquals("Number of blocks", blocks, getParser().blocks.size());
+        assertEquals("Number of declarations", decls, getParser().decls.size());
+        assertEquals("Number of references", references, getParser().references.size());
+    }
+
+    private void assertInspector(int errors) {
+        GrammarSyntax syntax = new GrammarSyntax(this);
+        syntax.rebuildAll();
+        EditorInspector inspector = new EditorInspector(syntax, new MockInspectorDelegate());
+        assertEquals("Errors", errors, inspector.getErrors().size());
     }
 
     private List<String> getDeclsAsString(List<ATEToken> tokens) {
@@ -137,6 +161,14 @@ public class TestParser extends AbstractTest {
             names.add(token.token.getAttribute());
         }
         return names;
+    }
+
+    public String getTokenVocabFile(String tokenVocabName) {
+        return vocabFile;
+    }
+
+    public GrammarSyntaxEngine getParserEngine() {
+        return engine;
     }
 
 }

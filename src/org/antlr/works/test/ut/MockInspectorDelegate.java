@@ -1,17 +1,10 @@
-package org.antlr.works.test;
+package org.antlr.works.test.ut;
 
-import edu.usfca.xj.foundation.XJUtils;
-import junit.framework.TestCase;
-import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
-import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
-import org.antlr.works.syntax.GrammarSyntaxEngine;
-import org.antlr.works.syntax.GrammarSyntaxParser;
-
-import java.io.IOException;
+import org.antlr.works.editor.InspectorDelegate;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005-2007 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,42 +32,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate {
-
-    protected GrammarSyntaxEngine engine = new GrammarSyntaxEngine();
-    protected String text;
-
-    public void parseFile(String fileName) throws IOException {
-        this.text = getTextFromFile(fileName);
-
-        engine.setDelegate(this);
-        engine.process();
+public class MockInspectorDelegate implements InspectorDelegate {
+    public void createRuleAtIndex(boolean lexer, String name, String content) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public ATESyntaxLexer getLexer() {
-        return engine.getLexer();
+    public void deleteRuleAtCurrentPosition() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public GrammarSyntaxParser getParser() {
-        return (GrammarSyntaxParser) engine.getParser();
+    public void removeLeftRecursion() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public String getResourceFile(String fileName) {
-        return getClass().getResource(fileName).getFile();
+    public void convertLiteralsToSingleQuote() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public String getTextFromFile(String fileName) throws IOException {
-        return XJUtils.getStringFromFile(getResourceFile(fileName));
+    public void replaceText(int start, int end, String grammarNameFromFile) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void ateEngineWillParse() {
-
-    }
-
-    public void ateEngineDidParse() {
+    public String getFileName() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

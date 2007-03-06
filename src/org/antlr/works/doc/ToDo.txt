@@ -14,6 +14,7 @@
   -> double-quote string in ST, for example: write_to("<id>",<id>)
   -> check that no syntax error is reported with rewrite (and reported when it is a real problem)
 
+- is GrammarSyntax still used for left recursion -> check and UT
 - review syntax color prefs to ensure it's up-to-date
 
 - prefs: backup file

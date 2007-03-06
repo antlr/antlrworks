@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate.syntax.generic;
 
-import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
@@ -41,7 +40,7 @@ import java.util.List;
 
 public abstract class ATESyntaxEngine {
 
-    protected ATEPanel textEditor;
+    protected ATESyntaxEngineDelegate delegate;
 
     protected ATESyntaxLexer lexer;
     protected ATESyntaxParser parser;
@@ -55,8 +54,8 @@ public abstract class ATESyntaxEngine {
         parser = createParser();
     }
 
-    public void setTextEditor(ATEPanel textEditor) {
-        this.textEditor = textEditor;
+    public void setDelegate(ATESyntaxEngineDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public static void setDelay(int delay) {
@@ -99,7 +98,7 @@ public abstract class ATESyntaxEngine {
 
     public void processSyntax() {
         // First run the lexer
-        lexer.tokenize(textEditor.getTextPane().getText());
+        lexer.tokenize(delegate.getText());
         tokens = new ArrayList<ATEToken>(lexer.getTokens());
         lexerDidRun(lexer);
 
@@ -111,9 +110,9 @@ public abstract class ATESyntaxEngine {
     }
 
     public void process() {
-        textEditor.ateEngineWillParse();
+        delegate.ateEngineWillParse();
         processSyntax();
-        textEditor.ateEngineDidParse();
+        delegate.ateEngineDidParse();
     }
 
 }

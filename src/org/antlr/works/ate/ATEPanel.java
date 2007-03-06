@@ -10,6 +10,7 @@ import org.antlr.works.ate.folding.ATEFoldingManager;
 import org.antlr.works.ate.swing.ATEAutoIndentation;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
+import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
@@ -57,7 +58,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDelegate {
+public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDelegate, ATESyntaxEngineDelegate {
 
     protected XJFrameInterface parentFrame;
     protected XJSmoothScrolling smoothScrolling;
@@ -101,7 +102,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public void setParserEngine(ATESyntaxEngine engine) {
         this.engine = engine;
-        this.engine.setTextEditor(this);
+        this.engine.setDelegate(this);
         this.engine.refreshColoring();
     }
 
@@ -469,6 +470,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     public void parse() {
         if(engine != null)
             engine.process();
+    }
+
+    public String getText() {
+        return getTextPane().getText();
     }
 
     public void ateEngineWillParse() {

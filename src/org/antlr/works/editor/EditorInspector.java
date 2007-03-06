@@ -4,9 +4,9 @@ import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEScope;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.idea.IdeaAction;
 import org.antlr.works.idea.IdeaActionDelegate;
+import org.antlr.works.syntax.GrammarSyntax;
 import org.antlr.works.syntax.element.*;
 
 import java.awt.*;
@@ -46,10 +46,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorInspector {
 
-    public CEditorGrammar editor;
+    private GrammarSyntax syntax;
+    private InspectorDelegate delegate;
 
-    public EditorInspector(CEditorGrammar editor) {
-        this.editor = editor;
+    public EditorInspector(GrammarSyntax syntax, InspectorDelegate delegate) {
+        this.syntax = syntax;
+        this.delegate = delegate;
     }
 
     public List<Item> getErrors() {
@@ -85,9 +87,8 @@ public class EditorInspector {
 
     protected List<Item> getItemsAtIndex(List<Item> items, int index) {
         List<Item> filteredItems = new ArrayList<Item>();
-        for(int i=0; i<items.size(); i++) {
-            Item item = items.get(i);
-            if(index >= item.startIndex && index <= item.endIndex)
+        for (Item item : items) {
+            if (index >= item.startIndex && index <= item.endIndex)
                 filteredItems.add(item);
         }
         return filteredItems;
@@ -107,11 +108,11 @@ public class EditorInspector {
     }
 
     private ElementGrammarName getGrammarName() {
-        return editor.getParserEngine().getName();
+        return syntax.getParserEngine().getName();
     }
 
     private String getGrammarNameFromFile() {
-        String filename = editor.getFileName();
+        String filename = delegate.getFileName();
         if(filename == null) {
             return null;
         }
@@ -119,19 +120,18 @@ public class EditorInspector {
     }
 
     protected void discoverInvalidCharLiteralTokens(List<Item> items) {
-        List<ATEToken> tokens = editor.getTokens();
+        List<ATEToken> tokens = syntax.getParserEngine().getTokens();
         if(tokens == null)
             return;
 
-        for(int index=0; index<tokens.size(); index++) {
-            ATEToken t = tokens.get(index);
-            if(t.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
-                if(ignoreScopeForDoubleQuoteLiteral(t.scope)) continue;
+        for (ATEToken t : tokens) {
+            if (t.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
+                if (ignoreScopeForDoubleQuoteLiteral(t.scope)) continue;
 
                 Item item = new ItemInvalidCharLiteral();
                 item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
                         t.startLineNumber, Color.red,
-                        "Invalid character literal '"+t.getAttribute()+"' - must use single quote");
+                        "Invalid character literal '" + t.getAttribute() + "' - must use single quote");
                 items.add(item);
             }
         }
@@ -149,68 +149,64 @@ public class EditorInspector {
     }
 
     protected void discoverUndefinedReferences(List<Item> items) {
-        List<ElementReference> undefinedRefs = editor.getSyntax().getUndefinedReferences();
+        List<ElementReference> undefinedRefs = syntax.getUndefinedReferences();
         if(undefinedRefs == null)
             return;
 
-        for(int index=0; index<undefinedRefs.size(); index++) {
-            ElementReference ref = undefinedRefs.get(index);
+        for (ElementReference ref : undefinedRefs) {
             Item item = new ItemUndefinedReference();
             item.setAttributes(ref.token, ref.token.getStartIndex(), ref.token.getEndIndex(),
                     ref.token.startLineNumber, Color.red,
-                    "Undefined reference \""+ref.token.getAttribute()+"\"");
+                    "Undefined reference \"" + ref.token.getAttribute() + "\"");
             items.add(item);
         }
     }
 
     protected void discoverDuplicateRules(List<Item> items) {
-        List<ElementRule> rules = editor.getSyntax().getDuplicateRules();
+        List<ElementRule> rules = syntax.getDuplicateRules();
         if(rules == null)
             return;
 
-        for(int index=0; index<rules.size(); index++) {
-            ElementRule rule = rules.get(index);
+        for (ElementRule rule : rules) {
             Item item = new ItemDuplicateRule();
             item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
                     rule.start.startLineNumber, Color.red,
-                    "Duplicate rule \""+rule.name+"\"");
+                    "Duplicate rule \"" + rule.name + "\"");
             items.add(item);
         }
     }
 
     protected void discoverLeftRecursionRules(List<Item> items) {
-        List rules = editor.rules.getRules();
+        List<ElementRule> rules = syntax.getParserEngine().getRules();
         if(rules == null)
             return;
 
-        for(int index=0; index<rules.size(); index++) {
-            ElementRule rule = (ElementRule)rules.get(index);
-            if(!rule.hasLeftRecursion())
+        for (ElementRule rule : rules) {
+            if (!rule.hasLeftRecursion())
                 continue;
 
             Item item = new ItemLeftRecursion();
             item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
                     rule.start.startLineNumber, Color.blue,
-                    "Rule \""+rule.name+"\" is left-recursive");
+                    "Rule \"" + rule.name + "\" is left-recursive");
             items.add(item);
         }
     }
 
     protected void discoverLeftRecursiveRulesSet(List<Item> items) {
-        List rules = editor.rules.getRules();
+        List<ElementRule> rules = syntax.getParserEngine().getRules();
         if(rules == null)
             return;
 
-        for(int index=0; index<rules.size(); index++) {
-            ElementRule rule = (ElementRule)rules.get(index);
+        for (ElementRule rule : rules) {
             Set rulesSet = rule.getLeftRecursiveRulesSet();
-            if(rulesSet == null || rulesSet.size() < 2)
+            if (rulesSet == null || rulesSet.size() < 2)
                 continue;
 
             Item item = new Item();
             item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
                     rule.start.startLineNumber, Color.blue,
-                    "Rule \""+rule.name+"\" is mutually left-recursive with other rules (see Console)");
+                    "Rule \"" + rule.name + "\" is mutually left-recursive with other rules (see Console)");
             items.add(item);
         }
     }
@@ -259,7 +255,7 @@ public class EditorInspector {
         public void ideaActionFire(IdeaAction action, int actionID) {
             switch(actionID) {
                 case IDEA_CREATE_RULE:
-                    editor.menuRefactor.createRuleAtIndex(((ElementToken)action.token).lexer, action.token.getAttribute(), null);
+                    delegate.createRuleAtIndex(((ElementToken)action.token).lexer, action.token.getAttribute(), null);
                     break;
             }
         }
@@ -277,7 +273,7 @@ public class EditorInspector {
         public void ideaActionFire(IdeaAction action, int actionID) {
             switch(actionID) {
                 case IDEA_DELETE_RULE:
-                    editor.menuRefactor.deleteRuleAtIndex(editor.getCaretPosition());
+                    delegate.deleteRuleAtCurrentPosition();
                     break;
             }
         }
@@ -294,7 +290,7 @@ public class EditorInspector {
         public void ideaActionFire(IdeaAction action, int actionID) {
             switch(actionID) {
                 case IDEA_REMOVE_LEFT_RECURSION:
-                    editor.menuRefactor.removeLeftRecursion();
+                    delegate.removeLeftRecursion();
                     break;
             }
         }
@@ -311,7 +307,7 @@ public class EditorInspector {
         public void ideaActionFire(IdeaAction action, int actionID) {
             switch(actionID) {
                 case IDEA_CONVERT_TO_SINGLE_QUOTE:
-                    editor.menuRefactor.convertLiteralsToSingleQuote();
+                    delegate.convertLiteralsToSingleQuote();
                     break;
             }
         }
@@ -330,7 +326,7 @@ public class EditorInspector {
                 case IDEA_FIX_GRAMMAR_NAME:
                     ElementGrammarName n = getGrammarName();
                     ATEToken name = n.name;
-                    editor.replaceText(name.start, name.end, getGrammarNameFromFile());
+                    delegate.replaceText(name.start, name.end, getGrammarNameFromFile());
                     break;
             }
         }
