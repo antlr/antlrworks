@@ -68,7 +68,7 @@ public class GLiteral {
             return OP_MAX+OP_LPAREN+a+OP_COMA+b+OP_RPAREN;
     }
 
-    public static float evaluate(String s, Map values) {
+    public static float evaluate(String s, Map<String,Float> values) {
         if(s == null)
             return 0;
 
@@ -78,10 +78,10 @@ public class GLiteral {
     private static class Evaluator {
 
         public String s;
-        public Map values;
+        public Map<String,Float> values;
         public int position;
 
-        public Evaluator(String s, Map values) {
+        public Evaluator(String s, Map<String,Float> values) {
             this.s = s;
             this.values = values;
         }
@@ -95,7 +95,7 @@ public class GLiteral {
             float _value = 0;
 
             do {
-                Float v = (Float)values.get(c());
+                Float v = values.get(c());
                 if(v != null) {
                     _value += v.floatValue();
                 } else {

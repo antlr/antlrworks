@@ -47,7 +47,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EngineRuntime {
 
-    public static Map processPerThread = new HashMap();
+    public static Map<Thread,Process> processPerThread = new HashMap<Thread, Process>();
 
     public static void setProcess(Process p) {
         processPerThread.put(Thread.currentThread(), p);
@@ -58,11 +58,11 @@ public class EngineRuntime {
     }
 
     public static Process getProcess(Thread t) {
-        return (Process) processPerThread.get(t);
+        return processPerThread.get(t);
     }
 
     public static Process getProcess() {
-        return (Process) processPerThread.get(Thread.currentThread());
+        return processPerThread.get(Thread.currentThread());
     }
 
     public static String getClassPath(String outputPath) {
@@ -130,8 +130,8 @@ public class EngineRuntime {
          */
 
         if(error == null && esw != null) {
-            for (Iterator iterator = esw.getLines().iterator(); iterator.hasNext();) {
-                String line = (String) iterator.next();
+            for (Iterator<String> iterator = esw.getLines().iterator(); iterator.hasNext();) {
+                String line = iterator.next();
 
                 if(line.startsWith("ANTLR Parser Generator"))
                     continue;
@@ -231,7 +231,7 @@ public class EngineRuntime {
                 for(int i=0; i<files.length; i++)
                     args[2+i] = files[i];
 
-                Class javac = Class.forName("com.sun.tools.javac.Main");
+                Class<?> javac = Class.forName("com.sun.tools.javac.Main");
                 Class[] p = new Class[] { String[].class };
                 Method m = javac.getMethod("compile", p);
                 Object[] a = new Object[] { args };

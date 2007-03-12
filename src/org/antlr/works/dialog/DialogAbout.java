@@ -102,10 +102,10 @@ public class DialogAbout extends XJPanel {
 
     public class InfoTableModel extends DefaultTableModel {
 
-        public List info = new ArrayList();
+        public List<Object[]> info = new ArrayList<Object[]>();
 
         public Object getValueAt(int row, int column) {
-            return ((Object[])info.get(row))[column];
+            return (info.get(row))[column];
         }
 
         public boolean isCellEditable(int row, int column) {

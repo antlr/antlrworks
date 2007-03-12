@@ -142,7 +142,7 @@ public class ProjectFileItem implements Comparable {
         this.container = container;
         this.container.setPersistentData(containerData);
     }
-    
+
     public ComponentContainer getComponentContainer() {
         return container;
     }
@@ -181,7 +181,7 @@ public class ProjectFileItem implements Comparable {
     public String getFileType() {
         return fileType;
     }
-    
+
     public void windowActivated() {
         if(container != null)
             container.getEditor().componentActivated();
@@ -206,16 +206,16 @@ public class ProjectFileItem implements Comparable {
 
     public void setPersistentData(Map data) {
         setFileName((String)data.get(KEY_FILE_NAME));
-        setOpened(((Boolean)data.get(KEY_FILE_OPENED)).booleanValue());
-        setTabIndex(((Integer)data.get(KEY_TAB_INDEX)).intValue());
+        setOpened((Boolean) data.get(KEY_FILE_OPENED));
+        setTabIndex((Integer) data.get(KEY_TAB_INDEX));
         setContainerPersistentData((Map)data.get(KEY_CONTAINER_DATA));
     }
 
-    public Map getPersistentData() {
-        Map data = new HashMap();
+    public Map<String,Object> getPersistentData() {
+        Map<String,Object> data = new HashMap<String, Object>();
         data.put(KEY_FILE_NAME, fileName);
-        data.put(KEY_FILE_OPENED, Boolean.valueOf(opened));
-        data.put(KEY_TAB_INDEX, new Integer(tabIndex));
+        data.put(KEY_FILE_OPENED, opened);
+        data.put(KEY_TAB_INDEX, tabIndex);
 
         Map d = getContainerPersistentData();
         if(d != null)
@@ -229,15 +229,23 @@ public class ProjectFileItem implements Comparable {
     }
 
     public boolean equals(Object o) {
-        ProjectFileItem otherItem = (ProjectFileItem)o;
-        return fileName.equals(otherItem.fileName);
+        if(o instanceof ProjectFileItem) {
+            ProjectFileItem otherItem = (ProjectFileItem)o;
+            return fileName.equals(otherItem.fileName);
+        } else {
+            return false;
+        }
     }
 
     public int compareTo(Object o) {
-        ProjectFileItem otherItem = (ProjectFileItem)o;
-        return fileName.compareTo(otherItem.fileName);
+        if(o instanceof ProjectFileItem) {
+            ProjectFileItem otherItem = (ProjectFileItem)o;
+            return fileName.compareTo(otherItem.fileName);
+        } else {
+            return 1;
+        }
     }
-    
+
     /** Called by the XJTree to display the cell content. Use only the last path component
      * (that is the name of file) only.
      */

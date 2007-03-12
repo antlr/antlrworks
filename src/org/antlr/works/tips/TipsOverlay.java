@@ -49,10 +49,10 @@ public class TipsOverlay extends OverlayObject implements ToolTipListDelegate {
         super(parentFrame, parentComponent);
     }
 
-    public void setTips(List tips) {
+    public void setTips(List<String> tips) {
         toolTip.clear();
-        for(Iterator iter = tips.iterator(); iter.hasNext();) {
-            toolTip.addLine((String)iter.next());
+        for(Iterator<String> iter = tips.iterator(); iter.hasNext();) {
+            toolTip.addLine(iter.next());
         }
         toolTip.selectFirstLine();
     }

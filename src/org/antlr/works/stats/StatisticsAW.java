@@ -136,12 +136,12 @@ public class StatisticsAW {
     public static final int EVENT_DEBUGGER_GOTO_END = 146;
     public static final int EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS = 147;
 
-    static final Map eventNames = new HashMap();
-    static final List eventList = new ArrayList();
+    static final Map<Integer,String> eventNames = new HashMap<Integer, String>();
+    static final List<Integer> eventList = new ArrayList<Integer>();
 
     static void register(int eventID, String eventName) {
-        eventNames.put(new Integer(eventID), eventName);
-        eventList.add(new Integer(eventID));
+        eventNames.put(eventID, eventName);
+        eventList.add(eventID);
     }
 
     static {
@@ -225,7 +225,7 @@ public class StatisticsAW {
         register(EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS, "Debugger toggle input tokens");
     }
 
-    protected Map events = null;
+    protected Map<Integer,Integer> events = null;
 
     public static StatisticsAW shared() {
         return shared;
@@ -258,27 +258,27 @@ public class StatisticsAW {
     }
 
     protected void setCount(int event, int count) {
-        getEvents().put(new Integer(event), new Integer(count));
+        getEvents().put(event, count);
     }
 
     protected int getCount(int event) {
-        Integer count = (Integer)getEvents().get(new Integer(event));
+        Integer count = getEvents().get(event);
         if(count == null)
             return 0;
         else
-            return count.intValue();
+            return count;
     }
 
-    protected synchronized Map getEvents() {
+    protected synchronized Map<Integer,Integer> getEvents() {
         if(events == null) {
             try {
-                events = (Map)AWPrefs.getPreferences().getObject(PREF_KEY, null);
+                events = (Map<Integer,Integer>)AWPrefs.getPreferences().getObject(PREF_KEY, null);
             } catch(Exception e) {
                 events = null;
                 System.err.println("Statistics: "+e);
             }
             if(events == null) {
-                events = new HashMap();
+                events = new HashMap<Integer, Integer>();
                 initDate();
             }
         }
@@ -289,9 +289,9 @@ public class StatisticsAW {
         StringBuffer s = new StringBuffer();
         s.append(XJApplication.getAppVersionShort());
         s.append('\t');
-        for (Iterator iterator = eventList.iterator(); iterator.hasNext();) {
-            Integer key = (Integer) iterator.next();
-            s.append(getCount(key.intValue()));
+        for (Iterator<Integer> iterator = eventList.iterator(); iterator.hasNext();) {
+            Integer key = iterator.next();
+            s.append(getCount(key));
             if(iterator.hasNext())
                 s.append('\t');
         }
@@ -304,12 +304,12 @@ public class StatisticsAW {
         s.append(XJApplication.getAppVersionShort());
         s.append('\n');
 
-        for (Iterator iterator = eventList.iterator(); iterator.hasNext();) {
-            Integer key = (Integer) iterator.next();
+        for (Iterator<Integer> iterator = eventList.iterator(); iterator.hasNext();) {
+            Integer key = iterator.next();
 
             s.append(eventNames.get(key));
             s.append(": ");
-            s.append(getCount(key.intValue()));
+            s.append(getCount(key));
 
             if(iterator.hasNext())
                 s.append('\n');

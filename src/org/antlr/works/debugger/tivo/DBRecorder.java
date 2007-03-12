@@ -66,7 +66,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     protected String address;
     protected int port;
 
-    protected ArrayList events;
+    protected ArrayList<DBEvent> events;
     protected int position;
     protected NumberSet breakEvents = new NumberSet();
     protected int stoppedOnEvent = DBEvent.NO_EVENT;
@@ -124,7 +124,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public synchronized void reset() {
         if(events == null)
-            events = new ArrayList();
+            events = new ArrayList<DBEvent>();
         else
             events.clear();
         position = -1;
@@ -136,11 +136,11 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         if(position<0 || position>=events.size())
             return null;
         else
-            return (DBEvent)events.get(position);
+            return events.get(position);
     }
 
     public synchronized DBEvent getLastEvent() {
-        return (DBEvent)events.get(events.size()-1);
+        return events.get(events.size()-1);
     }
 
     public synchronized List getCurrentEvents() {
@@ -357,7 +357,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         eventListener = new DBRecorderEventListener(this);
         cancelled = false;
 
-        boolean connected = false;
+        boolean connected = false;                                                                 
         boolean showProgress = false;
 
         long t = System.currentTimeMillis();

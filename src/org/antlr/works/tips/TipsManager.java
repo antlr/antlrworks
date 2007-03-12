@@ -37,13 +37,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class TipsManager {
 
-    protected List providers;
+    protected List<TipsProvider> providers;
     protected TipsOverlay overlay;
     protected int lastPosition;
     protected boolean enabled;
 
     public TipsManager() {
-        providers = new ArrayList();
+        providers = new ArrayList<TipsProvider>();
         enabled = true;
     }
 
@@ -79,7 +79,7 @@ public class TipsManager {
 
         lastPosition = position;
 
-        List tips = generateTips(position);
+        List<String> tips = generateTips(position);
         if(tips == null || tips.isEmpty()) {
             hide();
         } else {
@@ -94,11 +94,11 @@ public class TipsManager {
         lastPosition = -1;
     }
 
-    public List generateTips(int position) {
-        List tips = new ArrayList();
-        for(Iterator iter = providers.iterator(); iter.hasNext(); ) {
-            TipsProvider provider = (TipsProvider)iter.next();
-            List ptips = provider.tipsProviderGetTips(position);
+    public List<String> generateTips(int position) {
+        List<String> tips = new ArrayList<String>();
+        for(Iterator<TipsProvider> iter = providers.iterator(); iter.hasNext(); ) {
+            TipsProvider provider = iter.next();
+            List<String> ptips = provider.tipsProviderGetTips(position);
             if(ptips != null && !ptips.isEmpty()) {
                 tips.addAll(ptips);
             }

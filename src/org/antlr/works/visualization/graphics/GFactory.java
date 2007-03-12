@@ -67,7 +67,7 @@ public class GFactory {
         this.console = console;
     }
 
-    public List buildGraphsForRule(EngineGrammar grammar, String rule, List errors) throws Exception {
+    public List buildGraphsForRule(EngineGrammar grammar, String rule, List<EngineGrammarError> errors) throws Exception {
         if(grammar == null)
             return null;
         
@@ -88,12 +88,12 @@ public class GFactory {
         return Collections.singletonList(graph);
     }
 
-    public List buildGraphsForErrors(EngineGrammar grammar, String rule, List errors) throws Exception {
+    public List buildGraphsForErrors(EngineGrammar grammar, String rule, List<EngineGrammarError> errors) throws Exception {
         List graphs = new ArrayList();
 
-        Iterator iterator = errors.iterator();
+        Iterator<EngineGrammarError> iterator = errors.iterator();
         while(iterator.hasNext()) {
-            graphs.add(buildGraphGroup(grammar.getGrammarForRule(rule), (EngineGrammarError)iterator.next()));
+            graphs.add(buildGraphGroup(grammar.getGrammarForRule(rule), iterator.next()));
         }
 
         return graphs;
@@ -101,10 +101,10 @@ public class GFactory {
 
     private GGraphGroup buildGraphGroup(Grammar grammar, EngineGrammarError error) {
         // Create one GGraph for each error rules
-        List graphs = new ArrayList();
+        List<GGraph> graphs = new ArrayList<GGraph>();
         FAFactory factory = new FAFactory(grammar);
         for (int i = 0; i < error.rules.size(); i++) {
-            String rule = (String)error.rules.get(i);
+            String rule = error.rules.get(i);
             NFAState startState = grammar.getRuleStartState(rule);
             FAState state = factory.buildNFA(startState, optimize);
 
@@ -118,8 +118,8 @@ public class GFactory {
         // states that do not exist in the graph (they are after the accepted state
         // and are ignored by the FAFactory)
         GGraphGroup gg = new GGraphGroup();
-        for (Iterator graphIterator = graphs.iterator(); graphIterator.hasNext();) {
-            GGraph graph = (GGraph) graphIterator.next();
+        for (Iterator<GGraph> graphIterator = graphs.iterator(); graphIterator.hasNext();) {
+            GGraph graph = graphIterator.next();
             if(graph.containsAtLeastOneState(error.states))
                 gg.add(graph);
         }
@@ -127,7 +127,7 @@ public class GFactory {
         // Attach all error paths to the GGraphGroup
         for(int i=0; i<error.paths.size(); i++) {
             List states = (List) error.paths.get(i);
-            Boolean disabled = (Boolean) error.pathsDisabled.get(i);
+            Boolean disabled = error.pathsDisabled.get(i);
             try {
                 gg.addPath(states, disabled.booleanValue(), factory.getSkippedStatesMap());
             } catch(Exception e) {
@@ -140,7 +140,7 @@ public class GFactory {
 
         // Attach all unreacheable alts to the GGraphGroup
         for(int i=0; i<error.unreachableAlts.size(); i++) {
-            Object[] unreachableAlt = (Object[]) error.unreachableAlts.get(i);
+            Object[] unreachableAlt = error.unreachableAlts.get(i);
             gg.addUnreachableAlt((NFAState)unreachableAlt[0], (Integer)unreachableAlt[1]);
         }
 

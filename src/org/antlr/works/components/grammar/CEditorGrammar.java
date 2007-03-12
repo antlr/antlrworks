@@ -763,14 +763,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         return parserEngine;
     }
 
-    public List getRules() {
+    public List<ElementRule> getRules() {
         if(rules.isSorted()) {
             return rules.getSortedRules();
         } else
             return rules.getRules();
     }
 
-    public List getSortedRules() {
+    public List<ElementRule> getSortedRules() {
         return rules.getSortedRules();
     }
 
@@ -1111,7 +1111,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
      *  given a partial word
      */
 
-    public List autoCompletionMenuGetMatchingWordsForPartialWord(String partialWord) {
+    public List<String> autoCompletionMenuGetMatchingWordsForPartialWord(String partialWord) {
         if(parserEngine == null || parserEngine.getRules() == null)
             return null;
 

@@ -53,14 +53,14 @@ public class IdeaOverlay extends OverlayObject {
     protected JScrollPane ideasScrollPane;
     protected JToggleButton ideaButton;
 
-    protected List ideas;
+    protected List<IdeaAction> ideas;
 
     public IdeaOverlay(CEditorGrammar editor, XJFrameInterface parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
         this.editor = editor;
     }
 
-    public void setIdeas(List ideas) {
+    public void setIdeas(List<IdeaAction> ideas) {
         this.ideas = ideas;
     }
 
@@ -172,7 +172,7 @@ public class IdeaOverlay extends OverlayObject {
 
     public void updateIdeasList() {
         ideasModel.clear();
-        for(Iterator iter = ideas.iterator(); iter.hasNext();) {
+        for(Iterator<IdeaAction> iter = ideas.iterator(); iter.hasNext();) {
             ideasModel.addElement(iter.next());
         }
         ideasList.setSelectedIndex(0);
@@ -186,7 +186,7 @@ public class IdeaOverlay extends OverlayObject {
     }
 
     public void applyIdea(int index) {
-        IdeaAction action = (IdeaAction)ideas.get(index);
+        IdeaAction action = ideas.get(index);
         action.run();
     }
 

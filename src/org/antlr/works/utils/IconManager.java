@@ -40,14 +40,14 @@ public class IconManager {
     private static final String path = "org/antlr/works/icons/";
 
     private static IconManager shared = new IconManager();
-    private static Map cache = new HashMap();
+    private static Map<String,ImageIcon> cache = new HashMap<String, ImageIcon>();
 
     public static IconManager shared() {
         return shared;
     }
 
     public ImageIcon createImageIcon(String path) {
-        ImageIcon image = (ImageIcon)cache.get(path);
+        ImageIcon image = cache.get(path);
         if(image == null) {
             java.net.URL imgURL = this.getClass().getClassLoader().getResource(path);
             image = imgURL != null ? new ImageIcon(imgURL) : null;

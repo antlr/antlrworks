@@ -44,9 +44,9 @@ public class ErrorListener implements ANTLRErrorListener {
 
     protected static ErrorListener shared = new ErrorListener();
 
-    public List infos = new LinkedList();
-    public List errors = new LinkedList();
-    public List warnings = new LinkedList();
+    public List<String> infos = new LinkedList<String>();
+    public List<Message> errors = new LinkedList<Message>();
+    public List<Message> warnings = new LinkedList<Message>();
 
     public boolean printToConsole = true;
     public ErrorListener forwardListener = null;

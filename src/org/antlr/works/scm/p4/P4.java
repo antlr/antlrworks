@@ -147,7 +147,7 @@ public class P4 implements SCM {
 
     protected class P4Scheduler implements Runnable, P4CommandCompletionDelegate {
 
-        protected List scheduledCommands = new ArrayList();
+        protected List<P4Command> scheduledCommands = new ArrayList<P4Command>();
         protected P4Command runningCommand = null;
 
         public void start() {
@@ -181,7 +181,7 @@ public class P4 implements SCM {
                 if(scheduledCommands.isEmpty()) {
                     runningCommand = null;
                 } else {
-                    runningCommand = (P4Command)scheduledCommands.get(0);
+                    runningCommand = scheduledCommands.get(0);
                     scheduledCommands.remove(0);
                 }
             }

@@ -136,7 +136,7 @@ public class Usages extends EditorTab {
         return getContainer();
     }
 
-    public class UsageMatch {
+    public static class UsageMatch {
         public ElementRule rule;
         public ATEToken token;
         public String contextualText;

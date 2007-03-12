@@ -165,11 +165,11 @@ public class GrammarSyntax {
 
         List<ElementRule> sortedRules = Collections.list(Collections.enumeration(rules));
         Collections.sort(sortedRules);
-        Iterator iter = sortedRules.iterator();
+        Iterator<ElementRule> iter = sortedRules.iterator();
         ElementRule currentRule = null;
         duplicateRules.clear();
         while(iter.hasNext()) {
-            ElementRule nextRule = (ElementRule) iter.next();
+            ElementRule nextRule = iter.next();
             if(currentRule != null && currentRule.name.equals(nextRule.name) && !duplicateRules.contains(currentRule)) {
                 duplicateRules.add(currentRule);
                 duplicateRules.add(nextRule);

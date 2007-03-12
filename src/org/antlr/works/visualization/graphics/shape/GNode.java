@@ -47,7 +47,7 @@ import java.util.List;
 public class GNode extends GObject {
 
     public FAState state;
-    public List links = new ArrayList();
+    public List<GLink> links = new ArrayList<GLink>();
 
     public GPoint position;
     public GDimension nodeDimension = new GDimension(GContext.NODE_WIDTH, GContext.NODE_DOWN, GContext.NODE_UP);
@@ -63,8 +63,8 @@ public class GNode extends GObject {
 
     public void setContext(GContext context) {
         super.setContext(context);
-        for (Iterator iterator = links.iterator(); iterator.hasNext();) {
-            GLink link = (GLink) iterator.next();
+        for (Iterator<GLink> iterator = links.iterator(); iterator.hasNext();) {
+            GLink link = iterator.next();
             link.setContext(context);
         }
     }
@@ -84,8 +84,8 @@ public class GNode extends GObject {
         // Look into each transition to see if the state number
         // has been skipped during NFA optimization: in this case,
         // any skipped state will be stored in the transition.
-        for (Iterator iterator = links.iterator(); iterator.hasNext();) {
-            GLink link = (GLink) iterator.next();
+        for (Iterator<GLink> iterator = links.iterator(); iterator.hasNext();) {
+            GLink link = iterator.next();
             if(link.containsStateNumber(n))
                 return true;
         }
@@ -98,8 +98,8 @@ public class GNode extends GObject {
     }
 
     public GLink getLink(FATransition transition) {
-        for (Iterator iterator = links.iterator(); iterator.hasNext();) {
-            GLink link = (GLink) iterator.next();
+        for (Iterator<GLink> iterator = links.iterator(); iterator.hasNext();) {
+            GLink link = iterator.next();
             if(link.transition == transition)
                 return link;
         }
@@ -170,7 +170,7 @@ public class GNode extends GObject {
         cacheGlobalDimension(context);
 
         for(int i=0; i<links.size(); i++) {
-            GLink link = (GLink)links.get(i);
+            GLink link = links.get(i);
             link.render(ox, oy);
         }
     }
@@ -187,7 +187,7 @@ public class GNode extends GObject {
     public void drawNodeAndLink() {
 
         for(int i=0; i<links.size(); i++) {
-            GLink link = (GLink)links.get(i);
+            GLink link = links.get(i);
             link.draw();
         }
 

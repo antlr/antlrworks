@@ -72,7 +72,7 @@ public class MenuGoTo extends MenuAbstract {
         else
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_NEXT_BRKPT);
 
-        Set breakpoints = editor.breakpointManager.getBreakpoints();
+        Set<Integer> breakpoints = editor.breakpointManager.getBreakpoints();
         int line = editor.getTextEditor().getLineIndexAtTextPosition(getCaretPosition());
         if(line == -1) return;
 
@@ -81,7 +81,7 @@ public class MenuGoTo extends MenuAbstract {
             if(line < 0 || line > editor.parserEngine.getMaxLines()-1)
                 break;
 
-            if(breakpoints.contains(new Integer(line))) {
+            if(breakpoints.contains(Integer.valueOf(line))) {
                 moveCursorToLine(line);
                 break;
             }

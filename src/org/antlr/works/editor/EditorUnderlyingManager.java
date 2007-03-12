@@ -50,12 +50,12 @@ public class EditorUnderlyingManager extends ATEUnderlyingManager {
         renderItems(g, editor.editorInspector.getWarnings());
     }
 
-    protected void renderItems(Graphics g, List items) {
+    protected void renderItems(Graphics g, List<EditorInspector.Item> items) {
         if(items == null)
             return;
 
         for(int index=0; index<items.size(); index++) {
-            EditorInspector.Item item = (EditorInspector.Item)items.get(index);
+            EditorInspector.Item item = items.get(index);
             drawUnderlineAtIndexes(g, item.color, item.startIndex, item.endIndex);
         }
     }

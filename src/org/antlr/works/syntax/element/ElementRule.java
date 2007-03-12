@@ -62,7 +62,7 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     // Set of rules that are mutually left recursive (cannot be fixed by ANTLRWorks)
     public Set leftRecursiveRulesSet;
 
-    public List errors;
+    public List<EngineGrammarError> errors;
     public boolean needsToBuildErrors = true;
 
     protected GrammarSyntaxParser parser;
@@ -201,11 +201,11 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         return alts;
     }
 
-    public void setErrors(List errors) {
+    public void setErrors(List<EngineGrammarError> errors) {
         this.errors = errors;
     }
 
-    public List getErrors() {
+    public List<EngineGrammarError> getErrors() {
         return errors;
     }
 
@@ -295,15 +295,15 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public String getErrorMessageString(int index) {
-        EngineGrammarError error = (EngineGrammarError) errors.get(index);
+        EngineGrammarError error = errors.get(index);
         return error.messageText;
     }
 
     public String getErrorMessageHTML() {
         StringBuffer message = new StringBuffer();
         message.append("<html>");
-        for (Iterator iterator = errors.iterator(); iterator.hasNext();) {
-            EngineGrammarError error = (EngineGrammarError) iterator.next();
+        for (Iterator<EngineGrammarError> iterator = errors.iterator(); iterator.hasNext();) {
+            EngineGrammarError error = iterator.next();
             message.append(error.messageText);
             if(iterator.hasNext())
                 message.append("<br>");

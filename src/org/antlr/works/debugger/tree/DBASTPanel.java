@@ -164,9 +164,9 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
         if(rule == null)
             return;
 
-        Stack roots = rule.getRoots();
+        Stack<DBASTModel.ASTNode> roots = rule.getRoots();
         for (int r = 0; r < roots.size(); r++) {
-            DBASTModel.ASTNode node = (DBASTModel.ASTNode) roots.get(r);
+            DBASTModel.ASTNode node = roots.get(r);
             DBTreeNode candidate = node.findNodeWithToken(token);
             if(candidate != null) {
                 rootsTable.setSelectedRow(r);

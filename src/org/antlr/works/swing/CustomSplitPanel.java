@@ -45,7 +45,7 @@ public class CustomSplitPanel extends JPanel {
     public JSplitPane rightSplitPane;
 
     public Component left, middle, right;
-    public Map widths = new HashMap();
+    public Map<Component,Float> widths = new HashMap<Component, Float>();
 
     public CustomSplitPanel() {
         super(new BorderLayout());
@@ -72,7 +72,7 @@ public class CustomSplitPanel extends JPanel {
     }
 
     public void setComponentWidth(Component c, float width) {
-        widths.put(c, new Float(width));
+        widths.put(c, width);
     }
 
     public void resize() {
@@ -94,7 +94,7 @@ public class CustomSplitPanel extends JPanel {
     }
 
     public int getWidth(Component c) {
-        Float width = (Float)widths.get(c);
+        Float width = widths.get(c);
         if(width != null)
             return (int)width.floatValue();
         else

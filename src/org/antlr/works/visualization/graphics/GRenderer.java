@@ -47,11 +47,11 @@ import java.util.Map;
 
 public class GRenderer {
 
-    protected List graphicNodes = new ArrayList();
+    protected List<GNode> graphicNodes = new ArrayList<GNode>();
 
     protected FAAnalysis analysis = new FAAnalysis();
-    protected Map nodes = new HashMap();
-    protected Map endOfAlternativeInfoMap = new HashMap();
+    protected Map<FAState,GNode> nodes = new HashMap<FAState, GNode>();
+    protected Map<FAState, EOAInfo> endOfAlternativeInfoMap = new HashMap<FAState, EOAInfo>();
 
     public GRenderer() {
     }
@@ -69,11 +69,11 @@ public class GRenderer {
 
         /** Mark the last node in order to draw an arrow at the end of the syntax diagram
          */
-        GNode lastNode = (GNode) graphicNodes.get(graphicNodes.size()-1);
+        GNode lastNode = graphicNodes.get(graphicNodes.size()-1);
         if(lastNode != null)
             lastNode.lastNodeOfRule = true;
 
-        graph.setNodes((ArrayList)((ArrayList)graphicNodes).clone());
+        graph.setNodes((ArrayList<GNode>)((ArrayList)graphicNodes).clone());
         return graph;
     }
 
@@ -208,7 +208,7 @@ public class GRenderer {
                 if(state == endState) {
                     // If we have reached the end of an alternative, we must set the "last" flag
                     // to the SDLink in order for it to be correctly rendered on screen.
-                    EOAInfo eoa = (EOAInfo)endOfAlternativeInfoMap.get(state);
+                    EOAInfo eoa = endOfAlternativeInfoMap.get(state);
                     if(eoa != null) {
                         link.setLast(eoa.last);
                     }
@@ -304,7 +304,7 @@ public class GRenderer {
     }
 
     public GNode getNode(FAState state) {
-        return (GNode)nodes.get(state);
+        return nodes.get(state);
     }
 
     public FAState alternativeEndState(FAState alt) {

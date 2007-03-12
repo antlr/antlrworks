@@ -37,7 +37,7 @@ import java.util.List;
 
 public class GoToHistory {
 
-    protected List history = new ArrayList();
+    protected List<Integer> history = new ArrayList<Integer>();
     protected int currentIndex = 0;
 
     public GoToHistory() {
@@ -53,7 +53,7 @@ public class GoToHistory {
             history.remove(index);
             index--;
         }
-        history.add(new Integer(pos));
+        history.add(pos);
         currentIndex = history.size();
     }
 
@@ -70,19 +70,19 @@ public class GoToHistory {
             // Add the current position if the currentIndex
             // is at the end of the history (so Forward is able
             // to come back)
-            history.add(new Integer(currentPosition));
+            history.add(currentPosition);
         }
 
         currentIndex--;
         if(currentIndex < 0)
             currentIndex = 0;
-        return ((Integer)history.get(currentIndex)).intValue();
+        return history.get(currentIndex);
     }
 
     public int getForwardPosition() {
         currentIndex++;
         if(currentIndex >= history.size())
             currentIndex = history.size()-1;
-        return ((Integer)history.get(currentIndex)).intValue();
+        return history.get(currentIndex);
     }
 }

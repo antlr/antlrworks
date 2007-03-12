@@ -37,20 +37,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class DBASTModel {
 
     /** Stack of rule. Each rule contains a stack of roots */
-    public Stack rules = new Stack();
+    public Stack<Rule> rules = new Stack<Rule>();
 
     /** Map of nodes */
-    public Map nodesMap = new HashMap();
+    public Map<Integer, ASTNode> nodesMap = new HashMap<Integer, ASTNode>();
 
-    public List listeners = new ArrayList();
+    public List<DBASTModelListener> listeners = new ArrayList<DBASTModelListener>();
 
     public void addListener(DBASTModelListener listener) {
         listeners.add(listener);
     }
 
     public void fireDataChanged() {
-        for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            DBASTModelListener listener = (DBASTModelListener) iterator.next();
+        for (DBASTModelListener listener : listeners) {
             listener.modelChanged(this);
         }
     }
@@ -71,7 +70,7 @@ public class DBASTModel {
         if(index < 0 || index >= rules.size())
             return null;
         else
-            return (Rule) rules.get(index);
+            return rules.get(index);
     }
 
     public int getRootCount() {
@@ -81,7 +80,7 @@ public class DBASTModel {
     /* Methods used by the debugger */
 
     public void pushRule(String name) {
-        rules.push(new Rule(name, new Stack()));
+        rules.push(new Rule(name, new Stack<ASTNode>()));
     }
 
     public void popRule() {
@@ -97,7 +96,7 @@ public class DBASTModel {
 
     /** Replace a root node by another one */
     public void replaceRoot(ASTNode oldRoot, ASTNode newRoot) {
-        Stack roots = getRoots();
+        Stack<ASTNode> roots = getRoots();
         int index = roots.indexOf(oldRoot);
         roots.remove(index);
         roots.add(index, newRoot);
@@ -157,36 +156,36 @@ public class DBASTModel {
 
     protected ASTNode createTreeNode(int id) {
         ASTNode node = new ASTNode(id);
-        nodesMap.put(new Integer(id), node);
+        nodesMap.put(id, node);
         return node;
     }
 
     protected ASTNode getTreeNode(int id) {
-        return (ASTNode) nodesMap.get(new Integer(id));
+        return nodesMap.get(id);
     }
 
-    protected Stack getRoots() {
+    protected Stack<ASTNode> getRoots() {
         if(rules.isEmpty())
             return null;
         else
-            return ((Rule)rules.peek()).roots;
+            return (rules.peek()).roots;
     }
 
     public class Rule {
 
         public String name;
-        public Stack roots;
+        public Stack<ASTNode> roots;
 
-        public Rule(String name, Stack roots) {
+        public Rule(String name, Stack<ASTNode> roots) {
             this.name = name;
             this.roots = roots;
         }
 
         public ASTNode getRootAtIndex(int index) {
-            return (ASTNode)roots.get(index);
+            return roots.get(index);
         }
 
-        public Stack getRoots() {
+        public Stack<ASTNode> getRoots() {
             return roots;
         }
     }

@@ -53,7 +53,7 @@ public class ATERenderingView extends PlainView {
 
     protected ATEPanel textEditor;
     protected ATETextPane textPane;
-    protected List tokens;
+    protected List<ATEToken> tokens;
 
     protected DisplayOperation displayOp = new DisplayOperation();
     protected ModelToViewOperation modelToViewOp = new ModelToViewOperation();
@@ -258,7 +258,7 @@ public class ATERenderingView extends PlainView {
         int p = p0;
         final int start = findStartingTokenIndex(p0, 0, tokens.size(), 0);
         for (int i = start; i < tokens.size(); i++) {
-            ATEToken t = (ATEToken) tokens.get(i);
+            ATEToken t = tokens.get(i);
             AttributeSet attribute = engine.getAttributeForToken(t);
             if(t.start >= p0 && t.start <= p1) {
                 // Fill any non-contiguous token with default color
@@ -297,7 +297,7 @@ public class ATERenderingView extends PlainView {
             return Math.min(candidate, low);
 
         final int middle = low + (high-low) / 2;
-        final ATEToken t = (ATEToken) tokens.get(middle);
+        final ATEToken t = tokens.get(middle);
         if(p0 >= t.startLineIndex && p0 <= t.endLineIndex) {
             return findStartingTokenIndex(p0, low, middle, middle);
         } else {

@@ -52,7 +52,13 @@ public class ElementAction extends ElementScopable implements EditorPersistentOb
     }
 
     public boolean equals(Object other) {
-        return getUniqueIdentifier() == ((ElementAction)other).getUniqueIdentifier();
+        if(other == null) return false;
+
+        if(other instanceof ElementAction) {
+            return getUniqueIdentifier() == ((ElementAction)other).getUniqueIdentifier();
+        } else {
+            return false;
+        }
     }
 
     public int getUniqueIdentifier() {

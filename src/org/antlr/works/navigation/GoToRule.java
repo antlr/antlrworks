@@ -123,7 +123,7 @@ public class GoToRule extends OverlayObject {
     public void updateAutoCompletionList() {
         matchingRuleListModel.removeAllElements();
 
-        List rules = editor.rules.getRulesStartingWith(ruleNameField.getText().toLowerCase());
+        List<String> rules = editor.rules.getRulesStartingWith(ruleNameField.getText().toLowerCase());
         if(rules.isEmpty()) {
             matchingRuleScrollPane.setVisible(false);
             ruleNameField.setForeground(Color.red);
@@ -132,7 +132,7 @@ public class GoToRule extends OverlayObject {
             ruleNameField.setForeground(Color.black);
         }
 
-        for(Iterator iter = rules.iterator(); iter.hasNext(); ) {
+        for(Iterator<String> iter = rules.iterator(); iter.hasNext(); ) {
             matchingRuleListModel.addElement(iter.next());
         }
         matchingRuleList.setSelectedIndex(0);

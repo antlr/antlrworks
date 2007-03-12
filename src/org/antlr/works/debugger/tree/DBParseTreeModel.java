@@ -47,8 +47,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DBParseTreeModel extends AWTreeModel implements XJNotificationObserver {
 
-    public Stack rules = new Stack();
-    public Stack backtrackStack = new Stack();
+    public Stack<ParseTreeNode> rules = new Stack<ParseTreeNode>();
+    public Stack<Backtrack> backtrackStack = new Stack<Backtrack>();
 
     public Color lookaheadTokenColor;
     public TreeNode lastNode;
@@ -56,7 +56,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
     public Debugger debugger;
 
-    public List listeners = new ArrayList();
+    public List<DBParseTreeModelListener> listeners = new ArrayList<DBParseTreeModelListener>();
 
     public DBParseTreeModel(Debugger debugger) {
         this.debugger = debugger;
@@ -74,8 +74,8 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     }
 
     public void fireDataChanged() {
-        for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            DBParseTreeModelListener listener = (DBParseTreeModelListener) iterator.next();
+        for (Iterator<DBParseTreeModelListener> iterator = listeners.iterator(); iterator.hasNext();) {
+            DBParseTreeModelListener listener = iterator.next();
             listener.modelChanged(this);
         }
     }
@@ -115,7 +115,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     }
 
     public void pushRule(String name) {
-        ParseTreeNode parentRuleNode = (ParseTreeNode)rules.peek();
+        ParseTreeNode parentRuleNode = rules.peek();
 
         ParseTreeNode ruleNode = new ParseTreeNode(name);
         ruleNode.setPosition(line, pos);
@@ -143,7 +143,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     }
 
     public void addToken(Token token) {
-        ParseTreeNode ruleNode = (ParseTreeNode)rules.peek();
+        ParseTreeNode ruleNode = rules.peek();
         ParseTreeNode elementNode = new ParseTreeNode(token, debugger.getGrammar().getANTLRGrammar());
         elementNode.setPosition(line, pos);
         addNode(ruleNode, elementNode);
@@ -152,7 +152,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     }
 
     public void addException(Exception e) {
-        ParseTreeNode ruleNode = (ParseTreeNode)rules.peek();
+        ParseTreeNode ruleNode = rules.peek();
         ParseTreeNode errorNode = new ParseTreeNode(e);
         errorNode.setPosition(line, pos);
         addNode(ruleNode, errorNode);
@@ -164,7 +164,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
         if(backtrackStack.isEmpty())
             return;
 
-        Backtrack b = (Backtrack) backtrackStack.peek();
+        Backtrack b = backtrackStack.peek();
         b.addNode(node);
     }
 
@@ -173,7 +173,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     }
 
     public void endBacktrack(int level, boolean success) {
-        Backtrack b = (Backtrack) backtrackStack.pop();
+        Backtrack b = backtrackStack.pop();
         b.end(success);
         setLastNode(b.getLastNode());
     }
@@ -215,7 +215,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     public class Backtrack {
 
         public int level;
-        public LinkedList nodes = new LinkedList();
+        public LinkedList<DBTreeNode> nodes = new LinkedList<DBTreeNode>();
 
         public Backtrack(int level) {
             this.level = level;
@@ -234,7 +234,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
         public void end(boolean success) {
             Color color = getColor(success);
             for (int i = 0; i < nodes.size(); i++) {
-                DBTreeNode node = (DBTreeNode) nodes.get(i);
+                DBTreeNode node = nodes.get(i);
                 node.setColor(color);
             }
         }

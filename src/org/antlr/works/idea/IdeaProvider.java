@@ -33,5 +33,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface IdeaProvider {
-    public List ideaProviderGetActions(int position);
+    public List<IdeaAction> ideaProviderGetActions(int position);
 }

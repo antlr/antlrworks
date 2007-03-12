@@ -2,6 +2,7 @@ package org.antlr.works.editor;
 
 import org.antlr.works.ate.breakpoint.ATEBreakpointManager;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.syntax.element.ElementRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +46,9 @@ public class EditorBreakpointManager extends ATEBreakpointManager {
         this.editor = editor;
     }
 
-    public List getBreakpointEntities() {
-        List entities = new ArrayList();
-        List rules = editor.parserEngine.getRules();
+    public List<ElementRule> getBreakpointEntities() {
+        List<ElementRule> entities = new ArrayList<ElementRule>();
+        List<ElementRule> rules = editor.parserEngine.getRules();
         if(rules != null)
             entities.addAll(rules);
         return entities;

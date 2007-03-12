@@ -135,7 +135,7 @@ public class ElementBlock extends ElementScopable {
     }
 
     public List<String> getDeclaredTokensAsString() {
-        List<String> names = new ArrayList();
+        List<String> names = new ArrayList<String>();
         for(int t=0; t<declaredTokens.size(); t++) {
             names.add(declaredTokens.get(t).getAttribute());
         }

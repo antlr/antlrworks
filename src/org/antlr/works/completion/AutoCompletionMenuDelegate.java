@@ -34,6 +34,6 @@ package org.antlr.works.completion;
 import java.util.List;
 
 public interface AutoCompletionMenuDelegate {
-    public List autoCompletionMenuGetMatchingWordsForPartialWord(String partialWord);
+    public List<String> autoCompletionMenuGetMatchingWordsForPartialWord(String partialWord);
     public void autoCompletionMenuWillDisplay();
 }

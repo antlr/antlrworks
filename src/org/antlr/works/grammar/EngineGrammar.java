@@ -54,7 +54,7 @@ public class EngineGrammar {
 
     protected Grammar parserGrammar;
     protected Grammar lexerGrammar;
-    protected List errors;
+    protected List<EngineGrammarError> errors;
 
     protected boolean grammarDirty;
     protected boolean grammarAnalyzeDirty;
@@ -63,7 +63,7 @@ public class EngineGrammar {
 
     public EngineGrammar(CEditorGrammar editor) {
         this.editor = editor;
-        errors = new ArrayList();
+        errors = new ArrayList<EngineGrammarError>();
         makeDirty();
     }
 
@@ -104,7 +104,7 @@ public class EngineGrammar {
             return getParserGrammar();
     }
 
-    public List getErrors() {
+    public List<EngineGrammarError> getErrors() {
         return errors;
     }
 
@@ -326,10 +326,10 @@ public class EngineGrammar {
 
     protected void buildNonDeterministicErrors() {
         errors.clear();
-        for (Iterator iterator = ErrorListener.shared().warnings.iterator(); iterator.hasNext();) {
+        for (Iterator<Message> iterator = ErrorListener.shared().warnings.iterator(); iterator.hasNext();) {
             buildError(iterator.next());
         }
-        for (Iterator iterator = ErrorListener.shared().errors.iterator(); iterator.hasNext();) {
+        for (Iterator<Message> iterator = ErrorListener.shared().errors.iterator(); iterator.hasNext();) {
             buildError(iterator.next());
         }
     }
@@ -380,23 +380,23 @@ public class EngineGrammar {
     protected void markRulesWithWarningsOrErrors() throws Exception {
         // Clear graphic cache because we have to redraw each rule again
         editor.visual.clearCacheGraphs();
-        for (Iterator iterator = editor.getParserEngine().getRules().iterator(); iterator.hasNext();) {
-            ElementRule rule = (ElementRule)iterator.next();
+        for (Iterator<ElementRule> iterator = editor.getParserEngine().getRules().iterator(); iterator.hasNext();) {
+            ElementRule rule = iterator.next();
             updateRuleWithErrors(rule, fetchErrorsForRule(rule));
         }
 
         editor.rules.refreshRules();
     }
 
-    protected void updateRuleWithErrors(ElementRule rule, List errors) throws Exception {
+    protected void updateRuleWithErrors(ElementRule rule, List<EngineGrammarError> errors) throws Exception {
         rule.setErrors(errors);
         rule.setNeedsToBuildErrors(true);
     }
 
-    protected List fetchErrorsForRule(ElementRule rule) {
-        List errors = new ArrayList();
-        for (Iterator iterator = getErrors().iterator(); iterator.hasNext();) {
-            EngineGrammarError error = (EngineGrammarError) iterator.next();
+    protected List<EngineGrammarError> fetchErrorsForRule(ElementRule rule) {
+        List<EngineGrammarError> errors = new ArrayList<EngineGrammarError>();
+        for (Iterator<EngineGrammarError> iterator = getErrors().iterator(); iterator.hasNext();) {
+            EngineGrammarError error = iterator.next();
             if(error.line>=rule.start.startLineNumber && error.line<=rule.end.startLineNumber)
                 errors.add(error);
         }
@@ -404,9 +404,9 @@ public class EngineGrammar {
     }
 
     public void computeRuleErrors(ElementRule rule) {
-        List errors = rule.getErrors();
-        for (Iterator iterator = errors.iterator(); iterator.hasNext();) {
-            EngineGrammarError error = (EngineGrammarError) iterator.next();
+        List<EngineGrammarError> errors = rule.getErrors();
+        for (Iterator<EngineGrammarError> iterator = errors.iterator(); iterator.hasNext();) {
+            EngineGrammarError error = iterator.next();
             Object o = error.getMessage();
             if(o instanceof GrammarUnreachableAltsMessage)
                 computeRuleError(rule, error, (GrammarUnreachableAltsMessage)o);

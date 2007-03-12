@@ -78,10 +78,10 @@ public class DecisionDFA extends GrammarDOTTab {
     public ATEToken findClosestDecisionToken() {
         ATEToken ct = editor.getCurrentToken();
         ATEToken lastToken = ct;
-        List tokens = editor.getTokens();
+        List<ATEToken> tokens = editor.getTokens();
         int nestedParen = 0;
         for(int index=tokens.indexOf(ct); index >= 0; index--) {
-            ATEToken t = (ATEToken)tokens.get(index);
+            ATEToken t = tokens.get(index);
             if(t.type == GrammarSyntaxLexer.TOKEN_COLON)
                 return lastToken;
             else if(t.type == GrammarSyntaxLexer.TOKEN_RPAREN)

@@ -33,6 +33,7 @@ package org.antlr.works.ate;
 
 import org.antlr.works.ate.breakpoint.ATEBreakpointEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
@@ -41,8 +42,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ATEGutter extends JComponent {
 
@@ -59,18 +62,18 @@ public class ATEGutter extends JComponent {
 
     private ATEPanel textEditor;
 
-    private List breakpoints = new ArrayList();
+    private List<BreakpointInfo> breakpoints = new ArrayList<BreakpointInfo>();
 
-    private List foldingInfos = new ArrayList();
+    private List<FoldingInfo> foldingInfos = new ArrayList<FoldingInfo>();
     private boolean foldingEnabled = false;
 
-    private Image collapseDown;
-    private Image collapseUp;
-    private Image collapse;
-    private Image expand;
-    private Image delimiter;
-    private Image delimiterUp;
-    private Image delimiterDown;
+    private transient Image collapseDown;
+    private transient Image collapseUp;
+    private transient Image collapse;
+    private transient Image expand;
+    private transient Image delimiter;
+    private transient Image delimiterUp;
+    private transient Image delimiterDown;
 
     public ATEGutter(ATEPanel textEditor) {
         this.textEditor = textEditor;
@@ -96,13 +99,12 @@ public class ATEGutter extends JComponent {
         repaint();
     }
 
-    public Set getBreakpoints() {
+    public Set<Integer> getBreakpoints() {
         // Returns a set containing all lines which contains a breakpoint
-        Set set = new HashSet();
-        for (Iterator iterator = breakpoints.iterator(); iterator.hasNext();) {
-            BreakpointInfo info = (BreakpointInfo) iterator.next();
-            if(info.entity.breakpointEntityIsBreakpoint())
-                set.add(new Integer(info.entity.breakpointEntityLine()));
+        Set<Integer> set = new HashSet<Integer>();
+        for (BreakpointInfo info : breakpoints) {
+            if (info.entity.breakpointEntityIsBreakpoint())
+                set.add(info.entity.breakpointEntityLine());
         }
         return set;
     }
@@ -143,7 +145,7 @@ public class ATEGutter extends JComponent {
 
         breakpoints.clear();
         if(textEditor.breakpointManager != null) {
-            List entities = textEditor.breakpointManager.getBreakpointEntities();
+            List<ElementRule> entities = textEditor.breakpointManager.getBreakpointEntities();
             for (int i=0; i<entities.size(); i++) {
                 ATEBreakpointEntity entity = (ATEBreakpointEntity)entities.get(i);
                 int index = entity.breakpointEntityIndex();
@@ -157,18 +159,16 @@ public class ATEGutter extends JComponent {
 
         foldingInfos.clear();
         if(textEditor.foldingManager != null) {
-            List entities = textEditor.foldingManager.getFoldingEntities();
-            for(int i=0; i<entities.size(); i++) {
-                ATEFoldingEntity entity = (ATEFoldingEntity)entities.get(i);
-
+            List<ATEFoldingEntity> entities = textEditor.foldingManager.getFoldingEntities();
+            for (ATEFoldingEntity entity : entities) {
                 int entityStartIndex = entity.foldingEntityGetStartIndex();
                 int entityEndIndex = entity.foldingEntityGetEndIndex();
-                if(!(entityStartIndex > endIndex || entityEndIndex < startIndex)) {
+                if (!(entityStartIndex > endIndex || entityEndIndex < startIndex)) {
                     int top_y = getLineYPixelPosition(entity.foldingEntityGetStartIndex());
                     int bottom_y = getLineYPixelPosition(entity.foldingEntityGetEndIndex());
 
-                    Point top = new Point(getWidth()-getOffsetFromText(), top_y);
-                    Point bottom = new Point(getWidth()-getOffsetFromText(), bottom_y);
+                    Point top = new Point(getWidth() - getOffsetFromText(), top_y);
+                    Point bottom = new Point(getWidth() - getOffsetFromText(), bottom_y);
                     foldingInfos.add(new FoldingInfo(entity, top, bottom));
                 }
             }
@@ -176,18 +176,16 @@ public class ATEGutter extends JComponent {
     }
 
     public BreakpointInfo getBreakpointInfoAtPoint(Point p) {
-        for(int i=0; i<breakpoints.size(); i++) {
-            BreakpointInfo info = (BreakpointInfo)breakpoints.get(i);
-            if(info.contains(p))
+        for (BreakpointInfo info : breakpoints) {
+            if (info.contains(p))
                 return info;
         }
         return null;
     }
 
     public FoldingInfo getFoldingInfoAtPoint(Point p) {
-        for(int i=0; i<foldingInfos.size(); i++) {
-            FoldingInfo info = (FoldingInfo)foldingInfos.get(i);
-            if(info.contains(p))
+        for (FoldingInfo info : foldingInfos) {
+            if (info.contains(p))
                 return info;
         }
         return null;
@@ -223,11 +221,10 @@ public class ATEGutter extends JComponent {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
 
         g.setColor(Color.red);
-        for (int index = 0; index < breakpoints.size(); index++) {
-            BreakpointInfo info = (BreakpointInfo) breakpoints.get(index);
-            if(info.entity.breakpointEntityIsBreakpoint()) {
+        for (BreakpointInfo info : breakpoints) {
+            if (info.entity.breakpointEntityIsBreakpoint()) {
                 Rectangle r = info.r;
-                if(clip.intersects(r))
+                if (clip.intersects(r))
                     g.fillArc(r.x, r.y, r.width, r.height, 0, 360);
             }
         }
@@ -237,19 +234,17 @@ public class ATEGutter extends JComponent {
         // Do not alias otherwise the dotted line between collapsed icon doesn't show up really well
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 
-        for (int index = 0; index < foldingInfos.size(); index++) {
-            FoldingInfo info = (FoldingInfo) foldingInfos.get(index);
-
-            if(!clip.intersects(info.top_r) && !clip.intersects(info.bottom_r))
+        for (FoldingInfo info : foldingInfos) {
+            if (!clip.intersects(info.top_r) && !clip.intersects(info.bottom_r))
                 continue;
 
             Point top = info.top;
             Point bottom = info.bottom;
-            if(foldingEnabled && info.entity.foldingEntityCanBeCollapsed()) {
-                if(info.entity.foldingEntityIsExpanded()) {
+            if (foldingEnabled && info.entity.foldingEntityCanBeCollapsed()) {
+                if (info.entity.foldingEntityIsExpanded()) {
                     drawFoldingLine(g, top, bottom);
 
-                    if(top.equals(bottom)) {
+                    if (top.equals(bottom)) {
                         drawCenteredImageAtPoint(g, collapse, top);
                     } else {
                         drawCenteredImageAtPoint(g, collapseUp, top);
@@ -261,7 +256,7 @@ public class ATEGutter extends JComponent {
             } else {
                 drawFoldingLine(g, top, bottom);
 
-                if(top.equals(bottom)) {
+                if (top.equals(bottom)) {
                     drawCenteredImageAtPoint(g, delimiter, top);
                 } else {
                     drawCenteredImageAtPoint(g, delimiterUp, top);
@@ -292,7 +287,7 @@ public class ATEGutter extends JComponent {
         g.drawImage(image, p.x-image.getWidth(null)/2, p.y-image.getHeight(null)/2, null);
     }
 
-    protected class BreakpointInfo {
+    protected static class BreakpointInfo {
         public ATEBreakpointEntity entity;
         public Rectangle r;
 
@@ -306,7 +301,7 @@ public class ATEGutter extends JComponent {
         }
     }
 
-    protected class FoldingInfo {
+    protected static class FoldingInfo {
         public ATEFoldingEntity entity;
 
         public Point top;

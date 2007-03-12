@@ -88,7 +88,7 @@ public class ATELanguageSyntaxEngine extends ATESyntaxEngine {
      *
      * @return The set of keywords
      */
-    public Set getKeywords() {
+    public Set<String> getKeywords() {
         return null;
     }
 
@@ -104,7 +104,7 @@ public class ATELanguageSyntaxEngine extends ATESyntaxEngine {
                 attr = stringAttr;
                 break;
             default:
-                Set s = getKeywords();
+                Set<String> s = getKeywords();
                 if(s != null && s.contains(token.getAttribute()))
                     attr = keywordAttr;
                 break;

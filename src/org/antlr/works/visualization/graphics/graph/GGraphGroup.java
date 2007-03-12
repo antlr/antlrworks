@@ -44,7 +44,6 @@ import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +52,7 @@ public class GGraphGroup extends GGraphAbstract {
     public static final int TITLE_OFFSET = 100;
 
     public GDimension dimension = new GDimension();
-    public List graphs = new ArrayList();
+    public List<GGraph> graphs = new ArrayList<GGraph>();
     public GPathGroup pathGroup = new GPathGroup();
 
     protected GContext defaultContext;
@@ -71,8 +70,7 @@ public class GGraphGroup extends GGraphAbstract {
 
     public void setContext(GContext context) {
         super.setContext(context);
-        for (Iterator iterator = graphs.iterator(); iterator.hasNext();) {
-            GGraph graph = (GGraph) iterator.next();
+        for (GGraph graph : graphs) {
             graph.setContext(context);
         }
         pathGroup.setContext(context);
@@ -97,19 +95,19 @@ public class GGraphGroup extends GGraphAbstract {
 
     protected int pathIndex;
 
-    public List getTransitionsMatchingSkippedStates(List candidates, List states) {
+    public List<FATransition> getTransitionsMatchingSkippedStates(List<FATransition> candidates, List states) {
         /** First convert the list of NFAStates to a list of Integer containing
          * the state number
          */
         List statesNumbers = new ArrayList();
         for(int i=0; i<states.size(); i++) {
-            statesNumbers.add((new Integer(((NFAState)states.get(i)).stateNumber)));
+            statesNumbers.add((((NFAState) states.get(i)).stateNumber));
         }
 
         /** Select only the transitions that containing all the state numbers */
-        List newCandidates = new ArrayList();
+        List<FATransition> newCandidates = new ArrayList<FATransition>();
         for(int c=0; c<candidates.size(); c++) {
-            FATransition t = (FATransition)candidates.get(c);
+            FATransition t = candidates.get(c);
             if(t.skippedStates != null && t.skippedStates.containsAll(statesNumbers)) {
                 newCandidates.add(t);
             }
@@ -122,7 +120,7 @@ public class GGraphGroup extends GGraphAbstract {
         if(node == null)
             return null;
 
-        List candidateTransitions = new ArrayList(node.state.transitions);
+        List<FATransition> candidateTransitions = new ArrayList<FATransition>(node.state.transitions);
         FATransition candidate = null;
         int start = pathIndex;
 
@@ -136,7 +134,7 @@ public class GGraphGroup extends GGraphAbstract {
                 case 1:
                     // The uniquely identified transition has been found.
                     // Continue to loop until all skipped states have been found.
-                    candidate = (FATransition) candidateTransitions.get(0);
+                    candidate = candidateTransitions.get(0);
                     break;
 
                 default:
@@ -147,7 +145,7 @@ public class GGraphGroup extends GGraphAbstract {
                     if(pathIndex+1 < path.size()) {
                         NFAState nextPathState = (NFAState) path.get(pathIndex+1);
                         for(int i=0; i<candidateTransitions.size(); i++) {
-                            FATransition t = (FATransition)candidateTransitions.get(i);
+                            FATransition t = candidateTransitions.get(i);
                             if(t.target.stateNumber == nextPathState.stateNumber) {
                                 pathIndex++;    // always points to the next element after the transition
                                 return t;
@@ -161,7 +159,7 @@ public class GGraphGroup extends GGraphAbstract {
         return candidate;
     }
 
-    public void addNextElementInSameRule(List elements, GNode node, GNode nextNode) {
+    public void addNextElementInSameRule(List<GPathElement> elements, GNode node, GNode nextNode) {
         elements.add(GPathElement.createElement(node));
 
         // Use nextNode instead of nextState (previously in parameter) because nextState
@@ -183,7 +181,7 @@ public class GGraphGroup extends GGraphAbstract {
         }
     }
 
-    public void addNextElementInOtherRule(List elements, GNode node, GNode externalNode, GNode nextNode, NFAState nextState) {
+    public void addNextElementInOtherRule(List<GPathElement> elements, GNode node, GNode externalNode, GNode nextNode, NFAState nextState) {
         if(externalNode == null) {
             // The external node is not specified. Try to find it.
             if(node.state.getFirstTransition() == null) {
@@ -217,8 +215,8 @@ public class GGraphGroup extends GGraphAbstract {
         }
     }
 
-    public void addPath(List path, boolean disabled, Map skippedStates) {
-        List elements = new ArrayList();
+    public void addPath(List path, boolean disabled, Map<Integer,FAState> skippedStates) {
+        List<GPathElement> elements = new ArrayList<GPathElement>();
 
         /** path contains a list of NFAState states (from ANTLR): they represent
          * all the states along the path. The graphical representation of the NFA/SD
@@ -248,7 +246,7 @@ public class GGraphGroup extends GGraphAbstract {
                     // that the starting state of the path has been skipped by
                     // the optimization in FAFactory. We use the skippedStates mapping
                     // to find out what is the parent state of the skipped state.
-                    FAState parentState = (FAState) skippedStates.get(new Integer(nextState.stateNumber));
+                    FAState parentState = skippedStates.get(nextState.stateNumber);
                     if(parentState == null) {
                         System.err.println("[GGraphGroup] Starting path state "+nextState.stateNumber+"["+nextState.getEnclosingRule()+"] cannot be found in the graph");
                         return;
@@ -276,7 +274,7 @@ public class GGraphGroup extends GGraphAbstract {
                     // it might be possible that the next state is in another rule but
                     // cannot be found because it has been skipped.
 
-                    FAState parentState = (FAState) skippedStates.get(new Integer(nextState.stateNumber));
+                    FAState parentState = skippedStates.get(nextState.stateNumber);
                     if(parentState == null) {
                         //  OK. The node really does not exist. Continue by skipping it.
                         nextNode = node;
@@ -329,22 +327,22 @@ public class GGraphGroup extends GGraphAbstract {
     }
 
     public void addUnreachableAlt(NFAState state, Integer alt) {
-        List elements = new ArrayList();
+        List<GPathElement> elements = new ArrayList<GPathElement>();
 
         GNode node = findNodeForStateNumber(state.stateNumber);
         if(node == null) {
             System.err.println("[GGraphGroup] Decision state "+state.stateNumber+"["+state.getEnclosingRule()+"] cannot be found in the graph");
             return;
         }
-        List transitions = node.state.transitions;
-        int altNum = alt.intValue()-1;
+        List<FATransition> transitions = node.state.transitions;
+        int altNum = alt -1;
 
         if(altNum >= transitions.size()) {
             System.err.println("[GGraphGroup] Unreachable alt "+altNum+"["+state.getEnclosingRule()+"] is out of bounds: "+transitions.size());
             return;
         }
 
-        FATransition t = (FATransition) transitions.get(altNum);
+        FATransition t = transitions.get(altNum);
 
         elements.add(GPathElement.createElement(node));
         elements.add(GPathElement.createElement(node.getLink(t)));
@@ -357,10 +355,9 @@ public class GGraphGroup extends GGraphAbstract {
     }
 
     public GNode findNodeForStateNumber(int stateNumber) {
-        for (Iterator iterator = graphs.iterator(); iterator.hasNext();) {
-            GGraph graph = (GGraph) iterator.next();
+        for (GGraph graph : graphs) {
             GNode node = graph.findNodeForStateNumber(stateNumber);
-            if(node != null) {
+            if (node != null) {
                 return node;
             }
         }
@@ -374,7 +371,7 @@ public class GGraphGroup extends GGraphAbstract {
     public void render(float ox, float oy) {
         ox += TITLE_OFFSET;
         for (int i = 0; i<graphs.size(); i++) {
-            GGraph graph = (GGraph)graphs.get(i);
+            GGraph graph = graphs.get(i);
             graph.render(ox, oy);
             if(i<graphs.size()-1)
                 oy += graph.getHeight()+context.getPixelLineSpace();
@@ -389,7 +386,7 @@ public class GGraphGroup extends GGraphAbstract {
         context.setLineWidth(1);
 
         for (int i = 0; i<graphs.size(); i++) {
-            GGraph graph = (GGraph)graphs.get(i);
+            GGraph graph = graphs.get(i);
             graph.draw();
             context.setColor(Color.black);
             context.drawString(context.getRuleFont(), graph.name, TITLE_OFFSET-5, graph.offsetY, GContext.ALIGN_RIGHT);

@@ -73,7 +73,7 @@ public class GContext {
     public boolean drawnode = false;
     public boolean drawdimension = false;
 
-    public Stack colorStack = new Stack();
+    public Stack<Color> colorStack = new Stack<Color>();
 
     public Color nodeColor = Color.black;
     public Color linkColor = Color.black;
@@ -211,7 +211,7 @@ public class GContext {
     }
 
     public void popColor() {
-        setColor((Color)colorStack.pop());
+        setColor(colorStack.pop());
     }
 
     public Color getColorForLabel(String label) {

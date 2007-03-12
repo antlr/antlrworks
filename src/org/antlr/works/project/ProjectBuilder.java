@@ -62,11 +62,11 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         this.progress.setDelegate(this);
     }
 
-    public List getListOfDirtyBuildFiles(String type) {
+    public List<ProjectBuildList.BuildFile> getListOfDirtyBuildFiles(String type) {
         return project.getBuildList().getDirtyBuildFilesOfType(type);
     }
 
-    public List buildListOfBuildFilesOfType(List filesOnDisk, String fileType) {
+    public List<ProjectBuildList.BuildFile> buildListOfBuildFilesOfType(List<String> filesOnDisk, String fileType) {
         ProjectBuildList buildList = project.getBuildList();
 
         // Update the build list with list of files on the disk
@@ -98,8 +98,8 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         return getListOfDirtyBuildFiles(fileType);
     }
 
-    public List buildListOfGrammarBuildFiles() {
-        List filesOnDisk = new ArrayList();
+    public List<ProjectBuildList.BuildFile> buildListOfGrammarBuildFiles() {
+        List<String> filesOnDisk = new ArrayList<String>();
         for (Iterator iterator = project.getFileEditorItems().iterator(); iterator.hasNext();) {
             ProjectFileItem item = (ProjectFileItem) iterator.next();
             filesOnDisk.add(item.getFilePath());
@@ -107,8 +107,8 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         return buildListOfBuildFilesOfType(filesOnDisk, ProjectFileItem.FILE_TYPE_GRAMMAR);
     }
 
-    public List buildListOfJavaBuildFiles() {
-        List filesOnDisk = new ArrayList();
+    public List<ProjectBuildList.BuildFile> buildListOfJavaBuildFiles() {
+        List<String> filesOnDisk = new ArrayList<String>();
         File[] files = new File(project.getSourcePath()).listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
@@ -117,9 +117,9 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         return buildListOfBuildFilesOfType(filesOnDisk, ProjectFileItem.FILE_TYPE_JAVA);
     }
 
-    public boolean generateGrammarBuildFiles(List buildFiles) {
-        for (Iterator iterator = buildFiles.iterator(); iterator.hasNext() && !cancel;) {
-            ProjectBuildList.BuildFile buildFile = (ProjectBuildList.BuildFile) iterator.next();
+    public boolean generateGrammarBuildFiles(List<ProjectBuildList.BuildFile> buildFiles) {
+        for (Iterator<ProjectBuildList.BuildFile> iterator = buildFiles.iterator(); iterator.hasNext() && !cancel;) {
+            ProjectBuildList.BuildFile buildFile = iterator.next();
 
             String file = buildFile.getFilePath();
             String libPath = buildFile.getFileFolder();
@@ -150,9 +150,9 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         }
     }
 
-    public boolean compileJavaBuildFiles(List buildFiles) {
-        for (Iterator iterator = buildFiles.iterator(); iterator.hasNext() && !cancel;) {
-            ProjectBuildList.BuildFile buildFile = (ProjectBuildList.BuildFile) iterator.next();
+    public boolean compileJavaBuildFiles(List<ProjectBuildList.BuildFile> buildFiles) {
+        for (Iterator<ProjectBuildList.BuildFile> iterator = buildFiles.iterator(); iterator.hasNext() && !cancel;) {
+            ProjectBuildList.BuildFile buildFile = iterator.next();
             String file = buildFile.getFilePath();
             setProgressStepInfo("Compiling \""+ XJUtils.getLastPathComponent(file)+"\"...");
             if(!compileFile(file))
@@ -171,8 +171,8 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
     }
 
     public boolean performBuild() {
-        List grammars = buildListOfGrammarBuildFiles();
-        List javas = buildListOfJavaBuildFiles();
+        List<ProjectBuildList.BuildFile> grammars = buildListOfGrammarBuildFiles();
+        List<ProjectBuildList.BuildFile> javas = buildListOfJavaBuildFiles();
 
         int total = grammars.size()+javas.size();
         if(total == 0)
@@ -199,7 +199,7 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
 
     public void performBuildFile() {
         String type = fileToBuild.getFileType();
-        List files;
+        List<ProjectBuildList.BuildFile> files;
 
         if(type.equals(ProjectFileItem.FILE_TYPE_GRAMMAR))
             files = buildListOfGrammarBuildFiles();
@@ -208,10 +208,10 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
         else
             return;
 
-        for (Iterator iterator = files.iterator(); iterator.hasNext();) {
-            ProjectBuildList.BuildFile buildFile = (ProjectBuildList.BuildFile) iterator.next();
+        for (Iterator<ProjectBuildList.BuildFile> iterator = files.iterator(); iterator.hasNext();) {
+            ProjectBuildList.BuildFile buildFile = iterator.next();
             if(buildFile.getFilePath().equals(fileToBuild.getFilePath())) {
-                List f = Collections.singletonList(buildFile);
+                List<ProjectBuildList.BuildFile> f = Collections.singletonList(buildFile);
                 if(type.equals(ProjectFileItem.FILE_TYPE_GRAMMAR))
                     generateGrammarBuildFiles(f);
                 else if(type.equals(ProjectFileItem.FILE_TYPE_JAVA))

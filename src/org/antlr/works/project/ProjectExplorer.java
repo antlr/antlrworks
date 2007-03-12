@@ -108,7 +108,7 @@ public class ProjectExplorer {
         });
     }
 
-    public List openedFiles = new ArrayList();
+    public List<ProjectFileItem> openedFiles = new ArrayList<ProjectFileItem>();
 
     public void reopen() {
         openedFiles.clear();
@@ -125,8 +125,8 @@ public class ProjectExplorer {
         
         // Sort the project file item by tab index
         ProjectFileItem items[] = new ProjectFileItem[openedFiles.size()];
-        for (Iterator iterator = openedFiles.iterator(); iterator.hasNext();) {
-            ProjectFileItem item = (ProjectFileItem) iterator.next();
+        for (Iterator<ProjectFileItem> iterator = openedFiles.iterator(); iterator.hasNext();) {
+            ProjectFileItem item = iterator.next();
             items[item.getTabIndex()] = item;
         }
 

@@ -44,7 +44,7 @@ import java.util.List;
 public class GGraph extends GGraphAbstract {
 
     public GDimension dimension;
-    public List nodes;
+    public List<GNode> nodes;
 
     public String name;
 
@@ -57,8 +57,8 @@ public class GGraph extends GGraphAbstract {
 
     public void setContext(GContext context) {
         super.setContext(context);
-        for (Iterator iterator = nodes.iterator(); iterator.hasNext();) {
-            GNode node = (GNode) iterator.next();
+        for (Iterator<GNode> iterator = nodes.iterator(); iterator.hasNext();) {
+            GNode node = iterator.next();
             node.setContext(context);
         }
     }
@@ -71,7 +71,7 @@ public class GGraph extends GGraphAbstract {
         this.dimension = dimension;
     }
 
-    public void setNodes(List nodes) {
+    public void setNodes(List<GNode> nodes) {
         this.nodes = nodes;
     }
 
@@ -94,9 +94,9 @@ public class GGraph extends GGraphAbstract {
     public void render(float ox, float oy) {
         oy += getDimension().getPixelUp(context);
 
-        Iterator iterator = nodes.iterator();
+        Iterator<GNode> iterator = nodes.iterator();
         while(iterator.hasNext()) {
-            GNode node = (GNode)iterator.next();
+            GNode node = iterator.next();
             node.render(ox, oy);
         }
 
@@ -111,9 +111,9 @@ public class GGraph extends GGraphAbstract {
         context.linkColor = Color.black;
         context.setLineWidth(1);
         
-        Iterator iterator = nodes.iterator();
+        Iterator<GNode> iterator = nodes.iterator();
         while(iterator.hasNext()) {
-            GNode node = (GNode)iterator.next();
+            GNode node = iterator.next();
             node.drawNodeAndLink();
         }
 
@@ -128,10 +128,10 @@ public class GGraph extends GGraphAbstract {
     }
 
     public GLink findLinkAtPosition(int x, int y) {
-        for (Iterator iterator = nodes.iterator(); iterator.hasNext();) {
-            GNode node = (GNode) iterator.next();
-            for (Iterator iterator1 = node.links.iterator(); iterator1.hasNext();) {
-                GLink link = (GLink) iterator1.next();
+        for (Iterator<GNode> iterator = nodes.iterator(); iterator.hasNext();) {
+            GNode node = iterator.next();
+            for (Iterator<GLink> iterator1 = node.links.iterator(); iterator1.hasNext();) {
+                GLink link = iterator1.next();
                 /** Only non-null transition label has to be tested (that is, visible
                  * syntax diagram box, not simple line)
                  */
@@ -143,8 +143,8 @@ public class GGraph extends GGraphAbstract {
     }
 
     public GNode findNodeForStateNumber(int stateNumber) {
-        for (Iterator iterator = nodes.iterator(); iterator.hasNext();) {
-            GNode node = (GNode) iterator.next();
+        for (Iterator<GNode> iterator = nodes.iterator(); iterator.hasNext();) {
+            GNode node = iterator.next();
             if(node.state.stateNumber == stateNumber) {
                 return node;
             }
@@ -153,8 +153,8 @@ public class GGraph extends GGraphAbstract {
     }
 
     public boolean containsAtLeastOneState(List states) {
-        for (Iterator nodeIterator = nodes.iterator(); nodeIterator.hasNext();) {
-            GNode node = (GNode) nodeIterator.next();
+        for (Iterator<GNode> nodeIterator = nodes.iterator(); nodeIterator.hasNext();) {
+            GNode node = nodeIterator.next();
             for (Iterator stateIterator = states.iterator(); stateIterator.hasNext();) {
                 NFAState state = (NFAState) stateIterator.next();
                 if(node.containsStateNumber(state.stateNumber))

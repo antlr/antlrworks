@@ -4,7 +4,6 @@ import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 /*
 
@@ -104,13 +103,13 @@ public abstract class ATEUnderlyingManager {
     }
 
 
-    public class UnderlyingShape {
+    public static class UnderlyingShape {
 
-        public Map shapes = new HashMap();
+        public Map<Color,GeneralPath> shapes = new HashMap<Color, GeneralPath>();
         public boolean ready = false;
 
         public void addLine(Color c, int x1, int y1, int x2, int y2) {
-            GeneralPath gp = (GeneralPath)shapes.get(c);
+            GeneralPath gp = shapes.get(c);
             if(gp == null) {
                 gp = new GeneralPath();
                 shapes.put(c, gp);
@@ -120,10 +119,9 @@ public abstract class ATEUnderlyingManager {
         }
 
         public void draw(Graphics2D g) {
-            for(Iterator iter = shapes.keySet().iterator(); iter.hasNext(); ) {
-                Color c = (Color)iter.next();
+            for (Color c : shapes.keySet()) {
                 g.setColor(c);
-                g.draw((GeneralPath)shapes.get(c));
+                g.draw(shapes.get(c));
             }
         }
 

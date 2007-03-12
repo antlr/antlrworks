@@ -57,29 +57,29 @@ public abstract class Skin {
     protected float value_char_width = 0;
     protected float value_line_space = 0;
 
-    protected Map values = null;
+    protected Map<String,Float> values = null;
 
     public Skin() {
     }
 
-    public Map getValuesMap() {
+    public Map<String,Float> getValuesMap() {
         if(values == null) {
-            values = new HashMap();
+            values = new HashMap<String, Float>();
 
-            values.put(GContext.EPSILON_WIDTH, new Float(value_epsilon_width));
-            values.put(GContext.EPSILON_UP, new Float(value_epsilon_up));
-            values.put(GContext.EPSILON_DOWN, new Float(value_epsilon_down));
+            values.put(GContext.EPSILON_WIDTH, value_epsilon_width);
+            values.put(GContext.EPSILON_UP, value_epsilon_up);
+            values.put(GContext.EPSILON_DOWN, value_epsilon_down);
 
-            values.put(GContext.BOX_WIDTH, new Float(value_box_width));
-            values.put(GContext.BOX_UP, new Float(value_box_up));
-            values.put(GContext.BOX_DOWN, new Float(value_box_down));
+            values.put(GContext.BOX_WIDTH, value_box_width);
+            values.put(GContext.BOX_UP, value_box_up);
+            values.put(GContext.BOX_DOWN, value_box_down);
 
-            values.put(GContext.NODE_WIDTH, new Float(value_node_width));
-            values.put(GContext.NODE_UP, new Float(value_node_up));
-            values.put(GContext.NODE_DOWN, new Float(value_node_down));
+            values.put(GContext.NODE_WIDTH, value_node_width);
+            values.put(GContext.NODE_UP, value_node_up);
+            values.put(GContext.NODE_DOWN, value_node_down);
 
-            values.put(GContext.CHAR_WIDTH, new Float(value_char_width));
-            values.put(GContext.LINE_SPACE, new Float(value_line_space));
+            values.put(GContext.CHAR_WIDTH, value_char_width);
+            values.put(GContext.LINE_SPACE, value_line_space);
         }
         return values;
     }

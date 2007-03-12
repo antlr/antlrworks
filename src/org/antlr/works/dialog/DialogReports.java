@@ -164,7 +164,8 @@ public class DialogReports extends XJDialog {
         if(!textOnly)
             setRangeEnabled(rangeEnabled, sm);
 
-        setText(sm);
+        if(sm != null)
+            setText(sm);
     }
 
     protected void setRangeEnabled(boolean flag, StatisticsManager sm) {

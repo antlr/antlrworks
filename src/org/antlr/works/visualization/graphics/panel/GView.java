@@ -316,7 +316,6 @@ public class GView extends JPanel implements XJMenuItemDelegate {
                 if(!cachedImageResize && cachedImage != null) {
                     cachedImage.flush();
                     cachedImage = null;
-                    System.gc();
                 }
             }
 
@@ -335,7 +334,6 @@ public class GView extends JPanel implements XJMenuItemDelegate {
                         outOfMemoryDimension.width = width;
                         outOfMemoryDimension.height = height;
                         cachedImage = null;
-                        System.gc();
                         System.err.println("Out of memory, disabling cache ("+(int)(width*height*3.0/(1024*1024))+" Mb)");
                     }
                 }

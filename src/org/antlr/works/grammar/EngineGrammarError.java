@@ -43,13 +43,13 @@ public class EngineGrammarError {
     public List paths = new ArrayList();
 
     /** Array describing which path is disabled */
-    public List pathsDisabled = new ArrayList();
+    public List<Boolean> pathsDisabled = new ArrayList<Boolean>();
 
     /** Array of array of NFAState states */
-    public List unreachableAlts = new ArrayList();
+    public List<Object[]> unreachableAlts = new ArrayList<Object[]>();
 
     /** Array of rules concerned by the error */
-    public List rules = new ArrayList();
+    public List<String> rules = new ArrayList<String>();
 
     /** Array of states concerned by the error */
     public List states = new ArrayList();

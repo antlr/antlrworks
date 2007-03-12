@@ -386,14 +386,14 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
      * Returns a string of import statement based on the package declaration inside any @header block
      */
     private String getCustomImports() {
-        List blocks = debugger.getBlocks();
+        List<ElementBlock> blocks = debugger.getBlocks();
         if(blocks == null || blocks.isEmpty()) {
             return "";
         }
 
-        Set imports = new HashSet();
+        Set<String> imports = new HashSet<String>();
         for (int i = 0; i < blocks.size(); i++) {
-            ElementBlock block = (ElementBlock) blocks.get(i);
+            ElementBlock block = blocks.get(i);
             if(!block.name.equals(GrammarSyntaxParser.PARSER_HEADER_BLOCK_NAME) && !block.name.equals(GrammarSyntaxParser.LEXER_HEADER_BLOCK_NAME)) {
                 continue;
             }
@@ -405,14 +405,14 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
             ATEJavaSyntaxLexer engine = new ATEJavaSyntaxLexer();
             engine.tokenize(javaText);
-            List tokens = engine.getTokens();
+            List<ATEToken> tokens = engine.getTokens();
             for (int j = 0; j < tokens.size(); j++) {
-                ATEToken token = (ATEToken) tokens.get(j);
+                ATEToken token = tokens.get(j);
                 if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("package")) {
                     StringBuffer sb = new StringBuffer();
                     j++;
                     while(j < tokens.size()) {
-                        ATEToken t = (ATEToken) tokens.get(j);
+                        ATEToken t = tokens.get(j);
                         String at = t.getAttribute();
                         if(at.equals(";"))
                             break;
@@ -429,8 +429,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         }
 
         StringBuffer importLines = new StringBuffer();
-        for (Iterator iterator = imports.iterator(); iterator.hasNext();) {
-            String importName = (String) iterator.next();
+        for (Iterator<String> iterator = imports.iterator(); iterator.hasNext();) {
+            String importName = iterator.next();
             importLines.append("import ");
             importLines.append(importName);
             importLines.append(".*;\n");
@@ -513,7 +513,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         debugger.getConsole().print(e);
     }
 
-    protected class ErrorReporter {
+    protected static class ErrorReporter {
 
         public String title;
         public String message;

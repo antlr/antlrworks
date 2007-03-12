@@ -46,7 +46,7 @@ public class DBPlayer {
     protected DBInputProcessor processor;
 
     protected DBPlayerContextInfo contextInfo;
-    protected Stack markStack;
+    protected Stack<Integer> markStack;
 
     protected int resyncing = 0;
     protected int eventPlayedCount = 0;
@@ -54,7 +54,7 @@ public class DBPlayer {
     public DBPlayer(Debugger debugger) {
         this.debugger = debugger;
         contextInfo = new DBPlayerContextInfo();
-        markStack = new Stack();
+        markStack = new Stack<Integer>();
     }
 
     public void setInputBuffer(DBInputProcessor processor) {
@@ -315,11 +315,11 @@ public class DBPlayer {
 
     public void playMark(DBEventMark event) {
         contextInfo.mark(event.id);
-        markStack.push(new Integer(processor.getCurrentTokenIndex()));
+        markStack.push(processor.getCurrentTokenIndex());
     }
 
     public void playRewind(DBEventRewind event) {
-        processor.rewind(((Integer)markStack.peek()).intValue());
+        processor.rewind(markStack.peek());
         if(!event.rewindToLastMark()) {
             markStack.pop();
             contextInfo.rewind();

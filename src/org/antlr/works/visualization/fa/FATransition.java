@@ -48,7 +48,7 @@ public class FATransition {
     public boolean externalRuleRef = false;
 
     /** Set of all skipped states along this transition */
-    public List skippedStates;
+    public List<Integer> skippedStates;
 
     public FATransition(String label, FAState targetState) {
         this.label = label;
@@ -59,7 +59,7 @@ public class FATransition {
         this(targetState, null);
     }
 
-    public FATransition(FAState targetState, List skippedStates) {
+    public FATransition(FAState targetState, List<Integer> skippedStates) {
         this.label = null;  // epsilon transition
         this.target = targetState;
         this.skippedStates = skippedStates;
@@ -82,8 +82,8 @@ public class FATransition {
     }
 
     public boolean containsStateNumber(int n) {
-        for (Iterator iterator = skippedStates.iterator(); iterator.hasNext();) {
-            Integer state = (Integer) iterator.next();
+        for (Iterator<Integer> iterator = skippedStates.iterator(); iterator.hasNext();) {
+            Integer state = iterator.next();
             if(state.intValue() == n)
                 return true;
         }

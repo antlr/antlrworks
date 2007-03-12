@@ -44,7 +44,7 @@ public class FAState {
     public int stateNumber = -1;
     public boolean acceptedState = false;
     public String enclosingRuleName = null;
-    public List transitions = new ArrayList();
+    public List<FATransition> transitions = new ArrayList<FATransition>();
 
     /** If the state represents a reference to an external state, this field
      contains the name of the referenced rule. */
@@ -92,7 +92,7 @@ public class FAState {
         // located at the end of the list.
 
         for(int t=0; t<transitions.size(); t++) {
-            FATransition transition = (FATransition)transitions.get(t);
+            FATransition transition = transitions.get(t);
             if(transition.loop && t<transitions.size()-1) {
                 // This loop transition is not at the end of the list. Move it.
                 Collections.swap(transitions, t, transitions.size()-1);
@@ -105,11 +105,11 @@ public class FAState {
         if(transitions.isEmpty())
             return null;
         else
-            return (FATransition)transitions.get(0);
+            return transitions.get(0);
     }
 
     public FATransition transition(int index) {
-        return (FATransition)transitions.get(index);
+        return transitions.get(index);
     }
 
     public int getNumberOfTransitions(){
@@ -121,10 +121,8 @@ public class FAState {
     }
 
     public FATransition getTransitionToStateNumber(int stateNumber) {
-        Iterator iterator = transitions.iterator();
-        while(iterator.hasNext()) {
-            FATransition transition = (FATransition)iterator.next();
-            if(transition.target.stateNumber == stateNumber)
+        for (FATransition transition : transitions) {
+            if (transition.target.stateNumber == stateNumber)
                 return transition;
         }
         return null;
@@ -135,16 +133,14 @@ public class FAState {
      */
 
     public FATransition getTransitionToExternalStateRule(String externalRule) {
-        for (Iterator iterator = transitions.iterator(); iterator.hasNext();) {
-            FATransition tr = (FATransition) iterator.next();
-            if(tr.target == null)
+        for (FATransition tr : transitions) {
+            if (tr.target == null)
                 continue;
 
             // Lookup the target's transitions label to see if one of them match the name
             // of the external rule
-            for (Iterator iterator1 = tr.target.transitions.iterator(); iterator1.hasNext();) {
-                FATransition targetTr = (FATransition) iterator1.next();
-                if(targetTr.label != null && targetTr.label.equals(externalRule))
+            for (FATransition targetTr : tr.target.transitions) {
+                if (targetTr.label != null && targetTr.label.equals(externalRule))
                     return tr;
             }
         }
@@ -172,8 +168,12 @@ public class FAState {
     }
 
     public boolean equals(Object o) {
-        FAState otherState = (FAState)o;
-        return stateNumber == otherState.stateNumber;
+        if(o instanceof FAState) {
+            FAState otherState = (FAState)o;
+            return stateNumber == otherState.stateNumber;
+        } else {
+            return false;
+        }
     }
 
     public String toString() {

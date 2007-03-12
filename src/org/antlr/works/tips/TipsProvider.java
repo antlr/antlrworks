@@ -33,5 +33,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface TipsProvider {
-    public List tipsProviderGetTips(int position);
+    public List<String> tipsProviderGetTips(int position);
 }

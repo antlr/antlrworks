@@ -112,7 +112,7 @@ public class DBEventsPanel extends DetachablePanel {
         sb.append(eventTableDataModel.getHeadersAsString());
         sb.append("\n");
 
-        List events = eventTableDataModel.events;
+        List<EventTableDataModel.EventInfo> events = eventTableDataModel.events;
         for(int i=0; i<events.size(); i++) {
             sb.append(i);
             sb.append(":\t");
@@ -122,9 +122,9 @@ public class DBEventsPanel extends DetachablePanel {
         return sb.toString();
     }
 
-    public class EventTableDataModel extends AbstractTableModel {
+    public static class EventTableDataModel extends AbstractTableModel {
 
-        protected List events = new ArrayList();
+        protected List<EventInfo> events = new ArrayList<EventInfo>();
 
         public void add(DBEvent event, DBPlayerContextInfo info) {
             events.add(new EventInfo(event, info));
@@ -172,7 +172,7 @@ public class DBEventsPanel extends DetachablePanel {
         }
 
         public Object getValueAt(int rowIndex, int columnIndex) {
-            EventInfo info = (EventInfo) events.get(rowIndex);
+            EventInfo info = events.get(rowIndex);
             switch(columnIndex) {
                 case INFO_COLUMN_COUNT: return String.valueOf(rowIndex);
                 case INFO_COLUMN_EVENT: return info.event;

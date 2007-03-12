@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public abstract class ATEAnalysisManager {
     public abstract int[] getAvailableTypes();
-    public abstract List getItemsForType(int type);
+    public abstract List<ATEAnalysisItem> getItemsForType(int type);
     public abstract int getLinesCount();
     public abstract Color getAnalysisColor();
     public abstract String getAnalysisDescription();

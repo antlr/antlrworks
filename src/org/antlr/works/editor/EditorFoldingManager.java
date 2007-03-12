@@ -77,20 +77,20 @@ public class EditorFoldingManager extends ATEFoldingManager {
     }
 
     public void provideFoldingEntities() {
-        List rules = editor.parserEngine.getRules();
+        List<ElementRule> rules = editor.parserEngine.getRules();
         if(rules != null) {
             for(int index=0; index<rules.size(); index++) {
-                ElementRule rule = (ElementRule)rules.get(index);
+                ElementRule rule = rules.get(index);
                 addEntity(rule);
             }
         }
 
         // Add only actions that are in expanded rules
         if(AWPrefs.getFoldingEnabled() && AWPrefs.getDisplayActionsAnchorsFolding()) {
-            List actions = editor.parserEngine.getActions();
+            List<ElementAction> actions = editor.parserEngine.getActions();
             if(actions != null) {
                 for(int index=0; index<actions.size(); index++) {
-                    ElementAction action = (ElementAction)actions.get(index);
+                    ElementAction action = actions.get(index);
                     if(action.rule.isExpanded())
                         addEntity(action);
                 }

@@ -35,7 +35,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class AWTreeModel {
 
-    public List newNodes = new ArrayList();
+    public List<AWTreeNode[]> newNodes = new ArrayList<AWTreeNode[]>();
 
     public void addNode(AWTreeNode parent, AWTreeNode node) {
         parent.add(node);
@@ -47,11 +47,11 @@ public class AWTreeModel {
     }
 
     public AWTreeNode getNewNodeParentAtIndex(int n) {
-        return ((AWTreeNode[])newNodes.get(n))[0];
+        return (newNodes.get(n))[0];
     }
 
     public AWTreeNode getNewNodeAtIndex(int n) {
-        return ((AWTreeNode[])newNodes.get(n))[1];
+        return (newNodes.get(n))[1];
     }
 
     public void clearNewNodes() {

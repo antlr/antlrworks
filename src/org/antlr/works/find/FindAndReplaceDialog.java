@@ -44,7 +44,7 @@ import java.awt.event.ActionListener;
 
 public class FindAndReplaceDialog extends XJPanel {
 
-    protected FindAndReplace delegate;
+    private FindAndReplace delegate;
 
     public FindAndReplaceDialog(FindAndReplace delegate) {
         this.delegate = delegate;

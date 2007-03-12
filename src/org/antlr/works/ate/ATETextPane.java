@@ -89,7 +89,7 @@ public class ATETextPane extends JTextPane
     }
 
     public void setTabSize(int size) {
-        getDocument().putProperty(PlainDocument.tabSizeAttribute, new Integer(size));
+        getDocument().putProperty(PlainDocument.tabSizeAttribute, size);
     }
 
     public boolean getScrollableTracksViewportWidth() {

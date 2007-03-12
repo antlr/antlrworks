@@ -52,7 +52,7 @@ public class EditorConsole extends EditorTab implements Console {
     protected JTextArea textArea;
 
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-    protected Map modeByThread = new HashMap();
+    protected Map<Thread,Integer> modeByThread = new HashMap<Thread, Integer>();
 
     protected static EditorConsole current = null;
 
@@ -84,15 +84,15 @@ public class EditorConsole extends EditorTab implements Console {
     }
 
     public void setMode(int mode) {
-        modeByThread.put(Thread.currentThread(), new Integer(mode));
+        modeByThread.put(Thread.currentThread(), mode);
     }
 
     public int getMode() {
-        Integer mode = (Integer)modeByThread.get(Thread.currentThread());
+        Integer mode = modeByThread.get(Thread.currentThread());
         if(mode == null)
             return Console.MODE_VERBOSE;
         else
-            return mode.intValue();
+            return mode;
     }
 
     public void makeCurrent() {

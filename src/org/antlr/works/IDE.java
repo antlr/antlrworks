@@ -83,7 +83,6 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         // Needs to specify the Mac OS X property here (starting from Tiger)
         // before any other line of code (the usual XJApplication won't work
         // because we are instanciating a SplashScreen before it)
-
         XJSystem.setSystemProperties();
         XJApplication.setPropertiesPath(PROPERTIES_PATH);
 
@@ -257,7 +256,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public static String getApplicationPath() {
-        Class c = XJApplication.getAppDelegate().getClass();
+        Class<? extends Object> c = XJApplication.getAppDelegate().getClass();
         URL url = c.getProtectionDomain().getCodeSource().getLocation();
         String p;
         if(url == null) {
@@ -304,7 +303,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         return p;
     }
 
-    public static void debugVerbose(Console console, Class c, String s) {
+    public static void debugVerbose(Console console, Class<? extends Object> c, String s) {
         if(AWPrefs.getDebugVerbose()) {
             String message = c.getName()+": "+s;
             if(console != null)
@@ -400,18 +399,18 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     private void restoreAllOpenedDocuments() {
-        List documents = AWPrefs.getAllOpenedDocuments();
+        List<String> documents = AWPrefs.getAllOpenedDocuments();
         if(documents == null)
             return;
 
-        for (Iterator iterator = documents.iterator(); iterator.hasNext();) {
-            String docPath = (String) iterator.next();
+        for (Iterator<String> iterator = documents.iterator(); iterator.hasNext();) {
+            String docPath = iterator.next();
             XJApplication.shared().openDocument(docPath);
         }
     }
 
     private void saveAllOpenedDocuments() {
-        List docPath = new ArrayList();
+        List<String> docPath = new ArrayList<String>();
         for (Iterator iterator = XJApplication.shared().getDocuments().iterator(); iterator.hasNext();) {
             XJDocument document = (XJDocument) iterator.next();
             if(document instanceof CDocumentGrammar) {

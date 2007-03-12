@@ -60,8 +60,10 @@ import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 public class EditorInterpreter extends EditorTab implements Runnable, AWTreePanelDelegate {
 
@@ -193,18 +195,18 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         return panel;
     }
 
-    public void setRules(List rules) {
+    public void setRules(List<ElementRule> rules) {
         updateRulesCombo(rules);
         updateIgnoreTokens(rules);
     }
 
-    public void updateRulesCombo(List rules) {
+    public void updateRulesCombo(List<ElementRule> rules) {
         Object selectedItem =  rulesCombo.getSelectedItem();
 
         rulesCombo.removeAllItems();
         if(rules != null) {
-            for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-                rulesCombo.addItem(iterator.next().toString());
+            for (ElementRule rule : rules) {
+                rulesCombo.addItem(rule.toString());
             }
         }
 
@@ -212,17 +214,16 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
             rulesCombo.setSelectedItem(selectedItem);
     }
 
-    public void updateIgnoreTokens(List rules) {
+    public void updateIgnoreTokens(List<ElementRule> rules) {
         StringBuffer sb = new StringBuffer();
         if(rules != null) {
-            for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-                ElementRule r = (ElementRule) iterator.next();
-                if(r.ignored) {
-                    if(sb.length() > 0)
+            for (ElementRule r : rules) {
+                if (r.ignored) {
+                    if (sb.length() > 0)
                         sb.append(" ");
                     sb.append(r.name);
                 }
-            }            
+            }
         }
         if(sb.length() == 0)
             tokensToIgnoreLabel.setText("-");
@@ -360,9 +361,9 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
             splitPane.setDividerLocation(i.intValue());
     }
 
-    public Map getPersistentData() {
-        Map data = new HashMap();
-        data.put(KEY_SPLITPANE_A, new Integer(splitPane.getDividerLocation()));
+    public Map<String,Integer> getPersistentData() {
+        Map<String,Integer> data = new HashMap<String, Integer>();
+        data.put(KEY_SPLITPANE_A, splitPane.getDividerLocation());
         return data;
     }
 

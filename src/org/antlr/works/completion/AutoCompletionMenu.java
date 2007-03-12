@@ -55,7 +55,7 @@ public class AutoCompletionMenu extends OverlayObject {
     protected DefaultListModel listModel;
     protected JList list;
 
-    protected List words;
+    protected List<String> words;
     protected int maxWordLength;
 
     protected int insertionStartIndex;
@@ -105,11 +105,11 @@ public class AutoCompletionMenu extends OverlayObject {
         setInsertionStartIndex(index+1);
         setInsertionEndIndex(position);
 
-        List matchingRules = delegate.autoCompletionMenuGetMatchingWordsForPartialWord(partialWord);
+        List<String> matchingRules = delegate.autoCompletionMenuGetMatchingWordsForPartialWord(partialWord);
         if(matchingRules.size() == 0) {
             return false;
         } else if(matchingRules.size() == 1) {
-            completePartialWord((String)matchingRules.get(0));
+            completePartialWord(matchingRules.get(0));
             return false;
         }
 
@@ -129,16 +129,16 @@ public class AutoCompletionMenu extends OverlayObject {
         return "controlEspace";
     }
 
-    public void setWordLists(List names, List words) {
+    public void setWordLists(List<String> names, List<String> words) {
         listModel.clear();
-        Iterator iterator = names.iterator();
+        Iterator<String> iterator = names.iterator();
         while(iterator.hasNext())
             listModel.addElement(iterator.next());
 
         this.words = words;
         maxWordLength = 0;
         for (iterator = words.iterator(); iterator.hasNext();) {
-            String word = (String) iterator.next();
+            String word = iterator.next();
             maxWordLength = Math.max(maxWordLength, word.length());
         }
     }
@@ -183,7 +183,7 @@ public class AutoCompletionMenu extends OverlayObject {
 
     public void autoComplete() {
         if(list.getSelectedIndex() >= 0)
-            completePartialWord((String)words.get(list.getSelectedIndex()));
+            completePartialWord(words.get(list.getSelectedIndex()));
     }
 
     public void resize() {
@@ -219,7 +219,7 @@ public class AutoCompletionMenu extends OverlayObject {
         if(index<position)
             partialWord = getTextComponent().getText().substring(index+1, position);
 
-        List matchingRules = delegate.autoCompletionMenuGetMatchingWordsForPartialWord(partialWord);
+        List<String> matchingRules = delegate.autoCompletionMenuGetMatchingWordsForPartialWord(partialWord);
         if(matchingRules == null || matchingRules.size() == 0) {
             hide();
         } else {

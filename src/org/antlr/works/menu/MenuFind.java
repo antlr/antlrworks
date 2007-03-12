@@ -75,9 +75,9 @@ public class MenuFind extends MenuAbstract {
         Usages usage = new Usages(editor, token);
         editor.addTab(usage);
 
-        Iterator iterator = editor.getTokens().iterator();
+        Iterator<ATEToken> iterator = editor.getTokens().iterator();
         while(iterator.hasNext()) {
-            ATEToken candidate = (ATEToken)iterator.next();
+            ATEToken candidate = iterator.next();
             if(candidate.getAttribute().equals(token.getAttribute())) {
                 ElementRule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStartIndex());
                 if(matchedRule != null)

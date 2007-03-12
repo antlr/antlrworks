@@ -41,8 +41,8 @@ import java.util.List;
 
 public class RuleTemplates extends AutoCompletionMenu {
 
-    private List templateRuleNames = new ArrayList();
-    private List templateRuleTexts = new ArrayList();
+    private List<String> templateRuleNames = new ArrayList<String>();
+    private List<String> templateRuleTexts = new ArrayList<String>();
 
     public RuleTemplates(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, XJFrameInterface frame) {
         super(delegate, textComponent, frame);

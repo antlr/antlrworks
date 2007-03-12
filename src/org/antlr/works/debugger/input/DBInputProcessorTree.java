@@ -13,7 +13,6 @@ import org.antlr.works.prefs.AWPrefsDialog;
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 /*
 
@@ -56,7 +55,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     public InputTreeNode lastNode;
 
     /** Map of token to tree node information */
-    public Map nodeInfoForToken = new HashMap();
+    public Map<Integer,NodeInfo> nodeInfoForToken = new HashMap<Integer, NodeInfo>();
 
     /** Last position in the grammar received from the parser */
     public int line, pos;
@@ -91,9 +90,8 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     }
 
     public void applyColor(Color c) {
-        for (Iterator iterator = nodeInfoForToken.values().iterator(); iterator.hasNext();) {
-            NodeInfo info = (NodeInfo) iterator.next();
-            if(info.node != null)
+        for (NodeInfo info : nodeInfoForToken.values()) {
+            if (info.node != null)
                 info.node.setColor(c);
         }
     }
@@ -169,7 +167,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
         /** Add all new node to the map using their unique ID */
         DBTreeToken tt = (DBTreeToken)token;
-        nodeInfoForToken.put(new Integer(tt.ID), info);
+        nodeInfoForToken.put(tt.ID, info);
 
         return info.node;
     }
@@ -182,7 +180,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
     public NodeInfo getNode(Token token) {
         DBTreeToken tt = (DBTreeToken)token;
-        return (NodeInfo)nodeInfoForToken.get(new Integer(tt.ID));
+        return nodeInfoForToken.get(tt.ID);
     }
 
     public void setLocation(int line, int pos) {
@@ -217,7 +215,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
             return info.node.breakpoint;
     }
 
-    public class NodeInfo {
+    public static class NodeInfo {
 
         /** Token */
         public Token token;

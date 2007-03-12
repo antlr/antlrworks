@@ -42,16 +42,16 @@ public class StreamWatcher extends Thread {
     protected InputStream is;
     protected String type;
     protected StreamWatcherDelegate delegate;
-    protected List lines;
+    protected List<String> lines;
 
     public StreamWatcher(InputStream is, String type, StreamWatcherDelegate delegate) {
         this.is = is;
         this.type = type;
         this.delegate = delegate;
-        lines = new ArrayList();
+        lines = new ArrayList<String>();
     }
 
-    public List getLines() {
+    public List<String> getLines() {
         return lines;
     }
 

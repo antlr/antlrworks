@@ -42,7 +42,6 @@ public class DBEventCreateNode extends DBEvent {
      * have a "real" token in the input stream: so tokenIndex is not provided
      */
     public String text = null;
-    public int type;
 
     public DBEventCreateNode(int id, int tokenIndex) {
         super(CREATE_NODE);

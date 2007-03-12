@@ -1,6 +1,7 @@
 package org.antlr.works.ate.breakpoint;
 
 import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.syntax.element.ElementRule;
 
 import java.util.List;
 import java.util.Set;
@@ -43,9 +44,9 @@ public abstract class ATEBreakpointManager {
         this.textEditor = textEditor;
     }
 
-    public Set getBreakpoints() {
+    public Set<Integer> getBreakpoints() {
         return textEditor.getGutter().getBreakpoints();
     }
 
-    public abstract List getBreakpointEntities();
+    public abstract List<ElementRule> getBreakpointEntities();
 }

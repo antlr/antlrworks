@@ -39,6 +39,7 @@ import org.antlr.tool.Grammar;
 import org.antlr.works.awtree.AWTreeNode;
 
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.util.Enumeration;
@@ -61,11 +62,10 @@ public class EditorInterpreterTreeModel extends DefaultTreeModel {
 
     public class InterpreterTreeNode extends AWTreeNode {
 
-        protected TreeNode parent;
         protected Tree tree;
 
         public InterpreterTreeNode(TreeNode parent, Tree tree) {
-            this.parent = parent;
+            this.parent = (MutableTreeNode) parent;
             this.tree = tree;
         }
 

@@ -46,7 +46,7 @@ public class StatisticsManager {
     public static final int MAX_REPORTS = 1000;
 
     protected String type;
-    protected List rawLines = new ArrayList();
+    protected List<String> rawLines = new ArrayList<String>();
 
     public StatisticsManager(String type) {
         this.type = type;
@@ -61,7 +61,7 @@ public class StatisticsManager {
         if(index < 0 || index >= rawLines.size())
             return null;
         else {
-            String rawLine = (String)rawLines.get(index);
+            String rawLine = rawLines.get(index);
             if(type.equals(StatisticsReporter.TYPE_GRAMMAR))
                 return GrammarReport.toString(rawLine);
             else if(type.equals(StatisticsReporter.TYPE_RUNTIME))
@@ -75,7 +75,7 @@ public class StatisticsManager {
         if(index < 0 || index >= rawLines.size())
             return null;
         else
-            return (String)rawLines.get(index);
+            return rawLines.get(index);
     }
 
     public boolean load() {

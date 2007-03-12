@@ -43,8 +43,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class RulesDependency extends GrammarDOTTab {
 
-    protected List visitedRules = new ArrayList();
-    protected List visitedRefs = new ArrayList();
+    protected List<String> visitedRules = new ArrayList<String>();
+    protected List<String> visitedRefs = new ArrayList<String>();
     protected StringBuffer dependency;
 
     protected boolean includeLexerRefs;
@@ -59,7 +59,7 @@ public class RulesDependency extends GrammarDOTTab {
             return false;
 
         ElementRule rule = editor.getCurrentRule();
-        List refs = editor.rules.getReferencesInRule(rule);
+        List<ElementReference> refs = editor.rules.getReferencesInRule(rule);
         if(refs == null || refs.isEmpty()) {
             XJAlert.display(editor.getWindowContainer(), "Error", "The selected rule doesn't contain any references");
             return false;
@@ -93,12 +93,12 @@ public class RulesDependency extends GrammarDOTTab {
 
         visitedRules.add(rule.name);
 
-        List refs = editor.rules.getReferencesInRule(rule);
+        List<ElementReference> refs = editor.rules.getReferencesInRule(rule);
         if(refs == null || refs.isEmpty())
             return;
 
-        for (Iterator iterator = refs.iterator(); iterator.hasNext();) {
-            ElementReference reference = (ElementReference) iterator.next();
+        for (Iterator<ElementReference> iterator = refs.iterator(); iterator.hasNext();) {
+            ElementReference reference = iterator.next();
             String refRuleName = reference.token.getAttribute();
             String visitedRef = rule.name+" -> "+refRuleName;
 

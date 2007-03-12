@@ -33,6 +33,7 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.appkit.swing.XJTree;
 import edu.usfca.xj.appkit.swing.XJTreeDelegate;
+import edu.usfca.xj.foundation.XJSystem;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
@@ -175,7 +176,6 @@ public class EditorRules implements XJTreeDelegate {
                     }
                     if (token.type == GrammarSyntaxLexer.TOKEN_ID && token.getAttribute().equals("skip")) {
                         // Take skip() into account only if it is the only token in the block
-                        System.out.println(tokens.size());
                         if (tokens.size() == 5 && t == 1) {
                             rule.ignored = true;
                             break;
@@ -700,7 +700,9 @@ public class EditorRules implements XJTreeDelegate {
         return moveRule(sourceRule, targetRule, dropLocation == XJTree.DROP_ABOVE);
     }
 
-    public class RulesTableRenderer extends DefaultTreeCellRenderer {
+    public static final Color HIGHLIGHTED_COLOR = new Color(0, 0.5f, 1, 0.4f);
+
+    public static class RulesTableRenderer extends DefaultTreeCellRenderer {
 
         public Component getTreeCellRendererComponent(
                             JTree tree,
@@ -715,6 +717,11 @@ public class EditorRules implements XJTreeDelegate {
                             tree, value, sel,
                             expanded, leaf, row,
                             hasFocus);
+
+            // FIX AW-5
+            if(XJSystem.isWindows()) {
+                setBackgroundSelectionColor(HIGHLIGHTED_COLOR);
+            }
 
             setIcon(null);
             setToolTipText("");
@@ -778,7 +785,7 @@ public class EditorRules implements XJTreeDelegate {
 
     }
 
-    public class RuleTreeUserObject implements Transferable {
+    public static class RuleTreeUserObject implements Transferable {
 
         public ElementRule rule;
         public ElementGroup group;

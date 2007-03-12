@@ -43,7 +43,7 @@ public class FAWalker {
 
     private FAWalkerDelegate delegate;
     private int mode;
-    private Set visitedStates = new HashSet();
+    private Set<FAState> visitedStates = new HashSet<FAState>();
 
     public FAWalker(FAWalkerDelegate delegate, int mode) {
         this.delegate = delegate;
@@ -56,9 +56,9 @@ public class FAWalker {
         visitedStates.add(state);
         
         delegate.walkerState(state, mode);
-        Iterator iterator = state.transitions.iterator();
+        Iterator<FATransition> iterator = state.transitions.iterator();
         while(iterator.hasNext()) {
-            FATransition transition = (FATransition)iterator.next();
+            FATransition transition = iterator.next();
             delegate.walkerTransition(transition, mode);
             walk(transition.target);
         }

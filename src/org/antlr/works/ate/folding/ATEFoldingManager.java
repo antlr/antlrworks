@@ -40,8 +40,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public abstract class ATEFoldingManager {
 
     protected ATEPanel textEditor;
-    protected Set usedEntityLines = new HashSet();
-    protected List entities = new ArrayList();
+    protected Set<Integer> usedEntityLines = new HashSet<Integer>();
+    protected List<ATEFoldingEntity> entities = new ArrayList<ATEFoldingEntity>();
 
     public ATEFoldingManager(ATEPanel textEditor) {
         this.textEditor = textEditor;
@@ -59,8 +59,8 @@ public abstract class ATEFoldingManager {
     public abstract ATEFoldingEntity getEntityForKey(Object key, int tag);
 
     public void addEntity(ATEFoldingEntity entity) {
-        Integer start = new Integer(entity.foldingEntityGetStartLine());
-        Integer end = new Integer(entity.foldingEntityGetEndLine());
+        Integer start = entity.foldingEntityGetStartLine();
+        Integer end = entity.foldingEntityGetEndLine();
         if(usedEntityLines.contains(start) || usedEntityLines.contains(end))
             return;
 
@@ -70,7 +70,7 @@ public abstract class ATEFoldingManager {
         entities.add(entity);
     }
 
-    public List getFoldingEntities() {
+    public List<ATEFoldingEntity> getFoldingEntities() {
         usedEntityLines.clear();
         entities.clear();
         provideFoldingEntities();

@@ -103,9 +103,9 @@ public class ATEAnalysisColumn extends JPanel {
         analysisBox.paint(g);
     }
 
-    protected void paintStrips(Graphics2D g, List items) {
-        for(Iterator iter = items.iterator(); iter.hasNext(); ) {
-            ATEAnalysisItem item = (ATEAnalysisItem)iter.next();
+    protected void paintStrips(Graphics2D g, List<ATEAnalysisItem> items) {
+        for(Iterator<ATEAnalysisItem> iter = items.iterator(); iter.hasNext(); ) {
+            ATEAnalysisItem item = iter.next();
             g.setColor(item.color);
             g.fill(composeIndicatorRectangle(item.line, 0));
         }
@@ -134,9 +134,9 @@ public class ATEAnalysisColumn extends JPanel {
         public int getIndexOfFirstErrors(Point p) {
             int[] types = getAnalysisManager().getAvailableTypes();
             for(int type=0; type<types.length; type++) {
-                List items = getAnalysisManager().getItemsForType(type);
+                List<ATEAnalysisItem> items = getAnalysisManager().getItemsForType(type);
                 for(int item=0; item<items.size(); item++) {
-                    ATEAnalysisItem ai = (ATEAnalysisItem)items.get(item);
+                    ATEAnalysisItem ai = items.get(item);
                     if(composeIndicatorRectangle(ai.line, 2).contains(p)) {
                         return ai.index;
                     }
@@ -197,9 +197,9 @@ public class ATEAnalysisColumn extends JPanel {
             if(manager != null) {
                 int[] types = manager.getAvailableTypes();
                 for(int type=0; type<types.length; type++) {
-                    List items = manager.getItemsForType(type);
+                    List<ATEAnalysisItem> items = manager.getItemsForType(type);
                     for(int item=0; item<items.size(); item++) {
-                        ATEAnalysisItem ai = (ATEAnalysisItem)items.get(item);
+                        ATEAnalysisItem ai = items.get(item);
                         if(composeIndicatorRectangle(ai.line, 2).contains(point)) {
                             sb.append(ai.description);
                             sb.append("\n");

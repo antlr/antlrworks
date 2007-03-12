@@ -17,6 +17,7 @@ import org.antlr.works.project.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -344,11 +345,11 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
     }
 
     public Map getPersistentData() {
-        Map data = new HashMap();
+        Map<String, Serializable> data = new HashMap<String, Serializable>();
         data.put(KEY_WINDOW_LOC, getLocation());
         data.put(KEY_WINDOW_SIZE, getSize());
-        data.put(KEY_SPLITPANE_A, new Integer(splitPaneA.getDividerLocation()));
-        data.put(KEY_SPLITPANE_B, new Integer(splitPaneB.getDividerLocation()));
+        data.put(KEY_SPLITPANE_A, splitPaneA.getDividerLocation());
+        data.put(KEY_SPLITPANE_B, splitPaneB.getDividerLocation());
         return data;
     }
 
@@ -362,7 +363,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
     }
 
     public void documentDidLoad() {
-        buildList.setPersistentData((Map) getData().getBuildListData());
+        buildList.setPersistentData((Map<String,Map>) getData().getBuildListData());
         explorer.setPersistentData((Map) getData().getExplorerData());
         editorZone.setPersistentData((Map) getData().getEditorZoneData());
         setPersistentData((Map) getData().getContainerData());

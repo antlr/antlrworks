@@ -63,6 +63,8 @@ import org.antlr.works.swing.CustomSplitPanel;
 import org.antlr.works.swing.CustomToggleButton;
 import org.antlr.works.swing.DetachablePanel;
 import org.antlr.works.swing.DetachablePanelDelegate;
+import org.antlr.works.syntax.element.ElementBlock;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
@@ -104,11 +106,11 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     protected DBControlPanel controlPanel;
 
     protected CustomSplitPanel splitPanel;
-    protected Map components2toggle;
+    protected Map<Component,CustomToggleButton> components2toggle;
 
     protected CEditorGrammar editor;
 
-    protected Set breakpoints;
+    protected Set<Integer> breakpoints;
 
     protected DBLocal local;
     protected DBRecorder recorder;
@@ -126,7 +128,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     public void awake() {
         panel = new JPanel(new BorderLayout());
         splitPanel = new CustomSplitPanel();
-        components2toggle = new HashMap();
+        components2toggle = new HashMap<Component, CustomToggleButton>();
 
         controlPanel = new DBControlPanel(this);
 
@@ -220,7 +222,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void setComponentVisible(Component c, boolean flag) {
         c.setVisible(flag);
-        JToggleButton b = (JToggleButton)components2toggle.get(c);
+        JToggleButton b = components2toggle.get(c);
         b.setSelected(flag);
     }
 
@@ -296,7 +298,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         return editor.getConsole();
     }
 
-    public List getBlocks() {
+    public List<ElementBlock> getBlocks() {
         return editor.getBlocks();
     }
 
@@ -348,7 +350,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         if(breakpoints == null)
             return false;
         else
-            return breakpoints.contains(new Integer(line));
+            return breakpoints.contains(Integer.valueOf(line));
     }
 
     public boolean isBreakpointAtToken(Token token) {
@@ -412,11 +414,11 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         return debuggerCursorIndex;
     }
 
-    public List getRules() {
+    public List<ElementRule> getRules() {
         return editor.getRules();
     }
 
-    public List getSortedRules() {
+    public List<ElementRule> getSortedRules() {
         return editor.getSortedRules();
     }
 
@@ -534,11 +536,11 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public int computeAbsoluteGrammarIndex(int lineIndex, int pos) {
-        List lines = editor.getLines();
+        List<ATELine> lines = editor.getLines();
         if(lineIndex-1<0 || lineIndex-1 >= lines.size())
             return -1;
 
-        ATELine line = (ATELine)lines.get(lineIndex-1);
+        ATELine line = lines.get(lineIndex-1);
         return line.position+pos-1;
     }
 
@@ -711,14 +713,14 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
             c.setVisible(false);
             splitPanel.setComponent(null, panel.getTag());
 
-            CustomToggleButton button = (CustomToggleButton) components2toggle.get(c);
+            CustomToggleButton button = components2toggle.get(c);
             button.setSelected(false);
         }
         splitPanel.setComponent(panel, panel.getTag());
     }
 
     public void panelDoClose(DetachablePanel panel) {
-        CustomToggleButton button = (CustomToggleButton) components2toggle.get(panel);
+        CustomToggleButton button = components2toggle.get(panel);
         button.setSelected(false);
     }
 

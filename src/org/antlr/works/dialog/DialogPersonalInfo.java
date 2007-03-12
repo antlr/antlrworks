@@ -66,6 +66,8 @@ public class DialogPersonalInfo extends XJDialog {
         iconButton.setIcon(IconManager.shared().getIconApplication());
         setTitle(Localizable.getLocalizedString(Localizable.APP_NAME)+" "+Localizable.getLocalizedString(Localizable.APP_VERSION_LONG));
 
+        // FIX AW-19
+        setCancelButton(cancelButton);
         setDefaultButton(okButton);
         setOKButton(okButton);
 
@@ -86,10 +88,10 @@ public class DialogPersonalInfo extends XJDialog {
     }
 
     public void dialogWillCloseOK() {
-        Map info = new HashMap();
-        info.put(INFO_WHO, new Integer(whoCombo.getSelectedIndex()));
-        info.put(INFO_SECTOR, new Integer(sectorCombo.getSelectedIndex()));
-        info.put(INFO_DEVTOOL, new Integer(devtoolCombo.getSelectedIndex()));
+        Map<String,Object> info = new HashMap<String, Object>();
+        info.put(INFO_WHO, whoCombo.getSelectedIndex());
+        info.put(INFO_SECTOR, sectorCombo.getSelectedIndex());
+        info.put(INFO_DEVTOOL, devtoolCombo.getSelectedIndex());
         info.put(INFO_YEARSLANG, languageExperienceSpinner.getValue());
         info.put(INFO_YEARSPROG, programmingExperienceSpinner.getValue());
         info.put(INFO_RESIDING, countryField.getText());
@@ -137,6 +139,7 @@ public class DialogPersonalInfo extends XJDialog {
         funField = new JTextField();
         label5 = new JLabel();
         buttonBar = new JPanel();
+        cancelButton = new JButton();
         okButton = new JButton();
         CellConstraints cc = new CellConstraints();
 
@@ -281,7 +284,7 @@ public class DialogPersonalInfo extends XJDialog {
         		contentPane.add(devtoolCombo, cc.xywh(3, 19, 3, 1));
 
         		//---- languageExperienceSpinner ----
-        		languageExperienceSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+        		languageExperienceSpinner.setModel(new SpinnerNumberModel(0, 0, null, 1));
         		contentPane.add(languageExperienceSpinner, cc.xy(3, 23));
 
         		//---- label2 ----
@@ -290,7 +293,7 @@ public class DialogPersonalInfo extends XJDialog {
         		contentPane.add(label2, cc.xywh(3, 21, 3, 1));
 
         		//---- programmingExperienceSpinner ----
-        		programmingExperienceSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+        		programmingExperienceSpinner.setModel(new SpinnerNumberModel(0, 0, null, 1));
         		contentPane.add(programmingExperienceSpinner, cc.xy(3, 27));
 
         		//---- label3 ----
@@ -318,13 +321,19 @@ public class DialogPersonalInfo extends XJDialog {
         		buttonBar.setLayout(new FormLayout(
         			new ColumnSpec[] {
         				FormFactory.GLUE_COLSPEC,
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				FormFactory.DEFAULT_COLSPEC,
         				FormFactory.BUTTON_COLSPEC
         			},
         			RowSpec.decodeSpecs("pref")));
 
+        		//---- cancelButton ----
+        		cancelButton.setText("Don't Send");
+        		buttonBar.add(cancelButton, cc.xy(3, 1));
+
         		//---- okButton ----
-        		okButton.setText("OK");
-        		buttonBar.add(okButton, cc.xy(2, 1));
+        		okButton.setText("Send");
+        		buttonBar.add(okButton, cc.xy(4, 1));
         	}
         	dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
@@ -355,6 +364,7 @@ public class DialogPersonalInfo extends XJDialog {
     private JTextField funField;
     private JLabel label5;
     private JPanel buttonBar;
+    private JButton cancelButton;
     private JButton okButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 

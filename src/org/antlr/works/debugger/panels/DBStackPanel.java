@@ -48,7 +48,7 @@ public class DBStackPanel extends DetachablePanel {
 
     protected DBStackPanel.RuleTableDataModel ruleTableDataModel;
 
-    protected Stack rules = new Stack();
+    protected Stack<String> rules = new Stack<String>();
 
     public DBStackPanel(Debugger debugger) {
         super("Stack", debugger);

@@ -60,8 +60,8 @@ public class AWTreeGraphView extends GView {
     protected TreeNode root;
     protected GElementNode highlightedNode;
 
-    protected Map treeNodeToGElementMap = new HashMap();
-    protected Map gelementToTreeNodeMap = new HashMap();
+    protected Map<TreeNode,GElement> treeNodeToGElementMap = new HashMap<TreeNode, GElement>();
+    protected Map<GElement,TreeNode> gelementToTreeNodeMap = new HashMap<GElement, TreeNode>();
 
     protected AWTreePanel panel;
     protected AWTreeModel model;
@@ -132,7 +132,7 @@ public class AWTreeGraphView extends GView {
     }
 
     public TreeNode getTreeNodeForElement(GElementNode elem) {
-        return (TreeNode) gelementToTreeNodeMap.get(elem);
+        return gelementToTreeNodeMap.get(elem);
     }
 
     public GElementNode getGElementForNode(TreeNode node) {
@@ -381,7 +381,7 @@ public class AWTreeGraphView extends GView {
         return panel.getContextualMenu();
     }
 
-    public class GElementNode extends GElementRect {
+    public static class GElementNode extends GElementRect {
 
         public boolean highlighted = false;
         public double spanWidth = 0;

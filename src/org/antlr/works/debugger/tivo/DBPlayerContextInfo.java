@@ -34,13 +34,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DBPlayerContextInfo {
 
-    public Stack subrule = new Stack();
-    public Stack decision = new Stack();
-    public Stack mark = new Stack();
-    public Stack backtrack = new Stack();
+    public Stack<Integer> subrule = new Stack<Integer>();
+    public Stack<Integer> decision = new Stack<Integer>();
+    public Stack<Integer> mark = new Stack<Integer>();
+    public Stack<Integer> backtrack = new Stack<Integer>();
 
     public void enterSubrule(int i) {
-        subrule.push(new Integer(i));
+        subrule.push(i);
     }
 
     public void exitSubrule() {
@@ -52,7 +52,7 @@ public class DBPlayerContextInfo {
     }
 
     public void enterDecision(int i) {
-        decision.push(new Integer(i));
+        decision.push(i);
     }
 
     public void exitDecision() {
@@ -64,7 +64,7 @@ public class DBPlayerContextInfo {
     }
 
     public void mark(int i) {
-        mark.push(new Integer(i));
+        mark.push(i);
     }
 
     public void rewind() {
@@ -76,7 +76,7 @@ public class DBPlayerContextInfo {
     }
 
     public void beginBacktrack(int level) {
-        backtrack.push(new Integer(level));
+        backtrack.push(level);
     }
 
     public void endBacktrack() {
@@ -91,11 +91,11 @@ public class DBPlayerContextInfo {
         return !backtrack.isEmpty();
     }
 
-    public int getPeekValue(Stack s) {
+    public int getPeekValue(Stack<Integer> s) {
         if(s.isEmpty())
             return -1;
         else
-            return ((Integer)s.peek()).intValue();
+            return s.peek();
     }
 
     public void clear() {

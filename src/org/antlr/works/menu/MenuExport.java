@@ -104,7 +104,7 @@ public class MenuExport extends MenuAbstract {
     }
 
     public void saveImageToDisk(BufferedImage image) {
-        List extensions = new ArrayList();
+        List<String> extensions = new ArrayList<String>();
         for (int i = 0; i < ImageIO.getWriterFormatNames().length; i++) {
             String ext = ImageIO.getWriterFormatNames()[i].toLowerCase();
             if(!extensions.contains(ext))

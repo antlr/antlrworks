@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class IdeaManager {
 
-    protected List providers = new ArrayList();
+    protected List<IdeaProvider> providers = new ArrayList<IdeaProvider>();
     protected Timer timer;
     protected IdeaOverlay overlay;
     protected IdeaManagerDelegate delegate;
@@ -87,7 +87,7 @@ public class IdeaManager {
         if(!enabled)
             return;
 
-        List ideas = generateIdeaActions(position);
+        List<IdeaAction> ideas = generateIdeaActions(position);
         if(ideas == null || ideas.isEmpty())
             overlay.hide();
         else {
@@ -97,11 +97,11 @@ public class IdeaManager {
         }
     }
 
-    public List generateIdeaActions(int position) {
-        List actions = new ArrayList();
-        for(Iterator iter = providers.iterator(); iter.hasNext(); ) {
-            IdeaProvider provider = (IdeaProvider)iter.next();
-            List pactions = provider.ideaProviderGetActions(position);
+    public List<IdeaAction> generateIdeaActions(int position) {
+        List<IdeaAction> actions = new ArrayList<IdeaAction>();
+        for(Iterator<IdeaProvider> iter = providers.iterator(); iter.hasNext(); ) {
+            IdeaProvider provider = iter.next();
+            List<IdeaAction> pactions = provider.ideaProviderGetActions(position);
             if(pactions != null && !pactions.isEmpty()) {
                 actions.addAll(pactions);
             }
@@ -112,7 +112,7 @@ public class IdeaManager {
     protected class TimerActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             /** Make sure there is still some ideas to display */
-            List ideas = generateIdeaActions(lastPosition);
+            List<IdeaAction> ideas = generateIdeaActions(lastPosition);
             if(ideas.size() == 0)
                 return;
 

@@ -1,10 +1,7 @@
 package org.antlr.works.editor;
 
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.idea.IdeaManager;
-import org.antlr.works.idea.IdeaManagerDelegate;
-import org.antlr.works.idea.IdeaOverlay;
-import org.antlr.works.idea.IdeaProvider;
+import org.antlr.works.idea.*;
 import org.antlr.works.syntax.element.ElementRule;
 
 import java.awt.*;
@@ -69,12 +66,12 @@ public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
         ideaManager.setEnabled(!ideaManager.enabled());
     }
 
-    public List ideaProviderGetActions(int position) {
-        List actions = new ArrayList();
-        List items = editor.editorInspector.getAllItemsAtIndex(position);
+    public List<IdeaAction> ideaProviderGetActions(int position) {
+        List<IdeaAction> actions = new ArrayList<IdeaAction>();
+        List<EditorInspector.Item> items = editor.editorInspector.getAllItemsAtIndex(position);
         for(int index=0; index<items.size(); index++) {
-            EditorInspector.Item item = (EditorInspector.Item)items.get(index);
-            List itemActions = item.getIdeaActions();
+            EditorInspector.Item item = items.get(index);
+            List<IdeaAction> itemActions = item.getIdeaActions();
             if(itemActions != null)
                 actions.addAll(itemActions);
         }

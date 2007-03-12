@@ -62,10 +62,10 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     protected TextPane textPane;
     protected int mouseIndex = -1;
 
-    protected LinkedList inputTokenIndexes = new LinkedList();
-    protected Map indexToTokenInfoMap = new HashMap();
-    protected Map indexToConsumeAttributeMap = new HashMap();
-    protected Set lookaheadTokenIndexes = new HashSet();
+    protected LinkedList<Integer> inputTokenIndexes = new LinkedList<Integer>();
+    protected Map<Integer,DBInputTextTokenInfo> indexToTokenInfoMap = new HashMap<Integer, DBInputTextTokenInfo>();
+    protected Map<Integer,AttributeSet> indexToConsumeAttributeMap = new HashMap<Integer, AttributeSet>();
+    protected Set<Integer> lookaheadTokenIndexes = new HashSet<Integer>();
 
     /** Current token index */
     protected int currentTokenIndex;
@@ -78,7 +78,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     protected int locationCharInLine;
 
     /** Input breakpoints */
-    protected Set inputBreakpointIndexes = new HashSet();
+    protected Set<Integer> inputBreakpointIndexes = new HashSet<Integer>();
 
     protected SimpleAttributeSet attributeNonConsumed;
     protected SimpleAttributeSet attributeConsume;
@@ -163,15 +163,15 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     }
 
     public void addConsumeAttribute(Token token, AttributeSet attribute) {
-        indexToConsumeAttributeMap.put(new Integer(token.getTokenIndex()), attribute);
+        indexToConsumeAttributeMap.put(token.getTokenIndex(), attribute);
     }
 
     public void addTokenLT(Token token) {
-        lookaheadTokenIndexes.add(new Integer(token.getTokenIndex()));
+        lookaheadTokenIndexes.add(token.getTokenIndex());
     }
 
     public void removeTokenLT(Token token) {
-        lookaheadTokenIndexes.remove(new Integer(token.getTokenIndex()));
+        lookaheadTokenIndexes.remove(Integer.valueOf(token.getTokenIndex()));
     }
 
     public void removeAllLT() {
@@ -205,9 +205,8 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
         /** Remove any consume and lookahead attribute for any token with index
          * greater than start
          */
-        for (Iterator iterator = inputTokenIndexes.iterator(); iterator.hasNext();) {
-            Integer idx = (Integer) iterator.next();
-            if(idx.intValue() >= start) {
+        for (Integer idx : inputTokenIndexes) {
+            if (idx >= start) {
                 indexToConsumeAttributeMap.remove(idx);
                 lookaheadTokenIndexes.remove(idx);
             }
@@ -221,19 +220,18 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
             return;
         }
 
-        Integer idx = new Integer(index);
-        currentTokenIndex = idx.intValue();
+        currentTokenIndex = index;
 
         /** Insert the index into the list of sorted indexes - used to render the token */
 
-        if(!indexToTokenInfoMap.containsKey(idx)) {
+        if(!indexToTokenInfoMap.containsKey(index)) {
             if(inputTokenIndexes.isEmpty())
-                inputTokenIndexes.add(idx);
+                inputTokenIndexes.add((Integer)index);
             else {
                 for(int i=inputTokenIndexes.size()-1; i >= 0; i--) {
-                    Integer n = (Integer) inputTokenIndexes.get(i);
-                    if(n.intValue() < idx.intValue()) {
-                        inputTokenIndexes.add(i+1, idx);
+                    Integer n = inputTokenIndexes.get(i);
+                    if(n < index) {
+                        inputTokenIndexes.add(i+1, (Integer)index);
                         break;
                     }
                 }
@@ -244,11 +242,11 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
          * may have changed
          */
 
-        indexToTokenInfoMap.put(idx, new DBInputTextTokenInfo(token, locationLine, locationCharInLine));
+        indexToTokenInfoMap.put((Integer)index, new DBInputTextTokenInfo(token, locationLine, locationCharInLine));
     }
 
     public Token getCurrentToken() {
-        DBInputTextTokenInfo info = (DBInputTextTokenInfo) indexToTokenInfoMap.get(new Integer(getCurrentTokenIndex()));
+        DBInputTextTokenInfo info = indexToTokenInfoMap.get(getCurrentTokenIndex());
         if(info == null)
             return null;
         else
@@ -258,13 +256,12 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     public String renderTokensText() {
         currentTokenIndexInText = 0;
         StringBuffer text = new StringBuffer();
-        for (int i = 0; i < inputTokenIndexes.size(); i++) {
-            Integer idx = (Integer) inputTokenIndexes.get(i);
-            DBInputTextTokenInfo info = (DBInputTextTokenInfo) indexToTokenInfoMap.get(idx);
+        for (Integer idx : inputTokenIndexes) {
+            DBInputTextTokenInfo info = indexToTokenInfoMap.get(idx);
             info.setStart(text.length());
             text.append(info.getText());
 
-            if(idx.intValue() == getCurrentTokenIndex())
+            if (idx == getCurrentTokenIndex())
                 currentTokenIndexInText = info.start;
         }
         return text.toString();
@@ -278,15 +275,14 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
         textPane.getStyledDocument().setCharacterAttributes(0, text.length(), SimpleAttributeSet.EMPTY, true);
 
         /** Apply the style for each token */
-        for (int i = 0; i < inputTokenIndexes.size(); i++) {
-            Integer idx = (Integer) inputTokenIndexes.get(i);
-            DBInputTextTokenInfo info = (DBInputTextTokenInfo) indexToTokenInfoMap.get(idx);
-            AttributeSet attribute = (AttributeSet) indexToConsumeAttributeMap.get(idx);
-            if(attribute == null)
+        for (Integer idx : inputTokenIndexes) {
+            DBInputTextTokenInfo info = indexToTokenInfoMap.get(idx);
+            AttributeSet attribute = indexToConsumeAttributeMap.get(idx);
+            if (attribute == null)
                 attribute = attributeNonConsumed;
 
             /** LT attribute override the other */
-            if(lookaheadTokenIndexes.contains(idx))
+            if (lookaheadTokenIndexes.contains(idx))
                 attribute = attributeLookahead;
 
             textPane.getStyledDocument().setCharacterAttributes(info.start, info.end, attribute, true);
@@ -329,16 +325,14 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     }
 
     public void textPaneDidPaint(Graphics g) {
-        for (Iterator iterator = indexToTokenInfoMap.values().iterator(); iterator.hasNext();) {
-            DBInputTextTokenInfo info = (DBInputTextTokenInfo) iterator.next();
+        for (DBInputTextTokenInfo info : indexToTokenInfoMap.values()) {
+            if (drawTokensBox)
+                drawToken(info, (Graphics2D) g, Color.red, false);
 
-            if(drawTokensBox)
-                drawToken(info, (Graphics2D)g, Color.red, false);
-
-            if(inputBreakpointIndexes.contains(new Integer(info.token.getTokenIndex())))
-                drawToken(info, (Graphics2D)g, INPUT_BREAKPOINT_COLOR, true);
-            else if(mouseIndex >= info.start && mouseIndex < info.end)
-                drawToken(info, (Graphics2D)g, HIGHLIGHTED_COLOR, true);
+            if (inputBreakpointIndexes.contains(Integer.valueOf(info.token.getTokenIndex())))
+                drawToken(info, (Graphics2D) g, INPUT_BREAKPOINT_COLOR, true);
+            else if (mouseIndex >= info.start && mouseIndex < info.end)
+                drawToken(info, (Graphics2D) g, HIGHLIGHTED_COLOR, true);
         }
     }
 
@@ -397,20 +391,19 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     }
 
     public DBInputTextTokenInfo getTokenInfoAtTokenIndex(int index) {
-        return (DBInputTextTokenInfo) indexToTokenInfoMap.get(new Integer(index));
+        return indexToTokenInfoMap.get(index);
     }
 
     public DBInputTextTokenInfo getTokenInfoAtPositionIndex(int index) {
-        for (Iterator iter = indexToTokenInfoMap.values().iterator(); iter.hasNext();) {
-            DBInputTextTokenInfo info = (DBInputTextTokenInfo) iter.next();
-            if(index >= info.start && index < info.end)
+        for (DBInputTextTokenInfo info : indexToTokenInfoMap.values()) {
+            if (index >= info.start && index < info.end)
                 return info;
         }
         return null;
     }
 
     public boolean isBreakpointAtToken(Token token) {
-        return inputBreakpointIndexes.contains(new Integer(token.getTokenIndex()));
+        return inputBreakpointIndexes.contains(Integer.valueOf(token.getTokenIndex()));
     }
 
     /** This method highlights the token at the specified index
@@ -436,9 +429,8 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     }
 
     public DBInputTextTokenInfo getTokenInfoForToken(Token t) {
-        for (Iterator iter = indexToTokenInfoMap.values().iterator(); iter.hasNext();) {
-            DBInputTextTokenInfo info = (DBInputTextTokenInfo) iter.next();
-            if(info.token.getTokenIndex() == t.getTokenIndex())
+        for (DBInputTextTokenInfo info : indexToTokenInfoMap.values()) {
+            if (info.token.getTokenIndex() == t.getTokenIndex())
                 return info;
         }
         return null;
@@ -465,7 +457,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
             if(e.getButton() == MouseEvent.BUTTON1 && !shiftKey) {
                 debugger.selectToken(info.token, info.line, info.charInLine);
             } else {
-                Integer index = new Integer(info.token.getTokenIndex());
+                Integer index = info.token.getTokenIndex();
                 if(inputBreakpointIndexes.contains(index))
                     inputBreakpointIndexes.remove(index);
                 else

@@ -3,6 +3,7 @@ package org.antlr.works.project;
 import edu.usfca.xj.foundation.XJUtils;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.*;
 /*
 
@@ -117,8 +118,8 @@ public class ProjectBuildList {
         return files;
     }
 
-    public List getDirtyBuildFilesOfType(String type) {
-        List dirtyFiles= new ArrayList();
+    public List<BuildFile> getDirtyBuildFilesOfType(String type) {
+        List<BuildFile> dirtyFiles= new ArrayList<BuildFile>();
         for (Iterator iterator = getBuildFilesOfType(type).iterator(); iterator.hasNext();) {
             BuildFile file =  (BuildFile) iterator.next();
             if(file.isDirty() && !file.isIgnore())
@@ -155,14 +156,14 @@ public class ProjectBuildList {
         return modified;
     }
 
-    public void setPersistentData(Map data) {
+    public void setPersistentData(Map<String,Map> data) {
         files.clear();
 
-        for (Iterator typeIterator = data.keySet().iterator(); typeIterator.hasNext();) {
-            String type = (String) typeIterator.next();
+        for (Iterator<String> typeIterator = data.keySet().iterator(); typeIterator.hasNext();) {
+            String type = typeIterator.next();
             files.put(type, new HashMap());
 
-            for (Iterator fileDataIterator = ((Map)data.get(type)).values().iterator(); fileDataIterator.hasNext();) {
+            for (Iterator fileDataIterator = (data.get(type)).values().iterator(); fileDataIterator.hasNext();) {
                 Map persistentData = (Map) fileDataIterator.next();
                 BuildFile file = new BuildFile();
                 file.setPersistentData(persistentData);
@@ -171,12 +172,12 @@ public class ProjectBuildList {
         }
     }
 
-    public Map getPersistentData() {
-        Map data = new HashMap();
+    public Map<String,Map<Object,Map<Object,Serializable>>> getPersistentData() {
+        Map<String,Map<Object,Map<Object,Serializable>>> data = new HashMap<String, Map<Object,Map<Object, Serializable>>>();
 
         for (Iterator typeIterator = files.keySet().iterator(); typeIterator.hasNext();) {
             String type = (String) typeIterator.next();
-            Map dataFiles = new HashMap();
+            Map<Object,Map<Object,Serializable>> dataFiles = new HashMap<Object, Map<Object,Serializable>>();
             for (Iterator fileIterator = ((Map)files.get(type)).values().iterator(); fileIterator.hasNext();) {
                 BuildFile file = (BuildFile) fileIterator.next();
                 dataFiles.put(file.filePath, file.getPersistentData());
@@ -283,8 +284,8 @@ public class ProjectBuildList {
             modificationDate = ((Long) data.get(KEY_MODIFICATION_DATE)).longValue();
         }
 
-        public Map getPersistentData() {
-            Map m = new HashMap();
+        public Map<Object,Serializable> getPersistentData() {
+            Map<Object,Serializable> m = new HashMap<Object, Serializable>();
             m.put(KEY_FILE_PATH, filePath);
             m.put(KEY_DIRTY, Boolean.valueOf(dirty));
             m.put(KEY_IGNORE, Boolean.valueOf(ignore));

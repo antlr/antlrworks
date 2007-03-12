@@ -98,15 +98,27 @@ public class ATEToken implements Comparable {
     }
 
     public boolean equals(Object otherObject) {
-        ATEToken otherToken = (ATEToken)otherObject;
-        return type == otherToken.type &&
-                start == otherToken.start &&
-                end == otherToken.end;
+        if(otherObject == null) {
+            return false;
+        }
+
+        if(otherObject instanceof ATEToken) {
+            ATEToken otherToken = (ATEToken)otherObject;
+            return type == otherToken.type &&
+                    start == otherToken.start &&
+                    end == otherToken.end;
+        } else {
+            return false;
+        }
     }
 
     public int compareTo(Object o) {
-        ATEToken otherToken = (ATEToken)o;
-        return this.getAttribute().compareTo(otherToken.getAttribute());
+        if(o instanceof ATEToken) {
+            ATEToken otherToken = (ATEToken)o;
+            return this.getAttribute().compareTo(otherToken.getAttribute());
+        } else {
+            return 1;
+        }
     }
 
     public String toString() {

@@ -46,7 +46,7 @@ public class GPath extends GObject {
     public static int MAX_PATH_BLINK_WIDTH = 4;
 
     /** List of all elements composing the path */
-    protected List elements;
+    protected List<GPathElement> elements;
 
     /** A disable path will be displayed in red */
     protected boolean disabled = false;
@@ -69,15 +69,15 @@ public class GPath extends GObject {
 
     }
 
-    public GPath(List elements, boolean disabled) {
+    public GPath(List<GPathElement> elements, boolean disabled) {
         this.elements = elements;
         this.disabled = disabled;
     }
 
     public void setContext(GContext context) {
         super.setContext(context);
-        for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
-            GPathElement element = (GPathElement) iterator.next();
+        for (Iterator<GPathElement> iterator = elements.iterator(); iterator.hasNext();) {
+            GPathElement element = iterator.next();
             element.setContext(context);
         }
     }
@@ -109,7 +109,7 @@ public class GPath extends GObject {
     public int getNumberOfVisibleElements() {
         int count = 0;
         for(int i=0; i<elements.size(); i++) {
-            GPathElement element = (GPathElement)elements.get(i);
+            GPathElement element = elements.get(i);
             if(element.isVisible())
                 count++;
         }
@@ -128,7 +128,7 @@ public class GPath extends GObject {
         context.setLineWidth(width);
 
         for(int i=0; i<elements.size(); i++) {
-            GPathElement element = (GPathElement)elements.get(i);
+            GPathElement element = elements.get(i);
             if(ignoreElements != null && ignoreElements.contains(element))
                 continue;
 
@@ -149,7 +149,7 @@ public class GPath extends GObject {
         context.nodeColor = disabled?Color.red:Color.green.darker();
         context.linkColor = context.nodeColor;
         context.setLineWidth(currentLineWidth);
-        GPathElement element = (GPathElement)elements.get(currentIndex);
+        GPathElement element = elements.get(currentIndex);
         element.draw();
     }
 
@@ -157,30 +157,30 @@ public class GPath extends GObject {
         if(currentIndex == -1)
             return null;
 
-        GPathElement element = (GPathElement)elements.get(currentIndex);
+        GPathElement element = elements.get(currentIndex);
         return element.getBounds();
     }
 
     public boolean containsPoint(Point p) {
-        for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
-            GPathElement element = (GPathElement) iterator.next();
+        for (Iterator<GPathElement> iterator = elements.iterator(); iterator.hasNext();) {
+            GPathElement element = iterator.next();
             if(element.containsPoint(p))
                 return true;
         }
         return false;
     }
 
-    public Set getObjects() {
-        Set objects = new HashSet();
-        for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
-            GPathElement element = (GPathElement) iterator.next();
+    public Set<GObject> getObjects() {
+        Set<GObject> objects = new HashSet<GObject>();
+        for (Iterator<GPathElement> iterator = elements.iterator(); iterator.hasNext();) {
+            GPathElement element = iterator.next();
             objects.addAll(element.getObjects());
         }
         return objects;
     }
 
     public boolean isCurrentElementVisible() {
-        GPathElement element = (GPathElement)elements.get(currentIndex);
+        GPathElement element = elements.get(currentIndex);
         if(element.isRuleLink)
             return showRuleLinks;
         else

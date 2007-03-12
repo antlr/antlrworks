@@ -109,10 +109,10 @@ public class MenuRefactor extends MenuAbstract {
         mutator.insert(editor.getText().length(), "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
 
         // Then rename all strings token
-        List tokens = editor.getTokens();
+        List<ATEToken> tokens = editor.getTokens();
         String attr = t.getAttribute();
         for(int index = tokens.size()-1; index>0; index--) {
-            ATEToken token = (ATEToken) tokens.get(index);
+            ATEToken token = tokens.get(index);
             if(token.type != ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING && token.type != ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING)
                 continue;
 
@@ -144,9 +144,9 @@ public class MenuRefactor extends MenuAbstract {
 
         beginRefactor("Convert Literals To C-style Quote Literals");
 
-        List tokens = editor.getTokens();
+        List<ATEToken> tokens = editor.getTokens();
         for(int index = tokens.size()-1; index>0; index--) {
-            ATEToken token = (ATEToken) tokens.get(index);
+            ATEToken token = tokens.get(index);
 
             String attribute;
             String stripped;
@@ -188,9 +188,9 @@ public class MenuRefactor extends MenuAbstract {
     }
 
     protected void convertLiteralsToSpecifiedQuote(int tokenType, char quote, char unescapeQuote) {
-        List tokens = editor.getTokens();
+        List<ATEToken> tokens = editor.getTokens();
         for(int index = tokens.size()-1; index>0; index--) {
-            ATEToken token = (ATEToken) tokens.get(index);
+            ATEToken token = tokens.get(index);
             if(token.type != tokenType)
                 continue;
 
@@ -256,9 +256,9 @@ public class MenuRefactor extends MenuAbstract {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOVE_ALL_LEFT_RECURSION);
 
         beginRefactor("Remove All Left Recursion");
-        List rules = editor.rules.getRules();
+        List<ElementRule> rules = editor.rules.getRules();
         for(int index = rules.size()-1; index >= 0; index--) {
-            ElementRule rule = (ElementRule)rules.get(index);
+            ElementRule rule = rules.get(index);
             if(rule.hasLeftRecursion()) {
                 String ruleText = rule.getTextRuleAfterRemovingLeftRecursion();
                 mutator.replace(rule.getInternalTokensStartIndex(), rule.getInternalTokensEndIndex(), ruleText);
@@ -328,23 +328,23 @@ public class MenuRefactor extends MenuAbstract {
         String ruleName = rule.name;
         String ruleContent = Utils.trimString(oldContent.substring(rule.colon.getEndIndex(), rule.end.getStartIndex()));
 
-        List rules = editor.rules.getRules();
+        List<ElementRule> rules = editor.rules.getRules();
         if(rule.end.index - rule.colon.index > 2) {
             // More than one token, append ()
             ruleContent = "("+ruleContent+")";
         }
 
         for(int r=rules.size()-1; r>=0; r--) {
-            ElementRule candidate = (ElementRule)rules.get(r);
+            ElementRule candidate = rules.get(r);
             if(candidate == rule) {
                 mutator.delete(rule.getStartIndex(), rule.getEndIndex()+1);
             } else {
-                List references = candidate.getReferences();
+                List<ElementReference> references = candidate.getReferences();
                 if(references == null)
                     continue;
 
                 for(int index=references.size()-1; index>=0; index--) {
-                    ElementReference ref = (ElementReference)references.get(index);
+                    ElementReference ref = references.get(index);
                     if(ref.token.getAttribute().equals(ruleName)) {
                         mutator.replace(ref.token.getStartIndex(), ref.token.getEndIndex(), ruleContent);
                     }

@@ -108,12 +108,12 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
         String s = (String)JOptionPane.showInputDialog(editor.getWindowContainer(), "Group Name:", "Group",
                 JOptionPane.QUESTION_MESSAGE, null, null, "Group");
         if(s != null && s.length() > 0) {
-            List rules = editor.rules.getSelectedRules();
+            List<ElementRule> rules = editor.rules.getSelectedRules();
             if(!rules.isEmpty()) {
                 editor.beginGroupChange("Group");
 
-                ElementRule firstRule = (ElementRule) rules.get(0);
-                ElementRule lastRule = (ElementRule) rules.get(rules.size()-1);
+                ElementRule firstRule = rules.get(0);
+                ElementRule lastRule = rules.get(rules.size()-1);
 
                 int end = lastRule.getEndIndex();
                 editor.textEditor.insertText(end+1, "\n"+GrammarSyntaxParser.END_GROUP+"\n");

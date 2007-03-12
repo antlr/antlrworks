@@ -96,8 +96,8 @@ public class GPathElement extends GObject {
             return true;
     }
 
-    public Set getObjects() {
-        Set objects = new HashSet();
+    public Set<GObject> getObjects() {
+        Set<GObject> objects = new HashSet<GObject>();
 
         if(nodeOrLink != null)
             objects.add(nodeOrLink);

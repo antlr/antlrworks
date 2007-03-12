@@ -47,7 +47,7 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     public static final String NOTIF_CURRENT_PATH_DID_CHANGE = "NOTIF_CURRENT_PATH_DID_CHANGE";
     public static int DEFAULT_PATH_WIDTH = 1;
 
-    protected List graphicPaths = new ArrayList();
+    protected List<GPath> graphicPaths = new ArrayList<GPath>();
     protected int selectedPathIndex = 0;
     protected GTimer timer = new GTimer(this);
 
@@ -67,12 +67,12 @@ public class GPathGroup extends GObject implements GTimerDelegate {
         graphicPaths.add(path);
     }
 
-    public List getPaths() {
+    public List<GPath> getPaths() {
         return graphicPaths;
     }
 
     public GPath getPath(int index) {
-        return (GPath)graphicPaths.get(index);
+        return graphicPaths.get(index);
     }
 
     public int getNumberOfPaths() {
@@ -103,8 +103,8 @@ public class GPathGroup extends GObject implements GTimerDelegate {
         if(getCurrentPath().isVisible())
             return;
 
-        for (Iterator iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = (GPath) iterator.next();
+        for (Iterator<GPath> iterator = graphicPaths.iterator(); iterator.hasNext();) {
+            GPath path = iterator.next();
             if(path.isVisible()) {
                 setSelectedPath(graphicPaths.indexOf(path));
                 break;
@@ -122,7 +122,7 @@ public class GPathGroup extends GObject implements GTimerDelegate {
 
     public GPath getCurrentPath() {
         if(graphicPaths.size() > 0)
-            return (GPath)graphicPaths.get(selectedPathIndex);
+            return graphicPaths.get(selectedPathIndex);
         else
             return null;
     }
@@ -133,8 +133,8 @@ public class GPathGroup extends GObject implements GTimerDelegate {
 
     public void setContext(GContext context) {
         super.setContext(context);
-        for (Iterator iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = (GPath) iterator.next();
+        for (Iterator<GPath> iterator = graphicPaths.iterator(); iterator.hasNext();) {
+            GPath path = iterator.next();
             path.setContext(context);
         }
 
@@ -149,22 +149,22 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     }
 
     public void updateShowRuleLinks() {
-        for (Iterator iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = (GPath) iterator.next();
+        for (Iterator<GPath> iterator = graphicPaths.iterator(); iterator.hasNext();) {
+            GPath path = iterator.next();
             path.setShowRuleLinks(showRuleLinks);
         }
     }
 
     public void selectPath(Point p) {
-        List paths = getPathsAtPoint(p);
+        List<GPath> paths = getPathsAtPoint(p);
         if(paths.isEmpty())
             return;
 
-        GPath selectPath = (GPath)paths.get(0);
+        GPath selectPath = paths.get(0);
         if(paths.size()>1) {
             int i = 1;
             while(!selectPath.isVisible() && i<paths.size()) {
-                selectPath = (GPath)paths.get(i++);
+                selectPath = paths.get(i++);
             }
         }
 
@@ -172,10 +172,10 @@ public class GPathGroup extends GObject implements GTimerDelegate {
         context.repaint();
     }
 
-    public List getPathsAtPoint(Point p) {
-        List paths = new ArrayList();
-        for (Iterator iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = (GPath) iterator.next();
+    public List<GPath> getPathsAtPoint(Point p) {
+        List<GPath> paths = new ArrayList<GPath>();
+        for (Iterator<GPath> iterator = graphicPaths.iterator(); iterator.hasNext();) {
+            GPath path = iterator.next();
             if(path.containsPoint(p))
                 paths.add(path);
         }
@@ -185,8 +185,8 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     public void draw() {
         GPath currentPath = getCurrentPath();
 
-        for (Iterator iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = (GPath) iterator.next();
+        for (Iterator<GPath> iterator = graphicPaths.iterator(); iterator.hasNext();) {
+            GPath path = iterator.next();
             if(path != currentPath) {
                 path.deselectElement();
             } else {

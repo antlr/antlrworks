@@ -41,7 +41,7 @@ public class EditorPersistence {
     private static final String KEY_RULES = "rules";
     private static final String KEY_ACTIONS = "actions";
 
-    private Map persistence = new HashMap();
+    private Map<String,Map<Object,EditorPersistentObject>> persistence = new HashMap<String, Map<Object,EditorPersistentObject>>();
     private boolean stored = false;
     private CEditorGrammar editor;
 
@@ -67,9 +67,9 @@ public class EditorPersistence {
     }
     
     public void store(List objects, String key) {
-        Map m = (Map)persistence.get(key);
+        Map<Object,EditorPersistentObject> m = persistence.get(key);
         if(m == null) {
-            m = new HashMap();
+            m = new HashMap<Object, EditorPersistentObject>();
             persistence.put(key, m);
         }
 
@@ -84,7 +84,7 @@ public class EditorPersistence {
     }
 
     public void restore(List objects, String key) {
-        Map m = (Map)persistence.get(key);
+        Map<Object,EditorPersistentObject> m = persistence.get(key);
         if(m == null)
             return;
 
@@ -93,7 +93,7 @@ public class EditorPersistence {
 
         for(int index=0; index<objects.size(); index++) {
             EditorPersistentObject o = (EditorPersistentObject) objects.get(index);
-            EditorPersistentObject oldObject = (EditorPersistentObject) m.get(o.getPersistentID());
+            EditorPersistentObject oldObject = m.get(o.getPersistentID());
             if(oldObject != null)
                 o.persistentAssign(oldObject);
         }

@@ -39,13 +39,20 @@ public class Utils {
 
     public static String stringFromFile(String file) throws IOException {
         FileInputStream fis = new FileInputStream(file);
-        int x= fis.available();
-        if(x > 0) {
-            byte b[]= new byte[x];
-            int c = fis.read(b);
-            return new String(b);
-        } else
-            return null;
+        try {
+            int x = fis.available();
+            if(x > 0) {
+                byte b[]= new byte[x];
+                int c = 0;
+                while(c < x) {
+                    c += fis.read(b, c, x-c);
+                }
+                return new String(b);
+            } else
+                return null;
+        } finally {
+            fis.close();
+        }
     }
 
     public static String toString(String[] object) {

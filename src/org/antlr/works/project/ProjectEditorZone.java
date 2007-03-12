@@ -241,8 +241,8 @@ public class ProjectEditorZone {
         }
     }
 
-    public Map getPersistentData() {
-        Map data = new HashMap();
+    public Map<String,String> getPersistentData() {
+        Map<String,String> data = new HashMap<String, String>();
         if(getSelectedFileItem() != null)
             data.put(KEY_SELECTED_FILE_NAME, getSelectedFileItem().getFileName());
         return data;

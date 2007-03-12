@@ -58,7 +58,7 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
         return new int[] { ANALYSIS_ITEM_WARNING, ANALYSIS_ITEM_ERROR };
     }
 
-    public List getItemsForType(int type) {
+    public List<ATEAnalysisItem> getItemsForType(int type) {
         switch(type) {
             case ANALYSIS_ITEM_ERROR:
                 return getErrors();

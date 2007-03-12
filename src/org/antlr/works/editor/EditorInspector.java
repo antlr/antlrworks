@@ -143,7 +143,7 @@ public class EditorInspector {
     private boolean ignoreScopeForDoubleQuoteLiteral(ATEScope scope) {
         if(scope == null) return false;
 
-        Class c = scope.getClass();
+        Class<? extends Object> c = scope.getClass();
         return c.equals(ElementAction.class) || c.equals(ElementBlock.class) || c.equals(ElementRewriteBlock.class)
                 || c.equals(ElementRewriteFunction.class);
     }

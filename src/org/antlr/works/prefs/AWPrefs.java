@@ -98,9 +98,9 @@ public class AWPrefs {
     public static final String PREF_SYNTAX_STRING = "PREF_SYNTAX_STRING";
     public static final String PREF_SYNTAX_KEYWORD = "PREF_SYNTAX_KEYWORD";
 
-    public static Map color = new HashMap();
-    public static Map bold = new HashMap();
-    public static Map italic = new HashMap();
+    public static Map<String,Color> color = new HashMap<String, Color>();
+    public static Map<String,Boolean> bold = new HashMap<String, Boolean>();
+    public static Map<String,Boolean> italic = new HashMap<String, Boolean>();
 
     public static void addSyntax(String key, Color c, boolean b, boolean i) {
         color.put(key, c);
@@ -131,15 +131,15 @@ public class AWPrefs {
     }
 
     public static Color getSyntaxDefaultColor(String identifier) {
-        return (Color) color.get(identifier);
+        return color.get(identifier);
     }
 
     public static boolean getSyntaxDefaultBold(String identifier) {
-        return ((Boolean)bold.get(identifier)).booleanValue();
+        return (bold.get(identifier)).booleanValue();
     }
 
     public static boolean getSyntaxDefaultItalic(String identifier) {
-        return ((Boolean)italic.get(identifier)).booleanValue();
+        return (italic.get(identifier)).booleanValue();
     }
 
     public static Color getSyntaxColor(String identifier) {
@@ -482,7 +482,7 @@ public class AWPrefs {
         return getPreferences().getString(PREF_SERVER_ID, null);
     }
 
-    public static void setPersonalInfo(Map info) {
+    public static void setPersonalInfo(Map<String,Object> info) {
         getPreferences().setObject(PREF_PERSONAL_INFO, info);
     }
 
@@ -535,13 +535,13 @@ public class AWPrefs {
         return getPreferences().getString(PREF_LAST_SAVED_DOCUMENT, null);
     }
 
-    public static void setAllOpenedDocuments(List documents) {
+    public static void setAllOpenedDocuments(List<String> documents) {
         if(documents != null)
             getPreferences().setObject(PREF_ALL_OPENED_DOCUMENTS, documents);
     }
 
-    public static List getAllOpenedDocuments() {
-        return (List) getPreferences().getObject(PREF_ALL_OPENED_DOCUMENTS, null);
+    public static List<String> getAllOpenedDocuments() {
+        return (List<String>) getPreferences().getObject(PREF_ALL_OPENED_DOCUMENTS, null);
     }
 
     public static void setDebuggerEOL(int index) {
