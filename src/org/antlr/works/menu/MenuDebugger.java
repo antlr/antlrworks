@@ -52,11 +52,15 @@ public class MenuDebugger extends MenuAbstract {
     }
 
     public void debug() {
-        editor.debugger.launchLocalDebugger(Debugger.DEBUG);
+        editor.debugger.launchLocalDebugger(Debugger.OPTION_NONE);
+    }
+
+    public void debugAgain() {
+        editor.debugger.launchLocalDebugger(Debugger.OPTION_AGAIN);
     }
 
     public void buildAndDebug() {
-        editor.debugger.launchLocalDebugger(Debugger.BUILD_AND_DEBUG);
+        editor.debugger.launchLocalDebugger(Debugger.OPTION_BUILD);
     }
 
     public void debugRemote() {

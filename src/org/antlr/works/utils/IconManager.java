@@ -109,6 +109,14 @@ public class IconManager {
         return createImageIcon(path+"forward.png");
     }
 
+    public ImageIcon getIconDebug() {
+        return createImageIcon(path+"debug.png");
+    }
+
+    public ImageIcon getIconDebugAgain() {
+        return createImageIcon(path+"debug_again.png");
+    }
+
     public ImageIcon getIconShowLinks() {
         return createImageIcon(path+"show_links.png");
     }

@@ -90,7 +90,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected Process remoteParserProcess;
 
     protected boolean cancelled;
-    protected boolean buildAndDebug;
+    protected int options;
 
     protected CodeGenerate codeGenerator;
     protected Debugger debugger;
@@ -118,6 +118,10 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         return startRule;
     }
 
+    public boolean canDebugAgain() {
+        return inputText != null;
+    }
+    
     public void dialogDidCancel() {
         cancel();
     }
@@ -150,12 +154,21 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         progress.close();
     }
 
-    public void prepareAndLaunch(boolean buildAndDebug) {
-        this.buildAndDebug = buildAndDebug;
+    private boolean optionBuild() {
+        return (options & Debugger.OPTION_BUILD) > 0;
+    }
+
+    private boolean optionAgain() {
+        return (options & Debugger.OPTION_AGAIN) > 0;
+    }
+
+    public void prepareAndLaunch(int options) {
+        this.options = options;
         cancelled = false;
 
-        if(buildAndDebug)
+        if(optionBuild()) {
             showProgress();
+        }
 
         // Start the thread a little bit later to let
         // the progress dialog displays first
@@ -174,20 +187,15 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         resetErrors();
 
         if(prepare()) {
-            if(buildAndDebug)
-                generateAndCompileGrammar();
+            if(optionBuild()) generateAndCompileGrammar();
 
-            if(!cancelled())
-                askUserForInputText();
+            if(!cancelled() && !optionAgain()) askUserForInputText();
 
-            if(!cancelled())
-                generateAndCompileGlueCode(buildAndDebug);
+            if(!cancelled()) generateAndCompileGlueCode(optionBuild());
 
-            if(!cancelled())
-                generateInputText();
+            if(!cancelled()) generateInputText();
 
-            if(!cancelled())
-                launchRemoteParser();
+            if(!cancelled()) launchRemoteParser();
         }
 
         if(hasErrors())
@@ -257,7 +265,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 if(!cancelled())
-                    debugger.debuggerLocalDidRun(buildAndDebug);
+                    debugger.debuggerLocalDidRun(optionBuild());
             }
         });
     }
@@ -347,11 +355,11 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         compileFiles(new String[] { fileParser, fileLexer });
     }
 
-    protected void generateAndCompileGlueCode(boolean buildAndDebug) {
+    protected void generateAndCompileGlueCode(boolean build) {
         progress.setInfo("Preparing...");
         progress.setIndeterminate(true);
 
-        if(!buildAndDebug && lastStartRule != null && startRule.equals(lastStartRule))
+        if(!build && lastStartRule != null && startRule.equals(lastStartRule))
             return;
 
         lastStartRule = startRule;

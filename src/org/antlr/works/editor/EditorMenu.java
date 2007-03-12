@@ -102,7 +102,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     // Debugger
     public static final int MI_RUN_INTERPRETER = 80;
     public static final int MI_DEBUG = 81;
-    public static final int MI_BUILD_AND_DEBUG = 82;
+    public static final int MI_DEBUG_AGAIN = 82;
     public static final int MI_DEBUG_REMOTE = 83;
     public static final int MI_DEBUG_SHOW_INPUT_TOKENS = 86;
 
@@ -208,6 +208,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         //menu.addItem(new XJMenuItem("Run Interpreter", KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
         //menu.addSeparator();
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debug"), KeyEvent.VK_F9, MI_DEBUG, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugAgain"), KeyEvent.VK_F9, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_DEBUG_AGAIN, this));
         /** Removed since 05/01/06 because 'Debug' automatically detects any change
          * to the grammar and rebuild it.
          */
@@ -471,8 +472,11 @@ public class EditorMenu implements XJMenuItemDelegate {
             case MI_CHECK_GRAMMAR:
             case MI_FIND:
             case MI_RUN_INTERPRETER:
+            case MI_DEBUG_AGAIN:
+                item.setEnabled(!isDebuggerRunning() && editor.debugger.canDebugAgain());
+                break;
+
             case MI_DEBUG:
-            case MI_BUILD_AND_DEBUG:
             case MI_DEBUG_REMOTE:
                 item.setEnabled(!isDebuggerRunning());
                 break;
@@ -713,12 +717,13 @@ public class EditorMenu implements XJMenuItemDelegate {
             case MI_RUN_INTERPRETER:
                 editor.menuDebugger.runInterpreter();
                 break;
+
             case MI_DEBUG:
                 editor.menuDebugger.debug();
                 break;
 
-            case MI_BUILD_AND_DEBUG:
-                editor.menuDebugger.buildAndDebug();
+            case MI_DEBUG_AGAIN:
+                editor.menuDebugger.debugAgain();
                 break;
 
             case MI_DEBUG_REMOTE:

@@ -83,8 +83,9 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     public static final String NOTIF_DEBUG_STARTED = "NOTIF_DEBUG_STARTED";
     public static final String NOTIF_DEBUG_STOPPED = "NOTIF_DEBUG_STOPPED";
 
-    public static final boolean BUILD_AND_DEBUG = true;
-    public static final boolean DEBUG = false;
+    public static final int OPTION_NONE = 0;
+    public static final int OPTION_AGAIN = 1;
+    public static final int OPTION_BUILD = 2;
 
     public static final float PERCENT_WIDTH_LEFT = 0.2f;
     public static final float PERCENT_WIDTH_MIDDLE = 0.5f;
@@ -426,31 +427,29 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         return eventsPanel.getEventsAsString();
     }
 
-    public void launchLocalDebugger(boolean buildAndDebug) {
+    public void launchLocalDebugger(int options) {
         // If the grammar is dirty, build it anyway
 
-        if(needsToGenerateGrammar())
-            buildAndDebug = true;
+        if(needsToGenerateGrammar()) {
+            options = options | OPTION_BUILD;
+        }
 
-        if(buildAndDebug && !editor.ensureDocumentSaved())
+        if((options & OPTION_BUILD) > 0 && !editor.ensureDocumentSaved()) {
             return;
+        }
 
-        if(buildAndDebug || !local.isRequiredFilesExisting()) {
-            //DialogGenerate dialog = new DialogGenerate(getWindowComponent());
-            //dialog.setDebugOnly();
-            //if(dialog.runModal() == XJDialog.BUTTON_OK) {
+        if((options & OPTION_BUILD) > 0 || !local.isRequiredFilesExisting()) {
             local.setOutputPath(AWPrefs.getOutputPath());
-            local.prepareAndLaunch(BUILD_AND_DEBUG);
+            local.prepareAndLaunch(options);
 
             grammarGenerated();
-            //}
         } else {
-            local.prepareAndLaunch(DEBUG);
+            local.prepareAndLaunch(options);
         }
     }
 
-    public void debuggerLocalDidRun(boolean builtAndDebug) {
-        if(builtAndDebug)
+    public void debuggerLocalDidRun(boolean build) {
+        if(build)
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_LOCAL_DEBUGGER_BUILD);
         else
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_LOCAL_DEBUGGER);
@@ -728,4 +727,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         return editor.getJavaContainer();
     }
 
+    public boolean canDebugAgain() {
+        return local.canDebugAgain();
+    }
 }

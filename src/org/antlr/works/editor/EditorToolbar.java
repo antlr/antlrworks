@@ -46,6 +46,9 @@ public class EditorToolbar implements XJNotificationObserver {
 
     public Box toolbar;
 
+    public JButton debug;
+    public JButton debugAgain;
+
     public JButton backward;
     public JButton forward;
 
@@ -63,6 +66,8 @@ public class EditorToolbar implements XJNotificationObserver {
 
         createInterface();
         addActions();
+        
+        debugAgain.setEnabled(false);
 
         XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
         XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STOPPED);
@@ -79,8 +84,12 @@ public class EditorToolbar implements XJNotificationObserver {
     public void notificationFire(Object source, String name) {
         if(name.equals(Debugger.NOTIF_DEBUG_STARTED)) {
             find.setEnabled(false);
+            debug.setEnabled(false);
+            debugAgain.setEnabled(false);
         } else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED)) {
             find.setEnabled(true);
+            debug.setEnabled(true);
+            debugAgain.setEnabled(editor.debugger.canDebugAgain());
         }
     }
 
@@ -97,6 +106,9 @@ public class EditorToolbar implements XJNotificationObserver {
         toolbar.add(Box.createHorizontalStrut(15));
         toolbar.add(backward = (JButton)createNewButton(IconManager.shared().getIconBackward(), "Back", false));
         toolbar.add(forward = (JButton)createNewButton(IconManager.shared().getIconForward(), "Forward", false));
+        toolbar.add(Box.createHorizontalStrut(15));
+        toolbar.add(debug = (JButton)createNewButton(IconManager.shared().getIconDebug(), "Debug", false));
+        toolbar.add(debugAgain = (JButton)createNewButton(IconManager.shared().getIconDebugAgain(), "Debug Again", false));
 
         AWPrefs.getPreferences().bindToPreferences(sort, AWPrefs.PREF_TOOLBAR_SORT, false);
     }
@@ -150,6 +162,19 @@ public class EditorToolbar implements XJNotificationObserver {
                 editor.menuFind.find();
             }
         });
+
+        debug.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.menuDebugger.debug();
+            }
+        });
+
+        debugAgain.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editor.menuDebugger.debugAgain();
+            }
+        });
+
     }
 
     public AbstractButton createNewButton(ImageIcon icon, String tooltip, boolean toggle) {
