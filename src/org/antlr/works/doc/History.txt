@@ -2,6 +2,7 @@
 Version 1.0b10 -
 
 - syntax coloring parser has been rewritten
+- can now display the line numbers
 - ability to jump to tokens defined in the options block
 - ability to debug again (after having launched the debugger once in the current session)
 - fixed a bug when double-clicking a word: selection would be incorrect

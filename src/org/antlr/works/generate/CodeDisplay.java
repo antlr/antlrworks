@@ -50,6 +50,7 @@ public class CodeDisplay extends EditorTab {
         textEditor.setSyntaxColoring(true);
         textEditor.setAnalysisColumnVisible(false);
         textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
+        textEditor.setLineNumberEnabled(AWPrefs.getLineNumberEnabled());
         textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
         textEditor.setEditable(false);
         applyFont();

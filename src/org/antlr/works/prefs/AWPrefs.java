@@ -76,6 +76,7 @@ public class AWPrefs {
     public static final String PREF_EDITOR_FOLDING = "PREF_EDITOR_FOLDING";
     public static final String PREF_ACTIONS_ANCHORS_FOLDING = "PREF_ACTIONS_ANCHORS_FOLDING";
     public static final String PREF_AUTO_IDENT_COLON_RULE = "PREF_AUTO_IDENT_COLON_RULE";
+    public static final String PREF_LINE_NUMBER = "PREF_LINE_NUMBER";
     public static final String PREF_PARSER_DELAY = "PREF_PARSER_DELAY";
     public static final String PREF_SMOOTH_SCROLLING = "PREF_SMOOTH_SCROLLING";
 
@@ -104,8 +105,8 @@ public class AWPrefs {
 
     public static void addSyntax(String key, Color c, boolean b, boolean i) {
         color.put(key, c);
-        bold.put(key, Boolean.valueOf(b));
-        italic.put(key, Boolean.valueOf(i));
+        bold.put(key, b);
+        italic.put(key, i);
     }
 
     static {
@@ -135,11 +136,11 @@ public class AWPrefs {
     }
 
     public static boolean getSyntaxDefaultBold(String identifier) {
-        return (bold.get(identifier)).booleanValue();
+        return bold.get(identifier);
     }
 
     public static boolean getSyntaxDefaultItalic(String identifier) {
-        return (italic.get(identifier)).booleanValue();
+        return italic.get(identifier);
     }
 
     public static Color getSyntaxColor(String identifier) {
@@ -357,7 +358,11 @@ public class AWPrefs {
     public static boolean autoIndentColonInRule() {
         return getPreferences().getBoolean(PREF_AUTO_IDENT_COLON_RULE, true);
     }
-    
+
+    public static boolean getLineNumberEnabled() {
+        return getPreferences().getBoolean(PREF_LINE_NUMBER, false);
+    }
+
     public static int getParserDelay() {
         return getPreferences().getInt(PREF_PARSER_DELAY, DEFAULT_PARSER_DELAY);
     }

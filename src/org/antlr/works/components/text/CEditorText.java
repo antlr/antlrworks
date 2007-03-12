@@ -80,6 +80,7 @@ public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
 
     public void applyPrefs() {
         textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
+        textEditor.setLineNumberEnabled(AWPrefs.getLineNumberEnabled());
         textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
         textEditor.refresh();
         applyFont();

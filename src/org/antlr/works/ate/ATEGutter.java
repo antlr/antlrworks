@@ -33,7 +33,6 @@ package org.antlr.works.ate;
 
 import org.antlr.works.ate.breakpoint.ATEBreakpointEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
-import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
@@ -59,6 +58,7 @@ public class ATEGutter extends JComponent {
     private static final Color BACKGROUND_COLOR = new Color(240,240,240);
     private static final Stroke FOLDING_DASHED_STROKE = new BasicStroke(0.0f, BasicStroke.CAP_BUTT,
                                                     BasicStroke.JOIN_MITER, 1.0f, new float[] { 1.0f}, 0.0f);
+    private static final Font LINE_NUMBER_FONT = new Font("Courier", Font.PLAIN, 12);
 
     private ATEPanel textEditor;
 
@@ -66,6 +66,10 @@ public class ATEGutter extends JComponent {
 
     private List<FoldingInfo> foldingInfos = new ArrayList<FoldingInfo>();
     private boolean foldingEnabled = false;
+
+    private FontMetrics lineNumberMetrics;
+    private int offsetForLineNumber;
+    private boolean lineNumberEnabled;
 
     private transient Image collapseDown;
     private transient Image collapseUp;
@@ -93,6 +97,10 @@ public class ATEGutter extends JComponent {
     public void setFoldingEnabled(boolean foldingEnabled) {
         // @todo currently disabled
         //this.foldingEnabled = foldingEnabled;
+    }
+
+    public void setLineNumberEnabled(boolean lineNumberEnabled) {
+        this.lineNumberEnabled = lineNumberEnabled;
     }
 
     public void markDirty() {
@@ -145,13 +153,12 @@ public class ATEGutter extends JComponent {
 
         breakpoints.clear();
         if(textEditor.breakpointManager != null) {
-            List<ElementRule> entities = textEditor.breakpointManager.getBreakpointEntities();
-            for (int i=0; i<entities.size(); i++) {
-                ATEBreakpointEntity entity = (ATEBreakpointEntity)entities.get(i);
+            List<? extends ATEBreakpointEntity> entities = textEditor.breakpointManager.getBreakpointEntities();
+            for (ATEBreakpointEntity entity : entities) {
                 int index = entity.breakpointEntityIndex();
-                if(index >= startIndex && index <= endIndex) {
+                if (index >= startIndex && index <= endIndex) {
                     int y = getLineYPixelPosition(entity.breakpointEntityIndex());
-                    Rectangle r = new Rectangle(0, y-BREAKPOINT_HEIGHT/2, BREAKPOINT_WIDTH, BREAKPOINT_HEIGHT);
+                    Rectangle r = new Rectangle(offsetForLineNumber, y - BREAKPOINT_HEIGHT / 2, BREAKPOINT_WIDTH, BREAKPOINT_HEIGHT);
                     breakpoints.add(new BreakpointInfo(entity, r));
                 }
             }
@@ -171,6 +178,21 @@ public class ATEGutter extends JComponent {
                     Point bottom = new Point(getWidth() - getOffsetFromText(), bottom_y);
                     foldingInfos.add(new FoldingInfo(entity, top, bottom));
                 }
+            }
+        }
+
+    }
+
+    public void updateSize() {
+        if(lineNumberMetrics == null) {
+            lineNumberMetrics = textEditor.textPane.getFontMetrics(LINE_NUMBER_FONT);
+        }
+
+        offsetForLineNumber = 0;
+        if(lineNumberEnabled) {
+            List lines = textEditor.getLines();
+            if(lines != null) {
+                offsetForLineNumber = lineNumberMetrics.stringWidth(String.valueOf(lines.size()));
             }
         }
     }
@@ -198,45 +220,63 @@ public class ATEGutter extends JComponent {
     public void paintComponent(Graphics g) {
         Rectangle r = g.getClipBounds();
 
-        paintGutter(g, r);
-
         updateInfo(r);
+        updateSize();
 
+        paintGutter(g, r);
         paintFolding((Graphics2D)g, r);
         paintBreakpoints((Graphics2D)g, r);
+
+        if(lineNumberEnabled) {
+            paintLineNumbers((Graphics2D)g, r);
+        }
     }
 
-    public void paintGutter(Graphics g, Rectangle r) {
+    private void paintGutter(Graphics g, Rectangle clip) {
         g.setColor(textEditor.textPane.getBackground());
-        g.fillRect(r.x+r.width-getOffsetFromText(), r.y, getOffsetFromText(), r.height);
+        g.fillRect(clip.x+clip.width-getOffsetFromText(), clip.y, getOffsetFromText(), clip.height);
 
         g.setColor(BACKGROUND_COLOR);
-        g.fillRect(r.x, r.y, r.width-getOffsetFromText(), r.height);
+        g.fillRect(clip.x, clip.y, clip.width-getOffsetFromText(), clip.height);
 
         g.setColor(Color.lightGray);
-        g.drawLine(r.x+r.width-getOffsetFromText(), r.y, r.x+r.width-getOffsetFromText(), r.y+r.height);
+        g.drawLine(clip.x+clip.width-getOffsetFromText(), clip.y, clip.x+clip.width-getOffsetFromText(), clip.y+clip.height);
     }
 
-    public void paintBreakpoints(Graphics2D g, Rectangle clip) {
+    private void paintBreakpoints(Graphics2D g, Rectangle clip) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
 
         g.setColor(Color.red);
         for (BreakpointInfo info : breakpoints) {
             if (info.entity.breakpointEntityIsBreakpoint()) {
                 Rectangle r = info.r;
-                if (clip.intersects(r))
+                if (clip.intersects(r)) {
                     g.fillArc(r.x, r.y, r.width, r.height, 0, 360);
+                }
             }
         }
     }
 
-    public void paintFolding(Graphics2D g, Rectangle clip) {
+    private void paintLineNumbers(Graphics2D g, Rectangle clip) {
+        g.setColor(Color.black);
+        g.setFont(LINE_NUMBER_FONT);
+
+        int lineCount = textEditor.getLines().size();
+        int lineHeight = textEditor.textPane.getFontMetrics(textEditor.textPane.getFont()).getHeight();
+        int number = Math.max(0, (Math.round(clip.y / lineHeight) - 1));
+        int y = number*lineHeight;
+        while(number <= lineCount && y-lineHeight <= clip.getY()+clip.getHeight()) {
+            g.drawString(String.valueOf(number++), 0, y - 4);
+            y += lineHeight;
+        }
+    }
+
+    private void paintFolding(Graphics2D g, Rectangle clip) {
         // Do not alias otherwise the dotted line between collapsed icon doesn't show up really well
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 
         for (FoldingInfo info : foldingInfos) {
-            if (!clip.intersects(info.top_r) && !clip.intersects(info.bottom_r))
-                continue;
+            if (!clip.intersects(info.top_r) && !clip.intersects(info.bottom_r)) continue;
 
             Point top = info.top;
             Point bottom = info.bottom;
@@ -279,7 +319,7 @@ public class ATEGutter extends JComponent {
 
     public Dimension getPreferredSize() {
         Dimension d = textEditor.textPane.getSize();
-        d.width = 25;
+        d.width = 25+offsetForLineNumber;
         return d;
     }
 

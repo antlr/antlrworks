@@ -177,6 +177,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         gutter.setFoldingEnabled(flag);
     }
 
+    public void setLineNumberEnabled(boolean flag) {
+        gutter.setLineNumberEnabled(flag);
+    }
+
     public void setEnableRecordChange(boolean flag) {
         if(flag)
             textPaneListener.enable();
@@ -249,11 +253,15 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public void damage() {
-        if(underlyingManager != null)
+        if(underlyingManager != null) {
             underlyingManager.reset();
+        }
 
-        if(gutter != null)
+        if(gutter != null) {
+            gutter.updateSize();
+            gutter.revalidate();
             gutter.markDirty();
+        }
     }
 
     public void refresh() {

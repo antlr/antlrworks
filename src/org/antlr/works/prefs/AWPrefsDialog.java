@@ -107,8 +107,8 @@ public class AWPrefsDialog extends XJPanel {
 
         lafCombo.removeAllItems();
         UIManager.LookAndFeelInfo[] info = UIManager.getInstalledLookAndFeels();
-        for (int i=0; i<info.length; i++) {
-            lafCombo.addItem(info[i].getName());
+        for (UIManager.LookAndFeelInfo anInfo : info) {
+            lafCombo.addItem(anInfo.getName());
         }
         lafCombo.setEnabled(!IDE.isPlugin());
 
@@ -134,8 +134,8 @@ public class AWPrefsDialog extends XJPanel {
         String fontNames[] = ge.getAvailableFontFamilyNames();
 
         editorFontCombo.removeAllItems();
-        for (int i=0; i<fontNames.length; i++) {
-            editorFontCombo.addItem(fontNames[i]);
+        for (String fontName : fontNames) {
+            editorFontCombo.addItem(fontName);
         }
 
         getPreferences().bindToPreferences(autoSaveButton, AWPrefs.PREF_AUTOSAVE_ENABLED, false);
@@ -146,6 +146,7 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(editorFontSizeSpinner, AWPrefs.PREF_EDITOR_FONT_SIZE, AWPrefs.DEFAULT_EDITOR_FONT_SIZE);
         getPreferences().bindToPreferences(parserDelayField, AWPrefs.PREF_PARSER_DELAY, AWPrefs.DEFAULT_PARSER_DELAY);
         getPreferences().bindToPreferences(autoIndentColonInRuleButton, AWPrefs.PREF_AUTO_IDENT_COLON_RULE, AWPrefs.DEFAULT_AUTO_INDENT_COLON_RULE);
+        getPreferences().bindToPreferences(showLineNumbers, AWPrefs.PREF_LINE_NUMBER, false);
 //        getPreferences().bindToPreferences(foldingButton, AWPrefs.PREF_EDITOR_FOLDING, AWPrefs.DEFAULT_EDITOR_FOLDING);
 //        getPreferences().bindToPreferences(actionsFoldingAnchorsButton, AWPrefs.PREF_ACTIONS_ANCHORS_FOLDING, AWPrefs.DEFAULT_ACTIONS_ANCHORS_FOLDING);
         getPreferences().bindToPreferences(smoothScrollingButton, AWPrefs.PREF_SMOOTH_SCROLLING, AWPrefs.DEFAULT_SMOOTH_SCROLLING);
@@ -371,6 +372,7 @@ public class AWPrefsDialog extends XJPanel {
         highlightCursorLineButton = new JCheckBox();
         smoothScrollingButton = new JCheckBox();
         autoIndentColonInRuleButton = new JCheckBox();
+        showLineNumbers = new JCheckBox();
         label1 = new JLabel();
         tabWidthField = new JTextField();
         label22 = new JLabel();
@@ -604,6 +606,8 @@ public class AWPrefsDialog extends XJPanel {
         						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC,
         						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
         						new RowSpec(Sizes.dluY(10))
         					}));
 
@@ -616,7 +620,7 @@ public class AWPrefsDialog extends XJPanel {
         				tabEditor.add(editorFontCombo, cc.xywh(5, 3, 5, 1));
 
         				//---- editorFontSizeSpinner ----
-        				editorFontSizeSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(8), null, new Integer(1)));
+        				editorFontSizeSpinner.setModel(new SpinnerNumberModel(12, 8, null, 1));
         				tabEditor.add(editorFontSizeSpinner, cc.xy(11, 3));
 
         				//---- autoSaveButton ----
@@ -640,26 +644,30 @@ public class AWPrefsDialog extends XJPanel {
         				autoIndentColonInRuleButton.setText("Auto-indent ':' in rule");
         				tabEditor.add(autoIndentColonInRuleButton, cc.xywh(5, 11, 7, 1));
 
+        				//---- showLineNumbers ----
+        				showLineNumbers.setText("Show line numbers");
+        				tabEditor.add(showLineNumbers, cc.xywh(5, 13, 5, 1));
+
         				//---- label1 ----
         				label1.setText("Tab width:");
         				label1.setHorizontalAlignment(SwingConstants.RIGHT);
-        				tabEditor.add(label1, cc.xy(3, 15));
+        				tabEditor.add(label1, cc.xy(3, 17));
 
         				//---- tabWidthField ----
         				tabWidthField.setText("8");
-        				tabEditor.add(tabWidthField, cc.xy(5, 15));
+        				tabEditor.add(tabWidthField, cc.xy(5, 17));
 
         				//---- label22 ----
         				label22.setText("Update delay:");
-        				tabEditor.add(label22, cc.xy(3, 17));
+        				tabEditor.add(label22, cc.xy(3, 19));
 
         				//---- parserDelayField ----
         				parserDelayField.setText("250");
-        				tabEditor.add(parserDelayField, cc.xy(5, 17));
+        				tabEditor.add(parserDelayField, cc.xy(5, 19));
 
         				//---- label23 ----
         				label23.setText("ms");
-        				tabEditor.add(label23, cc.xy(7, 17));
+        				tabEditor.add(label23, cc.xy(7, 19));
         			}
         			tabbedPane1.addTab("Editor", tabEditor);
 
@@ -1300,6 +1308,7 @@ public class AWPrefsDialog extends XJPanel {
     private JCheckBox highlightCursorLineButton;
     private JCheckBox smoothScrollingButton;
     private JCheckBox autoIndentColonInRuleButton;
+    private JCheckBox showLineNumbers;
     private JLabel label1;
     private JTextField tabWidthField;
     private JLabel label22;

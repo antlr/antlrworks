@@ -409,6 +409,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public void applyPrefs() {
         afterParserOp.setDefaultThreshold(AWPrefs.getParserDelay());
         textEditor.setFoldingEnabled(AWPrefs.getFoldingEnabled());
+        textEditor.setLineNumberEnabled(AWPrefs.getLineNumberEnabled());
         textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
         textEditor.refresh();
         applyFont();
