@@ -472,6 +472,9 @@ public class EditorMenu implements XJMenuItemDelegate {
             case MI_CHECK_GRAMMAR:
             case MI_FIND:
             case MI_RUN_INTERPRETER:
+                item.setEnabled(!isDebuggerRunning());
+                break;
+
             case MI_DEBUG_AGAIN:
                 item.setEnabled(!isDebuggerRunning() && editor.debugger.canDebugAgain());
                 break;

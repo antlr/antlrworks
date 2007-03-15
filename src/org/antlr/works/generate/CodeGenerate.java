@@ -36,6 +36,7 @@ import edu.usfca.xj.appkit.utils.XJDialogProgress;
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
+import org.antlr.tool.Grammar;
 import org.antlr.works.editor.EditorProvider;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementGrammarName;
@@ -81,7 +82,15 @@ public class CodeGenerate implements Runnable {
 
     public String getGrammarLanguage() {
         try {
-            return (String)provider.getEngineGrammar().getParserGrammar().getOption("language");
+            Grammar g = provider.getEngineGrammar().getParserGrammar();
+            if(g == null) {
+                g = provider.getEngineGrammar().getLexerGrammar();
+            }
+            if(g != null) {
+                return (String)g.getOption("language");
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             provider.getConsole().print(e);
         }

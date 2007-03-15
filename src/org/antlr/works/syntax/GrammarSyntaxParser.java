@@ -194,12 +194,10 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
     private boolean tryMatchName() {
         ATEToken start = T(0);
-        ATEToken type = null;
 
         // Check if the grammar has a type (e.g. lexer, parser, tree, etc)
         if(ElementGrammarName.isKnownType(start.getAttribute())) {
             if(!nextToken()) return false;
-            type = T(0);
         }
 
         if(!matchID(0, "grammar")) return false;
@@ -211,7 +209,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         // The next token must be a semi colon
         if(!matchSEMI(0)) return false;
 
-        this.name = new ElementGrammarName(name, start, T(-1), type);
+        this.name = new ElementGrammarName(name, start, T(-1), start);
         return true;
     }
 

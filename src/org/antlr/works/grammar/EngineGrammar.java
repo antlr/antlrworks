@@ -46,7 +46,6 @@ import org.antlr.works.utils.ErrorListener;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -237,8 +236,8 @@ public class EngineGrammar {
     public void printLeftRecursionToConsole(List rules) {
         StringBuffer info = new StringBuffer();
         info.append("Aborting because the following rules are mutually left-recursive:");
-        for (int i = 0; i < rules.size(); i++) {
-            Set rulesSet = (Set) rules.get(i);
+        for (Object rule : rules) {
+            Set rulesSet = (Set) rule;
             info.append("\n    ");
             info.append(rulesSet);
         }
@@ -247,12 +246,12 @@ public class EngineGrammar {
 
     public void markLeftRecursiveRules(List rules) {
         // 'rules' is a list of set of rules given by ANTLR
-        for (int i = 0; i < rules.size(); i++) {
-            Set rulesSet = (Set) rules.get(i);
-            for (Iterator iterator = rulesSet.iterator(); iterator.hasNext();) {
-                String name = (String) iterator.next();
+        for (Object rule : rules) {
+            Set rulesSet = (Set) rule;
+            for (Object aRulesSet : rulesSet) {
+                String name = (String) aRulesSet;
                 ElementRule r = editor.rules.getRuleWithName(name);
-                if(r == null)
+                if (r == null)
                     continue;
                 r.setLeftRecursiveRulesSet(rulesSet);
             }
@@ -297,7 +296,7 @@ public class EngineGrammar {
 
             buildNonDeterministicErrors();
             markRulesWithWarningsOrErrors();
-        } finally {
+        } catch(Exception e) {
             // ignore
         }
 
@@ -326,11 +325,11 @@ public class EngineGrammar {
 
     protected void buildNonDeterministicErrors() {
         errors.clear();
-        for (Iterator<Message> iterator = ErrorListener.shared().warnings.iterator(); iterator.hasNext();) {
-            buildError(iterator.next());
+        for (Message warning : ErrorListener.shared().warnings) {
+            buildError(warning);
         }
-        for (Iterator<Message> iterator = ErrorListener.shared().errors.iterator(); iterator.hasNext();) {
-            buildError(iterator.next());
+        for (Message error : ErrorListener.shared().errors) {
+            buildError(error);
         }
     }
 
@@ -380,8 +379,7 @@ public class EngineGrammar {
     protected void markRulesWithWarningsOrErrors() throws Exception {
         // Clear graphic cache because we have to redraw each rule again
         editor.visual.clearCacheGraphs();
-        for (Iterator<ElementRule> iterator = editor.getParserEngine().getRules().iterator(); iterator.hasNext();) {
-            ElementRule rule = iterator.next();
+        for (ElementRule rule : editor.getParserEngine().getRules()) {
             updateRuleWithErrors(rule, fetchErrorsForRule(rule));
         }
 
@@ -395,9 +393,8 @@ public class EngineGrammar {
 
     protected List<EngineGrammarError> fetchErrorsForRule(ElementRule rule) {
         List<EngineGrammarError> errors = new ArrayList<EngineGrammarError>();
-        for (Iterator<EngineGrammarError> iterator = getErrors().iterator(); iterator.hasNext();) {
-            EngineGrammarError error = iterator.next();
-            if(error.line>=rule.start.startLineNumber && error.line<=rule.end.startLineNumber)
+        for (EngineGrammarError error : getErrors()) {
+            if (error.line >= rule.start.startLineNumber && error.line <= rule.end.startLineNumber)
                 errors.add(error);
         }
         return errors;
@@ -405,15 +402,14 @@ public class EngineGrammar {
 
     public void computeRuleErrors(ElementRule rule) {
         List<EngineGrammarError> errors = rule.getErrors();
-        for (Iterator<EngineGrammarError> iterator = errors.iterator(); iterator.hasNext();) {
-            EngineGrammarError error = iterator.next();
+        for (EngineGrammarError error : errors) {
             Object o = error.getMessage();
-            if(o instanceof GrammarUnreachableAltsMessage)
-                computeRuleError(rule, error, (GrammarUnreachableAltsMessage)o);
-            else if(o instanceof GrammarNonDeterminismMessage)
-                computeRuleError(rule, error, (GrammarNonDeterminismMessage)o);
-            else if(o instanceof NonRegularDecisionMessage)
-                computeRuleError(rule, error, (NonRegularDecisionMessage)o);
+            if (o instanceof GrammarUnreachableAltsMessage)
+                computeRuleError(rule, error, (GrammarUnreachableAltsMessage) o);
+            else if (o instanceof GrammarNonDeterminismMessage)
+                computeRuleError(rule, error, (GrammarNonDeterminismMessage) o);
+            else if (o instanceof NonRegularDecisionMessage)
+                computeRuleError(rule, error, (NonRegularDecisionMessage) o);
         }
 
         try {
@@ -431,25 +427,25 @@ public class EngineGrammar {
 
         int firstAlt = 0;
 
-        for (Iterator iter = nonDetAlts.iterator(); iter.hasNext();) {
-            Integer displayAltI = (Integer) iter.next();
+        for (Object nonDetAlt : nonDetAlts) {
+            Integer displayAltI = (Integer) nonDetAlt;
             NFAState nfaStart = message.probe.dfa.getNFADecisionStartState();
 
-            int tracePathAlt = nfaStart.translateDisplayAltToWalkAlt(message.probe.dfa, displayAltI.intValue());
-            if( firstAlt == 0 )
+            int tracePathAlt = nfaStart.translateDisplayAltToWalkAlt(message.probe.dfa, displayAltI);
+            if (firstAlt == 0)
                 firstAlt = tracePathAlt;
 
             List path =
-                message.probe.getNFAPathStatesForAlt(firstAlt,
-                                                       tracePathAlt,
-                                                       error.getLabels());
+                    message.probe.getNFAPathStatesForAlt(firstAlt,
+                            tracePathAlt,
+                            error.getLabels());
 
             error.addPath(path, disabledAlts.contains(displayAltI));
             error.addStates(path);
 
             // Find all rules enclosing each state (because a path can extend over multiple rules)
-            for (Iterator iterator = path.iterator(); iterator.hasNext();) {
-                NFAState state = (NFAState)iterator.next();
+            for (Object aPath : path) {
+                NFAState state = (NFAState) aPath;
                 error.addRule(state.getEnclosingRule());
             }
         }
@@ -457,8 +453,8 @@ public class EngineGrammar {
 
     public void computeRuleError(ElementRule rule, EngineGrammarError error, GrammarUnreachableAltsMessage message) {
         NFAState state = message.probe.dfa.getNFADecisionStartState();
-        for(int alt=0; alt<message.alts.size(); alt++) {
-            error.addUnreachableAlt(state, (Integer)message.alts.get(alt));
+        for (Object alt1 : message.alts) {
+            error.addUnreachableAlt(state, (Integer) alt1);
             error.addStates(state);
             error.addRule(state.getEnclosingRule());
         }
@@ -466,10 +462,9 @@ public class EngineGrammar {
 
     public void computeRuleError(ElementRule rule, EngineGrammarError error, NonRegularDecisionMessage message) {
         NFAState state = message.probe.dfa.getNFADecisionStartState();
-        for (Iterator iterator = message.altsWithRecursion.iterator(); iterator.hasNext();) {
-            Object alt = iterator.next();
+        for (Object alt : message.altsWithRecursion) {
             // Use currently the unreachable alt for display purpose only
-            error.addUnreachableAlt(state, (Integer)alt);
+            error.addUnreachableAlt(state, (Integer) alt);
             error.addStates(state);
             error.addRule(state.getEnclosingRule());
         }

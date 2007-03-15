@@ -107,7 +107,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
     public void appDidLaunch(String[] args) {
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
-        XJApplication.addDocumentType(CDocumentGrammar.class, CContainerGrammar.class, XJDataPlainText.class, new String[] { "g", "gl", "gp", "gtp" }, Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
+        XJApplication.addDocumentType(CDocumentGrammar.class, CContainerGrammar.class, XJDataPlainText.class, "g", Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
         if(AWPrefs.getEnableProjectDocument())
             XJApplication.addDocumentType(CDocumentProject.class, CContainerProject.class, XJDataXML.class, "awp", Localizable.getLocalizedString(Localizable.PROJECT_TYPE));
 
