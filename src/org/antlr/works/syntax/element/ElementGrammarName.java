@@ -51,6 +51,7 @@ public class ElementGrammarName {
 
     static {
         types = new ArrayList<String>();
+        types.add("combined");
         types.add("parser");
         types.add("lexer");
         types.add("tree");
@@ -64,18 +65,24 @@ public class ElementGrammarName {
     }
 
     public int getType() {
-        if(type != null)
-            return types.indexOf(type.getAttribute());
-        else
+        int t = COMBINED;
+        if(type != null) {
+            t = types.indexOf(type.getAttribute());
+        }
+
+        if(t == -1) {
             return COMBINED;
+        } else {
+            return t;
+        }
     }
 
     public String getName() {
         return name.getAttribute();
     }
-    
+
     public static boolean isKnownType(String type) {
         return types.contains(type);
     }
-    
+
 }

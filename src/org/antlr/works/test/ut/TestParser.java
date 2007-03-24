@@ -8,6 +8,7 @@ import org.antlr.works.syntax.GrammarSyntax;
 import org.antlr.works.syntax.GrammarSyntaxDelegate;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.syntax.element.ElementBlock;
+import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.test.AbstractTest;
 import org.antlr.works.test.TestConstants;
@@ -50,6 +51,20 @@ public class TestParser extends AbstractTest implements GrammarSyntaxDelegate {
 
     public static void main(String[] args) {
         new TestRunner().doRun(new TestSuite(TestParser.class));
+    }
+
+    public void testGrammarType() throws Exception {
+        parseFile(TestConstants.PREFIX+"type/combined.g");
+        assertEquals("combined grammar", ElementGrammarName.COMBINED, getParser().name.getType());
+
+        parseFile(TestConstants.PREFIX+"type/parser.g");
+        assertEquals("parser grammar", ElementGrammarName.PARSER, getParser().name.getType());
+
+        parseFile(TestConstants.PREFIX+"type/lexer.g");
+        assertEquals("lexer grammar", ElementGrammarName.LEXER, getParser().name.getType());
+
+        parseFile(TestConstants.PREFIX+"type/tree.g");
+        assertEquals("tree grammar", ElementGrammarName.TREEPARSER, getParser().name.getType());
     }
 
     public void testSyntaxBlock() throws Exception {
