@@ -127,10 +127,11 @@ public class CodeGenerate implements Runnable {
 
     public String getGeneratedClassName(boolean lexer) throws Exception {
         String name;
-        if(lexer)
-            name = provider.getEngineGrammar().getParserGrammar().name+"Lexer";
-        else
+        if(lexer) {
+            name = provider.getEngineGrammar().getLexerGrammar().name+"Lexer";
+        } else {
             name = provider.getEngineGrammar().getParserGrammar().name+"Parser";
+        }
         return name;
     }
 
