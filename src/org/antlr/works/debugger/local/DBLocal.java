@@ -41,7 +41,6 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.antlr.works.IDE;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
-import org.antlr.works.ate.syntax.java.ATEJavaSyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.DebuggerInputDialog;
@@ -60,7 +59,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -400,29 +398,22 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         }
 
         Set<String> imports = new HashSet<String>();
-        for (int i = 0; i < blocks.size(); i++) {
-            ElementBlock block = blocks.get(i);
-            if(!block.name.equals(GrammarSyntaxParser.PARSER_HEADER_BLOCK_NAME) && !block.name.equals(GrammarSyntaxParser.LEXER_HEADER_BLOCK_NAME)) {
+        for (ElementBlock block : blocks) {
+            if (!block.name.equals(GrammarSyntaxParser.PARSER_HEADER_BLOCK_NAME) && !block.name.equals(GrammarSyntaxParser.LEXER_HEADER_BLOCK_NAME))
+            {
                 continue;
             }
 
-            String javaText = block.end.getAttribute();
-            if(javaText == null || javaText.length() == 0) {
-                continue;
-            }
-
-            ATEJavaSyntaxLexer engine = new ATEJavaSyntaxLexer();
-            engine.tokenize(javaText);
-            List<ATEToken> tokens = engine.getTokens();
-            for (int j = 0; j < tokens.size(); j++) {
+            List<ATEToken> tokens = block.internalTokens;
+            for(int j = 0; j < tokens.size(); j++) {
                 ATEToken token = tokens.get(j);
-                if(token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("package")) {
+                if (token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("package")) {
                     StringBuffer sb = new StringBuffer();
                     j++;
-                    while(j < tokens.size()) {
+                    while (j < tokens.size()) {
                         ATEToken t = tokens.get(j);
                         String at = t.getAttribute();
-                        if(at.equals(";"))
+                        if (at.equals(";"))
                             break;
                         sb.append(at);
                         j++;
@@ -437,8 +428,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         }
 
         StringBuffer importLines = new StringBuffer();
-        for (Iterator<String> iterator = imports.iterator(); iterator.hasNext();) {
-            String importName = iterator.next();
+        for (String importName : imports) {
             importLines.append("import ");
             importLines.append(importName);
             importLines.append(".*;\n");

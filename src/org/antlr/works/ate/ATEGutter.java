@@ -266,7 +266,8 @@ public class ATEGutter extends JComponent {
         int number = Math.max(0, (Math.round(clip.y / lineHeight) - 1));
         int y = number*lineHeight;
         while(number <= lineCount && y-lineHeight <= clip.getY()+clip.getHeight()) {
-            g.drawString(String.valueOf(number++), 0, y - 4);
+            String s = String.valueOf(number++);
+            g.drawString(s, offsetForLineNumber-lineNumberMetrics.stringWidth(s), y - 4);
             y += lineHeight;
         }
     }
