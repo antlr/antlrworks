@@ -49,6 +49,7 @@ import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.swing.Toolbar;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.IconManager;
@@ -125,14 +126,14 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     }
 
     public Box createControlPanel() {
-        Box box = Box.createHorizontalBox();
-        box.add(createRunButton());
-        box.add(createRulesPopUp());
-        box.add(Box.createHorizontalStrut(20));
-        box.add(new JLabel("Line Endings:"));
-        box.add(createEOLCombo());
-        box.add(Box.createHorizontalStrut(20));
-        box.add(createTokensToIgnoreField());
+        Toolbar box = Toolbar.createHorizontalToolbar();
+        box.addElement(createRunButton());
+        box.addElement(createRulesPopUp());
+        box.addGroupSeparator();
+        box.addElement(new JLabel("Line Endings:"));
+        box.addElement(createEOLCombo());
+        box.addGroupSeparator();
+        createTokensToIgnoreField(box);
         return box;
     }
 
@@ -151,6 +152,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     public JComboBox createRulesPopUp() {
         rulesCombo = new JComboBox();
         rulesCombo.setFocusable(false);
+        rulesCombo.setMaximumSize(new Dimension(Short.MAX_VALUE, rulesCombo.getPreferredSize().height));
         rulesCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 String rule = (String)rulesCombo.getSelectedItem();
@@ -164,18 +166,17 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     public JComboBox createEOLCombo() {
         eolCombo = new JComboBox();
         eolCombo.setFocusable(false);
+        eolCombo.setMaximumSize(new Dimension(Short.MAX_VALUE, eolCombo.getPreferredSize().height));
         Utils.fillComboWithEOL(eolCombo);
         return eolCombo;
     }
 
-    public Box createTokensToIgnoreField() {
-        Box box = Box.createHorizontalBox();
-        box.add(new JLabel("Ignore rules:"));
-        box.add(Box.createHorizontalStrut(5));
+    public Box createTokensToIgnoreField(Toolbar box) {
+        box.addElement(new JLabel("Ignore rules:"));
 
         tokensToIgnoreLabel = new JLabel();
         tokensToIgnoreLabel.setFont(tokensToIgnoreLabel.getFont().deriveFont(Font.ITALIC));
-        box.add(tokensToIgnoreLabel);
+        box.addElement(tokensToIgnoreLabel);
 
         JButton button = new JButton("Guess");
         button.setFocusable(false);
@@ -186,7 +187,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
             }
         });
         box.add(Box.createHorizontalGlue());
-        box.add(button);
+        box.addElement(button);
 
         return box;
     }

@@ -6,6 +6,7 @@ import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 import org.antlr.works.debugger.tivo.DBRecorder;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.NumberSet;
 
@@ -70,19 +71,19 @@ public class DBControlPanel extends JPanel {
 
         this.debugger = debugger;
 
-        Box box = Box.createHorizontalBox();
-        box.add(stopButton = createStopButton());
-        box.add(Box.createHorizontalStrut(20));
-        box.add(goToStartButton = createGoToStartButton());
-        box.add(backButton = createStepBackButton());
-        box.add(forwardButton = createStepForwardButton());
-        box.add(stepOverButton = createStepOverButton());
-        box.add(fastForwardButton = createFastForwardButton());
-        box.add(goToEndButton = createGoToEndButton());
-        box.add(Box.createHorizontalStrut(20));
-        box.add(createBreakEventsBox());
-        box.add(Box.createHorizontalGlue());
-        box.add(createInfoLabelPanel());
+        Toolbar box = Toolbar.createHorizontalToolbar();
+        box.addElement(stopButton = createStopButton());
+        box.addGroupSeparator();
+        box.addElement(goToStartButton = createGoToStartButton());
+        box.addElement(backButton = createStepBackButton());
+        box.addElement(forwardButton = createStepForwardButton());
+        box.addElement(stepOverButton = createStepOverButton());
+        box.addElement(fastForwardButton = createFastForwardButton());
+        box.addElement(goToEndButton = createGoToEndButton());
+        box.addGroupSeparator();
+        createBreakEvents(box);
+        box.addElement(Box.createHorizontalGlue());
+        box.addElement(createInfoLabelPanel());
 
         add(box, BorderLayout.CENTER);
     }
@@ -182,23 +183,19 @@ public class DBControlPanel extends JPanel {
         return button;
     }
 
-    public JComponent createBreakEventsBox() {
-        Box box = Box.createHorizontalBox();
-
-        box.add(new JLabel("Break on:"));
-        box.add(breakAllButton = createBreakButton("All"));
-        box.add(breakLocationButton = createBreakButton("Location"));
-        box.add(breakConsumeButton = createBreakButton("Consume"));
-        box.add(breakLTButton = createBreakButton("LT"));
-        box.add(breakExceptionButton = createBreakButton("Exception"));
+    public void createBreakEvents(Toolbar box) {
+        box.addElement(new JLabel("Break on:"));
+        box.addElement(breakAllButton = createBreakButton("All"));
+        box.addElement(breakLocationButton = createBreakButton("Location"));
+        box.addElement(breakConsumeButton = createBreakButton("Consume"));
+        box.addElement(breakLTButton = createBreakButton("LT"));
+        box.addElement(breakExceptionButton = createBreakButton("Exception"));
 
         AWPrefs.getPreferences().bindToPreferences(breakAllButton, AWPrefs.PREF_DEBUG_BREAK_ALL, false);
         AWPrefs.getPreferences().bindToPreferences(breakLocationButton, AWPrefs.PREF_DEBUG_BREAK_LOCATION, false);
         AWPrefs.getPreferences().bindToPreferences(breakConsumeButton, AWPrefs.PREF_DEBUG_BREAK_CONSUME, true);
         AWPrefs.getPreferences().bindToPreferences(breakLTButton, AWPrefs.PREF_DEBUG_BREAK_LT, false);
         AWPrefs.getPreferences().bindToPreferences(breakExceptionButton, AWPrefs.PREF_DEBUG_BREAK_EXCEPTION, false);
-
-        return box;
     }
 
     public JCheckBox createBreakButton(String title) {

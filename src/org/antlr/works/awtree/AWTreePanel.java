@@ -2,7 +2,7 @@ package org.antlr.works.awtree;
 
 import edu.usfca.xj.appkit.gview.object.GElement;
 import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TreeUtilities;
 
@@ -110,13 +110,13 @@ public class AWTreePanel extends JPanel {
         scrollPane.setWheelScrollingEnabled(true);
         scrollPane.setBackground(Color.white);
 
-        Box box = Box.createHorizontalBox();
-        box.add(createExpandAllButton());
-        box.add(createCollapseAllButton());
+        Toolbar box = Toolbar.createHorizontalToolbar();
+        box.addElement(createExpandAllButton());
+        box.addElement(createCollapseAllButton());
         box.add(Box.createHorizontalGlue());
-        box.add(createDisplayAsGraphButton());
-        if(XJSystem.isMacOS())
-            box.add(Box.createHorizontalStrut(15));
+        box.addElement(createDisplayAsGraphButton());
+        //if(XJSystem.isMacOS())
+        //    box.add(Box.createHorizontalStrut(15));
                                                 
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);
@@ -175,13 +175,13 @@ public class AWTreePanel extends JPanel {
         graphScrollPane = new JScrollPane(treeGraphView);
         graphScrollPane.setWheelScrollingEnabled(true);
 
-        Box box = Box.createHorizontalBox();
-        box.add(new JLabel("Zoom"));
-        box.add(createZoomSlider());
+        Toolbar box = Toolbar.createHorizontalToolbar();
+        box.addElement(new JLabel("Zoom"));
+        box.addElement(createZoomSlider());
         box.add(Box.createHorizontalGlue());
-        box.add(createDisplayAsListButton());
-        if(XJSystem.isMacOS())
-            box.add(Box.createHorizontalStrut(15));
+        box.addElement(createDisplayAsListButton());
+        //if(XJSystem.isMacOS())
+        //    box.add(Box.createHorizontalStrut(15));
 
         panel.add(graphScrollPane, BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);

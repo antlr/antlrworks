@@ -37,6 +37,7 @@ import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.swing.Toolbar;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.visualization.graphics.GContext;
@@ -53,14 +54,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.Iterator;
 import java.util.List;
 
 public class GPanel implements XJNotificationObserver {
 
     protected Container container;
     protected Box pathButtonSelectionBox;
-    protected Box controlPanel;
+    protected Toolbar controlPanel;
     protected JTextField errorLabel;
 
     protected GContext context;
@@ -154,28 +154,26 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private Container createErrorPane() {
-        controlPanel = new Box(BoxLayout.X_AXIS);
+        controlPanel = Toolbar.createHorizontalToolbar();
 
         if(rule.errors.size()>1) {
-            controlPanel.add(createPrevErrorButton());
-            controlPanel.add(createNextErrorButton());
+            controlPanel.addElement(createPrevErrorButton());
+            controlPanel.addElement(createNextErrorButton());
+            controlPanel.addGroupSeparator();
         }
-        controlPanel.add(Box.createHorizontalStrut(5));
-        controlPanel.add(new JLabel(IconManager.shared().getIconWarning()));
-        controlPanel.add(Box.createHorizontalStrut(3));
-        controlPanel.add(errorLabel = new JTextField());
+        controlPanel.addElement(new JLabel(IconManager.shared().getIconWarning()));
+        controlPanel.addElement(errorLabel = new JTextField());
         errorLabel.setBorder(null);
         errorLabel.setEditable(false);
         errorLabel.setBackground(getContainer().getBackground());
 
         controlPanel.add(Box.createHorizontalGlue());
 
-        controlPanel.add(Box.createHorizontalStrut(20));
         pathButtonSelectionBox = new Box(BoxLayout.X_AXIS);
-        controlPanel.add(pathButtonSelectionBox);
+        controlPanel.addElement(pathButtonSelectionBox);
 
-        controlPanel.add(Box.createHorizontalStrut(20));
-        controlPanel.add(createShowCrossLinksButton());
+        controlPanel.addGroupSeparator();
+        controlPanel.addElement(createShowCrossLinksButton());
 
         return controlPanel;
     }
@@ -283,9 +281,8 @@ public class GPanel implements XJNotificationObserver {
         button.setToolTipText("Show links between rules");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                Iterator iterator = view.getGraphs().iterator();
-                while(iterator.hasNext()) {
-                    GGraphGroup gg = (GGraphGroup)iterator.next();
+                for (Object o : view.getGraphs()) {
+                    GGraphGroup gg = (GGraphGroup) o;
                     gg.pathGroup.toggleShowRuleLinks();
                 }
                 view.cacheRerender();
@@ -296,21 +293,20 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private Container createControlPane() {
-        Box box = new Box(BoxLayout.X_AXIS);
-        //box.setBorder(BorderFactory.createTitledBorder("Settings"));
+        Toolbar box = Toolbar.createHorizontalToolbar();
 
-        box.add(new JLabel("Zoom"));
-        box.add(createFactorSlider());
+        box.addElement(new JLabel("Zoom"));
+        box.addElement(createFactorSlider());
 
-        //box.add(new JLabel("Line space"));
-        //box.add(createLineSpaceSlider());
+        //box.addElement(new JLabel("Line space"));
+        //box.addElement(createLineSpaceSlider());
 
-        //box.add(new JLabel("Epsilon width"));
-        //box.add(createEpsilonWidthSlider());
+        //box.addElement(new JLabel("Epsilon width"));
+        //box.addElement(createEpsilonWidthSlider());
 
         //box.add(createDrawNodeButton());
         //box.add(createDrawDimensionButton());
-        box.add(createShowNFAButton());
+        box.addElement(createShowNFAButton());
         //box.add(createUseCacheButton());
 
         //box.setPreferredSize(new Dimension(160, 0));

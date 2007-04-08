@@ -33,6 +33,7 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.Console;
 
 import javax.swing.*;
@@ -68,7 +69,7 @@ public class EditorConsole extends EditorTab implements Console {
         this.editor = editor;
 
         panel = new JPanel(new BorderLayout());
-        Box box = Box.createHorizontalBox();
+        Toolbar box = Toolbar.createHorizontalToolbar();
 
         JButton clear = new JButton("Clear All");
         clear.addActionListener(new ActionListener() {
@@ -76,7 +77,7 @@ public class EditorConsole extends EditorTab implements Console {
                 clear();
             }
         });
-        box.add(clear);
+        box.addElement(clear);
         box.add(Box.createHorizontalGlue());
 
         panel.add(createTextArea(), BorderLayout.CENTER);

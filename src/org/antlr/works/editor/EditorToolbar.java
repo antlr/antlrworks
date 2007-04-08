@@ -5,6 +5,7 @@ import edu.usfca.xj.foundation.notification.XJNotificationObserver;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
@@ -44,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorToolbar implements XJNotificationObserver {
 
-    public Box toolbar;
+    public Toolbar toolbar;
 
     public JButton debug;
     public JButton debugAgain;
@@ -94,21 +95,19 @@ public class EditorToolbar implements XJNotificationObserver {
     }
 
     public void createInterface() {
-        toolbar = Box.createHorizontalBox();
-        toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
-        toolbar.add(Box.createHorizontalStrut(5));
-        toolbar.add(sd = (JToggleButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Toggle Syntax diagram", true));
-        toolbar.add(coloring = (JToggleButton)createNewButton(IconManager.shared().getIconColoring(), "Toggle Syntax coloring", true));
-        toolbar.add(ideas = (JToggleButton)createNewButton(IconManager.shared().getIconIdea(), "Toggle Syntax ideas", true));
-        toolbar.add(Box.createHorizontalStrut(15));
-        toolbar.add(sort = (JToggleButton)createNewButton(IconManager.shared().getIconSort(), "Toggle Sort rules", true));
-        toolbar.add(find = (JButton)createNewButton(IconManager.shared().getIconFind(), "Find text", false));
-        toolbar.add(Box.createHorizontalStrut(15));
-        toolbar.add(backward = (JButton)createNewButton(IconManager.shared().getIconBackward(), "Back", false));
-        toolbar.add(forward = (JButton)createNewButton(IconManager.shared().getIconForward(), "Forward", false));
-        toolbar.add(Box.createHorizontalStrut(15));
-        toolbar.add(debug = (JButton)createNewButton(IconManager.shared().getIconDebug(), "Debug", false));
-        toolbar.add(debugAgain = (JButton)createNewButton(IconManager.shared().getIconDebugAgain(), "Debug Again", false));
+        toolbar = Toolbar.createHorizontalToolbar();
+        toolbar.addElement(sd = (JToggleButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Toggle Syntax diagram", true));
+        toolbar.addElement(coloring = (JToggleButton)createNewButton(IconManager.shared().getIconColoring(), "Toggle Syntax coloring", true));
+        toolbar.addElement(ideas = (JToggleButton)createNewButton(IconManager.shared().getIconIdea(), "Toggle Syntax ideas", true));
+        toolbar.addGroupSeparator();
+        toolbar.addElement(sort = (JToggleButton)createNewButton(IconManager.shared().getIconSort(), "Toggle Sort rules", true));
+        toolbar.addElement(find = (JButton)createNewButton(IconManager.shared().getIconFind(), "Find text", false));
+        toolbar.addGroupSeparator();
+        toolbar.addElement(backward = (JButton)createNewButton(IconManager.shared().getIconBackward(), "Back", false));
+        toolbar.addElement(forward = (JButton)createNewButton(IconManager.shared().getIconForward(), "Forward", false));
+        toolbar.addGroupSeparator();
+        toolbar.addElement(debug = (JButton)createNewButton(IconManager.shared().getIconDebug(), "Debug", false));
+        toolbar.addElement(debugAgain = (JButton)createNewButton(IconManager.shared().getIconDebugAgain(), "Debug Again", false));
 
         AWPrefs.getPreferences().bindToPreferences(sort, AWPrefs.PREF_TOOLBAR_SORT, false);
     }
