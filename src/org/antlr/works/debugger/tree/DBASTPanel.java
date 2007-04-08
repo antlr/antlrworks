@@ -3,6 +3,7 @@ package org.antlr.works.debugger.tree;
 import edu.usfca.xj.appkit.gview.GView;
 import edu.usfca.xj.appkit.swing.XJTable;
 import edu.usfca.xj.appkit.swing.XJTableDelegate;
+import edu.usfca.xj.appkit.swing.XJTableView;
 import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;
@@ -50,8 +51,8 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
 
     public Debugger debugger;
 
-    public XJTable rulesTable;
-    public XJTable rootsTable;
+    public XJTableView rulesTableView;
+    public XJTableView rootsTableView;
     public AWTreePanel treePanel;
 
     public DBASTModel model;
@@ -66,17 +67,21 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
         model = new DBASTModel();
         model.addListener(this);
 
-        rulesTable = new XJTable(new RulesTableModel());
-        rulesTable.setFocusable(true);
-        rulesTable.setDelegate(this);
-        rulesTable.setAllowEmptySelection(false);
-        rulesTable.setRememberSelection(true);
+        rulesTableView = new XJTableView();
+        rulesTableView.setFocusable(true);
+        rulesTableView.getTable().setModel(new RulesTableModel());
+        rulesTableView.getTable().setDelegate(this);
+        rulesTableView.getTable().setAllowEmptySelection(false);
+        rulesTableView.getTable().setRememberSelection(true);
+        rulesTableView.autoresizeColumns();
 
-        rootsTable = new XJTable(new RootsTableModel());
-        rootsTable.setFocusable(true);
-        rootsTable.setDelegate(this);
-        rootsTable.setAllowEmptySelection(false);
-        rootsTable.setRememberSelection(true);
+        rootsTableView = new XJTableView();
+        rootsTableView.getTable().setModel(new RootsTableModel());
+        rootsTableView.setFocusable(true);
+        rootsTableView.getTable().setDelegate(this);
+        rootsTableView.getTable().setAllowEmptySelection(false);
+        rootsTableView.getTable().setRememberSelection(true);
+        rootsTableView.autoresizeColumns();
 
         treePanel = new AWTreePanel(new DefaultTreeModel(null));
         treePanel.setRootVisible(true);
@@ -85,15 +90,8 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
         tablesSplitPane = createSplitPane();
         tableTreeSplitPane = createSplitPane();
 
-        JScrollPane rulesScrollPane = new JScrollPane(rulesTable);
-        rulesScrollPane.setWheelScrollingEnabled(true);
-        rulesTable.getParent().setBackground(Color.white);
-        tablesSplitPane.setLeftComponent(rulesScrollPane);
-
-        JScrollPane rootsScrollPane = new JScrollPane(rootsTable);
-        rootsScrollPane.setWheelScrollingEnabled(true);
-        rootsTable.getParent().setBackground(Color.white);
-        tablesSplitPane.setRightComponent(rootsScrollPane);
+        tablesSplitPane.setLeftComponent(rulesTableView);
+        tablesSplitPane.setRightComponent(rootsTableView);
 
         tableTreeSplitPane.setLeftComponent(tablesSplitPane);
         tableTreeSplitPane.setRightComponent(treePanel);
@@ -141,16 +139,16 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
     }
 
     public void rulesModelChanged() {
-        rulesTable.reload();
+        rulesTableView.getTable().reload();
     }
 
     public void rootsModelChanged() {
-        rootsTable.reload();
+        rootsTableView.getTable().reload();
         updateTreePanel();
     }
 
     public void updateTreePanel() {
-        int row = rootsTable.getSelectedRow();
+        int row = rootsTableView.getTable().getSelectedRow();
         if(row == -1)
             treePanel.setRoot(null);
         else
@@ -169,7 +167,7 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
             DBASTModel.ASTNode node = roots.get(r);
             DBTreeNode candidate = node.findNodeWithToken(token);
             if(candidate != null) {
-                rootsTable.setSelectedRow(r);
+                rootsTableView.getTable().setSelectedRow(r);
                 treePanel.selectNode(candidate);
                 break;
             }
@@ -177,15 +175,15 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
     }
 
     public void selectLastRule() {
-        rulesTable.selectLastRow();
+        rulesTableView.getTable().selectLastRow();
     }
 
     public void selectLastRootNode() {
-        rootsTable.selectLastRow();
+        rootsTableView.getTable().selectLastRow();
     }
 
     public DBASTModel.Rule getSelectedRule() {
-        int row = rulesTable.getSelectedRow();
+        int row = rulesTableView.getTable().getSelectedRow();
         if(row == -1)
             return null;
         else
@@ -201,9 +199,9 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
     }
 
     public void tableSelectionChanged(XJTable table, int selectedRow) {
-        if(table == rulesTable) {
+        if(table == rulesTableView.getTable()) {
             rootsModelChanged();
-        } else if(table == rootsTable) {
+        } else if(table == rootsTableView.getTable()) {
             updateTreePanel();
         }
     }

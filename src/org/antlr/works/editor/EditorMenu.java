@@ -44,6 +44,8 @@ import java.util.ResourceBundle;
 
 public class EditorMenu implements XJMenuItemDelegate {
 
+    public static final int MI_PRINT = 5;
+
     // Edit
     public static final int MI_TOGGLE_SYNTAX_COLORING = 6;
     public static final int MI_TOGGLE_SYNTAX_DIAGRAM = 7;
@@ -145,6 +147,9 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void customizeFileMenu(XJMenu menu) {
+        menu.insertItemAfter(new XJMenuItem(resourceBundle.getString("menu.item.print"), MI_PRINT, this), XJMainMenuBar.MI_SAVEAS);
+        menu.insertSeparatorAfter(XJMainMenuBar.MI_SAVEAS);
+
         XJMenu exportMenu = new XJMenu();
         exportMenu.setTitle(resourceBundle.getString("menu.title.exportEvents"));
         exportMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.asText"), MI_EXPORT_EVENT, this));
@@ -528,6 +533,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
+        handleMenuFile(item.getTag());
         handleMenuView(item.getTag());
         handleMenuFind(item.getTag());
         handleMenuGrammar(item);
@@ -538,6 +544,14 @@ public class EditorMenu implements XJMenuItemDelegate {
         handleMenuSCM(item.getTag());
         handleMenuPrivate(item.getTag());
         handleMenuExport(item.getTag());
+    }
+
+    public void handleMenuFile(int itemTag) {
+        switch(itemTag) {
+            case MI_PRINT:
+                editor.print();
+                break;
+        }
     }
 
     public void handleMenuView(int itemTag) {

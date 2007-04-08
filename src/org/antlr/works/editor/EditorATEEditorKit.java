@@ -52,7 +52,6 @@ public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory {
 
     public View create(Element elem) {
         return new EditorATERenderingView(elem, editor.getTextEditor(), editor.getDebugger());
-        //return new ATERenderingView(elem, editor.getTextEditor());
     }
 
 }

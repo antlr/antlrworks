@@ -52,6 +52,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.print.PrinterException;
 import java.io.File;
 import java.util.*;
 import java.util.List;
@@ -1310,6 +1311,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         data.put(KEY_INTERPRETER, interpreter.getPersistentData());
         data.put(KEY_DEBUGGER, debugger.getPersistentData());
         return data;
+    }
+
+    public void print() {
+        try {
+            textEditor.print();
+        } catch (PrinterException e) {
+            XJAlert.display(getWindowContainer(), "Print Error", "An error occurred while printing:\n"+e.toString());
+        }
     }
 
     /** This class is used to perform after parsing operations in another

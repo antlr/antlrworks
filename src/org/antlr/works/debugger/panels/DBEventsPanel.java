@@ -1,11 +1,11 @@
 package org.antlr.works.debugger.panels;
 
+import edu.usfca.xj.appkit.swing.XJTable;
+import edu.usfca.xj.appkit.swing.XJTableView;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 import org.antlr.works.swing.DetachablePanel;
-import org.antlr.works.swing.TableAlternateRenderer;
-import org.antlr.works.swing.TableResizer;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -52,7 +52,7 @@ public class DBEventsPanel extends DetachablePanel {
     public static final int INFO_COLUMN_MARK = 4;
     public static final int INFO_COLUMN_BACKTRACK = 5;
 
-    protected JTable infoTable;
+    protected XJTableView infoTableView;
 
     protected EventTableDataModel eventTableDataModel;
 
@@ -61,29 +61,22 @@ public class DBEventsPanel extends DetachablePanel {
 
         eventTableDataModel = new EventTableDataModel();
 
-        infoTable = new JTable();
-        infoTable.setFocusable(true);
-        infoTable.setDefaultRenderer(Object.class, new TableAlternateRenderer());
-        infoTable.setShowGrid(false);
-        infoTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        setInfoTableModel(eventTableDataModel);
+        infoTableView = new XJTableView();
+        infoTableView.setFocusable(true);
+        setInfoTableModel(infoTableView.getTable(), eventTableDataModel);
 
-        JScrollPane infoScrollPane = new JScrollPane(infoTable);
-        infoScrollPane.setWheelScrollingEnabled(true);
-        infoScrollPane.getViewport().setBackground(Color.white);
+        mainPanel.add(infoTableView, BorderLayout.CENTER);
 
-        mainPanel.add(infoScrollPane, BorderLayout.CENTER);
+        infoTableView.autoresizeColumns();
     }
 
-    public void setInfoTableModel(AbstractTableModel model) {
-        infoTable.setModel(model);
-
+    public void setInfoTableModel(XJTable table, AbstractTableModel model) {
+        table.setModel(model);
         selectLastInfoTableItem();
     }
 
     public void selectLastInfoTableItem() {
-        int count = eventTableDataModel.events.size();
-        infoTable.scrollRectToVisible(infoTable.getCellRect(count-1, 0, true));
+        infoTableView.scrollToLastRow();
     }
 
     public void clear() {
@@ -130,12 +123,12 @@ public class DBEventsPanel extends DetachablePanel {
         public void clear() {
             events.clear();
             fireTableDataChanged();
-            TableResizer.resizeTableColumnsToFitContent(infoTable, 0);
+            infoTableView.autoresizeColumns();
         }
 
         public void update() {
             fireTableDataChanged();
-            TableResizer.resizeTableColumnsToFitContent(infoTable, 0);
+            infoTableView.autoresizeColumns();
         }
 
         public int getRowCount() {

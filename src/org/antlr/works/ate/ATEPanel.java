@@ -26,6 +26,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.util.List;
 /*
 
@@ -415,6 +419,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         textPane.setCaretPosition(textPane.getCaretPosition());
     }
 
+    public void print() throws PrinterException {
+        new ATEPrintUtility().print();
+    }
+
     public void textPaneDidPaint(Graphics g) {
         if(underlyingManager != null)
             underlyingManager.paint(g);
@@ -442,7 +450,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         textPane.addMouseMotionListener(new TextPaneMouseMotionAdapter());
 
         smoothScrolling = new XJSmoothScrolling(textPane, this);
-        
+
         // Gutter
         gutter = new ATEGutter(this);
 
@@ -622,4 +630,70 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         }
     }
 
+    public class ATEPrintUtility implements Printable {
+
+        public ATEPrintUtility() {
+        }
+
+        public void print() throws PrinterException {
+            PrinterJob printJob = PrinterJob.getPrinterJob();
+            printJob.setPrintable(this);
+            if (printJob.printDialog()) {
+                printJob.print();
+            }
+        }
+
+        public int print(Graphics g, PageFormat pf, int pageIndex) {
+            Graphics2D g2 = (Graphics2D) g;
+
+            disableDoubleBuffering(textPane);
+
+            int lineHeight = textPane.getFontMetrics(textPane.getFont()).getHeight();
+            textPane.setWordWrap(true);
+
+            Dimension d = textPane.getSize(); //get size of document
+            double panelWidth = d.width; //width in pixels
+            double panelHeight = d.height; //height in pixels
+
+            double pageHeight = pf.getImageableHeight(); //height of printer page
+            double pageWidth = pf.getImageableWidth(); //width of printer page
+
+            textPane.setSize((int)pageWidth, (int)textPane.getPreferredSize().getHeight());
+
+            double scale = pageWidth / panelWidth;
+            int totalNumPages = (int) Math.ceil(scale * panelHeight / pageHeight);
+
+            //  make sure not print empty pages
+            if (pageIndex >= totalNumPages) {
+                enableDoubleBuffering(textPane);
+                //textPane.setWordWrap(false);
+                return NO_SUCH_PAGE;
+            } else {
+                //  shift Graphic to line up with beginning of print-imageable region
+                g2.translate(pf.getImageableX(), pf.getImageableY());
+
+                //  shift Graphic to line up with beginning of next page to print
+                g2.translate(0f, -pageIndex * pageHeight);
+
+                //  scale the page so the width fits...
+                g2.scale(scale, scale);
+
+                textPane.paint(g2); //repaint the page for printing
+
+                //textPane.setWordWrap(false);
+                enableDoubleBuffering(textPane);
+                return Printable.PAGE_EXISTS;
+            }
+        }
+
+        public void disableDoubleBuffering(Component c) {
+            RepaintManager currentManager = RepaintManager.currentManager(c);
+            currentManager.setDoubleBufferingEnabled(false);
+        }
+
+        public void enableDoubleBuffering(Component c) {
+            RepaintManager currentManager = RepaintManager.currentManager(c);
+            currentManager.setDoubleBufferingEnabled(true);
+        }
+    }
 }

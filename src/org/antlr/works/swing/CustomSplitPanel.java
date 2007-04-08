@@ -86,11 +86,31 @@ public class CustomSplitPanel extends JPanel {
         } else if(middle != null && right != null) {
             setDividerLocationToComponentWidth(rightSplitPane, getWidth(middle));
         }
-        revalidate();
+
+        /* This is really ugly but if I don't do the resize later on again, it happens that if the right divider is
+        moved and the middle panel hidden and then showed again, the left split pane's divider will be screwed up. Maybe
+        a bug in my code but don't have time to investigate more. If someone finds the reason, let me know.
+        */
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if(left != null && middle != null && right != null) {
+                    setDividerLocationToComponentWidth(rightSplitPane, getWidth(left)+getWidth(middle));
+                    setDividerLocationToComponentWidth(leftSplitPane, getWidth(left));
+                } else if(left != null && middle != null) {
+                    setDividerLocationToComponentWidth(rightSplitPane, getWidth(left));
+                } else if(left != null && right != null) {
+                    setDividerLocationToComponentWidth(rightSplitPane, getWidth(left));
+                } else if(middle != null && right != null) {
+                    setDividerLocationToComponentWidth(rightSplitPane, getWidth(middle));
+                }
+            }
+        });
+
     }
 
     public void setDividerLocationToComponentWidth(JSplitPane splitPane, int width) {
         splitPane.setDividerLocation(width);
+
     }
 
     public int getWidth(Component c) {
@@ -173,10 +193,9 @@ public class CustomSplitPanel extends JPanel {
         }
 
         if(left != null && right != null) {
-            rightSplitPane.setLeftComponent(null);
+            rightSplitPane.setLeftComponent(leftSplitPane);
             leftSplitPane.setLeftComponent(left);
             leftSplitPane.setRightComponent(c);
-            rightSplitPane.setLeftComponent(leftSplitPane);
         } else if(left != null) {
             remove(left);
             rightSplitPane.setLeftComponent(left);

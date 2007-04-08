@@ -219,6 +219,12 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         splitPanel.setComponentWidth(astPanel, width*PERCENT_WIDTH_MIDDLE);
 
         splitPanel.setComponents(inputPanel, parseTreePanel, stackPanel);
+
+       /* SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                splitPanel.resize();
+            }
+        });*/
     }
 
     public void setComponentVisible(Component c, boolean flag) {
