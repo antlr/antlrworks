@@ -4,6 +4,8 @@ import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 import org.antlr.works.swing.DetachablePanel;
+import org.antlr.works.swing.TableAlternateRenderer;
+import org.antlr.works.swing.TableResizer;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -61,25 +63,20 @@ public class DBEventsPanel extends DetachablePanel {
 
         infoTable = new JTable();
         infoTable.setFocusable(true);
+        infoTable.setDefaultRenderer(Object.class, new TableAlternateRenderer());
+        infoTable.setShowGrid(false);
+        infoTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setInfoTableModel(eventTableDataModel);
 
         JScrollPane infoScrollPane = new JScrollPane(infoTable);
         infoScrollPane.setWheelScrollingEnabled(true);
-        infoTable.getParent().setBackground(Color.white);
+        infoScrollPane.getViewport().setBackground(Color.white);
 
         mainPanel.add(infoScrollPane, BorderLayout.CENTER);
     }
 
     public void setInfoTableModel(AbstractTableModel model) {
         infoTable.setModel(model);
-
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setPreferredWidth(35);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_COUNT).setMaxWidth(60);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_EVENT).setMinWidth(100);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_SUBRULE).setMaxWidth(35);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_DECISION).setMaxWidth(35);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_MARK).setMaxWidth(35);
-        infoTable.getColumnModel().getColumn(INFO_COLUMN_BACKTRACK).setMaxWidth(35);
 
         selectLastInfoTableItem();
     }
@@ -122,7 +119,7 @@ public class DBEventsPanel extends DetachablePanel {
         return sb.toString();
     }
 
-    public static class EventTableDataModel extends AbstractTableModel {
+    public class EventTableDataModel extends AbstractTableModel {
 
         protected List<EventInfo> events = new ArrayList<EventInfo>();
 
@@ -133,10 +130,12 @@ public class DBEventsPanel extends DetachablePanel {
         public void clear() {
             events.clear();
             fireTableDataChanged();
+            TableResizer.resizeTableColumnsToFitContent(infoTable, 0);
         }
 
         public void update() {
             fireTableDataChanged();
+            TableResizer.resizeTableColumnsToFitContent(infoTable, 0);
         }
 
         public int getRowCount() {
@@ -151,10 +150,10 @@ public class DBEventsPanel extends DetachablePanel {
             switch(column) {
                 case INFO_COLUMN_COUNT: return "#";
                 case INFO_COLUMN_EVENT: return "Event";
-                case INFO_COLUMN_SUBRULE: return "SR";
-                case INFO_COLUMN_DECISION: return "DC";
-                case INFO_COLUMN_MARK: return "MK";
-                case INFO_COLUMN_BACKTRACK: return "BK";
+                case INFO_COLUMN_SUBRULE: return "Subrule";
+                case INFO_COLUMN_DECISION: return "Decision";
+                case INFO_COLUMN_MARK: return "Mark";
+                case INFO_COLUMN_BACKTRACK: return "Backtrack";
             }
             return super.getColumnName(column);
         }

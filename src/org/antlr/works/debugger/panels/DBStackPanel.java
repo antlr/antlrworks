@@ -2,6 +2,8 @@ package org.antlr.works.debugger.panels;
 
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.swing.DetachablePanel;
+import org.antlr.works.swing.TableAlternateRenderer;
+import org.antlr.works.swing.TableResizer;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -45,6 +47,7 @@ public class DBStackPanel extends DetachablePanel {
     public static final int INFO_COLUMN_RULE = 1;
 
     protected JTable infoTable;
+    private JScrollPane infoScrollPane;
 
     protected DBStackPanel.RuleTableDataModel ruleTableDataModel;
 
@@ -56,13 +59,18 @@ public class DBStackPanel extends DetachablePanel {
         ruleTableDataModel = new DBStackPanel.RuleTableDataModel();
 
         infoTable = new JTable();
+        infoTable.setDefaultRenderer(Object.class, new TableAlternateRenderer());
+        infoTable.setShowGrid(false);
+        infoTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setInfoTableModel(ruleTableDataModel);
 
-        JScrollPane infoScrollPane = new JScrollPane(infoTable);
+        infoScrollPane = new JScrollPane(infoTable);
         infoScrollPane.setWheelScrollingEnabled(true);
-        infoTable.getParent().setBackground(Color.white);
+        infoScrollPane.getViewport().setBackground(Color.white);
 
         mainPanel.add(infoScrollPane, BorderLayout.CENTER);
+
+        resizeTable();        
     }
 
     public void setInfoTableModel(AbstractTableModel model) {
@@ -101,6 +109,10 @@ public class DBStackPanel extends DetachablePanel {
         rules.pop();
     }
 
+    private void resizeTable() {
+        TableResizer.resizeColumnsToFitContent(infoTable, infoScrollPane, 20);
+    }
+
     public class RuleTableDataModel extends AbstractTableModel {
 
         protected java.util.List rules = new ArrayList();
@@ -116,10 +128,12 @@ public class DBStackPanel extends DetachablePanel {
         public void clear() {
             rules.clear();
             fireTableDataChanged();
+            resizeTable();
         }
 
         public void update() {
             fireTableDataChanged();
+            resizeTable();
         }
 
         public int getRowCount() {
