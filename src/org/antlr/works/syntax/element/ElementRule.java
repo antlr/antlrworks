@@ -173,31 +173,30 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         List<ATEToken> alt = null;
         boolean findColon = true;
         int level = 0;
-        // todo check
-/*        for(Iterator iter = getTokens().iterator(); iter.hasNext(); ) {
-            ATEToken token = (ATEToken)iter.next();
-            if(findColon) {
-                if(token.getAttribute().equals(":")) {
+        for (ATEToken token : getTokens()) {
+            if (findColon) {
+                if (token.getAttribute().equals(":")) {
                     findColon = false;
-                    alt = new ArrayList();
+                    alt = new ArrayList<ATEToken>();
                 }
             } else {
-                if(token.getAttribute().equals("("))
+                if (token.getAttribute().equals("("))
                     level++;
-                else if(token.getAttribute().equals(")"))
+                else if (token.getAttribute().equals(")"))
                     level--;
-                else if(token.type != GrammarSyntaxLexer.TOKEN_BLOCK && level == 0) {
-                    if(token.getAttribute().equals("|")) {
+                else if (level == 0) { // removed token.type != GrammarSyntaxLexer.TOKEN_BLOCK &&
+                    if (token.getAttribute().equals("|")) {
                         alts.add(alt);
-                        alt = new ArrayList();
+                        alt = new ArrayList<ATEToken>();
                         continue;
                     }
                 }
                 alt.add(token);
             }
-        }*/
-        if(alt != null && !alt.isEmpty())
+        }
+        if(alt != null && !alt.isEmpty()) {
             alts.add(alt);
+        }
         return alts;
     }
 

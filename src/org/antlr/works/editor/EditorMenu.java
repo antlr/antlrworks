@@ -304,14 +304,16 @@ public class EditorMenu implements XJMenuItemDelegate {
         rules.addSeparator();
         rules.addItem(ignoreRuleMenuItem = createMenuItem(MI_IGNORE_RULE));
 
+        /* Currently not supported
         XJMenu folding = new XJMenu();
         folding.setTitle(resourceBundle.getString("menu.title.folding"));
         folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.toggleRule"), KeyEvent.VK_PERIOD, MI_EXPAND_COLLAPSE_RULE, this));
         folding.addItem(new XJMenuItem(resourceBundle.getString("menu.item.toggleAction"), KeyEvent.VK_MINUS, MI_EXPAND_COLLAPSE_ACTION, this));
 
-        menu.addSeparator();
+        menu.addSeparator();*/
+
         menu.addItem(rules);
-        menu.addItem(folding);
+        //menu.addItem(folding);
         menu.addSeparator();
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.checkGrammar"), KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
 

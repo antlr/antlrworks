@@ -56,7 +56,7 @@ public class VisualDrawing extends ATEThread {
     protected ElementRule threadRule;
     protected ElementRule threadLastProcessedRule;
 
-    protected Map cacheGraphs = new HashMap();
+    protected Map<ElementRule,List> cacheGraphs = new HashMap<ElementRule, List>();
 
     public VisualDrawing(Visual visual) {
         this.visual = visual;
@@ -86,7 +86,7 @@ public class VisualDrawing extends ATEThread {
      * Tries to refresh the current graph in cache. If the graphs are not in cache, return false.
      */
     public synchronized boolean refresh() {
-        List graphs = (List)cacheGraphs.get(threadLastProcessedRule);
+        List graphs = cacheGraphs.get(threadLastProcessedRule);
         if(graphs == null || graphs.isEmpty()) {
             return false;
         } else {
@@ -167,7 +167,7 @@ public class VisualDrawing extends ATEThread {
     }
 
     protected synchronized void createGraphsForRule(ElementRule rule) throws Exception {
-        List graphs = (List)cacheGraphs.get(rule);
+        List graphs = cacheGraphs.get(rule);
         if(graphs == null) {
             factory.setOptimize(!AWPrefs.getDebugDontOptimizeNFA());
             factory.setConsole(visual.getConsole());
@@ -186,7 +186,7 @@ public class VisualDrawing extends ATEThread {
 
         if(threadShouldProcess()) {
             threadPrepareProcess();
-            
+
             // Process any text
             threadProcessText();
 

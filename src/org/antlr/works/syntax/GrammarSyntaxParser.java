@@ -726,6 +726,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      * @return True if the reference is a label reference
      */
     private boolean addReference(ATEToken ref, boolean addOnlyIfKnownLabel) {
+        refsToRules.put(ref, currentRule);        
         if(labels.lookup(ref.getAttribute())) {
             // Reference is to a label, not a lexer/parser rule
             ref.type = GrammarSyntaxLexer.TOKEN_LABEL;
@@ -818,7 +819,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 // skip these references.
 
                 unresolvedReferences.add(ref);
-                refsToRules.put(ref, currentRule);
             }
         }
     }
