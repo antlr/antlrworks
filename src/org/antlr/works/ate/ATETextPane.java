@@ -115,6 +115,21 @@ public class ATETextPane extends JTextPane
         textEditor.textPaneDidPaint(g);
     }
 
+    /**
+     * Paints the text area for printing. Make sure the caret and the current line background is not painted.
+     *
+     * @param g The Graphics context
+     */
+    public void printPaint(Graphics g) {
+        boolean flag = highlightCursorLine();
+        setHighlightCursorLine(false);
+        boolean caretVisible = getCaret().isVisible();
+        getCaret().setVisible(false);
+        paint(g);
+        getCaret().setVisible(caretVisible);
+        setHighlightCursorLine(flag);
+    }
+
     protected void processKeyEvent(KeyEvent keyEvent) {
         // If the document is not writable, emits a beep
         // if the key event is not an action key

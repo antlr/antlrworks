@@ -1,11 +1,15 @@
 
 Version 1.0b10 -
 
+- requires Java 1.5
 - syntax coloring parser has been rewritten
 - can now display the line numbers in the grammar editor
+- simple print capability
 - ability to jump to tokens defined in the options block
 - ability to debug again (after having launched the debugger once in the current session)
 - reverted file extension to *.g only
+- minor UI and table enhancement
+
 - fixed a bug when double-clicking a word: selection would be incorrect
 - fixed a bug when trying to generate a parser/lexer from a tree grammar (would loop forever)
 

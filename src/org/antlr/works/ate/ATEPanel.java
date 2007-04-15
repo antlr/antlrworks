@@ -22,6 +22,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.StyledEditorKit;
+import javax.swing.text.View;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -644,43 +645,44 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         }
 
         public int print(Graphics g, PageFormat pf, int pageIndex) {
-            Graphics2D g2 = (Graphics2D) g;
+            double pageWidth = pf.getImageableWidth();
+            double pageHeight = pf.getImageableHeight();
 
-            disableDoubleBuffering(textPane);
+            double preferredLineWidth = textPane.getUI().getRootView(textPane).getView(0).getPreferredSpan(View.X_AXIS);
+            double scale = pageWidth / preferredLineWidth;
+            double lineHeight = textPane.getFontMetrics(textPane.getFont()).getHeight() * scale;
 
-            int lineHeight = textPane.getFontMetrics(textPane.getFont()).getHeight();
-            textPane.setWordWrap(true);
+            double numberOfLinesPerPage = pageHeight / lineHeight;
+            double numberOfLines = textPane.getDocument().getDefaultRootElement().getElementCount();
 
-            Dimension d = textPane.getSize(); //get size of document
-            double panelWidth = d.width; //width in pixels
-            double panelHeight = d.height; //height in pixels
+            int totalNumPages = (int)Math.ceil(numberOfLines / numberOfLinesPerPage);
 
-            double pageHeight = pf.getImageableHeight(); //height of printer page
-            double pageWidth = pf.getImageableWidth(); //width of printer page
-
-            textPane.setSize((int)pageWidth, (int)textPane.getPreferredSize().getHeight());
-
-            double scale = pageWidth / panelWidth;
-            int totalNumPages = (int) Math.ceil(scale * panelHeight / pageHeight);
-
-            //  make sure not print empty pages
             if (pageIndex >= totalNumPages) {
-                enableDoubleBuffering(textPane);
-                //textPane.setWordWrap(false);
                 return NO_SUCH_PAGE;
             } else {
-                //  shift Graphic to line up with beginning of print-imageable region
+                Graphics2D g2 = (Graphics2D) g;
+                disableDoubleBuffering(textPane);
+
+                // Offset to the beginning of the printable region
                 g2.translate(pf.getImageableX(), pf.getImageableY());
 
-                //  shift Graphic to line up with beginning of next page to print
-                g2.translate(0f, -pageIndex * pageHeight);
+                // Offset to the beginning of the page to render
+                double offsety = pageIndex * (int)numberOfLinesPerPage * lineHeight;
+                g2.translate(0f, -offsety);
 
-                //  scale the page so the width fits...
+                // Set the clip to draw only a integer number of lines (and not a fraction of it)
+                g2.setClip(null);
+                g2.clipRect(0, (int)(offsety), (int)Math.floor(pageWidth), (int)Math.floor((int)numberOfLinesPerPage*lineHeight));
+
+                // Apply the scaling to the graphics
                 g2.scale(scale, scale);
 
-                textPane.paint(g2); //repaint the page for printing
+                textPane.printPaint(g2);
 
-                //textPane.setWordWrap(false);
+                // debug frame
+                //g2.setColor(Color.red);
+                //g2.drawRect(0, (int)(offsety/scale), (int)Math.floor(pageWidth/scale), (int)Math.floor((int)numberOfLinesPerPage*lineHeight/scale));
+
                 enableDoubleBuffering(textPane);
                 return Printable.PAGE_EXISTS;
             }

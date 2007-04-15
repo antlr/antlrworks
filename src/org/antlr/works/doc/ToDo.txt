@@ -1,7 +1,15 @@
 
 * Prio 1
 
-- rewrite: check all "todo check"
+- finish finally/exception syntax
+
+- button to autofit any syntax diagram/other to the size of visible area
+- prefs to display output dir dialog before generating grammar
+- color prefs for tree nodes
+
+- is GrammarSyntax still used for left recursion -> check and UT
+- make a little tutorial with calc_1.g
+- be able to read file for debugger input instead of text in dialog (useful for long input)
 
 - unit tests:
   -> rule skipped for interpreter (with HIDDEN or skip())
@@ -11,18 +19,6 @@
   -> rename internal tokens identified inside blocks with $
   -> double-quoted string in ST, for example: write_to("<id>",<id>)
   -> check that no syntax error is reported with rewrite (and reported when it is a real problem)
-
-- is GrammarSyntax still used for left recursion -> check and UT
-- review syntax color prefs to ensure it's up-to-date
-
-- prefs: backup file
-- button to autofit any syntax diagram/other to the size of visible area
-- prefs to display output dir dialog before generating grammar
-- config file per grammar file for various parameters (i.e. output path?)
-- color prefs for tree nodes
-
-- make a little tutorial with calc_1.g
-- be able to read file for debugger input instead of text in dialog (useful for long input)
 
 * Prio 2
 

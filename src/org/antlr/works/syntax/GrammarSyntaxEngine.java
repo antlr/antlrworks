@@ -49,8 +49,6 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
     public static final Color COLOR_PARSER = new Color(0.42f, 0, 0.42f);
     public static final Color COLOR_LEXER = new Color(0, 0, 0.5f);
-    public static final Color COLOR_ACTION_REF = new Color(1.0f, 0.0f, 0.0f);
-    public static final Color COLOR_BLOCK_LABEL = new Color(1.0f, 0.0f, 0.0f);
 
     protected List<ElementRule> rules;
     protected List<ElementGroup> groups;
@@ -131,6 +129,10 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
             case GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT:
             case GrammarSyntaxLexer.TOKEN_BLOCK_LABEL:
                 attr = blockLabelAttr;
+                break;
+
+            case GrammarSyntaxLexer.TOKEN_INTERNAL_REF:
+                attr = actionRefAttr;
                 break;
         }
         return attr;

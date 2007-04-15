@@ -113,7 +113,7 @@ public class AWPrefs {
         addSyntax(PREF_SYNTAX_PARSER, new Color(0.42f, 0, 0.42f), true, false);
         addSyntax(PREF_SYNTAX_LEXER, new Color(0, 0, 0.5f), true, false);
         addSyntax(PREF_SYNTAX_LABEL, Color.black, false, true);
-        addSyntax(PREF_SYNTAX_REFS, new Color(102, 102, 255), true, false);
+        addSyntax(PREF_SYNTAX_REFS, new Color(0, 153, 153), true, false);
         addSyntax(PREF_SYNTAX_COMMENT, Color.lightGray, false, true);
         addSyntax(PREF_SYNTAX_STRING, new Color(0, 0.5f, 0), true, false);
         addSyntax(PREF_SYNTAX_KEYWORD, new Color(0, 0, 0.5f), true, false);

@@ -45,6 +45,7 @@ public class GrammarSyntaxLexer extends ATESyntaxLexer {
     public static final int TOKEN_DECL = 105;
     public static final int TOKEN_OPEN_DOUBLE_ANGLE = 106;
     public static final int TOKEN_CLOSE_DOUBLE_ANGLE = 107;
+    public static final int TOKEN_INTERNAL_REF = 108; // i.e. { ... $type ... }
 
     @Override
     protected ATEToken customMatch() {

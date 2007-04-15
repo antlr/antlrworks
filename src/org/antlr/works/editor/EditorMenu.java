@@ -147,7 +147,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void customizeFileMenu(XJMenu menu) {
-        menu.insertItemAfter(new XJMenuItem(resourceBundle.getString("menu.item.print"), MI_PRINT, this), XJMainMenuBar.MI_SAVEAS);
+        menu.insertItemAfter(new XJMenuItem(resourceBundle.getString("menu.item.print"), KeyEvent.VK_P, MI_PRINT, this), XJMainMenuBar.MI_SAVEAS);
         menu.insertSeparatorAfter(XJMainMenuBar.MI_SAVEAS);
 
         XJMenu exportMenu = new XJMenu();

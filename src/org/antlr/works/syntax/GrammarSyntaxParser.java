@@ -805,6 +805,8 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
     private void matchInternalRefInBalancedToken(boolean matchInternalRef) {
         if(matchInternalRef && isChar(0, "$") && isID(1)) {
+            T(0).type = GrammarSyntaxLexer.TOKEN_INTERNAL_REF;
+
             // Look for internal references, that is any ID preceeded by a $
             ATEToken ref = T(1);
             if(!addReference(ref, true)) {
