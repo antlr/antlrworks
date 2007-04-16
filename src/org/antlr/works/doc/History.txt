@@ -1,17 +1,29 @@
 
-Version 1.0b10 -
+Version 1.0b10 - 04/15/07
 
 - requires Java 1.5
-- syntax coloring parser has been rewritten
+- new Online Help (in progress)
 - can now display the line numbers in the grammar editor
 - simple print capability
-- ability to jump to tokens defined in the options block
 - ability to debug again (after having launched the debugger once in the current session)
+- syntax coloring parser has been rewritten
+- ability to jump to tokens defined in the options block
 - reverted file extension to *.g only
+- Mac OS X document icon (thanks Abe)
+- save the last used path in the open/save dialogs
 - minor UI and table enhancement
-
 - fixed a bug when double-clicking a word: selection would be incorrect
 - fixed a bug when trying to generate a parser/lexer from a tree grammar (would loop forever)
+
+Bug fixes:
+[AW-1] - Rename fails to rename reference inside rewrite rule
+[AW-5] - Tree highlight in Windows is too dark
+[AW-6] - Incorrect syntax error with double-quoted string inside ST function
+[AW-7] - Invalid syntax error for double-quoted string in ST
+[AW-9] - Null pointer exception when displaying the DFA for the decision in rule a
+[AW-19] - Make the personal info dialog optional
+[AW-22] - AST node not found in specific situation
+[AW-23] - Debugger panels are incorrectly resized when a split pane divider is moved
 
 Version 1.0b9 - 02/20/07
 

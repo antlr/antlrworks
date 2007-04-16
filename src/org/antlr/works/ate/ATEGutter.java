@@ -260,6 +260,7 @@ public class ATEGutter extends JComponent {
     private void paintLineNumbers(Graphics2D g, Rectangle clip) {
         g.setColor(Color.black);
         g.setFont(LINE_NUMBER_FONT);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
 
         int lineCount = textEditor.getLines().size();
         int lineHeight = textEditor.textPane.getFontMetrics(textEditor.textPane.getFont()).getHeight();

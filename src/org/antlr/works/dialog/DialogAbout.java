@@ -80,6 +80,7 @@ public class DialogAbout extends XJPanel {
         addAcknowledge("B-spline algorithm is (c) Leen Ammeraal <http://home.wxs.nl/~ammeraal/grjava.html>");
         addAcknowledge("BrowserLauncher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>");
         addAcknowledge("Application icon is (c) Matthew McClintock <matthew@mc.clintock.com>");
+        addAcknowledge("Mac OS X document icon was created by Abe <abe149@gmail.com>");
 
         setResizable(false);
         setSize(800, 430);

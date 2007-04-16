@@ -1,8 +1,8 @@
 ANTLRWorks
-Version 1.0b9
-February 20, 2007
+Version 1.0b10
+April 15, 2007
 
-(c) 2005-2006 Jean Bovet & Terence Parr
+(c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco
 
 * INTRODUCTION *
@@ -10,12 +10,11 @@ University of San Francisco
 Welcome to ANTLRWorks!  ANTLRWorks is a simple but efficient IDE for
 ANTLR 3 grammars.  ANTLRWorks allows users to edit, visualize,
 interpret and debug any ANTLR 3 grammar through an easy-to-use
-graphical user interface.  This is an early-access (no source) release
-and so you should not expect ANTLRWorks to work at this point.
+graphical user interface.
 
-The User's Guide is available at
+An Online Help is available at
 
-	http://www.antlr.org/works/antlrworks.pdf
+	http://www.antlr.org/works/help/index.html
 
 More information is available at
 
@@ -73,60 +72,30 @@ using "java org.antlr.works.IDE".
 
 * HISTORY *
 
-02/20/07 - Version 1.0b9
+Version 1.0b10 - 04/15/07
 
-- removed message to console when trying to create the syntax diagram
-- improved ability to cancel the grammar checking operation
-- can open now files with extension g, gl, gp and gtp.
-- fixed a bug where inline template where incorrectly flagged as "syntax error"
-- fixed a bug introduced in b8 that prevented syntax diagram from being displayed when moving the caret in the text pane
-- fixed a bug where error reporting was not working properly if generating a grammar after checking it
+- requires Java 1.5
+- can now display the line numbers in the grammar editor
+- simple print capability
+- ability to debug again (after having launched the debugger once in the current session)
+- syntax coloring parser has been rewritten
+- ability to jump to tokens defined in the options block
+- reverted file extension to *.g only
+- Mac OS X document icon (thanks Abe)
+- save the last used path in the open/save dialogs
+- minor UI and table enhancement
+- fixed a bug when double-clicking a word: selection would be incorrect
+- fixed a bug when trying to generate a parser/lexer from a tree grammar (would loop forever)
 
-12/04/06 - Version 1.0b8
-
-- fixed a bug where package name with dot would fail to be correctly parsed
-- fixed a bug where creating a new document would fail
-- fixed a bug where checking the grammar would make the current syntax diagram go away
-- fixed a bug where checking twice a grammar containing one or more errors would fail to report the errors the second time
-
-12/03/06 - Version 1.0b7
-
-- handles now the "package" statement found in the @header block (both parser and lexer)
-- new idea to convert invalid grammar name
-- prefs: auto-indent on colon in rule can be disabled now
-- interpreter now correctly identify rules to ignore when using skip() in action
-- display the read/write state of each grammar document (disable editing if grammar is read-only)
-
-- fixed the default size of the preferences window that was too small
-- fixed various end of line problem on Windows causing syntax coloring and debugger token highlighting to fail
-- fixed a bug where the AST/Parse tree contextual menu would not work when the focus was not in the panel
-- fixed a bug where generating code for a read-only grammar could result in an infinite loop
-- fixed a bug where the window size/position would not be recorded when AW is closed
-- fixed a bug where an editor thread would not be stopped when a document was closed
-- fixed a bug where the end of line pop-up menu in the debugger input dialog would be populated twice
-- fixed a bug in the interpreter where the "guess" button would not work properly
-- fixed a bug in the debugger where the red cursor would not be displayed on Java 1.4
-
-11/18/06 - Version 1.0b6
-
-- added line endings preferences in debugger input text dialog and interpreter panel
-- read now the token vocab file from the output path (in addition to the default grammar location)
-- output path is now specified in the preferences
-- alert after checking grammar
-- added shift-delete to behave like delete when typing with the shift key pressed
-
-- fixed a bug when storing strings greated than 8KB (it is now truncated and an alert is displayed)
-- fixed a bug that prevented some DFA diagram from being completely displayed (scrollable zone too small)
-- fixed a bug in the syntax coloring parser when a multi-line comment where located at the end of file
-- fixed a bug where some menu items were not disabled in debug mode
-- fixed a bug where AST node where not correctly added when a node became parent (nil node)
-- fixed a bug where errors in the grammar where not reported when checking or generating the grammar
-
-10/22/06 - Version 1.0b5
-
-- allow traversal of bundle on Mac OS X when choosing files
-- fixed bug in syntax coloring with escape character
-- plugin: now clear the read-only status
+Bug fixes:
+[AW-1] - Rename fails to rename reference inside rewrite rule
+[AW-5] - Tree highlight in Windows is too dark
+[AW-6] - Incorrect syntax error with double-quoted string inside ST function
+[AW-7] - Invalid syntax error for double-quoted string in ST
+[AW-9] - Null pointer exception when displaying the DFA for the decision in rule a
+[AW-19] - Make the personal info dialog optional
+[AW-22] - AST node not found in specific situation
+[AW-23] - Debugger panels are incorrectly resized when a split pane divider is moved
 
 
 * WARNING *

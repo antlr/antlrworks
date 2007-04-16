@@ -356,7 +356,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         try {
             BrowserLauncher.openURL(url);
         } catch (IOException e) {
-            XJAlert.display(parent, "Cannot access the online help file", "Browse "+url+" to download the PDF manual.");
+            XJAlert.display(parent, "Cannot access the online help", "An error occurred when accessing the online help:\n"+e.toString()+"\n\nBrowse the online help at "+url+".");
         }
     }
 
