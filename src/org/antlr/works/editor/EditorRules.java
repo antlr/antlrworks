@@ -136,7 +136,8 @@ public class EditorRules implements XJTreeDelegate {
         editor.rulesDidChange();
     }
 
-    /** This method iterates over all rules and all blocks inside each rule to
+    /**
+     * This method iterates over all rules and all blocks inside each rule to
      * find a sequence of token equals to "$channel=HIDDEN" or "skip()".
      */
 
@@ -145,6 +146,12 @@ public class EditorRules implements XJTreeDelegate {
         if(rules == null || rules.isEmpty())
             return;
 
+        findTokensToIgnore(rules);
+
+        rulesTree.repaint();
+    }
+
+    public static void findTokensToIgnore(List<ElementRule> rules) {
         for (ElementRule rule : rules) {
             List<ElementAction> actions = rule.getActions();
             if (actions == null || actions.isEmpty())
@@ -153,15 +160,13 @@ public class EditorRules implements XJTreeDelegate {
             rule.ignored = false;
 
             for (ElementAction action : actions) {
-
-                List<ATEToken> tokens = editor.getTokens();
-                int start = tokens.indexOf(action.start);
-                int end = tokens.indexOf(action.end);
-
-                tokens = tokens.subList(start, end);
+                List<ATEToken> tokens = action.getTokens();
                 for (int t = 0; t < tokens.size(); t++) {
                     ATEToken token = tokens.get(t);
-                    if (token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("channel") && t + 3 < tokens.size())
+                    /* the 'channel' token can be either an ID or a reference if a rule in the grammar has the name
+                   'channel' */
+                    if ((token.type == ATESyntaxLexer.TOKEN_ID || token.type == GrammarSyntaxLexer.TOKEN_REFERENCE)
+                            && token.getAttribute().equals("channel") && t + 3 < tokens.size())
                     {
                         ATEToken t1 = tokens.get(t + 1);
                         ATEToken t2 = tokens.get(t + 2);
@@ -184,8 +189,6 @@ public class EditorRules implements XJTreeDelegate {
                 }
             }
         }
-
-        rulesTree.repaint();
     }
 
     public boolean getFirstSelectedRuleIgnoredFlag() {
@@ -233,7 +236,7 @@ public class EditorRules implements XJTreeDelegate {
         RuleTreeUserObject n = (RuleTreeUserObject)node.getUserObject();
         if(n.group != null)
             return n.group;
-       else
+        else
             return null;
     }
 
@@ -287,7 +290,7 @@ public class EditorRules implements XJTreeDelegate {
     public List<ElementRule> getSortedRules() {
         return getSortedRules(getRules());
     }
-    
+
     public List<ElementRule> getSortedRules(List<ElementRule> rules) {
         if(rules == null)
             return null;
@@ -326,7 +329,7 @@ public class EditorRules implements XJTreeDelegate {
         if(rules != null && !rules.isEmpty())
             return rules.get(rules.size()-1);
         else
-        return null;
+            return null;
     }
 
     public ElementRule getLastParserRule() {
@@ -487,21 +490,19 @@ public class EditorRules implements XJTreeDelegate {
             parentStack.add(rulesTreeRootNode);
 
             int ruleIndex = 0;
-            for(int index=0; index<groups.size(); index++) {
-                ElementGroup group = groups.get(index);
-
+            for (ElementGroup group : groups) {
                 DefaultMutableTreeNode parentNode = parentStack.peek();
-                if(group.ruleIndex >= 0) {
+                if (group.ruleIndex >= 0) {
                     buildTree(parentNode, rules, ruleIndex, group.ruleIndex);
-                    ruleIndex = group.ruleIndex+1;
+                    ruleIndex = group.ruleIndex + 1;
                 }
 
-                if(group.openGroup) {
+                if (group.openGroup) {
                     DefaultMutableTreeNode node = new DefaultMutableTreeNode(new RuleTreeUserObject(group));
                     parentNode.add(node);
                     parentStack.push(node);
                 } else {
-                    if(parentStack.size()>1)
+                    if (parentStack.size() > 1)
                         parentStack.pop();
                 }
             }
@@ -513,7 +514,7 @@ public class EditorRules implements XJTreeDelegate {
         }
 
         rulesTreeModel.reload();
-        
+
         restoreSelectedTreeItem();
         restoreExpandedNodes();
     }
@@ -620,7 +621,7 @@ public class EditorRules implements XJTreeDelegate {
     public boolean moveRule(ElementRule sourceRule, ElementRule targetRule, boolean dropAbove) {
         if(sourceRule == null || targetRule == null)
             return false;
-        
+
         String sourceRuleText = editor.getText().substring(sourceRule.getStartIndex(), sourceRule.getEndIndex()+1);
 
         try {
@@ -631,7 +632,7 @@ public class EditorRules implements XJTreeDelegate {
 
             // should move at the line after the rule (a comment can be located
             // after the end of the rule but still on the same line)
-            
+
             // Remove one more character to remove the end of line of the rule
             int removeLength = sourceRule.getLength()+1;
             if(removeStartIndex+removeLength > doc.getLength())
@@ -705,18 +706,18 @@ public class EditorRules implements XJTreeDelegate {
     public static class RulesTableRenderer extends DefaultTreeCellRenderer {
 
         public Component getTreeCellRendererComponent(
-                            JTree tree,
-                            Object value,
-                            boolean sel,
-                            boolean expanded,
-                            boolean leaf,
-                            int row,
-                            boolean hasFocus)
+                JTree tree,
+                Object value,
+                boolean sel,
+                boolean expanded,
+                boolean leaf,
+                int row,
+                boolean hasFocus)
         {
             Component r = super.getTreeCellRendererComponent(
-                            tree, value, sel,
-                            expanded, leaf, row,
-                            hasFocus);
+                    tree, value, sel,
+                    expanded, leaf, row,
+                    hasFocus);
 
             // FIX AW-5
             if(XJSystem.isWindows()) {
@@ -732,7 +733,7 @@ public class EditorRules implements XJTreeDelegate {
                 if(n.rule.lexer)
                     setIcon(IconManager.shared().getIconLexer());
                 else
-                    setIcon(IconManager.shared().getIconParser());                
+                    setIcon(IconManager.shared().getIconParser());
             }
 
             setFont(getFont().deriveFont(Font.PLAIN));
@@ -746,7 +747,7 @@ public class EditorRules implements XJTreeDelegate {
                 if(n.rule.ignored)
                     setFont(getFont().deriveFont(Font.ITALIC));
             }
-            
+
             return r;
         }
     }

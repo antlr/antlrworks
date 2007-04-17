@@ -3,6 +3,10 @@ package org.antlr.works.syntax.element;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.EditorPersistentObject;
+import org.antlr.works.syntax.GrammarSyntaxParser;
+
+import java.util.ArrayList;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -41,8 +45,10 @@ public class ElementAction extends ElementScopable implements EditorPersistentOb
     public ATEToken end;
     public int actionNum;
     private boolean expanded = true;
+    private GrammarSyntaxParser parser;
 
-    public ElementAction(ElementRule rule, ATEToken start) {
+    public ElementAction(GrammarSyntaxParser parser, ElementRule rule, ATEToken start) {
+        this.parser = parser;
         this.rule = rule;
         this.start = start;
     }
@@ -59,6 +65,14 @@ public class ElementAction extends ElementScopable implements EditorPersistentOb
         } else {
             return false;
         }
+    }
+
+    public List<ATEToken> getTokens() {
+        List<ATEToken> t = new ArrayList<ATEToken>();
+        for(int index=start.index; index<end.index; index++) {
+            t.add(parser.getTokens().get(index));
+        }
+        return t;
     }
 
     public int getUniqueIdentifier() {

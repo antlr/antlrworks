@@ -4,12 +4,14 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.EditorInspector;
+import org.antlr.works.editor.EditorRules;
 import org.antlr.works.syntax.GrammarSyntax;
 import org.antlr.works.syntax.GrammarSyntaxDelegate;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.syntax.element.ElementBlock;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementReference;
+import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.test.AbstractTest;
 import org.antlr.works.test.TestConstants;
 
@@ -61,6 +63,16 @@ public class TestParser extends AbstractTest implements GrammarSyntaxDelegate {
     public void testEmptyRewriteSyntax() throws Exception {
         parseFile(TestConstants.PREFIX+"empty_rewrite.g");
         assertInspector(0);
+    }
+
+    public void testIgnoreRules() throws Exception {
+        parseFile(TestConstants.PREFIX+"ignore_rules.g");
+        EditorRules.findTokensToIgnore(getParser().rules);
+        int ignored = 0;
+        for(ElementRule r : getParser().rules) {
+            if(r.ignored) ignored++;
+        }
+        assertEquals("ignored rules", 3, ignored);
     }
 
     public void testGrammarType() throws Exception {

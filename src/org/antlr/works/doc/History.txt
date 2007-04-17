@@ -1,4 +1,7 @@
 
+Version 1.0b11 - 
+
+
 Version 1.0b10 - 04/15/07
 
 - requires Java 1.5

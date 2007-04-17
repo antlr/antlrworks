@@ -463,7 +463,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         // Match an action
         ATEToken t0 = T(0);
-        ElementAction action = new ElementAction(currentRule, t0);
+        ElementAction action = new ElementAction(this, currentRule, t0);
         if(matchBalancedToken(ATESyntaxLexer.TOKEN_LCURLY, ATESyntaxLexer.TOKEN_RCURLY, action, true)) {
             t0.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
             T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
