@@ -40,6 +40,8 @@ import org.antlr.works.grammar.CheckGrammar;
 import org.antlr.works.grammar.CheckGrammarDelegate;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.syntax.element.ElementGrammarName;
+import org.antlr.works.syntax.element.ElementRule;
 
 public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, CheckGrammarDelegate {
 
@@ -47,7 +49,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     protected CheckGrammar checkGrammar;
 
     protected String actionShowCodeRule;
-    protected boolean actionShowCodeLexer;
+    protected int actionShowCodeType;
     protected boolean actionShowCodeAfterGeneration = false;
 
     public MenuGenerate(CEditorGrammar editor) {
@@ -95,53 +97,59 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
         return language != null && language.equals("Java");
     }
 
-    public void showGeneratedCode(boolean lexer) {
-        StatisticsAW.shared().recordEvent(lexer?StatisticsAW.EVENT_SHOW_LEXER_GENERATED_CODE:StatisticsAW.EVENT_SHOW_PARSER_GENERATED_CODE);
+    public void showGeneratedCode(int type) {
+        StatisticsAW.shared().recordEvent(type==ElementGrammarName.LEXER?StatisticsAW.EVENT_SHOW_LEXER_GENERATED_CODE:StatisticsAW.EVENT_SHOW_PARSER_GENERATED_CODE);
 
-        if(lexer && !generateCode.supportsLexer()) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the lexer because there is no lexer in this grammar.");
-            return;
-        } else if(!lexer && !generateCode.supportsParser()) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the parser because there is no parser in this grammar.");
-            return;
+        if(type == ElementGrammarName.LEXER) {
+            if(!generateCode.supportsLexer()) {
+                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the lexer because there is no lexer in this grammar.");
+                return;
+            }
+        } else {
+            if(!generateCode.supportsParser()) {
+                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the parser because there is no parser in this grammar.");
+                return;
+            }
         }
 
-        checkAndShowGeneratedCode(null, lexer);
+        checkAndShowGeneratedCode(null, type);
     }
 
     public void showRuleGeneratedCode() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_RULE_GENERATED_CODE);
 
-        if(editor.getCurrentRule() == null)
+        if(editor.getCurrentRule() == null) {
             XJAlert.display(editor.getWindowContainer(), "Error", "A rule must be selected first.");
-        else
-            checkAndShowGeneratedCode(editor.getCurrentRule().name, false);
+        } else {
+            ElementRule r = editor.getCurrentRule();
+            checkAndShowGeneratedCode(r.name, r.lexer?ElementGrammarName.LEXER:ElementGrammarName.PARSER);
+        }
     }
 
-    public void checkAndShowGeneratedCode(String rule, boolean lexer) {
+    public void checkAndShowGeneratedCode(String rule, int type) {
         if(!checkLanguage())
             return;
 
-        if(!generateCode.isGeneratedTextFileExisting(lexer)
+        if(!generateCode.isGeneratedTextFileExisting(type)
                 || generateCode.isFileModifiedSinceLastGeneration()
                 || editor.getDocument().isDirty()) {
             // Generate automatically the code and call again
             // this method (using actionShowCodeRule as flag)
             actionShowCodeRule = rule;
-            actionShowCodeLexer = lexer;
+            actionShowCodeType = type;
             actionShowCodeAfterGeneration = true;
             generateCodeProcess();
             return;
         }
 
-        showGeneratedCode(rule, lexer);
+        showGeneratedCode(rule, type);
     }
 
-    private void showGeneratedCode(String rule, boolean lexer) {
+    private void showGeneratedCode(String rule, int type) {
         CodeDisplay dc = new CodeDisplay(editor.getXJFrame());
         String title;
         try {
-            title = generateCode.getGeneratedClassName(lexer)+".java";
+            title = generateCode.getGeneratedClassName(type)+".java";
         } catch (Exception e) {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot cannot get the name of the generated file:\n"+e.toString());
             return;
@@ -149,7 +157,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
 
         String text;
         try {
-            text = generateCode.getGeneratedText(lexer);
+            text = generateCode.getGeneratedText(type);
         } catch (Exception e) {
             XJAlert.display(editor.getWindowContainer(), "Error", "Exception while reading the generated file:\n"+e.toString());
             return;
@@ -184,7 +192,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     public void codeGenerateDidComplete() {
         if(actionShowCodeAfterGeneration) {
             actionShowCodeAfterGeneration = false;
-            showGeneratedCode(actionShowCodeRule, actionShowCodeLexer);
+            showGeneratedCode(actionShowCodeRule, actionShowCodeType);
         }
     }
 

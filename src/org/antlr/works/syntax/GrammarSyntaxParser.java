@@ -47,6 +47,7 @@ import java.util.*;
 public class GrammarSyntaxParser extends ATESyntaxParser {
 
     private static final ElementRewriteBlock REWRITE_BLOCK = new ElementRewriteBlock();
+    private static final ElementArgumentBlock ARGUMENT_BLOCK = new ElementArgumentBlock();
     private static final ElementRewriteFunction REWRITE_FUNCTION = new ElementRewriteFunction();
 
     public static final String BEGIN_GROUP = "// $<";
@@ -587,7 +588,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         } else if(matchAction()) {
             // matched -> {...}
         } else {
-            return false;
+            return true;
         }
 
         return true;
@@ -681,7 +682,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     private boolean matchArguments() {
-        return matchBalancedToken(ATESyntaxLexer.TOKEN_LBRACK, ATESyntaxLexer.TOKEN_RBRACK, null, true);
+        return matchBalancedToken(ATESyntaxLexer.TOKEN_LBRACK, ATESyntaxLexer.TOKEN_RBRACK, ARGUMENT_BLOCK, true);
     }
 
     // todo check and terminate
@@ -726,7 +727,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      * @return True if the reference is a label reference
      */
     private boolean addReference(ATEToken ref, boolean addOnlyIfKnownLabel) {
-        refsToRules.put(ref, currentRule);        
+        refsToRules.put(ref, currentRule);
         if(labels.lookup(ref.getAttribute())) {
             // Reference is to a label, not a lexer/parser rule
             ref.type = GrammarSyntaxLexer.TOKEN_LABEL;

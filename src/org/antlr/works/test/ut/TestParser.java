@@ -53,6 +53,16 @@ public class TestParser extends AbstractTest implements GrammarSyntaxDelegate {
         new TestRunner().doRun(new TestSuite(TestParser.class));
     }
 
+    public void testDoubleQuoteStringInArgument() throws Exception {
+        parseFile(TestConstants.PREFIX+"arguments.g");
+        assertInspector(0);
+    }
+
+    public void testEmptyRewriteSyntax() throws Exception {
+        parseFile(TestConstants.PREFIX+"empty_rewrite.g");
+        assertInspector(0);
+    }
+
     public void testGrammarType() throws Exception {
         parseFile(TestConstants.PREFIX+"type/combined.g");
         assertEquals("combined grammar", ElementGrammarName.COMBINED, getParser().name.getType());

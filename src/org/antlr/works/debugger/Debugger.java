@@ -64,6 +64,7 @@ import org.antlr.works.swing.CustomToggleButton;
 import org.antlr.works.swing.DetachablePanel;
 import org.antlr.works.swing.DetachablePanelDelegate;
 import org.antlr.works.syntax.element.ElementBlock;
+import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Utils;
 
@@ -435,6 +436,11 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void launchLocalDebugger(int options) {
         // If the grammar is dirty, build it anyway
+        if(getGrammar().getType() == ElementGrammarName.TREEPARSER) {
+            XJAlert.display(editor.getWindowContainer(), "Unsupported Grammar Type",
+                    "ANTLRWorks does not support debugging tree parser grammar.");
+            return;
+        }
 
         if(needsToGenerateGrammar()) {
             options = options | OPTION_BUILD;

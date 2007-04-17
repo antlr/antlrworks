@@ -38,6 +38,7 @@ import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.works.editor.EditorProvider;
+import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.utils.Console;
@@ -46,6 +47,8 @@ import org.antlr.works.utils.ErrorListener;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CodeGenerate implements Runnable {
 
@@ -125,23 +128,67 @@ public class CodeGenerate implements Runnable {
         return success;
     }
 
-    public String getGeneratedClassName(boolean lexer) throws Exception {
-        String name;
-        if(lexer) {
-            name = provider.getEngineGrammar().getLexerGrammar().name+"Lexer";
-        } else {
-            name = provider.getEngineGrammar().getParserGrammar().name+"Parser";
+    public static final String LEXER_SUFFIX = "Lexer";
+    public static final String PARSER_SUFFIX = "Parser";
+    public static final String TREEPARSER_SUFFIX = "";
+
+    public String getGeneratedClassName(int type) throws Exception {
+        String name = null;
+        EngineGrammar engine = provider.getEngineGrammar();
+        if(type == ElementGrammarName.LEXER) {
+            Grammar g = engine.getLexerGrammar();
+            if(g == null) return null;
+            name = g.name+LEXER_SUFFIX;
+        } else if(type == ElementGrammarName.PARSER) {
+            Grammar g = engine.getParserGrammar();
+            if(g == null) return null;
+
+            if(engine.getType() == ElementGrammarName.TREEPARSER) {
+                name = g.name+TREEPARSER_SUFFIX;
+            } else {
+                name = g.name+PARSER_SUFFIX;
+            }
+        } else if(type == ElementGrammarName.TREEPARSER) {
+            Grammar g = engine.getParserGrammar();
+            if(g == null) return null;
+            if(engine.getType() != ElementGrammarName.TREEPARSER) return null;
+            name = g.name+TREEPARSER_SUFFIX;
         }
         return name;
     }
 
-    public String getGeneratedTextFileName(boolean lexer) throws Exception {
-        return XJUtils.concatPath(getOutputPath(), getGeneratedClassName(lexer)+".java");
+    public List<String> getGeneratedTextFileNames() throws Exception {
+        List<String> names = new ArrayList<String>();
+
+        String name = getGeneratedTextFileName(ElementGrammarName.LEXER);
+        if(name != null) {
+            names.add(name);
+        }
+
+        name = getGeneratedTextFileName(ElementGrammarName.PARSER);
+        if(name != null) {
+            names.add(name);
+        }
+
+        name = getGeneratedTextFileName(ElementGrammarName.TREEPARSER);
+        if(name != null) {
+            names.add(name);
+        }
+
+        return names;
     }
 
-    public boolean isGeneratedTextFileExisting(boolean lexer) {
+    public String getGeneratedTextFileName(int type) throws Exception {
+        String className = getGeneratedClassName(type);
+        if(className == null) return null;
+        return XJUtils.concatPath(getOutputPath(), className+".java");
+    }
+
+    public boolean isGeneratedTextFileExisting(int type) {
         try {
-            return new File(getGeneratedTextFileName(lexer)).exists();
+            String file = getGeneratedTextFileName(type);
+            if(file == null) return true;
+            return new File(file).exists();
         } catch (Exception e) {
             provider.getConsole().print(e);
         }
@@ -162,8 +209,8 @@ public class CodeGenerate implements Runnable {
         return type == ElementGrammarName.COMBINED || type == ElementGrammarName.PARSER || type == ElementGrammarName.TREEPARSER;
     }
 
-    public String getGeneratedText(boolean lexer) throws Exception {
-        return XJUtils.getStringFromFile(getGeneratedTextFileName(lexer));
+    public String getGeneratedText(int type) throws Exception {
+        return XJUtils.getStringFromFile(getGeneratedTextFileName(type));
     }
 
     public void generateInThread(Container parent) {

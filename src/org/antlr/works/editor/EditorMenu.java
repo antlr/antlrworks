@@ -36,6 +36,7 @@ import org.antlr.works.IDE;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.element.ElementGrammarName;
 
 import javax.swing.*;
 import java.awt.*;
@@ -718,11 +719,11 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_SHOW_GENERATED_LEXER_CODE:
-                editor.menuGenerate.showGeneratedCode(true);
+                editor.menuGenerate.showGeneratedCode(ElementGrammarName.LEXER);
                 break;
 
             case MI_SHOW_GENERATED_PARSER_CODE:
-                editor.menuGenerate.showGeneratedCode(false);
+                editor.menuGenerate.showGeneratedCode(ElementGrammarName.PARSER);
                 break;
 
             case MI_SHOW_RULE_GENCODE:

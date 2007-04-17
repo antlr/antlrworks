@@ -49,6 +49,7 @@ import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.syntax.element.ElementBlock;
+import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.StreamWatcher;
@@ -77,8 +78,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected String outputFileDir;
 
-    protected String fileParser;
-    protected String fileLexer;
+    protected List<String> grammarGeneratedFiles;
     protected String fileRemoteParser;
     protected String fileRemoteParserInputText;
 
@@ -273,9 +273,9 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             setOutputPath(AWPrefs.getOutputPath());
             setStartRule(AWPrefs.getStartSymbol());
 
-            fileParser = codeGenerator.getGeneratedTextFileName(false);
-            fileLexer = codeGenerator.getGeneratedTextFileName(true);
-
+            grammarGeneratedFiles = codeGenerator.getGeneratedTextFileNames();
+            System.out.println(grammarGeneratedFiles);
+            
             fileRemoteParser = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+".java");
             fileRemoteParserInputText = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
 
@@ -350,7 +350,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected void compileGrammar() {
         XJUtils.deleteDirectory(outputFileDir);                
         new File(outputFileDir).mkdirs();
-        compileFiles(new String[] { fileParser, fileLexer });
+        compileFiles(grammarGeneratedFiles.toArray(new String[grammarGeneratedFiles.size()]));
     }
 
     protected void generateAndCompileGlueCode(boolean build) {
@@ -377,8 +377,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             glueCode.setAttribute(ST_ATTR_IMPORT, getCustomImports());
             glueCode.setAttribute(ST_ATTR_CLASSNAME, remoteParserClassName);
             glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(fileRemoteParserInputText));
-            glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(false));
-            glueCode.setAttribute(ST_ATTR_JAVA_LEXER, codeGenerator.getGeneratedClassName(true));
+            glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(ElementGrammarName.PARSER));
+            glueCode.setAttribute(ST_ATTR_JAVA_LEXER, codeGenerator.getGeneratedClassName(ElementGrammarName.LEXER));
             glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
 
             XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
@@ -456,8 +456,16 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     public boolean isRequiredFilesExisting() {
-        return prepare() && new File(fileParser).exists() && new File(fileLexer).exists() && new File(fileRemoteParser).exists()
-                && new File(fileRemoteParserInputText).exists();
+        if(!prepare()) return false;
+
+        if(!new File(fileRemoteParser).exists()) return false;
+        if(!new File(fileRemoteParserInputText).exists()) return false;
+
+        for(String file : grammarGeneratedFiles) {
+            if(!new File(file).exists()) return false;
+        }
+
+        return true;
     }
 
     public boolean checkForLaunch() {
