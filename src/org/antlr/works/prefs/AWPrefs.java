@@ -70,6 +70,7 @@ public class AWPrefs {
     public static final String PREF_TAB_WIDTH = "PREF_TAB_WIDTH";
     public static final String PREF_AUTOSAVE_ENABLED = "PREF_AUTOSAVE_ENABLED";
     public static final String PREF_AUTOSAVE_DELAY = "PREF_AUTOSAVE_DELAY";
+    public static final String PREF_BACKUP_FILE_ENABLED = "PREF_BACKUP_FILE_ENABLED";
     public static final String PREF_HIGHLIGHTCURSORLINE = "PREF_HIGHLIGHTCURSORLINE";
     public static final String PREF_EDITOR_FONT = "PREF_EDITOR_FONT";
     public static final String PREF_EDITOR_FONT_SIZE = "PREF_EDITOR_FONT_SIZE";
@@ -325,6 +326,10 @@ public class AWPrefs {
 
     public static int getAutoSaveDelay() {
         return getPreferences().getInt(PREF_AUTOSAVE_DELAY, 5);
+    }
+
+    public static boolean getBackupFileEnabled() {
+        return getPreferences().getBoolean(PREF_BACKUP_FILE_ENABLED, false);
     }
 
     public static boolean getHighlightCursorEnabled() {

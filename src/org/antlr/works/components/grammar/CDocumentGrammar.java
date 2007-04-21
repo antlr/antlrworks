@@ -33,6 +33,9 @@ package org.antlr.works.components.grammar;
 
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentDocument;
+import org.antlr.works.prefs.AWPrefs;
+
+import java.io.File;
 
 public class CDocumentGrammar extends ComponentDocument {
 
@@ -41,10 +44,17 @@ public class CDocumentGrammar extends ComponentDocument {
         // before calling the super class method to do
         // the actual job
         ComponentContainer w = getContainer();
-        if(w.willSaveDocument())
+        if(w.willSaveDocument()) {
+            if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
+                // Create the backup file if needed
+                File backup = new File(documentPath+"~");
+                if(backup.exists()) backup.delete();
+                new File(documentPath).renameTo(backup);
+            }
             return super.performSave(saveAs);
-        else
+        } else {
             return false;
+        }
     }
 
 }

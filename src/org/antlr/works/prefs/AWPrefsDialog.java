@@ -140,6 +140,7 @@ public class AWPrefsDialog extends XJPanel {
 
         getPreferences().bindToPreferences(autoSaveButton, AWPrefs.PREF_AUTOSAVE_ENABLED, false);
         getPreferences().bindToPreferences(autoSaveDelayField, AWPrefs.PREF_AUTOSAVE_DELAY, 5);
+        getPreferences().bindToPreferences(backupFileButton, AWPrefs.PREF_BACKUP_FILE_ENABLED, false);
         getPreferences().bindToPreferences(highlightCursorLineButton, AWPrefs.PREF_HIGHLIGHTCURSORLINE, true);
         getPreferences().bindToPreferences(tabWidthField, AWPrefs.PREF_TAB_WIDTH, AWPrefs.DEFAULT_TAB_WIDTH);
         getPreferences().bindToPreferences(editorFontCombo, AWPrefs.PREF_EDITOR_FONT, AWPrefs.DEFAULT_EDITOR_FONT);
@@ -369,6 +370,7 @@ public class AWPrefsDialog extends XJPanel {
         autoSaveButton = new JCheckBox();
         autoSaveDelayField = new JTextField();
         label11 = new JLabel();
+        backupFileButton = new JCheckBox();
         highlightCursorLineButton = new JCheckBox();
         smoothScrollingButton = new JCheckBox();
         autoIndentColonInRuleButton = new JCheckBox();
@@ -608,6 +610,8 @@ public class AWPrefsDialog extends XJPanel {
         						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC,
         						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
         						new RowSpec(Sizes.dluY(10))
         					}));
 
@@ -632,42 +636,46 @@ public class AWPrefsDialog extends XJPanel {
         				label11.setText("minutes");
         				tabEditor.add(label11, cc.xy(11, 5));
 
+        				//---- backupFileButton ----
+        				backupFileButton.setText("Create backup file");
+        				tabEditor.add(backupFileButton, cc.xywh(5, 7, 5, 1));
+
         				//---- highlightCursorLineButton ----
         				highlightCursorLineButton.setText("Highlight cursor line");
-        				tabEditor.add(highlightCursorLineButton, cc.xywh(5, 7, 5, 1));
+        				tabEditor.add(highlightCursorLineButton, cc.xywh(5, 9, 5, 1));
 
         				//---- smoothScrollingButton ----
         				smoothScrollingButton.setText("Smooth scrolling");
-        				tabEditor.add(smoothScrollingButton, cc.xywh(5, 9, 3, 1));
+        				tabEditor.add(smoothScrollingButton, cc.xywh(5, 11, 3, 1));
 
         				//---- autoIndentColonInRuleButton ----
         				autoIndentColonInRuleButton.setText("Auto-indent ':' in rule");
-        				tabEditor.add(autoIndentColonInRuleButton, cc.xywh(5, 11, 7, 1));
+        				tabEditor.add(autoIndentColonInRuleButton, cc.xywh(5, 13, 7, 1));
 
         				//---- showLineNumbers ----
         				showLineNumbers.setText("Show line numbers");
-        				tabEditor.add(showLineNumbers, cc.xywh(5, 13, 5, 1));
+        				tabEditor.add(showLineNumbers, cc.xywh(5, 15, 5, 1));
 
         				//---- label1 ----
         				label1.setText("Tab width:");
         				label1.setHorizontalAlignment(SwingConstants.RIGHT);
-        				tabEditor.add(label1, cc.xy(3, 17));
+        				tabEditor.add(label1, cc.xy(3, 19));
 
         				//---- tabWidthField ----
         				tabWidthField.setText("8");
-        				tabEditor.add(tabWidthField, cc.xy(5, 17));
+        				tabEditor.add(tabWidthField, cc.xy(5, 19));
 
         				//---- label22 ----
         				label22.setText("Update delay:");
-        				tabEditor.add(label22, cc.xy(3, 19));
+        				tabEditor.add(label22, cc.xy(3, 21));
 
         				//---- parserDelayField ----
         				parserDelayField.setText("250");
-        				tabEditor.add(parserDelayField, cc.xy(5, 19));
+        				tabEditor.add(parserDelayField, cc.xy(5, 21));
 
         				//---- label23 ----
         				label23.setText("ms");
-        				tabEditor.add(label23, cc.xy(7, 19));
+        				tabEditor.add(label23, cc.xy(7, 21));
         			}
         			tabbedPane1.addTab("Editor", tabEditor);
 
@@ -1305,6 +1313,7 @@ public class AWPrefsDialog extends XJPanel {
     private JCheckBox autoSaveButton;
     private JTextField autoSaveDelayField;
     private JLabel label11;
+    private JCheckBox backupFileButton;
     private JCheckBox highlightCursorLineButton;
     private JCheckBox smoothScrollingButton;
     private JCheckBox autoIndentColonInRuleButton;
