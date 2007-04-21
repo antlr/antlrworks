@@ -31,11 +31,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate;
 
+import edu.usfca.xj.appkit.undo.XJUndo;
 import org.antlr.works.ate.swing.ATEEditorKit;
 import org.antlr.works.ate.swing.ATERenderingView;
 
 import javax.swing.*;
 import javax.swing.text.*;
+import javax.swing.undo.AbstractUndoableEdit;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -110,6 +112,7 @@ public class ATETextPane extends JTextPane
         }
     }
 
+    @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         textEditor.textPaneDidPaint(g);
@@ -130,13 +133,100 @@ public class ATETextPane extends JTextPane
         setHighlightCursorLine(flag);
     }
 
+    @Override
     protected void processKeyEvent(KeyEvent keyEvent) {
         // If the document is not writable, emits a beep
         // if the key event is not an action key
-        if(writable || keyEvent.isActionKey()) {
+        if(writable && keyEvent.getKeyCode() == KeyEvent.VK_TAB && keyEvent.getID() == KeyEvent.KEY_PRESSED) {
+            int start = getSelectionStart();
+            int stop = getSelectionEnd();
+            if(start != stop) {
+                // Ident the lines covered by the selection
+                try {
+                    indentText(start, stop, keyEvent.isShiftDown()?-1:1);
+                    keyEvent.consume();
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                super.processKeyEvent(keyEvent);
+            }
+        } else if(writable || keyEvent.isActionKey()) {
             super.processKeyEvent(keyEvent);
         } else {
             Toolkit.getDefaultToolkit().beep();
+        }
+    }
+
+    protected void indentText(int start, int stop, int direction) throws BadLocationException {
+        Element paragraph = getDocument().getDefaultRootElement();
+        final int contentCount = paragraph.getElementCount();
+        final String oldText = getText();
+
+        StringBuffer sb = new StringBuffer(oldText);
+
+        int modified = 0;
+        for (int i=contentCount-1; i>=0; i--) {
+            Element e = paragraph.getElement(i);
+            int rangeStart = e.getStartOffset();
+            int rangeEnd = e.getEndOffset();
+            if(start >= rangeStart && start <= rangeEnd ||
+                    rangeStart >= start && rangeStart <= stop)
+            {
+                if(direction == -1) {
+                    if(sb.charAt(rangeStart) == '\t') {
+                        sb.delete(rangeStart, rangeStart+1);
+                        modified++;
+                    }
+                } else {
+                    sb.insert(rangeStart, "\t");
+                    modified++;
+                }
+            }
+        }
+
+        if(modified == 0) return;
+
+        textEditor.disableUndo();
+        XJUndo undo = textEditor.getTextPaneUndo();
+        undo.addEditEvent(new UndoableRefactoringEdit(oldText, sb.toString()));
+        setText(sb.toString());
+        textEditor.enableUndo();
+
+        getCaret().setDot(start+direction);
+        if(modified > 1) {
+            getCaret().moveDot(stop+2*direction);
+        } else {
+            getCaret().moveDot(stop+direction);
+        }
+    }
+
+    protected class UndoableRefactoringEdit extends AbstractUndoableEdit {
+
+        public String oldContent;
+        public String newContent;
+
+        public UndoableRefactoringEdit(String oldContent, String newContent) {
+            this.oldContent = oldContent;
+            this.newContent = newContent;
+        }
+
+        public void redo() {
+            super.redo();
+            refactorReplaceEditorText(newContent);
+        }
+
+        public void undo() {
+            super.undo();
+            refactorReplaceEditorText(oldContent);
+        }
+
+        private void refactorReplaceEditorText(String text) {
+            int old = getCaretPosition();
+            textEditor.disableUndo();
+            setText(text);
+            textEditor.enableUndo();
+            setCaretPosition(Math.min(old, text.length()));
         }
     }
 
