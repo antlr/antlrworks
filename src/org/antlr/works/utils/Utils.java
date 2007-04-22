@@ -148,4 +148,10 @@ public class Utils {
         return "\n";
     }
 
+    public static String[] concat(String[] a, String[] b) {
+        String[] n = new String[a.length+b.length];
+        System.arraycopy(a, 0, n, 0, a.length);
+        System.arraycopy(b, 0, n, a.length, b.length);
+        return n;
+    }
 }

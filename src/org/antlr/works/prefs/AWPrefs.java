@@ -55,6 +55,7 @@ public class AWPrefs {
     public static final String PREF_DEBUG_DONT_OPTIMIZE_NFA = "PREF_DONT_OPTIMIZE_NFA";
 
     public static final String PREF_DOT_TOOL_PATH = "PREF_DOT_TOOL_PATH";
+    public static final String PREF_ANTLR3_OPTIONS = "PREF_ANTLR3_OPTIONS";
 
     public static final String PREF_TOOLBAR_SORT = "PREF_TOOLBAR_SORT";
 
@@ -64,6 +65,7 @@ public class AWPrefs {
     public static final int STARTUP_OPEN_ALL_OPENED_DOC = 3;
 
     public static final String DEFAULT_DOT_TOOL_PATH;
+    public static final String DEFAULT_ANTLR3_OPTIONS="";
     public static final boolean DEFAULT_RESTORE_WINDOWS = true;
 
     // Editor
@@ -168,7 +170,7 @@ public class AWPrefs {
     public static final String PREF_JAVAC_CUSTOM_PATH = "PREF_JAVAC_CUSTOM_PATH";
     public static final String PREF_JAVAC_PATH = "PREF_JAVAC_PATH";
     public static final String PREF_JIKES_PATH = "PREF_JIKES_PATH";
-    public static final String PREF_ANTLR3_PATH = "PREF_ANTLR3_PATH";
+    public static final String PREF_CUSTOM_CLASS_PATH = "PREF_CUSTOM_CLASS_PATH";
     public static final String PREF_COMPILER = "PREF_COMPILER";
     public static final String PREF_CLASSPATH_SYSTEM = "PREF_CLASSPATH_SYSTEM";
     public static final String PREF_CLASSPATH_CUSTOM = "PREF_CLASSPATH_CUSTOM";
@@ -176,7 +178,7 @@ public class AWPrefs {
     public static final boolean DEFAULT_JAVAC_CUSTOM_PATH = false;
     public static final String DEFAULT_JAVAC_PATH = "";
     public static final String DEFAULT_JIKES_PATH = "";
-    public static final String DEFAULT_ANTLR3_PATH = "";
+    public static final String DEFAULT_PREF_CUSTOM_CLASS_PATH = "";
     public static final String DEFAULT_COMPILER = "javac";
     public static final boolean DEFAULT_CLASSPATH_SYSTEM = true;
     public static final boolean DEFAULT_CLASSPATH_CUSTOM = false;
@@ -223,6 +225,9 @@ public class AWPrefs {
 
     public static final String PREF_DETACHABLE_CHILDREN = "PREF_DETACHABLE_CHILDREN";
     public static final boolean DEFAULT_DETACHABLE_CHILDREN = true;
+
+    public static final String PREF_DEBUGGER_ASK_GEN = "PREF_DEBUGGER_ASK_GEN";
+    public static final boolean DEFAULT_DEBUGGER_ASK_GEN = false;
 
     // Other
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
@@ -388,6 +393,15 @@ public class AWPrefs {
         return getPreferences().getString(PREF_DOT_TOOL_PATH, DEFAULT_DOT_TOOL_PATH);
     }
 
+    public static String[] getANTLR3Options() {
+        String options = getPreferences().getString(PREF_ANTLR3_OPTIONS, DEFAULT_ANTLR3_OPTIONS);
+        if(options != null && options.trim().length() > 0) {
+            return options.split(" ");
+        } else {
+            return new String[0];
+        }
+    }
+
     public static boolean getP4Enabled() {
         return getPreferences().getBoolean(PREF_SCM_P4_ENABLED, false);
     }
@@ -432,12 +446,12 @@ public class AWPrefs {
         return getPreferences().getString(PREF_JIKES_PATH, DEFAULT_JIKES_PATH);
     }
 
-    public static void setANTLR3Path(String path) {
-        getPreferences().setString(PREF_ANTLR3_PATH, path);
+    public static void setCustomClassPath(String path) {
+        getPreferences().setString(PREF_CUSTOM_CLASS_PATH, path);
     }
 
-    public static String getANTLR3Path() {
-        return getPreferences().getString(PREF_ANTLR3_PATH, DEFAULT_ANTLR3_PATH);
+    public static String getCustomClassPath() {
+        return getPreferences().getString(PREF_CUSTOM_CLASS_PATH, DEFAULT_PREF_CUSTOM_CLASS_PATH);
     }
 
     public static String getCompiler() {
@@ -526,6 +540,10 @@ public class AWPrefs {
 
     public static boolean getDetachableChildren() {
         return getPreferences().getBoolean(PREF_DETACHABLE_CHILDREN, DEFAULT_DETACHABLE_CHILDREN);
+    }
+
+    public static boolean getDebuggerAskGen() {
+        return getPreferences().getBoolean(PREF_DEBUGGER_ASK_GEN, DEFAULT_DEBUGGER_ASK_GEN);
     }
 
     public static boolean getEnableProjectDocument() {

@@ -43,6 +43,7 @@ import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
+import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -118,7 +119,7 @@ public class CodeGenerate implements Runnable {
         else
             params = new String[] { "-o", getOutputPath(), "-lib", provider.getFileFolder(), provider.getFilePath() };
 
-        Tool antlr = new Tool(params);
+        Tool antlr = new Tool(Utils.concat(params, AWPrefs.getANTLR3Options()));
         antlr.process();
 
         boolean success = !errorListener.hasErrors();

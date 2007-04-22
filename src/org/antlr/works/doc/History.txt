@@ -1,6 +1,15 @@
 
 Version 1.0b11 - 
 
+New Feature
+[AW-8] - Backup file
+[AW-15] - Use the Tab key to indent/unindent text
+
+Bug fixes:
+[AW-26] - Null pointer exception when generating a tree parser grammar
+[AW-28] - Syntax coloring does take into account empty rewrite syntax
+[AW-29] - Syntax coloring reports an error when using double-quoted string in an argument block
+[AW-30] - Interpreter does not ignore rules with $channel=HIDDEN;
 
 Version 1.0b10 - 04/15/07
 

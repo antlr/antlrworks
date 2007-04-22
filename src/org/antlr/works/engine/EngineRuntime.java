@@ -78,7 +78,7 @@ public class EngineRuntime {
             classPath += File.pathSeparatorChar+Utils.unquotePath(System.getProperty("java.class.path"));
 
         if(AWPrefs.getUseCustomClassPath())
-            classPath += File.pathSeparatorChar+Utils.unquotePath(AWPrefs.getANTLR3Path());
+            classPath += File.pathSeparatorChar+Utils.unquotePath(AWPrefs.getCustomClassPath());
 
         classPath += File.pathSeparatorChar+".";
 

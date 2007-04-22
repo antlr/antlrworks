@@ -443,7 +443,20 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         }
 
         if(needsToGenerateGrammar()) {
-            options = options | OPTION_BUILD;
+            if(AWPrefs.getDebuggerAskGen()) {
+                int result = XJAlert.displayCustomAlert(editor.getWindowContainer(), "Generate and compile",
+                        "The grammar has been modified and needs to be generated and compiled again. You can choose " +
+                                "to cancel the operation, to continue without generating and compiling the grammar or " +
+                                "to generate and compile the grammar.",
+                        new String[] { "Cancel", "Continue", "Generate and compile" }, 2);
+                switch(result) {
+                    case 0: return;
+                    case 2: options = options | OPTION_BUILD; break;
+
+                }
+            } else {
+                options = options | OPTION_BUILD;
+            }
         }
 
         if((options & OPTION_BUILD) > 0 && !editor.ensureDocumentSaved()) {

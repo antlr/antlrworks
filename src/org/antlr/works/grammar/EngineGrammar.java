@@ -39,10 +39,12 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.*;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
+import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -138,10 +140,11 @@ public class EngineGrammar {
     }
 
     public Tool getANTLRTool() {
-        if(editor.getFileFolder() != null)
-            return new Tool(new String[] { "-lib", editor.getFileFolder() } );
-        else
-            return new Tool();
+        String[] params = AWPrefs.getANTLR3Options();
+        if(editor.getFileFolder() != null) {
+            params = Utils.concat(params, new String[] { "-lib", editor.getFileFolder() });
+        }
+        return new Tool(params);
     }
 
     public String getName() {

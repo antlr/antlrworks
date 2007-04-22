@@ -149,7 +149,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     public void hideProgress() {
-        progress.close();
+        if(progress != null)
+            progress.close();
     }
 
     private boolean optionBuild() {
@@ -274,8 +275,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             setStartRule(AWPrefs.getStartSymbol());
 
             grammarGeneratedFiles = codeGenerator.getGeneratedTextFileNames();
-            System.out.println(grammarGeneratedFiles);
-            
+
             fileRemoteParser = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+".java");
             fileRemoteParserInputText = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
 

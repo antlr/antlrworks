@@ -12,23 +12,16 @@
 - be able to read file for debugger input instead of text in dialog (useful for long input)
 
 - unit tests:
-  -> rule skipped for interpreter (with HIDDEN or skip())
-  -> bad grammar (when starting to write a new grammar, check for no exception in that case)
-     -> with { not closed inside rule and nothing until the end (that is no })
   -> remove left recursion
   -> rename internal tokens identified inside blocks with $
   -> double-quoted string in ST, for example: write_to("<id>",<id>)
-  -> check that no syntax error is reported with rewrite (and reported when it is a real problem)
 
 * Prio 2
 
 - plugin: hook undo, copy, paste from IntelliJ menu
 - click on input token should display token type
-- visualdrawing: exception display in console configurable in prefs?
 - optimize tree drawing using incremental model (see AWTreeGraphView)
 - make breakpoint in grammar and stop around this location (line, column)
-- be able to search the generated grammar too
-- tab and shift-tab to indent/unindent block of selected lines (like in IntelliJ)
 - build and debug with custom class path and command line arguments (to launch mantra for example)
     -> the command-line argument will launch the parser with any arguments it needs (we don't care)
 
