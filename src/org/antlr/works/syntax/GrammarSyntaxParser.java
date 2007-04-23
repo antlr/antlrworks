@@ -712,9 +712,11 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         if(comment.startsWith(BEGIN_GROUP)) {
             groups.add(new ElementGroup(comment.substring(BEGIN_GROUP.length(), comment.length()-1), rules.size()-1, token));
+            nextToken();
             return true;
         } else if(comment.startsWith(END_GROUP)) {
             groups.add(new ElementGroup(rules.size()-1, token));
+            nextToken();
             return true;
         }
         return false;
