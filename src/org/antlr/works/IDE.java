@@ -66,7 +66,10 @@ import org.antlr.works.utils.Localizable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -262,7 +265,10 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         if(url == null) {
             // url can be null in some situation (i.e. plugin in IntelliJ). Let's try another
             // way using getResource().
-            String name = c.getName().replace('.', File.separatorChar).concat(".class");
+            // Warning: use only '/' for the resource name even on Windows because internally
+            // Java uses '/'!
+            // See AW-35
+            String name = c.getName().replace('.', '/').concat(".class");
             url = c.getClassLoader().getResource(name);
             if(url == null) {
                 System.err.println("IDE: unable to get the location of the XJApplicationDelegate");
