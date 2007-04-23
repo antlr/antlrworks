@@ -65,6 +65,11 @@ public class TestParser extends AbstractTest implements GrammarSyntaxDelegate {
         assertInspector(0);
     }
 
+    public void testGroups() throws Exception {
+        parseFile(TestConstants.PREFIX+"groups.g");
+        assertInspector(0);
+    }
+
     public void testIgnoreRules() throws Exception {
         parseFile(TestConstants.PREFIX+"ignore_rules.g");
         EditorRules.findTokensToIgnore(getParser().rules);
