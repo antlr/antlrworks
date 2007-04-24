@@ -45,10 +45,6 @@
 - optimize imports
 - check update.xml file
 - tests: check grammar, interpreter, debugger
-- rebuild plug-in for IntelliJ
-
-- package for Mac OS X
-- upload antlrworks.pdf
 
 * Tools *
 

@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0b10
-April 15, 2007
+Version 1.0b11
+April 23, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco
@@ -71,6 +71,23 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+Version 1.0b11 - 04/23/07
+
+New feature:
+    [AW-8] - Backup file
+    [AW-15] - Use the Tab key to indent/unindent text
+    [AW-25] - Add command-line options for ANTLR
+    [AW-33] - Optional generation and compilation step before debugging
+
+Bug fix:
+    [AW-26] - Null pointer exception when generating a tree parser grammar
+    [AW-28] - Syntax coloring does take into account empty rewrite syntax
+    [AW-29] - Syntax coloring reports an error when using double-quoted string in an argument block
+    [AW-30] - Interpreter does not ignore rules with $channel=HIDDEN;
+    [AW-34] - Plugin in IntelliJ for Windows reports incorrect grammar name while it is correct
+    [AW-35] - Error when compiling a grammar within IntelliJ on Windows
+    [AW-36] - Rules grouping causes ANTLRWorks to run out of heap space
 
 Version 1.0b10 - 04/15/07
 
