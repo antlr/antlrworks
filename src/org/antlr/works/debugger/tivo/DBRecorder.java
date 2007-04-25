@@ -214,32 +214,32 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         if(stepOver.isSteppingOver()) {
             if(stepOver.shouldStop(event)) {
                 stepOver.endStepOver();
-                return event.type;
+                return event.getEventType();
             } else
                 return DBEvent.NO_EVENT;
         }
 
-        if(event.type == DBEvent.COMMENCE)
-            return event.type;
+        if(event.getEventType() == DBEvent.COMMENCE)
+            return event.getEventType();
 
         if(breakEvents.contains(DBEvent.ALL))
-            return event.type;
+            return event.getEventType();
 
         // Stop on debugger breakpoints
-        if(event.type == DBEvent.LOCATION && !ignoreBreakpoints())
+        if(event.getEventType() == DBEvent.LOCATION && !ignoreBreakpoints())
             if(debugger.isBreakpointAtLine(((DBEventLocation)event).line-1))
-                return event.type;
+                return event.getEventType();
 
         // Stop on input text breakpoint
-        if(event.type == DBEvent.CONSUME_TOKEN && !ignoreBreakpoints())
+        if(event.getEventType() == DBEvent.CONSUME_TOKEN && !ignoreBreakpoints())
             if(debugger.isBreakpointAtToken(((DBEventConsumeToken)event).token))
-                return event.type;
+                return event.getEventType();
 
-        if(event.type == DBEvent.CONSUME_TOKEN && breakEvents.contains(DBEvent.CONSUME_TOKEN)) {
+        if(event.getEventType() == DBEvent.CONSUME_TOKEN && breakEvents.contains(DBEvent.CONSUME_TOKEN)) {
             // Breaks only on consume token from channel 0
-            return ((DBEventConsumeToken)event).token.getChannel() == Token.DEFAULT_CHANNEL?event.type:DBEvent.NO_EVENT;
+            return ((DBEventConsumeToken)event).token.getChannel() == Token.DEFAULT_CHANNEL?event.getEventType() :DBEvent.NO_EVENT;
         } else
-            return breakEvents.contains(event.type)?event.type:DBEvent.NO_EVENT;
+            return breakEvents.contains(event.getEventType())?event.getEventType() :DBEvent.NO_EVENT;
     }
 
     public synchronized void setStatus(int status) {
@@ -262,7 +262,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         if(e == null)
             return true;
         else
-            return e.type == DBEvent.TERMINATE;
+            return e.getEventType() == DBEvent.TERMINATE;
     }
 
     public void stepBackward(Set breakEvents) {
@@ -524,13 +524,13 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
                 /* Stop the debugger if the terminate event is reached or if the flag
                 debuggerReceivedTerminateEvent is true
                 */
-                if(event.type == DBEvent.TERMINATE || debuggerReceivedTerminateEvent)
+                if(event.getEventType() == DBEvent.TERMINATE || debuggerReceivedTerminateEvent)
                     stop();
                 break;
         }
 
         if(isRunning()) {
-            switch(event.type) {
+            switch(event.getEventType()) {
                 case DBEvent.TERMINATE:
                     setStoppedOnEvent(DBEvent.TERMINATE);
                     breaksOnEvent(false);

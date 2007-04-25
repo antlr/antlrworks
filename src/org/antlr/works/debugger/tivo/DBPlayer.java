@@ -107,7 +107,7 @@ public class DBPlayer {
     }
 
     public void playEvent(DBEvent event) {
-        switch(event.type) {
+        switch(event.getEventType()) {
             case DBEvent.ENTER_RULE:
                 playEnterRule((DBEventEnterRule)event);
                 break;

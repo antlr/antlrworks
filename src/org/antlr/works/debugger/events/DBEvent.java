@@ -63,10 +63,10 @@ public class DBEvent {
     public static final int SET_TOKEN_BOUNDARIES = 25;
     public static final int RECOGNITION_EXCEPTION = 26;
 
-    public int type;
+    private int eventType;
 
-    public DBEvent(int type) {
-        this.type = type;
+    public DBEvent(int eventType) {
+        this.eventType = eventType;
     }
 
     public static String getEventName(int type) {
@@ -102,8 +102,16 @@ public class DBEvent {
         return "?";
     }
 
+    public int getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(int eventType) {
+        this.eventType = eventType;
+    }
+
     public String toString() {
-        switch(type) {
+        switch(getEventType()) {
             case BEGIN_RESYNC:  return "Begin resync";
             case END_RESYNC:    return "End resync";
             case COMMENCE:      return "Commence";
@@ -111,4 +119,5 @@ public class DBEvent {
         }
         return super.toString();
     }
+
 }

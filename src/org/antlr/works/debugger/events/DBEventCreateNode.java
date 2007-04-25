@@ -43,6 +43,8 @@ public class DBEventCreateNode extends DBEvent {
      */
     public String text = null;
 
+    public int type;
+    
     public DBEventCreateNode(int id, int tokenIndex) {
         super(CREATE_NODE);
         this.id = id;
