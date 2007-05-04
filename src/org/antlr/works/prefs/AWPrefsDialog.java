@@ -115,6 +115,7 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(startupActionCombo, AWPrefs.PREF_STARTUP_ACTION, AWPrefs.STARTUP_OPEN_LAST_OPENED_DOC);
         getPreferences().bindToPreferences(restoreWindowsBoundButton, AWPrefs.PREF_RESTORE_WINDOWS, AWPrefs.DEFAULT_RESTORE_WINDOWS);
         getPreferences().bindToPreferences(lafCombo, AWPrefs.PREF_LOOK_AND_FEEL, XJLookAndFeel.getDefaultLookAndFeelName());
+        getPreferences().bindToPreferences(desktopModeButton, AWPrefs.PREF_DESKTOP_MODE, AWPrefs.DEFAULT_DESKTOP_MODE);
         getPreferences().bindToPreferences(outputPathField, AWPrefs.PREF_OUTPUT_PATH, AWPrefs.DEFAULT_OUTPUT_PATH);
         getPreferences().bindToPreferences(dotToolPathField, AWPrefs.PREF_DOT_TOOL_PATH, AWPrefs.DEFAULT_DOT_TOOL_PATH);
         getPreferences().bindToPreferences(antlr3OptionsField, AWPrefs.PREF_ANTLR3_OPTIONS, AWPrefs.DEFAULT_ANTLR3_OPTIONS);
@@ -359,6 +360,7 @@ public class AWPrefsDialog extends XJPanel {
         lafCombo = new JComboBox();
         startupActionCombo = new JComboBox();
         restoreWindowsBoundButton = new JCheckBox();
+        desktopModeButton = new JCheckBox();
         label25 = new JLabel();
         outputPathField = new JTextField();
         browseOutputPathButton = new JButton();
@@ -549,6 +551,11 @@ public class AWPrefsDialog extends XJPanel {
         				//---- restoreWindowsBoundButton ----
         				restoreWindowsBoundButton.setText("Restore project's windows position and size");
         				tabGeneral.add(restoreWindowsBoundButton, cc.xywh(5, 5, 3, 1));
+
+        				//---- desktopModeButton ----
+        				desktopModeButton.setText("Desktop Mode");
+        				desktopModeButton.setToolTipText("This option will take effect after restarting ANTLRWorks");
+        				tabGeneral.add(desktopModeButton, cc.xywh(5, 9, 3, 1));
 
         				//---- label25 ----
         				label25.setText("Output path:");
@@ -1307,6 +1314,7 @@ public class AWPrefsDialog extends XJPanel {
     private JComboBox lafCombo;
     private JComboBox startupActionCombo;
     private JCheckBox restoreWindowsBoundButton;
+    private JCheckBox desktopModeButton;
     private JLabel label25;
     private JTextField outputPathField;
     private JButton browseOutputPathButton;

@@ -50,6 +50,7 @@ public class AWPrefs {
 
     public static final String PREF_RESTORE_WINDOWS = "PREF_RESTORE_WINDOWS";
     public static final String PREF_LOOK_AND_FEEL = "PREF_LOOK_AND_FEEL";
+    public static final String PREF_DESKTOP_MODE = "PREF_DESKTOP_MODE";
 
     public static final String PREF_DEBUG_VERBOSE = "PREF_DEBUG_VERBOSE";
     public static final String PREF_DEBUG_DONT_OPTIMIZE_NFA = "PREF_DONT_OPTIMIZE_NFA";
@@ -64,6 +65,7 @@ public class AWPrefs {
     public static final int STARTUP_OPEN_LAST_SAVED_DOC = 2;
     public static final int STARTUP_OPEN_ALL_OPENED_DOC = 3;
 
+    public static final boolean DEFAULT_DESKTOP_MODE;
     public static final String DEFAULT_DOT_TOOL_PATH;
     public static final String DEFAULT_ANTLR3_OPTIONS="";
     public static final boolean DEFAULT_RESTORE_WINDOWS = true;
@@ -275,6 +277,8 @@ public class AWPrefs {
             if(Font.getFont("Courier") != null)
                 DEFAULT_EDITOR_FONT = "Courier";
         }
+
+        DEFAULT_DESKTOP_MODE = !XJSystem.isMacOS();
     }
 
     public static boolean getDebugVerbose() {
@@ -383,6 +387,10 @@ public class AWPrefs {
 
     public static String getLookAndFeel() {
         return getPreferences().getString(PREF_LOOK_AND_FEEL, null);
+    }
+
+    public static boolean getUseDesktopMode() {
+        return getPreferences().getBoolean(PREF_DESKTOP_MODE, DEFAULT_DESKTOP_MODE);
     }
 
     public static void setDOTToolPath(String path) {

@@ -72,7 +72,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -151,7 +150,10 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
                 case AWPrefs.STARTUP_OPEN_ALL_OPENED_DOC:
                     sc.setVisible(false);
-                    restoreAllOpenedDocuments();
+                    if(!restoreAllOpenedDocuments()) {
+                        sc.setVisible(false);
+                        XJApplication.shared().newDocument();
+                    }
                     break;
             }
         }
@@ -392,8 +394,16 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         return false;
     }
 
+    public boolean useDesktopMode() {
+        return AWPrefs.getUseDesktopMode();
+    }
+
     public Class appPreferencesClass() {
         return IDE.class;
+    }
+
+    public String appName() {
+        return Localizable.getLocalizedString(Localizable.APP_NAME)+" "+appVersionShort();
     }
 
     public String appVersionShort() {
@@ -404,22 +414,24 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         return Localizable.getLocalizedString(Localizable.APP_VERSION_LONG);
     }
 
-    private void restoreAllOpenedDocuments() {
+    private boolean restoreAllOpenedDocuments() {
         List<String> documents = AWPrefs.getAllOpenedDocuments();
-        if(documents == null)
-            return;
+        if(documents == null) return false;
 
-        for (Iterator<String> iterator = documents.iterator(); iterator.hasNext();) {
-            String docPath = iterator.next();
-            XJApplication.shared().openDocument(docPath);
+        boolean success = false;
+        for (String docPath : documents) {
+            if(XJApplication.shared().openDocument(docPath)) {
+                success = true;
+            }
         }
+        return success;
     }
 
     private void saveAllOpenedDocuments() {
         List<String> docPath = new ArrayList<String>();
-        for (Iterator iterator = XJApplication.shared().getDocuments().iterator(); iterator.hasNext();) {
-            XJDocument document = (XJDocument) iterator.next();
-            if(document instanceof CDocumentGrammar) {
+        for (Object o : XJApplication.shared().getDocuments()) {
+            XJDocument document = (XJDocument) o;
+            if (document instanceof CDocumentGrammar) {
                 docPath.add(document.getDocumentPath());
             }
         }

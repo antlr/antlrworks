@@ -60,7 +60,7 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
 
         getContentPane().add(panel);
 
-        getJFrame().pack();
+        pack();
     }
 
     public String autosaveName() {

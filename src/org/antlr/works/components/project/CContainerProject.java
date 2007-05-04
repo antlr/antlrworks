@@ -109,7 +109,7 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
 
         getContentPane().add(projectPanel);
 
-        getJFrame().pack();
+        pack();
     }
 
     public void awake() {
