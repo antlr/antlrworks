@@ -83,7 +83,7 @@ public class DialogAbout extends XJPanel {
         addAcknowledge("Mac OS X document icon was created by Abe <abe149@gmail.com>");
 
         setResizable(false);
-        setSize(800, 430);
+        setSize(800, 500);
         center();
     }
 
