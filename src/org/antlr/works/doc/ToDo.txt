@@ -2,13 +2,9 @@
 * Prio 1
 
 - finish finally/exception syntax
-
 - button to autofit any syntax diagram/other to the size of visible area
 - prefs to display output dir dialog before generating grammar
 - color prefs for tree nodes
-
-- is GrammarSyntax still used for left recursion -> check and UT
-- make a little tutorial with calc_1.g
 - be able to read file for debugger input instead of text in dialog (useful for long input)
 
 - unit tests:
@@ -57,6 +53,9 @@ Enable project document: set prefs PREF_PROJET_DOCUMENT to true
 DOT: /Applications/Graphviz.app/Contents/MacOS/dot
 JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\javac
 SD path width: modify constants in GPath and GPathGroup
+Windows Prefs:
+- Command "regedit.exe"
+- HKEY_CURRENT_USER\Software\JavaSoft\Prefs\org\antlr\works
 
 * Issues *
 

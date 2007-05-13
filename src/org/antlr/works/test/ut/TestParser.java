@@ -72,7 +72,7 @@ public class TestParser extends AbstractTest implements GrammarSyntaxDelegate {
 
     public void testIgnoreRules() throws Exception {
         parseFile(TestConstants.PREFIX+"ignore_rules.g");
-        EditorRules.findTokensToIgnore(getParser().rules);
+        EditorRules.findTokensToIgnore(getParser().rules, true);
         int ignored = 0;
         for(ElementRule r : getParser().rules) {
             if(r.ignored) ignored++;

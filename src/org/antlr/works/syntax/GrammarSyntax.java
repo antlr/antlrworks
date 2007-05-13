@@ -112,8 +112,7 @@ public class GrammarSyntax {
         // Read the tokens from the file if it exists
         List<ATEToken> tokens = parsePropertiesString(XJUtils.getStringFromFile(filePath));
         // Add each token name to the list of tokenVocabNames
-        for(int index=0; index<tokens.size(); index++) {
-            ATEToken t = tokens.get(index);
+        for (ATEToken t : tokens) {
             tokenNames.add(t.getAttribute());
         }
 
@@ -151,10 +150,11 @@ public class GrammarSyntax {
             return;
 
         hasLeftRecursionRules.clear();
-        for(Iterator<ElementRule> iter = getParserEngine().getRules().iterator(); iter.hasNext();) {
-            ElementRule r = iter.next();
-            if(r.hasLeftRecursion())
+        for (ElementRule r : getParserEngine().getRules()) {
+            // hasLeftRecursion has a side-effect to analyze the rule
+            if (r.hasLeftRecursion()) {
                 hasLeftRecursionRules.add(r);
+            }
         }
     }
 
@@ -192,9 +192,8 @@ public class GrammarSyntax {
         if(references == null)
             return;
 
-        for(int index=0; index<references.size(); index++) {
-            ElementReference ref = references.get(index);
-            if(!existingReferences.contains(ref.token.getAttribute()))
+        for (ElementReference ref : references) {
+            if (!existingReferences.contains(ref.token.getAttribute()))
                 undefinedReferences.add(ref);
         }
     }

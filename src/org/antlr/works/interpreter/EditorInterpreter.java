@@ -183,7 +183,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         button.setToolTipText("Find the name of all rules containing an action with channel=99");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                editor.findTokensToIgnore();
+                editor.findTokensToIgnore(true);
             }
         });
         box.add(Box.createHorizontalGlue());
@@ -243,6 +243,9 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         } else {
             progress.setInfo("Interpreting...");
         }
+
+        // AW-42: guess always before running the interpreter
+        editor.findTokensToIgnore(false);
 
         progress.setCancellable(false);
         progress.setIndeterminate(true);

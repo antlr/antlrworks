@@ -1,5 +1,5 @@
 
-Version 1.0b12 -
+Version 1.0 -
 
 Version 1.0b11 - 04/23/07
 

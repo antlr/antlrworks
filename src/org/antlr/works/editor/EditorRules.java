@@ -141,23 +141,24 @@ public class EditorRules implements XJTreeDelegate {
      * find a sequence of token equals to "$channel=HIDDEN" or "skip()".
      */
 
-    public void findTokensToIgnore() {
+    public void findTokensToIgnore(boolean reset) {
         List<ElementRule> rules = getRules();
         if(rules == null || rules.isEmpty())
             return;
 
-        findTokensToIgnore(rules);
+        findTokensToIgnore(rules, reset);
 
         rulesTree.repaint();
     }
 
-    public static void findTokensToIgnore(List<ElementRule> rules) {
+    public static void findTokensToIgnore(List<ElementRule> rules, boolean reset) {
         for (ElementRule rule : rules) {
+            if(reset)
+                rule.ignored = false;
+
             List<ElementAction> actions = rule.getActions();
             if (actions == null || actions.isEmpty())
                 continue;
-
-            rule.ignored = false;
 
             for (ElementAction action : actions) {
                 List<ATEToken> tokens = action.getTokens();

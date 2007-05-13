@@ -1000,7 +1000,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
                 public void run() {
                     updateVisualization(true);
                     executeFirstOpeningOperations();
-                    findTokensToIgnore();
+                    findTokensToIgnore(true);
                 }
             });
         } else {
@@ -1251,8 +1251,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         }
     }
 
-    public void findTokensToIgnore() {
-        rules.findTokensToIgnore();
+    public void findTokensToIgnore(boolean reset) {
+        rules.findTokensToIgnore(reset);
         interpreter.setRules(getRules());
     }
 

@@ -73,9 +73,6 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     }
 
     protected void generateCodeProcessContinued() {
-        if(!checkLanguage())
-            return;
-
         if(!editor.getDocument().performAutoSave())
             return;
 
@@ -86,7 +83,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
 
     public boolean checkLanguage() {
         if(!isKnownLanguage()) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Can only generate grammar for Java language");
+            XJAlert.display(editor.getWindowContainer(), "Error", "Can only show generated grammar for Java language");
             return false;
         } else
             return true;
