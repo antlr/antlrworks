@@ -36,18 +36,14 @@ import javax.swing.*;
 public class TreeUtilities {
 
     static public void expandAll(JTree tree) {
-        int row = 0;
-        while(row<tree.getRowCount()) {
+        for(int row=0; row<tree.getRowCount(); row++) {
             tree.expandRow(row);
-            row++;
         }
     }
 
     static public void collapseAll(JTree tree) {
-        int row = 0;
-        while(row<tree.getRowCount()) {
+        for(int row=tree.getRowCount()-1; row>=0; row--) {
             tree.collapseRow(row);
-            row++;
         }
     }
 }
