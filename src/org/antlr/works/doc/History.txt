@@ -1,5 +1,18 @@
 
-Version 1.0 -
+Version 1.0 - 05/17/07
+
+New feature:
+    [AW-41] - Added a desktop-mode where all windows are in a "desktop" frame (mostly for Windows/Linux)
+
+Bug fix:
+    [AW-2] - When dialog box is closed, focus automatically to the main window
+    [AW-38] - Mismatched DBEvent during debugging
+    [AW-39] - Re-open all closed documents may fail to display something on Windows/Linux if no document is found
+    [AW-40] - Windows position are stored in such a way in the preferences that they might cause key length issues
+    [AW-24] - Make sure a window is visible in one of the available screen
+    [AW-42] - Always "guess" the rules to ignore before running the interpreter
+    [AW-44] - Able to generate grammar for language other than Java from within ANTLRWorks
+    [AW-47] - Do not expand all subtree after they have been collapsed
 
 Version 1.0b11 - 04/23/07
 

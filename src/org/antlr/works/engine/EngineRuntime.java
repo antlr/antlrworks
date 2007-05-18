@@ -12,7 +12,6 @@ import org.antlr.works.utils.Utils;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 /*
 
@@ -67,7 +66,7 @@ public class EngineRuntime {
 
     public static String getClassPath(String outputPath) {
         String appPath = IDE.getApplicationPath();
-
+        
         // Need to include the path of the application in order to be able
         // to compile the parser if the system classpath doesn't have ANTLR or ST
         String classPath = outputPath;
@@ -130,13 +129,11 @@ public class EngineRuntime {
          */
 
         if(error == null && esw != null) {
-            for (Iterator<String> iterator = esw.getLines().iterator(); iterator.hasNext();) {
-                String line = iterator.next();
-
-                if(line.startsWith("ANTLR Parser Generator"))
+            for (String line : esw.getLines()) {
+                if (line.startsWith("ANTLR Parser Generator"))
                     continue;
 
-                if(line.startsWith("no such locale file"))
+                if (line.startsWith("no such locale file"))
                     continue;
 
                 error = line;
@@ -154,8 +151,7 @@ public class EngineRuntime {
             args[0] = "java";
             args[1] = "-cp";
             args[2] = getClassPath(currentPath);
-            for(int i=0; i<params.length; i++)
-                args[3+i] = params[i];
+            System.arraycopy(params, 0, args, 3, params.length);
 
             IDE.debugVerbose(console, EngineRuntime.class, "Run Java: "+Utils.toString(args));
 
@@ -195,8 +191,7 @@ public class EngineRuntime {
                 args[2] = classPath;
                 args[3] = "-d";
                 args[4] = Utils.quotePath(outputFileDir);
-                for(int i=0; i<files.length; i++)
-                    args[5+i] = files[i];
+                System.arraycopy(files, 0, args, 5, files.length);
 
                 IDE.debugVerbose(console, EngineRuntime.class, "Compile: "+Utils.toString(args));
 
@@ -214,8 +209,7 @@ public class EngineRuntime {
                 args[2] = classPath;
                 args[3] = "-d";
                 args[4] = Utils.quotePath(outputFileDir);
-                for(int i=0; i<files.length; i++)
-                    args[5+i] = files[i];
+                System.arraycopy(files, 0, args, 5, files.length);
 
                 IDE.debugVerbose(console, EngineRuntime.class, "Compile: "+Utils.toString(args));
 
@@ -228,15 +222,14 @@ public class EngineRuntime {
                 String[] args = new String[2+files.length];
                 args[0] = "-d";
                 args[1] = outputFileDir;
-                for(int i=0; i<files.length; i++)
-                    args[2+i] = files[i];
+                System.arraycopy(files, 0, args, 2, files.length);
 
                 Class<?> javac = Class.forName("com.sun.tools.javac.Main");
                 Class[] p = new Class[] { String[].class };
                 Method m = javac.getMethod("compile", p);
                 Object[] a = new Object[] { args };
                 Object r = m.invoke(javac.newInstance(), a);
-                result = ((Integer)r).intValue();
+                result = (Integer) r;
                 //result = com.sun.tools.javac.Main.compile(args);
             }
 

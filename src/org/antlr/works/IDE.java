@@ -308,6 +308,10 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
             p = sb.toString();
         }
 
+        // Replace all %20 with white space. Apparently inside IntelliJ 6, white space in a path
+        // are replaced by %20 but not in IntelliJ 5
+        p = p.replaceAll("%20", " ");
+
         return p;
     }
 

@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0b11
-April 23, 2007
+Version 1.0
+May 17, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco
@@ -72,47 +72,20 @@ using "java org.antlr.works.IDE".
 
 * HISTORY *
 
-Version 1.0b11 - 04/23/07
+Version 1.0 - 05/17/07
 
 New feature:
-    [AW-8] - Backup file
-    [AW-15] - Use the Tab key to indent/unindent text
-    [AW-25] - Add command-line options for ANTLR
-    [AW-33] - Optional generation and compilation step before debugging
+    [AW-41] - Added a desktop-mode where all windows are in a "desktop" frame (mostly for Windows/Linux)
 
 Bug fix:
-    [AW-26] - Null pointer exception when generating a tree parser grammar
-    [AW-28] - Syntax coloring does take into account empty rewrite syntax
-    [AW-29] - Syntax coloring reports an error when using double-quoted string in an argument block
-    [AW-30] - Interpreter does not ignore rules with $channel=HIDDEN;
-    [AW-34] - Plugin in IntelliJ for Windows reports incorrect grammar name while it is correct
-    [AW-35] - Error when compiling a grammar within IntelliJ on Windows
-    [AW-36] - Rules grouping causes ANTLRWorks to run out of heap space
-
-Version 1.0b10 - 04/15/07
-
-- requires Java 1.5
-- can now display the line numbers in the grammar editor
-- simple print capability
-- ability to debug again (after having launched the debugger once in the current session)
-- syntax coloring parser has been rewritten
-- ability to jump to tokens defined in the options block
-- reverted file extension to *.g only
-- Mac OS X document icon (thanks Abe)
-- save the last used path in the open/save dialogs
-- minor UI and table enhancement
-- fixed a bug when double-clicking a word: selection would be incorrect
-- fixed a bug when trying to generate a parser/lexer from a tree grammar (would loop forever)
-
-Bug fixes:
-[AW-1] - Rename fails to rename reference inside rewrite rule
-[AW-5] - Tree highlight in Windows is too dark
-[AW-6] - Incorrect syntax error with double-quoted string inside ST function
-[AW-7] - Invalid syntax error for double-quoted string in ST
-[AW-9] - Null pointer exception when displaying the DFA for the decision in rule a
-[AW-19] - Make the personal info dialog optional
-[AW-22] - AST node not found in specific situation
-[AW-23] - Debugger panels are incorrectly resized when a split pane divider is moved
+    [AW-2] - When dialog box is closed, focus automatically to the main window
+    [AW-38] - Mismatched DBEvent during debugging
+    [AW-39] - Re-open all closed documents may fail to display something on Windows/Linux if no document is found
+    [AW-40] - Windows position are stored in such a way in the preferences that they might cause key length issues
+    [AW-24] - Make sure a window is visible in one of the available screen
+    [AW-42] - Always "guess" the rules to ignore before running the interpreter
+    [AW-44] - Able to generate grammar for language other than Java from within ANTLRWorks
+    [AW-47] - Do not expand all subtree after they have been collapsed
 
 
 * WARNING *
