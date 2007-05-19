@@ -1,4 +1,6 @@
 
+Version 1.0.1
+
 Version 1.0 - 05/17/07
 
 New feature:

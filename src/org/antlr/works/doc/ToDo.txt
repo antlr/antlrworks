@@ -63,7 +63,6 @@ Windows Prefs:
 * Issues *
 
 - jikes doesn't work from within a jar
-- use "load" on Linux/Windows when opening a document on an untouched one
 - tree view of TUsage: why use white spaces to be able to display the entire string ?
 
 * Problem with syntax diagram path? *
