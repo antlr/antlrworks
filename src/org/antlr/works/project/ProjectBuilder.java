@@ -86,9 +86,9 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
 
         // Remove all non-existent file on disk that are still in the the build list.
 
-        for (Iterator iterator = buildList.getBuildFilesOfType(fileType).iterator(); iterator.hasNext();)
+        for (Iterator<ProjectBuildList.BuildFile> iterator = buildList.getBuildFilesOfType(fileType).iterator(); iterator.hasNext();)
         {
-            ProjectBuildList.BuildFile buildFile = (ProjectBuildList.BuildFile) iterator.next();
+            ProjectBuildList.BuildFile buildFile = iterator.next();
             if(!new File(buildFile.getFilePath()).exists()) {
                 // The file doesn't exist anymore. Remove it from the build list.
                 buildList.removeFile(buildFile.getFilePath(), fileType);

@@ -85,7 +85,8 @@ public class Visual extends EditorTab implements GContextProvider {
     public void close() {
         panel.close();
         drawing.stop();
-        while(drawing.isRunning()) {
+        final long t = System.currentTimeMillis();
+        while(drawing.isRunning() && (System.currentTimeMillis() - t) < 5000) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {

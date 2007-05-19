@@ -86,8 +86,8 @@ public abstract class ATEThread implements Runnable {
 
     public synchronized void stop() {
         threshold = 0;
-        thread.interrupt();
         run = false;
+        thread.interrupt();
     }
 
     /** Interrupt the thread if it is sleeping. If threshold > 0, the thread will sleep an

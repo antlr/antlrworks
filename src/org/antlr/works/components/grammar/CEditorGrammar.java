@@ -500,10 +500,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public boolean isBottomComponentVisible() {
-        if(delegate != null)
-            return delegate.isBottomComponentVisible();
-        else
-            return false;
+        return delegate != null && delegate.isBottomComponentVisible();
     }
 
     public JComponent getToolbarComponent() {
@@ -717,11 +714,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             return true;
         } else {
             File f = new File(path);
-            if(f.exists()) {
-                return f.canWrite();
-            } else {
-                return true;
-            }
+            return !f.exists() || f.canWrite();
         }
     }
 
@@ -807,9 +800,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public ElementReference getReferenceAtPosition(int pos) {
         List<ElementReference> refs = getReferences();
-        for(int index=0; index<refs.size(); index++) {
-            ElementReference ref = refs.get(index);
-            if(ref.containsIndex(pos))
+        for (ElementReference ref : refs) {
+            if (ref.containsIndex(pos))
                 return ref;
         }
         return null;
@@ -824,9 +816,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         if(tokens == null)
             return null;
 
-        for(int index=0; index<tokens.size(); index++) {
-            ATEToken token = tokens.get(index);
-            if(token.containsIndex(pos))
+        for (ATEToken token : tokens) {
+            if (token.containsIndex(pos))
                 return token;
         }
         return null;
@@ -839,9 +830,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     public ElementAction getCurrentAction() {
         List<ElementAction> actions = parserEngine.getActions();
         int position = getCaretPosition();
-        for(int index=0; index<actions.size(); index++) {
-            ElementAction action = actions.get(index);
-            if(action.containsIndex(position))
+        for (ElementAction action : actions) {
+            if (action.containsIndex(position))
                 return action;
         }
         return null;
@@ -1034,10 +1024,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public boolean ensureDocumentSaved() {
-        if(getDocument().getDocumentPath() == null)
-            return getDocument().performSave(false) == XJApplication.YES;
-        else
-            return true;
+        return getDocument().getDocumentPath() != null || getDocument().performSave(false) == XJApplication.YES;
     }
 
     public void grammarChanged() {
@@ -1078,8 +1065,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         menuSCM.setSilent(true);
         menuSCM.queryFileStatus();
 
-        // Request focus in the text pane
-        getTextPane().requestFocusInWindow();
+        // Request focus in the text pane. A little bit later because
+        // in desktop mode, the focus is not taken into account if
+        // requested immediately.
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                getTextPane().requestFocusInWindow();                
+            }
+        });
     }
 
     public void componentActivated() {
@@ -1302,7 +1295,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         debugger.setPersistentData((Map) data.get(KEY_DEBUGGER));
     }
 
-    public Map getPersistentData() {
+    public Map<String, Object> getPersistentData() {
         Map<String,Object> data = new HashMap<String, Object>();
         if(rulesTextSplitPane != null)
             data.put(KEY_SPLITPANE_A, rulesTextSplitPane.getDividerLocation());

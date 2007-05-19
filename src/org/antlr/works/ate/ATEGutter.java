@@ -33,6 +33,7 @@ package org.antlr.works.ate;
 
 import org.antlr.works.ate.breakpoint.ATEBreakpointEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
+import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.utils.IconManager;
 
 import javax.swing.*;
@@ -190,7 +191,7 @@ public class ATEGutter extends JComponent {
 
         offsetForLineNumber = 0;
         if(lineNumberEnabled) {
-            List lines = textEditor.getLines();
+            List<ATELine> lines = textEditor.getLines();
             if(lines != null) {
                 offsetForLineNumber = lineNumberMetrics.stringWidth(String.valueOf(lines.size()));
             }

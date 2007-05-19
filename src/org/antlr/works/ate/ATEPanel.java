@@ -294,6 +294,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         return textPane.getSelectionEnd();
     }
 
+    public String getSelectedText() {
+        return textPane.getSelectedText();
+    }
+
     public List<ATEToken> getTokens() {
         return engine==null?null:engine.getTokens();
     }

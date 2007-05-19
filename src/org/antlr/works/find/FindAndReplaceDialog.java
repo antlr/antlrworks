@@ -89,6 +89,7 @@ public class FindAndReplaceDialog extends XJPanel {
 
         replaceAndFindButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
+                delegate.setFindString(findField.getText());
                 delegate.setReplaceString(replaceField.getText());
                 delegate.replace();
                 delegate.next();

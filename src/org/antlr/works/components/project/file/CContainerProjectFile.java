@@ -145,7 +145,7 @@ public abstract class CContainerProjectFile implements ComponentContainer, XJMen
     }
 
     public Map getPersistentData() {
-        Map data = new HashMap();
+        Map<String, Map<String, Object>> data = new HashMap<String, Map<String, Object>>();
         data.put(KEY_EDITOR_DATA, getEditor().getPersistentData());
         return data;
     }

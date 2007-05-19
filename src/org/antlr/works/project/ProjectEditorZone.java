@@ -14,7 +14,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 /*
 
@@ -207,9 +206,9 @@ public class ProjectEditorZone {
         if(component == null)
             return null;
 
-        for (Iterator iterator = project.getFileEditorItems().iterator(); iterator.hasNext();) {
-            ProjectFileItem item = (ProjectFileItem) iterator.next();
-            if(item.getEditorPanel() == component)
+        for (Object o : project.getFileEditorItems()) {
+            ProjectFileItem item = (ProjectFileItem) o;
+            if (item.getEditorPanel() == component)
                 return item;
         }
 

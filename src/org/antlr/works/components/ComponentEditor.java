@@ -158,7 +158,7 @@ public abstract class ComponentEditor implements XJNotificationObserver {
 
     }
 
-    public Map getPersistentData() {
+    public Map<String, Object> getPersistentData() {
         return null;
     }
 

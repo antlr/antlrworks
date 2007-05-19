@@ -41,6 +41,10 @@
 - check update.xml file
 - tests: check grammar, interpreter, debugger
 
+* Debug plugin in IntelliJ *
+
+Set flag org.antlr.works.debug.plugin to true: -Dorg.antlr.works.debug.plugin=true
+
 * Tools *
 
 http://pmd.sourceforge.net/

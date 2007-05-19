@@ -78,33 +78,51 @@ public class FindAndReplace implements XJFrameDelegate {
         return p;
     }
 
-    public void next() {
+    public boolean matching() {
+        Pattern p = getCompiledPattern();
+        if(p == null)
+            return false;
+
+        String text = editor.getText();
+        Matcher m = p.matcher(text);
+        if(m.find(0)) {
+            editor.selectTextRange(m.start(), m.end());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean next() {
         if(findString == null || findString.length() == 0)
-            return;
+            return false;
 
         int position = editor.getTextPane().getSelectionEnd();
         String text = editor.getText();
 
         Pattern p = getCompiledPattern();
         if(p == null)
-            return;
+            return false;
 
         Matcher m = p.matcher(text);
         if(m.find(position)) {
             editor.selectTextRange(m.start(), m.end());
+            return true;
+        } else {
+            return false;
         }
     }
 
-    public void prev() {
+    public boolean prev() {
         if(findString == null || findString.length() == 0)
-            return;
+            return false;
 
         int position = editor.getTextPane().getSelectionStart();
         String text = editor.getText();
 
         Pattern p = getCompiledPattern();
         if(p == null)
-            return;
+            return false;
 
         Matcher m = p.matcher(text.substring(0, position));
         int matchStart = 0;
@@ -115,12 +133,18 @@ public class FindAndReplace implements XJFrameDelegate {
             matchEnd = m.end();
             matched = true;
         }
-        if(matched)
+        if(matched) {
             editor.selectTextRange(matchStart, matchEnd);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void replace() {
-        editor.textEditor.replaceSelectedText(replaceString);
+        if(matching()) {
+            editor.textEditor.replaceSelectedText(replaceString);
+        }
     }
 
     public void replaceAll() {

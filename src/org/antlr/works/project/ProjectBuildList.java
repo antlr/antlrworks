@@ -38,7 +38,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ProjectBuildList {
 
-    protected Map files = new HashMap();
+    protected Map<String, Map<Object, BuildFile>> files = new HashMap<String, Map<Object, BuildFile>>();
 
     public ProjectBuildList() {
     }
@@ -56,7 +56,7 @@ public class ProjectBuildList {
     }
 
     public void setFileDirty(String filePath, String type, boolean dirty) {
-        BuildFile f = (BuildFile)getMapForType(type).get(filePath);
+        BuildFile f = getMapForType(type).get(filePath);
         if(f != null)
             f.setDirty(dirty);
     }
@@ -66,7 +66,7 @@ public class ProjectBuildList {
     }
 
     public void setIgnoreBuild(String filePath, String fileType, boolean ignore) {
-        BuildFile f = (BuildFile)getMapForType(fileType).get(filePath);
+        BuildFile f = getMapForType(fileType).get(filePath);
         if(f != null)
             f.setIgnore(ignore);
     }
@@ -76,7 +76,7 @@ public class ProjectBuildList {
     }
 
     public boolean isIgnoreBuild(String filePath, String fileType) {
-        BuildFile f = (BuildFile)getMapForType(fileType).get(filePath);
+        BuildFile f = getMapForType(fileType).get(filePath);
         if(f != null)
             return f.isIgnore();
         else
@@ -84,10 +84,10 @@ public class ProjectBuildList {
     }
 
     public void setAllFilesToDirty(boolean flag) {
-        for (Iterator typeIterator = files.values().iterator(); typeIterator.hasNext();) {
-            Map m = (Map) typeIterator.next();
-            for (Iterator fileIterator = m.values().iterator(); fileIterator.hasNext();) {
-                BuildFile file = (BuildFile) fileIterator.next();
+        for (Iterator<Map<Object, BuildFile>> typeIterator = files.values().iterator(); typeIterator.hasNext();) {
+            Map<Object, BuildFile> m = typeIterator.next();
+            for (Iterator<BuildFile> fileIterator = m.values().iterator(); fileIterator.hasNext();) {
+                BuildFile file = fileIterator.next();
                 file.setDirty(true);
             }
         }
@@ -102,17 +102,17 @@ public class ProjectBuildList {
     }
 
     public BuildFile getBuildFile(String filePath, String type) {
-        for (Iterator iterator = getBuildFilesOfType(type).iterator(); iterator.hasNext();) {
-            BuildFile file =  (BuildFile) iterator.next();
+        for (Iterator<BuildFile> iterator = getBuildFilesOfType(type).iterator(); iterator.hasNext();) {
+            BuildFile file = iterator.next();
             if(file.getFilePath().equals(filePath))
                 return file;
         }
         return null;
     }
 
-    public List getBuildFilesOfType(String type) {
-        List files = new ArrayList();
-        for (Iterator iterator = getMapForType(type).values().iterator(); iterator.hasNext();) {
+    public List<BuildFile> getBuildFilesOfType(String type) {
+        List<BuildFile> files = new ArrayList<BuildFile>();
+        for (Iterator<BuildFile> iterator = getMapForType(type).values().iterator(); iterator.hasNext();) {
             files.add(iterator.next());
         }
         return files;
@@ -120,8 +120,8 @@ public class ProjectBuildList {
 
     public List<BuildFile> getDirtyBuildFilesOfType(String type) {
         List<BuildFile> dirtyFiles= new ArrayList<BuildFile>();
-        for (Iterator iterator = getBuildFilesOfType(type).iterator(); iterator.hasNext();) {
-            BuildFile file =  (BuildFile) iterator.next();
+        for (Iterator<BuildFile> iterator = getBuildFilesOfType(type).iterator(); iterator.hasNext();) {
+            BuildFile file = iterator.next();
             if(file.isDirty() && !file.isIgnore())
                 dirtyFiles.add(file);
         }
@@ -144,10 +144,10 @@ public class ProjectBuildList {
 
     public boolean handleExternalModification() {
         boolean modified = false;
-        for (Iterator typeIterator = files.values().iterator(); typeIterator.hasNext();) {
-            Map m = (Map) typeIterator.next();
-            for (Iterator fileIterator = m.values().iterator(); fileIterator.hasNext();) {
-                BuildFile file = (BuildFile) fileIterator.next();
+        for (Iterator<Map<Object, BuildFile>> typeIterator = files.values().iterator(); typeIterator.hasNext();) {
+            Map<Object, BuildFile> m = typeIterator.next();
+            for (Iterator<BuildFile> fileIterator = m.values().iterator(); fileIterator.hasNext();) {
+                BuildFile file = fileIterator.next();
                 if(file.handleExternalModification()) {
                     modified = true;
                 }
@@ -161,13 +161,13 @@ public class ProjectBuildList {
 
         for (Iterator<String> typeIterator = data.keySet().iterator(); typeIterator.hasNext();) {
             String type = typeIterator.next();
-            files.put(type, new HashMap());
+            files.put(type, new HashMap<Object, BuildFile>());
 
             for (Iterator fileDataIterator = (data.get(type)).values().iterator(); fileDataIterator.hasNext();) {
                 Map persistentData = (Map) fileDataIterator.next();
                 BuildFile file = new BuildFile();
                 file.setPersistentData(persistentData);
-                ((Map)files.get(type)).put(file.filePath, file);
+                (files.get(type)).put(file.filePath, file);
             }
         }
     }
@@ -175,11 +175,11 @@ public class ProjectBuildList {
     public Map<String,Map<Object,Map<Object,Serializable>>> getPersistentData() {
         Map<String,Map<Object,Map<Object,Serializable>>> data = new HashMap<String, Map<Object,Map<Object, Serializable>>>();
 
-        for (Iterator typeIterator = files.keySet().iterator(); typeIterator.hasNext();) {
-            String type = (String) typeIterator.next();
+        for (Iterator<String> typeIterator = files.keySet().iterator(); typeIterator.hasNext();) {
+            String type = typeIterator.next();
             Map<Object,Map<Object,Serializable>> dataFiles = new HashMap<Object, Map<Object,Serializable>>();
-            for (Iterator fileIterator = ((Map)files.get(type)).values().iterator(); fileIterator.hasNext();) {
-                BuildFile file = (BuildFile) fileIterator.next();
+            for (Iterator<BuildFile> fileIterator = (files.get(type)).values().iterator(); fileIterator.hasNext();) {
+                BuildFile file = fileIterator.next();
                 dataFiles.put(file.filePath, file.getPersistentData());
             }
             data.put(type, dataFiles);
@@ -188,10 +188,10 @@ public class ProjectBuildList {
         return data;
     }
 
-    private Map getMapForType(String type) {
-        Map m = (Map)files.get(type);
+    private Map<Object, BuildFile> getMapForType(String type) {
+        Map<Object, BuildFile> m = files.get(type);
         if(m == null) {
-            m = new HashMap();
+            m = new HashMap<Object, BuildFile>();
             files.put(type, m);
         }
         return m;

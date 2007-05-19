@@ -66,7 +66,23 @@ public class EngineRuntime {
 
     public static String getClassPath(String outputPath) {
         String appPath = IDE.getApplicationPath();
-        
+
+        String isDebuggingPlugin = System.getProperty("org.antlr.works.debug.plugin");
+        if(isDebuggingPlugin != null && Boolean.parseBoolean(isDebuggingPlugin)) {
+            // If we are debugging the plugin in IntelliJ, add all the jar in the lib
+            // folder of the plugin sandbox (usually on Mac OS X at ~/Library/Preferences/sandbox/plugins/...
+            String sandbox = XJUtils.getPathByDeletingLastComponent(appPath)+File.separatorChar+"lib";
+            File dir = new File(sandbox);
+            if(dir.isDirectory()) {
+                for(File f : dir.listFiles()) {
+                    String candidate = f.getAbsolutePath();
+                    if(candidate.endsWith(".jar")) {
+                        appPath += File.pathSeparatorChar+candidate;
+                    }
+                }
+            }
+        }
+
         // Need to include the path of the application in order to be able
         // to compile the parser if the system classpath doesn't have ANTLR or ST
         String classPath = outputPath;
