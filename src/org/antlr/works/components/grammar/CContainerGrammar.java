@@ -36,6 +36,7 @@ import edu.usfca.xj.appkit.frame.XJWindow;
 import edu.usfca.xj.appkit.menu.XJMainMenuBar;
 import edu.usfca.xj.appkit.menu.XJMenu;
 import edu.usfca.xj.appkit.menu.XJMenuItem;
+import edu.usfca.xj.appkit.app.XJApplication;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentEditor;
 import org.antlr.works.prefs.AWPrefs;
@@ -71,11 +72,14 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
     }
 
     public void setDefaultSize() {
+        if(XJApplication.shared().useDesktopMode()) {
+            super.setDefaultSize();
+            return;
+        }
+
         Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         r.width *= 0.8;
         r.height *= 0.8;
-        //r.width = 940;
-        //r.height = 700;
         getRootPane().setPreferredSize(r.getSize());
     }
 
