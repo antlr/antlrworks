@@ -194,6 +194,10 @@ public class MenuRefactor extends MenuAbstract {
             if(token.type != tokenType)
                 continue;
 
+            // FIX AW-56
+            if(RefactorEngine.ignoreScopeForDoubleQuoteLiteral(token.scope))
+                continue;
+
             String attribute = token.getAttribute();
             String stripped = attribute.substring(1, attribute.length()-1);
             if(stripped.indexOf(quote) != -1 || stripped.indexOf(unescapeQuote) != -1)

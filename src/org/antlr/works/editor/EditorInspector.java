@@ -2,12 +2,15 @@ package org.antlr.works.editor;
 
 import edu.usfca.xj.foundation.XJUtils;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
-import org.antlr.works.ate.syntax.misc.ATEScope;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.grammar.RefactorEngine;
 import org.antlr.works.idea.IdeaAction;
 import org.antlr.works.idea.IdeaActionDelegate;
 import org.antlr.works.syntax.GrammarSyntax;
-import org.antlr.works.syntax.element.*;
+import org.antlr.works.syntax.element.ElementGrammarName;
+import org.antlr.works.syntax.element.ElementReference;
+import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.syntax.element.ElementToken;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -126,7 +129,7 @@ public class EditorInspector {
 
         for (ATEToken t : tokens) {
             if (t.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
-                if (ignoreScopeForDoubleQuoteLiteral(t.scope)) continue;
+                if (RefactorEngine.ignoreScopeForDoubleQuoteLiteral(t.scope)) continue;
 
                 Item item = new ItemInvalidCharLiteral();
                 item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
@@ -135,17 +138,6 @@ public class EditorInspector {
                 items.add(item);
             }
         }
-    }
-
-    /**
-     * Returns true if the scope should be ignored when checking for double-quote literal
-     */
-    private boolean ignoreScopeForDoubleQuoteLiteral(ATEScope scope) {
-        if(scope == null) return false;
-
-        Class<? extends Object> c = scope.getClass();
-        return c.equals(ElementAction.class) || c.equals(ElementBlock.class) || c.equals(ElementRewriteBlock.class)
-                || c.equals(ElementRewriteFunction.class) || c.equals(ElementArgumentBlock.class);
     }
 
     protected void discoverUndefinedReferences(List<Item> items) {

@@ -1,7 +1,9 @@
 package org.antlr.works.grammar;
 
+import org.antlr.works.ate.syntax.misc.ATEScope;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.syntax.GrammarSyntaxLexer;
+import org.antlr.works.syntax.element.*;
 
 import java.util.List;
 /*
@@ -58,12 +60,24 @@ public class RefactorEngine {
             if(!token.getAttribute().equals(attr)) continue;
 
             if(token.type == t.type ||
-               renameRefRule && (token.type == GrammarSyntaxLexer.TOKEN_REFERENCE || token.type == GrammarSyntaxLexer.TOKEN_DECL))
+                    renameRefRule && (token.type == GrammarSyntaxLexer.TOKEN_REFERENCE || token.type == GrammarSyntaxLexer.TOKEN_DECL))
             {
                 mutator.replace(token.getStartIndex(), token.getEndIndex(), name);
             }
         }
         return true;
     }
+
+    /**
+     * Returns true if the scope should be ignored when checking for double-quote literal
+     */
+    public static boolean ignoreScopeForDoubleQuoteLiteral(ATEScope scope) {
+        if(scope == null) return false;
+
+        Class<? extends Object> c = scope.getClass();
+        return c.equals(ElementAction.class) || c.equals(ElementBlock.class) || c.equals(ElementRewriteBlock.class)
+                || c.equals(ElementRewriteFunction.class) || c.equals(ElementArgumentBlock.class);
+    }
+
 
 }
