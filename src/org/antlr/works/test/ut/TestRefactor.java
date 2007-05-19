@@ -92,6 +92,10 @@ public class TestRefactor extends AbstractTest {
             mutableText.insert(index, s);
         }
 
+        public void insertAtLinesBoundary(int index, String s) {
+            mutableText.insert(index, s);
+        }
+
         public void delete(int start, int end) {
             mutableText.delete(start, end);
         }

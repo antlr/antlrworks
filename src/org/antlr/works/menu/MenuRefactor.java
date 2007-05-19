@@ -76,10 +76,7 @@ public class MenuRefactor extends MenuAbstract {
 
     public boolean canReplaceLiteralWithTokenLabel() {
         ATEToken token = editor.getCurrentToken();
-        if(token == null)
-            return false;
-        else
-            return token.type == ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING || token.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING;
+        return token != null && (token.type == ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING || token.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING);
     }
 
     public void replaceLiteralWithTokenLabel() {
@@ -413,7 +410,6 @@ public class MenuRefactor extends MenuAbstract {
         StringBuffer sb = new StringBuffer();
 
         sb.append("\n");
-        sb.append("\n");
         sb.append(name);
 
         if(name.length() >= AWPrefs.getEditorTabSize())
@@ -425,12 +421,11 @@ public class MenuRefactor extends MenuAbstract {
             sb.append(content);
         }
         sb.append("\n\t;");
-        sb.append("\n");
         return sb.toString();
     }
 
     protected void insertRuleAtIndex(String rule, int index) {
-        mutator.insert(index, rule);
+        mutator.insertAtLinesBoundary(index, rule);
     }
 
     protected void beginRefactor(String name) {
@@ -468,6 +463,18 @@ public class MenuRefactor extends MenuAbstract {
 
         public void insert(int index, String s) {
             mutableText.insert(index, s);
+        }
+
+        public void insertAtLinesBoundary(int index, String s) {
+            if(!(mutableText.charAt(index) == '\n' && mutableText.charAt(index-1) == '\n')) {
+                mutableText.insert(index++, '\n');
+            }
+            mutableText.insert(index, s);
+            int end = index+s.length();
+            if(!(mutableText.charAt(end) == '\n' && mutableText.charAt(end+1) == '\n'))
+            {
+                mutableText.insert(end, '\n');
+            }
         }
 
         public void delete(int start, int end) {

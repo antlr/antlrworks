@@ -33,5 +33,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public interface RefactorMutator {
     void replace(int start, int end, String s);
     void insert(int index, String s);
+    void insertAtLinesBoundary(int index, String s);
     void delete(int start, int end);
 }
