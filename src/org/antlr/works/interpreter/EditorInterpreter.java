@@ -46,6 +46,7 @@ import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
@@ -282,15 +283,18 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
         CharStream input = new ANTLRStringStream(Utils.convertRawTextWithEOL(textPane.getText(), eolCombo));
 
+        EngineGrammar eg = editor.getEngineGrammar();
         Grammar parser;
         Grammar lexer;
         try {
-            parser = editor.getEngineGrammar().getParserGrammar();
-            lexer = editor.getEngineGrammar().getLexerGrammar();
+            eg.createGrammars();
         } catch (Exception e) {
             editor.console.print(e);
             return;
         }
+
+        parser = eg.getParserGrammar();
+        lexer = eg.getLexerGrammar();
 
         Interpreter lexEngine = new Interpreter(lexer, input);
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);

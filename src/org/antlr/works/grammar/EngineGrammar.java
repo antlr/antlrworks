@@ -77,19 +77,17 @@ public class EngineGrammar {
         return grammarDirty || grammarAnalyzeDirty;
     }
 
-    public Grammar getParserGrammar() throws Exception {
-        createGrammars();
+    public Grammar getParserGrammar() {
         return parserGrammar;
     }
 
-    public Grammar getLexerGrammar() throws Exception {
-        createGrammars();
+    public Grammar getLexerGrammar() {
         return lexerGrammar;
     }
 
     public NFAState getRuleStartState(String name) throws Exception {
         Grammar g;
-
+        createGrammars();
         if(ATEToken.isLexerName(name))
             g = getLexerGrammar();
         else
@@ -99,6 +97,7 @@ public class EngineGrammar {
     }
 
     public Grammar getGrammarForRule(String name) throws Exception {
+        createGrammars();
         if(ATEToken.isLexerName(name))
             return getLexerGrammar();
         else
@@ -292,9 +291,8 @@ public class EngineGrammar {
             g.createLookaheadDFAs();
             if(getType() == ElementGrammarName.COMBINED) {
                 // If the grammar is combined, analyze also the lexer
-                Grammar lexer = getLexerGrammar();
-                if(lexer != null)
-                    lexer.createLookaheadDFAs();
+                if(lexerGrammar != null)
+                    lexerGrammar.createLookaheadDFAs();
             }
 
             buildNonDeterministicErrors();

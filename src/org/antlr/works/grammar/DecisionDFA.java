@@ -8,7 +8,6 @@ import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.GrammarSyntaxLexer;
-import org.antlr.works.syntax.element.ElementRule;
 
 import java.util.List;
 /*
@@ -98,16 +97,31 @@ public class DecisionDFA extends GrammarDOTTab {
     }
 
     public String getDOTString() throws Exception {
+        EngineGrammar eg = editor.getEngineGrammar();
+        eg.analyze();
+
         Grammar g;
 
-        ElementRule rule = editor.getCurrentRule();
-        if(rule.lexer)
-            g = editor.getEngineGrammar().getLexerGrammar();
-        else
-            g = editor.getEngineGrammar().getParserGrammar();
+        int adjustedColumn = getDecisionColumn(g = eg.getParserGrammar());
+        if(adjustedColumn == -1)
+            adjustedColumn = getDecisionColumn(g = eg.getLexerGrammar());
 
-        editor.getEngineGrammar().analyze();
+        if(adjustedColumn == -1)
+            throw new Exception("No decision in the current line");
 
+        CodeGenerator generator = new CodeGenerator(new Tool(), g,
+                (String) eg.getParserGrammar().getOption("language"));
+
+        DFA dfa = g.getLookaheadDFAFromPositionInFile(line, adjustedColumn);
+        decisionNumber = dfa.getDecisionNumber();
+        DOTGenerator dg = new DOTGenerator(g);
+        g.setCodeGenerator(generator);
+        dg.setArrowheadType("none");
+        dg.setRankdir("LR");    // Left-to-right
+        return dg.getDOT( dfa.startState );
+    }
+
+    public int getDecisionColumn(Grammar g) {
         List columns = g.getLookaheadDFAColumnsForLineInFile(line);
         int adjustedColumn = -1;
         for(int index = columns.size()-1; index >=0; index--) {
@@ -118,20 +132,7 @@ public class DecisionDFA extends GrammarDOTTab {
             } else if(index == 0)
                 adjustedColumn = match;
         }
-
-        if(adjustedColumn == -1)
-            throw new Exception("No decision in the current line");
-
-        CodeGenerator generator = new CodeGenerator(new Tool(), g,
-                (String) editor.getEngineGrammar().getParserGrammar().getOption("language"));
-
-        DFA dfa = g.getLookaheadDFAFromPositionInFile(line, adjustedColumn);
-        decisionNumber = dfa.getDecisionNumber();
-        DOTGenerator dg = new DOTGenerator(g);
-        g.setCodeGenerator(generator);
-        dg.setArrowheadType("none");
-        dg.setRankdir("LR");    // Left-to-right
-        return dg.getDOT( dfa.startState );
+        return adjustedColumn;
     }
 
     public String getTabName() {

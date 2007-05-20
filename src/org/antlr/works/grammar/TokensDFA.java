@@ -44,9 +44,10 @@ public class TokensDFA extends GrammarDOTTab {
     }
 
     public String getDOTString() throws Exception {
-        editor.getEngineGrammar().analyze();
+        EngineGrammar eg = editor.getEngineGrammar();
+        eg.analyze();
 
-        Grammar g = editor.getEngineGrammar().getLexerGrammar();
+        Grammar g = eg.getLexerGrammar();
         Rule r = g.getRule(Grammar.ARTIFICIAL_TOKENS_RULENAME);
         NFAState s = (NFAState)r.startState.transition(0).target;
         DFA dfa = g.getLookaheadDFA(s.getDecisionNumber());
