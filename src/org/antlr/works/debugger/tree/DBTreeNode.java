@@ -105,8 +105,12 @@ public class DBTreeNode extends AWTreeNode {
                 DBTreeToken t2 = (DBTreeToken)t;
                 if(t1.ID == t2.ID)
                     lastNodeSoFar = this;
-            } else if(t.getTokenIndex() == token.getTokenIndex())
+            } else if(t.getTokenIndex() == token.getTokenIndex() &&
+                    t.getType() == token.getType())
+            {
+                // FIX AW-61 - compare also the token type to avoid selecting the wrong one (e.g. imaginary)
                 lastNodeSoFar = this;
+            }
         }
 
         for(Enumeration childrenEnumerator = children(); childrenEnumerator.hasMoreElements(); ) {

@@ -135,7 +135,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
             case TOKEN_NORMAL: attr = attributeConsume; break;
             case TOKEN_HIDDEN: attr = attributeConsumeHidden; break;
             case TOKEN_DEAD: attr = attributeConsumeDead; break;
-        }        
+        }
         addToken(token);
         addConsumeAttribute(token, attr);
         removeTokenLT(token);
@@ -426,11 +426,15 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
         DBInputTextTokenInfo info = getTokenInfoForToken(t);
         if(info != null)
             highlightToken(info.start);
+        else
+            highlightToken(-1);        
     }
 
     public DBInputTextTokenInfo getTokenInfoForToken(Token t) {
         for (DBInputTextTokenInfo info : indexToTokenInfoMap.values()) {
-            if (info.token.getTokenIndex() == t.getTokenIndex())
+            // FIX AW-61 - compare also the token type to avoid selecting the wrong one (e.g. imaginary)
+            if (info.token.getTokenIndex() == t.getTokenIndex() &&
+                    info.token.getType() == t.getType())
                 return info;
         }
         return null;
