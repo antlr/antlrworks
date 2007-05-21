@@ -1,11 +1,11 @@
 package org.antlr.works.awtree;
 
-import edu.usfca.xj.appkit.gview.GView;
-import edu.usfca.xj.appkit.gview.base.Rect;
-import edu.usfca.xj.appkit.gview.object.GElement;
-import edu.usfca.xj.appkit.gview.object.GElementRect;
-import edu.usfca.xj.appkit.gview.object.GLink;
-import edu.usfca.xj.appkit.gview.shape.SLinkElbow;
+import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.gview.base.Rect;
+import org.antlr.xjlib.appkit.gview.object.GElement;
+import org.antlr.xjlib.appkit.gview.object.GElementRect;
+import org.antlr.xjlib.appkit.gview.object.GLink;
+import org.antlr.xjlib.appkit.gview.shape.SLinkElbow;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.ParseTree;
 

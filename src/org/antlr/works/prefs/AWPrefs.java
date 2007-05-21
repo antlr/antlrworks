@@ -31,9 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.prefs;
 
-import edu.usfca.xj.appkit.app.XJApplication;
-import edu.usfca.xj.appkit.app.XJPreferences;
-import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.app.XJPreferences;
+import org.antlr.xjlib.foundation.XJSystem;
 
 import java.awt.*;
 import java.util.Calendar;

@@ -1,9 +1,9 @@
 package org.antlr.works.components.project.file;
 
-import edu.usfca.xj.appkit.document.XJDataPlainText;
-import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
-import edu.usfca.xj.appkit.menu.*;
+import org.antlr.xjlib.appkit.document.XJDataPlainText;
+import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.menu.*;
 import org.antlr.works.components.ComponentContainer;
 import org.antlr.works.components.ComponentDocument;
 import org.antlr.works.components.ComponentEditor;

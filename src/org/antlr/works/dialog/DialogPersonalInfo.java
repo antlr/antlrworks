@@ -34,7 +34,7 @@ package org.antlr.works.dialog;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import edu.usfca.xj.appkit.frame.XJDialog;
+import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsReporter;
 import org.antlr.works.utils.IconManager;

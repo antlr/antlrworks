@@ -1,13 +1,13 @@
 package org.antlr.works.components;
 
-import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
-import edu.usfca.xj.appkit.menu.XJMainMenuBar;
-import edu.usfca.xj.appkit.menu.XJMenu;
-import edu.usfca.xj.appkit.menu.XJMenuItem;
-import edu.usfca.xj.appkit.undo.XJUndo;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
+import org.antlr.xjlib.appkit.undo.XJUndo;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
+import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefsDialog;
 

@@ -1,6 +1,6 @@
 package org.antlr.works.visualization.graphics;
 
-import edu.usfca.xj.appkit.swing.XJGraphics2DPS;
+import org.antlr.xjlib.appkit.swing.XJGraphics2DPS;
 
 import java.awt.*;
 /*

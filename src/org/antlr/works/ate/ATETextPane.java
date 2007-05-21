@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate;
 
-import edu.usfca.xj.appkit.undo.XJUndo;
+import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.works.ate.swing.ATEEditorKit;
 import org.antlr.works.ate.swing.ATERenderingView;
 

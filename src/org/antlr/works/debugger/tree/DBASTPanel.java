@@ -1,9 +1,9 @@
 package org.antlr.works.debugger.tree;
 
-import edu.usfca.xj.appkit.gview.GView;
-import edu.usfca.xj.appkit.swing.XJTable;
-import edu.usfca.xj.appkit.swing.XJTableDelegate;
-import edu.usfca.xj.appkit.swing.XJTableView;
+import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.swing.XJTable;
+import org.antlr.xjlib.appkit.swing.XJTableDelegate;
+import org.antlr.xjlib.appkit.swing.XJTableView;
 import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;

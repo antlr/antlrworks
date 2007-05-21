@@ -31,21 +31,21 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works;
 
-import edu.usfca.xj.appkit.app.XJApplication;
-import edu.usfca.xj.appkit.app.XJApplicationDelegate;
-import edu.usfca.xj.appkit.document.XJDataPlainText;
-import edu.usfca.xj.appkit.document.XJDataXML;
-import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.appkit.frame.XJPanel;
-import edu.usfca.xj.appkit.menu.XJMainMenuBar;
-import edu.usfca.xj.appkit.menu.XJMenu;
-import edu.usfca.xj.appkit.menu.XJMenuItem;
-import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
-import edu.usfca.xj.appkit.swing.XJLookAndFeel;
-import edu.usfca.xj.appkit.utils.BrowserLauncher;
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJLocalizable;
-import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
+import org.antlr.xjlib.appkit.document.XJDataPlainText;
+import org.antlr.xjlib.appkit.document.XJDataXML;
+import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.xjlib.appkit.frame.XJPanel;
+import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
+import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
+import org.antlr.xjlib.appkit.swing.XJLookAndFeel;
+import org.antlr.xjlib.appkit.utils.BrowserLauncher;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJLocalizable;
+import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.works.components.grammar.CContainerGrammar;

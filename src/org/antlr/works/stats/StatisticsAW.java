@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.stats;
 
-import edu.usfca.xj.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.works.prefs.AWPrefs;
 
 import java.util.*;

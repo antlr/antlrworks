@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.utils;
 
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 
 import javax.swing.*;
 import java.awt.*;

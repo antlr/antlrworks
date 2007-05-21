@@ -1,6 +1,6 @@
 package org.antlr.works.tips;
 
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.works.tooltip.ToolTipList;
 import org.antlr.works.tooltip.ToolTipListDelegate;
 import org.antlr.works.utils.OverlayObject;

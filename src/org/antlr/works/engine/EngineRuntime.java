@@ -1,7 +1,7 @@
 package org.antlr.works.engine;
 
-import edu.usfca.xj.foundation.XJSystem;
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.foundation.XJSystem;
+import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.IDE;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;

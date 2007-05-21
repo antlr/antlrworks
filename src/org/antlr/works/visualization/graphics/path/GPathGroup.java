@@ -31,9 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics.path;
 
-import edu.usfca.xj.appkit.gview.timer.GTimer;
-import edu.usfca.xj.appkit.gview.timer.GTimerDelegate;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import org.antlr.xjlib.appkit.gview.timer.GTimer;
+import org.antlr.xjlib.appkit.gview.timer.GTimerDelegate;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GObject;
 

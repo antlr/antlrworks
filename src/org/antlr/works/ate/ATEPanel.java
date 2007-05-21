@@ -1,8 +1,8 @@
 package org.antlr.works.ate;
 
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
-import edu.usfca.xj.appkit.undo.XJUndo;
-import edu.usfca.xj.appkit.utils.XJSmoothScrolling;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.undo.XJUndo;
+import org.antlr.xjlib.appkit.utils.XJSmoothScrolling;
 import org.antlr.works.ate.analysis.ATEAnalysisColumn;
 import org.antlr.works.ate.analysis.ATEAnalysisManager;
 import org.antlr.works.ate.breakpoint.ATEBreakpointManager;

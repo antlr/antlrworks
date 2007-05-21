@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics;
 
-import edu.usfca.xj.appkit.gview.base.Vector2D;
-import edu.usfca.xj.appkit.gview.shape.SLinkArc;
+import org.antlr.xjlib.appkit.gview.base.Vector2D;
+import org.antlr.xjlib.appkit.gview.shape.SLinkArc;
 
 import java.awt.*;
 import java.awt.font.TextLayout;

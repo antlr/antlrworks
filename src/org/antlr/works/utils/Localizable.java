@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.utils;
 
-import edu.usfca.xj.appkit.utils.XJLocalizable;
+import org.antlr.xjlib.appkit.utils.XJLocalizable;
 
 public class Localizable {
 

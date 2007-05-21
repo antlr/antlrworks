@@ -1,7 +1,7 @@
 package org.antlr.works.debugger.tree;
 
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
+import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
 import org.antlr.tool.Grammar;
 import org.antlr.works.awtree.AWTreeModel;

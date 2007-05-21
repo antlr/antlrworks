@@ -31,13 +31,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.utils;
 
-import edu.usfca.xj.appkit.app.XJApplication;
-import edu.usfca.xj.appkit.update.XJUpdateManager;
-import edu.usfca.xj.appkit.utils.BrowserLauncher;
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.foundation.XJSystem;
-import edu.usfca.xj.foundation.XJUtils;
-import edu.usfca.xj.foundation.timer.XJScheduledTimerDelegate;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.update.XJUpdateManager;
+import org.antlr.xjlib.appkit.utils.BrowserLauncher;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.foundation.XJSystem;
+import org.antlr.xjlib.foundation.XJUtils;
+import org.antlr.xjlib.foundation.timer.XJScheduledTimerDelegate;
 import org.antlr.Tool;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.works.dialog.DialogReports;

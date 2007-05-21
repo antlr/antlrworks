@@ -1,8 +1,8 @@
 package org.antlr.works.stats;
 
-import edu.usfca.xj.appkit.app.XJApplicationDelegate;
-import edu.usfca.xj.appkit.swing.XJLookAndFeel;
-import edu.usfca.xj.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
+import org.antlr.xjlib.appkit.swing.XJLookAndFeel;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.works.IDE;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.dialog.DialogReports;

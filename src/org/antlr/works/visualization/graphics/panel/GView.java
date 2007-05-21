@@ -31,10 +31,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics.panel;
 
-import edu.usfca.xj.appkit.menu.XJMenu;
-import edu.usfca.xj.appkit.menu.XJMenuItem;
-import edu.usfca.xj.appkit.menu.XJMenuItemDelegate;
-import edu.usfca.xj.appkit.utils.XJSmoothScrolling;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
+import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
+import org.antlr.xjlib.appkit.utils.XJSmoothScrolling;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;

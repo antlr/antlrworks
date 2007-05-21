@@ -32,9 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.find;
 
-import edu.usfca.xj.appkit.frame.XJFrame;
-import edu.usfca.xj.appkit.frame.XJFrameDelegate;
-import edu.usfca.xj.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.frame.XJFrame;
+import org.antlr.xjlib.appkit.frame.XJFrameDelegate;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.works.components.grammar.CEditorGrammar;
 
 import java.util.regex.Matcher;

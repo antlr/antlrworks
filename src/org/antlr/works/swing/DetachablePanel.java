@@ -1,6 +1,6 @@
 package org.antlr.works.swing;
 
-import edu.usfca.xj.appkit.frame.XJDialog;
+import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
 

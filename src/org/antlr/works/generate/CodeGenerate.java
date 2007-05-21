@@ -31,9 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.generate;
 
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
+import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;

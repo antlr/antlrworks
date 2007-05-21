@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.generate;
 
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
 import org.antlr.works.editor.EditorTab;

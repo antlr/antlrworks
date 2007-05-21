@@ -31,9 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger.input;
 
-import edu.usfca.xj.foundation.XJSystem;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
-import edu.usfca.xj.foundation.notification.XJNotificationObserver;
+import org.antlr.xjlib.foundation.XJSystem;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
+import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;

@@ -1,6 +1,6 @@
 package org.antlr.works.test;
 
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.foundation.XJUtils;
 import junit.framework.TestCase;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;

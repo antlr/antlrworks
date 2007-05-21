@@ -1,6 +1,6 @@
 package org.antlr.works.project;
 
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.File;
 import java.io.Serializable;

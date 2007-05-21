@@ -1,6 +1,6 @@
 package org.antlr.works.grammar;
 
-import edu.usfca.xj.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.element.ElementGrammarName;

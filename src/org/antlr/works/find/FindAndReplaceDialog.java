@@ -34,7 +34,7 @@ package org.antlr.works.find;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import edu.usfca.xj.appkit.frame.XJPanel;
+import org.antlr.xjlib.appkit.frame.XJPanel;
 import org.antlr.works.IDE;
 
 import javax.swing.*;

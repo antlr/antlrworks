@@ -34,8 +34,8 @@ package org.antlr.works.debugger.remote;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import edu.usfca.xj.appkit.frame.XJDialog;
-import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.xjlib.appkit.frame.XJDialog;
+import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.*;

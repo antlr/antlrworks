@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.interpreter;
 
-import edu.usfca.xj.appkit.gview.GView;
-import edu.usfca.xj.appkit.utils.XJDialogProgress;
+import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;

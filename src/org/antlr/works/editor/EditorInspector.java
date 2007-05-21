@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.RefactorEngine;

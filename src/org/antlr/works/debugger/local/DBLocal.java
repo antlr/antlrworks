@@ -31,11 +31,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger.local;
 
-import edu.usfca.xj.appkit.frame.XJDialog;
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.appkit.frame.XJDialog;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
+import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
+import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;

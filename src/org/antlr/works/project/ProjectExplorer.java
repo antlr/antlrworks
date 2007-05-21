@@ -1,6 +1,6 @@
 package org.antlr.works.project;
 
-import edu.usfca.xj.appkit.swing.XJTree;
+import org.antlr.xjlib.appkit.swing.XJTree;
 import org.antlr.works.components.project.CContainerProject;
 
 import javax.swing.*;

@@ -1,8 +1,8 @@
 package org.antlr.works.components;
 
-import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
-import edu.usfca.xj.appkit.menu.XJMainMenuBar;
+import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 
 import java.util.Map;
 /*

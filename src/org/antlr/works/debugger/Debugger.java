@@ -31,10 +31,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger;
 
-import edu.usfca.xj.appkit.frame.XJDialog;
-import edu.usfca.xj.appkit.gview.GView;
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.foundation.notification.XJNotificationCenter;
+import org.antlr.xjlib.appkit.frame.XJDialog;
+import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.ClassicToken;
 import org.antlr.runtime.Token;
 import org.antlr.works.ate.syntax.misc.ATELine;

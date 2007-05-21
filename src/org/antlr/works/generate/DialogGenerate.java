@@ -37,9 +37,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import edu.usfca.xj.appkit.frame.XJDialog;
-import edu.usfca.xj.appkit.utils.XJFileChooser;
-import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.xjlib.appkit.frame.XJDialog;
+import org.antlr.xjlib.appkit.utils.XJFileChooser;
+import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.*;

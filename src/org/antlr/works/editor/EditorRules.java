@@ -31,9 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import edu.usfca.xj.appkit.swing.XJTree;
-import edu.usfca.xj.appkit.swing.XJTreeDelegate;
-import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.xjlib.appkit.swing.XJTree;
+import org.antlr.xjlib.appkit.swing.XJTreeDelegate;
+import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;

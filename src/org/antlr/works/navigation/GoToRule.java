@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.navigation;
 
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.OverlayObject;

@@ -1,6 +1,6 @@
 package org.antlr.works.syntax;
 
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;

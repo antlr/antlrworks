@@ -1,8 +1,8 @@
 package org.antlr.works.components;
 
-import edu.usfca.xj.appkit.document.XJDataPlainText;
-import edu.usfca.xj.appkit.document.XJDocument;
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.appkit.document.XJDataPlainText;
+import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.xjlib.foundation.XJUtils;
 /*
 
 [The "BSD licence"]

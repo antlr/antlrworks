@@ -1,6 +1,6 @@
 package org.antlr.works.components.project;
 
-import edu.usfca.xj.appkit.document.XJDocument;
+import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.works.project.ProjectData;
 
 import java.util.Map;

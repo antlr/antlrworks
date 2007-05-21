@@ -1,10 +1,10 @@
 package org.antlr.works.grammar;
 
-import edu.usfca.xj.appkit.gview.GView;
-import edu.usfca.xj.appkit.gview.GViewDelegate;
-import edu.usfca.xj.appkit.gview.object.GElement;
-import edu.usfca.xj.appkit.gview.utils.GDOTImporterDOT;
-import edu.usfca.xj.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.gview.GViewDelegate;
+import org.antlr.xjlib.appkit.gview.object.GElement;
+import org.antlr.xjlib.appkit.gview.utils.GDOTImporterDOT;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;

@@ -33,9 +33,9 @@ package org.antlr.works.dialog;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import edu.usfca.xj.appkit.app.XJApplication;
-import edu.usfca.xj.appkit.frame.XJPanel;
-import edu.usfca.xj.foundation.XJLib;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.frame.XJPanel;
+import org.antlr.xjlib.foundation.XJLib;
 import org.antlr.Tool;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.works.IDE;

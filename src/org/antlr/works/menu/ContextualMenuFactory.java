@@ -1,6 +1,6 @@
 package org.antlr.works.menu;
 
-import edu.usfca.xj.appkit.menu.XJMenuItem;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
 import org.antlr.works.editor.EditorMenu;
 
 import javax.swing.*;

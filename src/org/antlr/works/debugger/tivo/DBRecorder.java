@@ -31,10 +31,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger.tivo;
 
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
+import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
+import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
 import org.antlr.works.debugger.Debugger;

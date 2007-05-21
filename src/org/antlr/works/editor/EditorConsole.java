@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.Console;

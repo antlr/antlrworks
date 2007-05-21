@@ -1,16 +1,16 @@
 package org.antlr.works.components.grammar;
 
-import edu.usfca.xj.appkit.app.XJApplication;
-import edu.usfca.xj.appkit.menu.XJMainMenuBar;
-import edu.usfca.xj.appkit.menu.XJMenu;
-import edu.usfca.xj.appkit.menu.XJMenuItem;
-import edu.usfca.xj.appkit.menu.XJMenuItemCheck;
-import edu.usfca.xj.appkit.swing.XJTree;
-import edu.usfca.xj.appkit.text.XJURLLabel;
-import edu.usfca.xj.appkit.undo.XJUndo;
-import edu.usfca.xj.appkit.undo.XJUndoDelegate;
-import edu.usfca.xj.appkit.utils.XJAlert;
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
+import org.antlr.xjlib.appkit.menu.XJMenuItemCheck;
+import org.antlr.xjlib.appkit.swing.XJTree;
+import org.antlr.xjlib.appkit.text.XJURLLabel;
+import org.antlr.xjlib.appkit.undo.XJUndo;
+import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;

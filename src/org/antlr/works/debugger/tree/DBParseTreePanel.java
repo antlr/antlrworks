@@ -1,6 +1,6 @@
 package org.antlr.works.debugger.tree;
 
-import edu.usfca.xj.appkit.gview.GView;
+import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;

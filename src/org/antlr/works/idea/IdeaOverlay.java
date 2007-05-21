@@ -1,6 +1,6 @@
 package org.antlr.works.idea;
 
-import edu.usfca.xj.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.OverlayObject;

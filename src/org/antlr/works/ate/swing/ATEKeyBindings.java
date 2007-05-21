@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate.swing;
 
-import edu.usfca.xj.foundation.XJSystem;
+import org.antlr.xjlib.foundation.XJSystem;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;

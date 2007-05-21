@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import edu.usfca.xj.appkit.gview.GView;
+import org.antlr.xjlib.appkit.gview.GView;
 
 import java.awt.*;
 /*

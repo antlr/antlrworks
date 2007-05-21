@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import edu.usfca.xj.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.generate.CodeDisplay;
 import org.antlr.works.generate.CodeGenerate;

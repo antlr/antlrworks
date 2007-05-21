@@ -1,7 +1,7 @@
 package org.antlr.works.debugger.panels;
 
-import edu.usfca.xj.appkit.swing.XJTable;
-import edu.usfca.xj.appkit.swing.XJTableView;
+import org.antlr.xjlib.appkit.swing.XJTable;
+import org.antlr.xjlib.appkit.swing.XJTableView;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.swing.DetachablePanel;
 

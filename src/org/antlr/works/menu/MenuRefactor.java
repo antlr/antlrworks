@@ -1,7 +1,7 @@
 package org.antlr.works.menu;
 
-import edu.usfca.xj.appkit.undo.XJUndo;
-import edu.usfca.xj.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.undo.XJUndo;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;

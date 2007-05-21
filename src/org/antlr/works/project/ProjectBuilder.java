@@ -1,8 +1,8 @@
 package org.antlr.works.project;
 
-import edu.usfca.xj.appkit.utils.XJDialogProgress;
-import edu.usfca.xj.appkit.utils.XJDialogProgressDelegate;
-import edu.usfca.xj.foundation.XJUtils;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
+import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
+import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.components.project.CContainerProject;
 import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.utils.StreamWatcherDelegate;
