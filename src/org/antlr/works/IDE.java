@@ -107,11 +107,14 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         }
     }
 
-    public void appDidLaunch(String[] args) {
+    public void appDidLaunch(String[] args, List<String> documentsToOpenAtStartup) {
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
-        XJApplication.addDocumentType(CDocumentGrammar.class, CContainerGrammar.class, XJDataPlainText.class, "g", Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
-        if(AWPrefs.getEnableProjectDocument())
-            XJApplication.addDocumentType(CDocumentProject.class, CContainerProject.class, XJDataXML.class, "awp", Localizable.getLocalizedString(Localizable.PROJECT_TYPE));
+        XJApplication.addDocumentType(CDocumentGrammar.class, CContainerGrammar.class, XJDataPlainText.class, "g",
+                Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
+        if(AWPrefs.getEnableProjectDocument()) {
+            XJApplication.addDocumentType(CDocumentProject.class, CContainerProject.class, XJDataXML.class, "awp",
+                    Localizable.getLocalizedString(Localizable.PROJECT_TYPE));
+        }
 
         XJApplication.addScheduledTimer(new HelpManager(), 1, true);
 
@@ -123,6 +126,8 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
         if(args.length >= 2 && args[0].equals("-f")) {
             XJApplication.shared().openDocument(args[1]);
+        } else if(documentsToOpenAtStartup != null && documentsToOpenAtStartup.size() > 0) {
+            XJApplication.shared().openDocuments(documentsToOpenAtStartup);
         } else {
             switch (AWPrefs.getStartupAction()) {
                 case AWPrefs.STARTUP_NEW_DOC:

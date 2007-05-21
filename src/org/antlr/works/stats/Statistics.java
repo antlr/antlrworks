@@ -9,6 +9,8 @@ import org.antlr.works.dialog.DialogReports;
 import org.antlr.works.dialog.DialogReportsDelegate;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Localizable;
+
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -46,7 +48,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class Statistics extends XJApplicationDelegate implements DialogReportsDelegate {
 
-    public void appDidLaunch(String[] args) {
+    public void appDidLaunch(String[] args, List<String> documentsToOpenAtStartup) {
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
 
         if(args.length >= 2 && args[1].equals("-erase")) {
