@@ -270,10 +270,12 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         StringBuffer sb = new StringBuffer();
         sb.append("(");
         sb.append(head);
-        sb.append(") ");
-        sb.append("(");
-        sb.append(star);
-        sb.append(")*");
+        sb.append(")");
+        if(star.length() > 0) {
+            sb.append(" (");
+            sb.append(star);
+            sb.append(")*");
+        }
 
         return sb.toString();
     }
