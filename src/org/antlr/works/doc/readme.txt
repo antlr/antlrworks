@@ -1,5 +1,5 @@
 ANTLRWorks
-Version 1.0
+Version 1.0.1
 May 17, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
@@ -49,14 +49,14 @@ directories will be expanded:
 
 	antlr/...			ANTLR 2.x
 	com/jgoodies/forms/...		JGoodies
-	edu/usfca/xj/...		XJLibrary
 	org/antlr/...			ANTLR 3.x
 	org/antlr/stringtemplate/...	StringTemplate
+	org/antlr/xjlib/...		XJLibrary
 	org/antlr/works/...		ANTLRWorks
 
 To update ANTLR v3, remove ANTLR 3 (that is everything in "org/antlr/"
 *EXCEPT* "org/antlr/stringtemplate" and "org/antlr/works"). Note that
-ANTLRWorks requires the "com/jgoodies/forms" and "edu/usfca/xj"
+ANTLRWorks requires the "com/jgoodies/forms" and "org/antlr/xjlib"
 directories.
 
 Make sure ANTLR 3 is in your CLASSPATH and then launch ANTLRWorks
