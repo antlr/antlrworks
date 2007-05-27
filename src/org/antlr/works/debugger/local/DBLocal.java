@@ -31,11 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger.local;
 
-import org.antlr.xjlib.appkit.frame.XJDialog;
-import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.appkit.utils.XJDialogProgress;
-import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
@@ -54,6 +49,11 @@ import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.StreamWatcher;
 import org.antlr.works.utils.StreamWatcherDelegate;
+import org.antlr.xjlib.appkit.frame.XJDialog;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
+import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
 import java.io.File;
@@ -75,6 +75,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     public static final String ST_ATTR_JAVA_PARSER = "java_parser";
     public static final String ST_ATTR_JAVA_LEXER = "java_parser_lexer";
     public static final String ST_ATTR_START_SYMBOL = "start_symbol";
+    public static final String ST_ATTR_DEBUG_PORT = "port";
 
     protected String outputFileDir;
 
@@ -98,6 +99,9 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected XJDialogProgress progress;
     protected ErrorReporter error = new ErrorReporter();
+
+    protected int debugPort = -1;
+    protected boolean debugPortChanged = true;
 
     public DBLocal(Debugger debugger) {
         this.debugger = debugger;
@@ -154,7 +158,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     private boolean optionBuild() {
-        return (options & Debugger.OPTION_BUILD) > 0;
+        return (options & Debugger.OPTION_BUILD) > 0 || debugPortChanged;
     }
 
     private boolean optionAgain() {
@@ -164,6 +168,11 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     public void prepareAndLaunch(int options) {
         this.options = options;
         cancelled = false;
+
+        if(debugPort != AWPrefs.getDebugDefaultLocalPort()) {
+            debugPort = AWPrefs.getDebugDefaultLocalPort();
+            debugPortChanged = true;
+        }
 
         if(optionBuild()) {
             showProgress();
@@ -380,6 +389,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(ElementGrammarName.PARSER));
             glueCode.setAttribute(ST_ATTR_JAVA_LEXER, codeGenerator.getGeneratedClassName(ElementGrammarName.LEXER));
             glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
+            glueCode.setAttribute(ST_ATTR_DEBUG_PORT, AWPrefs.getDebugDefaultLocalPort());
 
             XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
         } catch(Exception e) {
