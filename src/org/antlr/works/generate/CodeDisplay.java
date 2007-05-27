@@ -31,11 +31,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.generate;
 
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 
 import java.awt.*;
 

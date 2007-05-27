@@ -31,29 +31,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate.swing;
 
+import org.antlr.works.ate.ATETextPane;
 import org.antlr.xjlib.foundation.XJSystem;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 public class ATEKeyBindings {
 
-    private JTextComponent textComponent = null;
+    private ATETextPane textComponent = null;
 
-    public ATEKeyBindings(JTextComponent textComponent) {
+    public ATEKeyBindings(ATETextPane textComponent) {
         this.textComponent = textComponent;
-        // @todo currently only on Mac OS
-        if(XJSystem.isMacOS())
+        if(XJSystem.isMacOS()) {
             addEmacsKeyBindings();
+        }
 
         addStandardKeyBindings();
     }
@@ -65,14 +64,25 @@ public class ATEKeyBindings {
         KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0);
         inputMap.put(key, DefaultEditorKit.beginLineAction);
 
+        // SHIFT-HOME to move cursor to begin of line and select
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, Event.SHIFT_MASK);
+        inputMap.put(key, DefaultEditorKit.selectionBeginLineAction);
+
         // END to move cursor to end of line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_END, 0);
         inputMap.put(key, DefaultEditorKit.endLineAction);
 
-        // Add shift-delete to act as the standard delete key
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.SHIFT_MASK);
-        inputMap.put(key, DefaultEditorKit.deleteNextCharAction);
+        // SHIFT-END to move cursor to end of line and select
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_END, Event.SHIFT_MASK);
+        inputMap.put(key, DefaultEditorKit.selectionEndLineAction);
 
+        // Add shift-delete to act as the standard delete key
+        addKeyBinding("SHIFT_DELETE", KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, Event.SHIFT_MASK), new AbstractAction() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(!textComponent.isWritable()) return;
+                textComponent.getActionMap().get(DefaultEditorKit.deleteNextCharAction).actionPerformed(actionEvent);
+            }
+        });
     }
 
     public void addEmacsKeyBindings() {
@@ -94,10 +104,6 @@ public class ATEKeyBindings {
         key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.downAction);
 
-        // Ctrl-d to delete the character under the cursor
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK);
-        inputMap.put(key, DefaultEditorKit.deleteNextCharAction);
-
         // Ctrl-a to move cursor to begin of line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.beginLineAction);
@@ -106,10 +112,19 @@ public class ATEKeyBindings {
         key = KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.endLineAction);
 
+        // Ctrl-d to delete the character under the cursor
+        addKeyBinding("CONTROL_D", KeyStroke.getKeyStroke(KeyEvent.VK_K, Event.CTRL_MASK), new AbstractAction() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(!textComponent.isWritable()) return;
+                textComponent.getActionMap().get(DefaultEditorKit.deleteNextCharAction).actionPerformed(actionEvent);
+            }
+        });
+
         // Ctrl-k to delete the characters from the current position to the end of the line
         // Has to create a custom action to handle this one.
         addKeyBinding("CONTROL_K", KeyStroke.getKeyStroke(KeyEvent.VK_K, Event.CTRL_MASK), new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
+                if(!textComponent.isWritable()) return;
 
                 int start = textComponent.getCaretPosition();
                 Document doc = textComponent.getDocument();
@@ -145,6 +160,7 @@ public class ATEKeyBindings {
         // Has to create a custom action to handle this one.
         addKeyBinding("CONTROL_T", KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK), new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
+                if(!textComponent.isWritable()) return;
 
                 int p = textComponent.getCaretPosition();
                 Document doc = textComponent.getDocument();

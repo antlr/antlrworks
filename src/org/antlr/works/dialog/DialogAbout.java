@@ -33,13 +33,13 @@ package org.antlr.works.dialog;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import org.antlr.xjlib.appkit.app.XJApplication;
-import org.antlr.xjlib.appkit.frame.XJPanel;
-import org.antlr.xjlib.foundation.XJLib;
 import org.antlr.Tool;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.works.IDE;
 import org.antlr.works.utils.IconManager;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.frame.XJPanel;
+import org.antlr.xjlib.foundation.XJLib;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -183,7 +183,7 @@ public class DialogAbout extends XJPanel {
         	}));
 
         //---- appIconButton ----
-        appIconButton.setIcon(new ImageIcon("/Users/bovet/Dev/Projects/ANTLRWorks/classes/org/antlr/works/icons/app.png"));
+        appIconButton.setIcon(null);
         appIconButton.setBorderPainted(false);
         appIconButton.setContentAreaFilled(false);
         appIconButton.setDefaultCapable(false);
@@ -282,6 +282,7 @@ public class DialogAbout extends XJPanel {
         				boolean[] columnEditable = new boolean[] {
         					false, false
         				};
+        				@Override
         				public boolean isCellEditable(int rowIndex, int columnIndex) {
         					return columnEditable[columnIndex];
         				}

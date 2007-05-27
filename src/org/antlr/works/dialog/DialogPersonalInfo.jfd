@@ -66,10 +66,7 @@
             </void> 
             <void method="setProperty"> 
              <string>icon</string> 
-             <object class="com.jformdesigner.model.SwingIcon"> 
-              <int>1</int> 
-              <string>/Users/bovet/Dev/Projects/ANTLRWorks/classes/org/antlr/works/icons/app.png</string> 
-             </object> 
+             <object class="com.jformdesigner.model.FormObject" field="NULL_VALUE"/> 
             </void> 
             <void method="setProperty"> 
              <string>enabled</string> 

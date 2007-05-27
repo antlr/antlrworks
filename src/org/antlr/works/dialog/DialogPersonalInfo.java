@@ -34,11 +34,11 @@ package org.antlr.works.dialog;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsReporter;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.Localizable;
+import org.antlr.xjlib.appkit.frame.XJDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -210,7 +210,7 @@ public class DialogPersonalInfo extends XJDialog {
 
         		//---- iconButton ----
         		iconButton.setBorder(null);
-        		iconButton.setIcon(new ImageIcon("/Users/bovet/Dev/Projects/ANTLRWorks/classes/org/antlr/works/icons/app.png"));
+        		iconButton.setIcon(null);
         		iconButton.setEnabled(true);
         		iconButton.setFocusable(false);
         		iconButton.setFocusPainted(false);

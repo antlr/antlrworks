@@ -31,9 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate;
 
-import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.works.ate.swing.ATEEditorKit;
 import org.antlr.works.ate.swing.ATERenderingView;
+import org.antlr.xjlib.appkit.undo.XJUndo;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -65,6 +65,10 @@ public class ATETextPane extends JTextPane
         this.writable = flag;
     }
 
+    public boolean isWritable() {
+        return writable;
+    }
+    
     public void setWordWrap(boolean flag) {
         this.wrap = flag;
     }
@@ -136,25 +140,34 @@ public class ATETextPane extends JTextPane
     @Override
     protected void processKeyEvent(KeyEvent keyEvent) {
         // If the document is not writable, emits a beep
-        // if the key event is not an action key
-        if(writable && keyEvent.getKeyCode() == KeyEvent.VK_TAB && keyEvent.getID() == KeyEvent.KEY_PRESSED) {
-            int start = getSelectionStart();
-            int stop = getSelectionEnd();
-            if(start != stop) {
-                // Ident the lines covered by the selection
-                try {
-                    indentText(start, stop, keyEvent.isShiftDown()?-1:1);
-                    keyEvent.consume();
-                } catch (BadLocationException e) {
-                    e.printStackTrace();
+        if(writable) {
+            if(keyEvent.getKeyCode() == KeyEvent.VK_TAB && keyEvent.getID() == KeyEvent.KEY_PRESSED) {
+                int start = getSelectionStart();
+                int stop = getSelectionEnd();
+                if(start != stop) {
+                    // Ident the lines covered by the selection
+                    try {
+                        indentText(start, stop, keyEvent.isShiftDown()?-1:1);
+                        keyEvent.consume();
+                    } catch (BadLocationException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    super.processKeyEvent(keyEvent);
                 }
             } else {
-                super.processKeyEvent(keyEvent);
+                super.processKeyEvent(keyEvent);                
             }
-        } else if(writable || keyEvent.isActionKey()) {
-            super.processKeyEvent(keyEvent);
         } else {
-            Toolkit.getDefaultToolkit().beep();
+            if(keyEvent.isActionKey()) {
+                super.processKeyEvent(keyEvent);
+            } else if((keyEvent.getModifiers() & KeyEvent.META_MASK) > 0) {
+                super.processKeyEvent(keyEvent);
+            } else if((keyEvent.getModifiers() & KeyEvent.CTRL_MASK) > 0) {
+                super.processKeyEvent(keyEvent);
+            } else {
+                Toolkit.getDefaultToolkit().beep();
+            }
         }
     }
 

@@ -31,12 +31,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import org.antlr.xjlib.appkit.menu.*;
 import org.antlr.works.IDE;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementGrammarName;
+import org.antlr.xjlib.appkit.menu.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -211,16 +211,9 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle(resourceBundle.getString("menu.title.debugger"));
-        //menu.addItem(new XJMenuItem("Run Interpreter", KeyEvent.VK_F8, MI_RUN_INTERPRETER, this));
-        //menu.addSeparator();
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debug"), KeyEvent.VK_F9, MI_DEBUG, this));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugAgain"), KeyEvent.VK_F9, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_DEBUG_AGAIN, this));
-        /** Removed since 05/01/06 because 'Debug' automatically detects any change
-         * to the grammar and rebuild it.
-         */
-        //menu.addItem(new XJMenuItem("Build and Debug...", KeyEvent.VK_F10, MI_BUILD_AND_DEBUG, this));
-        //menu.addSeparator();
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugRemote"), KeyEvent.VK_F11, MI_DEBUG_REMOTE, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debug"), KeyEvent.VK_D, MI_DEBUG, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugAgain"), KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_DEBUG_AGAIN, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugRemote"), MI_DEBUG_REMOTE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showInputTokens"), MI_DEBUG_SHOW_INPUT_TOKENS, this));
 
@@ -231,7 +224,7 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle(resourceBundle.getString("menu.title.generate"));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.generateCode"), KeyEvent.VK_F10, MI_GENERATE_CODE, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.generateCode"), KeyEvent.VK_G, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_GENERATE_CODE, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showParserCode"), MI_SHOW_GENERATED_PARSER_CODE, this));
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showLexerCode"), MI_SHOW_GENERATED_LEXER_CODE, this));
