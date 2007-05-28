@@ -34,16 +34,16 @@ package org.antlr.works.prefs;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
+import org.antlr.works.IDE;
+import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
+import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.utils.HelpManager;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJPreferences;
 import org.antlr.xjlib.appkit.frame.XJPanel;
 import org.antlr.xjlib.appkit.swing.XJLookAndFeel;
 import org.antlr.xjlib.appkit.utils.XJFileChooser;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
-import org.antlr.works.IDE;
-import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
-import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.utils.HelpManager;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -62,7 +62,6 @@ public class AWPrefsDialog extends XJPanel {
         super();
 
         initComponents();
-        setSize(getDefaultSize());
 
         prepareGeneralTab();
         prepareEditorTab();
@@ -80,10 +79,6 @@ public class AWPrefsDialog extends XJPanel {
                 apply();
             }
         });
-    }
-
-    public Dimension getDefaultSize() {
-        return new Dimension(650, 410);
     }
 
     public void prepareGeneralTab() {
@@ -481,7 +476,6 @@ public class AWPrefsDialog extends XJPanel {
         //======== dialogPane ========
         {
         	dialogPane.setBorder(Borders.DIALOG_BORDER);
-        	dialogPane.setPreferredSize(new Dimension(600, 380));
         	dialogPane.setMinimumSize(new Dimension(540, 350));
         	dialogPane.setLayout(new BorderLayout());
 

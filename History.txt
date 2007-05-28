@@ -1,5 +1,26 @@
 
-Version 1.0.1
+Version 1.0.1 - 05/27/07
+
+Bug fix:
+    [AW-48] - IntelliJ 6 does not always quit after running ANTLRWorks plugin debugger
+    [AW-51] - Find dialog replaces even non-matching text and performs replace with previous find value
+    [AW-53] - Wrong version of ST included in the jar (2.3b10 instead of 3.0.1)
+    [AW-55] - Freezes when opening the Find dialog in desktop mode on Windows
+    [AW-56] - Don't change the string quote (double/single) in actions when refactoring
+    [AW-57] - Creating a new rule automatically introduces always a new line
+    [AW-59] - Window menu does not select the correct window if a panel is visible (like the Find panel)
+    [AW-61] - AST tree node is not correctly selected when selecting input token "class" in the attached grammar
+    [AW-62] - Decision does not show up for assignment ref (in rule stat)
+    [AW-63] - Opening ANTLRWorks from the Mac OS X Finder by double-clicking a grammar file fails
+    [AW-64] - CTRL-F10 does not work on Windows in desktop mode
+    [AW-67] - There are some hard coded links to icons that prevent ANTLRWorks to launch correctly
+    [AW-68] - Read-only document prevents menu shortcut to be invoked
+    [AW-52] - Bring windows to the front when show() is invoked
+    [AW-58] - Move the last closed document to the top of the Recent Files list
+    [AW-60] - In desktop mode, the grammar text area is not focused at startup
+    [AW-65] - Generate test-ring with a different port number to avoid conflict under Windows Vista
+    [AW-69] - Shift-HOME or Shift-END do not select the line on Mac OS X
+    [AW-50] - Merged XJLib into ANTLR project
 
 Version 1.0 - 05/17/07
 
