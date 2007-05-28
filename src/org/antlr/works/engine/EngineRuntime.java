@@ -1,13 +1,13 @@
 package org.antlr.works.engine;
 
-import org.antlr.xjlib.foundation.XJSystem;
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.IDE;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.StreamWatcher;
 import org.antlr.works.utils.StreamWatcherDelegate;
 import org.antlr.works.utils.Utils;
+import org.antlr.xjlib.foundation.XJSystem;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -70,7 +70,7 @@ public class EngineRuntime {
         String isDebuggingPlugin = System.getProperty("org.antlr.works.debug.plugin");
         if(isDebuggingPlugin != null && Boolean.parseBoolean(isDebuggingPlugin)) {
             // If we are debugging the plugin in IntelliJ, add all the jar in the lib
-            // folder of the plugin sandbox (usually on Mac OS X at ~/Library/Preferences/sandbox/plugins/...
+            // folder of the plugin sandbox (usually on Mac OS X at ~/Library/Preferences/sandbox/plugins/...)
             String sandbox = XJUtils.getPathByDeletingLastComponent(appPath)+File.separatorChar+"lib";
             File dir = new File(sandbox);
             if(dir.isDirectory()) {
