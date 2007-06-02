@@ -1,4 +1,10 @@
 
+Version 1.0.2 - 06/01/07
+
+Bug fix:
+    [AW-72] - Grammar is generated and compiled each time the debugger is invoked even if nothing changed
+    [AW-73] - Change ANTLR 3 template to allow the debugger port to be specified
+
 Version 1.0.1 - 05/27/07
 
 Bug fix:

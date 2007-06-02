@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0.1
-May 27, 2007
+Version 1.0.2
+June 1, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco
@@ -71,6 +71,12 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+Version 1.0.2 - 06/01/07
+
+Bug fix:
+    [AW-72] - Grammar is generated and compiled each time the debugger is invoked even if nothing changed
+    [AW-73] - Change ANTLR 3 template to allow the debugger port to be specified
 
 Version 1.0.1 - 05/27/07
 

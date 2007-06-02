@@ -172,6 +172,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         if(debugPort != AWPrefs.getDebugDefaultLocalPort()) {
             debugPort = AWPrefs.getDebugDefaultLocalPort();
             debugPortChanged = true;
+        } else {
+            debugPortChanged = false;
         }
 
         if(optionBuild()) {

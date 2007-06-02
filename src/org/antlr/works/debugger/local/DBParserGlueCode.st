@@ -11,15 +11,7 @@ public class $class_name$ {
         $java_parser_lexer$ lex = new $java_parser_lexer$(new ANTLRFileStream("$input_file$"));
         CommonTokenStream tokens = new CommonTokenStream(lex);
 
-        $java_parser$ g = new $java_parser$(tokens, null);
-        DebugEventSocketProxy proxy = new DebugEventSocketProxy(g.getGrammarFileName(), $port$);
-        g.setDebugListener(proxy);
-        try {
-            proxy.handshake();
-        } catch (IOException ioe) {
-            g.reportError(ioe);
-        }
-
+        $java_parser$ g = new $java_parser$(tokens, $port$);
         try {
             g.$start_symbol$();
         } catch (RecognitionException e) {
