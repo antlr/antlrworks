@@ -194,7 +194,7 @@ public class ATESyntaxLexer {
             if(c0 == '*' && c1 == '/') {
                 // Don't forget to eat the next character ;-)
                 nextCharacter();
-                return createNewToken(TOKEN_COMPLEX_COMMENT, sp, Math.min(position+2, text.length()));
+                return createNewToken(TOKEN_COMPLEX_COMMENT, sp, Math.min(position+1, text.length()));
             }
         }
         // Complex comment terminates also at the end of the text
