@@ -31,15 +31,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics.panel;
 
-import org.antlr.xjlib.appkit.menu.XJMenu;
-import org.antlr.xjlib.appkit.menu.XJMenuItem;
-import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
-import org.antlr.xjlib.appkit.utils.XJSmoothScrolling;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;
 import org.antlr.works.visualization.graphics.path.GPath;
 import org.antlr.works.visualization.graphics.path.GPathGroup;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
+import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
+import org.antlr.xjlib.appkit.utils.XJSmoothScrolling;
 
 import javax.swing.*;
 import java.awt.*;
@@ -122,8 +122,8 @@ public class GView extends JPanel implements XJMenuItemDelegate {
     }
 
     public void applyContext() {
-        for (Iterator iterator = graphs.iterator(); iterator.hasNext();) {
-            GGraphAbstract graph = (GGraphAbstract) iterator.next();
+        for (Object graph1 : graphs) {
+            GGraphAbstract graph = (GGraphAbstract) graph1;
             graph.setContext(context);
         }
     }
@@ -426,6 +426,9 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         public void mouseReleased(MouseEvent e) {
             lastMouse = null;
             setCacheEnabled(true);
+            // FIX AW-76. Need to trigger a repaint so the cache is created again. Otherwise
+            // it is null and will prevent exporting the image into the bitmap
+            repaint();
         }
 
         public void handleMousePressedInGraphGroup(MouseEvent e) {
