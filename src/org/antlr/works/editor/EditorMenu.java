@@ -443,14 +443,21 @@ public class EditorMenu implements XJMenuItemDelegate {
         return factory.menu;
     }
 
-    public void menuItemState(XJMenuItem item) {
+    public void menuItemState(final XJMenuItem item) {
         EditorTab tab = editor.getSelectedTab();
 
         switch(item.getTag()) {
             case XJMainMenuBar.MI_UNDO:
             case XJMainMenuBar.MI_REDO:
-                if(isDebuggerRunning())
-                    item.setEnabled(false);
+                if(isDebuggerRunning()) {
+                    // FIX AW-79
+                    // Note: that's weird, but I have to invoke this later otherwise the menu is not disabled
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            item.setEnabled(false);
+                        }
+                    });
+                }
                 break;
 
             case XJMainMenuBar.MI_CUT:
