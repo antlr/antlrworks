@@ -1,8 +1,8 @@
 package org.antlr.works.swing;
 
-import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
+import org.antlr.xjlib.appkit.frame.XJDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -120,13 +120,7 @@ public class DetachablePanel extends JPanel {
 
     public boolean isParentOf(Component c) {
         Component p = c.getParent();
-        if(p != null) {
-            if(p == this)
-                return true;
-            else
-                return isParentOf(p);
-        }
-        return false;
+        return p != null && (p == this || isParentOf(p));
     }
 
     public void focusGained() {
@@ -155,6 +149,9 @@ public class DetachablePanel extends JPanel {
         return detached;
     }
 
+    private Point previousPosition;
+    private Dimension previousSize;
+
     public void detach() {
         detached = true;
 
@@ -169,8 +166,17 @@ public class DetachablePanel extends JPanel {
         else
             window = new DetachableWindow(null);
         window.setTitle(title);
-        window.setPosition(p.x, p.y);
-        window.setSize(getWidth(), getHeight());
+        if(previousPosition == null) {
+            window.setPosition(p.x, p.y);
+        } else {
+            window.setPosition(previousPosition);
+        }
+
+        if(previousSize == null) {
+            window.setSize(getWidth(), getHeight());
+        } else {
+            window.setSize(previousSize);
+        }
 
         window.getContentPane().add(this);
 
@@ -179,6 +185,8 @@ public class DetachablePanel extends JPanel {
 
     public void attach() {
         detached = false;
+        previousPosition = window.getPosition();
+        previousSize = window.getSize();
         window.getContentPane().remove(0);
         window.close();
         detach.setIcon(IconManager.shared().getIconDetach());
