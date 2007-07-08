@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.0.2
-June 1, 2007
+Version 1.0.3
+July 8, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco

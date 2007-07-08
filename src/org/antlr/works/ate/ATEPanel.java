@@ -1,8 +1,5 @@
 package org.antlr.works.ate;
 
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
-import org.antlr.xjlib.appkit.undo.XJUndo;
-import org.antlr.xjlib.appkit.utils.XJSmoothScrolling;
 import org.antlr.works.ate.analysis.ATEAnalysisColumn;
 import org.antlr.works.ate.analysis.ATEAnalysisManager;
 import org.antlr.works.ate.breakpoint.ATEBreakpointManager;
@@ -13,16 +10,16 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.undo.XJUndo;
+import org.antlr.xjlib.appkit.utils.XJSmoothScrolling;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.StyledEditorKit;
-import javax.swing.text.View;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -387,6 +384,18 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         }
     }
 
+    public void setText(String text) {
+        Document doc = textPane.getDocument();
+        getTextPaneUndo().beginUndoGroup("setText");
+        try {
+            doc.remove(0, doc.getLength());
+            doc.insertString(0, text, null);
+        } catch (BadLocationException e) {
+            // ignore
+        }
+        getTextPaneUndo().endUndoGroup();
+    }
+
     public void insertText(int index, String text) {
         try {
             textPane.getDocument().insertString(index, normalizeText(text), null);
@@ -400,12 +409,14 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public void replaceText(int start, int end, String text) {
+        getTextPaneUndo().beginUndoGroup("replaceText");
         try {
             textPane.getDocument().remove(start, end-start);
             textPane.getDocument().insertString(start, normalizeText(text), null);
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
+        getTextPaneUndo().endUndoGroup();
     }
 
     public static String normalizeText(String text) {

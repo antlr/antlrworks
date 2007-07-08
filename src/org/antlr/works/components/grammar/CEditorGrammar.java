@@ -657,7 +657,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void setText(String text) {
-        getTextPane().setText(text);
+        textEditor.setText(text);
         grammarChanged();
         textEditor.parse();
         changeDone();
