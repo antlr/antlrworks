@@ -53,6 +53,7 @@ public class ATETextPane extends JTextPane
 
     protected boolean wrap = false;
     protected boolean highlightCursorLine = false;
+    private int destinationCursorPosition = -1;
 
     public ATETextPane(ATEPanel textEditor, StyledEditorKit editorKit) {
         super(new DefaultStyledDocument());
@@ -68,7 +69,7 @@ public class ATETextPane extends JTextPane
     public boolean isWritable() {
         return writable;
     }
-    
+
     public void setWordWrap(boolean flag) {
         this.wrap = flag;
     }
@@ -119,7 +120,21 @@ public class ATETextPane extends JTextPane
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        paintDestinationCursor(g);
         textEditor.textPaneDidPaint(g);
+    }
+
+    private void paintDestinationCursor(Graphics g) {
+        if(destinationCursorPosition < 0) return;
+        
+        try {
+            Rectangle r = modelToView(destinationCursorPosition);
+            g.setColor(Color.black);
+            g.drawRect(r.x,  r.y, r.width, r.height);
+        } catch (BadLocationException e) {
+            // Ignore
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -156,7 +171,7 @@ public class ATETextPane extends JTextPane
                     super.processKeyEvent(keyEvent);
                 }
             } else {
-                super.processKeyEvent(keyEvent);                
+                super.processKeyEvent(keyEvent);
             }
         } else {
             if(keyEvent.isActionKey()) {
@@ -246,8 +261,18 @@ public class ATETextPane extends JTextPane
     protected class ATECaret extends DefaultCaret {
 
         public boolean selectingWord = false;
-        public int selectingWordStart;
-        public int selectingWordEnd;
+        public boolean selectingLine = false;
+        public boolean draggingWord = false;
+        public boolean draggingLine = false;
+        public boolean startedDragging = false; //this is true after 'mousepressed' and while 'mousedragging'
+        public int mouseDraggingOffset;
+        public int selectionMovingLineBegin;
+        public int selectionMovingLineEnd;
+        public int selectionAnchorLineBegin;
+        public int selectionAnchorLineEnd;
+        public int selectionStart;
+        public int selectionEnd;
+        public int dragDropCursorPosition = 0;
 
         public ATECaret() {
             setBlinkRate(500);
@@ -256,7 +281,6 @@ public class ATETextPane extends JTextPane
         public void paint(Graphics g) {
             if(!isVisible())
                 return;
-
             try {
                 Rectangle r = ATETextPane.this.modelToView(getDot());
                 g.setColor(ATETextPane.this.getCaretColor());
@@ -282,50 +306,220 @@ public class ATETextPane extends JTextPane
         public void mouseClicked(MouseEvent e) {
             // Do not call super if more than one click
             // because it causes the word selection to deselect
-            if(e.getClickCount() < 2)
+            if(e.getClickCount()<2 || !SwingUtilities.isLeftMouseButton(e)){
                 super.mouseClicked(e);
+            }
         }
 
         public void mousePressed(MouseEvent e) {
-            selectingWord = false;
+            draggingWord =false;
+            draggingLine =false;
+            selectingWord=false;
+            selectingLine=false;
+            startedDragging=false;
 
-            if(SwingUtilities.isLeftMouseButton(e)) {
-                if(e.getClickCount() == 2) {
-                    selectWord();
-                    selectingWord = true;
-                    selectingWordStart = getSelectionStart();
-                    selectingWordEnd = getSelectionEnd();
-                    e.consume();
-                    return;
-                }
+            if((e.getClickCount()+1)%3 == 0) {
+                selectWord();
+                selectingWord = true;
+                selectionStart = getSelectionStart();
+                selectionEnd = getSelectionEnd();
+                e.consume();
+                return;
+            }
+            if(e.getClickCount()%3 == 0) {
+                selectLine();
+                selectingLine = true;
+                selectionStart = getSelectionStart();
+                selectionEnd = getSelectionEnd();
+                selectionMovingLineBegin=selectionStart;
+                selectionAnchorLineBegin=selectionStart;
+                selectionMovingLineEnd=selectionEnd;
+                selectionAnchorLineEnd=selectionEnd;
+                e.consume();
+                return;
             }
 
+            selectionStart = getSelectionStart();
+            selectionEnd = getSelectionEnd();
+            int mouseCharIndex = viewToModel(e.getPoint());
+            if(selectionStart!=selectionEnd&&e.getClickCount()==1&&
+                    mouseCharIndex>=selectionStart&&mouseCharIndex<=selectionEnd){
+                String s = getText();
+                if ((selectionStart==0||s.charAt(selectionStart-1)=='\n')&&s.charAt(selectionEnd-1)=='\n'){
+                    draggingLine=true;
+                } else {
+                    draggingWord=true;
+                }
+                mouseDraggingOffset=mouseCharIndex-selectionStart;
+                beginDestinationCursor();
+            }
             // Call super only after handling the double-click otherwise the current
             // caret position will be already moved due to the super() selection.
-            super.mousePressed(e);
+            if (!draggingWord&&!draggingLine)
+                super.mousePressed(e);
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            setHighlightCursorLine(true);
+            if (draggingWord||draggingLine){
+                //the text had been selected, so let the regular click happen
+                endDestinationCursor();
+                super.mousePressed(e);
+            }
+            if (startedDragging){
+                super.mousePressed(e);
+            }
+            if (draggingWord){
+                moveSelectionWord(e);
+            }else if (draggingLine){
+                moveSelectionLine(e);
+            }
+            //all need to release
+            super.mouseReleased(e);
         }
 
         public void mouseDragged(MouseEvent e) {
+            setHighlightCursorLine(false);//it makes weird artifacts on the right side when dragging (see ANTLRWorks 1.0.0)
+            //if it's being dragged, paint the selection permanent, and show a cursor where dragging to
+            if (draggingWord ||draggingLine){
+                dragDropCursorPosition = viewToModel(e.getPoint());
+                if (!startedDragging){
+                    startedDragging=true;
+                }
+            }
             if(selectingWord) {
                 extendSelectionWord(e);
-            } else {
+            } else if (selectingLine){
+                extendSelectionLine(e);
+            } else if (draggingWord){
+                setDestinationCursorPosition(viewToModel(e.getPoint()));
+                //moveSelectionWord(e); //it's not good here, makes a big UNDO list, and causes problems refreshing
+            } else if (draggingLine){
+                int mouseCharIndex = viewToModel(e.getPoint());
+                int lineBegin = findBeginningLineBoundary(mouseCharIndex);
+                setDestinationCursorPosition(lineBegin);
+                //moveSelectionLine(e); //same thing, it makes a big UNDO list, and has weird problems
+            } else{
                 super.mouseDragged(e);
             }
+        }
+
+        /**
+         * Sets the position of an overlay cursor. It is used mostly to display the destination
+         * when a selection is dragged to another location in the text.
+         *
+         * To disable this cursor, set pos to -1.
+         *
+         * @param pos Position to show. To hide, use -1
+         */
+        private void setDestinationCursorPosition(int pos) {
+            destinationCursorPosition = pos;
+            ATETextPane.this.repaint();
+        }
+        
+        private void beginDestinationCursor() {
+            // Disable Swing d&d to avoid conflict between Swing and our own drag stuff
+            setDragEnabled(false);
+            setVisible(false);
+        }
+
+        private void endDestinationCursor() {
+            setDragEnabled(true);
+            setVisible(true);
+            setDestinationCursorPosition(-1);
+        }
+
+        private void moveSelectionLine(MouseEvent e)  {
+            int mouseCharIndex = viewToModel(e.getPoint());
+            StyledDocument doc = getStyledDocument();
+            textEditor.getTextPaneUndo().beginUndoGroup("moveSelectionLine");
+            try{
+                if(mouseCharIndex > selectionEnd) {
+                    int moveTo = findBeginningLineBoundary(mouseCharIndex);
+                    int offset = moveTo-selectionEnd;
+                    String s = doc.getText(selectionEnd, offset);
+                    doc.remove(selectionEnd,offset);
+                    doc.insertString(selectionStart,s,null);
+                    selectionEnd = selectionEnd+offset;
+                    selectionStart = selectionStart+offset;
+                }
+                else if(mouseCharIndex < selectionStart) {
+                    int moveFrom = Math.max(0,findBeginningLineBoundary(mouseCharIndex));
+                    int offset = selectionStart - moveFrom;
+                    String s = doc.getText(moveFrom, offset);
+                    doc.insertString(selectionEnd,s,null);
+                    doc.remove(moveFrom,offset);
+                    selectionEnd = selectionEnd-offset;
+                    selectionStart = selectionStart-offset;
+                }
+            }catch(BadLocationException ex){System.out.println(ex);}
+            textEditor.getTextPaneUndo().endUndoGroup();
+        }
+
+        private void moveSelectionWord(MouseEvent e) {
+            int mouseCharIndex = viewToModel(e.getPoint());
+            StyledDocument doc = getStyledDocument();
+            textEditor.getTextPaneUndo().beginUndoGroup("moveSelectionWord");
+            try{
+                if(mouseCharIndex > selectionEnd) {
+                    int offset = mouseCharIndex-selectionEnd;
+                    String s = doc.getText(selectionEnd, offset);
+                    doc.remove(selectionEnd,offset);
+                    doc.insertString(selectionStart,s,null);
+                    selectionEnd = selectionEnd+offset;
+                    selectionStart = selectionStart+offset;
+                }
+                else if(mouseCharIndex < selectionStart) {
+                    mouseCharIndex = Math.max(0,mouseCharIndex);
+                    int offset = selectionStart - mouseCharIndex;
+                    String s = doc.getText(mouseCharIndex, offset);
+                    doc.insertString(selectionEnd,s,null);
+                    doc.remove(mouseCharIndex,offset);
+                    selectionEnd = selectionEnd-offset;
+                    selectionStart = selectionStart-offset;
+                }
+            }catch(BadLocationException ex){System.out.println(ex);}
+            textEditor.getTextPaneUndo().endUndoGroup();
         }
 
         public void extendSelectionWord(MouseEvent e) {
             int mouseCharIndex = viewToModel(e.getPoint());
 
-            if(mouseCharIndex > selectingWordEnd) {
+            if(mouseCharIndex > selectionEnd) {
                 int npos = findNextWordBoundary(mouseCharIndex);
-                if(npos > selectingWordEnd)
-                    select(selectingWordStart, npos);
-            } else if(mouseCharIndex < selectingWordStart) {
+                if(npos > selectionEnd)
+                    select(selectionStart, npos);
+            } else if(mouseCharIndex < selectionStart) {
                 int npos = findPrevWordBoundary(mouseCharIndex);
-                if(npos < selectingWordStart)
-                    select(Math.max(0, npos), selectingWordEnd);
+                if(npos < selectionStart)
+                    select(Math.max(0, npos), selectionEnd);
             } else
-                select(selectingWordStart, selectingWordEnd);
+                select(selectionStart, selectionEnd);
+        }
+
+        public void extendSelectionLine(MouseEvent e) {
+            int mouseCharIndex = viewToModel(e.getPoint());
+            if(mouseCharIndex > selectionMovingLineEnd) {
+                int npos = findEndLineBoundary(mouseCharIndex);
+                if(npos > selectionMovingLineEnd){
+                    selectionMovingLineEnd = npos;
+                    selectionMovingLineBegin = findBeginningLineBoundary(mouseCharIndex);
+                    selectionStart = Math.min(selectionMovingLineBegin,selectionAnchorLineBegin);
+                    selectionEnd = Math.max(selectionMovingLineEnd,selectionAnchorLineEnd);
+                    select(selectionStart, selectionEnd);
+                }
+            } else if(mouseCharIndex < selectionMovingLineBegin) {
+                int npos = Math.max(0,findBeginningLineBoundary(mouseCharIndex));
+                if(npos < selectionMovingLineBegin){
+                    selectionMovingLineBegin = npos;
+                    selectionMovingLineEnd = findEndLineBoundary(mouseCharIndex);
+                    selectionEnd = Math.max(selectionMovingLineEnd,selectionAnchorLineEnd);
+                    selectionStart = Math.min(selectionMovingLineBegin,selectionAnchorLineBegin);
+                    select(selectionStart, selectionEnd);
+                }
+            } else{ //it's somewhere between the selection, so move the line up or down if needed
+                select(selectionStart, selectionEnd);
+            }
         }
 
         public void selectWord() {
@@ -333,6 +527,30 @@ public class ATETextPane extends JTextPane
 
             setCaretPosition(findPrevWordBoundary(p));
             moveCaretPosition(findNextWordBoundary(p));
+        }
+        public void selectLine() {
+            int p = getCaretPosition();
+
+            setCaretPosition(findBeginningLineBoundary(p));
+            moveCaretPosition(findEndLineBoundary(p));
+        }
+
+        private int findBeginningLineBoundary(int pos) {
+            int index = pos-1;
+            String s = getText();
+            while(index >= 0 && s.charAt(index)!='\n') {
+                index--;
+            }
+            return index +1;
+        }
+
+        private int findEndLineBoundary(int pos) {
+            int index = pos;
+            String s = getText();
+            while(index < s.length() && s.charAt(index)!='\n') {
+                index++;
+            }
+            return index+1;
         }
 
         public int findPrevWordBoundary(int pos) {
