@@ -32,10 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.navigation;
 
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.OverlayObject;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -44,7 +44,8 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Iterator;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class GoToRule extends OverlayObject {
@@ -77,6 +78,17 @@ public class GoToRule extends OverlayObject {
         matchingRuleList.setBackground(new Color(235, 244, 254));
         matchingRuleList.setPrototypeCellValue("This is a rule name g");
         matchingRuleList.addKeyListener(new ListKeyAdapter());
+
+        // FIX AW-85
+        matchingRuleList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                if(mouseEvent.getClickCount() == 2) {
+                    goToRule();
+                    hide();                    
+                }
+            }
+        });
 
         matchingRuleScrollPane = new JScrollPane(matchingRuleList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         matchingRuleScrollPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
@@ -132,8 +144,8 @@ public class GoToRule extends OverlayObject {
             ruleNameField.setForeground(Color.black);
         }
 
-        for(Iterator<String> iter = rules.iterator(); iter.hasNext(); ) {
-            matchingRuleListModel.addElement(iter.next());
+        for (String rule : rules) {
+            matchingRuleListModel.addElement(rule);
         }
         matchingRuleList.setSelectedIndex(0);
 
