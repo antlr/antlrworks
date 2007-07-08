@@ -1,16 +1,5 @@
 package org.antlr.works.components.grammar;
 
-import org.antlr.xjlib.appkit.app.XJApplication;
-import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
-import org.antlr.xjlib.appkit.menu.XJMenu;
-import org.antlr.xjlib.appkit.menu.XJMenuItem;
-import org.antlr.xjlib.appkit.menu.XJMenuItemCheck;
-import org.antlr.xjlib.appkit.swing.XJTree;
-import org.antlr.xjlib.appkit.text.XJURLLabel;
-import org.antlr.xjlib.appkit.undo.XJUndo;
-import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
-import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
@@ -40,6 +29,17 @@ import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.visualization.Visual;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
+import org.antlr.xjlib.appkit.menu.XJMenuItemCheck;
+import org.antlr.xjlib.appkit.swing.XJTree;
+import org.antlr.xjlib.appkit.text.XJURLLabel;
+import org.antlr.xjlib.appkit.undo.XJUndo;
+import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -413,6 +413,9 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         textEditor.setLineNumberEnabled(AWPrefs.getLineNumberEnabled());
         textEditor.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
         textEditor.refresh();
+        // Need to re-create the auto-completion pop-up because the vstyle is in prefs
+        // and requires new key bindings
+        initAutoCompletion();
         applyFont();
     }
 
@@ -869,9 +872,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         editorMenu.handleMenuSelected(menu);
     }
 
-    /** Update methods
-     */
-
     public void updateVisualization(boolean immediate) {
         if(visual.isEnable()) {
             ElementRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
@@ -1070,7 +1070,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         // requested immediately.
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                getTextPane().requestFocusInWindow();                
+                getTextPane().requestFocusInWindow();
             }
         });
     }
@@ -1117,7 +1117,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             // Inside a rule - show all rules in alphabetical order
 
             List<ElementRule> sortedRules = Collections.list(Collections.enumeration(parserEngine.getRules()));
-            Collections.sort(sortedRules);
+            Collections.sort(sortedRules,new Comparator<ElementRule>() {
+                public int compare(ElementRule o1, ElementRule o2) {
+                    return o1.name.compareToIgnoreCase(o2.name);
+                }
+            });
 
             for (ElementRule rule : sortedRules) {
                 if (rule.name.toLowerCase().startsWith(partialWord) && !matchingRules.contains(rule.name))
@@ -1127,7 +1131,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             // Not inside rule - show only undefined rules
 
             List<ElementReference> sortedUndefinedReferences = Collections.list(Collections.enumeration(grammarSyntax.getUndefinedReferences()));
-            Collections.sort(sortedUndefinedReferences);
+            Collections.sort(sortedUndefinedReferences,new Comparator<ElementReference>() {
+                public int compare(ElementReference o1, ElementReference o2) {
+                    return o1.rule.name.compareToIgnoreCase(o2.rule.name);
+                }
+            });
 
             for (ElementReference ref : sortedUndefinedReferences) {
                 String attr = ref.token.getAttribute();

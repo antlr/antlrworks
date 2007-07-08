@@ -145,6 +145,7 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(parserDelayField, AWPrefs.PREF_PARSER_DELAY, AWPrefs.DEFAULT_PARSER_DELAY);
         getPreferences().bindToPreferences(autoIndentColonInRuleButton, AWPrefs.PREF_AUTO_IDENT_COLON_RULE, AWPrefs.DEFAULT_AUTO_INDENT_COLON_RULE);
         getPreferences().bindToPreferences(showLineNumbers, AWPrefs.PREF_LINE_NUMBER, false);
+        getPreferences().bindToPreferences(vstyleAutocompletionButton, AWPrefs.PREF_VSTYLE_AUTOCOMPLETION, false);
 //        getPreferences().bindToPreferences(foldingButton, AWPrefs.PREF_EDITOR_FOLDING, AWPrefs.DEFAULT_EDITOR_FOLDING);
 //        getPreferences().bindToPreferences(actionsFoldingAnchorsButton, AWPrefs.PREF_ACTIONS_ANCHORS_FOLDING, AWPrefs.DEFAULT_ACTIONS_ANCHORS_FOLDING);
         getPreferences().bindToPreferences(smoothScrollingButton, AWPrefs.PREF_SMOOTH_SCROLLING, AWPrefs.DEFAULT_SMOOTH_SCROLLING);
@@ -376,6 +377,7 @@ public class AWPrefsDialog extends XJPanel {
         smoothScrollingButton = new JCheckBox();
         autoIndentColonInRuleButton = new JCheckBox();
         showLineNumbers = new JCheckBox();
+        vstyleAutocompletionButton = new JCheckBox();
         label1 = new JLabel();
         tabWidthField = new JTextField();
         label22 = new JLabel();
@@ -622,6 +624,8 @@ public class AWPrefsDialog extends XJPanel {
         						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC,
         						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
         						new RowSpec(Sizes.dluY(10))
         					}));
 
@@ -666,26 +670,31 @@ public class AWPrefsDialog extends XJPanel {
         				showLineNumbers.setText("Show line numbers");
         				tabEditor.add(showLineNumbers, cc.xywh(5, 15, 5, 1));
 
+        				//---- vstyleAutocompletionButton ----
+        				vstyleAutocompletionButton.setText("Visual Studio auto-completion menu");
+        				vstyleAutocompletionButton.setToolTipText("Displayed when a space is pressed, remember previous auto-completed word, continues to auto-complete without decreasing the word choice as you type");
+        				tabEditor.add(vstyleAutocompletionButton, cc.xywh(5, 17, 9, 1));
+
         				//---- label1 ----
         				label1.setText("Tab width:");
         				label1.setHorizontalAlignment(SwingConstants.RIGHT);
-        				tabEditor.add(label1, cc.xy(3, 17));
+        				tabEditor.add(label1, cc.xy(3, 19));
 
         				//---- tabWidthField ----
         				tabWidthField.setText("8");
-        				tabEditor.add(tabWidthField, cc.xy(5, 17));
+        				tabEditor.add(tabWidthField, cc.xy(5, 19));
 
         				//---- label22 ----
         				label22.setText("Update delay:");
-        				tabEditor.add(label22, cc.xy(3, 19));
+        				tabEditor.add(label22, cc.xy(3, 21));
 
         				//---- parserDelayField ----
         				parserDelayField.setText("250");
-        				tabEditor.add(parserDelayField, cc.xy(5, 19));
+        				tabEditor.add(parserDelayField, cc.xy(5, 21));
 
         				//---- label23 ----
         				label23.setText("ms");
-        				tabEditor.add(label23, cc.xy(7, 19));
+        				tabEditor.add(label23, cc.xy(7, 21));
         			}
         			tabbedPane1.addTab("Editor", tabEditor);
 
@@ -1329,6 +1338,7 @@ public class AWPrefsDialog extends XJPanel {
     private JCheckBox smoothScrollingButton;
     private JCheckBox autoIndentColonInRuleButton;
     private JCheckBox showLineNumbers;
+    private JCheckBox vstyleAutocompletionButton;
     private JLabel label1;
     private JTextField tabWidthField;
     private JLabel label22;

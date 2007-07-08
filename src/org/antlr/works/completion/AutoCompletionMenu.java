@@ -31,10 +31,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.completion;
 
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.OverlayObject;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -42,10 +42,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.Iterator;
+import java.awt.event.*;
+import java.util.LinkedList;
 import java.util.List;
 
 public class AutoCompletionMenu extends OverlayObject {
@@ -56,6 +54,10 @@ public class AutoCompletionMenu extends OverlayObject {
     protected JList list;
 
     protected List<String> words;
+    /** Used to store most recently used during autocompletion
+     *  the newest should be stored at the front of the list.
+     */
+    protected static List<String> recentlyUsedWords = new LinkedList<String>();
     protected int maxWordLength;
 
     protected int insertionStartIndex;
@@ -63,11 +65,15 @@ public class AutoCompletionMenu extends OverlayObject {
 
     protected int displayIndex;
 
-    public static final int VISIBLE_MATCHING_RULES = 15;
+    public static int visibleMatchingRules = 15;
 
     public AutoCompletionMenu(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, XJFrameInterface frame) {
         super(frame, textComponent);
         this.delegate = delegate;
+    }
+
+    public boolean isVStyle() {
+        return AWPrefs.isVStyleAutoCompletion();
     }
 
     public JTextComponent getTextComponent() {
@@ -75,19 +81,21 @@ public class AutoCompletionMenu extends OverlayObject {
     }
 
     public JComponent overlayCreateInterface() {
+        visibleMatchingRules = (isVStyle()?7:15); //if it's on all the time, better if there's less displayed on screen
         getTextComponent().addKeyListener(new MyKeyAdapter());
 
         listModel = new DefaultListModel();
 
         list = new JList(listModel) {
             public int getVisibleRowCount() {
-                return Math.min(listModel.getSize(), VISIBLE_MATCHING_RULES);
+                return Math.min(listModel.getSize(), visibleMatchingRules);
             }
         };
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setBackground(new Color(235, 244, 254));
         list.addKeyListener(new MyKeyAdapter());
         list.setPrototypeCellValue("This is a rule name g");
+        list.addMouseListener(new ListMouseAdapter());
 
         JScrollPane scrollPane = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
@@ -95,34 +103,59 @@ public class AutoCompletionMenu extends OverlayObject {
     }
 
     public boolean overlayWillDisplay() {
-        int position = getTextComponent().getCaretPosition();
+        if (isVStyle()){
+            //this is vsStyle, so whenever space is pressed, this is run
+            int index = getTextComponent().getCaretPosition()+1;//the space hasn't happened yet
 
-        int index = getPartialWordBeginsAtPosition(position);
-        String partialWord = "";
-        if(index < position)
-            partialWord = getTextComponent().getText().substring(index+1, position);
+            String partialWord = "";
+            setInsertionStartIndex(index);
+            setInsertionEndIndex(index);
 
-        setInsertionStartIndex(index+1);
-        setInsertionEndIndex(position);
+            List<String> matchingRules = delegate.autoCompletionMenuGetMatchingWordsForPartialWord(partialWord);
+            if(matchingRules.size() == 0) {   //this'll only happen if there's no rules made yet (since partial word is "")
+                return false;
+            }
 
-        List<String> matchingRules = delegate.autoCompletionMenuGetMatchingWordsForPartialWord(partialWord);
-        if(matchingRules.size() == 0) {
-            return false;
-        } else if(matchingRules.size() == 1) {
-            completePartialWord(matchingRules.get(0));
-            return false;
+            list.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, 12));
+            list.setAutoscrolls(true);
+            setDisplayIndex(index);
+            setWordLists(matchingRules, matchingRules);
+            delegate.autoCompletionMenuWillDisplay();
+            selectMostRecentlyUsedWordPosition(partialWord, matchingRules.get(0));
+            return true;
+        } else {
+            int position = getTextComponent().getCaretPosition();
+
+            int index = getPartialWordBeginsAtPosition(position);
+            String partialWord = "";
+            if(index < position)
+                partialWord = getTextComponent().getText().substring(index+1, position);
+
+            setInsertionStartIndex(index+1);
+            setInsertionEndIndex(position);
+
+            List<String> matchingRules = delegate.autoCompletionMenuGetMatchingWordsForPartialWord(partialWord);
+            if(matchingRules.size() == 0) {
+                return false;
+            } else if(matchingRules.size() == 1) {
+                completePartialWord(matchingRules.get(0));
+                return false;
+            }
+
+            list.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, 12));
+            list.setAutoscrolls(true);
+            setDisplayIndex(index+1);
+            setWordLists(matchingRules, matchingRules);
+            delegate.autoCompletionMenuWillDisplay();
+            return true;
         }
-
-        list.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, 12));
-        setDisplayIndex(index+1);
-        setWordLists(matchingRules, matchingRules);
-
-        delegate.autoCompletionMenuWillDisplay();
-        return true;
     }
 
     public KeyStroke overlayDisplayKeyStroke() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_MASK);
+        if (isVStyle())
+            return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0); //whenever space is pressed
+        else
+            return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_MASK);
     }
 
     public String overlayDisplayKeyStrokeMappingName() {
@@ -131,14 +164,11 @@ public class AutoCompletionMenu extends OverlayObject {
 
     public void setWordLists(List<String> names, List<String> words) {
         listModel.clear();
-        Iterator<String> iterator = names.iterator();
-        while(iterator.hasNext())
-            listModel.addElement(iterator.next());
+        for (String name : names) listModel.addElement(name);
 
         this.words = words;
         maxWordLength = 0;
-        for (iterator = words.iterator(); iterator.hasNext();) {
-            String word = iterator.next();
+        for (String word : words) {
             maxWordLength = Math.max(maxWordLength, word.length());
         }
     }
@@ -155,11 +185,17 @@ public class AutoCompletionMenu extends OverlayObject {
         this.displayIndex = index;
     }
 
-    public boolean isCharIdentifier(char c) {
-        if(Character.isLetterOrDigit(c))
-            return true;
+    public static boolean isCharIdentifier(char c) {
+        return Character.isLetterOrDigit(c) || c == '_';
+    }
 
-        return c == '_';
+    private static boolean isAlphaNumericOr_(int keyCode) {
+        return (keyCode>=65 && keyCode <=90 || keyCode == 45); //is a-zA-Z or '_'(45)
+    }
+
+    private static boolean isFunctionKey(int keyCode) {
+        //16-18 (ctrl,shift,alt) 20 is capslock
+        return (keyCode >= 16 && keyCode <=18 || keyCode==20);
     }
 
     public int getPartialWordBeginsAtPosition(int pos) {
@@ -182,8 +218,14 @@ public class AutoCompletionMenu extends OverlayObject {
     }
 
     public void autoComplete() {
-        if(list.getSelectedIndex() >= 0)
-            completePartialWord(words.get(list.getSelectedIndex()));
+        if(list.getSelectedIndex() >= 0){
+            String partialWord = words.get(list.getSelectedIndex());
+            if (isVStyle())  {
+                recentlyUsedWords.remove(partialWord); //put it at the beginning of the list if it exists
+                ((LinkedList)recentlyUsedWords).addFirst(partialWord);
+            }
+            completePartialWord(partialWord);
+        }
     }
 
     public void resize() {
@@ -204,9 +246,33 @@ public class AutoCompletionMenu extends OverlayObject {
         int height = list.getFixedCellHeight();
         int size = listModel.size();
         if(size > 0) {
-            height = height*Math.min(VISIBLE_MATCHING_RULES, size)+5;
+            height = height*Math.min(visibleMatchingRules, size)+5;
             content.setBounds(p.x - 3, p.y + rect.height, maxWordLength*8+50, height);
         }
+    }
+
+    public void selectMostRecentlyUsedWordPosition(String partialWord, String firstWordInList){
+        String mostRecentWord="";
+        for (String recentlyUsedWord : recentlyUsedWords) {
+            if (recentlyUsedWord.toLowerCase().startsWith(partialWord) && words.contains(recentlyUsedWord)) {
+                mostRecentWord = recentlyUsedWord;
+                break;
+            }
+        }
+
+        if (mostRecentWord.length()>0){
+            list.setSelectedValue(mostRecentWord,true);
+        }
+        else {
+            //don't have any recent words that match, so select first word
+            list.setSelectedValue(firstWordInList,true);
+        }
+        //fix the scrolling:
+        //put the word in the middle of the box
+        int selectedIndex = list.getSelectedIndex();
+        int bottomIndex = Math.max(0,selectedIndex-1);
+        int topIndex = Math.min(words.size()-1, selectedIndex+2);
+        list.scrollRectToVisible(list.getCellBounds(bottomIndex, topIndex));
     }
 
     public void updateAutoCompleteList() {
@@ -224,8 +290,19 @@ public class AutoCompletionMenu extends OverlayObject {
             hide();
         } else {
             setInsertionEndIndex(position);
-            setWordLists(matchingRules, matchingRules);
+            if (!isVStyle()) setWordLists(matchingRules, matchingRules);
+            selectMostRecentlyUsedWordPosition(partialWord,matchingRules.get(0));
             resize();
+        }
+    }
+
+    public class ListMouseAdapter extends MouseAdapter {
+        public void mouseReleased(MouseEvent e) {
+            if (e.isConsumed() || !content.isVisible())
+                return;
+            autoComplete();
+            content.setVisible(false);
+            parentComponent.requestFocusInWindow(); //return focus to text
         }
     }
 
@@ -245,17 +322,36 @@ public class AutoCompletionMenu extends OverlayObject {
             if(e.isConsumed())
                 return;
 
+            int keyCode = e.getKeyCode();
             if(!content.isVisible())
                 return;
-
-            switch(e.getKeyCode()) {
+            switch(keyCode) {
                 case KeyEvent.VK_LEFT:
                 case KeyEvent.VK_RIGHT:
                     content.setVisible(false);
                     break;
 
+                case KeyEvent.VK_BACK_SPACE:
+                    int position = getTextComponent().getCaretPosition();
+                    int index = getPartialWordBeginsAtPosition(position);
+                    if (position-1 <= index)
+                        content.setVisible(false);
+                    //make it so they can backspace out of a word and it closes autocomplete
+                    //(it closes if the word they were typing completely deletes)
+                    //position-2 : right as they delete the last letter(it hasn't been updated yet)
+                    //position-1 : they have deleted the last letter and are now deleting the space
+                    //I personally like position-1 better...I think
+
+                    break;
+                case KeyEvent.VK_T: //if Ctrl+T is pressed
+                case KeyEvent.VK_F: //if Ctrl+F is pressed
+                    if (!e.isControlDown()) break;
+                    content.setVisible(false);  //don't consume
+                    break;
+
                 case KeyEvent.VK_ESCAPE:
-                    content.setVisible(false);
+                    //@todo it'd be cool to do intellij CTRL+mouse = goto...but it won't work in this class :(
+                    content.setVisible(false);   
                     e.consume();
                     break;
 
@@ -276,25 +372,36 @@ public class AutoCompletionMenu extends OverlayObject {
                     break;
 
                 case KeyEvent.VK_PAGE_DOWN:
+                    if (isVStyle()) {content.setVisible(false);break;}   //good.mdiehl: this just gets annoying when autocomplete is always up
                     move(list.getVisibleRowCount() - 1);
                     e.consume();
                     break;
 
                 case KeyEvent.VK_PAGE_UP:
+                    if (isVStyle()) {content.setVisible(false);break;}   //good.mdiehl: this just gets annoying when autocomplete is always up
                     move(-(list.getVisibleRowCount() - 1));
                     e.consume();
                     break;
 
                 case KeyEvent.VK_HOME:
+                    if (isVStyle()) {content.setVisible(false);break;}   //good.mdiehl: this just gets annoying when autocomplete is always up
                     move(-listModel.getSize());
                     e.consume();
                     break;
 
                 case KeyEvent.VK_END:
+                    if (isVStyle()) {content.setVisible(false);break;}   //good.mdiehl: this just gets annoying when autocomplete is always up
                     move(listModel.getSize());
                     e.consume();
                     break;
+
+                default: //good.mdiehl: if they type anything not part of an identifier, close the autocomplete (ctrl,alt,shift are ok)
+                    if (!(isAlphaNumericOr_(keyCode) || isFunctionKey(keyCode)) ){
+                        System.out.println(keyCode); //good.mdiehl: find out which key was pressed that is killing autocomplete
+                        content.setVisible(false);
+                    }
             }
         }
+
     }
 }
