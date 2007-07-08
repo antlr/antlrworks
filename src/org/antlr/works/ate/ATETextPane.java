@@ -318,11 +318,12 @@ public class ATETextPane extends JTextPane
             selectingLine=false;
             startedDragging=false;
 
-            if((e.getClickCount()+1)%3 == 0) {
+            if(e.getClickCount()%2 == 0) {
                 selectWord();
                 selectingWord = true;
                 selectionStart = getSelectionStart();
                 selectionEnd = getSelectionEnd();
+                setDragEnabled(false);
                 e.consume();
                 return;
             }
@@ -336,6 +337,7 @@ public class ATETextPane extends JTextPane
                 selectionMovingLineEnd=selectionEnd;
                 selectionAnchorLineEnd=selectionEnd;
                 e.consume();
+                setDragEnabled(false);
                 return;
             }
 
@@ -360,7 +362,6 @@ public class ATETextPane extends JTextPane
         }
 
         public void mouseReleased(MouseEvent e) {
-            setHighlightCursorLine(true);
             if (draggingWord||draggingLine){
                 //the text had been selected, so let the regular click happen
                 endDestinationCursor();
@@ -379,7 +380,6 @@ public class ATETextPane extends JTextPane
         }
 
         public void mouseDragged(MouseEvent e) {
-            setHighlightCursorLine(false);//it makes weird artifacts on the right side when dragging (see ANTLRWorks 1.0.0)
             //if it's being dragged, paint the selection permanent, and show a cursor where dragging to
             if (draggingWord ||draggingLine){
                 dragDropCursorPosition = viewToModel(e.getPoint());
@@ -389,8 +389,12 @@ public class ATETextPane extends JTextPane
             }
             if(selectingWord) {
                 extendSelectionWord(e);
+                // Repaint to avoid leaving trace with the underlying line highlighting
+                ATETextPane.this.repaint();
             } else if (selectingLine){
                 extendSelectionLine(e);
+                // Repaint to avoid leaving trace with the underlying line highlighting
+                ATETextPane.this.repaint();
             } else if (draggingWord){
                 setDestinationCursorPosition(viewToModel(e.getPoint()));
                 //moveSelectionWord(e); //it's not good here, makes a big UNDO list, and causes problems refreshing
@@ -414,6 +418,12 @@ public class ATETextPane extends JTextPane
          */
         private void setDestinationCursorPosition(int pos) {
             destinationCursorPosition = pos;
+            try {
+                // Make sure to scroll the text in order for the destination cursor to be always visible
+                ATETextPane.this.scrollRectToVisible(modelToView(pos));
+            } catch (BadLocationException e) {
+                // ignore
+            }
             ATETextPane.this.repaint();
         }
         
