@@ -1,5 +1,10 @@
 package org.antlr.works.components.project;
 
+import org.antlr.works.components.ComponentContainer;
+import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.components.ComponentStatusBar;
+import org.antlr.works.components.project.file.CContainerProjectFile;
+import org.antlr.works.project.*;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.frame.XJWindow;
@@ -8,11 +13,6 @@ import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
 import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
 import org.antlr.xjlib.foundation.XJUtils;
-import org.antlr.works.components.ComponentContainer;
-import org.antlr.works.components.ComponentEditor;
-import org.antlr.works.components.ComponentStatusBar;
-import org.antlr.works.components.project.file.CContainerProjectFile;
-import org.antlr.works.project.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -150,8 +150,9 @@ public class CContainerProject extends XJWindow implements ComponentContainer, X
             getXJFrame().getMainMenuBar().refreshState();
     }
 
-    public void setTitle(String title) {
-        super.setTitle(title+" - [Project]");
+    @Override
+    protected String customizeWindowTitle(String title) {
+        return super.customizeWindowTitle(title)+" - [Project]";
     }
 
     public ProjectData getData() {
