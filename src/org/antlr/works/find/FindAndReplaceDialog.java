@@ -34,8 +34,9 @@ package org.antlr.works.find;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import org.antlr.xjlib.appkit.frame.XJPanel;
 import org.antlr.works.IDE;
+import org.antlr.xjlib.appkit.frame.XJPanel;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,18 +66,23 @@ public class FindAndReplaceDialog extends XJPanel {
         delegate.setIgnoreCase(true);
     }
 
+    public void setFindText(String text) {
+        if(text == null || text.length() == 0) return;
+        findField.setText(text);
+    }
+
     public void createActions() {
         nextButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 delegate.setFindString(findField.getText());
-                delegate.next();
+                alertEndOfDocument(delegate.next());
             }
         });
 
         previousButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 delegate.setFindString(findField.getText());
-                delegate.prev();
+                alertBeginningOfDocument(delegate.prev());
             }
         });
 
@@ -92,7 +98,7 @@ public class FindAndReplaceDialog extends XJPanel {
                 delegate.setFindString(findField.getText());
                 delegate.setReplaceString(replaceField.getText());
                 delegate.replace();
-                delegate.next();
+                alertEndOfDocument(delegate.next());
             }
         });
 
@@ -121,6 +127,18 @@ public class FindAndReplaceDialog extends XJPanel {
                 delegate.setOptions(optionsCombo.getSelectedIndex());
             }
         });
+    }
+
+    private void alertEndOfDocument(boolean result) {
+        if(result) return;
+
+        XJAlert.display(getJavaContainer(), "End of Document", "The end of the document has been reached.");                
+    }
+
+    private void alertBeginningOfDocument(boolean result) {
+        if(result) return;
+
+        XJAlert.display(getJavaContainer(), "Beginning of Document", "The beginning of the document has been reached.");
     }
 
     public boolean shouldDisplayMainMenuBar() {

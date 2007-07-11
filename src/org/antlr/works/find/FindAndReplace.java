@@ -32,10 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.find;
 
+import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.xjlib.appkit.frame.XJFrame;
 import org.antlr.xjlib.appkit.frame.XJFrameDelegate;
 import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.works.components.grammar.CEditorGrammar;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -142,8 +142,9 @@ public class FindAndReplace implements XJFrameDelegate {
     }
 
     public void replace() {
-        if(matching()) {
-            editor.textEditor.replaceSelectedText(replaceString);
+        String t = editor.textEditor.getSelectedText();
+        if(t != null && t.length() > 0) {
+            editor.textEditor.replaceSelectedText(replaceString);            
         }
     }
 
@@ -165,6 +166,7 @@ public class FindAndReplace implements XJFrameDelegate {
             dialog = new FindAndReplaceDialog(this);
         }
         dialog.setDelegate(this);
+        dialog.setFindText(editor.textEditor.getSelectedText());
         dialog.show();
     }
 
