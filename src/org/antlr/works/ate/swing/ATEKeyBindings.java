@@ -113,7 +113,7 @@ public class ATEKeyBindings {
         inputMap.put(key, DefaultEditorKit.endLineAction);
 
         // Ctrl-d to delete the character under the cursor
-        addKeyBinding("CONTROL_D", KeyStroke.getKeyStroke(KeyEvent.VK_K, Event.CTRL_MASK), new AbstractAction() {
+        addKeyBinding("CONTROL_D", KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK), new AbstractAction() {
             public void actionPerformed(ActionEvent actionEvent) {
                 if(!textComponent.isWritable()) return;
                 textComponent.getActionMap().get(DefaultEditorKit.deleteNextCharAction).actionPerformed(actionEvent);
