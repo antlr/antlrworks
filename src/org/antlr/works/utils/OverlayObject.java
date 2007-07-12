@@ -75,13 +75,23 @@ public abstract class OverlayObject {
 
         parentComponent.addComponentListener(new ComponentAdapter() {
             public void componentMoved(ComponentEvent e) {
-                if(content.isVisible())
+                if(!isOverlayVisibleInParentComponent()) {
+                    hide();
+                }
+
+                if(content.isVisible()) {
                     resize();
+                }
             }
 
             public void componentResized(ComponentEvent e) {
-                if(content.isVisible())
+                if(!isOverlayVisibleInParentComponent()) {
+                    hide();
+                }
+
+                if(content.isVisible()) {
                     resize();
+                }
             }
         });
 
@@ -112,6 +122,13 @@ public abstract class OverlayObject {
                 display();
             }
         });
+    }
+
+    public boolean isOverlayVisibleInParentComponent() {
+        Rectangle vr = SwingUtilities.convertRectangle(parentComponent, parentComponent.getVisibleRect(), parentFrame.getJavaContainer());
+        Rectangle cr = SwingUtilities.convertRectangle(parentFrame.getLayeredPane(), content.getBounds(), parentFrame.getJavaContainer());
+
+        return vr.intersects(cr);
     }
 
     public void hide() {
