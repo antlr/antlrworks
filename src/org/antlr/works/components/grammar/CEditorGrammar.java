@@ -1013,6 +1013,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         rules.parserDidParse();
         grammarSyntax.parserDidParse();
         decisionDFAEngine.reset();
+        decisionDFAEngine.refreshMenu();
 
         // Make sure to invoke the ideas after Rules
         // has completely updated its list (which should

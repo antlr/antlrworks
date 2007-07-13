@@ -1,4 +1,8 @@
 
+Version 1.0.3 - 07/07/07
+
+Bug fix:
+
 Version 1.0.2 - 06/01/07
 
 Bug fix:

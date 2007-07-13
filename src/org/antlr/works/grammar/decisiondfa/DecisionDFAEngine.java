@@ -60,8 +60,12 @@ public class DecisionDFAEngine {
         decisionDFA.clear();
     }
 
-    public void discoverAllDecisions(boolean lexer) throws Exception {
-        discover(0, editor.getTextEditor().getText().length(), lexer);
+    public int getDecisionDFACount() {
+        return decisionDFA.size();
+    }
+
+    public void discoverAllDecisions() throws Exception {
+        discover(0, editor.getTextEditor().getText().length());
     }
 
     public void discoverDecisionsAtCurrentRule() throws Exception {
@@ -69,10 +73,10 @@ public class DecisionDFAEngine {
         if(r == null) {
             throw new RuntimeException("No rule at cursor position.");
         }
-        discover(r.getStartIndex(), r.getEndIndex(), r.lexer);
+        discover(r.getStartIndex(), r.getEndIndex());
     }
 
-    private void discover(int start, int end, boolean lexer) throws Exception {
+    private void discover(int start, int end) throws Exception {
         Set<Integer> lineIndexes = new HashSet<Integer>();
         for(int index = start; index < end; index++) {
             lineIndexes.add(editor.getTextEditor().getLineIndexAtTextPosition(index));
@@ -81,39 +85,33 @@ public class DecisionDFAEngine {
         engineGrammar = editor.getEngineGrammar();
         engineGrammar.analyze();
 
-        Grammar g = lexer?engineGrammar.getLexerGrammar():engineGrammar.getParserGrammar();
-
-        // Get the info about syn/sem predicates used by some DFA decision
-        Set<DFA> semPredDFAs = new HashSet<DFA>();
-        if(g != null) {
-            semPredDFAs.addAll(g.decisionsWhoseDFAsUsesSemPreds);
-        }
-
-        Set<DFA> synPredDFAs = new HashSet<DFA>();
-        if(g != null) {
-            synPredDFAs.addAll(g.decisionsWhoseDFAsUsesSynPreds);
-        }
-
-        usesSemPreds.clear();
-        for(DFA dfa : semPredDFAs) {
-            usesSemPreds.add(dfa.getDecisionNumber());
-        }
-
-        usesSynPreds.clear();
-        for(DFA dfa : synPredDFAs) {
-            usesSynPreds.add(dfa.getDecisionNumber());
-        }
-
-        // Get the position information about each DFA decision
         decisionDFA.clear();
-        for(Integer lineIndex : lineIndexes) {
-            if(g != null) {
-                addPositions(lineIndex, g.getLookaheadDFAColumnsForLineInFile(lineIndex));
+        usesSynPreds.clear();
+        usesSemPreds.clear();
+
+        discover(engineGrammar.getLexerGrammar(), lineIndexes, usesSemPreds, usesSynPreds);
+        discover(engineGrammar.getParserGrammar(), lineIndexes, usesSemPreds, usesSynPreds);
+    }
+
+    private void discover(Grammar g, Set<Integer> lineIndexes, Set<Integer> usesSemPreds, Set<Integer> usesSynPreds) {
+        if(g == null) return;
+
+        if(g.decisionsWhoseDFAsUsesSemPreds != null) {
+            for(DFA dfa : (Set<DFA>)g.decisionsWhoseDFAsUsesSemPreds) {
+                usesSemPreds.add(dfa.getDecisionNumber());
             }
         }
 
-        editor.textEditor.damage();
-        editor.textEditor.repaint();
+        if(g.decisionsWhoseDFAsUsesSynPreds != null) {
+            for(DFA dfa : g.decisionsWhoseDFAsUsesSynPreds) {
+                usesSynPreds.add(dfa.getDecisionNumber());
+            }
+        }
+
+        // Get the position information about each DFA decision
+        for(Integer lineIndex : lineIndexes) {
+            addPositions(lineIndex, g.getLookaheadDFAColumnsForLineInFile(lineIndex));
+        }
     }
 
     public void addPositions(Integer line, List<Integer> columnsForLineInFile) {
@@ -130,11 +128,11 @@ public class DecisionDFAEngine {
                 Color c = new Color(255, 128, 0);
                 String title = "DFA decision "+dfa.getDecisionNumber();
                 if(usesSemPreds.contains(dfa.getDecisionNumber())) {
-                    title += " (uses semantic predicates)";
+                    title += " (uses semantic predicate)";
                     c = new Color(255, 111, 207);
                 }
                 if(usesSynPreds.contains(dfa.getDecisionNumber())) {
-                    title += " (uses syntactic predicates)";
+                    title += " (uses syntactic predicate)";
                     c = new Color(255, 204, 102);
                 }
                 Point p = editor.textEditor.getLineTextPositionsAtLineIndex(lineIndex-1);
@@ -162,4 +160,14 @@ public class DecisionDFAEngine {
 
         return dfa;
     }
+
+    public void refreshMenu() {
+        editor.getXJFrame().getMainMenuBar().refreshMenuState(editor.editorMenu.menuGrammar);
+    }
+
+    public void refresh() {
+        editor.textEditor.damage();
+        editor.textEditor.repaint();
+    }
+
 }

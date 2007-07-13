@@ -70,20 +70,16 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
         decision.launch();
     }
 
-    public void showAllDecisionDFA(boolean lexer) {
+    public void showDecisionDFA() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_DECISION_DFA);
         try {
-            editor.decisionDFAEngine.discoverAllDecisions(lexer);
-        } catch (Exception e) {
-            e.printStackTrace();
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot show the DFA:\n"+e.toString());
-        }
-    }
-
-    public void showRuleDecisionDFA() {
-        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_DECISION_DFA);
-        try {
-            editor.decisionDFAEngine.discoverDecisionsAtCurrentRule();
+            if(editor.decisionDFAEngine.getDecisionDFACount() == 0) {
+                editor.decisionDFAEngine.discoverAllDecisions();
+            } else {
+                editor.decisionDFAEngine.reset();
+            }
+            editor.decisionDFAEngine.refresh();
+            editor.decisionDFAEngine.refreshMenu();
         } catch (Exception e) {
             e.printStackTrace();
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot show the DFA:\n"+e.toString());
