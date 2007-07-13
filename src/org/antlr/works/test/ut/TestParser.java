@@ -185,7 +185,7 @@ public class TestParser extends AbstractTest implements GrammarSyntaxDelegate {
     private void assertInspector(int errors) {
         GrammarSyntax syntax = new GrammarSyntax(this);
         syntax.rebuildAll();
-        EditorInspector inspector = new EditorInspector(syntax, new MockInspectorDelegate());
+        EditorInspector inspector = new EditorInspector(syntax, null, new MockInspectorDelegate());
         assertEquals("Errors", errors, inspector.getErrors().size());
     }
 

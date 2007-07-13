@@ -75,26 +75,28 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_NEXT_BREAKPOINT = 47;
 
     // Grammar
-    public static final int MI_SHOW_DECISION_DFA = 50;
-    public static final int MI_SHOW_DEPENDENCY = 51;
-    public static final int MI_SHOW_TOKENS_SD = 52;
-    public static final int MI_SHOW_TOKENS_DFA = 53;
-    public static final int MI_INSERT_TEMPLATE = 54;
-    public static final int MI_GROUP_RULE = 55;
-    public static final int MI_UNGROUP_RULE = 56;
-    public static final int MI_IGNORE_RULE = 57;
-    public static final int MI_CHECK_GRAMMAR = 58;
+    public static final int MI_SHOW_DECISION_DFA_RULE = 50;
+    public static final int MI_SHOW_DECISION_DFA_PARSER = 51;
+    public static final int MI_SHOW_DECISION_DFA_LEXER = 52;
+    public static final int MI_SHOW_DEPENDENCY = 53;
+    public static final int MI_SHOW_TOKENS_SD = 54;
+    public static final int MI_SHOW_TOKENS_DFA = 55;
+    public static final int MI_INSERT_TEMPLATE = 56;
+    public static final int MI_GROUP_RULE = 57;
+    public static final int MI_UNGROUP_RULE = 58;
+    public static final int MI_IGNORE_RULE = 59;
+    public static final int MI_CHECK_GRAMMAR = 60;
 
     // Refactor
-    public static final int MI_RENAME = 60;
-    public static final int MI_REPLACE_LITERAL_WITH_TOKEN_LABEL = 61;
-    public static final int MI_LITERAL_TO_SINGLEQUOTE = 62;
-    public static final int MI_LITERAL_TO_DOUBLEQUOTE = 63;
-    public static final int MI_LITERAL_TO_CSTYLEQUOTE = 64;
-    public static final int MI_REMOVE_LEFT_RECURSION = 65;
-    public static final int MI_REMOVE_ALL_LEFT_RECURSION = 66;
-    public static final int MI_EXTRACT_RULE = 67;
-    public static final int MI_INLINE_RULE = 68;
+    public static final int MI_RENAME = 61;
+    public static final int MI_REPLACE_LITERAL_WITH_TOKEN_LABEL = 62;
+    public static final int MI_LITERAL_TO_SINGLEQUOTE = 63;
+    public static final int MI_LITERAL_TO_DOUBLEQUOTE = 64;
+    public static final int MI_LITERAL_TO_CSTYLEQUOTE = 65;
+    public static final int MI_REMOVE_LEFT_RECURSION = 66;
+    public static final int MI_REMOVE_ALL_LEFT_RECURSION = 67;
+    public static final int MI_EXTRACT_RULE = 68;
+    public static final int MI_INLINE_RULE = 69;
 
     // Generate
     public static final int MI_GENERATE_CODE = 70;
@@ -283,8 +285,11 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu menu;
         menu = new XJMenu();
         menu.setTitle(resourceBundle.getString("menu.title.grammar"));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFA"), MI_SHOW_DECISION_DFA, this));
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showRuleDependencyGraph"), MI_SHOW_DEPENDENCY, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFARule"), MI_SHOW_DECISION_DFA_RULE, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFAParser"), MI_SHOW_DECISION_DFA_PARSER, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFALexer"), MI_SHOW_DECISION_DFA_LEXER, this));
         menu.addSeparator();
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensSyntaxDiagram"), MI_SHOW_TOKENS_SD, this));
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensDFA"), MI_SHOW_TOKENS_DFA, this));
@@ -342,8 +347,8 @@ public class EditorMenu implements XJMenuItemDelegate {
                 item = new XJMenuItem(resourceBundle.getString("menu.item.findUsages"), KeyEvent.VK_F7, Event.ALT_MASK, MI_FIND_USAGE, this);
                 break;
 
-            case MI_SHOW_DECISION_DFA:
-                item = new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFA"), MI_SHOW_DECISION_DFA, this);
+            case MI_SHOW_DECISION_DFA_RULE:
+                item = new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFARule"), MI_SHOW_DECISION_DFA_RULE, this);
                 break;
 
             case MI_SHOW_DEPENDENCY:
@@ -435,7 +440,7 @@ public class EditorMenu implements XJMenuItemDelegate {
 
         if(overRule) {
             factory.addSeparator();
-            factory.addItem(MI_SHOW_DECISION_DFA);
+            factory.addItem(MI_SHOW_DECISION_DFA_RULE);
             factory.addItem(MI_SHOW_DEPENDENCY);
             factory.addItem(MI_SHOW_RULE_GENCODE);
         }
@@ -603,8 +608,16 @@ public class EditorMenu implements XJMenuItemDelegate {
                 editor.menuGrammar.showTokensDFA();
                 break;
 
-            case MI_SHOW_DECISION_DFA:
-                editor.menuGrammar.showDecisionDFA();
+            case MI_SHOW_DECISION_DFA_RULE:
+                editor.menuGrammar.showRuleDecisionDFA();
+                break;
+
+            case MI_SHOW_DECISION_DFA_PARSER:
+                editor.menuGrammar.showAllDecisionDFA(false);
+                break;
+
+            case MI_SHOW_DECISION_DFA_LEXER:
+                editor.menuGrammar.showAllDecisionDFA(true);
                 break;
 
             case MI_SHOW_DEPENDENCY:

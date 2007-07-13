@@ -16,6 +16,7 @@ import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.*;
 import org.antlr.works.find.FindAndReplace;
 import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.grammar.decisiondfa.DecisionDFAEngine;
 import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.menu.*;
 import org.antlr.works.navigation.GoToHistory;
@@ -39,6 +40,8 @@ import org.antlr.xjlib.appkit.text.XJURLLabel;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
 import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
+import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
@@ -101,6 +104,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     /* Tools */
 
     public FindAndReplace findAndReplace;
+    public DecisionDFAEngine decisionDFAEngine;
 
     public GoToRule goToRule;
     public GoToHistory goToHistory;
@@ -174,6 +178,9 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     protected EngineGrammar engineGrammar;
     protected GrammarSyntax grammarSyntax;
 
+    /* Progress */
+    private XJDialogProgress progress;
+
     public CEditorGrammar(ComponentContainer container) {
         super(container);
         afterParserOp = new AfterParseOperations();
@@ -242,6 +249,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     protected void initCore() {
+        decisionDFAEngine = new DecisionDFAEngine(this);
         parserEngine = new GrammarSyntaxEngine();
         grammarSyntax = new GrammarSyntax(this);
         interpreter = new EditorInterpreter(this);
@@ -255,7 +263,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         editorMenu = new EditorMenu(this);
         editorIdeas = new EditorIdeas(this);
         editorTips = new EditorTips(this);
-        editorInspector = new EditorInspector(grammarSyntax, this);
+        editorInspector = new EditorInspector(grammarSyntax, decisionDFAEngine, this);
 
         persistence = new EditorPersistence(this);
 
@@ -1004,10 +1012,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         interpreter.setRules(getRules());
         rules.parserDidParse();
         grammarSyntax.parserDidParse();
+        decisionDFAEngine.reset();
 
         // Make sure to invoke the ideas after Rules
         // has completely updated its list (which should
-        // be done inside rules.parserDidParse()
+        // be done inside rules.parserDidParse())
         editorIdeas.display(getCaretPosition());
 
         visual.setText(getText(), getFileName());
@@ -1320,6 +1329,20 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         } catch (PrinterException e) {
             XJAlert.display(getWindowContainer(), "Print Error", "An error occurred while printing:\n"+e.toString());
         }
+    }
+
+    public void showProgress(String title, XJDialogProgressDelegate delegate) {
+        if(progress == null)
+            progress = new XJDialogProgress(getWindowContainer());
+        progress.setInfo(title);
+        progress.setCancellable(true);
+        progress.setDelegate(delegate);
+        progress.setIndeterminate(true);
+        progress.display();
+    }
+
+    public void hideProgress() {
+        progress.close();
     }
 
     /** This class is used to perform after parsing operations in another

@@ -1,17 +1,18 @@
 package org.antlr.works.grammar;
 
+import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.editor.EditorMenu;
+import org.antlr.works.editor.EditorTab;
+import org.antlr.works.grammar.decisiondfa.DecisionDFA;
+import org.antlr.works.menu.ContextualMenuFactory;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.utils.Utils;
 import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.xjlib.appkit.gview.GViewDelegate;
 import org.antlr.xjlib.appkit.gview.object.GElement;
 import org.antlr.xjlib.appkit.gview.utils.GDOTImporterDOT;
 import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.editor.EditorMenu;
-import org.antlr.works.editor.EditorTab;
-import org.antlr.works.menu.ContextualMenuFactory;
-import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.element.ElementRule;
-import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -63,11 +64,8 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
 
     protected String error;
 
-    protected GrammarDOTTabDelegate delegate;
-
-    public GrammarDOTTab(CEditorGrammar editor, GrammarDOTTabDelegate delegate) {
+    public GrammarDOTTab(CEditorGrammar editor) {
         this.editor = editor;
-        this.delegate = delegate;
     }
 
     public Container getContainer() {
@@ -88,6 +86,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
 
         if(willLaunch()) {
             new Thread(this).start();
+            editor.showProgress("Generating...", null);
             return true;
         } else
             return false;
@@ -195,7 +194,16 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                delegate.grammarDOTTabDidComplete(GrammarDOTTab.this, error);
+                editor.hideProgress();
+                if(error == null) {
+                    editor.addTab(GrammarDOTTab.this);
+                    editor.makeBottomComponentVisible();
+                } else {
+                    if(GrammarDOTTab.this instanceof DecisionDFA)
+                        XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the DFA:\n"+error);
+                    if(GrammarDOTTab.this instanceof RulesDependency)
+                        XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the rule dependency graph:\n"+error);
+                }
             }
         });
 
@@ -274,10 +282,6 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
                 editor.console.print(e);
             }
         }
-    }
-
-    public interface GrammarDOTTabDelegate {
-        public void grammarDOTTabDidComplete(GrammarDOTTab tab, String error);
     }
 
 }

@@ -1,13 +1,13 @@
-package org.antlr.works.grammar;
+package org.antlr.works.grammar.decisiondfa;
 
 import org.antlr.Tool;
 import org.antlr.analysis.DFA;
 import org.antlr.codegen.CodeGenerator;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
-import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.syntax.GrammarSyntaxLexer;
+import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.grammar.GrammarDOTTab;
 
 import java.util.List;
 /*
@@ -48,54 +48,22 @@ public class DecisionDFA extends GrammarDOTTab {
 
     protected int decisionNumber;
 
-    public DecisionDFA(CEditorGrammar editor, GrammarDOTTabDelegate delegate) {
-        super(editor, delegate);
+    public DecisionDFA(CEditorGrammar editor) {
+        super(editor);
     }
 
+    @Override
     protected boolean willLaunch() {
         return checkForCurrentRule();
     }
 
+    @Override
     public void willRun() {
-        ATEToken t = findClosestDecisionToken();
-        if(t == null) {
-            line = editor.getTextEditor().getCurrentLinePosition();
-            column = editor.getTextEditor().getCurrentColumnPosition();
-        } else {
-            line = editor.getTextEditor().getLinePositionAtIndex(t.getStartIndex());
-            column = editor.getTextEditor().getColumnPositionAtIndex(t.getStartIndex());
-            editor.setCaretPosition(t.getStartIndex());
-        }
+        line = editor.getTextEditor().getCurrentLinePosition();
+        column = editor.getTextEditor().getCurrentColumnPosition();
     }
 
-    /**
-     * Finds the closest decision token. We backup until we see a colon and then
-     * use the last seen token (because the token in a rule can be in another line
-     * than the colon)
-     * @return The closest token of a decision point
-     */
-    public ATEToken findClosestDecisionToken() {
-        ATEToken ct = editor.getCurrentToken();
-        ATEToken lastToken = ct;
-        List<ATEToken> tokens = editor.getTokens();
-        int nestedParen = 0;
-        for(int index=tokens.indexOf(ct); index >= 0; index--) {
-            ATEToken t = tokens.get(index);
-            if(t.type == GrammarSyntaxLexer.TOKEN_COLON)
-                return lastToken;
-            else if(t.type == GrammarSyntaxLexer.TOKEN_RPAREN)
-                nestedParen++;
-            else if(t.type == GrammarSyntaxLexer.TOKEN_LPAREN) {
-                if(nestedParen == 0)
-                    return t;
-                else
-                    nestedParen--;
-            }
-            lastToken = t;
-        }
-        return null;
-    }
-
+    @Override
     public String getDOTString() throws Exception {
         EngineGrammar eg = editor.getEngineGrammar();
         eg.analyze();

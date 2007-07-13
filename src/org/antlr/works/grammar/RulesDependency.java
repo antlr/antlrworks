@@ -1,14 +1,13 @@
 package org.antlr.works.grammar;
 
-import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 /*
 
@@ -49,10 +48,11 @@ public class RulesDependency extends GrammarDOTTab {
 
     protected boolean includeLexerRefs;
 
-    public RulesDependency(CEditorGrammar editor, GrammarDOTTabDelegate delegate) {
-        super(editor, delegate);
+    public RulesDependency(CEditorGrammar editor) {
+        super(editor);
     }
 
+    @Override
     protected boolean willLaunch() {
 
         if(!checkForCurrentRule())
@@ -73,6 +73,7 @@ public class RulesDependency extends GrammarDOTTab {
         return true;
     }
 
+    @Override
     public String getDOTString() throws Exception {
         ElementRule rule = editor.getCurrentRule();
 
@@ -97,15 +98,14 @@ public class RulesDependency extends GrammarDOTTab {
         if(refs == null || refs.isEmpty())
             return;
 
-        for (Iterator<ElementReference> iterator = refs.iterator(); iterator.hasNext();) {
-            ElementReference reference = iterator.next();
+        for (ElementReference reference : refs) {
             String refRuleName = reference.token.getAttribute();
-            String visitedRef = rule.name+" -> "+refRuleName;
+            String visitedRef = rule.name + " -> " + refRuleName;
 
-            if(visitedRefs.contains(visitedRef))
+            if (visitedRefs.contains(visitedRef))
                 continue;
 
-            if(ATEToken.isLexerName(reference.token.getAttribute()) && !includeLexerRefs)
+            if (ATEToken.isLexerName(reference.token.getAttribute()) && !includeLexerRefs)
                 continue;
 
             visitedRefs.add(visitedRef);
@@ -113,7 +113,7 @@ public class RulesDependency extends GrammarDOTTab {
             dependency.append(visitedRef);
             dependency.append(";\n");
 
-            if(!visitedRules.contains(refRuleName))
+            if (!visitedRules.contains(refRuleName))
                 buildGraph(editor.rules.getRuleWithName(refRuleName));
         }
     }

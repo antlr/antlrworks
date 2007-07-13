@@ -31,24 +31,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.appkit.utils.XJDialogProgress;
-import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.grammar.*;
+import org.antlr.works.grammar.CheckGrammar;
+import org.antlr.works.grammar.CheckGrammarDelegate;
+import org.antlr.works.grammar.RulesDependency;
+import org.antlr.works.grammar.TokensDFA;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.syntax.element.ElementGroup;
 import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
 
 import javax.swing.*;
 import java.util.List;
 
-public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDOTTabDelegate, CheckGrammarDelegate, XJDialogProgressDelegate {
+public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, XJDialogProgressDelegate {
 
-    protected XJDialogProgress progress;
     protected CheckGrammar checkGrammar;
     protected boolean checkingGrammar;
 
@@ -65,36 +66,34 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
 
     public void showTokensDFA() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_TOKENS_DFA);
-        TokensDFA decision = new TokensDFA(editor, this);
-        if(decision.launch())
-            showProgress("Generating...");
+        TokensDFA decision = new TokensDFA(editor);
+        decision.launch();
     }
 
-    public void showDecisionDFA() {
+    public void showAllDecisionDFA(boolean lexer) {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_DECISION_DFA);
-        DecisionDFA decision = new DecisionDFA(editor, this);
-        if(decision.launch())
-            showProgress("Generating...");
+        try {
+            editor.decisionDFAEngine.discoverAllDecisions(lexer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot show the DFA:\n"+e.toString());
+        }
+    }
+
+    public void showRuleDecisionDFA() {
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_DECISION_DFA);
+        try {
+            editor.decisionDFAEngine.discoverDecisionsAtCurrentRule();
+        } catch (Exception e) {
+            e.printStackTrace();
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot show the DFA:\n"+e.toString());
+        }
     }
 
     public void showDependency() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_RULE_DEPENDENCY);
-        RulesDependency dependency = new RulesDependency(editor, this);
-        if(dependency.launch())
-            showProgress("Generating...");
-    }
-
-    public void grammarDOTTabDidComplete(GrammarDOTTab tab, String error) {
-        progress.close();
-        if(error == null) {
-            editor.addTab(tab);
-            editor.makeBottomComponentVisible();
-        } else {
-            if(tab instanceof DecisionDFA)
-                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the DFA:\n"+error);
-            if(tab instanceof RulesDependency)
-                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the rule dependency graph:\n"+error);
-        }
+        RulesDependency dependency = new RulesDependency(editor);
+        dependency.launch();
     }
 
     public void insertRuleFromTemplate() {
@@ -167,7 +166,7 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
     }
 
     public void checkGrammar() {
-        showProgress("Checking Grammar...");
+        editor.showProgress("Checking Grammar...", this);
 
         editor.console.makeCurrent();
         editor.console.println("Checking Grammar...");
@@ -182,26 +181,12 @@ public class MenuGrammar extends MenuAbstract implements GrammarDOTTab.GrammarDO
 
     public void checkGrammarDidEnd(String errorMsg) {
         checkingGrammar = false;
-        hideProgress();
+        editor.hideProgress();
         if(errorMsg != null) {
             XJAlert.display(editor.getWindowContainer(), "Failure", "Check Grammar failed:\n"+errorMsg+"\nConsult the console for more information.");
         } else {
             XJAlert.display(editor.getWindowContainer(), "Success", "Check Grammar succeeded.");
         }
-    }
-
-    protected void showProgress(String title) {
-        if(progress == null)
-            progress = new XJDialogProgress(editor.getWindowContainer());        
-        progress.setInfo(title);
-        progress.setCancellable(true);
-        progress.setDelegate(this);
-        progress.setIndeterminate(true);
-        progress.display();
-    }
-
-    protected void hideProgress() {
-        progress.close();
     }
 
     public void dialogDidCancel() {

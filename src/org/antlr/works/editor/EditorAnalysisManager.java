@@ -42,6 +42,7 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
 
     protected static final int ANALYSIS_ITEM_ERROR = 0;
     protected static final int ANALYSIS_ITEM_WARNING = 1;
+    protected static final int ANALYSIS_ITEM_OTHER = 2;
 
     protected final Color greenColor = new Color(0f, 0.9f, 0.25f, 1.0f);
 
@@ -55,7 +56,7 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
     }
 
     public int[] getAvailableTypes() {
-        return new int[] { ANALYSIS_ITEM_WARNING, ANALYSIS_ITEM_ERROR };
+        return new int[] { ANALYSIS_ITEM_WARNING, ANALYSIS_ITEM_ERROR, ANALYSIS_ITEM_OTHER };
     }
 
     public List<ATEAnalysisItem> getItemsForType(int type) {
@@ -64,6 +65,8 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
                 return getErrors();
             case ANALYSIS_ITEM_WARNING:
                 return getWarnings();
+            case ANALYSIS_ITEM_OTHER:
+                return getOthers();
         }
         return null;
     }
@@ -105,7 +108,7 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
 
     public List<ATEAnalysisItem> getErrors() {
         List<ATEAnalysisItem> errors = new ArrayList<ATEAnalysisItem>();
-        for (EditorInspector.Item item : editor.editorInspector.getErrors()) {
+        for (EditorInspectorItem item : editor.editorInspector.getErrors()) {
             errors.add(new ATEAnalysisItem(ANALYSIS_ITEM_ERROR, item.color, item.startLineNumber, item.startIndex, item.description));
         }
         numberOfErrors = errors.size();
@@ -114,11 +117,19 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
 
     public List<ATEAnalysisItem> getWarnings() {
         List<ATEAnalysisItem> warnings = new ArrayList<ATEAnalysisItem>();
-        for (EditorInspector.Item item : editor.editorInspector.getWarnings()) {
+        for (EditorInspectorItem item : editor.editorInspector.getWarnings()) {
             warnings.add(new ATEAnalysisItem(ANALYSIS_ITEM_WARNING, item.color, item.startLineNumber, item.startIndex, item.description));
         }
         numberOfWarnings = warnings.size();
         return warnings;
+    }
+
+    public List<ATEAnalysisItem> getOthers() {
+        List<ATEAnalysisItem> others = new ArrayList<ATEAnalysisItem>();
+        for (EditorInspectorItem item : editor.editorInspector.getDecisionDFAs()) {
+            others.add(new ATEAnalysisItem(ANALYSIS_ITEM_OTHER, item.color, item.startLineNumber, item.startIndex, item.description));
+        }
+        return others;
     }
 
 }

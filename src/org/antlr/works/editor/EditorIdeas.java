@@ -68,11 +68,10 @@ public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
 
     public List<IdeaAction> ideaProviderGetActions(int position) {
         List<IdeaAction> actions = new ArrayList<IdeaAction>();
-        List<EditorInspector.Item> items = editor.editorInspector.getAllItemsAtIndex(position);
-        for(int index=0; index<items.size(); index++) {
-            EditorInspector.Item item = items.get(index);
+        List<EditorInspectorItem> items = editor.editorInspector.getAllItemsAtIndex(position);
+        for (EditorInspectorItem item : items) {
             List<IdeaAction> itemActions = item.getIdeaActions();
-            if(itemActions != null)
+            if (itemActions != null)
                 actions.addAll(itemActions);
         }
         return actions;

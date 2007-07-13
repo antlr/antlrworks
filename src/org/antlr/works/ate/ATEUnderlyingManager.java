@@ -78,24 +78,45 @@ public abstract class ATEUnderlyingManager {
 
     public abstract void render(Graphics g);
 
-    public void drawUnderlineAtIndexes(Graphics g, Color c, int start, int end) {
+    public static final int SHAPE_SAW_TOOTH = 1;
+    public static final int SHAPE_LINE = 2;
+    public static final int SHAPE_RECT = 3;
+
+    public void drawUnderlineAtIndexes(Graphics g, Color c, int start, int end, int shape) {
         try {
             Rectangle r1 = textEditor.textPane.modelToView(start);
             Rectangle r2 = textEditor.textPane.modelToView(end);
 
             g.setColor(c);
 
-            int width = r2.x-r1.x;
-            int triangle_size = 5;
-            for(int triangle=0; triangle<width/triangle_size; triangle++) {
-                int x = r1.x+triangle*triangle_size;
-                int y = r1.y+r1.height-1;
-                g.drawLine(x, y, x+triangle_size/2, y-triangle_size/2);
-                g.drawLine(x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
+            switch(shape) {
+                case SHAPE_SAW_TOOTH: {
+                    int width = r2.x-r1.x;
+                    int triangle_size = 5;
+                    for(int triangle=0; triangle<width/triangle_size; triangle++) {
+                        int x = r1.x+triangle*triangle_size;
+                        int y = r1.y+r1.height-1;
+                        g.drawLine(x, y, x+triangle_size/2, y-triangle_size/2);
+                        g.drawLine(x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
 
 
-                underlyingShape.addLine(c, x, y, x+triangle_size/2, y-triangle_size/2);
-                underlyingShape.addLine(c, x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
+                        underlyingShape.addLine(c, x, y, x+triangle_size/2, y-triangle_size/2);
+                        underlyingShape.addLine(c, x+triangle_size/2, y-triangle_size/2, x+triangle_size, y);
+                    }
+                }
+                break;
+
+                case SHAPE_LINE: {
+                    g.drawLine(r1.x, r1.y+r1.height, r2.x, r2.y+r2.height);
+                    underlyingShape.addLine(c, r1.x, r1.y+r1.height, r2.x, r2.y+r2.height);
+                }
+                break;
+
+                case SHAPE_RECT: {
+                    g.drawRect(r1.x, r1.y, r2.x+r2.width-r1.x, r1.height);
+                    underlyingShape.addRect(c, r1.x, r1.y, r2.x+r2.width, r2.y+r2.height);
+                }
+                break;
             }
         } catch (BadLocationException e) {
             // Ignore
@@ -116,6 +137,19 @@ public abstract class ATEUnderlyingManager {
             }
             gp.moveTo(x1, y1);
             gp.lineTo(x2, y2);
+        }
+
+        public void addRect(Color c, int x1, int y1, int x2, int y2) {
+            GeneralPath gp = shapes.get(c);
+            if(gp == null) {
+                gp = new GeneralPath();
+                shapes.put(c, gp);
+            }
+            gp.moveTo(x1, y1);
+            gp.lineTo(x2, y1);
+            gp.lineTo(x2, y2);
+            gp.lineTo(x1, y2);
+            gp.lineTo(x1, y1);
         }
 
         public void draw(Graphics2D g) {

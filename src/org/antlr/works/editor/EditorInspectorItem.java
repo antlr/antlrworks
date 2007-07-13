@@ -1,15 +1,17 @@
-package org.antlr.works.grammar;
+package org.antlr.works.editor;
 
-import org.antlr.analysis.DFA;
-import org.antlr.analysis.NFAState;
-import org.antlr.tool.DOTGenerator;
-import org.antlr.tool.Grammar;
-import org.antlr.tool.Rule;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.ate.ATEUnderlyingManager;
+import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.idea.IdeaAction;
+import org.antlr.works.idea.IdeaActionDelegate;
+
+import java.awt.*;
+import java.util.List;
+
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,30 +39,37 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class TokensDFA extends GrammarDOTTab {
+public class EditorInspectorItem implements IdeaActionDelegate {
 
-    public TokensDFA(CEditorGrammar editor) {
-        super(editor);
+    public static final int IDEA_DELETE_RULE = 0;
+    public static final int IDEA_CREATE_RULE = 1;
+    public static final int IDEA_REMOVE_LEFT_RECURSION = 2;
+    public static final int IDEA_CONVERT_TO_SINGLE_QUOTE = 3;
+    public static final int IDEA_FIX_GRAMMAR_NAME = 4;
+    public static final int IDEA_DECISION_DFA = 5;
+
+    public ATEToken token;
+    public int startIndex;
+    public int endIndex;
+    public int startLineNumber;
+    public Color color;
+    public String description;
+    public int shape = ATEUnderlyingManager.SHAPE_SAW_TOOTH;
+
+    public void setAttributes(ATEToken token, int startIndex, int endIndex, int startLineNumber, Color color, String description) {
+        this.token = token;
+        this.startIndex = startIndex;
+        this.endIndex = endIndex;
+        this.startLineNumber = startLineNumber;
+        this.color = color;
+        this.description = description;
     }
 
-    @Override
-    public String getDOTString() throws Exception {
-        EngineGrammar eg = editor.getEngineGrammar();
-        eg.analyze();
-
-        Grammar g = eg.getLexerGrammar();
-        Rule r = g.getRule(Grammar.ARTIFICIAL_TOKENS_RULENAME);
-        NFAState s = (NFAState)r.startState.transition(0).target;
-        DFA dfa = g.getLookaheadDFA(s.getDecisionNumber());
-
-        DOTGenerator dg = new DOTGenerator(g);
-        dg.setArrowheadType("none");
-        dg.setRankdir("LR");    // Left-to-right
-        return dg.getDOT( dfa.startState );
+    public List<IdeaAction> getIdeaActions() {
+        return null;
     }
 
-    public String getTabName() {
-        return Grammar.ARTIFICIAL_TOKENS_RULENAME+" DFA";
+    public void ideaActionFire(IdeaAction action, int actionID) {
     }
 
 }

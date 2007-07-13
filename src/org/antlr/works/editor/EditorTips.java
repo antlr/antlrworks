@@ -93,9 +93,9 @@ public class EditorTips implements TipsProvider {
     public List<String> tipsProviderGetTips(int position) {
         List<String> tips = new ArrayList<String>();
 
-        List<EditorInspector.Item> items = editor.editorInspector.getAllItemsAtIndex(position);
+        List<EditorInspectorItem> items = editor.editorInspector.getAllItemsAtIndex(position);
         for(int index=0; index<items.size(); index++) {
-            EditorInspector.Item item = items.get(index);
+            EditorInspectorItem item = items.get(index);
             tips.add(item.description);
         }
 

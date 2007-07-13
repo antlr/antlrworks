@@ -1,16 +1,16 @@
 package org.antlr.works.editor;
 
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.RefactorEngine;
+import org.antlr.works.grammar.decisiondfa.DecisionDFAEngine;
 import org.antlr.works.idea.IdeaAction;
-import org.antlr.works.idea.IdeaActionDelegate;
 import org.antlr.works.syntax.GrammarSyntax;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.syntax.element.ElementToken;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -50,15 +50,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class EditorInspector {
 
     private GrammarSyntax syntax;
+    private DecisionDFAEngine decisionDFAEngine;
     private InspectorDelegate delegate;
 
-    public EditorInspector(GrammarSyntax syntax, InspectorDelegate delegate) {
+    public EditorInspector(GrammarSyntax syntax, DecisionDFAEngine decisionDFAEngine, InspectorDelegate delegate) {
         this.syntax = syntax;
+        this.decisionDFAEngine = decisionDFAEngine;
         this.delegate = delegate;
     }
 
-    public List<Item> getErrors() {
-        List<Item> errors = new ArrayList<Item>();
+    public List<EditorInspectorItem> getErrors() {
+        List<EditorInspectorItem> errors = new ArrayList<EditorInspectorItem>();
         discoverInvalidGrammarName(errors);
         discoverInvalidCharLiteralTokens(errors);
         discoverUndefinedReferences(errors);
@@ -66,43 +68,42 @@ public class EditorInspector {
         return errors;
     }
 
-    public List<Item> getWarnings() {
-        List<Item> warnings = new ArrayList<Item>();
+    public List<EditorInspectorItem> getWarnings() {
+        List<EditorInspectorItem> warnings = new ArrayList<EditorInspectorItem>();
         discoverLeftRecursionRules(warnings);
         discoverLeftRecursiveRulesSet(warnings);
         return warnings;
     }
 
-    public List<Item> getErrorsAtIndex(int index) {
-        return getItemsAtIndex(getErrors(), index);
-    }
-
-    public List<Item> getWarningsAtIndex(int index) {
-        return getItemsAtIndex(getWarnings(), index);
-    }
-
-    protected List<Item> getAllItemsAtIndex(int index) {
-        List<Item> items = new ArrayList<Item>();
-        items.addAll(getErrorsAtIndex(index));
-        items.addAll(getWarningsAtIndex(index));
+    public List<EditorInspectorItem> getDecisionDFAs() {
+        List<EditorInspectorItem> items = new ArrayList<EditorInspectorItem>();
+        discoverDecisionDFAs(items);
         return items;
     }
 
-    protected List<Item> getItemsAtIndex(List<Item> items, int index) {
-        List<Item> filteredItems = new ArrayList<Item>();
-        for (Item item : items) {
+    protected List<EditorInspectorItem> getAllItemsAtIndex(int index) {
+        List<EditorInspectorItem> items = new ArrayList<EditorInspectorItem>();
+        items.addAll(getItemsAtIndex(getErrors(), index));
+        items.addAll(getItemsAtIndex(getWarnings(), index));
+        items.addAll(getItemsAtIndex(getDecisionDFAs(), index));
+        return items;
+    }
+
+    protected List<EditorInspectorItem> getItemsAtIndex(List<EditorInspectorItem> items, int index) {
+        List<EditorInspectorItem> filteredItems = new ArrayList<EditorInspectorItem>();
+        for (EditorInspectorItem item : items) {
             if (index >= item.startIndex && index <= item.endIndex)
                 filteredItems.add(item);
         }
         return filteredItems;
     }
 
-    protected void discoverInvalidGrammarName(List<Item> items) {
+    protected void discoverInvalidGrammarName(List<EditorInspectorItem> items) {
         ElementGrammarName n = getGrammarName();
         String grammarFileName = getGrammarNameFromFile();
         if(n != null && grammarFileName != null && !grammarFileName.equals(n.getName())) {
             ATEToken t = n.name;
-            Item item = new ItemInvalidGrammarName();
+            EditorInspectorItem item = new ItemInvalidGrammarName();
             item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
                     t.startLineNumber, Color.red,
                     "Invalid grammar name '"+t.getAttribute()+"'");
@@ -122,7 +123,7 @@ public class EditorInspector {
         return XJUtils.getPathByDeletingPathExtension(filename);
     }
 
-    protected void discoverInvalidCharLiteralTokens(List<Item> items) {
+    protected void discoverInvalidCharLiteralTokens(List<EditorInspectorItem> items) {
         List<ATEToken> tokens = syntax.getParserEngine().getTokens();
         if(tokens == null)
             return;
@@ -131,7 +132,7 @@ public class EditorInspector {
             if (t.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
                 if (RefactorEngine.ignoreScopeForDoubleQuoteLiteral(t.scope)) continue;
 
-                Item item = new ItemInvalidCharLiteral();
+                EditorInspectorItem item = new ItemInvalidCharLiteral();
                 item.setAttributes(t, t.getStartIndex(), t.getEndIndex(),
                         t.startLineNumber, Color.red,
                         "Invalid character literal '" + t.getAttribute() + "' - must use single quote");
@@ -140,13 +141,13 @@ public class EditorInspector {
         }
     }
 
-    protected void discoverUndefinedReferences(List<Item> items) {
+    protected void discoverUndefinedReferences(List<EditorInspectorItem> items) {
         List<ElementReference> undefinedRefs = syntax.getUndefinedReferences();
         if(undefinedRefs == null)
             return;
 
         for (ElementReference ref : undefinedRefs) {
-            Item item = new ItemUndefinedReference();
+            EditorInspectorItem item = new ItemUndefinedReference();
             item.setAttributes(ref.token, ref.token.getStartIndex(), ref.token.getEndIndex(),
                     ref.token.startLineNumber, Color.red,
                     "Undefined reference \"" + ref.token.getAttribute() + "\"");
@@ -154,13 +155,13 @@ public class EditorInspector {
         }
     }
 
-    protected void discoverDuplicateRules(List<Item> items) {
+    protected void discoverDuplicateRules(List<EditorInspectorItem> items) {
         List<ElementRule> rules = syntax.getDuplicateRules();
         if(rules == null)
             return;
 
         for (ElementRule rule : rules) {
-            Item item = new ItemDuplicateRule();
+            EditorInspectorItem item = new ItemDuplicateRule();
             item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
                     rule.start.startLineNumber, Color.red,
                     "Duplicate rule \"" + rule.name + "\"");
@@ -168,7 +169,7 @@ public class EditorInspector {
         }
     }
 
-    protected void discoverLeftRecursionRules(List<Item> items) {
+    protected void discoverLeftRecursionRules(List<EditorInspectorItem> items) {
         List<ElementRule> rules = syntax.getParserEngine().getRules();
         if(rules == null)
             return;
@@ -177,7 +178,7 @@ public class EditorInspector {
             if (!rule.hasLeftRecursion())
                 continue;
 
-            Item item = new ItemLeftRecursion();
+            EditorInspectorItem item = new ItemLeftRecursion();
             item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
                     rule.start.startLineNumber, Color.blue,
                     "Rule \"" + rule.name + "\" is left-recursive");
@@ -185,7 +186,7 @@ public class EditorInspector {
         }
     }
 
-    protected void discoverLeftRecursiveRulesSet(List<Item> items) {
+    protected void discoverLeftRecursiveRulesSet(List<EditorInspectorItem> items) {
         List<ElementRule> rules = syntax.getParserEngine().getRules();
         if(rules == null)
             return;
@@ -195,7 +196,7 @@ public class EditorInspector {
             if (rulesSet == null || rulesSet.size() < 2)
                 continue;
 
-            Item item = new Item();
+            EditorInspectorItem item = new EditorInspectorItem();
             item.setAttributes(rule.start, rule.start.getStartIndex(), rule.start.getEndIndex(),
                     rule.start.startLineNumber, Color.blue,
                     "Rule \"" + rule.name + "\" is mutually left-recursive with other rules (see Console)");
@@ -203,40 +204,11 @@ public class EditorInspector {
         }
     }
 
-    public class Item implements IdeaActionDelegate {
-
-        public static final int IDEA_DELETE_RULE = 0;
-        public static final int IDEA_CREATE_RULE = 1;
-        public static final int IDEA_REMOVE_LEFT_RECURSION = 2;
-        public static final int IDEA_CONVERT_TO_SINGLE_QUOTE = 3;
-        public static final int IDEA_FIX_GRAMMAR_NAME = 4;
-
-        public ATEToken token;
-        public int startIndex;
-        public int endIndex;
-        public int startLineNumber;
-        public Color color;
-        public String description;
-
-        public void setAttributes(ATEToken token, int startIndex, int endIndex, int startLineNumber, Color color, String description) {
-            this.token = token;
-            this.startIndex = startIndex;
-            this.endIndex = endIndex;
-            this.startLineNumber = startLineNumber;
-            this.color = color;
-            this.description = description;
-        }
-
-        public List<IdeaAction> getIdeaActions() {
-            return null;
-        }
-
-        public void ideaActionFire(IdeaAction action, int actionID) {
-        }
-
+    protected void discoverDecisionDFAs(List<EditorInspectorItem> items) {
+        items.addAll(decisionDFAEngine.getDecisionDFAItems());
     }
 
-    public class ItemUndefinedReference extends Item {
+    public class ItemUndefinedReference extends EditorInspectorItem {
 
         public List<IdeaAction> getIdeaActions() {
             List<IdeaAction> actions = new ArrayList<IdeaAction>();
@@ -254,7 +226,7 @@ public class EditorInspector {
 
     }
 
-    public class ItemDuplicateRule extends Item {
+    public class ItemDuplicateRule extends EditorInspectorItem {
 
         public List<IdeaAction> getIdeaActions() {
             List<IdeaAction> actions = new ArrayList<IdeaAction>();
@@ -271,7 +243,7 @@ public class EditorInspector {
         }
     }
 
-    public class ItemLeftRecursion extends Item {
+    public class ItemLeftRecursion extends EditorInspectorItem {
 
         public List<IdeaAction> getIdeaActions() {
             List<IdeaAction> actions = new ArrayList<IdeaAction>();
@@ -288,7 +260,7 @@ public class EditorInspector {
         }
     }
 
-    public class ItemInvalidCharLiteral extends Item {
+    public class ItemInvalidCharLiteral extends EditorInspectorItem {
 
         public List<IdeaAction> getIdeaActions() {
             List<IdeaAction> actions = new ArrayList<IdeaAction>();
@@ -305,7 +277,7 @@ public class EditorInspector {
         }
     }
 
-    public class ItemInvalidGrammarName extends Item {
+    public class ItemInvalidGrammarName extends EditorInspectorItem {
 
         public List<IdeaAction> getIdeaActions() {
             List<IdeaAction> actions = new ArrayList<IdeaAction>();
