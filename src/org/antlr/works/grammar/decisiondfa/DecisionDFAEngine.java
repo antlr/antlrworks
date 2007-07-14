@@ -1,7 +1,9 @@
 package org.antlr.works.grammar.decisiondfa;
 
 import org.antlr.analysis.DFA;
+import org.antlr.analysis.NFAState;
 import org.antlr.tool.Grammar;
+import org.antlr.tool.Rule;
 import org.antlr.works.ate.ATEUnderlyingManager;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.EngineGrammar;
@@ -120,24 +122,45 @@ public class DecisionDFAEngine {
         decisionDFA.put(line, columnsForLineInFile);
     }
 
+    public boolean isDecisionPointAroundLocation(int line, int column) {
+        List s = decisionDFA.get(line+1);
+        return s != null && (s.contains(column-1) || s.contains(column));
+    }
+
     public List<DecisionDFAItem> getDecisionDFAItems() {
         List<DecisionDFAItem> items = new ArrayList<DecisionDFAItem>();
         for(int lineIndex : decisionDFA.keySet()) {
             for(int columnIndex : decisionDFA.get(lineIndex)) {
                 DFA dfa = getDFAAtPosition(lineIndex, columnIndex);
-                Color c = new Color(255, 128, 0);
+
+                Grammar g = engineGrammar.getLexerGrammar();
+                if(g != null) {
+                    Rule r = g.getRule(Grammar.ARTIFICIAL_TOKENS_RULENAME);
+                    NFAState s = (NFAState)r.startState.transition(0).target;
+                    // Ignore tokens DFA
+                    if(dfa.getDecisionNumber() == s.getDecisionNumber()) continue;
+                }
+
+                Color c = new Color(0, 128, 64);
                 String title = "DFA decision "+dfa.getDecisionNumber();
+                String info = "";
                 if(usesSemPreds.contains(dfa.getDecisionNumber())) {
-                    title += " (uses semantic predicate)";
-                    c = new Color(255, 111, 207);
+                    info += "uses semantic predicate";
+                    c = new Color(255, 220, 0);
+                } else if(usesSynPreds.contains(dfa.getDecisionNumber())) {
+                    info += "uses syntactic predicate";
+                    c = new Color(255, 220, 0);
                 }
-                if(usesSynPreds.contains(dfa.getDecisionNumber())) {
-                    title += " (uses syntactic predicate)";
-                    c = new Color(255, 204, 102);
+                if(dfa.isCyclic()) {
+                    if(info.length() > 0) info += ", ";
+                    info += "cyclic";
                 }
+                if(info.length() > 0) info += ", ";
+                info += dfa.getNumberOfStates()+" states";
+
                 Point p = editor.textEditor.getLineTextPositionsAtLineIndex(lineIndex-1);
                 DecisionDFAItem item = new DecisionDFAItem(editor);
-                item.setAttributes(null, p.x+columnIndex-1, p.x+columnIndex, lineIndex-1, c, title);
+                item.setAttributes(null, p.x+columnIndex-1, p.x+columnIndex, lineIndex-1, c, title+" ("+info+")");
                 item.shape = ATEUnderlyingManager.SHAPE_RECT;
                 items.add(item);
             }

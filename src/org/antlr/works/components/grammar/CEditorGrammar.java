@@ -1199,7 +1199,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void ateInvokePopUp(Component component, int x, int y) {
-        JPopupMenu m = editorMenu.getContextualMenu();
+        JPopupMenu m = editorMenu.getContextualMenu(textEditor.getTextIndexAtPosition(x, y));
         if(m != null)
             m.show(component,  x, y);
     }

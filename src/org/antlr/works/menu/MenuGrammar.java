@@ -38,6 +38,7 @@ import org.antlr.works.grammar.CheckGrammar;
 import org.antlr.works.grammar.CheckGrammarDelegate;
 import org.antlr.works.grammar.RulesDependency;
 import org.antlr.works.grammar.TokensDFA;
+import org.antlr.works.grammar.decisiondfa.DecisionDFA;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxParser;
 import org.antlr.works.syntax.element.ElementGroup;
@@ -71,6 +72,11 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
     }
 
     public void showDecisionDFA() {
+        DecisionDFA decision = new DecisionDFA(editor);
+        decision.launch();
+    }
+
+    public void highlightDecisionDFA() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_DECISION_DFA);
         try {
             if(editor.decisionDFAEngine.getDecisionDFACount() == 0) {

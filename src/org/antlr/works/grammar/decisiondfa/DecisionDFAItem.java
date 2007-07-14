@@ -18,7 +18,7 @@ public class DecisionDFAItem extends EditorInspectorItem {
     @Override
     public List<IdeaAction> getIdeaActions() {
         List<IdeaAction> actions = new ArrayList<IdeaAction>();
-        actions.add(new IdeaAction("Display Decision DFA", this, IDEA_DECISION_DFA, token));
+        actions.add(new IdeaAction("Show Decision DFA", this, IDEA_DECISION_DFA, token));
         return actions;
     }
 

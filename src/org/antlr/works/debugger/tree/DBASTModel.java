@@ -120,6 +120,14 @@ public class DBASTModel {
     public void becomeRoot(int newRootID, int oldRootID) {
         ASTNode newRoot = getTreeNode(newRootID);
         ASTNode oldRoot = getTreeNode(oldRootID);
+        if(newRoot == null) {
+            System.err.println("[becomeRoot] New root node "+newRootID+" not found, ignoring.");
+            return;
+        }
+        if(oldRoot == null) {
+            System.err.println("[becomeRoot] Old root node "+oldRootID+" not found, ignoring.");
+            return;
+        }
         oldRoot.becomeParent(newRoot);
         replaceRoot(oldRoot, newRoot);
     }
@@ -128,11 +136,11 @@ public class DBASTModel {
         ASTNode root = getTreeNode(rootID);
         ASTNode child = getTreeNode(childID);
         if(root == null) {
-            System.err.println("Root node "+rootID+" not found!");
+            System.err.println("[addChild] Root node "+rootID+" not found, ignoring.");
             return;
         }
         if(child == null) {
-            System.err.println("Child node "+childID+" not found!");
+            System.err.println("[addChild] Child node "+childID+" not found, ignoring.");
             return;
         }
 

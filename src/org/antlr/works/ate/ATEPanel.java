@@ -549,6 +549,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             undo.enableUndo();
     }
 
+    public int getTextIndexAtPosition(int x, int y) {
+        return getTextPane().viewToModel(new Point(x, y));
+    }
+
     protected class TextPaneCaretListener implements CaretListener {
 
         public void caretUpdate(CaretEvent e) {

@@ -75,15 +75,16 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_NEXT_BREAKPOINT = 47;
 
     // Grammar
-    public static final int MI_SHOW_DECISION_DFA = 50;
-    public static final int MI_SHOW_DEPENDENCY = 51;
-    public static final int MI_SHOW_TOKENS_SD = 52;
-    public static final int MI_SHOW_TOKENS_DFA = 53;
-    public static final int MI_INSERT_TEMPLATE = 54;
-    public static final int MI_GROUP_RULE = 55;
-    public static final int MI_UNGROUP_RULE = 56;
-    public static final int MI_IGNORE_RULE = 57;
-    public static final int MI_CHECK_GRAMMAR = 58;
+    public static final int MI_HIGHLIGHT_DECISION_DFA = 50;
+    public static final int MI_SHOW_DECISION_DFA = 51;
+    public static final int MI_SHOW_DEPENDENCY = 52;
+    public static final int MI_SHOW_TOKENS_SD = 53;
+    public static final int MI_SHOW_TOKENS_DFA = 54;
+    public static final int MI_INSERT_TEMPLATE = 55;
+    public static final int MI_GROUP_RULE = 56;
+    public static final int MI_UNGROUP_RULE = 57;
+    public static final int MI_IGNORE_RULE = 58;
+    public static final int MI_CHECK_GRAMMAR = 59;
 
     // Refactor
     public static final int MI_RENAME = 61;
@@ -284,7 +285,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     private void createGrammarMenu(XJMainMenuBar menubar) {
         menuGrammar = new XJMenu();
         menuGrammar.setTitle(resourceBundle.getString("menu.title.grammar"));
-        menuGrammar.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showDecisionDFA"), MI_SHOW_DECISION_DFA, this));
+        menuGrammar.addItem(new XJMenuItemCheck(resourceBundle.getString("menu.item.highlightDecisionDFA"), MI_HIGHLIGHT_DECISION_DFA, this, false));
         menuGrammar.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showRuleDependencyGraph"), MI_SHOW_DEPENDENCY, this));
         menuGrammar.addSeparator();
         menuGrammar.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensSyntaxDiagram"), MI_SHOW_TOKENS_SD, this));
@@ -406,11 +407,13 @@ public class EditorMenu implements XJMenuItemDelegate {
         return item;
     }
 
-    public JPopupMenu getContextualMenu() {
+    public JPopupMenu getContextualMenu(int textIndex) {
         boolean overReference = editor.getCurrentReference() != null;
         boolean overToken = editor.getCurrentToken() != null;
         boolean overRule = editor.getCurrentRule() != null;
         boolean overSelection = editor.getTextPane().getSelectionStart() != editor.getTextPane().getSelectionEnd();
+        boolean overDecisionDFA = editor.decisionDFAEngine.isDecisionPointAroundLocation(editor.getTextEditor().getLineIndexAtTextPosition(textIndex),
+                editor.getTextEditor().getColumnPositionAtIndex(textIndex));
 
         ContextualMenuFactory factory = new ContextualMenuFactory(this);
         factory.addItem(MI_GOTO_RULE);
@@ -436,7 +439,8 @@ public class EditorMenu implements XJMenuItemDelegate {
 
         if(overRule) {
             factory.addSeparator();
-            factory.addItem(MI_SHOW_DECISION_DFA);
+            if(overDecisionDFA)
+                factory.addItem(MI_SHOW_DECISION_DFA);
             factory.addItem(MI_SHOW_DEPENDENCY);
             factory.addItem(MI_SHOW_RULE_GENCODE);
         }
@@ -529,11 +533,11 @@ public class EditorMenu implements XJMenuItemDelegate {
                         resourceBundle.getString("menu.item.hideInputTokens") : resourceBundle.getString("menu.item.showInputTokens"));
                 break;
 
-            case MI_SHOW_DECISION_DFA:
+            case MI_HIGHLIGHT_DECISION_DFA:
                 if(editor.decisionDFAEngine.getDecisionDFACount() == 0) {
-                    item.setTitle(resourceBundle.getString("menu.item.showDecisionDFA"));
+                    item.setSelected(false);
                 } else {
-                    item.setTitle(resourceBundle.getString("menu.item.hideDecisionDFA"));
+                    item.setSelected(true);
                 }
                 break;
         }
@@ -614,6 +618,10 @@ public class EditorMenu implements XJMenuItemDelegate {
 
             case MI_SHOW_DECISION_DFA:
                 editor.menuGrammar.showDecisionDFA();
+                break;
+
+            case MI_HIGHLIGHT_DECISION_DFA:
+                editor.menuGrammar.highlightDecisionDFA();
                 break;
 
             case MI_SHOW_DEPENDENCY:

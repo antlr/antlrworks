@@ -126,7 +126,7 @@ public class ATETextPane extends JTextPane
 
     private void paintDestinationCursor(Graphics g) {
         if(destinationCursorPosition < 0) return;
-        
+
         try {
             Rectangle r = modelToView(destinationCursorPosition);
             g.setColor(Color.black);
@@ -336,8 +336,8 @@ public class ATETextPane extends JTextPane
                 selectionAnchorLineBegin=selectionStart;
                 selectionMovingLineEnd=selectionEnd;
                 selectionAnchorLineEnd=selectionEnd;
-                e.consume();
                 setDragEnabled(false);
+                e.consume();
                 return;
             }
 
@@ -353,7 +353,6 @@ public class ATETextPane extends JTextPane
                     draggingWord=true;
                 }
                 mouseDraggingOffset=mouseCharIndex-selectionStart;
-                beginDestinationCursor();
             }
             // Call super only after handling the double-click otherwise the current
             // caret position will be already moved due to the super() selection.
@@ -385,27 +384,25 @@ public class ATETextPane extends JTextPane
                 dragDropCursorPosition = viewToModel(e.getPoint());
                 if (!startedDragging){
                     startedDragging=true;
+                    beginDestinationCursor();
                 }
             }
             if(selectingWord) {
                 extendSelectionWord(e);
-                // Repaint to avoid leaving trace with the underlying line highlighting
                 ATETextPane.this.repaint();
             } else if (selectingLine){
                 extendSelectionLine(e);
-                // Repaint to avoid leaving trace with the underlying line highlighting
-                ATETextPane.this.repaint();
             } else if (draggingWord){
                 setDestinationCursorPosition(viewToModel(e.getPoint()));
-                //moveSelectionWord(e); //it's not good here, makes a big UNDO list, and causes problems refreshing
             } else if (draggingLine){
                 int mouseCharIndex = viewToModel(e.getPoint());
                 int lineBegin = findBeginningLineBoundary(mouseCharIndex);
                 setDestinationCursorPosition(lineBegin);
-                //moveSelectionLine(e); //same thing, it makes a big UNDO list, and has weird problems
             } else{
                 super.mouseDragged(e);
             }
+            // Repaint to avoid leaving trace with the underlying line highlighting
+            ATETextPane.this.repaint();
         }
 
         /**
@@ -418,15 +415,17 @@ public class ATETextPane extends JTextPane
          */
         private void setDestinationCursorPosition(int pos) {
             destinationCursorPosition = pos;
-            try {
-                // Make sure to scroll the text in order for the destination cursor to be always visible
-                ATETextPane.this.scrollRectToVisible(modelToView(pos));
-            } catch (BadLocationException e) {
-                // ignore
+            if(destinationCursorPosition != -1) {
+                try {
+                    // Make sure to scroll the text in order for the destination cursor to be always visible
+                    ATETextPane.this.scrollRectToVisible(modelToView(pos));
+                } catch (BadLocationException e) {
+                    // ignore
+                }                
             }
             ATETextPane.this.repaint();
         }
-        
+
         private void beginDestinationCursor() {
             // Disable Swing d&d to avoid conflict between Swing and our own drag stuff
             setDragEnabled(false);
