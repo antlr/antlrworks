@@ -34,17 +34,19 @@ package org.antlr.works.debugger;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import org.antlr.xjlib.appkit.frame.XJDialog;
-import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.TextUtils;
 import org.antlr.works.utils.Utils;
+import org.antlr.xjlib.appkit.frame.XJDialog;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJFileChooser;
+import org.antlr.xjlib.foundation.XJSystem;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Iterator;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.prefs.Preferences;
 
 public class DebuggerInputDialog extends XJDialog {
@@ -77,14 +79,30 @@ public class DebuggerInputDialog extends XJDialog {
         inputTextArea.setText(AWPrefs.getDebuggerInputText());
 
         rulesCombo.removeAllItems();
-        for (Iterator<ElementRule> iterator = debugger.getSortedRules().iterator(); iterator.hasNext();) {
-            ElementRule rule = iterator.next();
+        for (ElementRule rule : debugger.getSortedRules()) {
             rulesCombo.addItem(rule.name);
         }
         rulesCombo.setSelectedItem(AWPrefs.getStartSymbol());
 
         Utils.fillComboWithEOL(eolCombo);
         eolCombo.setSelectedIndex(AWPrefs.getDebuggerEOL());
+
+        if(AWPrefs.getDebuggerInputMode() == 0) {
+            textInputRadio.setSelected(true);
+        } else {
+            fileInputRadio.setSelected(true);
+        }
+
+        inputFileField.setText(AWPrefs.getDebuggerInputFile());
+
+        browseInputFileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(XJFileChooser.shared().displayOpenDialog(getContentPane(), false)) {
+                    inputFileField.setText(XJFileChooser.shared().getSelectedFilePath());
+                    AWPrefs.setDebuggerInputFile(inputFileField.getText());
+                }
+            }
+        });
     }
 
     public void dialogWillCloseOK() {
@@ -96,8 +114,14 @@ public class DebuggerInputDialog extends XJDialog {
         AWPrefs.setStartSymbol(getRule());
         AWPrefs.setDebuggerInputText(text);
         AWPrefs.setDebuggerEOL(eolCombo.getSelectedIndex());
+        AWPrefs.setDebuggerInputMode(textInputRadio.isSelected()?0:1);
+        AWPrefs.setDebuggerInputFile(inputFileField.getText());
     }
 
+    public int getInputMode() {
+        return textInputRadio.isSelected()?0:1;
+    }
+    
     public void setInputText(String text) {
         if(text != null) {
             inputTextArea.setText(text);
@@ -112,6 +136,10 @@ public class DebuggerInputDialog extends XJDialog {
         return Utils.convertRawTextWithEOL(getRawInputText(), eolCombo);
     }
 
+    public String getInputFile() {
+        return inputFileField.getText();
+    }
+
     public String getRule() {
         return (String)rulesCombo.getSelectedItem();
     }
@@ -121,9 +149,12 @@ public class DebuggerInputDialog extends XJDialog {
         // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
         dialogPane = new JPanel();
         contentPane = new JPanel();
+        textInputRadio = new JRadioButton();
         scrollPane1 = new JScrollPane();
         inputTextArea = new JTextPane();
-        label1 = new JLabel();
+        fileInputRadio = new JRadioButton();
+        inputFileField = new JTextField();
+        browseInputFileButton = new JButton();
         label2 = new JLabel();
         rulesCombo = new JComboBox();
         label3 = new JLabel();
@@ -140,83 +171,104 @@ public class DebuggerInputDialog extends XJDialog {
 
         //======== dialogPane ========
         {
-            dialogPane.setBorder(Borders.DIALOG_BORDER);
-            dialogPane.setLayout(new BorderLayout());
+        	dialogPane.setBorder(Borders.DIALOG_BORDER);
+        	dialogPane.setLayout(new BorderLayout());
 
-            //======== contentPane ========
-            {
-                contentPane.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.DEFAULT_COLSPEC,
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.DEFAULT_COLSPEC,
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
-                    },
-                    new RowSpec[] {
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC
-                    }));
+        	//======== contentPane ========
+        	{
+        		contentPane.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				FormFactory.DEFAULT_COLSPEC,
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        				FormFactory.DEFAULT_COLSPEC
+        			},
+        			new RowSpec[] {
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC,
+        				FormFactory.LINE_GAP_ROWSPEC,
+        				FormFactory.DEFAULT_ROWSPEC
+        			}));
 
-                //======== scrollPane1 ========
-                {
-                    scrollPane1.setPreferredSize(new Dimension(300, 200));
-                    scrollPane1.setViewportView(inputTextArea);
-                }
-                contentPane.add(scrollPane1, cc.xywh(1, 3, 5, 1));
+        		//---- textInputRadio ----
+        		textInputRadio.setText("Text:");
+        		textInputRadio.setSelected(true);
+        		contentPane.add(textInputRadio, cc.xy(1, 1));
 
-                //---- label1 ----
-                label1.setText("Input text:");
-                contentPane.add(label1, cc.xywh(1, 1, 5, 1));
+        		//======== scrollPane1 ========
+        		{
+        			scrollPane1.setPreferredSize(new Dimension(300, 200));
+        			scrollPane1.setViewportView(inputTextArea);
+        		}
+        		contentPane.add(scrollPane1, cc.xywh(3, 1, 5, 5));
 
-                //---- label2 ----
-                label2.setText("Start Rule:");
-                contentPane.add(label2, cc.xywh(1, 5, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-                contentPane.add(rulesCombo, cc.xywh(3, 5, 3, 1));
+        		//---- fileInputRadio ----
+        		fileInputRadio.setText("File:");
+        		contentPane.add(fileInputRadio, cc.xy(1, 7));
+        		contentPane.add(inputFileField, cc.xywh(3, 7, 3, 1));
 
-                //---- label3 ----
-                label3.setText("Line Endings:");
-                contentPane.add(label3, cc.xywh(1, 7, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+        		//---- browseInputFileButton ----
+        		browseInputFileButton.setText("Browse");
+        		contentPane.add(browseInputFileButton, cc.xy(7, 7));
 
-                //---- eolCombo ----
-                eolCombo.setModel(new DefaultComboBoxModel(new String[] {
-                    "Unix (LF)",
-                    "Mac (CR)",
-                    "Windows (CRLF)"
-                }));
-                contentPane.add(eolCombo, cc.xy(3, 7));
-            }
-            dialogPane.add(contentPane, BorderLayout.CENTER);
+        		//---- label2 ----
+        		label2.setText("Start Rule:");
+        		contentPane.add(label2, cc.xywh(1, 9, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+        		contentPane.add(rulesCombo, cc.xywh(3, 9, 5, 1));
 
-            //======== buttonBar ========
-            {
-                buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
-                buttonBar.setLayout(new FormLayout(
-                    new ColumnSpec[] {
-                        FormFactory.GLUE_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC,
-                        FormFactory.RELATED_GAP_COLSPEC,
-                        FormFactory.BUTTON_COLSPEC
-                    },
-                    RowSpec.decodeSpecs("pref")));
+        		//---- label3 ----
+        		label3.setText("Line Endings:");
+        		contentPane.add(label3, cc.xywh(1, 11, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 
-                //---- okButton ----
-                okButton.setText("OK");
-                buttonBar.add(okButton, cc.xy(2, 1));
+        		//---- eolCombo ----
+        		eolCombo.setModel(new DefaultComboBoxModel(new String[] {
+        			"Unix (LF)",
+        			"Mac (CR)",
+        			"Windows (CRLF)"
+        		}));
+        		contentPane.add(eolCombo, cc.xy(3, 11));
+        	}
+        	dialogPane.add(contentPane, BorderLayout.CENTER);
 
-                //---- cancelButton ----
-                cancelButton.setText("Cancel");
-                buttonBar.add(cancelButton, cc.xy(4, 1));
-            }
-            dialogPane.add(buttonBar, BorderLayout.SOUTH);
+        	//======== buttonBar ========
+        	{
+        		buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
+        		buttonBar.setLayout(new FormLayout(
+        			new ColumnSpec[] {
+        				FormFactory.GLUE_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC,
+        				FormFactory.RELATED_GAP_COLSPEC,
+        				FormFactory.BUTTON_COLSPEC
+        			},
+        			RowSpec.decodeSpecs("pref")));
+
+        		//---- okButton ----
+        		okButton.setText("OK");
+        		buttonBar.add(okButton, cc.xy(2, 1));
+
+        		//---- cancelButton ----
+        		cancelButton.setText("Cancel");
+        		buttonBar.add(cancelButton, cc.xy(4, 1));
+        	}
+        	dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
-        pack();
+        setSize(625, 395);
+
+        //---- buttonGroup1 ----
+        ButtonGroup buttonGroup1 = new ButtonGroup();
+        buttonGroup1.add(textInputRadio);
+        buttonGroup1.add(fileInputRadio);
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
@@ -224,9 +276,12 @@ public class DebuggerInputDialog extends XJDialog {
     // Generated using JFormDesigner Open Source Project license - ANTLR (www.antlr.org)
     private JPanel dialogPane;
     private JPanel contentPane;
+    private JRadioButton textInputRadio;
     private JScrollPane scrollPane1;
     private JTextPane inputTextArea;
-    private JLabel label1;
+    private JRadioButton fileInputRadio;
+    private JTextField inputFileField;
+    private JButton browseInputFileButton;
     private JLabel label2;
     private JComboBox rulesCombo;
     private JLabel label3;

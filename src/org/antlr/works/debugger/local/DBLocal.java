@@ -81,7 +81,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected List<String> grammarGeneratedFiles;
     protected String fileRemoteParser;
-    protected String fileRemoteParserInputText;
+    protected String fileRemoteParserInputTextFile;
 
     protected String startRule;
     protected String lastStartRule;
@@ -94,6 +94,9 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected CodeGenerate codeGenerator;
     protected Debugger debugger;
 
+    protected int inputMode;
+    protected int lastInputMode;
+    protected String inputFile;
     protected String inputText;
     protected String rawInputText;
 
@@ -121,7 +124,11 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     public boolean canDebugAgain() {
-        return inputText != null;
+        if(inputMode == 0) {
+            return inputText != null;
+        } else {
+            return inputFile != null && new File(inputFile).exists();
+        }
     }
     
     public void dialogDidCancel() {
@@ -227,6 +234,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
                     if(dialog.runModal() == XJDialog.BUTTON_OK) {
                         rawInputText = dialog.getRawInputText();
                         inputText = dialog.getInputText();
+                        inputFile = dialog.getInputFile();
+                        inputMode = dialog.getInputMode();
                         setStartRule(dialog.getRule());
                         showProgress();
                     } else
@@ -288,7 +297,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             grammarGeneratedFiles = codeGenerator.getGeneratedTextFileNames();
 
             fileRemoteParser = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+".java");
-            fileRemoteParserInputText = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
+            fileRemoteParserInputTextFile = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
 
             outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
             new File(outputFileDir).mkdirs();
@@ -368,10 +377,11 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         progress.setInfo("Preparing...");
         progress.setIndeterminate(true);
 
-        if(!build && lastStartRule != null && startRule.equals(lastStartRule))
+        if(!build && lastStartRule != null && startRule.equals(lastStartRule) && lastInputMode == inputMode)
             return;
 
         lastStartRule = startRule;
+        lastInputMode = inputMode;
 
         generateGlueCode();
 
@@ -387,7 +397,11 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             StringTemplate glueCode = group.getInstanceOf(parserGlueCodeTemplatePath +parserGlueCodeTemplateName);
             glueCode.setAttribute(ST_ATTR_IMPORT, getCustomImports());
             glueCode.setAttribute(ST_ATTR_CLASSNAME, remoteParserClassName);
-            glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(fileRemoteParserInputText));
+            if(inputMode == 0) {
+                glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(fileRemoteParserInputTextFile));
+            } else {
+                glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(inputFile));
+            }
             glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(ElementGrammarName.PARSER));
             glueCode.setAttribute(ST_ATTR_JAVA_LEXER, codeGenerator.getGeneratedClassName(ElementGrammarName.LEXER));
             glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
@@ -460,7 +474,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected void generateInputText() {
         try {
-            XJUtils.writeStringToFile(inputText, fileRemoteParserInputText);
+            XJUtils.writeStringToFile(inputText, fileRemoteParserInputTextFile);
         } catch (IOException e) {
             debugger.getConsole().print(e);
             reportError("Error while generating the input text:\n"+e.toString());
@@ -471,7 +485,9 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         if(!prepare()) return false;
 
         if(!new File(fileRemoteParser).exists()) return false;
-        if(!new File(fileRemoteParserInputText).exists()) return false;
+
+        if(inputMode == 0 && !new File(fileRemoteParserInputTextFile).exists()) return false;
+        if(inputMode == 1 && !new File(inputFile).exists()) return false;
 
         for(String file : grammarGeneratedFiles) {
             if(!new File(file).exists()) return false;

@@ -240,6 +240,8 @@ public class AWPrefs {
     public static final String PREF_START_SYMBOL = "PREF_START_SYMBOL";
     public static final String PREF_DEBUGGER_INPUT_TEXT = "PREF_DEBUGGER_INPUT_TEXT";
     public static final String PREF_DEBUGGER_EOL = "PREF_DEBUGGER_EOL";
+    public static final String PREF_DEBUGGER_INPUT_FILE = "PREF_DEBUGGER_INPUT_FILE";
+    public static final String PREF_DEBUGGER_INPUT_MODE = "PREF_DEBUGGER_INPUT_MODE";
 
     public static final String PREF_DEBUG_BREAK_ALL = "PREF_DEBUG_BREAK_ALL";
     public static final String PREF_DEBUG_BREAK_LOCATION = "PREF_DEBUG_BREAK_LOCATION";
@@ -593,4 +595,19 @@ public class AWPrefs {
         return getPreferences().getInt(PREF_DEBUGGER_EOL, 0); 
     }
 
+    public static void setDebuggerInputMode(int mode) {
+        getPreferences().setInt(PREF_DEBUGGER_INPUT_MODE, mode);
+    }
+
+    public static int getDebuggerInputMode() {
+        return getPreferences().getInt(PREF_DEBUGGER_INPUT_MODE, 0);
+    }
+
+    public static void setDebuggerInputFile(String file) {
+        getPreferences().setString(PREF_DEBUGGER_INPUT_FILE, file);
+    }
+
+    public static String getDebuggerInputFile() {
+        return getPreferences().getString(PREF_DEBUGGER_INPUT_FILE, "");         
+    }
 }
