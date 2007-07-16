@@ -81,6 +81,7 @@ public class DialogAbout extends XJPanel {
         addAcknowledge("BrowserLauncher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>");
         addAcknowledge("Application icon is (c) Matthew McClintock <matthew@mc.clintock.com>");
         addAcknowledge("Mac OS X document icon was created by Abe <abe149@gmail.com>");
+        addAcknowledge("Contributions by Matthew J. Diehl <matthew.j.diehl@intel.com>");
 
         setResizable(false);
         setSize(800, 500);

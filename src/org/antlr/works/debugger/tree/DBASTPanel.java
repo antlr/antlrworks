@@ -1,14 +1,14 @@
 package org.antlr.works.debugger.tree;
 
-import org.antlr.xjlib.appkit.gview.GView;
-import org.antlr.xjlib.appkit.swing.XJTable;
-import org.antlr.xjlib.appkit.swing.XJTableDelegate;
-import org.antlr.xjlib.appkit.swing.XJTableView;
 import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.swing.DetachablePanel;
+import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.swing.XJTable;
+import org.antlr.xjlib.appkit.swing.XJTableDelegate;
+import org.antlr.xjlib.appkit.swing.XJTableView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -64,7 +64,7 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
 
         this.debugger = debugger;
 
-        model = new DBASTModel();
+        model = new DBASTModel(debugger);
         model.addListener(this);
 
         rulesTableView = new XJTableView();

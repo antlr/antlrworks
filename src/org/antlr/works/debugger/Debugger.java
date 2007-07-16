@@ -31,10 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger;
 
-import org.antlr.xjlib.appkit.frame.XJDialog;
-import org.antlr.xjlib.appkit.gview.GView;
-import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.runtime.ClassicToken;
 import org.antlr.runtime.Token;
 import org.antlr.works.ate.syntax.misc.ATELine;
@@ -66,7 +62,12 @@ import org.antlr.works.swing.DetachablePanelDelegate;
 import org.antlr.works.syntax.element.ElementBlock;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.utils.Console;
 import org.antlr.works.utils.Utils;
+import org.antlr.xjlib.appkit.frame.XJDialog;
+import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -434,6 +435,10 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         return eventsPanel.getEventsAsString();
     }
 
+    public int getNumberOfEvents() {
+        return eventsPanel.getNumberOfEvents();
+    }
+
     public void launchLocalDebugger(int options) {
         // If the grammar is dirty, build it anyway
         if(getGrammar().getType() == ElementGrammarName.TREEPARSER) {
@@ -754,5 +759,9 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public boolean canDebugAgain() {
         return local.canDebugAgain();
+    }
+
+    public void warning(Object o, String message) {
+        getConsole().println("["+o.getClass().getName()+" - event "+getNumberOfEvents()+"] Warning: "+message, Console.LEVEL_WARNING);
     }
 }

@@ -1,7 +1,5 @@
 package org.antlr.works.debugger.input;
 
-import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
-import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
 import org.antlr.tool.Grammar;
 import org.antlr.works.awtree.AWTreePanel;
@@ -10,6 +8,8 @@ import org.antlr.works.debugger.tree.DBTreeNode;
 import org.antlr.works.debugger.tree.DBTreeToken;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
+import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -155,11 +155,22 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
                 break;
 
             case Token.UP:
+                if(currentNode == rootNode) {
+                    debugger.warning(this, "UP token applied to the root node!");
+                }
+                if(currentNode == null) {
+                    debugger.warning(this, "Warning: currentNode is null, use rootNode instead.");
+                    currentNode = rootNode;
+                }
                 currentNode = (InputTreeNode)currentNode.getParent();
                 info.currentNode = currentNode;
                 break;
 
             default:
+                if(currentNode == null) {
+                    debugger.warning(this, "Warning: currentNode is null, use rootNode instead.");
+                    currentNode = rootNode;
+                }
                 currentNode.add(info.node = createNode(token));
                 info.currentNode = currentNode;
                 break;
@@ -209,10 +220,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
     public boolean isBreakpointAtToken(Token token) {
         NodeInfo info = getNode(token);
-        if(info == null || info.node == null)
-            return false;
-        else
-            return info.node.breakpoint;
+        return !(info == null || info.node == null) && info.node.breakpoint;
     }
 
     public static class NodeInfo {

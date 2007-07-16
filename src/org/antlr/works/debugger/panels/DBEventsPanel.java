@@ -1,11 +1,11 @@
 package org.antlr.works.debugger.panels;
 
-import org.antlr.xjlib.appkit.swing.XJTable;
-import org.antlr.xjlib.appkit.swing.XJTableView;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 import org.antlr.works.swing.DetachablePanel;
+import org.antlr.xjlib.appkit.swing.XJTable;
+import org.antlr.xjlib.appkit.swing.XJTableView;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -79,6 +79,10 @@ public class DBEventsPanel extends DetachablePanel {
         infoTableView.scrollToLastRow();
     }
 
+    public int getNumberOfEvents() {
+        return eventTableDataModel.getRowCount();
+    }
+    
     public void clear() {
         eventTableDataModel.clear();
     }

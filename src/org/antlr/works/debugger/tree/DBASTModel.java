@@ -1,6 +1,7 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
+import org.antlr.works.debugger.Debugger;
 
 import java.util.*;
 /*
@@ -43,6 +44,12 @@ public class DBASTModel {
     public Map<Integer, ASTNode> nodesMap = new HashMap<Integer, ASTNode>();
 
     public List<DBASTModelListener> listeners = new ArrayList<DBASTModelListener>();
+
+    private Debugger debugger;
+
+    public DBASTModel(Debugger debugger) {
+        this.debugger = debugger;
+    }
 
     public void addListener(DBASTModelListener listener) {
         listeners.add(listener);
@@ -121,11 +128,11 @@ public class DBASTModel {
         ASTNode newRoot = getTreeNode(newRootID);
         ASTNode oldRoot = getTreeNode(oldRootID);
         if(newRoot == null) {
-            System.err.println("[becomeRoot] New root node "+newRootID+" not found, ignoring.");
+            debugger.warning(this, "[becomeRoot] New root node "+newRootID+" not found, ignoring.");
             return;
         }
         if(oldRoot == null) {
-            System.err.println("[becomeRoot] Old root node "+oldRootID+" not found, ignoring.");
+            debugger.warning(this, "[becomeRoot] Old root node "+oldRootID+" not found, ignoring.");
             return;
         }
         oldRoot.becomeParent(newRoot);
@@ -136,11 +143,11 @@ public class DBASTModel {
         ASTNode root = getTreeNode(rootID);
         ASTNode child = getTreeNode(childID);
         if(root == null) {
-            System.err.println("[addChild] Root node "+rootID+" not found, ignoring.");
+            debugger.warning(this, "[addChild] Root node "+rootID+" not found, ignoring.");
             return;
         }
         if(child == null) {
-            System.err.println("[addChild] Child node "+childID+" not found, ignoring.");
+            debugger.warning(this, "[addChild] Child node "+childID+" not found, ignoring.");
             return;
         }
 
