@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.stats;
 
 import org.antlr.runtime.debug.Profiler;
+import org.antlr.runtime.misc.Stats;
 import org.antlr.tool.GrammarReport;
 
 import java.io.BufferedReader;
@@ -149,7 +150,7 @@ public class StatisticsManager {
 
     public static String getAbsoluteFileName(String filename) {
         return System.getProperty("user.home")+File.separator+
-                    GrammarReport.ANTLRWORKS_DIR+File.separator+
+                    Stats.ANTLRWORKS_DIR+File.separator+
                     filename;
     }
 
