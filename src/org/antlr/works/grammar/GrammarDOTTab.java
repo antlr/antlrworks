@@ -199,6 +199,8 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
                     editor.addTab(GrammarDOTTab.this);
                     editor.makeBottomComponentVisible();
                 } else {
+                    if(GrammarDOTTab.this instanceof TokensDFA)
+                        XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the tokens DFA:\n"+error);
                     if(GrammarDOTTab.this instanceof DecisionDFA)
                         XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the DFA:\n"+error);
                     if(GrammarDOTTab.this instanceof RulesDependency)

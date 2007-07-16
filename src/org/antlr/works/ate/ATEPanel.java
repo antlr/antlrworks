@@ -138,6 +138,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public void setEditable(boolean flag) {
         textPane.setEditable(flag);
+        textPane.setWritable(flag);
     }
 
     public void setAutoIndent(boolean flag) {

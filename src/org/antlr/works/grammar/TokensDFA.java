@@ -49,6 +49,9 @@ public class TokensDFA extends GrammarDOTTab {
         eg.analyze();
 
         Grammar g = eg.getLexerGrammar();
+        if(g == null) {
+            throw new Exception("Cannot show tokens DFA because there is no lexer grammar");
+        }
         Rule r = g.getRule(Grammar.ARTIFICIAL_TOKENS_RULENAME);
         NFAState s = (NFAState)r.startState.transition(0).target;
         DFA dfa = g.getLookaheadDFA(s.getDecisionNumber());

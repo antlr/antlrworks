@@ -312,6 +312,11 @@ public class ATETextPane extends JTextPane
         }
 
         public void mousePressed(MouseEvent e) {
+            if(!isWritable() || e.getButton() != MouseEvent.BUTTON1) {
+                super.mousePressed(e);
+                return;
+            }
+
             draggingWord =false;
             draggingLine =false;
             selectingWord=false;
@@ -361,6 +366,11 @@ public class ATETextPane extends JTextPane
         }
 
         public void mouseReleased(MouseEvent e) {
+            if(!isWritable() || e.getButton() != MouseEvent.BUTTON1) {
+                super.mouseReleased(e);
+                return;
+            }
+
             if (draggingWord||draggingLine){
                 //the text had been selected, so let the regular click happen
                 endDestinationCursor();
@@ -379,6 +389,11 @@ public class ATETextPane extends JTextPane
         }
 
         public void mouseDragged(MouseEvent e) {
+            if(!isWritable() || e.getButton() != MouseEvent.BUTTON1) {
+                super.mouseDragged(e);
+                return;
+            }
+                  
             //if it's being dragged, paint the selection permanent, and show a cursor where dragging to
             if (draggingWord ||draggingLine){
                 dragDropCursorPosition = viewToModel(e.getPoint());
