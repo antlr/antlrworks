@@ -443,7 +443,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         // If the grammar is dirty, build it anyway
         if(getGrammar().getType() == ElementGrammarName.TREEPARSER) {
             XJAlert.display(editor.getWindowContainer(), "Unsupported Grammar Type",
-                    "ANTLRWorks does not support debugging tree parser grammar.");
+                    "ANTLRWorks supports tree grammar debugging only if you \"debug remote\".");
             return;
         }
 
