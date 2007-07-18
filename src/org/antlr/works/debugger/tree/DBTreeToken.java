@@ -1,6 +1,7 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.debug.RemoteDebugEventSocketListener.ProxyTree;
 /*
 
 [The "BSD licence"]
@@ -33,52 +34,45 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public class DBTreeToken implements Token {
+	public ProxyTree tree;
+	public int ID;
 
-    public int ID;
-    public String text;
-	public int type;
-	public int tokenIndex;
-	public int line = 0;
-	public int charPos = -1;
-
-    public DBTreeToken(int ID, String text, int type, int line, int charPos, int tokenIndex) {
-        this.ID = ID;
-        this.text = text;
-        this.type = type;
-		this.line = line;
-		this.charPos = charPos;
-		this.tokenIndex = tokenIndex;
+	public DBTreeToken(ProxyTree tree) {
+		this.tree = tree;
+		this.ID = tree.ID;
 	}
 
     public String getText() {
-        return text;
+        return tree.text;
     }
 
     public void setText(String text) {
-        this.text = text;
+        tree.text = text;
     }
 
     public int getType() {
-        return type;
+        return tree.type;
     }
 
     public void setType(int ttype) {
-        this.type = ttype;
+        tree.type = ttype;
     }
 
     public int getLine() {
-        return 0;
+        return tree.line;
     }
 
     public void setLine(int line) {
-    }
+		tree.line = line;
+	}
 
     public int getCharPositionInLine() {
-        return 0;
+        return tree.charPos;
     }
 
     public void setCharPositionInLine(int pos) {
-    }
+		tree.charPos = pos;
+	}
 
     public int getChannel() {
         return 0;
@@ -88,16 +82,16 @@ public class DBTreeToken implements Token {
     }
 
     public int getTokenIndex() {
-        return tokenIndex;
+        return tree.tokenIndex;
     }
 
     public void setTokenIndex(int index) {
-		tokenIndex = index;
+		tree.tokenIndex = index;
 	}
 
     public String toString() {
-		String tokenIndexS = tokenIndex>=0?(",@"+tokenIndex):"";
-		String pos = line>0?(","+line+":"+charPos):"";
-		return "["+text+"/, <"+type+">, "+ID+pos+tokenIndexS+"]";
+		String tokenIndexS = tree.tokenIndex>=0?(",@"+tree.tokenIndex):"";
+		String pos = tree.line>0?(","+tree.line+":"+tree.charPos):"";
+		return "["+tree.text+"/, <"+tree.type+">, "+tree.ID+pos+tokenIndexS+"]";
     }
 }

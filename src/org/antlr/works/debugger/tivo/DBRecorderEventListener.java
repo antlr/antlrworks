@@ -4,6 +4,7 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.DebugEventListener;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
+import org.antlr.runtime.debug.RemoteDebugEventSocketListener.ProxyTree;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.events.DBEventFactory;
 import org.antlr.works.debugger.tree.DBTreeToken;
@@ -175,17 +176,17 @@ public class DBRecorderEventListener implements DebugEventListener {
     /** Tree parsing */
 
     public void consumeNode(Object t) {
-		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)t;
+		ProxyTree p = (ProxyTree)t;
         /** Create a special kind of token holding information about the tree node. This allow
          * us to use the same method for token parser and tree parser.
          */
-		event(DBEventFactory.createConsumeToken(new DBTreeToken(p.ID, p.text, p.type, p.line, p.charPos, p.tokenIndex)));
+		event(DBEventFactory.createConsumeToken(new DBTreeToken(p)));
     }
 
     public void LT(int i, Object t) {
-		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)t;
+		ProxyTree p = (ProxyTree)t;
         /** See consumeNode() comment */
-        event(DBEventFactory.createLT(i, new DBTreeToken(p.ID, p.text, p.type, p.line, p.charPos, p.tokenIndex)));
+        event(DBEventFactory.createLT(i, new DBTreeToken(p)));
     }
 
 }
