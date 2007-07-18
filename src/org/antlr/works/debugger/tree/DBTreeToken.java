@@ -36,13 +36,19 @@ public class DBTreeToken implements Token {
 
     public int ID;
     public String text;
-    public int type;
+	public int type;
+	public int tokenIndex;
+	public int line = 0;
+	public int charPos = -1;
 
-    public DBTreeToken(int ID, String text, int type) {
+    public DBTreeToken(int ID, String text, int type, int line, int charPos, int tokenIndex) {
         this.ID = ID;
         this.text = text;
         this.type = type;
-    }
+		this.line = line;
+		this.charPos = charPos;
+		this.tokenIndex = tokenIndex;
+	}
 
     public String getText() {
         return text;
@@ -82,13 +88,16 @@ public class DBTreeToken implements Token {
     }
 
     public int getTokenIndex() {
-        return 0;
+        return tokenIndex;
     }
 
     public void setTokenIndex(int index) {
-    }
+		tokenIndex = index;
+	}
 
     public String toString() {
-        return "["+text+"/, <"+type+">, "+ID+"]";
+		String tokenIndexS = tokenIndex>=0?(",@"+tokenIndex):"";
+		String pos = line>0?(","+line+":"+charPos):"";
+		return "["+text+"/, <"+type+">, "+ID+pos+tokenIndexS+"]";
     }
 }

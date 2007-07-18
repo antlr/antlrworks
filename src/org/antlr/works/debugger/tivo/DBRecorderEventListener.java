@@ -3,6 +3,7 @@ package org.antlr.works.debugger.tivo;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.DebugEventListener;
+import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.events.DBEventFactory;
 import org.antlr.works.debugger.tree.DBTreeToken;
@@ -41,7 +42,7 @@ public class DBRecorderEventListener implements DebugEventListener {
 
     public DBRecorder recorder;
 
-    public DBRecorderEventListener(DBRecorder recorder) {
+	public DBRecorderEventListener(DBRecorder recorder) {
         this.recorder = recorder;
     }
 
@@ -139,42 +140,52 @@ public class DBRecorderEventListener implements DebugEventListener {
 
     /** AST events */
 
-    public void nilNode(int ID) {
-        event(DBEventFactory.createNilNode(ID));
+    public void nilNode(Object t) {
+		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)t;
+		event(DBEventFactory.createNilNode(p.ID));
     }
 
-    public void createNode(int ID, String text, int type) {
-        event(DBEventFactory.createCreateNode(ID, text, type));
+    public void createNode(Object t) {
+		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)t;
+		event(DBEventFactory.createCreateNode(p.ID, p.text, p.type));
     }
 
-    public void createNode(int ID, int tokenIndex) {
-        event(DBEventFactory.createCreateNode(ID, tokenIndex));
+    public void createNode(Object node, Token token) {
+		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)node;
+        event(DBEventFactory.createCreateNode(p.ID, token.getTokenIndex()));
     }
 
-    public void becomeRoot(int newRootID, int oldRootID) {
-        event(DBEventFactory.createBecomeRoot(newRootID, oldRootID));
+    public void becomeRoot(Object newRoot, Object oldRoot) {
+		RemoteDebugEventSocketListener.ProxyTree n = (RemoteDebugEventSocketListener.ProxyTree)newRoot;
+		RemoteDebugEventSocketListener.ProxyTree o = (RemoteDebugEventSocketListener.ProxyTree)oldRoot;
+        event(DBEventFactory.createBecomeRoot(n.ID, o.ID));
     }
 
-    public void addChild(int rootID, int childID) {
-        event(DBEventFactory.createAddChild(rootID, childID));
+    public void addChild(Object root, Object child) {
+		RemoteDebugEventSocketListener.ProxyTree r = (RemoteDebugEventSocketListener.ProxyTree)root;
+		RemoteDebugEventSocketListener.ProxyTree c = (RemoteDebugEventSocketListener.ProxyTree)child;
+        event(DBEventFactory.createAddChild(r.ID, c.ID));
     }
 
-    public void setTokenBoundaries(int ID, int tokenStartIndex, int tokenStopIndex) {
-        event(DBEventFactory.createSetTokenBoundaries(ID, tokenStartIndex, tokenStopIndex));
+    public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {
+		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)t;
+        event(DBEventFactory.createSetTokenBoundaries(p.ID, tokenStartIndex, tokenStopIndex));
     }
 
     /** Tree parsing */
 
-    public void consumeNode(int ID, String text, int type) {
+    public void consumeNode(Object t) {
+		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)t;
         /** Create a special kind of token holding information about the tree node. This allow
          * us to use the same method for token parser and tree parser.
          */
-        event(DBEventFactory.createConsumeToken(new DBTreeToken(ID, text, type)));
+		event(DBEventFactory.createConsumeToken(new DBTreeToken(p.ID, p.text, p.type, p.line, p.charPos, p.tokenIndex)));
     }
 
-    public void LT(int i, int ID, String text, int type) {
+    public void LT(int i, Object t) {
+		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)t;
         /** See consumeNode() comment */
-        event(DBEventFactory.createLT(i, new DBTreeToken(ID, text, type)));
+        event(DBEventFactory.createLT(i, new DBTreeToken(p.ID, p.text, p.type, p.line, p.charPos, p.tokenIndex)));
     }
 
 }
