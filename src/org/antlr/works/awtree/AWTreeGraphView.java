@@ -1,13 +1,13 @@
 package org.antlr.works.awtree;
 
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.tree.ParseTree;
 import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.xjlib.appkit.gview.base.Rect;
 import org.antlr.xjlib.appkit.gview.object.GElement;
 import org.antlr.xjlib.appkit.gview.object.GElementRect;
 import org.antlr.xjlib.appkit.gview.object.GLink;
 import org.antlr.xjlib.appkit.gview.shape.SLinkElbow;
-import org.antlr.runtime.CommonToken;
-import org.antlr.runtime.tree.ParseTree;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
@@ -377,6 +377,7 @@ public class AWTreeGraphView extends GView {
         scrollElementToVisible(element);
     }
 
+    @Override
     public JPopupMenu getContextualMenu(GElement element) {
         return panel.getContextualMenu();
     }
@@ -390,8 +391,9 @@ public class AWTreeGraphView extends GView {
             this.highlighted = flag;
         }
 
+        @Override
         public void draw(Graphics2D g) {
-            if(highlighted) {
+            if(highlighted && isVisibleInClip(g)) {
                 Rectangle r = getFrame().rectangle();
                 g.setColor(HIGHLIGHTED_COLOR);
                 g.fillRect(r.x, r.y, r.width, r.height);
@@ -403,7 +405,6 @@ public class AWTreeGraphView extends GView {
         /** Methods to retrieve the span width of the node. The span width
          * is the maximum width of the node and its children.
          */
-
         public void setSpanWidth(double width) {
             spanWidth = width;
         }
@@ -447,10 +448,9 @@ public class AWTreeGraphView extends GView {
             if(elements == null)
                 return 0;
 
-            for (int i = 0; i < elements.size(); i++) {
-                GElement element = (GElement) elements.get(i);
-                if(element instanceof GElementNode) {
-                    GElementNode n = (GElementNode)element;
+            for (GElement element : elements) {
+                if (element instanceof GElementNode) {
+                    GElementNode n = (GElementNode) element;
                     return n.getLeftSpan();
                 }
             }

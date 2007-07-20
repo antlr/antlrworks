@@ -107,9 +107,11 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     }
 
     public void removeAllLT() {
+
     }
 
     public void rewind(int i) {
+
     }
 
     public void rewindAll() {
@@ -140,7 +142,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
         NodeInfo info = getNode(token);
         if(info != null) {
             /** Set the current position to the one when the node has been created */
-            currentNode = info.currentNode;
+            setCurrentNode(info.currentNode);
             /** Return the node itself */
             return info.node;
         }
@@ -150,7 +152,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
         switch(token.getType()) {
             case Token.DOWN:
-                currentNode = (InputTreeNode)currentNode.getLastChild();
+                setCurrentNode((InputTreeNode)currentNode.getLastChild());
                 info.currentNode = currentNode;
                 break;
 
@@ -159,17 +161,18 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
                     debugger.warning(this, "UP token applied to the root node!");
                 }
                 if(currentNode == null) {
-                    debugger.warning(this, "Warning: currentNode is null, use rootNode instead.");
-                    currentNode = rootNode;
+                    debugger.warning(this, "CurrentNode is null, use rootNode instead.");
+                    setCurrentNode(rootNode);
+                } else {
+                    setCurrentNode((InputTreeNode)currentNode.getParent());
                 }
-                currentNode = (InputTreeNode)currentNode.getParent();
                 info.currentNode = currentNode;
                 break;
 
             default:
                 if(currentNode == null) {
-                    debugger.warning(this, "Warning: currentNode is null, use rootNode instead.");
-                    currentNode = rootNode;
+                    debugger.warning(this, "CurrentNode is null, use rootNode instead.");
+                    setCurrentNode(rootNode);
                 }
                 currentNode.add(info.node = createNode(token));
                 info.currentNode = currentNode;
@@ -179,8 +182,11 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
         /** Add all new node to the map using their unique ID */
         DBTreeToken tt = (DBTreeToken)token;
         nodeInfoForToken.put(tt.ID, info);
-
         return info.node;
+    }
+
+    public void setCurrentNode(InputTreeNode node) {
+        currentNode = node;
     }
 
     public InputTreeNode createNode(Token token) {
@@ -191,7 +197,11 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
     public NodeInfo getNode(Token token) {
         DBTreeToken tt = (DBTreeToken)token;
-        return nodeInfoForToken.get(tt.ID);
+        NodeInfo info = nodeInfoForToken.get(tt.ID);
+        if(info != null && !info.token.toString().equals(token.toString())) {
+            debugger.warning(this, "Duplicate token ID "+tt.ID+" for "+info.token+" <-> "+token);
+        }
+        return info;
     }
 
     public void setLocation(int line, int pos) {
@@ -208,7 +218,6 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     }
 
     public DBInputTextTokenInfo getTokenInfoForToken(Token token) {
-        //return rootNode.findNodeWithToken(token);
         return null;
     }
 

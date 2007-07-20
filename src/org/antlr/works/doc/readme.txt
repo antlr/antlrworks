@@ -1,5 +1,5 @@
 ANTLRWorks
-Version 1.0.3
+Version 1.1
 July 8, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
