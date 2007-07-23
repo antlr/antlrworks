@@ -31,8 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.interpreter;
 
-import org.antlr.xjlib.appkit.gview.GView;
-import org.antlr.xjlib.appkit.utils.XJDialogProgress;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -56,6 +54,8 @@ import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TextUtils;
 import org.antlr.works.utils.Utils;
+import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
@@ -256,7 +256,6 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     }
 
     public void run() {
-
         ErrorManager.setErrorListener(ErrorListener.shared());
 
         try {
@@ -319,7 +318,21 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         }
 
         if(parser != null && t != null) {
-            treeModel.setGrammar(parser);
+            SwingUtilities.invokeLater(new Refresh(parser, t));
+        }
+    }
+
+    public class Refresh implements Runnable {
+        Grammar g;
+        ParseTree t;
+
+        public Refresh(Grammar grammar, ParseTree t) {
+            this.g = grammar;
+            this.t = t;
+        }
+
+        public void run() {
+            treeModel.setGrammar(g);
             treeModel.setTree(t);
 
             awTreePanel.setRoot((TreeNode)treeModel.getRoot());

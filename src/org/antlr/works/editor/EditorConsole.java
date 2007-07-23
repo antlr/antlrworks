@@ -31,10 +31,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.Console;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -128,7 +128,15 @@ public class EditorConsole extends EditorTab implements Console {
         println(XJUtils.stackTrace(e), Console.LEVEL_ERROR);
     }
 
-    public synchronized void print(String s, int level) {
+    public synchronized void print(final String s, final int level) {
+        if(!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    print(s, level);
+                }
+            });
+        }
+        
         String t = "["+dateFormat.format(new Date())+"] "+s;
         textArea.setText(textArea.getText()+t);
         textArea.setCaretPosition(textArea.getText().length());

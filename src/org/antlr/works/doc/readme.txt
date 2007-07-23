@@ -1,6 +1,6 @@
 ANTLRWorks
 Version 1.1
-July 8, 2007
+July 22, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco
@@ -71,6 +71,30 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+
+Version 1.1 - 07/22/07
+
+New feature:
+    [AW-94] - Ability to choose a text file for the debugger input within ANTLRWorks
+
+Improvement:
+    [AW-71] - Floating window should remember last size when detached
+    [AW-82] - Add ctrl-d to "delete char under cursor" as in emacs
+    [AW-85] - Double-click on the GoToRule popup now jumps to the rule
+    [AW-86] - Added Visual Studio-style auto-completion menu
+    [AW-87] - Double/triple click to select word + extending selection + dragging of word/line
+    [AW-89] - Visual clue when the grammar is not saved when not on Mac OS X
+    [AW-91] - Fix Find and Replace Dialog and add alert when reaching the beginning/end of document
+    [AW-93] - Decision DFA grammar highlighting
+    [AW-95] - Improve tree rendering speed on screen
+
+Bug fix:
+    [AW-76] - Export Bitmap for syntax diagram does not work
+    [AW-79] - Disable CTRL-Z when debuggin in text editor (check other shortcuts also)
+    [AW-80] - Yellow triangle is visible over the bottom component of the window when scrolling with the editor
+    [AW-81] - Display an additional / after a complex comment
+    [AW-84] - Plugin does not save the editor when Save Project is invoked
 
 Version 1.0.2 - 06/01/07
 

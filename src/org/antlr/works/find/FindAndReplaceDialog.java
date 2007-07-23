@@ -42,6 +42,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 public class FindAndReplaceDialog extends XJPanel {
 
@@ -58,7 +59,8 @@ public class FindAndReplaceDialog extends XJPanel {
         center();
 
         getRootPane().setDefaultButton(nextButton);
-
+        addEscapeHandling();
+        
         createActions();
 
         // Default values
@@ -69,6 +71,19 @@ public class FindAndReplaceDialog extends XJPanel {
     public void setFindText(String text) {
         if(text == null || text.length() == 0) return;
         findField.setText(text);
+    }
+
+    public void addEscapeHandling() {
+        KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true);
+
+        ActionListener cancelAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent ae) {
+                setVisible(false);
+            }
+        };
+
+        getRootPane().registerKeyboardAction(cancelAction, "CancelAction", ks,
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     public void createActions() {
