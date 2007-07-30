@@ -55,6 +55,7 @@ public class CheckGrammar implements Runnable {
 
     public void run() {
         editor.getConsole().setMode(Console.MODE_VERBOSE);
+        ErrorListener.shared().clear();
         ErrorListener.shared().setPrintToConsole(true);
 
         delegate.checkGrammarDidBegin();

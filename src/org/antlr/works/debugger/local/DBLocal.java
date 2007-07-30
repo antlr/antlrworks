@@ -291,6 +291,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected boolean prepare() {
         try {
+            ErrorListener.shared().clear();
+            
             setOutputPath(AWPrefs.getOutputPath());
             setStartRule(AWPrefs.getStartSymbol());
 
