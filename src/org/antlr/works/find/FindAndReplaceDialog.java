@@ -90,14 +90,14 @@ public class FindAndReplaceDialog extends XJPanel {
         nextButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 delegate.setFindString(findField.getText());
-                alertEndOfDocument(delegate.next());
+                alertEndOfDocument(this, delegate.next());
             }
         });
 
         previousButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 delegate.setFindString(findField.getText());
-                alertBeginningOfDocument(delegate.prev());
+                alertBeginningOfDocument(this, delegate.prev());
             }
         });
 
@@ -113,7 +113,7 @@ public class FindAndReplaceDialog extends XJPanel {
                 delegate.setFindString(findField.getText());
                 delegate.setReplaceString(replaceField.getText());
                 delegate.replace();
-                alertEndOfDocument(delegate.next());
+                alertEndOfDocument(this, delegate.next());
             }
         });
 
@@ -144,16 +144,26 @@ public class FindAndReplaceDialog extends XJPanel {
         });
     }
 
-    private void alertEndOfDocument(boolean result) {
+    private void alertEndOfDocument(ActionListener actionListener, boolean result) {
         if(result) return;
 
-        XJAlert.display(getJavaContainer(), "End of Document", "The end of the document has been reached.");                
+        if(XJAlert.displayAlert(getJavaContainer(), "End of Document", "The end of the document has been reached.",
+                "Continue", "OK", 0) == 0)
+        {
+            delegate.setPositionToTop();
+            actionListener.actionPerformed(null);
+        }
     }
 
-    private void alertBeginningOfDocument(boolean result) {
+    private void alertBeginningOfDocument(ActionListener actionListener, boolean result) {
         if(result) return;
 
-        XJAlert.display(getJavaContainer(), "Beginning of Document", "The beginning of the document has been reached.");
+        if(XJAlert.displayAlert(getJavaContainer(), "Beginning of Document", "The beginning of the document has been reached.",
+                "Continue", "OK", 0) == 0)
+        {
+            delegate.setPositionToBottom();
+            actionListener.actionPerformed(null);
+        }
     }
 
     public boolean shouldDisplayMainMenuBar() {

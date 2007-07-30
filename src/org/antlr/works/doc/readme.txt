@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.1
-July 22, 2007
+Version 1.1.1
+July 29, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco
@@ -72,6 +72,12 @@ using "java org.antlr.works.IDE".
 
 * HISTORY *
 
+Version 1.1.1 - 07/29/07
+
+Bug fix:
+    [AW-98] - Fail to detect external file modification in desktop mode
+    [AW-97] - Error messages are not reset when checking the grammar
+    [AW-99] - Find does not wrap when reaching end/beginning of document
 
 Version 1.1 - 07/22/07
 

@@ -78,6 +78,16 @@ public class FindAndReplace implements XJFrameDelegate {
         return p;
     }
 
+    public void setPositionToTop() {
+        editor.getTextPane().setSelectionStart(0);
+        editor.getTextPane().setSelectionEnd(0);
+    }
+
+    public void setPositionToBottom() {
+        editor.getTextPane().setSelectionStart(editor.getText().length()-1);
+        editor.getTextPane().setSelectionEnd(editor.getText().length()-1);
+    }
+
     public boolean matching() {
         Pattern p = getCompiledPattern();
         if(p == null)
