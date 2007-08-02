@@ -97,6 +97,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected int inputMode;
     protected int lastInputMode;
     protected String inputFile;
+    protected String lastInputFile;
     protected String inputText;
     protected String rawInputText;
 
@@ -130,7 +131,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             return inputFile != null && new File(inputFile).exists();
         }
     }
-    
+
     public void dialogDidCancel() {
         cancel();
     }
@@ -205,13 +206,9 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
         if(prepare()) {
             if(optionBuild()) generateAndCompileGrammar();
-
             if(!cancelled() && !optionAgain()) askUserForInputText();
-
             if(!cancelled()) generateAndCompileGlueCode(optionBuild());
-
             if(!cancelled()) generateInputText();
-
             if(!cancelled()) launchRemoteParser();
         }
 
@@ -292,7 +289,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected boolean prepare() {
         try {
             ErrorListener.shared().clear();
-            
+
             setOutputPath(AWPrefs.getOutputPath());
             setStartRule(AWPrefs.getStartSymbol());
 
@@ -370,7 +367,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     protected void compileGrammar() {
-        XJUtils.deleteDirectory(outputFileDir);                
+        XJUtils.deleteDirectory(outputFileDir);
         new File(outputFileDir).mkdirs();
         compileFiles(grammarGeneratedFiles.toArray(new String[grammarGeneratedFiles.size()]));
     }
@@ -379,11 +376,13 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         progress.setInfo("Preparing...");
         progress.setIndeterminate(true);
 
-        if(!build && lastStartRule != null && startRule.equals(lastStartRule) && lastInputMode == inputMode)
+        if(!build && lastStartRule != null && startRule.equals(lastStartRule) &&
+                inputFile.equals(lastInputFile) && lastInputMode == inputMode)
             return;
 
         lastStartRule = startRule;
         lastInputMode = inputMode;
+        lastInputFile = inputFile;
 
         generateGlueCode();
 
