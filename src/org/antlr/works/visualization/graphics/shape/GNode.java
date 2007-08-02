@@ -41,7 +41,6 @@ import org.antlr.works.visualization.graphics.primitive.GPoint;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class GNode extends GObject {
@@ -63,8 +62,7 @@ public class GNode extends GObject {
 
     public void setContext(GContext context) {
         super.setContext(context);
-        for (Iterator<GLink> iterator = links.iterator(); iterator.hasNext();) {
-            GLink link = iterator.next();
+        for (GLink link : links) {
             link.setContext(context);
         }
     }
@@ -84,9 +82,8 @@ public class GNode extends GObject {
         // Look into each transition to see if the state number
         // has been skipped during NFA optimization: in this case,
         // any skipped state will be stored in the transition.
-        for (Iterator<GLink> iterator = links.iterator(); iterator.hasNext();) {
-            GLink link = iterator.next();
-            if(link.containsStateNumber(n))
+        for (GLink link : links) {
+            if (link.containsStateNumber(n))
                 return true;
         }
         return false;
@@ -98,9 +95,8 @@ public class GNode extends GObject {
     }
 
     public GLink getLink(FATransition transition) {
-        for (Iterator<GLink> iterator = links.iterator(); iterator.hasNext();) {
-            GLink link = iterator.next();
-            if(link.transition == transition)
+        for (GLink link : links) {
+            if (link.transition == transition)
                 return link;
         }
         return null;
@@ -169,8 +165,7 @@ public class GNode extends GObject {
         linkDimension.cache(context);
         cacheGlobalDimension(context);
 
-        for(int i=0; i<links.size(); i++) {
-            GLink link = links.get(i);
+        for (GLink link : links) {
             link.render(ox, oy);
         }
     }
@@ -186,8 +181,7 @@ public class GNode extends GObject {
 
     public void drawNodeAndLink() {
 
-        for(int i=0; i<links.size(); i++) {
-            GLink link = links.get(i);
+        for (GLink link : links) {
             link.draw();
         }
 

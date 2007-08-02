@@ -31,18 +31,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.xjlib.appkit.gview.GView;
-import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.appkit.utils.XJFileChooser;
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.visualization.SDGenerator;
 import org.antlr.works.visualization.Visual;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GEngine;
 import org.antlr.works.visualization.graphics.GEnginePS;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
+import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJFileChooser;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -90,6 +92,40 @@ public class MenuExport extends MenuAbstract {
             exportGViewAsImage(tab.getExportableGView());
     }
 
+    public void exportAllRulesAsImage() {
+        exportAllRules(true);
+    }
+
+    public void exportAllRulesAsEPS() {
+        exportAllRules(false);
+    }
+
+    public void exportAllRules(boolean asImage) {
+        List<String> extensions = null;
+        if(asImage) {
+            extensions = lookupAvailableImageFormat();            
+        }
+        if(!XJFileChooser.shared().displayChooseDirectory(editor.getWindowContainer(), extensions, extensions, !asImage)) {
+            return;
+        }
+
+        String directory = XJFileChooser.shared().getSelectedFilePath();
+        String extension = XJFileChooser.shared().getSelectedFileExtension();
+
+        SDGenerator sd = new SDGenerator(editor.getEngineGrammar());
+        for(ElementRule rule : editor.getRules()) {
+            try {
+                if(asImage) {
+                    sd.renderRuleToBitmapFile(rule.name, extension, XJUtils.concatPath(directory, rule.name+"."+extension));
+                } else {
+                    sd.renderRuleToEPSFile(rule.name, XJUtils.concatPath(directory, rule.name+".eps"));
+                }
+            } catch (Exception e) {
+                XJAlert.display(editor.getWindowContainer(), "Error", "Images cannot be saved because:\n"+e);
+            }
+        }
+    }
+
     public void exportRuleAsImage() {
         if(!editor.visual.canSaveImage()) {
             XJAlert.display(editor.getWindowContainer(), "Export Rule to Bitmap Image", "There is no rule at cursor position.");
@@ -104,13 +140,7 @@ public class MenuExport extends MenuAbstract {
     }
 
     public void saveImageToDisk(BufferedImage image) {
-        List<String> extensions = new ArrayList<String>();
-        for (int i = 0; i < ImageIO.getWriterFormatNames().length; i++) {
-            String ext = ImageIO.getWriterFormatNames()[i].toLowerCase();
-            if(!extensions.contains(ext))
-                extensions.add(ext);
-        }
-
+        List<String> extensions = lookupAvailableImageFormat();
         if(XJFileChooser.shared().displaySaveDialog(editor.getWindowContainer(), extensions, extensions, false)) {
             String file = XJFileChooser.shared().getSelectedFilePath();
             try {
@@ -119,6 +149,16 @@ public class MenuExport extends MenuAbstract {
                 XJAlert.display(editor.getWindowContainer(), "Error", "Image \""+file+"\" cannot be saved because:\n"+e);
             }
         }
+    }
+
+    private static List<String> lookupAvailableImageFormat() {
+        List<String> extensions = new ArrayList<String>();
+        for (int i = 0; i < ImageIO.getWriterFormatNames().length; i++) {
+            String ext = ImageIO.getWriterFormatNames()[i].toLowerCase();
+            if(!extensions.contains(ext))
+                extensions.add(ext);
+        }
+        return extensions;
     }
 
     public void exportAsEPS() {

@@ -46,7 +46,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class GView extends JPanel implements XJMenuItemDelegate {
@@ -93,8 +92,8 @@ public class GView extends JPanel implements XJMenuItemDelegate {
     }
 
     public void setEnable(boolean flag) {
-        for (Iterator iterator = graphs.iterator(); iterator.hasNext();) {
-            GGraphAbstract graph = (GGraphAbstract) iterator.next();
+        for (Object graph1 : graphs) {
+            GGraphAbstract graph = (GGraphAbstract) graph1;
             graph.setEnable(flag);
         }
     }

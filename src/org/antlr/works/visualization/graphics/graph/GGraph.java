@@ -38,7 +38,6 @@ import org.antlr.works.visualization.graphics.shape.GLink;
 import org.antlr.works.visualization.graphics.shape.GNode;
 
 import java.awt.*;
-import java.util.Iterator;
 import java.util.List;
 
 public class GGraph extends GGraphAbstract {
@@ -57,8 +56,7 @@ public class GGraph extends GGraphAbstract {
 
     public void setContext(GContext context) {
         super.setContext(context);
-        for (Iterator<GNode> iterator = nodes.iterator(); iterator.hasNext();) {
-            GNode node = iterator.next();
+        for (GNode node : nodes) {
             node.setContext(context);
         }
     }
@@ -94,9 +92,7 @@ public class GGraph extends GGraphAbstract {
     public void render(float ox, float oy) {
         oy += getDimension().getPixelUp(context);
 
-        Iterator<GNode> iterator = nodes.iterator();
-        while(iterator.hasNext()) {
-            GNode node = iterator.next();
+        for (GNode node : nodes) {
             node.render(ox, oy);
         }
 
@@ -111,9 +107,7 @@ public class GGraph extends GGraphAbstract {
         context.linkColor = Color.black;
         context.setLineWidth(1);
         
-        Iterator<GNode> iterator = nodes.iterator();
-        while(iterator.hasNext()) {
-            GNode node = iterator.next();
+        for (GNode node : nodes) {
             node.drawNodeAndLink();
         }
 
@@ -128,14 +122,12 @@ public class GGraph extends GGraphAbstract {
     }
 
     public GLink findLinkAtPosition(int x, int y) {
-        for (Iterator<GNode> iterator = nodes.iterator(); iterator.hasNext();) {
-            GNode node = iterator.next();
-            for (Iterator<GLink> iterator1 = node.links.iterator(); iterator1.hasNext();) {
-                GLink link = iterator1.next();
+        for (GNode node : nodes) {
+            for (GLink link : node.links) {
                 /** Only non-null transition label has to be tested (that is, visible
                  * syntax diagram box, not simple line)
                  */
-                if(link.containsPoint(new Point(x, y)) && link.transition.label != null)
+                if (link.containsPoint(new Point(x, y)) && link.transition.label != null)
                     return link;
             }
         }
@@ -143,9 +135,8 @@ public class GGraph extends GGraphAbstract {
     }
 
     public GNode findNodeForStateNumber(int stateNumber) {
-        for (Iterator<GNode> iterator = nodes.iterator(); iterator.hasNext();) {
-            GNode node = iterator.next();
-            if(node.state.stateNumber == stateNumber) {
+        for (GNode node : nodes) {
+            if (node.state.stateNumber == stateNumber) {
                 return node;
             }
         }
@@ -153,11 +144,10 @@ public class GGraph extends GGraphAbstract {
     }
 
     public boolean containsAtLeastOneState(List states) {
-        for (Iterator<GNode> nodeIterator = nodes.iterator(); nodeIterator.hasNext();) {
-            GNode node = nodeIterator.next();
-            for (Iterator stateIterator = states.iterator(); stateIterator.hasNext();) {
-                NFAState state = (NFAState) stateIterator.next();
-                if(node.containsStateNumber(state.stateNumber))
+        for (GNode node : nodes) {
+            for (Object state1 : states) {
+                NFAState state = (NFAState) state1;
+                if (node.containsStateNumber(state.stateNumber))
                     return true;
             }
         }

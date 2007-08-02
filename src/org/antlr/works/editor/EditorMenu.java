@@ -126,7 +126,9 @@ public class EditorMenu implements XJMenuItemDelegate {
     // File Export
     public static final int MI_EXPORT_AS_IMAGE = 110;
     public static final int MI_EXPORT_AS_EPS = 111;
-    public static final int MI_EXPORT_AS_DOT = 112;
+    public static final int MI_EXPORT_ALL_AS_IMAGE = 112;
+    public static final int MI_EXPORT_ALL_AS_EPS = 113;
+    public static final int MI_EXPORT_AS_DOT = 114;
     public static final int MI_EXPORT_EVENT = 115;
 
     public static final int MI_PRIVATE_UNREGISTER = 200;
@@ -157,6 +159,13 @@ public class EditorMenu implements XJMenuItemDelegate {
         XJMenu exportMenu = new XJMenu();
         exportMenu.setTitle(resourceBundle.getString("menu.title.exportEvents"));
         exportMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.asText"), MI_EXPORT_EVENT, this));
+
+        menu.insertItemAfter(exportMenu, XJMainMenuBar.MI_SAVEAS);
+
+        exportMenu = new XJMenu();
+        exportMenu.setTitle(resourceBundle.getString("menu.title.exportAllRules"));
+        exportMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.exportAsEPS"), MI_EXPORT_ALL_AS_EPS, this));
+        exportMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.exportAsBitmap"), MI_EXPORT_ALL_AS_IMAGE, this));
 
         menu.insertItemAfter(exportMenu, XJMainMenuBar.MI_SAVEAS);
 
@@ -817,6 +826,14 @@ public class EditorMenu implements XJMenuItemDelegate {
 
             case MI_EXPORT_AS_DOT:
                 editor.menuExport.exportAsDOT();
+                break;
+
+            case MI_EXPORT_ALL_AS_IMAGE:
+                editor.menuExport.exportAllRulesAsImage();
+                break;
+
+            case MI_EXPORT_ALL_AS_EPS:
+                editor.menuExport.exportAllRulesAsEPS();
                 break;
 
             case MI_EXPORT_EVENT:
