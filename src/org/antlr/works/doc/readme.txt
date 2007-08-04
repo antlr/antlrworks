@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.1.1
-July 29, 2007
+Version 1.1.2
+August 4, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco
@@ -71,6 +71,16 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+Version 1.1.2 - 08/04/07
+
+Bug fix:
+    [AW-100] - Debugger does not take into account the input file path if it is changed after debugging at least once
+    [AW-101] - Closing a window using the menu command in desktop mode causes the main menu bar to disappear
+
+Improvement:
+    [AW-102] - Export all rules into eps or bitmap files
+    [AW-103] - New application and Mac OS X document icon
 
 Version 1.1.1 - 07/29/07
 

@@ -17,7 +17,7 @@
        </void> 
        <void method="setProperty"> 
         <string>$rowSpecs</string> 
-        <string>10dlu, linegap, bottom:default, linegap, top:max(default;20dlu), linegap, bottom:max(default;15dlu), linegap, top:max(default;15dlu), linegap, fill:max(default;60dlu):grow, linegap, 10dlu</string> 
+        <string>10dlu, linegap, bottom:default, linegap, top:max(default;15dlu), linegap, bottom:max(default;10dlu), linegap, top:max(default;10dlu), linegap, fill:max(default;60dlu):grow, linegap, 10dlu</string> 
        </void> 
       </object> 
       <void method="setProperty"> 

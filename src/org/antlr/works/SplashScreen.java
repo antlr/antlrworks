@@ -33,9 +33,9 @@ package org.antlr.works;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.Localizable;
+import org.antlr.xjlib.foundation.XJSystem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -82,20 +82,20 @@ public class SplashScreen extends JWindow {
         Container contentPane = backgroundPanel; //getContentPane();
         contentPane.setLayout(new FormLayout(
             new ColumnSpec[] {
-                new ColumnSpec(Sizes.dluX(15)),
+                new ColumnSpec(Sizes.dluX(0)),
                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                 FormFactory.DEFAULT_COLSPEC,
                 new ColumnSpec(ColumnSpec.LEFT, Sizes.DLUX5, FormSpec.NO_GROW),
                 FormFactory.DEFAULT_COLSPEC,
                 FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                new ColumnSpec(Sizes.dluX(15))
+                new ColumnSpec(Sizes.dluX(10))
             },
             new RowSpec[] {
                 new RowSpec(Sizes.dluY(10)),
                 FormFactory.LINE_GAP_ROWSPEC,
                 new RowSpec(RowSpec.TOP, Sizes.DEFAULT, FormSpec.NO_GROW),
                 FormFactory.LINE_GAP_ROWSPEC,
-                new RowSpec(RowSpec.TOP, Sizes.dluY(20), FormSpec.NO_GROW),
+                new RowSpec(RowSpec.TOP, Sizes.dluY(10), FormSpec.NO_GROW),
                 FormFactory.LINE_GAP_ROWSPEC,
                 FormFactory.DEFAULT_ROWSPEC,
                 FormFactory.LINE_GAP_ROWSPEC,

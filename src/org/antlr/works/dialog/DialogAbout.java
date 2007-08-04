@@ -75,12 +75,11 @@ public class DialogAbout extends XJPanel {
         resetAcknowledge();
         addAcknowledge("ANTLR and StringTemplate are (c) 1989-2007 Terence Parr");
         addAcknowledge("XJLibrary is (c) 2004-2007 Jean Bovet");
+        addAcknowledge("Application & Mac OS X document icons are (c) Simon Bovet");
         addAcknowledge("Portion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch");
         addAcknowledge("Portion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber");
         addAcknowledge("B-spline algorithm is (c) Leen Ammeraal <http://home.wxs.nl/~ammeraal/grjava.html>");
         addAcknowledge("BrowserLauncher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>");
-        addAcknowledge("Application icon is (c) Matthew McClintock <matthew@mc.clintock.com>");
-        addAcknowledge("Mac OS X document icon was created by Abe <abe149@gmail.com>");
         addAcknowledge("Contributions by Matthew J. Diehl <good.mdiehl@comcast.net>");
 
         setResizable(false);
@@ -172,11 +171,11 @@ public class DialogAbout extends XJPanel {
         		FormFactory.LINE_GAP_ROWSPEC,
         		new RowSpec(RowSpec.BOTTOM, Sizes.DEFAULT, FormSpec.NO_GROW),
         		FormFactory.LINE_GAP_ROWSPEC,
-        		new RowSpec("top:max(default;20dlu)"),
-        		FormFactory.LINE_GAP_ROWSPEC,
-        		new RowSpec("bottom:max(default;15dlu)"),
-        		FormFactory.LINE_GAP_ROWSPEC,
         		new RowSpec("top:max(default;15dlu)"),
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		new RowSpec("bottom:max(default;10dlu)"),
+        		FormFactory.LINE_GAP_ROWSPEC,
+        		new RowSpec("top:max(default;10dlu)"),
         		FormFactory.LINE_GAP_ROWSPEC,
         		new RowSpec("fill:max(default;60dlu):grow"),
         		FormFactory.LINE_GAP_ROWSPEC,
