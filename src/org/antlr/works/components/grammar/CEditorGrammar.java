@@ -745,7 +745,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         }
 
         // No token vocab file in the default directory. Try in the output path.
-        path = XJUtils.concatPath(AWPrefs.getOutputPath(), tokenVocabName);
+        path = XJUtils.concatPath(getOutputPath(), tokenVocabName);
         if(new File(path).exists()) {
             return path;
         }
@@ -759,6 +759,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public synchronized String getFileName() {
         return getDocument().getDocumentName();
+    }
+
+    public String getOutputPath() {
+        if(AWPrefs.getOutputPathSameAsDocument()) {
+            return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(getFilePath()), "build");
+        } else {
+            return AWPrefs.getOutputPath();
+        }
     }
 
     public Container getWindowContainer() {

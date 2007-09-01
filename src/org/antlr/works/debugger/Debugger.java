@@ -469,7 +469,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         }
 
         if((options & OPTION_BUILD) > 0 || !local.isRequiredFilesExisting()) {
-            local.setOutputPath(AWPrefs.getOutputPath());
             local.prepareAndLaunch(options);
 
             grammarGenerated();
@@ -763,5 +762,9 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void warning(Object o, String message) {
         getConsole().println("["+o.getClass().getName()+" - event "+getNumberOfEvents()+"] Warning: "+message, Console.LEVEL_WARNING);
+    }
+
+    public String getOutputPath() {
+        return editor.getOutputPath();
     }
 }

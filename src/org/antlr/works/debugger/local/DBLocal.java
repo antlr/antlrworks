@@ -112,10 +112,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         this.codeGenerator = new CodeGenerate(debugger.getProvider(), null);
     }
 
-    public void setOutputPath(String path) {
-        codeGenerator.setOutputPath(path);
-    }
-
     public void setStartRule(String rule) {
         this.startRule = rule;
     }
@@ -290,7 +286,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         try {
             ErrorListener.shared().clear();
 
-            setOutputPath(AWPrefs.getOutputPath());
             setStartRule(AWPrefs.getStartSymbol());
 
             grammarGeneratedFiles = codeGenerator.getGeneratedTextFileNames();
@@ -521,7 +516,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher", debugger.getOutputPanel()).start();
             new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher", debugger.getOutputPanel()).start();
         } catch (IOException e) {
-            reportError("Cannot launch the remote parser:\n"+e.toString());
+            reportError("Cannot launch the remote parser:\n"+e.toString()+"\nIt is possible that some errors prevented the parser from launching. Check the output panel of the debugger and any other output console in your system to see if an error has been reported from the parser and try again.");
             return false;
         }
 

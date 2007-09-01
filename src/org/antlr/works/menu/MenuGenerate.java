@@ -31,17 +31,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.generate.CodeDisplay;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
 import org.antlr.works.grammar.CheckGrammar;
 import org.antlr.works.grammar.CheckGrammarDelegate;
-import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 
 public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, CheckGrammarDelegate {
 
@@ -77,7 +76,6 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
             return;
 
         generateCode.setDebug(false);
-        generateCode.setOutputPath(AWPrefs.getOutputPath());
         generateCode.generateInThread(editor.getJavaContainer());
     }
 

@@ -31,9 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.generate;
 
-import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.appkit.utils.XJDialogProgress;
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
@@ -44,6 +41,9 @@ import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.Utils;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +53,6 @@ import java.util.List;
 
 public class CodeGenerate implements Runnable {
 
-    protected String outputPath;
     protected boolean debug = true;
 
     protected EditorProvider provider;
@@ -65,7 +64,6 @@ public class CodeGenerate implements Runnable {
     public CodeGenerate(EditorProvider provider, CodeGenerateDelegate delegate) {
         this.provider = provider;
         this.delegate = delegate;
-        this.outputPath = AWPrefs.getOutputPath();
 
         errorListener = new ErrorListener();
         errorListener.setPrintToConsole(false);
@@ -76,12 +74,8 @@ public class CodeGenerate implements Runnable {
         this.debug = debug;
     }
 
-    public void setOutputPath(String path) {
-        this.outputPath = path;
-    }
-
     public String getOutputPath() {
-        return outputPath;
+        return provider.getOutputPath();
     }
 
     public String getGrammarLanguage() {
@@ -233,7 +227,7 @@ public class CodeGenerate implements Runnable {
             XJAlert.display(provider.getWindowContainer(), "Error", "Cannot generate the grammar because:\n"+generateError);
         else {
             if(delegate == null || delegate.codeGenerateDisplaySuccess())
-                XJAlert.display(provider.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+outputPath);
+                XJAlert.display(provider.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+getOutputPath());
             else
                 delegate.codeGenerateDidComplete();
         }

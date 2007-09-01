@@ -236,6 +236,8 @@ public class AWPrefs {
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
     public static final String PREF_SERVER_ID = "PREF_SERVER_ID";
 
+    public static final String PREF_OUTPUT_PATH_SAME = "PREF_OUTPUT_PATH_SAME";
+    public static final String PREF_OUTPUT_PATH_CUSTOM = "PREF_OUTPUT_PATH_CUSTOM";
     public static final String PREF_OUTPUT_PATH = "PREF_OUTPUT_PATH";
     public static final String PREF_START_SYMBOL = "PREF_START_SYMBOL";
     public static final String PREF_DEBUGGER_INPUT_TEXT = "PREF_DEBUGGER_INPUT_TEXT";
@@ -302,6 +304,10 @@ public class AWPrefs {
 
     public static void setOutputPath(String path) {
         getPreferences().setString(PREF_OUTPUT_PATH, path);
+    }
+
+    public static boolean getOutputPathSameAsDocument() {
+        return getPreferences().getBoolean(PREF_OUTPUT_PATH_SAME, false);
     }
 
     public static String getOutputPath() {

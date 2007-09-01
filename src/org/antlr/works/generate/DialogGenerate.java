@@ -37,10 +37,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import org.antlr.works.editor.EditorProvider;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.utils.XJFileChooser;
 import org.antlr.xjlib.foundation.XJSystem;
-import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,7 +50,7 @@ import java.awt.event.ActionListener;
 
 public class DialogGenerate extends XJDialog {
 
-    public DialogGenerate(Container parent) {
+    public DialogGenerate(Container parent, EditorProvider provider) {
         super(parent, true);
 
         initComponents();
@@ -69,7 +70,7 @@ public class DialogGenerate extends XJDialog {
         setOKButton(okButton);
         setCancelButton(cancelButton);
 
-        outputPathField.setText(AWPrefs.getOutputPath());
+        outputPathField.setText(provider.getOutputPath());
 
         browseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {

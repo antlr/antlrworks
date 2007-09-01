@@ -107,10 +107,25 @@ public class AWPrefsDialog extends XJPanel {
         }
         lafCombo.setEnabled(!IDE.isPlugin());
 
+        outputPathSameRadio.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                outputPathField.setEnabled(outputPathCustomRadio.isSelected());
+                browseOutputPathButton.setEnabled(outputPathCustomRadio.isSelected());
+            }
+        });
+        outputPathCustomRadio.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                outputPathField.setEnabled(outputPathCustomRadio.isSelected());
+                browseOutputPathButton.setEnabled(outputPathCustomRadio.isSelected());
+            }
+        });
+
         getPreferences().bindToPreferences(startupActionCombo, AWPrefs.PREF_STARTUP_ACTION, AWPrefs.STARTUP_OPEN_LAST_OPENED_DOC);
         getPreferences().bindToPreferences(restoreWindowsBoundButton, AWPrefs.PREF_RESTORE_WINDOWS, AWPrefs.DEFAULT_RESTORE_WINDOWS);
         getPreferences().bindToPreferences(lafCombo, AWPrefs.PREF_LOOK_AND_FEEL, XJLookAndFeel.getDefaultLookAndFeelName());
         getPreferences().bindToPreferences(desktopModeButton, AWPrefs.PREF_DESKTOP_MODE, AWPrefs.DEFAULT_DESKTOP_MODE);
+        getPreferences().bindToPreferences(outputPathSameRadio, AWPrefs.PREF_OUTPUT_PATH_SAME, false);
+        getPreferences().bindToPreferences(outputPathCustomRadio, AWPrefs.PREF_OUTPUT_PATH_CUSTOM, true);
         getPreferences().bindToPreferences(outputPathField, AWPrefs.PREF_OUTPUT_PATH, AWPrefs.DEFAULT_OUTPUT_PATH);
         getPreferences().bindToPreferences(dotToolPathField, AWPrefs.PREF_DOT_TOOL_PATH, AWPrefs.DEFAULT_DOT_TOOL_PATH);
         getPreferences().bindToPreferences(antlr3OptionsField, AWPrefs.PREF_ANTLR3_OPTIONS, AWPrefs.DEFAULT_ANTLR3_OPTIONS);
@@ -295,6 +310,8 @@ public class AWPrefsDialog extends XJPanel {
         browseJavacPath.setEnabled(javacCustomPathButton.isSelected());
         customClasspathField.setEnabled(classpathCustomButton.isSelected());
         browseCustomClassPathButton.setEnabled(classpathCustomButton.isSelected());
+        outputPathField.setEnabled(outputPathCustomRadio.isSelected());
+        browseOutputPathButton.setEnabled(outputPathCustomRadio.isSelected());
         // @todo disable for now
         //actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_PREFERENCES);
@@ -358,6 +375,8 @@ public class AWPrefsDialog extends XJPanel {
         restoreWindowsBoundButton = new JCheckBox();
         desktopModeButton = new JCheckBox();
         label25 = new JLabel();
+        outputPathSameRadio = new JRadioButton();
+        outputPathCustomRadio = new JRadioButton();
         outputPathField = new JTextField();
         browseOutputPathButton = new JButton();
         label24 = new JLabel();
@@ -523,6 +542,8 @@ public class AWPrefsDialog extends XJPanel {
         						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC,
         						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC
         					}));
 
@@ -557,30 +578,38 @@ public class AWPrefsDialog extends XJPanel {
         				label25.setText("Output path:");
         				tabGeneral.add(label25, cc.xy(3, 11));
 
+        				//---- outputPathSameRadio ----
+        				outputPathSameRadio.setText("Same as grammar");
+        				tabGeneral.add(outputPathSameRadio, cc.xy(5, 11));
+
+        				//---- outputPathCustomRadio ----
+        				outputPathCustomRadio.setText("Custom:");
+        				tabGeneral.add(outputPathCustomRadio, cc.xy(7, 11));
+
         				//---- outputPathField ----
         				outputPathField.setToolTipText("Absolute path to the DOT command-line tool");
-        				tabGeneral.add(outputPathField, cc.xywh(5, 11, 3, 1));
+        				tabGeneral.add(outputPathField, cc.xywh(5, 13, 3, 1));
 
         				//---- browseOutputPathButton ----
         				browseOutputPathButton.setText("Browse...");
-        				tabGeneral.add(browseOutputPathButton, cc.xy(9, 11));
+        				tabGeneral.add(browseOutputPathButton, cc.xy(9, 13));
 
         				//---- label24 ----
         				label24.setText("DOT path:");
-        				tabGeneral.add(label24, cc.xy(3, 13));
+        				tabGeneral.add(label24, cc.xy(3, 15));
 
         				//---- dotToolPathField ----
         				dotToolPathField.setToolTipText("Absolute path to the DOT command-line tool");
-        				tabGeneral.add(dotToolPathField, cc.xywh(5, 13, 3, 1));
+        				tabGeneral.add(dotToolPathField, cc.xywh(5, 15, 3, 1));
 
         				//---- browseDotToolPathButton ----
         				browseDotToolPathButton.setText("Browse...");
-        				tabGeneral.add(browseDotToolPathButton, cc.xy(9, 13));
+        				tabGeneral.add(browseDotToolPathButton, cc.xy(9, 15));
 
         				//---- label37 ----
         				label37.setText("ANTLR options:");
-        				tabGeneral.add(label37, cc.xy(3, 15));
-        				tabGeneral.add(antlr3OptionsField, cc.xywh(5, 15, 3, 1));
+        				tabGeneral.add(label37, cc.xy(3, 17));
+        				tabGeneral.add(antlr3OptionsField, cc.xywh(5, 17, 3, 1));
         			}
         			tabbedPane1.addTab("General", tabGeneral);
 
@@ -1303,6 +1332,11 @@ public class AWPrefsDialog extends XJPanel {
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
         pack();
+
+        //---- buttonGroup1 ----
+        ButtonGroup buttonGroup1 = new ButtonGroup();
+        buttonGroup1.add(outputPathSameRadio);
+        buttonGroup1.add(outputPathCustomRadio);
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
@@ -1319,6 +1353,8 @@ public class AWPrefsDialog extends XJPanel {
     private JCheckBox restoreWindowsBoundButton;
     private JCheckBox desktopModeButton;
     private JLabel label25;
+    private JRadioButton outputPathSameRadio;
+    private JRadioButton outputPathCustomRadio;
     private JTextField outputPathField;
     private JButton browseOutputPathButton;
     private JLabel label24;

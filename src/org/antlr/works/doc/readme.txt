@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.1.2
-August 4, 2007
+Version 1.1.3
+September 1, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco
@@ -71,6 +71,17 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+Version 1.1.3 - 09/01/07
+
+Bug fix:
+    [AW-104] - Saving a file without extension will add (null) as extension
+    [AW-105] - Choosing a non-existing directory on Windows/Linux causes a null-pointer exception when exporting rules
+    [AW-107] - Issue when saving last used directory when a file has been selected
+
+Improvement
+    [AW-109] - Generate code in the same directory as the current grammar document
+    [AW-108] - Updated with ANTLR 3.0.1
 
 Version 1.1.2 - 08/04/07
 
