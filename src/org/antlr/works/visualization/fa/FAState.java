@@ -64,7 +64,7 @@ public class FAState {
     public FAState(NFAState state) {
         this.stateNumber = state.stateNumber;
         this.acceptedState = state.isAcceptState();
-        this.enclosingRuleName = state.getEnclosingRule();
+        this.enclosingRuleName = state.enclosingRule.name;
     }
 
     public FAState(String externalRuleRefName) {

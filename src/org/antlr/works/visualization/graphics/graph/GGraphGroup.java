@@ -189,9 +189,9 @@ public class GGraphGroup extends GGraphAbstract {
                 // ignore externalNode. We will draw only a link from node to nextNode.
             } else {
                 // Find the transition that points to the external rule ref
-                FATransition t = node.state.getTransitionToExternalStateRule(nextState.getEnclosingRule());
+                FATransition t = node.state.getTransitionToExternalStateRule(nextState.enclosingRule.name);
                 if(t == null) {
-                    System.err.println("[GGraphGroup] No transition to external state "+nextState.stateNumber+"["+nextState.getEnclosingRule()+"] - using first transition by default");
+                    System.err.println("[GGraphGroup] No transition to external state "+nextState.stateNumber+"["+nextState.enclosingRule.name+"] - using first transition by default");
                     t = node.state.getFirstTransition();
                 }
                 externalNode = findNodeForStateNumber(t.target.stateNumber);
@@ -230,7 +230,7 @@ public class GGraphGroup extends GGraphAbstract {
         /*System.out.println("***");
         for (Iterator iterator = path.iterator(); iterator.hasNext();) {
             NFAState state = (NFAState)iterator.next();
-            System.out.println(state+" - "+state.getEnclosingRule());
+            System.out.println(state+" - "+state.enclosingRule.name);
         } */
 
         NFAState state;
@@ -248,7 +248,7 @@ public class GGraphGroup extends GGraphAbstract {
                     // to find out what is the parent state of the skipped state.
                     FAState parentState = skippedStates.get(nextState.stateNumber);
                     if(parentState == null) {
-                        System.err.println("[GGraphGroup] Starting path state "+nextState.stateNumber+"["+nextState.getEnclosingRule()+"] cannot be found in the graph");
+                        System.err.println("[GGraphGroup] Starting path state "+nextState.stateNumber+"["+nextState.enclosingRule.name+"] cannot be found in the graph");
                         return;
                     } else {
                         nextNode = findNodeForStateNumber(parentState.stateNumber);
@@ -314,7 +314,7 @@ public class GGraphGroup extends GGraphAbstract {
             if(state == null || node == null || nextNode == null)
                 continue;
 
-            if(state.getEnclosingRule().equals(nextState.getEnclosingRule()))
+            if(state.enclosingRule.name.equals(nextState.enclosingRule.name))
                 addNextElementInSameRule(elements, node, nextNode);
             else
                 addNextElementInOtherRule(elements, node, externalNode, nextNode, nextState);
@@ -331,14 +331,14 @@ public class GGraphGroup extends GGraphAbstract {
 
         GNode node = findNodeForStateNumber(state.stateNumber);
         if(node == null) {
-            System.err.println("[GGraphGroup] Decision state "+state.stateNumber+"["+state.getEnclosingRule()+"] cannot be found in the graph");
+            System.err.println("[GGraphGroup] Decision state "+state.stateNumber+"["+state.enclosingRule.name+"] cannot be found in the graph");
             return;
         }
         List<FATransition> transitions = node.state.transitions;
         int altNum = alt -1;
 
         if(altNum >= transitions.size()) {
-            System.err.println("[GGraphGroup] Unreachable alt "+altNum+"["+state.getEnclosingRule()+"] is out of bounds: "+transitions.size());
+            System.err.println("[GGraphGroup] Unreachable alt "+altNum+"["+state.enclosingRule.name+"] is out of bounds: "+transitions.size());
             return;
         }
 

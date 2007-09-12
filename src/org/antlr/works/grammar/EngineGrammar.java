@@ -447,7 +447,7 @@ public class EngineGrammar {
             // Find all rules enclosing each state (because a path can extend over multiple rules)
             for (Object aPath : path) {
                 NFAState state = (NFAState) aPath;
-                error.addRule(state.getEnclosingRule());
+                error.addRule(state.enclosingRule.name);
             }
         }
     }
@@ -457,7 +457,7 @@ public class EngineGrammar {
         for (Object alt1 : message.alts) {
             error.addUnreachableAlt(state, (Integer) alt1);
             error.addStates(state);
-            error.addRule(state.getEnclosingRule());
+            error.addRule(state.enclosingRule.name);
         }
     }
 
@@ -467,7 +467,7 @@ public class EngineGrammar {
             // Use currently the unreachable alt for display purpose only
             error.addUnreachableAlt(state, (Integer) alt);
             error.addStates(state);
-            error.addRule(state.getEnclosingRule());
+            error.addRule(state.enclosingRule.name);
         }
     }
 
