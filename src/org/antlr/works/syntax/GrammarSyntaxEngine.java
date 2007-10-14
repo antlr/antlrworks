@@ -173,9 +173,8 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     public synchronized List<String> getDeclaredTokenNames() {
         List<String> names = new ArrayList<String>();
         if(blocks != null) {
-            for(int index=0; index<blocks.size(); index++) {
-                ElementBlock block = blocks.get(index);
-                if(block.isTokenBlock) {
+            for (ElementBlock block : blocks) {
+                if (block.isTokenBlock) {
                     names.addAll(block.getDeclaredTokensAsString());
                 }
             }
@@ -191,9 +190,8 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         if(blocks == null)
             return null;
 
-        for(int index=0; index<blocks.size(); index++) {
-            ElementBlock block = blocks.get(index);
-            if(block.isOptionsBlock)
+        for (ElementBlock block : blocks) {
+            if (block.isOptionsBlock)
                 return block.getTokenVocab();
         }
         return null;
@@ -202,8 +200,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     public synchronized List<String> getRuleNames() {
         List<String> names = new ArrayList<String>();
         if(rules != null) {
-            for (int index=0; index<rules.size(); index++) {
-                ElementRule rule = rules.get(index);
+            for (ElementRule rule : rules) {
                 names.add(rule.name);
             }
         }

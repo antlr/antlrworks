@@ -195,7 +195,7 @@ public class FAFactory {
         NFAState target;
         if(transition instanceof RuleClosureTransition) {
             RuleClosureTransition rct = (RuleClosureTransition)transition;
-            target = rct.followState;
+            target = rct.getFollowState();
         } else {
             target = (NFAState)transition.target;
         }

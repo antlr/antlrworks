@@ -39,12 +39,10 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.*;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
-import org.antlr.works.utils.Utils;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -61,11 +59,20 @@ public class EngineGrammar {
     protected boolean grammarAnalyzeDirty;
 
     protected CEditorGrammar editor;
-
+    protected EngineGrammarDelegate delegate;
+    
     public EngineGrammar(CEditorGrammar editor) {
         this.editor = editor;
         errors = new ArrayList<EngineGrammarError>();
         makeDirty();
+    }
+
+    public EngineGrammarDelegate getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(EngineGrammarDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public void makeDirty() {
@@ -139,11 +146,7 @@ public class EngineGrammar {
     }
 
     public Tool getANTLRTool() {
-        String[] params = AWPrefs.getANTLR3Options();
-        if(editor.getFileFolder() != null) {
-            params = Utils.concat(params, new String[] { "-lib", editor.getFileFolder() });
-        }
-        return new Tool(params);
+        return delegate.getANTLRTool();
     }
 
     public String getName() {
@@ -191,7 +194,7 @@ public class EngineGrammar {
     }
 
     public String getFileName() {
-        String fileName = editor.getFileName();
+        String fileName = delegate.getFileName();
         return fileName==null?"<notsaved>":fileName;
     }
 
@@ -204,7 +207,7 @@ public class EngineGrammar {
     }
 
     protected void createCombinedGrammar() throws Exception {
-        parserGrammar = createNewGrammar(getFileName(), editor.getText());
+        parserGrammar = createNewGrammar(getFileName(), delegate.getText());
         parserGrammar.createNFAs();
         lexerGrammar = createLexerGrammarFromCombinedGrammar(parserGrammar);
     }
@@ -226,7 +229,7 @@ public class EngineGrammar {
     }
 
     protected void createParserGrammar() throws TokenStreamException, RecognitionException {
-        parserGrammar = createNewGrammar(getFileName(), editor.getText());
+        parserGrammar = createNewGrammar(getFileName(), delegate.getText());
         parserGrammar.createNFAs();
     }
 
@@ -447,7 +450,7 @@ public class EngineGrammar {
             // Find all rules enclosing each state (because a path can extend over multiple rules)
             for (Object aPath : path) {
                 NFAState state = (NFAState) aPath;
-                error.addRule(state.enclosingRule.name);
+                error.addRule(state.getEnclosingRule());
             }
         }
     }
@@ -457,7 +460,7 @@ public class EngineGrammar {
         for (Object alt1 : message.alts) {
             error.addUnreachableAlt(state, (Integer) alt1);
             error.addStates(state);
-            error.addRule(state.enclosingRule.name);
+            error.addRule(state.getEnclosingRule());
         }
     }
 
@@ -467,7 +470,7 @@ public class EngineGrammar {
             // Use currently the unreachable alt for display purpose only
             error.addUnreachableAlt(state, (Integer) alt);
             error.addStates(state);
-            error.addRule(state.enclosingRule.name);
+            error.addRule(state.getEnclosingRule());
         }
     }
 

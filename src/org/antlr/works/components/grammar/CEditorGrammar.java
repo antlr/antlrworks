@@ -1,5 +1,6 @@
 package org.antlr.works.components.grammar;
 
+import org.antlr.Tool;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
@@ -16,6 +17,7 @@ import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.*;
 import org.antlr.works.find.FindAndReplace;
 import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.grammar.EngineGrammarDelegate;
 import org.antlr.works.grammar.decisiondfa.DecisionDFAEngine;
 import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.menu.*;
@@ -29,6 +31,7 @@ import org.antlr.works.syntax.element.ElementBlock;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
+import org.antlr.works.utils.Utils;
 import org.antlr.works.visualization.Visual;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
@@ -93,7 +96,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class CEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
         EditorProvider, ATEPanelDelegate,
         XJUndoDelegate, InspectorDelegate,
-        GrammarSyntaxDelegate
+        GrammarSyntaxDelegate, EngineGrammarDelegate
 {
 
     /* Completion */
@@ -183,7 +186,6 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public CEditorGrammar(ComponentContainer container) {
         super(container);
-        afterParserOp = new AfterParseOperations();
     }
 
     public void setDelegate(CEditorGrammarDelegate delegate) {
@@ -249,6 +251,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     protected void initCore() {
+        afterParserOp = new AfterParseOperations();
+        
         decisionDFAEngine = new DecisionDFAEngine(this);
         parserEngine = new GrammarSyntaxEngine();
         grammarSyntax = new GrammarSyntax(this);
@@ -268,6 +272,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         persistence = new EditorPersistence(this);
 
         engineGrammar = new EngineGrammar(this);
+        engineGrammar.setDelegate(this);
     }
 
     protected void initMenus() {
@@ -673,6 +678,14 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public synchronized String getText() {
         return getTextPane().getText();
+    }
+
+    public Tool getANTLRTool() {
+        String[] params = AWPrefs.getANTLR3Options();
+        if(getFileFolder() != null) {
+            params = Utils.concat(params, new String[] { "-lib", getFileFolder() });
+        }
+        return new Tool(params);        
     }
 
     public void createRuleAtIndex(boolean lexer, String name, String content) {

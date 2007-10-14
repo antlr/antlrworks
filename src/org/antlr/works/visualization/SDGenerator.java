@@ -97,16 +97,16 @@ public class SDGenerator implements GContextProvider {
     }
 
     public Color contextGetColorForLabel(String label) {
-        if(label.charAt(0) == '\'' || label.charAt(0) == '"')
+        if(label.charAt(0) == '\'' || label.charAt(0) == '"') {
             return AWPrefs.getSyntaxColor(AWPrefs.PREF_SYNTAX_STRING);
-        else {
+        } else {
             if(ATEToken.isLexerName(label))
                 return GrammarSyntaxEngine.COLOR_LEXER;
             else
                 return GrammarSyntaxEngine.COLOR_PARSER;
         }
     }
-    
+
 }
 
 
