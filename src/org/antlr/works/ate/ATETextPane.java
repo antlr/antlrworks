@@ -187,46 +187,116 @@ public class ATETextPane extends JTextPane
     }
 
     protected void indentText(int start, int stop, int direction) throws BadLocationException {
-        Element paragraph = getDocument().getDefaultRootElement();
-        final int contentCount = paragraph.getElementCount();
-        final String oldText = getText();
+        final String text = getText();
 
-        StringBuffer sb = new StringBuffer(oldText);
+        final int begin = findBeginningLineBoundary(start);
+        final int end = findEndLineBoundary(stop);
 
-        int modified = 0;
-        for (int i=contentCount-1; i>=0; i--) {
-            Element e = paragraph.getElement(i);
-            int rangeStart = e.getStartOffset();
-            int rangeEnd = e.getEndOffset();
-            if(start >= rangeStart && start <= rangeEnd ||
-                    rangeStart >= start && rangeStart <= stop)
-            {
-                if(direction == -1) {
-                    if(sb.charAt(rangeStart) == '\t') {
-                        sb.delete(rangeStart, rangeStart+1);
-                        modified++;
-                    }
-                } else {
-                    sb.insert(rangeStart, "\t");
-                    modified++;
+        final StringBuffer modifiedPortion = new StringBuffer();
+
+        int selectionStart = start;
+        int selectionEnd = stop;
+
+        boolean modified = false;
+        boolean beginLine = true;
+        boolean firstLine = true;
+        for(int i=begin; i<end; i++) {
+            char c = text.charAt(i);
+            if(beginLine) {
+                // remove/add tab only at the beginning of lines
+                beginLine = false;
+
+                // we are not at the beginning of a line if another character is encountered
+                if(c != ' ' && c != '\t') {
+                    beginLine = false;
                 }
+
+                if(c == '\t' && direction == -1) {
+                    if(firstLine && i <= start) {
+                        // we are before the beginning of the selection
+                        selectionStart--;
+                    }
+                    selectionEnd--;
+                    firstLine = false;
+
+                    // remove tab by simply skipping the append step (continue)
+                    modified = true;
+                    continue;
+                } else if(direction > 0) {
+                    // add tab
+                    if(firstLine && i <= start) {
+                        // we are before the beginning of the selection
+                        selectionStart++;
+                    }
+                    selectionEnd++;
+                    firstLine = false;
+
+                    modifiedPortion.append('\t');
+                    modified = true;
+                }
+            } else if(c == '\n') {
+                beginLine = true;
             }
+            modifiedPortion.append(text.charAt(i));
         }
 
-        if(modified == 0) return;
+        // nothing has been modified
+        if(!modified) return;
 
+        // create the new text
+        final StringBuffer modifiedText = new StringBuffer(text);
+        modifiedText.replace(begin, end, modifiedPortion.toString());
+
+        // replace the text with the modified idented text
         textEditor.disableUndo();
         XJUndo undo = textEditor.getTextPaneUndo();
-        undo.addEditEvent(new UndoableRefactoringEdit(oldText, sb.toString()));
-        setText(sb.toString());
+        undo.addEditEvent(new UndoableRefactoringEdit(text, modifiedText.toString()));
+        setText(modifiedText.toString());
         textEditor.enableUndo();
 
-        getCaret().setDot(start+direction);
-        if(modified > 1) {
-            getCaret().moveDot(stop+2*direction);
-        } else {
-            getCaret().moveDot(stop+direction);
+        // adjust the selection
+        getCaret().setDot(selectionStart);
+        getCaret().moveDot(selectionEnd);
+    }
+
+    public int findBeginningLineBoundary(int pos) {
+        int index = pos-1;
+        String s = getText();
+        while(index >= 0 && s.charAt(index)!='\n') {
+            index--;
         }
+        return index +1;
+    }
+
+    public int findEndLineBoundary(int pos) {
+        int index = pos;
+        String s = getText();
+        while(index < s.length() && s.charAt(index)!='\n') {
+            index++;
+        }
+        return index+1;
+    }
+
+    public int findPrevWordBoundary(int pos) {
+        int index = pos-1;
+        String s = getText();
+        while(index >= 0 && isWordChar(s.charAt(index))) {
+            index--;
+        }
+        return index +1;
+    }
+
+    public int findNextWordBoundary(int pos) {
+        int index = pos;
+        String s = getText();
+        while(index < s.length() && isWordChar(s.charAt(index))) {
+            index++;
+        }
+        return index;
+    }
+
+    public boolean isWordChar(char c) {
+        return Character.isLetterOrDigit(c) || c == '_';
     }
 
     protected class UndoableRefactoringEdit extends AbstractUndoableEdit {
@@ -393,7 +463,7 @@ public class ATETextPane extends JTextPane
                 super.mouseDragged(e);
                 return;
             }
-                  
+
             //if it's being dragged, paint the selection permanent, and show a cursor where dragging to
             if (draggingWord ||draggingLine){
                 dragDropCursorPosition = viewToModel(e.getPoint());
@@ -436,7 +506,7 @@ public class ATETextPane extends JTextPane
                     ATETextPane.this.scrollRectToVisible(modelToView(pos));
                 } catch (BadLocationException e) {
                     // ignore
-                }                
+                }
             }
             ATETextPane.this.repaint();
         }
@@ -552,6 +622,7 @@ public class ATETextPane extends JTextPane
             setCaretPosition(findPrevWordBoundary(p));
             moveCaretPosition(findNextWordBoundary(p));
         }
+
         public void selectLine() {
             int p = getCaretPosition();
 
@@ -559,45 +630,6 @@ public class ATETextPane extends JTextPane
             moveCaretPosition(findEndLineBoundary(p));
         }
 
-        private int findBeginningLineBoundary(int pos) {
-            int index = pos-1;
-            String s = getText();
-            while(index >= 0 && s.charAt(index)!='\n') {
-                index--;
-            }
-            return index +1;
-        }
-
-        private int findEndLineBoundary(int pos) {
-            int index = pos;
-            String s = getText();
-            while(index < s.length() && s.charAt(index)!='\n') {
-                index++;
-            }
-            return index+1;
-        }
-
-        public int findPrevWordBoundary(int pos) {
-            int index = pos-1;
-            String s = getText();
-            while(index >= 0 && isWordChar(s.charAt(index))) {
-                index--;
-            }
-            return index +1;
-        }
-
-        public int findNextWordBoundary(int pos) {
-            int index = pos;
-            String s = getText();
-            while(index < s.length() && isWordChar(s.charAt(index))) {
-                index++;
-            }
-            return index;
-        }
-
-        public boolean isWordChar(char c) {
-            return Character.isLetterOrDigit(c) || c == '_';
-        }
     }
 
 }
