@@ -180,6 +180,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *
      * (lexer|parser|tree|) grammar JavaLexer;
      *
+     * @return true if the name of the grammar is matched
      */
     private boolean matchName() {
         if(!isID(0)) return false;
@@ -222,6 +223,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      * where
      *  BLOCK = { ... }
      *
+     * @return true if a scope is matched
      */
     private boolean matchScope() {
         if(!isID(0, "scope")) return false;
@@ -261,6 +263,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *  LABEL = @id || @bar::foo | label
      *  BLOCK = { ... }
      *
+     * @return true if a block is matched
      */
     private boolean matchBlock() {
         return matchBlock(null);
@@ -293,8 +296,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             block.parse();
             if(block.isTokenBlock) {
                 List<ATEToken> tokens = block.getDeclaredTokens();
-                for(int i=0; i<tokens.size(); i++) {
-                    ATEToken lexerToken = tokens.get(i);
+                for (ATEToken lexerToken : tokens) {
                     lexerToken.type = GrammarSyntaxLexer.TOKEN_DECL;
                     addDeclaration(lexerToken);
                 }
@@ -316,6 +318,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *  COMMENT = // or /*
      *  ARG = '[' Type arg... ']'
      *
+     * @return true if a rule is matched
      */
     private boolean matchRule() {
         mark();
@@ -554,13 +557,16 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      rewrite_template_arg
      :   id a:ASSIGN^ {#a.setType(ARG); #a.setText("ARG");} ACTION
      ;
-
+     * @return true if a rewrite syntax is matched
      */
 
     private boolean matchRewriteTemplate() {
         if(!isTokenType(0, GrammarSyntaxLexer.TOKEN_REWRITE)) return false;
 
         if(!nextToken()) return false;
+
+        // Match any comment between the -> and the template
+        matchComplexComment(0);
 
         // Check first for any semantic predicate:
         // e.g: -> {...}?
@@ -703,6 +709,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     /**
      * Matches the group token used to group rules in the rule lists
      *
+     * @return true if a rule group is matched
      */
     private boolean matchRuleGroup() {
         if(!isSingleComment(0)) return false;
@@ -726,6 +733,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      * Adds a new reference
      *
      * @param ref The token representing the reference
+     * @param addOnlyIfKnownLabel
      * @return True if the reference is a label reference
      */
     private boolean addReference(ATEToken ref, boolean addOnlyIfKnownLabel) {

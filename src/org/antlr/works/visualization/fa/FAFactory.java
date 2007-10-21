@@ -167,7 +167,7 @@ public class FAFactory {
         if(transition instanceof RuleClosureTransition) {
             RuleClosureTransition rct = (RuleClosureTransition)transition;
             // @todo to finish
-            String tokenName = rct.rule.name;
+            String tokenName = g.getRuleName(rct.getRuleIndex());
             //System.out.println(tokenName);
             //System.err.println(g.getTokenDisplayName(g.getTokenType(tokenName)));
             return tokenName;

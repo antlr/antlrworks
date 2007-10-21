@@ -776,7 +776,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public String getOutputPath() {
         if(AWPrefs.getOutputPathSameAsDocument()) {
-            return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(getFilePath()), "build");
+            return XJUtils.getPathByDeletingLastComponent(getFilePath());
         } else {
             return AWPrefs.getOutputPath();
         }

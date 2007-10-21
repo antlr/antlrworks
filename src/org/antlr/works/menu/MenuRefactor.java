@@ -1,7 +1,5 @@
 package org.antlr.works.menu;
 
-import org.antlr.xjlib.appkit.undo.XJUndo;
-import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
@@ -12,6 +10,8 @@ import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Utils;
+import org.antlr.xjlib.appkit.undo.XJUndo;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 
 import javax.swing.*;
 import javax.swing.undo.AbstractUndoableEdit;
@@ -471,7 +471,7 @@ public class MenuRefactor extends MenuAbstract {
             }
             mutableText.insert(index, s);
             int end = index+s.length();
-            if(!(mutableText.charAt(end) == '\n' && mutableText.charAt(end+1) == '\n'))
+            if(!(mutableText.charAt(end) == '\n' && end+1 < mutableText.length() && mutableText.charAt(end+1) == '\n'))
             {
                 mutableText.insert(end, '\n');
             }
