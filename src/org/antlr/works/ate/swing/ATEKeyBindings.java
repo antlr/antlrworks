@@ -50,11 +50,21 @@ public class ATEKeyBindings {
 
     public ATEKeyBindings(ATETextPane textComponent) {
         this.textComponent = textComponent;
+        this.textComponent.setKeyBindings(this);
+
         if(XJSystem.isMacOS()) {
             addEmacsKeyBindings();
         }
 
         addStandardKeyBindings();
+        
+        setEnableWritableActions(false);
+    }
+
+    public void setEnableWritableActions(boolean writable) {
+        ActionMap am = textComponent.getActionMap();
+        am.get("paste").setEnabled(writable);
+        am.get("paste-from-clipboard").setEnabled(writable);
     }
 
     public void addStandardKeyBindings() {

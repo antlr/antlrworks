@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.ate;
 
 import org.antlr.works.ate.swing.ATEEditorKit;
+import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.swing.ATERenderingView;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 
@@ -48,6 +49,7 @@ public class ATETextPane extends JTextPane
     public static final String ATTRIBUTE_PARAGRAPH_FOLDING_PROXY = "para_folding_proxy";
 
     protected ATEPanel textEditor;
+    protected ATEKeyBindings keyBindings;
 
     private boolean writable = true;
 
@@ -62,8 +64,19 @@ public class ATETextPane extends JTextPane
         this.textEditor = textEditor;
     }
 
+    public ATEKeyBindings getKeyBindings() {
+        return keyBindings;
+    }
+
+    public void setKeyBindings(ATEKeyBindings keyBindings) {
+        this.keyBindings = keyBindings;
+    }
+
     public void setWritable(boolean flag) {
         this.writable = flag;
+        if(keyBindings != null) {
+            keyBindings.setEnableWritableActions(flag);
+        }
     }
 
     public boolean isWritable() {

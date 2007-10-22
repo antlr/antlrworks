@@ -476,6 +476,8 @@ public class EditorMenu implements XJMenuItemDelegate {
 
             case XJMainMenuBar.MI_CUT:
             case XJMainMenuBar.MI_PASTE:
+                item.setEnabled(editor.isFileWritable());
+                break;
 
             case MI_RENAME:
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
