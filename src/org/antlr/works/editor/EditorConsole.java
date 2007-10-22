@@ -135,6 +135,7 @@ public class EditorConsole extends EditorTab implements Console {
                     print(s, level);
                 }
             });
+            return;
         }
         
         String t = "["+dateFormat.format(new Date())+"] "+s;

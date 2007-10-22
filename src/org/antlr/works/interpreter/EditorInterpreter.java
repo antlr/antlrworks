@@ -294,6 +294,9 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
         parser = eg.getParserGrammar();
         lexer = eg.getLexerGrammar();
+        if(lexer == null) {
+            throw new RuntimeException("Lexer is null. Check the grammar before running the interpreter.");
+        }
 
         Interpreter lexEngine = new Interpreter(lexer, input);
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
