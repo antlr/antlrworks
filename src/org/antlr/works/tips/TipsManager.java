@@ -106,4 +106,7 @@ public class TipsManager {
         return tips;
     }
 
+    public void close() {
+        overlay.close();
+    }
 }

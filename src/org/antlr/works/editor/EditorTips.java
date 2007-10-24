@@ -65,6 +65,10 @@ public class EditorTips implements TipsProvider {
         tipsManager.hide();
     }
 
+    public void close() {
+        tipsManager.close();
+    }
+
     public void display(Point relativePoint, Point absolutePoint) {
         if(editor.getTokens() == null)
             return;

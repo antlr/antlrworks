@@ -93,13 +93,17 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public ATEPanel(XJFrameInterface parentFrame, StyledEditorKit editorKit) {
         super(new BorderLayout());
-        this.parentFrame = parentFrame;
+        setParentFrame(parentFrame);
         autoIndent = new ATEAutoIndentation(this);
         createTextPane(editorKit);
     }
 
     public XJFrameInterface getParentFrame() {
         return parentFrame;
+    }
+
+    public void setParentFrame(XJFrameInterface parentFrame) {
+        this.parentFrame = parentFrame;
     }
 
     public void setParserEngine(ATESyntaxEngine engine) {
@@ -552,6 +556,12 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public int getTextIndexAtPosition(int x, int y) {
         return getTextPane().viewToModel(new Point(x, y));
+    }
+
+    public void close() {
+        analysisColumn.close();
+        setParentFrame(null);
+        setDelegate(null);
     }
 
     protected class TextPaneCaretListener implements CaretListener {

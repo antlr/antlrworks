@@ -75,6 +75,7 @@ public class IdeaManager {
     }
 
     public void close() {
+        overlay.close();
         timer.stop();
     }
 

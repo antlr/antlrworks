@@ -1,5 +1,7 @@
 package org.antlr.works.components;
 
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
@@ -8,8 +10,6 @@ import org.antlr.xjlib.appkit.menu.XJMenuItem;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.prefs.AWPrefsDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -145,6 +145,7 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     public abstract String getText();
 
     public void close() {
+        container = null;
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 

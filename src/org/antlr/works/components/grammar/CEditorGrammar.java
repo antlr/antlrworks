@@ -246,13 +246,20 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     protected void initAutoCompletion() {
+        if(autoCompletionMenu != null) {
+            autoCompletionMenu.close();
+        }
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), getXJFrame());
+
+        if(ruleTemplates != null) {
+            ruleTemplates.close();
+        }
         ruleTemplates = new RuleTemplates(this, getTextPane(), getXJFrame());
     }
 
     protected void initCore() {
         afterParserOp = new AfterParseOperations();
-        
+
         decisionDFAEngine = new DecisionDFAEngine(this);
         parserEngine = new GrammarSyntaxEngine();
         grammarSyntax = new GrammarSyntax(this);
@@ -438,10 +445,17 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void close() {
+        goToRule.close();
+        autoCompletionMenu.close();
+        ruleTemplates.close();
+
+        textEditor.close();
+        editorIdeas.close();
+        editorTips.close();
+        editorMenu.close();
+
         afterParserOp.stop();
         toolbar.close();
-        editorIdeas.close();
-        editorMenu.close();
         debugger.close();
         visual.close();
         super.close();
@@ -685,7 +699,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         if(getFileFolder() != null) {
             params = Utils.concat(params, new String[] { "-lib", getFileFolder() });
         }
-        return new Tool(params);        
+        return new Tool(params);
     }
 
     public void createRuleAtIndex(boolean lexer, String name, String content) {

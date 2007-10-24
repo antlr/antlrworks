@@ -31,15 +31,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.components.grammar;
 
+import org.antlr.works.components.ComponentContainer;
+import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.frame.XJWindow;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
-import org.antlr.xjlib.appkit.app.XJApplication;
-import org.antlr.works.components.ComponentContainer;
-import org.antlr.works.components.ComponentEditor;
-import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -61,7 +61,7 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
 
         getContentPane().add(panel);
 
-        pack();
+        pack();     
     }
 
     public String autosaveName() {
@@ -96,8 +96,8 @@ public class CContainerGrammar extends XJWindow implements ComponentContainer {
     }
 
     public void close() {
-        editor.close();
         super.close();
+        editor.close();
     }
 
     public void setPersistentData(Map data) {

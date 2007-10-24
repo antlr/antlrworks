@@ -50,9 +50,11 @@ public abstract class OverlayObject {
     protected XJFrameInterface parentFrame;
     protected JComponent parentComponent;
     protected JComponent content;
+    private ComponentAdapter pfcl;
+    private ComponentAdapter pccl;
+    private MouseAdapter pcml;
 
     public OverlayObject(XJFrameInterface parentFrame, JComponent parentComponent) {
-
         this.parentFrame = parentFrame;
         this.parentComponent = parentComponent;
 
@@ -65,15 +67,26 @@ public abstract class OverlayObject {
         createListeners();
     }
 
+    public void close() {
+        if(parentFrame.getJavaContainer() != null) {
+            parentFrame.getJavaContainer().removeComponentListener(pfcl);
+        }
+        parentComponent.removeComponentListener(pccl);
+        parentComponent.removeMouseListener(pcml);
+        
+        parentFrame = null;
+        parentComponent = null;
+    }
+
     private void createListeners() {
-        parentFrame.getJavaContainer().addComponentListener(new ComponentAdapter() {
+        parentFrame.getJavaContainer().addComponentListener(pfcl = new ComponentAdapter() {
             public void componentHidden(ComponentEvent e) {
                 if(content.isVisible())
                     content.setVisible(false);
             }
         });
 
-        parentComponent.addComponentListener(new ComponentAdapter() {
+        parentComponent.addComponentListener(pccl = new ComponentAdapter() {
             public void componentMoved(ComponentEvent e) {
                 if(!isOverlayVisibleInParentComponent()) {
                     hide();
@@ -95,7 +108,7 @@ public abstract class OverlayObject {
             }
         });
 
-        parentComponent.addMouseListener(new MouseAdapter() {
+        parentComponent.addMouseListener(pcml = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if(content.isVisible()) {

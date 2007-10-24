@@ -67,6 +67,11 @@ public class ATEAnalysisColumn extends JPanel {
         addMouseListener(new ColumnMouseAdapter());
     }
 
+    public void close() {
+        overlay.close();
+        overlay = null;
+    }
+    
     public ATEAnalysisManager getAnalysisManager() {
         return textEditor.getAnalysisManager();
     }
