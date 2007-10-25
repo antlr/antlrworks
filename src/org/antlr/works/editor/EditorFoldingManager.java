@@ -52,6 +52,12 @@ public class EditorFoldingManager extends ATEFoldingManager {
         this.editor = editor;
     }
 
+    @Override
+    public void close() {
+        super.close();
+        editor = null;
+    }
+
     public void textPaneWillFold() {
         super.textPaneWillFold();
         editor.disableTextPaneUndo();

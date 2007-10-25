@@ -31,9 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import org.antlr.xjlib.appkit.swing.XJTree;
-import org.antlr.xjlib.appkit.swing.XJTreeDelegate;
-import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
@@ -46,6 +43,9 @@ import org.antlr.works.syntax.element.ElementGroup;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.IconManager;
+import org.antlr.xjlib.appkit.swing.XJTree;
+import org.antlr.xjlib.appkit.swing.XJTreeDelegate;
+import org.antlr.xjlib.foundation.XJSystem;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -102,6 +102,13 @@ public class EditorRules implements XJTreeDelegate {
         rulesTree.setCellRenderer(new RulesTableRenderer());
         rulesTree.setRowHeight(17);
         rulesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+    }
+
+    public void close() {
+        editor = null;
+        rulesTree.setCellRenderer(null);
+        rulesTree.setDelegate(null);
+        rulesTree = null;
     }
 
     public void setKeyBindings(ATEKeyBindings keyBindings) {

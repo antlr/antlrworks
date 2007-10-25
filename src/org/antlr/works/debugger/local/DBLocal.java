@@ -112,6 +112,11 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         this.codeGenerator = new CodeGenerate(debugger.getProvider(), null);
     }
 
+    public void close() {
+        debugger = null;
+        codeGenerator = null;
+    }
+    
     public void setStartRule(String rule) {
         this.startRule = rule;
     }

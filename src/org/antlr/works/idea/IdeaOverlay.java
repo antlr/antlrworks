@@ -1,9 +1,9 @@
 package org.antlr.works.idea;
 
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.OverlayObject;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -58,6 +58,11 @@ public class IdeaOverlay extends OverlayObject {
     public IdeaOverlay(CEditorGrammar editor, XJFrameInterface parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
         this.editor = editor;
+    }
+
+    public void close() {
+        super.close();
+        editor = null;
     }
 
     public void setIdeas(List<IdeaAction> ideas) {

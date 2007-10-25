@@ -64,6 +64,10 @@ public class ATETextPane extends JTextPane
         this.textEditor = textEditor;
     }
 
+    public void close() {
+        textEditor = null;        
+    }
+
     public ATEKeyBindings getKeyBindings() {
         return keyBindings;
     }

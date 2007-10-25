@@ -63,6 +63,12 @@ public class VisualDrawing extends ATEThread {
         start();
     }
 
+    @Override
+    public void stop() {
+        super.stop();
+        visual = null;
+    }
+
     public void toggleNFAOptimization() {
         factory.toggleNFAOptimization();
         clearCacheGraphs();

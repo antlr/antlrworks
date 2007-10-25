@@ -49,6 +49,10 @@ public class EditorPersistence {
         this.editor = editor;
     }
 
+    public void close() {
+        editor = null;
+    }
+
     public void store() {
         if(stored)
             return;
@@ -77,8 +81,8 @@ public class EditorPersistence {
         if(objects == null)
             return;
 
-        for(int index=0; index<objects.size(); index++) {
-            EditorPersistentObject o = (EditorPersistentObject)objects.get(index);
+        for (Object object : objects) {
+            EditorPersistentObject o = (EditorPersistentObject) object;
             m.put(o.getPersistentID(), o);
         }
     }
@@ -91,11 +95,12 @@ public class EditorPersistence {
         if(objects == null)
             return;
 
-        for(int index=0; index<objects.size(); index++) {
-            EditorPersistentObject o = (EditorPersistentObject) objects.get(index);
+        for (Object object : objects) {
+            EditorPersistentObject o = (EditorPersistentObject) object;
             EditorPersistentObject oldObject = m.get(o.getPersistentID());
-            if(oldObject != null)
+            if (oldObject != null)
                 o.persistentAssign(oldObject);
         }
     }
+
 }

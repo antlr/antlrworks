@@ -124,6 +124,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     protected int debuggerCursorIndex = -1;
 
+    private boolean closing = false;
+    
     public Debugger(CEditorGrammar editor) {
         this.editor = editor;
     }
@@ -162,6 +164,29 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         player = new DBPlayer(this);
 
         updateStatusInfo();
+    }
+
+    public void close() {
+        closing = true;
+
+        debuggerStop(true);
+
+        controlPanel.close();
+        inputPanel.close();
+        outputPanel.close();
+
+        parseTreePanel.close();
+        astPanel.close();
+        stackPanel.close();
+        eventsPanel.close();
+
+        local.close();
+        recorder.close();
+        player.close();
+
+        parseTreeModel.close();
+
+        editor = null;
     }
 
     public void componentShouldLayout(Dimension size) {
@@ -313,12 +338,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public EditorProvider getProvider() {
         return editor;
-    }
-
-    public void close() {
-        debuggerStop(true);
-        inputPanel.close();
-        parseTreeModel.close();
     }
 
     public Container getContainer() {
@@ -638,6 +657,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public void recorderStatusDidChange() {
+        if(closing) return;
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 updateStatusInfo();

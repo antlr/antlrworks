@@ -88,6 +88,13 @@ public class EditorConsole extends EditorTab implements Console {
         modeByThread.put(Thread.currentThread(), mode);
     }
 
+    public void close() {
+        editor = null;
+        if(current == this) {
+            current = null;
+        }
+    }
+
     public int getMode() {
         Integer mode = modeByThread.get(Thread.currentThread());
         if(mode == null)

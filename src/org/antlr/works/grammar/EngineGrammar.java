@@ -67,6 +67,12 @@ public class EngineGrammar {
         makeDirty();
     }
 
+    public void close() {
+        delegate = null;
+        editor = null;
+        errors = null;
+    }
+
     public EngineGrammarDelegate getDelegate() {
         return delegate;
     }

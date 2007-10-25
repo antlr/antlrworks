@@ -146,6 +146,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void close() {
+        editor = null;
     }
 
     public boolean isDebuggerRunning() {

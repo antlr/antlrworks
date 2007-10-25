@@ -43,6 +43,10 @@ public abstract class MenuAbstract {
         this.editor = editor;
     }
 
+    public void close() {
+        editor = null;
+    }
+
     public JTextPane getTextPane() {
         return editor.getTextPane();
     }

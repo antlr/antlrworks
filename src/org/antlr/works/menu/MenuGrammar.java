@@ -59,6 +59,12 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
         checkGrammar = new CheckGrammar(editor, this);
     }
 
+    @Override
+    public void close() {
+        super.close();
+        checkGrammar.close();
+    }
+
     public void showTokensSD() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_TOKENS_SD);
         editor.visual.setRule(new ElementRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);

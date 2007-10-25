@@ -89,6 +89,11 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         this.editor = editor;
     }
 
+    public void close() {
+        awTreePanel.setDelegate(null);
+        editor = null;
+    }
+
     public void awake() {
         panel = new JPanel(new BorderLayout());
 

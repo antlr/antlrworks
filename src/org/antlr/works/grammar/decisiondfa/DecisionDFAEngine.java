@@ -58,6 +58,10 @@ public class DecisionDFAEngine {
         this.editor = editor;
     }
 
+    public void close() {
+        editor = null;
+    }
+
     public void reset() {
         decisionDFA.clear();
     }

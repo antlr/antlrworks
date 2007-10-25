@@ -559,6 +559,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public void close() {
+        textPane.close();
         analysisColumn.close();
         setParentFrame(null);
         setDelegate(null);

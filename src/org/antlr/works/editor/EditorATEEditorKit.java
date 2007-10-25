@@ -42,6 +42,10 @@ public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory {
         this.editor = editor;
     }
 
+    public void close() {
+        editor = null;
+    }
+
     public ViewFactory getViewFactory() {
         return this;
     }

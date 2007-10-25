@@ -93,6 +93,8 @@ public class Visual extends EditorTab implements GContextProvider {
                 // We don't care if sleep has been interrupted
             }
         }
+        editor = null;
+        context.setProvider(null);
     }
 
     public void setEnable(boolean flag) {

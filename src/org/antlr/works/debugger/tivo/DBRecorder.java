@@ -31,10 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger.tivo;
 
-import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.appkit.utils.XJDialogProgress;
-import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
 import org.antlr.works.debugger.Debugger;
@@ -42,6 +38,10 @@ import org.antlr.works.debugger.events.*;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.NumberSet;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
+import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -98,6 +98,10 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         reset();
     }
 
+    public void close() {
+        debugger = null;
+    }
+    
     public void showProgress() {
         if(progress == null)
             progress = new XJDialogProgress(debugger.getWindowComponent());

@@ -57,6 +57,10 @@ public class DBPlayer {
         markStack = new Stack<Integer>();
     }
 
+    public void close() {
+        debugger = null;
+    }
+    
     public void setInputBuffer(DBInputProcessor processor) {
         this.processor = processor;
     }

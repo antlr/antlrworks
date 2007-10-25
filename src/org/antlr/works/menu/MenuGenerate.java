@@ -44,7 +44,7 @@ import org.antlr.xjlib.appkit.utils.XJAlert;
 
 public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, CheckGrammarDelegate {
 
-    public CodeGenerate generateCode = null;
+    public CodeGenerate generateCode;
     protected CheckGrammar checkGrammar;
 
     protected String actionShowCodeRule;
@@ -55,6 +55,13 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
         super(editor);
         generateCode = new CodeGenerate(editor, this);
         checkGrammar = new CheckGrammar(editor, this);
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        generateCode.close();
+        checkGrammar.close();
     }
 
     public void generateCode() {

@@ -66,6 +66,7 @@ public class EditorTips implements TipsProvider {
     }
 
     public void close() {
+        editor = null;
         tipsManager.close();
     }
 

@@ -81,6 +81,10 @@ public class DetachablePanel extends JPanel {
         );
     }
 
+    public void close() {
+        delegate = null;
+    }
+
     public void createTitleBar(String title) {
         Box box = Box.createHorizontalBox();
         JLabel l = new JLabel(title);

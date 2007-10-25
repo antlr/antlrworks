@@ -72,6 +72,12 @@ public class AutoCompletionMenu extends OverlayObject {
         this.delegate = delegate;
     }
 
+    @Override
+    public void close() {
+        super.close();
+        delegate = null;
+    }
+
     public boolean isVStyle() {
         return AWPrefs.isVStyleAutoCompletion();
     }

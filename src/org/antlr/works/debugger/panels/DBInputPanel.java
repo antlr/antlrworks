@@ -76,6 +76,8 @@ public class DBInputPanel extends DetachablePanel {
     }
 
     public void close() {
+        super.close();
+        debugger = null;
         currentPanel.close();
     }
 

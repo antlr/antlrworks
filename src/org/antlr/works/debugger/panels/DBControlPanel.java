@@ -88,6 +88,10 @@ public class DBControlPanel extends JPanel {
         add(box, BorderLayout.CENTER);
     }
 
+    public void close() {
+        debugger = null;
+    }
+
     public JButton createStopButton() {
         JButton button = new JButton(IconManager.shared().getIconStop());
         button.setToolTipText("Stop");

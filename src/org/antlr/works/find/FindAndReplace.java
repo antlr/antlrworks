@@ -60,6 +60,10 @@ public class FindAndReplace implements XJFrameDelegate {
         this.editor = editor;
     }
 
+    public void close() {
+        editor = null;
+    }
+
     public void find() {
         display();
     }

@@ -59,6 +59,12 @@ public class EditorInspector {
         this.delegate = delegate;
     }
 
+    public void close() {
+        syntax = null;
+        decisionDFAEngine = null;
+        delegate = null;
+    }
+
     public List<EditorInspectorItem> getErrors() {
         List<EditorInspectorItem> errors = new ArrayList<EditorInspectorItem>();
         discoverInvalidGrammarName(errors);

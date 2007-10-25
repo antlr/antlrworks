@@ -45,6 +45,12 @@ public class EditorUnderlyingManager extends ATEUnderlyingManager {
         this.editor = editor;
     }
 
+    @Override
+    public void close() {
+        super.close();
+        editor = null;
+    }
+
     public void render(Graphics g) {
         renderItems(g, editor.editorInspector.getErrors());
         renderItems(g, editor.editorInspector.getWarnings());

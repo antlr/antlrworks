@@ -1,12 +1,12 @@
 package org.antlr.works.editor;
 
-import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
-import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.IconManager;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
+import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,6 +75,7 @@ public class EditorToolbar implements XJNotificationObserver {
     }
 
     public void close() {
+        editor = null;
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 

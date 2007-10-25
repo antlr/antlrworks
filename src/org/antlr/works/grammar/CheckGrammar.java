@@ -45,6 +45,11 @@ public class CheckGrammar implements Runnable {
         this.delegate = delegate;
     }
 
+    public void close() {
+        editor = null;
+        delegate = null;
+    }
+
     public void check() {
         new Thread(this).start();
     }

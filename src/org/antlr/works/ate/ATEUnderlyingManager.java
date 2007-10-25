@@ -47,6 +47,10 @@ public abstract class ATEUnderlyingManager {
         underlyingShape = new UnderlyingShape();
     }
 
+    public void close() {
+        textEditor = null;
+    }
+
     public void setUnderlying(boolean flag) {
         underlying = flag;
     }

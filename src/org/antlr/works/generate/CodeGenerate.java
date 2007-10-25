@@ -70,6 +70,11 @@ public class CodeGenerate implements Runnable {
         errorListener.setForwardListener(ErrorListener.shared());
     }
 
+    public void close() {
+        provider = null;
+        delegate = null;
+    }
+
     public void setDebug(boolean debug) {
         this.debug = debug;
     }

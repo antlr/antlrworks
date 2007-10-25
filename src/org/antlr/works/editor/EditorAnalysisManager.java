@@ -55,6 +55,10 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
         this.editor = editor;
     }
 
+    public void close() {
+        editor = null;
+    }
+
     public int[] getAvailableTypes() {
         return new int[] { ANALYSIS_ITEM_WARNING, ANALYSIS_ITEM_ERROR, ANALYSIS_ITEM_OTHER };
     }

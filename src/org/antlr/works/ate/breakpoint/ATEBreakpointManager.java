@@ -47,5 +47,9 @@ public abstract class ATEBreakpointManager {
         return textEditor.getGutter().getBreakpoints();
     }
 
+    public void close() {
+        textEditor = null;
+    }
+
     public abstract List<? extends ATEBreakpointEntity> getBreakpointEntities();
 }

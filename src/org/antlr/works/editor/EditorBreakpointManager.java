@@ -54,4 +54,10 @@ public class EditorBreakpointManager extends ATEBreakpointManager {
             entities.addAll(rules);
         return entities;
     }
+
+    @Override
+    public void close() {
+        super.close();
+        editor = null;
+    }
 }

@@ -99,6 +99,11 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
         mainPanel.add(tableTreeSplitPane, BorderLayout.CENTER);
     }
 
+    public void close() {
+        super.close();
+        debugger = null;
+    }
+
     public JSplitPane createSplitPane() {
         JSplitPane sp = new JSplitPane();
         sp.setBorder(null);

@@ -1,11 +1,11 @@
 package org.antlr.works.debugger.tree;
 
-import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.swing.DetachablePanel;
+import org.antlr.xjlib.appkit.gview.GView;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
@@ -60,6 +60,11 @@ public class DBParseTreePanel extends DetachablePanel implements DBParseTreeMode
         treePanel.setDelegate(this);
 
         mainPanel.add(treePanel, BorderLayout.CENTER);
+    }
+
+    public void close() {
+        super.close();
+        debugger = null;
     }
 
     public DBParseTreeModel getModel() {

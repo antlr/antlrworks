@@ -1,7 +1,5 @@
 package org.antlr.works.debugger.tree;
 
-import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
-import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
 import org.antlr.tool.Grammar;
 import org.antlr.works.awtree.AWTreeModel;
@@ -9,11 +7,15 @@ import org.antlr.works.awtree.AWTreeNode;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
+import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 
 import javax.swing.tree.TreeNode;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 /*
 
 [The "BSD licence"]
@@ -74,8 +76,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     }
 
     public void fireDataChanged() {
-        for (Iterator<DBParseTreeModelListener> iterator = listeners.iterator(); iterator.hasNext();) {
-            DBParseTreeModelListener listener = iterator.next();
+        for (DBParseTreeModelListener listener : listeners) {
             listener.modelChanged(this);
         }
     }
@@ -132,14 +133,14 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     }
 
     public TreeNode getRootRule() {
-        return (TreeNode)rules.firstElement();
+        return rules.firstElement();
     }
 
     public TreeNode peekRule() {
         if(rules.isEmpty())
             return null;
         else
-            return (TreeNode)rules.peek();
+            return rules.peek();
     }
 
     public void addToken(Token token) {
@@ -233,8 +234,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
         public void end(boolean success) {
             Color color = getColor(success);
-            for (int i = 0; i < nodes.size(); i++) {
-                DBTreeNode node = nodes.get(i);
+            for (DBTreeNode node : nodes) {
                 node.setColor(color);
             }
         }
@@ -243,7 +243,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
             if(nodes.isEmpty())
                 return null;
             else
-                return (AWTreeNode) nodes.getLast();
+                return nodes.getLast();
         }
 
         protected Color getColor(boolean success) {

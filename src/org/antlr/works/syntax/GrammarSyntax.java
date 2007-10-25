@@ -1,11 +1,11 @@
 package org.antlr.works.syntax;
 
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.syntax.element.ElementReference;
 import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -53,6 +53,10 @@ public class GrammarSyntax {
 
     public GrammarSyntax(GrammarSyntaxDelegate delegate) {
         this.delegate = delegate;
+    }
+
+    public void close() {
+        delegate = null;
     }
 
     public GrammarSyntaxEngine getParserEngine() {

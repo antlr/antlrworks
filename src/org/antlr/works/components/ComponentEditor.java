@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
@@ -56,11 +57,14 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     protected JPanel mainPanel;
     protected Box statusBar;
 
+    protected ComponentListener cl;
+    protected PropertyChangeListener pcl;
+
     public ComponentEditor(ComponentContainer container) {
         this.container = container;
 
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.addComponentListener(new MainPanelComponentListener());
+        mainPanel.addComponentListener(cl = new MainPanelComponentListener());
 
         statusBar = new ComponentStatusBar();
         statusBar.setPreferredSize(new Dimension(0, 30));
@@ -71,7 +75,7 @@ public abstract class ComponentEditor implements XJNotificationObserver {
 
         KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         focusManager.addPropertyChangeListener(
-                new PropertyChangeListener() {
+                pcl = new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent e) {
                         String prop = e.getPropertyName();
                         if(prop.equals("permanentFocusOwner"))
@@ -145,6 +149,10 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     public abstract String getText();
 
     public void close() {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().removePropertyChangeListener(pcl);
+        pcl = null;
+        mainPanel.removeComponentListener(cl);
+        cl = null;
         container = null;
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }

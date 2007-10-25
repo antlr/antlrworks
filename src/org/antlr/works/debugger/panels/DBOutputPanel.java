@@ -65,6 +65,11 @@ public class DBOutputPanel extends DetachablePanel implements StreamWatcherDeleg
         mainPanel.add(textScrollPane, BorderLayout.CENTER);
     }
 
+    public void close() {
+        super.close();
+        debugger = null;
+    }
+
     public void streamWatcherDidStarted() {
         outputTextPane.setText("");
     }

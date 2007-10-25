@@ -31,8 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics.panel;
 
-import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
-import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.menu.ContextualMenuFactory;
@@ -46,6 +44,8 @@ import org.antlr.works.visualization.graphics.graph.GGraphGroup;
 import org.antlr.works.visualization.graphics.path.GPathGroup;
 import org.antlr.works.visualization.skin.nfa.NFASkin;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
+import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -81,6 +81,8 @@ public class GPanel implements XJNotificationObserver {
     }
 
     public void close() {
+        editor = null;
+        context = null;
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 

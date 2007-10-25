@@ -47,6 +47,10 @@ public abstract class ATEFoldingManager {
         this.textEditor = textEditor;
     }
 
+    public void close() {
+        textEditor = null;
+    }
+
     public void textPaneWillFold() {
         
     }

@@ -54,10 +54,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.print.PrinterException;
 import java.io.File;
 import java.util.*;
@@ -183,6 +180,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     /* Progress */
     private XJDialogProgress progress;
+
+    protected EditorATEEditorKit editorKit;
+
+    protected MouseListener ml;
+    protected ChangeListener cl;
 
     public CEditorGrammar(ComponentContainer container) {
         super(container);
@@ -326,31 +328,15 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     protected void createTextEditor() {
         textEditor = new ATEPanel(getXJFrame());
-        textEditor.setEditorKit(new EditorATEEditorKit(this));
+        textEditor.setEditorKit(editorKit = new EditorATEEditorKit(this));
         textEditor.setSyntaxColoring(true);
         textEditor.setDelegate(this);
         applyPrefs();
     }
 
     protected void createRulesPane() {
-        rulesTree = new XJTree() {
-            public String getToolTipText(MouseEvent e) {
-                TreePath path = getPathForLocation(e.getX(), e.getY());
-                if(path == null)
-                    return "";
-
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-                EditorRules.RuleTreeUserObject n = (EditorRules.RuleTreeUserObject) node.getUserObject();
-                if(n == null)
-                    return "";
-
-                ElementRule r = n.rule;
-                if(r == null || !r.hasErrors())
-                    return "";
-                else
-                    return r.getErrorMessageHTML();
-            }
-        };
+        rulesTree = new RuleTree();
+        
         rulesTree.setBorder(null);
         // Apparently, if I don't set the tooltip here, nothing is displayed (weird)
         rulesTree.setToolTipText("");
@@ -367,8 +353,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     protected void createTabbedPane() {
         tabbedPane = new JTabbedPane();
         tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
-        tabbedPane.addMouseListener(new TabbedPaneMouseListener());
-        tabbedPane.addChangeListener(new TabbedPaneChangeListener());
+        tabbedPane.addMouseListener(ml = new TabbedPaneMouseListener());
+        tabbedPane.addChangeListener(cl = new TabbedPaneChangeListener());
     }
 
     public JComponent getTabbedComponent() {
@@ -446,18 +432,63 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     public void close() {
         goToRule.close();
+        findAndReplace.close();
+
         autoCompletionMenu.close();
         ruleTemplates.close();
 
-        textEditor.close();
+        decisionDFAEngine.close();
+        grammarSyntax.close();
+        interpreter.close();
+        debugger.close();
+
+        console.close();
+        editorMenu.close();
         editorIdeas.close();
         editorTips.close();
-        editorMenu.close();
+        editorInspector.close();
+
+        persistence.close();
+        engineGrammar.close();
+
+        rules.close();
+        visual.close();
 
         afterParserOp.stop();
+        afterParserOp = null;
+
+        menuFolding.close();
+        menuFind.close();
+        menuGrammar.close();
+        menuRefactor.close();
+        menuGoTo.close();
+        menuGenerate.close();
+        menuDebugger.close();
+        menuSCM.close();
+        menuExport.close();
+
+        breakpointManager.close();
+        foldingManager.close();
+        underlyingManager.close();
+        analysisManager.close();
+
+        textEditor.close();
         toolbar.close();
-        debugger.close();
-        visual.close();
+
+        getXJFrame().unregisterUndo(this);
+
+        editorKit.close();
+
+        tabbedPane.removeMouseListener(ml);
+        tabbedPane.removeChangeListener(cl);
+
+        ml = null;
+        cl = null;
+
+        consoleStatus = null;
+        rulesTree.close();
+        rulesTree = null;
+
         super.close();
     }
 
@@ -1392,6 +1423,27 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
         protected void threadRun() throws Exception {
             afterParseOperations();
+        }
+    }
+
+    protected static class RuleTree extends XJTree {
+        
+        @Override
+        public String getToolTipText(MouseEvent e) {
+            TreePath path = getPathForLocation(e.getX(), e.getY());
+            if(path == null)
+                return "";
+
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+            EditorRules.RuleTreeUserObject n = (EditorRules.RuleTreeUserObject) node.getUserObject();
+            if(n == null)
+                return "";
+
+            ElementRule r = n.rule;
+            if(r == null || !r.hasErrors())
+                return "";
+            else
+                return r.getErrorMessageHTML();
         }
     }
 

@@ -63,6 +63,11 @@ public class GoToRule extends OverlayObject {
         this.editor = editor;
     }
 
+    public void close() {
+        super.close();
+        editor = null;
+    }
+
     public JComponent overlayCreateInterface() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(new JLabel("Go To Rule:"), BorderLayout.NORTH);

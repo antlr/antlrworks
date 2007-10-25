@@ -55,6 +55,7 @@ public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
     }
 
     public void close() {
+        editor = null;
         ideaManager.close();
     }
 
