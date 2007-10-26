@@ -75,6 +75,8 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     }
 
     public void close() {
+        treePanel = null;
+        debugger = null;
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 

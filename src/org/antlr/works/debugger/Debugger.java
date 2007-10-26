@@ -171,6 +171,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
         debuggerStop(true);
 
+        splitPanel.close();
+        
         controlPanel.close();
         inputPanel.close();
         outputPanel.close();
@@ -185,7 +187,13 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         player.close();
 
         parseTreeModel.close();
+        astModel.close();
 
+        for(CustomToggleButton b : components2toggle.values()) {
+            for(ActionListener al : b.getActionListeners()) {
+                b.removeActionListener(al);
+            }
+        }
         editor = null;
     }
 
@@ -246,12 +254,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         splitPanel.setComponentWidth(astPanel, width*PERCENT_WIDTH_MIDDLE);
 
         splitPanel.setComponents(inputPanel, parseTreePanel, stackPanel);
-
-       /* SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                splitPanel.resize();
-            }
-        });*/
     }
 
     public void setComponentVisible(Component c, boolean flag) {

@@ -89,6 +89,12 @@ public class DBControlPanel extends JPanel {
     }
 
     public void close() {
+        AWPrefs.getPreferences().unbindFromPreferences(breakAllButton, AWPrefs.PREF_DEBUG_BREAK_ALL);
+        AWPrefs.getPreferences().unbindFromPreferences(breakLocationButton, AWPrefs.PREF_DEBUG_BREAK_LOCATION);
+        AWPrefs.getPreferences().unbindFromPreferences(breakConsumeButton, AWPrefs.PREF_DEBUG_BREAK_CONSUME);
+        AWPrefs.getPreferences().unbindFromPreferences(breakLTButton, AWPrefs.PREF_DEBUG_BREAK_LT);
+        AWPrefs.getPreferences().unbindFromPreferences(breakExceptionButton, AWPrefs.PREF_DEBUG_BREAK_EXCEPTION);
+
         debugger = null;
     }
 

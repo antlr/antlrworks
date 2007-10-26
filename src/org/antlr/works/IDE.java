@@ -31,21 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works;
 
-import org.antlr.xjlib.appkit.app.XJApplication;
-import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
-import org.antlr.xjlib.appkit.document.XJDataPlainText;
-import org.antlr.xjlib.appkit.document.XJDataXML;
-import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.appkit.frame.XJPanel;
-import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
-import org.antlr.xjlib.appkit.menu.XJMenu;
-import org.antlr.xjlib.appkit.menu.XJMenuItem;
-import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
-import org.antlr.xjlib.appkit.swing.XJLookAndFeel;
-import org.antlr.xjlib.appkit.utils.BrowserLauncher;
-import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.appkit.utils.XJLocalizable;
-import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.works.components.grammar.CContainerGrammar;
@@ -63,6 +48,21 @@ import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.HelpManager;
 import org.antlr.works.utils.Localizable;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
+import org.antlr.xjlib.appkit.document.XJDataPlainText;
+import org.antlr.xjlib.appkit.document.XJDataXML;
+import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.xjlib.appkit.frame.XJPanel;
+import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
+import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
+import org.antlr.xjlib.appkit.swing.XJLookAndFeel;
+import org.antlr.xjlib.appkit.utils.BrowserLauncher;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJLocalizable;
+import org.antlr.xjlib.foundation.XJSystem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -107,6 +107,14 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         }
     }
 
+    public void closeSplashScreen() {
+        if(sc != null) {
+            sc.setVisible(false);
+            sc.dispose();
+            sc = null;            
+        }
+    }
+
     public void appDidLaunch(String[] args, List<String> documentsToOpenAtStartup) {
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
         XJApplication.addDocumentType(CDocumentGrammar.class, CContainerGrammar.class, XJDataPlainText.class, "g",
@@ -131,14 +139,14 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         } else {
             switch (AWPrefs.getStartupAction()) {
                 case AWPrefs.STARTUP_NEW_DOC:
-                    sc.setVisible(false);
+                    closeSplashScreen();
                     XJApplication.shared().newDocument();
                     break;
 
                 case AWPrefs.STARTUP_OPEN_LAST_OPENED_DOC:
                     if(XJApplication.shared().getDocuments().size() == 0) {
                         if(!XJApplication.shared().openLastUsedDocument()) {
-                            sc.setVisible(false);
+                            closeSplashScreen();
                             XJApplication.shared().newDocument();
                         }
                     }
@@ -147,28 +155,27 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
                 case AWPrefs.STARTUP_OPEN_LAST_SAVED_DOC:
                     if(XJApplication.shared().getDocuments().size() == 0) {
                         if(!XJApplication.shared().openDocument(AWPrefs.getLastSavedDocument())) {
-                            sc.setVisible(false);
+                            closeSplashScreen();
                             XJApplication.shared().newDocument();
                         }
                     }
                     break;
 
                 case AWPrefs.STARTUP_OPEN_ALL_OPENED_DOC:
-                    sc.setVisible(false);
+                    closeSplashScreen();
                     if(!restoreAllOpenedDocuments()) {
-                        sc.setVisible(false);
                         XJApplication.shared().newDocument();
                     }
                     break;
             }
         }
 
-        sc.setVisible(false);
+        closeSplashScreen();
     }
 
     public void registerUser() {
         if(!AWPrefs.isUserRegistered()) {
-            sc.setVisible(false);
+            closeSplashScreen();
             AWPrefs.setServerID("");
             new DialogPersonalInfo(null).runModal();
             AWPrefs.setUserRegistered(true);
@@ -193,7 +200,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         }
 
         if(missing.length()>0) {
-            sc.setVisible(false);
+            closeSplashScreen();
             missing.insert(0, "ANTLRWorks cannot find the following libraries:");
             missing.append("\nThey are required in order to use all the features of ANTLRWorks.\nDownload them from www.antlr.org and put them in the same directory as ANTLRWorks.");
             XJAlert.display(null, "Missing Libraries", missing.toString());

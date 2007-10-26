@@ -73,7 +73,10 @@ public abstract class OverlayObject {
         }
         parentComponent.removeComponentListener(pccl);
         parentComponent.removeMouseListener(pcml);
-        
+
+        parentComponent.getInputMap().clear();
+        parentComponent.getActionMap().clear();
+
         parentFrame = null;
         parentComponent = null;
     }

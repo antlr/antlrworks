@@ -31,15 +31,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.debugger.input;
 
-import org.antlr.xjlib.foundation.XJSystem;
-import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
-import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 import org.antlr.runtime.Token;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.utils.TextPane;
 import org.antlr.works.utils.TextPaneDelegate;
+import org.antlr.xjlib.foundation.XJSystem;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
+import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -105,6 +105,8 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     }
 
     public void close() {
+        debugger = null;
+        textPane.setDelegate(null);
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 

@@ -53,6 +53,9 @@ public class DetachablePanel extends JPanel {
     protected XJDialog window;
     protected int tag;
 
+    private PropertyChangeListener pcl;
+    private ActionListener al;
+
     public DetachablePanel(String title, DetachablePanelDelegate delegate) {
         super(new BorderLayout());
 
@@ -65,8 +68,7 @@ public class DetachablePanel extends JPanel {
         add(mainPanel, BorderLayout.CENTER);
 
         KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        focusManager.addPropertyChangeListener(
-            new PropertyChangeListener() {
+        focusManager.addPropertyChangeListener(pcl = new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent e) {
                     String prop = e.getPropertyName();
                     if(prop.equals("focusOwner") && e.getNewValue() != null) {
@@ -82,7 +84,10 @@ public class DetachablePanel extends JPanel {
     }
 
     public void close() {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().removePropertyChangeListener(pcl);
+        detach.removeActionListener(al);
         delegate = null;
+        window = null;
     }
 
     public void createTitleBar(String title) {
@@ -111,7 +116,7 @@ public class DetachablePanel extends JPanel {
         detach.setOpaque(false);
         detach.setFocusable(false);
 
-        detach.addActionListener(new ActionListener() {
+        detach.addActionListener(al = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(detached)
                     attach();
@@ -197,7 +202,7 @@ public class DetachablePanel extends JPanel {
         delegate.panelDoAttach(this);
     }
 
-    public class TitlePanel extends JPanel {
+    public static class TitlePanel extends JPanel {
 
         public boolean focused = false;
 

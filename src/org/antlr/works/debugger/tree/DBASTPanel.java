@@ -101,6 +101,7 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
 
     public void close() {
         super.close();
+        treePanel.setDelegate(null);
         debugger = null;
     }
 

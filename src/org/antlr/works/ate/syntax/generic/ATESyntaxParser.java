@@ -47,6 +47,11 @@ public abstract class ATESyntaxParser {
     public ATESyntaxParser() {
     }
 
+    public void close() {
+        tokens.clear();
+        t0 = t1 = null;
+    }
+
     public void parse(List<ATEToken> tokens) {
         this.tokens = tokens;
         marks.clear();

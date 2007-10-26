@@ -1,8 +1,11 @@
 package org.antlr.works.editor;
 
+import org.antlr.works.ate.swing.ATERenderingView;
 import org.antlr.works.components.grammar.CEditorGrammar;
 
 import javax.swing.text.*;
+import java.util.HashSet;
+import java.util.Set;
 /*
 
 [The "BSD licence"]
@@ -37,12 +40,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory {
 
     protected CEditorGrammar editor;
+    protected Set<ATERenderingView> views = new HashSet<ATERenderingView>();
 
     public EditorATEEditorKit(CEditorGrammar editor) {
         this.editor = editor;
     }
 
     public void close() {
+        for(ATERenderingView v : views) {
+            v.close();
+        }
+        views.clear();
         editor = null;
     }
 
@@ -55,7 +63,9 @@ public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory {
     }
 
     public View create(Element elem) {
-        return new EditorATERenderingView(elem, editor.getTextEditor(), editor.getDebugger());
+        ATERenderingView v = new EditorATERenderingView(elem, editor.getTextEditor(), editor.getDebugger());
+        views.add(v);
+        return v;
     }
 
 }

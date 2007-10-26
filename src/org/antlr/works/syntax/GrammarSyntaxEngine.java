@@ -74,6 +74,18 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         blockLabelAttr = new SimpleAttributeSet();
     }
 
+    @Override
+    public void close() {
+        super.close();
+        name.close();
+        rules.clear();
+        groups.clear();
+        blocks.clear();
+        actions.clear();
+        references.clear();
+        decls.clear();
+    }
+
     public void applyCommentAttribute(SimpleAttributeSet commentAttr) {
         applyAttribute(commentAttr, AWPrefs.PREF_SYNTAX_COMMENT);
     }

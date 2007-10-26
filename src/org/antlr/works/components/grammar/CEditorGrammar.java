@@ -450,7 +450,8 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
         persistence.close();
         engineGrammar.close();
-
+        parserEngine.close();
+                         
         rules.close();
         visual.close();
 
@@ -1445,7 +1446,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
             else
                 return r.getErrorMessageHTML();
         }
-    }
+    }          
 
     protected class ConsoleStatus {
 

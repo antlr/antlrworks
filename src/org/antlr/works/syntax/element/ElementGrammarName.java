@@ -64,6 +64,13 @@ public class ElementGrammarName {
         this.type = type;
     }
 
+    public void close() {
+        name = null;
+        start = null;
+        end = null;
+        type = null;
+    }
+
     public int getType() {
         int t = COMBINED;
         if(type != null) {

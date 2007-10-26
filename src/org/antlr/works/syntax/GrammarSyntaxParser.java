@@ -107,20 +107,18 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     public GrammarSyntaxParser() {
+        
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        clear();
     }
 
     @Override
     public void parseTokens() {
-        rules.clear();
-        groups.clear();
-        blocks.clear();
-        actions.clear();
-        references.clear();
-        decls.clear();
-        currentRule = null;
-        declaredReferenceNames.clear();
-        unresolvedReferences.clear();
-        refsToRules.clear();
+        clear();
 
         if(!nextToken()) return;
 
@@ -141,6 +139,19 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         }
 
         resolveReferences();
+    }
+
+    private void clear() {
+        rules.clear();
+        groups.clear();
+        blocks.clear();
+        actions.clear();
+        references.clear();
+        decls.clear();
+        currentRule = null;
+        declaredReferenceNames.clear();
+        unresolvedReferences.clear();
+        refsToRules.clear();
     }
 
     /**
@@ -917,7 +928,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         return isTokenType(index, ATESyntaxLexer.TOKEN_LCURLY);
     }
 
-    private class LabelTable {
+    private static class LabelTable {
 
         Set<String> labels = new HashSet<String>();
 

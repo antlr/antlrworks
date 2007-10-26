@@ -47,6 +47,13 @@ public class EditorATERenderingView extends ATERenderingView {
         displayOp = new EditorDisplayOperation();
     }
 
+    @Override
+    public void close() {
+        super.close();
+        debugger = null;
+        displayOp = null;
+    }
+
     public class EditorDisplayOperation extends DisplayOperation {
 
         public int renderTextPortion(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute)

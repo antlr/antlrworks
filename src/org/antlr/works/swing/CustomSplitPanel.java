@@ -53,6 +53,13 @@ public class CustomSplitPanel extends JPanel {
         rightSplitPane = createSplitPane();
     }
 
+    public void close() {
+        left = null;
+        middle = null;
+        right = null;
+        widths.clear();
+    }
+
     public JSplitPane createSplitPane() {
         JSplitPane pane = new JSplitPane();
         pane.setBorder(null);

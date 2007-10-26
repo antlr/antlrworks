@@ -68,6 +68,8 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     }
 
     public void close() {
+        debugger = null;
+        listeners.clear();
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 
@@ -170,7 +172,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     }
 
     public void beginBacktrack(int level) {
-        backtrackStack.push(new Backtrack(level));
+        backtrackStack.push(new Backtrack(level, lookaheadTokenColor));
     }
 
     public void endBacktrack(int level, boolean success) {
@@ -185,7 +187,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
         }
     }
 
-    public class ParseTreeNode extends DBTreeNode {
+    public static class ParseTreeNode extends DBTreeNode {
 
         protected String s;
         protected Exception e;
@@ -213,13 +215,15 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
     }
 
-    public class Backtrack {
+    public static class Backtrack {
 
         public int level;
+        public Color lookaheadTokenColor;
         public LinkedList<DBTreeNode> nodes = new LinkedList<DBTreeNode>();
 
-        public Backtrack(int level) {
+        public Backtrack(int level, Color lookaheadTokenColor) {
             this.level = level;
+            this.lookaheadTokenColor = lookaheadTokenColor;
         }
 
         /** Node added to the backtrack object are displayed in blue

@@ -61,6 +61,12 @@ public class ATEKeyBindings {
         setEnableWritableActions(false);
     }
 
+    public void close() {
+        textComponent.getActionMap().clear();
+        textComponent.getInputMap().clear();
+        textComponent = null;
+    }
+
     public void setEnableWritableActions(boolean writable) {
         ActionMap am = textComponent.getActionMap();
         am.get("paste").setEnabled(writable);

@@ -59,10 +59,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -82,6 +79,9 @@ public class EditorRules implements XJTreeDelegate {
 
     protected boolean sort;
 
+    private TreeSelectionListener tsl;
+    private MouseListener ml;
+
     public EditorRules(CEditorGrammar editor, XJTree rulesTree) {
         this.editor = editor;
         this.rulesTree = rulesTree;
@@ -94,8 +94,8 @@ public class EditorRules implements XJTreeDelegate {
         rulesTreeExpandedNodes = new ArrayList<String>();
 
         rulesTree.setModel(rulesTreeModel);
-        rulesTree.addMouseListener(new RuleTreeMouseListener());
-        rulesTree.addTreeSelectionListener(new RuleTreeSelectionListener());
+        rulesTree.addMouseListener(ml = new RuleTreeMouseListener());
+        rulesTree.addTreeSelectionListener(tsl = new RuleTreeSelectionListener());
 
         rulesTree.setRootVisible(false);
         rulesTree.setShowsRootHandles(true);
@@ -106,6 +106,8 @@ public class EditorRules implements XJTreeDelegate {
 
     public void close() {
         editor = null;
+        rulesTree.removeMouseListener(ml);
+        rulesTree.removeTreeSelectionListener(tsl);
         rulesTree.setCellRenderer(null);
         rulesTree.setDelegate(null);
         rulesTree = null;

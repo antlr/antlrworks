@@ -77,6 +77,11 @@ public class ATESyntaxLexer {
         tokens = new ArrayList<ATEToken>();
     }
 
+    public void close() {
+        lines.clear();
+        tokens.clear();
+    }
+
     public List<ATEToken> getTokens() {
         return tokens;
     }

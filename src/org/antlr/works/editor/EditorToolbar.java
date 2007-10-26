@@ -76,6 +76,7 @@ public class EditorToolbar implements XJNotificationObserver {
 
     public void close() {
         editor = null;
+        AWPrefs.getPreferences().unbindFromPreferences(sort, AWPrefs.PREF_TOOLBAR_SORT);        
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 

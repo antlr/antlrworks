@@ -51,6 +51,10 @@ public class DBASTModel {
         this.debugger = debugger;
     }
 
+    public void close() {
+        debugger = null;
+    }
+
     public void addListener(DBASTModelListener listener) {
         listeners.add(listener);
     }

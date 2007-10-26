@@ -54,6 +54,14 @@ public abstract class ATESyntaxEngine {
         parser = createParser();
     }
 
+    public void close() {
+        parser.close();
+        parser = null;
+        lexer.close();
+        lexer = null;
+        delegate = null;
+    }
+
     public void setDelegate(ATESyntaxEngineDelegate delegate) {
         this.delegate = delegate;
     }

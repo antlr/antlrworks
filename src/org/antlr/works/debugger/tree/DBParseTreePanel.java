@@ -64,6 +64,9 @@ public class DBParseTreePanel extends DetachablePanel implements DBParseTreeMode
 
     public void close() {
         super.close();
+        treePanel.setDelegate(null);
+        model.close();
+        model = null;
         debugger = null;
     }
 

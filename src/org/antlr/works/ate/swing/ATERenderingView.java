@@ -68,6 +68,11 @@ public class ATERenderingView extends PlainView {
         this.textPane = textEditor.getTextPane();
     }
 
+    public void close() {
+        textEditor = null;
+        textPane = null;
+    }
+
     /**
      * Renders a line of text, suppressing whitespace at the end
      * and expanding any tabs.  This is implemented to make calls
@@ -108,7 +113,7 @@ public class ATERenderingView extends PlainView {
      *
      */
     public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
-        if(!textEditor.isSyntaxColoring()) {
+        if(textEditor == null || !textEditor.isSyntaxColoring()) {
             return super.modelToView(pos, a, b);
         }
 
@@ -144,7 +149,7 @@ public class ATERenderingView extends PlainView {
      *
      */
     public int viewToModel(float fx, float fy, Shape a, Position.Bias[] biasReturn) {
-        if(!textEditor.isSyntaxColoring()) {
+        if(textEditor == null || !textEditor.isSyntaxColoring()) {
             return super.viewToModel(fx, fy, a, biasReturn);
         }
 

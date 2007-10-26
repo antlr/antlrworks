@@ -60,6 +60,8 @@ public class DBInputTreePanel implements DBInputConcretePanel, AWTreePanelDelega
     }
 
     public void close() {
+        treePanel.setDelegate(null);
+        debugger = null;
         processorTree.close();
     }
 
