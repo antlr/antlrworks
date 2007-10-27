@@ -48,7 +48,9 @@ public abstract class ATESyntaxParser {
     }
 
     public void close() {
-        tokens.clear();
+        if(tokens != null) {
+            tokens.clear();            
+        }
         t0 = t1 = null;
     }
 

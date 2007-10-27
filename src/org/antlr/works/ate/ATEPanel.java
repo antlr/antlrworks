@@ -21,9 +21,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -83,6 +81,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     protected boolean syntaxColoring = false;
     protected int caretPosition;
+
+    protected CaretListener cl;
+    protected MouseListener ml;
+    protected MouseMotionListener mml;
 
     protected static final String unixEndOfLine = "\n";
     protected static int ANALYSIS_COLUMN_WIDTH = 18;
@@ -466,9 +468,9 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         // Set by default the end of line property in order to always use the Unix style
         textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, unixEndOfLine);
 
-        textPane.addCaretListener(new TextPaneCaretListener());
-        textPane.addMouseListener(new TextPaneMouseAdapter());
-        textPane.addMouseMotionListener(new TextPaneMouseMotionAdapter());
+        textPane.addCaretListener(cl = new TextPaneCaretListener());
+        textPane.addMouseListener(ml = new TextPaneMouseAdapter());
+        textPane.addMouseMotionListener(mml = new TextPaneMouseMotionAdapter());
 
         smoothScrolling = new XJSmoothScrolling(textPane, this);
 
@@ -559,6 +561,10 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public void close() {
+        textPane.removeCaretListener(cl);
+        textPane.removeMouseListener(ml);
+        textPane.removeMouseMotionListener(mml);
+        
         keyBindings.close();
         textPane.close();
         analysisColumn.close();

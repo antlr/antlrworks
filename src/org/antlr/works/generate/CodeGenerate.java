@@ -71,6 +71,8 @@ public class CodeGenerate implements Runnable {
     }
 
     public void close() {
+        errorListener.clear();
+        errorListener.setForwardListener(null);
         provider = null;
         delegate = null;
     }

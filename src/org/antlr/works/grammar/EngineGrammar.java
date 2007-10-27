@@ -294,7 +294,6 @@ public class EngineGrammar {
         }
 
         ErrorManager.setErrorListener(ErrorListener.shared());
-        //ErrorListener.shared().clear();
 
         try {
             g.createLookaheadDFAs();

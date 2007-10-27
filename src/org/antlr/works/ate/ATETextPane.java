@@ -65,6 +65,7 @@ public class ATETextPane extends JTextPane
     }
 
     public void close() {
+        setCaret(new DefaultCaret());
         textEditor = null;        
     }
 

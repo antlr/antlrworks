@@ -55,6 +55,10 @@ public class ErrorListener implements ANTLRErrorListener {
         return shared;
     }
 
+    public ErrorListener() {
+
+    }
+
     public void setPrintToConsole(boolean flag) {
         this.printToConsole = flag;
     }

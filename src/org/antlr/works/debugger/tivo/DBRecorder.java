@@ -447,6 +447,10 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     public void stop() {
+        // if the window is closed, the debugger does not exist anymore
+        // and this event can be ignored
+        if(debugger == null) return;
+
         setStatus(STATUS_STOPPED);
         debugger.recorderDidStop();
     }

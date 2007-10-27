@@ -669,6 +669,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public void recorderDidStop() {
+        if(closing) return;
+        
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 resetMarkLocationInGrammar();
