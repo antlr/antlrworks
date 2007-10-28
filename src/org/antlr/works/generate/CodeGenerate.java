@@ -57,22 +57,16 @@ public class CodeGenerate implements Runnable {
 
     protected EditorProvider provider;
     protected CodeGenerateDelegate delegate;
-    protected ErrorListener errorListener;
 
     protected long dateOfModificationOnDisk = 0;
+    protected String lastError;
 
     public CodeGenerate(EditorProvider provider, CodeGenerateDelegate delegate) {
         this.provider = provider;
         this.delegate = delegate;
-
-        errorListener = new ErrorListener();
-        errorListener.setPrintToConsole(false);
-        errorListener.setForwardListener(ErrorListener.shared());
     }
 
     public void close() {
-        errorListener.clear();
-        errorListener.setForwardListener(null);
         provider = null;
         delegate = null;
     }
@@ -109,12 +103,12 @@ public class CodeGenerate implements Runnable {
     }
 
     public String getLastError() {
-        return errorListener.getFirstErrorMessage();
+        return lastError;
     }
 
-    public boolean generate() throws Exception {
-        errorListener.clear();
-        ErrorManager.setErrorListener(errorListener);
+    public boolean generate() {
+        ErrorListener el = ErrorListener.getThreadInstance();
+        ErrorManager.setErrorListener(el);
 
         String[] params;
         if(debug)
@@ -125,10 +119,12 @@ public class CodeGenerate implements Runnable {
         Tool antlr = new Tool(Utils.concat(params, AWPrefs.getANTLR3Options()));
         antlr.process();
 
-        boolean success = !errorListener.hasErrors();
+        boolean success = !el.hasErrors();
         if(success) {
             dateOfModificationOnDisk = provider.getDocument().getDateOfModificationOnDisk();
         }
+        lastError = el.getFirstErrorMessage();
+        el.clear();
         return success;
     }
 

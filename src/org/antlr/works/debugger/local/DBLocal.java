@@ -290,8 +290,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected boolean prepare() {
         try {
-            ErrorListener.shared().clear();
-
             setStartRule(AWPrefs.getStartSymbol());
 
             grammarGeneratedFiles = codeGenerator.getGeneratedTextFileNames();
@@ -302,8 +300,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
             new File(outputFileDir).mkdirs();
         } catch(Exception e) {
-            debugger.getConsole().print(e);
-            String msg = ErrorListener.shared().getFirstErrorMessage();
+            debugger.getConsole().print(e);               
+            String msg = ErrorListener.getThreadInstance().getFirstErrorMessage();
             StringBuffer sb = new StringBuffer("Error while preparing the grammar:\n");
             if(msg != null) {
                 sb.append(msg);

@@ -489,7 +489,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         consoleStatus = null;
         rulesTree.close();
         rulesTree = null;
-
+        
         super.close();
     }
 

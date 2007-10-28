@@ -211,23 +211,23 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     public void checkEnvironment() {
         // todo give a hint in the message - like "check that no previous version of ANTLR is in your classpath..."
         // todo message for first-time user to go to tutorial
+        ErrorListener el = ErrorListener.getThreadInstance();
         CheckStream bos = new CheckStream(System.err);
         PrintStream ps = new PrintStream(bos);
         PrintStream os = System.err;
         System.setErr(ps);
         try {
             ErrorManager.setTool(new Tool());
-            //ErrorManager.setErrorListener(ErrorManager.getErrorListener());
-            ErrorManager.setErrorListener(ErrorListener.shared());
+            ErrorManager.setErrorListener(el);
         } catch (Throwable e) {
             XJAlert.display(null, "Fatal Error", "ANTLRWorks will quit now because ANTLR reported an error:\n"+bos.getMessage());
             System.exit(0);
         }
 
-        if(ErrorListener.shared().hasErrors()) {
+        if(el.hasErrors()) {
             XJAlert.display(null, "Error", "ANTLRWorks will continue to launch but ANTLR reported an error:\n"+bos.getMessage());
         }
-
+        el.clear();
         System.setErr(os);
         ps.close();
     }

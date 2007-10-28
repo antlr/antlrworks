@@ -35,7 +35,6 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.ParseTree;
-import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
 import org.antlr.works.ate.syntax.misc.ATEToken;
@@ -50,7 +49,6 @@ import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.swing.Toolbar;
 import org.antlr.works.syntax.element.ElementRule;
-import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TextUtils;
 import org.antlr.works.utils.Utils;
@@ -261,8 +259,6 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     }
 
     public void run() {
-        ErrorManager.setErrorListener(ErrorListener.shared());
-
         try {
             editor.getEngineGrammar().analyze();
             process();

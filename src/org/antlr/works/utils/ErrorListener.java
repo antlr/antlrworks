@@ -42,7 +42,7 @@ import java.util.List;
 
 public class ErrorListener implements ANTLRErrorListener {
 
-    protected static ErrorListener shared = new ErrorListener();
+    private static ThreadLocal<ErrorListener> threadLocalListener = new ThreadLocal<ErrorListener>();
 
     public List<String> infos = new LinkedList<String>();
     public List<Message> errors = new LinkedList<Message>();
@@ -51,8 +51,11 @@ public class ErrorListener implements ANTLRErrorListener {
     public boolean printToConsole = true;
     public ErrorListener forwardListener = null;
 
-    public static ErrorListener shared() {
-        return shared;
+    public static synchronized ErrorListener getThreadInstance() {
+        if(threadLocalListener.get() == null) {
+            threadLocalListener.set(new ErrorListener());
+        }
+        return threadLocalListener.get();
     }
 
     public ErrorListener() {

@@ -175,27 +175,30 @@ public class EngineGrammar {
         if(!grammarDirty)
             return true;
 
-        ErrorManager.setErrorListener(ErrorListener.shared());
-        ErrorListener.shared().clear();
+        ErrorListener el = ErrorListener.getThreadInstance();
+        ErrorManager.setErrorListener(el);
+        try {
+            switch(getType()) {
+                case ElementGrammarName.COMBINED:
+                    createCombinedGrammar();
+                    break;
+                case ElementGrammarName.TREEPARSER:
+                case ElementGrammarName.PARSER:
+                    createParserGrammar();
+                    break;
+                case ElementGrammarName.LEXER:
+                    createLexerGrammar();
+                    break;
+            }
 
-        switch(getType()) {
-            case ElementGrammarName.COMBINED:
-                createCombinedGrammar();
-                break;
-            case ElementGrammarName.TREEPARSER:
-            case ElementGrammarName.PARSER:
-                createParserGrammar();
-                break;
-            case ElementGrammarName.LEXER:
-                createLexerGrammar();
-                break;
-        }
-
-        if(!ErrorListener.shared().hasErrors()) {
-            grammarDirty = false;
-            return false;
-        } else {
-            return true;
+            if(!el.hasErrors()) {
+                grammarDirty = false;
+                return false;
+            } else {
+                return true;
+            }
+        } finally {
+            el.clear();
         }
     }
 
@@ -269,14 +272,14 @@ public class EngineGrammar {
         }
     }
 
-    public void analyze() throws Exception {
+    public String analyze() throws Exception {
         if(!createGrammars()) {
-            return;
+            return null;
         }
 
         Grammar g = getANTLRGrammar();
         if(g == null) {
-            return;
+            return null;
         }
 
         List rules = g.checkAllRulesForLeftRecursion();
@@ -286,14 +289,15 @@ public class EngineGrammar {
         }
 
         if(ErrorManager.doNotAttemptAnalysis()) {
-            return;
+            return null;
         }
 
         if(!grammarAnalyzeDirty) {
-            return;
+            return null;
         }
 
-        ErrorManager.setErrorListener(ErrorListener.shared());
+        ErrorListener el = ErrorListener.getThreadInstance();
+        ErrorManager.setErrorListener(el);
 
         try {
             g.createLookaheadDFAs();
@@ -303,7 +307,7 @@ public class EngineGrammar {
                     lexerGrammar.createLookaheadDFAs();
             }
 
-            buildNonDeterministicErrors();
+            buildNonDeterministicErrors(el);
             markRulesWithWarningsOrErrors();
         } catch(Exception e) {
             // ignore
@@ -312,7 +316,7 @@ public class EngineGrammar {
         if(SwingUtilities.isEventDispatchThread()) {
             editor.engineGrammarDidAnalyze();
         } else {
-            SwingUtilities.invokeLater(new Runnable() {
+            SwingUtilities.invokeAndWait(new Runnable() {
                 public void run() {
                     editor.engineGrammarDidAnalyze();
                 }
@@ -321,9 +325,13 @@ public class EngineGrammar {
 
         // Only reset the dirty flag when the grammar has no errors (otherwise the next time the grammar is checked
         // it will appear to be OK)
-        if(!ErrorListener.shared().hasErrors()) {
+        if(!el.hasErrors()) {
             grammarAnalyzeDirty = false;
         }
+
+        String error = el.getFirstErrorMessage();
+        el.clear();
+        return error;
     }
 
     public void cancel() {
@@ -332,12 +340,12 @@ public class EngineGrammar {
             g.externallyAbortNFAToDFAConversion();
     }
 
-    protected void buildNonDeterministicErrors() {
+    protected void buildNonDeterministicErrors(ErrorListener el) {
         errors.clear();
-        for (Message warning : ErrorListener.shared().warnings) {
+        for (Message warning : el.warnings) {
             buildError(warning);
         }
-        for (Message error : ErrorListener.shared().errors) {
+        for (Message error : el.errors) {
             buildError(error);
         }
     }

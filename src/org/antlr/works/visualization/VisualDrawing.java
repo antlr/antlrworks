@@ -119,7 +119,8 @@ public class VisualDrawing extends ATEThread {
         if(threadText == null)
             return;
 
-        ErrorListener.shared().setPrintToConsole(false);
+        ErrorListener.getThreadInstance().setPrintToConsole(false);
+
         try {
             visual.getEngineGrammar().createGrammars();
         } catch (Exception e) {
@@ -137,19 +138,14 @@ public class VisualDrawing extends ATEThread {
 
         String error = null;
 
-        ErrorListener.shared().setPrintToConsole(false);
+        ErrorListener.getThreadInstance().setPrintToConsole(false);
 
         if(visual.getEngineGrammar().hasGrammar()) {
             NFAState startState = null;
             try {
                 startState = visual.getEngineGrammar().getRuleStartState(threadRule.name);
-                /*Grammar g = visual.getEngineGrammar().getLexerGrammar();
-                for(int i=104; i<152; i++) {
-                   // System.out.println(g.getTokenDisplayName(g.getTokenType("T"+i)));
-                } */
             } catch (Exception e) {
-                // @todo ignore for now but later with prefs?                
-                //visual.editor.console.print(e);
+                // ignore
             }
             if(startState == null)
                 error = "Cannot display rule \"" + threadRule + "\" because start state not found";

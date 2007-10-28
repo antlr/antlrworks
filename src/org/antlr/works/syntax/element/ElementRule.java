@@ -281,10 +281,7 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public boolean hasErrors() {
-        if(errors == null)
-            return false;
-        else
-            return !errors.isEmpty();
+        return errors != null && !errors.isEmpty();
     }
 
     public void setNeedsToBuildErrors(boolean flag) {
