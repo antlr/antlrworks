@@ -77,13 +77,13 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     @Override
     public void close() {
         super.close();
-        name.close();
-        rules.clear();
-        groups.clear();
-        blocks.clear();
-        actions.clear();
-        references.clear();
-        decls.clear();
+        if(name != null) name.close();
+        if(rules != null) rules.clear();
+        if(groups != null) groups.clear();
+        if(blocks != null) blocks.clear();
+        if(actions != null) actions.clear();
+        if(references != null) references.clear();
+        if(decls != null) decls.clear();
     }
 
     public void applyCommentAttribute(SimpleAttributeSet commentAttr) {

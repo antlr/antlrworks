@@ -60,7 +60,11 @@ public class GrammarSyntax {
     }
 
     public GrammarSyntaxEngine getParserEngine() {
-        return delegate.getParserEngine();
+        if(delegate != null) {
+            return delegate.getParserEngine();
+        } else {
+            return null;
+        }
     }
 
     public int getNumberOfRulesWithErrors() {
@@ -150,11 +154,14 @@ public class GrammarSyntax {
     }
 
     public void rebuildHasLeftRecursionRulesList() {
-        if(getParserEngine().getRules() == null)
+        GrammarSyntaxEngine engine = getParserEngine();
+        if(engine == null) return;
+
+        if(engine.getRules() == null)
             return;
 
         hasLeftRecursionRules.clear();
-        for (ElementRule r : getParserEngine().getRules()) {
+        for (ElementRule r : engine.getRules()) {
             // hasLeftRecursion has a side-effect to analyze the rule
             if (r.hasLeftRecursion()) {
                 hasLeftRecursionRules.add(r);
@@ -163,7 +170,10 @@ public class GrammarSyntax {
     }
 
     public void rebuildDuplicateRulesList() {
-        List<ElementRule> rules = getParserEngine().getRules();
+        GrammarSyntaxEngine engine = getParserEngine();
+        if(engine == null) return;
+
+        List<ElementRule> rules = engine.getRules();
         if(rules == null)
             return;
 
@@ -183,16 +193,19 @@ public class GrammarSyntax {
     }
 
     public void rebuildUndefinedReferencesList() {
-        List<String> existingReferences = getParserEngine().getRuleNames();
-        existingReferences.addAll(getParserEngine().getDeclaredTokenNames());
-        existingReferences.addAll(getParserEngine().getPredefinedReferences());
+        GrammarSyntaxEngine engine = getParserEngine();
+        if(engine == null) return;
+
+        List<String> existingReferences = engine.getRuleNames();
+        existingReferences.addAll(engine.getDeclaredTokenNames());
+        existingReferences.addAll(engine.getPredefinedReferences());
 
         Set<String> tokenVocabNames = getTokenVocabNames();
         existingReferences.addAll(tokenVocabNames);
         delegate.getParser().resolveReferencesWithExternalNames(tokenVocabNames);
 
         undefinedReferences.clear();
-        List<ElementReference> references = getParserEngine().getReferences();
+        List<ElementReference> references = engine.getReferences();
         if(references == null)
             return;
 
