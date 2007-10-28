@@ -1,7 +1,14 @@
+package org.antlr.works.grammar;
+
+import org.antlr.tool.Message;
+
+import java.util.LinkedList;
+import java.util.List;
+
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-07 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,44 +36,58 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.grammar;
+public class EngineGrammarResult {
 
-import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.utils.Console;
+    public List<Message> errors = new LinkedList<Message>();
+    public List<Message> warnings = new LinkedList<Message>();
 
-public class CheckGrammar implements Runnable {
-
-    protected CheckGrammarDelegate delegate;
-    protected CEditorGrammar editor;
-
-    public CheckGrammar(CEditorGrammar editor, CheckGrammarDelegate delegate) {
-        this.editor = editor;
-        this.delegate = delegate;
+    public List<Message> getErrors() {
+        return errors;
     }
 
-    public void close() {
-        editor = null;
-        delegate = null;
-    }
-
-    public void check() {
-        new Thread(this).start();
-    }
-
-    public void cancel() {        
-        editor.getEngineGrammar().cancel();
-    }
-
-    public void run() {
-        editor.getConsole().setMode(Console.MODE_VERBOSE);
-        delegate.checkGrammarDidBegin();
-        EngineGrammarResult result = null;
-        try {
-            result = editor.getEngineGrammar().analyze();
-        } catch (Exception e) {
-            editor.getConsole().print(e);
+    public void setErrors(List<Message> errors) {
+        this.errors.clear();
+        if(errors != null) {
+            this.errors.addAll(errors);
         }
-        delegate.checkGrammarDidEnd(result);
     }
 
+    public List<Message> getWarnings() {
+        return warnings;
+    }
+
+    public void setWarnings(List<Message> warnings) {
+        this.warnings.clear();
+        if(warnings != null) {
+            this.warnings.addAll(warnings);
+        }
+    }
+
+    public String getFirstErrorMessage() {
+        if(getErrorCount() > 0) {
+            return errors.get(0).toString();
+        } else {
+            return null;
+        }
+    }
+
+    public int getErrorCount() {
+        if(errors == null) {
+            return 0;
+        } else {
+            return errors.size();
+        }
+    }
+
+    public int getWarningCount() {
+        if(warnings == null) {
+            return 0;
+        } else {
+            return warnings.size();
+        }
+    }
+
+    public boolean isSuccess() {
+        return getErrorCount() == 0 && getWarningCount() == 0;
+    }
 }

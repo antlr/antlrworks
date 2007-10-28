@@ -80,6 +80,10 @@ public class ErrorListener implements ANTLRErrorListener {
         return errors.size() > 0;
     }
 
+    public boolean hasWarnings() {
+        return warnings.size() > 0;
+    }
+    
     public String getFirstErrorMessage() {
         if(hasErrors()) {
             return errors.get(0).toString();

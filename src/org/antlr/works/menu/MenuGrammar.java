@@ -34,10 +34,7 @@ package org.antlr.works.menu;
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.grammar.CheckGrammar;
-import org.antlr.works.grammar.CheckGrammarDelegate;
-import org.antlr.works.grammar.RulesDependency;
-import org.antlr.works.grammar.TokensDFA;
+import org.antlr.works.grammar.*;
 import org.antlr.works.grammar.decisiondfa.DecisionDFA;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxParser;
@@ -187,13 +184,17 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
         checkingGrammar = true;
     }
 
-    public void checkGrammarDidEnd(String errorMsg) {
+    public void checkGrammarDidEnd(EngineGrammarResult result) {
         checkingGrammar = false;
         editor.hideProgress();
-        if(errorMsg != null) {
-            XJAlert.display(editor.getWindowContainer(), "Failure", "Check Grammar failed:\n"+errorMsg+"\nConsult the console for more information.");
-        } else {
+        if(result.isSuccess()) {
             XJAlert.display(editor.getWindowContainer(), "Success", "Check Grammar succeeded.");
+        } else {
+            if(result.getErrorCount() > 0) {
+                XJAlert.display(editor.getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
+            } else if(result.getWarningCount() > 0) {
+                XJAlert.display(editor.getWindowContainer(), "Warning", "Check Grammar reported some warnings:\n"+result.getWarningCount()+" warning(s)\nConsult the console for more information.");
+            }
         }
     }
 

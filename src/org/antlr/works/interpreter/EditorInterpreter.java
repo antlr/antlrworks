@@ -287,7 +287,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         Grammar parser;
         Grammar lexer;
         try {
-            eg.createGrammars();
+            eg.createGrammars(true);
         } catch (Exception e) {
             editor.console.print(e);
             return;

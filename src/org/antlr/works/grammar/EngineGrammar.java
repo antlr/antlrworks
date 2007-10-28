@@ -55,7 +55,6 @@ public class EngineGrammar {
     protected Grammar lexerGrammar;
     protected List<EngineGrammarError> errors;
 
-    protected boolean grammarDirty;
     protected boolean grammarAnalyzeDirty;
 
     protected CEditorGrammar editor;
@@ -82,12 +81,11 @@ public class EngineGrammar {
     }
 
     public void makeDirty() {
-        grammarDirty = true;
         grammarAnalyzeDirty = true;
     }
 
     public boolean isDirty() {
-        return grammarDirty || grammarAnalyzeDirty;
+        return grammarAnalyzeDirty;
     }
 
     public Grammar getParserGrammar() {
@@ -100,7 +98,7 @@ public class EngineGrammar {
 
     public NFAState getRuleStartState(String name) throws Exception {
         Grammar g;
-        createGrammars();
+        createGrammars(true);
         if(ATEToken.isLexerName(name))
             g = getLexerGrammar();
         else
@@ -110,7 +108,7 @@ public class EngineGrammar {
     }
 
     public Grammar getGrammarForRule(String name) throws Exception {
-        createGrammars();
+        createGrammars(true);
         if(ATEToken.isLexerName(name))
             return getLexerGrammar();
         else
@@ -171,9 +169,8 @@ public class EngineGrammar {
             return name.getType();
     }
 
-    public boolean createGrammars() throws Exception {
-        if(!grammarDirty)
-            return true;
+    public void createGrammars(boolean clearErrorListener) throws Exception {
+        if(!isDirty()) return;
 
         ErrorListener el = ErrorListener.getThreadInstance();
         ErrorManager.setErrorListener(el);
@@ -190,15 +187,10 @@ public class EngineGrammar {
                     createLexerGrammar();
                     break;
             }
-
-            if(!el.hasErrors()) {
-                grammarDirty = false;
-                return false;
-            } else {
-                return true;
-            }
         } finally {
-            el.clear();
+            if(clearErrorListener) {
+                el.clear();
+            }
         }
     }
 
@@ -272,14 +264,14 @@ public class EngineGrammar {
         }
     }
 
-    public String analyze() throws Exception {
-        if(!createGrammars()) {
-            return null;
-        }
+    public EngineGrammarResult analyze() throws Exception {
+        EngineGrammarResult result = new EngineGrammarResult();
+
+        createGrammars(false);
 
         Grammar g = getANTLRGrammar();
         if(g == null) {
-            return null;
+            return result;
         }
 
         List rules = g.checkAllRulesForLeftRecursion();
@@ -289,11 +281,11 @@ public class EngineGrammar {
         }
 
         if(ErrorManager.doNotAttemptAnalysis()) {
-            return null;
+            return result;
         }
 
         if(!grammarAnalyzeDirty) {
-            return null;
+            return result;
         }
 
         ErrorListener el = ErrorListener.getThreadInstance();
@@ -325,13 +317,14 @@ public class EngineGrammar {
 
         // Only reset the dirty flag when the grammar has no errors (otherwise the next time the grammar is checked
         // it will appear to be OK)
-        if(!el.hasErrors()) {
+        if(!el.hasErrors() && !el.hasWarnings()) {
             grammarAnalyzeDirty = false;
         }
-
-        String error = el.getFirstErrorMessage();
+        
+        result.setErrors(el.errors);
+        result.setWarnings(el.warnings);
         el.clear();
-        return error;
+        return result;
     }
 
     public void cancel() {

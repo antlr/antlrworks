@@ -122,10 +122,9 @@ public class VisualDrawing extends ATEThread {
         ErrorListener.getThreadInstance().setPrintToConsole(false);
 
         try {
-            visual.getEngineGrammar().createGrammars();
+            visual.getEngineGrammar().createGrammars(true);
         } catch (Exception e) {
-            // @todo ignore for now but later with prefs?
-            //visual.editor.console.print(e);
+            // ignore
         } finally {
             // Flush all caches in cache because the grammar has changed
             clearCacheGraphs();

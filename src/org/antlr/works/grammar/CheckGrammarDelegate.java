@@ -33,5 +33,5 @@ package org.antlr.works.grammar;
 
 public interface CheckGrammarDelegate {
     public void checkGrammarDidBegin();
-    public void checkGrammarDidEnd(String errorMsg);
+    public void checkGrammarDidEnd(EngineGrammarResult errorMsg);
 }

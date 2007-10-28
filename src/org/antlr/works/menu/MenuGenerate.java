@@ -37,6 +37,7 @@ import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
 import org.antlr.works.grammar.CheckGrammar;
 import org.antlr.works.grammar.CheckGrammarDelegate;
+import org.antlr.works.grammar.EngineGrammarResult;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementRule;
@@ -202,11 +203,11 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
         // do nothing
     }
 
-    public void checkGrammarDidEnd(String errorMsg) {
-        if(errorMsg != null) {
-            XJAlert.display(editor.getWindowContainer(), "Failure", "Check Grammar failed:\n"+errorMsg+"\nConsult the console for more information.");
-        } else {
+    public void checkGrammarDidEnd(EngineGrammarResult result) {
+        if(result.getErrorCount() == 0) {
             generateCodeProcessContinued();
+        } else {
+            XJAlert.display(editor.getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
         }
     }
 }
