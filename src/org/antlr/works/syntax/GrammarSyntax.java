@@ -94,6 +94,7 @@ public class GrammarSyntax {
     public Set<String> getTokenVocabNames() {
         String tokenVocab = getParserEngine().getTokenVocab();
         if(tokenVocab == null) {
+            tokenVocabName = null;
             tokenVocabNames.clear();
             return tokenVocabNames;
         }
