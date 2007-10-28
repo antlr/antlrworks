@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.1.3
-September 1, 2007
+Version 1.1.4
+October 27, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco
@@ -72,6 +72,22 @@ using "java org.antlr.works.IDE".
 
 * HISTORY *
 
+Version 1.1.4 - 10/27/07
+
+Bug fix:
+    [AW-111] - Cannot save file with name ending with 'g'
+    [AW-113] - Memory leak when running the debugger multiple times
+    [AW-114] - Issue matching comment between -> and template name
+    [AW-115] - Shift-tab sometimes takes other lines into account
+    [AW-116] - NPE when exporting EPS/Bitmap in interpreter and debugger
+    [AW-117] - Paste still work when file is read-only
+    [AW-118] - Duplicate messages displayed in the console
+    [AW-119] - Errors/warnings are not consistently reported when checking the grammar
+
+Improvement:
+    [AW-110] - Ability to generate the grammar in the same directory as the grammar document
+    [AW-112] - Ability to generate syntax diagram from a grammar file without using the GUI
+
 Version 1.1.3 - 09/01/07
 
 Bug fix:
@@ -79,7 +95,7 @@ Bug fix:
     [AW-105] - Choosing a non-existing directory on Windows/Linux causes a null-pointer exception when exporting rules
     [AW-107] - Issue when saving last used directory when a file has been selected
 
-Improvement
+Improvement:
     [AW-109] - Generate code in the same directory as the current grammar document
     [AW-108] - Updated with ANTLR 3.0.1
 
