@@ -479,6 +479,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public void goToRule(ElementRule rule) {
+        editor.goToHistoryRememberCurrentPosition();        
         editor.setCaretPosition(rule.start.getStartIndex());
     }
 
