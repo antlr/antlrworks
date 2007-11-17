@@ -6,9 +6,9 @@ import org.antlr.codegen.CodeGenerator;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.grammar.GrammarDOTTab;
 
+import java.util.Collections;
 import java.util.List;
 /*
 
@@ -65,20 +65,18 @@ public class DecisionDFA extends GrammarDOTTab {
 
     @Override
     public String getDOTString() throws Exception {
-        EngineGrammar eg = editor.getEngineGrammar();
-        eg.analyze();
-
+        DecisionDFAEngine engine = editor.decisionDFAEngine;
         Grammar g;
 
-        int adjustedColumn = getDecisionColumn(g = eg.getParserGrammar());
+        int adjustedColumn = getDecisionColumn(g = engine.getDiscoveredParserGrammar());
         if(adjustedColumn == -1)
-            adjustedColumn = getDecisionColumn(g = eg.getLexerGrammar());
+            adjustedColumn = getDecisionColumn(g = engine.getDiscoveredLexerGrammar());
 
         if(adjustedColumn == -1)
             throw new Exception("No decision in the current line");
 
         CodeGenerator generator = new CodeGenerator(new Tool(), g,
-                (String) eg.getParserGrammar().getOption("language"));
+                (String) engine.getDiscoveredParserGrammar().getOption("language"));
 
         DFA dfa = g.getLookaheadDFAFromPositionInFile(line, adjustedColumn);
         decisionNumber = dfa.getDecisionNumber();
@@ -91,6 +89,8 @@ public class DecisionDFA extends GrammarDOTTab {
 
     public int getDecisionColumn(Grammar g) {
         List columns = g.getLookaheadDFAColumnsForLineInFile(line);
+        // sort the columns as they appears to be not always in ascending order
+        Collections.sort(columns);
         int adjustedColumn = -1;
         for(int index = columns.size()-1; index >=0; index--) {
             Integer match = (Integer)columns.get(index);

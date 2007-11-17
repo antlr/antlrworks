@@ -7,7 +7,6 @@ import org.antlr.tool.Rule;
 import org.antlr.works.ate.ATEUnderlyingManager;
 import org.antlr.works.components.grammar.CEditorGrammar;
 import org.antlr.works.grammar.EngineGrammar;
-import org.antlr.works.syntax.element.ElementRule;
 
 import java.awt.*;
 import java.util.*;
@@ -47,12 +46,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class DecisionDFAEngine {
 
     private CEditorGrammar editor;
-    private EngineGrammar engineGrammar;
 
     private Set<Integer> usesSemPreds = new HashSet<Integer>();
     private Set<Integer> usesSynPreds = new HashSet<Integer>();
 
     private Map<Integer,List<Integer>> decisionDFA = new HashMap<Integer, List<Integer>>();
+
+    private Grammar discoveredLexerGrammar;
+    private Grammar discoveredParserGrammar;
 
     public DecisionDFAEngine(CEditorGrammar editor) {
         this.editor = editor;
@@ -70,16 +71,16 @@ public class DecisionDFAEngine {
         return decisionDFA.size();
     }
 
-    public void discoverAllDecisions() throws Exception {
-        discover(0, editor.getTextEditor().getText().length());
+    public Grammar getDiscoveredLexerGrammar() {
+        return discoveredLexerGrammar;
     }
 
-    public void discoverDecisionsAtCurrentRule() throws Exception {
-        ElementRule r = editor.rules.getEnclosingRuleAtPosition(editor.getCaretPosition());
-        if(r == null) {
-            throw new RuntimeException("No rule at cursor position.");
-        }
-        discover(r.getStartIndex(), r.getEndIndex());
+    public Grammar getDiscoveredParserGrammar() {
+        return discoveredParserGrammar;
+    }
+
+    public void discoverAllDecisions() throws Exception {
+        discover(0, editor.getTextEditor().getText().length());
     }
 
     private void discover(int start, int end) throws Exception {
@@ -88,15 +89,17 @@ public class DecisionDFAEngine {
             lineIndexes.add(editor.getTextEditor().getLineIndexAtTextPosition(index));
         }
 
-        engineGrammar = editor.getEngineGrammar();
+        EngineGrammar engineGrammar = editor.getEngineGrammar();
         engineGrammar.analyze();
+        discoveredLexerGrammar = engineGrammar.getLexerGrammar();
+        discoveredParserGrammar = engineGrammar.getParserGrammar();
 
         decisionDFA.clear();
         usesSynPreds.clear();
         usesSemPreds.clear();
 
-        discover(engineGrammar.getLexerGrammar(), lineIndexes, usesSemPreds, usesSynPreds);
-        discover(engineGrammar.getParserGrammar(), lineIndexes, usesSemPreds, usesSynPreds);
+        discover(discoveredLexerGrammar, lineIndexes, usesSemPreds, usesSynPreds);
+        discover(discoveredParserGrammar, lineIndexes, usesSemPreds, usesSynPreds);
     }
 
     private void discover(Grammar g, Set<Integer> lineIndexes, Set<Integer> usesSemPreds, Set<Integer> usesSynPreds) {
@@ -136,11 +139,19 @@ public class DecisionDFAEngine {
         for(int lineIndex : decisionDFA.keySet()) {
             for(int columnIndex : decisionDFA.get(lineIndex)) {
                 DFA dfa = getDFAAtPosition(lineIndex, columnIndex);
+                if(dfa == null) {
+                    System.err.println("DFA is null for line "+lineIndex+" and column "+columnIndex);
+                    continue;
+                }
 
-                Grammar g = engineGrammar.getLexerGrammar();
+                Grammar g = discoveredLexerGrammar;
                 if(g != null) {
                     Rule r = g.getRule(Grammar.ARTIFICIAL_TOKENS_RULENAME);
                     NFAState s = (NFAState)r.startState.transition(0).target;
+                    if(s == null) {
+                        System.err.println("NFAState s is null for rule "+r.name);
+                        continue;
+                    }
                     // Ignore tokens DFA
                     if(dfa.getDecisionNumber() == s.getDecisionNumber()) continue;
                 }
@@ -174,14 +185,12 @@ public class DecisionDFAEngine {
 
     public DFA getDFAAtPosition(int line, int column) {
         DFA dfa = null;
-        Grammar g = engineGrammar.getParserGrammar();
-        if(g != null) {
-            dfa = g.getLookaheadDFAFromPositionInFile(line, column);
+        if(discoveredParserGrammar != null) {
+            dfa = discoveredParserGrammar.getLookaheadDFAFromPositionInFile(line, column);
         }
         if(dfa == null) {
-            g = engineGrammar.getLexerGrammar();
-            if(g != null) {
-                dfa = g.getLookaheadDFAFromPositionInFile(line, column);
+            if(discoveredLexerGrammar != null) {
+                dfa = discoveredLexerGrammar.getLookaheadDFAFromPositionInFile(line, column);
             }
         }
 
