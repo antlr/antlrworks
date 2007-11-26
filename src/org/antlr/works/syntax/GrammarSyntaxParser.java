@@ -722,9 +722,8 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      */
     private void matchRuleExceptionGroup() {
         while(matchID(0, "catch")) {
-            //matchBalancedToken(ATESyntaxLexer.TOKEN_LBRACK, ATESyntaxLexer.TOKEN_RBRACK, ARGUMENT_BLOCK, true);
-            System.out.println("args="+matchArguments());
-            System.out.println("action="+matchAction());
+            matchArguments();
+            matchAction();
         }
         if(matchID(0, "finally")) {
             matchAction();            
