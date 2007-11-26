@@ -50,6 +50,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.util.*;
 
@@ -345,38 +346,16 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
             Rectangle r2 = textPane.modelToView(info.end);
 
             if(r2.y > r1.y) {
-                // Token is displayed on more than one line
-                // We will simply create a path containing the
-                // outline of the token spanning on multiple lines
-
+                // token spans more than one line
                 GeneralPath gp = new GeneralPath();
-
-                Rectangle r = null;
-                Rectangle pr = null;
-                int line_y = r1.y;
-
-                gp.moveTo(r1.x, r1.y);
+                Area area = new Area();
                 for(int index=info.start; index<info.end; index++) {
-                    r = textPane.modelToView(index);
-                    if(r.y > line_y) {
-                        // Draw a line between the last point of the path
-                        // and the last rectangle of the line which is pr
-                        // because r is already in the new line.
-                        line_y = r.y;
-                        if(pr != null) {
-                            gp.lineTo(pr.x+pr.width, pr.y);
-                            gp.lineTo(pr.x+pr.width, pr.y+pr.height);
-                        }
-                    }
-                    pr = r;
+                    Rectangle r = textPane.modelToView(index);
+                    // compute the width of the index
+                    r.width = Math.max(0,textPane.modelToView(index+1).x - r.x);
+                    area.add(new Area(r));
                 }
-                if(r != null) {
-                    gp.lineTo(r.x+r.width, r.y);
-                    gp.lineTo(r.x+r.width, r.y+r.height);
-
-                    gp.lineTo(r1.x, r.y+r.height);
-                    gp.lineTo(r1.x, r1.y);
-                }
+                gp.append(area, true);
                 if(fill)
                     g.fill(gp);
                 else
@@ -429,7 +408,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
         if(info != null)
             highlightToken(info.start);
         else
-            highlightToken(-1);        
+            highlightToken(-1);
     }
 
     public DBInputTextTokenInfo getTokenInfoForToken(Token t) {
