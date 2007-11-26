@@ -702,18 +702,32 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         return matchBalancedToken(ATESyntaxLexer.TOKEN_LBRACK, ATESyntaxLexer.TOKEN_RBRACK, ARGUMENT_BLOCK, true);
     }
 
-    // todo check and terminate
+    /**
+     *
+     *
+     *
+     exceptionGroup
+         :	( exceptionHandler )+ ( finallyClause )?
+         |	finallyClause
+         ;
+
+     exceptionHandler
+         :    "catch"^ ARG_ACTION ACTION
+         ;
+
+     finallyClause
+         :    "finally"^ ACTION
+         ;
+
+     */
     private void matchRuleExceptionGroup() {
-        if(!matchOptional("exception"))
-            return;
-
-        // Optional ARG_ACTION
-        if(isOpenBLOCK(1))
-            nextToken();
-
-        while(matchOptional("catch")) {
-            nextToken();    // ARG_ACTION: []
-            nextToken();    // ACTION: { }
+        while(matchID(0, "catch")) {
+            //matchBalancedToken(ATESyntaxLexer.TOKEN_LBRACK, ATESyntaxLexer.TOKEN_RBRACK, ARGUMENT_BLOCK, true);
+            System.out.println("args="+matchArguments());
+            System.out.println("action="+matchAction());
+        }
+        if(matchID(0, "finally")) {
+            matchAction();            
         }
     }
 
@@ -801,31 +815,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         return false;
     }
 
-    /*private boolean matchBalancedToken(String open, String close, ATEScope scope, boolean matchInternalRef) {
-        if(T(0) == null || !T(0).getAttribute().equals(open)) return false;
-
-        mark();
-        int balance = 0;
-        while(true) {
-            String attr = T(0).getAttribute();
-            T(0).scope = scope;
-            if(attr.equals(open))
-                balance++;
-            else if(attr.equals(close)) {
-                balance--;
-                if(balance == 0) {
-                    nextToken();
-                    return true;
-                }
-            }
-            if(!nextToken()) break;
-
-            matchInternalRefInBalancedToken(matchInternalRef);
-        }
-        rewind();
-        return false;
-    }*/
-
     private void matchInternalRefInBalancedToken(boolean matchInternalRef) {
         if(matchInternalRef && isChar(0, "$") && isID(1)) {
             T(0).type = GrammarSyntaxLexer.TOKEN_INTERNAL_REF;
@@ -843,14 +832,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 unresolvedReferences.add(ref);
             }
         }
-    }
-
-    private boolean matchOptional(String t) {
-        if(isID(1, t)) {
-            nextToken();
-            return true;
-        } else
-            return false;
     }
 
     private boolean matchChar(int index, String c) {
