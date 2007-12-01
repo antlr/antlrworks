@@ -1,6 +1,6 @@
 ANTLRWorks
-Version 1.1.4
-October 27, 2007
+Version 1.1.5
+December 1, 2007
 
 (c) 2005-2007 Jean Bovet & Terence Parr
 University of San Francisco
@@ -71,6 +71,16 @@ using "java org.antlr.works.IDE".
 
 
 * HISTORY *
+
+Version 1.1.5 - 12/01/07
+
+Bug fix:
+    [AW-124] - Highlight decision DFA does not always show inner rule decision
+    [AW-125] - Highlight decision DFA does not display in some situation
+    [AW-126] - Highlight of input token in debugger doesn't display properly for multi-line tokens
+
+Improvement:
+    [AW-45] - Handle catch/finally syntax
 
 Version 1.1.4 - 10/27/07
 

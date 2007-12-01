@@ -1,4 +1,12 @@
-Version 1.1.5
+Version 1.1.5 - 12/01/07
+
+Bug fix:
+    [AW-124] - Highlight decision DFA does not always show inner rule decision
+    [AW-125] - Highlight decision DFA does not display in some situation
+    [AW-126] - Highlight of input token in debugger doesn't display properly for multi-line tokens
+
+Improvement:
+    [AW-45] - Handle catch/finally syntax
 
 Version 1.1.4 - 10/27/07
 
