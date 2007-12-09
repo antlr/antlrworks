@@ -167,7 +167,7 @@ public class FAFactory {
         if(transition instanceof RuleClosureTransition) {
             RuleClosureTransition rct = (RuleClosureTransition)transition;
             // @todo to finish
-            String tokenName = g.getRuleName(rct.getRuleIndex());
+            String tokenName = g.getRuleName(rct.rule.index);
             //System.out.println(tokenName);
             //System.err.println(g.getTokenDisplayName(g.getTokenType(tokenName)));
             return tokenName;
@@ -195,7 +195,7 @@ public class FAFactory {
         NFAState target;
         if(transition instanceof RuleClosureTransition) {
             RuleClosureTransition rct = (RuleClosureTransition)transition;
-            target = rct.getFollowState();
+            target = rct.followState;
         } else {
             target = (NFAState)transition.target;
         }
