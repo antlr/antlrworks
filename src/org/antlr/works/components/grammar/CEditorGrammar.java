@@ -731,7 +731,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         if(getFileFolder() != null) {
             params = Utils.concat(params, new String[] { "-lib", getFileFolder() });
         }
-        return new Tool(params);
+        if(params.length > 0) {
+            return new Tool(params);
+        } else {
+            return new Tool();
+        }
     }
 
     public void createRuleAtIndex(boolean lexer, String name, String content) {
