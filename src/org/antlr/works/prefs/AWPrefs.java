@@ -273,12 +273,12 @@ public class AWPrefs {
                 DEFAULT_EDITOR_FONT = "Tahoma";
         } else if(XJSystem.isLinux()) {
             DEFAULT_OUTPUT_PATH = "/tmp/antlrworks/";
-            DEFAULT_DOT_TOOL_PATH = "";
+            DEFAULT_DOT_TOOL_PATH = "/usr/bin/dot";
             if(Font.getFont("Monospaced") != null)
                 DEFAULT_EDITOR_FONT = "Monospaced";
         } else {
             DEFAULT_OUTPUT_PATH = "/tmp/antlrworks/";
-            DEFAULT_DOT_TOOL_PATH = "";
+            DEFAULT_DOT_TOOL_PATH = "/usr/bin/dot";
             if(Font.getFont("Courier") != null)
                 DEFAULT_EDITOR_FONT = "Courier";
         }
