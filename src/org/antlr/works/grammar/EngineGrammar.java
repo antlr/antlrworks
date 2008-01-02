@@ -45,6 +45,7 @@ import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 
 import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -265,13 +266,15 @@ public class EngineGrammar {
     }
 
     public EngineGrammarResult analyze() throws Exception {
-        EngineGrammarResult result = new EngineGrammarResult();
+        // Set the error listener
+        ErrorListener el = ErrorListener.getThreadInstance();
+        ErrorManager.setErrorListener(el);
 
         createGrammars(false);
 
         Grammar g = getANTLRGrammar();
         if(g == null) {
-            return result;
+            return analyzeCompleted(el);
         }
 
         List rules = g.checkAllRulesForLeftRecursion();
@@ -281,15 +284,12 @@ public class EngineGrammar {
         }
 
         if(ErrorManager.doNotAttemptAnalysis()) {
-            return result;
+            return analyzeCompleted(el);
         }
 
         if(!grammarAnalyzeDirty) {
-            return result;
+            return analyzeCompleted(el);
         }
-
-        ErrorListener el = ErrorListener.getThreadInstance();
-        ErrorManager.setErrorListener(el);
 
         try {
             g.createLookaheadDFAs();
@@ -305,6 +305,10 @@ public class EngineGrammar {
             // ignore
         }
 
+        return analyzeCompleted(el);
+    }
+
+    public EngineGrammarResult analyzeCompleted(ErrorListener el) throws InvocationTargetException, InterruptedException {
         if(SwingUtilities.isEventDispatchThread()) {
             editor.engineGrammarDidAnalyze();
         } else {
@@ -320,7 +324,8 @@ public class EngineGrammar {
         if(!el.hasErrors() && !el.hasWarnings()) {
             grammarAnalyzeDirty = false;
         }
-        
+
+        EngineGrammarResult result = new EngineGrammarResult();
         result.setErrors(el.errors);
         result.setWarnings(el.warnings);
         el.clear();

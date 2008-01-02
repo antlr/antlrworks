@@ -38,8 +38,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EngineGrammarResult {
 
+    public Exception e;
     public List<Message> errors = new LinkedList<Message>();
     public List<Message> warnings = new LinkedList<Message>();
+
+    public EngineGrammarResult(Exception e) {
+        this.e = e;
+    }
+
+    public EngineGrammarResult() {
+    }
 
     public List<Message> getErrors() {
         return errors;
@@ -49,6 +57,14 @@ public class EngineGrammarResult {
         this.errors.clear();
         if(errors != null) {
             this.errors.addAll(errors);
+        }
+    }
+
+    public String getFirstErrorMessage() {
+        if(getErrorCount() > 0) {
+            return errors.get(0).toString();
+        } else {
+            return null;
         }
     }
 
@@ -63,9 +79,9 @@ public class EngineGrammarResult {
         }
     }
 
-    public String getFirstErrorMessage() {
-        if(getErrorCount() > 0) {
-            return errors.get(0).toString();
+    public String getFirstWarningMessage() {
+        if(getWarningCount() > 0) {
+            return warnings.get(0).toString();
         } else {
             return null;
         }
@@ -88,6 +104,6 @@ public class EngineGrammarResult {
     }
 
     public boolean isSuccess() {
-        return getErrorCount() == 0 && getWarningCount() == 0;
+        return getErrorCount() == 0 && getWarningCount() == 0 && e == null;
     }
 }

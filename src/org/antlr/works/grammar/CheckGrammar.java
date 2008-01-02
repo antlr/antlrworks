@@ -60,11 +60,13 @@ public class CheckGrammar implements Runnable {
     public void run() {
         editor.getConsole().setMode(Console.MODE_VERBOSE);
         delegate.checkGrammarDidBegin();
-        EngineGrammarResult result = null;
+        EngineGrammarResult result;
         try {
             result = editor.getEngineGrammar().analyze();
         } catch (Exception e) {
             editor.getConsole().print(e);
+            // Result cannot be null, so report the exception
+            result = new EngineGrammarResult(e);
         }
         delegate.checkGrammarDidEnd(result);
     }

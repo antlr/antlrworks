@@ -193,7 +193,9 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
             if(result.getErrorCount() > 0) {
                 XJAlert.display(editor.getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
             } else if(result.getWarningCount() > 0) {
-                XJAlert.display(editor.getWindowContainer(), "Warning", "Check Grammar reported some warnings:\n"+result.getWarningCount()+" warning(s)\nConsult the console for more information.");
+                XJAlert.display(editor.getWindowContainer(), "Warning", "Check Grammar reported some warnings:\n"+result.getFirstWarningMessage()+"\nConsult the console for more information.");
+            } else {
+                XJAlert.display(editor.getWindowContainer(), "Error", "Check Grammar reported some errors.\nConsult the console for more information.");                
             }
         }
     }
