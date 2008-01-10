@@ -50,12 +50,12 @@ public class DBEventFactory {
         return new DBEventLT(i, token);
     }
 
-    public static DBEvent createEnterRule(String name) {
-        return new DBEventEnterRule(name);
+    public static DBEvent createEnterRule(String grammarFileName, String name) {
+        return new DBEventEnterRule(grammarFileName, name);
     }
 
-    public static DBEvent createExitRule(String name) {
-        return new DBEventExitRule(name);
+    public static DBEvent createExitRule(String grammarFileName, String name) {
+        return new DBEventExitRule(grammarFileName, name);
     }
 
     public static DBEvent createEnterSubRule(int decision) {

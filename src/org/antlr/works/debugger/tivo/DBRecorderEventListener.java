@@ -59,12 +59,12 @@ public class DBRecorderEventListener implements DebugEventListener {
         event(DBEventFactory.createTerminate());
     }
 
-    public void enterRule(String ruleName) {
-        event(DBEventFactory.createEnterRule(ruleName));
+    public void enterRule(String grammarFileName, String ruleName) {
+        event(DBEventFactory.createEnterRule(grammarFileName, ruleName));
     }
 
-    public void exitRule(String ruleName) {
-        event(DBEventFactory.createExitRule(ruleName));
+    public void exitRule(String grammarFileName, String ruleName) {
+        event(DBEventFactory.createExitRule(grammarFileName, ruleName));
     }
 
     public void enterSubRule(int decisionNumber) {

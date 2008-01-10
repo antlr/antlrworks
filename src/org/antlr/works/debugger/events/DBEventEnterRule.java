@@ -33,14 +33,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DBEventEnterRule extends DBEvent {
 
+	public String grammarFileName;
     public String name;
 
-    public DBEventEnterRule(String name) {
+	public DBEventEnterRule(String grammarFileName, String name) {
         super(ENTER_RULE);
-        this.name = name;
+		this.grammarFileName = grammarFileName;
+		this.name = name;
     }
 
     public String toString() {
-        return "Enter rule "+name;
+        return "Enter rule "+grammarFileName+"."+name;
     }
 }

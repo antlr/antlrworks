@@ -32,14 +32,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DBEventExitRule extends DBEvent {
 
+	public String grammarFileName;
     public String name;
 
-    public DBEventExitRule(String name) {
+    public DBEventExitRule(String grammarFileName, String name) {
         super(EXIT_RULE);
+		this.grammarFileName = grammarFileName;
         this.name = name;
     }
 
     public String toString() {
-        return "Exit rule "+name;
+        return "Exit rule "+grammarFileName+"."+name;
     }
 }
