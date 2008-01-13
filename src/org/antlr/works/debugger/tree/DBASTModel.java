@@ -126,7 +126,6 @@ public class DBASTModel {
 	}
 
 	public void errorNode(int id, String text) {
-		text = "<error:"+text+'>';
 		pushRoot(createTreeNode(id,
 								new CommonToken(Token.INVALID_TOKEN_TYPE, text)));
 	}
