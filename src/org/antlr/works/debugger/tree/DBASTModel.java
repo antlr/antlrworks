@@ -1,6 +1,7 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.CommonToken;
 import org.antlr.works.debugger.Debugger;
 
 import java.util.*;
@@ -120,9 +121,15 @@ public class DBASTModel {
 
     /* Methods used by the protocol */
 
-    public void nilNode(int id) {
-        pushRoot(createNilTreeNode(id));
-    }
+	public void nilNode(int id) {
+		pushRoot(createNilTreeNode(id));
+	}
+
+	public void errorNode(int id, String text) {
+		text = "<error:"+text+'>';
+		pushRoot(createTreeNode(id,
+								new CommonToken(Token.INVALID_TOKEN_TYPE, text)));
+	}
 
     public void createNode(int id, Token token) {
         createTreeNode(id, token);
@@ -161,11 +168,11 @@ public class DBASTModel {
 
     /* Utility methods */
 
-    protected ASTNode createNilTreeNode(int id) {
-        ASTNode node = createTreeNode(id);
-        node.nil = true;
-        return node;
-    }
+	protected ASTNode createNilTreeNode(int id) {
+		ASTNode node = createTreeNode(id);
+		node.nil = true;
+		return node;
+	}
 
     protected ASTNode createTreeNode(int id, Token token) {
         ASTNode node = createTreeNode(id);
@@ -274,7 +281,7 @@ public class DBASTModel {
         }
 
         public String toString() {
-            if(nil)
+			if(nil)
                 return "nil";
             else if(token == null)
                 return String.valueOf(id);

@@ -62,6 +62,7 @@ public class DBEvent {
     public static final int ADD_CHILD = 24;
     public static final int SET_TOKEN_BOUNDARIES = 25;
     public static final int RECOGNITION_EXCEPTION = 26;
+	public static final int ERROR_NODE = 27;
 
     private int eventType;
 
@@ -91,6 +92,7 @@ public class DBEvent {
             case BEGIN_RESYNC:     return "Begin resync";
             case END_RESYNC:     return "End resync";
             case NIL_NODE: return "Nil node";
+			case ERROR_NODE: return "Error node";
             case CREATE_NODE: return "Create node";
             case BECOME_ROOT: return "Become root";
             case ADD_CHILD: return "Add child";

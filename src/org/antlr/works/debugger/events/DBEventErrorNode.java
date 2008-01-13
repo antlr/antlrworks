@@ -31,18 +31,24 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class DBEventEnterRule extends DBEvent {
+public class DBEventErrorNode extends DBEvent {
+    public int id;
+	public String text = null;
+	public int type;
 
-	public String grammarFileName;
-    public String name;
+	public DBEventErrorNode(int id, String text, int type) {
+		super(ERROR_NODE);
+		this.id = id;
+		this.text = text;
+		this.type = type;
+	}
 
-	public DBEventEnterRule(String grammarFileName, String name) {
-        super(ENTER_RULE);
-		this.grammarFileName = grammarFileName;
-		this.name = name;
+	public DBEventErrorNode(int id) {
+        super(ERROR_NODE);
+        this.id = id;
     }
 
     public String toString() {
-        return "Enter rule "+grammarFileName+":"+name;
+		return "Error node "+id+" ("+text+"/"+type+")";
     }
 }

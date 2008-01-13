@@ -634,9 +634,13 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         parseTreeModel.endBacktrack(level, success);
     }
 
-    public void playerNilNode(int id) {
-        astModel.nilNode(id);
-    }
+	public void playerNilNode(int id) {
+		astModel.nilNode(id);
+	}
+
+	public void playerErrorNode(int id, String text) {
+		astModel.errorNode(id, text);
+	}
 
     public void playerCreateNode(int id, Token token) {
         astModel.createNode(id, token);

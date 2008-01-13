@@ -141,10 +141,15 @@ public class DBRecorderEventListener implements DebugEventListener {
 
     /** AST events */
 
-    public void nilNode(Object t) {
+	public void nilNode(Object t) {
 		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)t;
 		event(DBEventFactory.createNilNode(p.ID));
-    }
+	}
+
+	public void errorNode(Object t) {
+		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)t;
+		event(DBEventFactory.createErrorNode(p.ID, p.text, p.type));
+	}
 
     public void createNode(Object t) {
 		RemoteDebugEventSocketListener.ProxyTree p = (RemoteDebugEventSocketListener.ProxyTree)t;

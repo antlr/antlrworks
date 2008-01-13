@@ -118,9 +118,13 @@ public class DBEventFactory {
         return new DBEvent(DBEvent.TERMINATE);
     }
 
-    public static DBEvent createNilNode(int id) {
-        return new DBEventNilNode(id);
-    }
+	public static DBEvent createNilNode(int id) {
+		return new DBEventNilNode(id);
+	}
+
+	public static DBEvent createErrorNode(int id, String text, int type) {
+		return new DBEventErrorNode(id, text, type);
+	}
 
     public static DBEvent createCreateNode(int id, int tokenIndex) {
         return new DBEventCreateNode(id, tokenIndex);

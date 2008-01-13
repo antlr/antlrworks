@@ -33,6 +33,7 @@ package org.antlr.works.debugger.tivo;
 
 import org.antlr.runtime.Token;
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.events.DBEventErrorNode;
 import org.antlr.works.debugger.events.*;
 import org.antlr.works.debugger.input.DBInputProcessor;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
@@ -184,9 +185,13 @@ public class DBPlayer {
                 playEndResync();
                 break;
 
-            case DBEvent.NIL_NODE:
-                playNilNode((DBEventNilNode)event);
-                break;
+			case DBEvent.NIL_NODE:
+				playNilNode((DBEventNilNode)event);
+				break;
+
+			case DBEvent.ERROR_NODE:
+				playErrorNode((DBEventErrorNode)event);
+				break;
 
             case DBEvent.CREATE_NODE:
                 playCreateNode((DBEventCreateNode)event);
@@ -358,9 +363,13 @@ public class DBPlayer {
         resyncing--;
     }
 
-    public void playNilNode(DBEventNilNode event) {
-        debugger.playerNilNode(event.id);
-    }
+	public void playNilNode(DBEventNilNode event) {
+		debugger.playerNilNode(event.id);
+	}
+
+	public void playErrorNode(DBEventErrorNode event) {
+		debugger.playerErrorNode(event.id, event.text);
+	}
 
     public void playCreateNode(DBEventCreateNode event) {
         if(event.tokenIndex == -1) {

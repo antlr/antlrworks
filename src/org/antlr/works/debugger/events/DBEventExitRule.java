@@ -42,6 +42,6 @@ public class DBEventExitRule extends DBEvent {
     }
 
     public String toString() {
-        return "Exit rule "+grammarFileName+"."+name;
+        return "Exit rule "+grammarFileName+":"+name;
     }
 }
