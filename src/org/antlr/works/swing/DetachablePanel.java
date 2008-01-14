@@ -115,6 +115,8 @@ public class DetachablePanel extends JPanel {
         detach.setBorderPainted(false);
         detach.setOpaque(false);
         detach.setFocusable(false);
+        detach.setVerticalAlignment(JButton.CENTER);
+        detach.setMargin(new Insets(0, 0, 0, 0));
 
         detach.addActionListener(al = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
