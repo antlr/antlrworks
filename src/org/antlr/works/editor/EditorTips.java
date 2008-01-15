@@ -78,7 +78,7 @@ public class EditorTips implements TipsProvider {
 
         Point p = null;
         try {
-            ATEToken token = editor.getTokenAtPosition(position);
+            ATEToken token = editor.getTokenAtPosition(position, false);
             if(token != null) {
                 // Make sure the mouse is over the token because
                 // Swing will return a valid position even if the mouse
@@ -99,8 +99,7 @@ public class EditorTips implements TipsProvider {
         List<String> tips = new ArrayList<String>();
 
         List<EditorInspectorItem> items = editor.editorInspector.getAllItemsAtIndex(position);
-        for(int index=0; index<items.size(); index++) {
-            EditorInspectorItem item = items.get(index);
+        for (EditorInspectorItem item : items) {
             tips.add(item.description);
         }
 

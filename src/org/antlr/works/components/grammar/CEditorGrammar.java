@@ -767,7 +767,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public int getSelectionLeftIndexOnTokenBoundary() {
-        ATEToken t = getTokenAtPosition(getTextPane().getSelectionStart());
+        ATEToken t = getTokenAtPosition(getTextPane().getSelectionStart(), true);
         if(t == null)
             return -1;
         else
@@ -775,7 +775,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public int getSelectionRightIndexOnTokenBoundary() {
-        ATEToken t = getTokenAtPosition(getTextPane().getSelectionEnd());
+        ATEToken t = getTokenAtPosition(getTextPane().getSelectionEnd(), false);
         if(t == null)
             return -1;
         else
@@ -890,17 +890,25 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public ATEToken getCurrentToken() {
-        return getTokenAtPosition(getCaretPosition());
+        return getTokenAtPosition(getCaretPosition(), false);
     }
 
-    public ATEToken getTokenAtPosition(int pos) {
+    public ATEToken getTokenAtPosition(int pos, boolean fromRight) {
         List<ATEToken> tokens = getTokens();
         if(tokens == null)
             return null;
 
-        for (ATEToken token : tokens) {
-            if (token.containsIndex(pos))
-                return token;
+        if(fromRight) {
+            for (int i = tokens.size()-1; i >= 0; i--) {
+                ATEToken token = tokens.get(i);
+                if (token.containsIndex(pos))
+                    return token;
+            }
+        } else {
+            for (ATEToken token : tokens) {
+                if (token.containsIndex(pos))
+                    return token;
+            }
         }
         return null;
     }
