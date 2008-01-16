@@ -70,15 +70,15 @@ public class DBOutputPanel extends DetachablePanel implements StreamWatcherDeleg
         debugger = null;
     }
 
-    public void streamWatcherDidStarted() {
+    public synchronized void streamWatcherDidStarted() {
         outputTextPane.setText("");
     }
 
-    public void streamWatcherDidReceiveString(String string) {
+    public synchronized void streamWatcherDidReceiveString(String string) {
         outputTextPane.setText(outputTextPane.getText()+string);
     }
 
-    public void streamWatcherException(Exception e) {
+    public synchronized void streamWatcherException(Exception e) {
         debugger.getConsole().print(e);
     }
 

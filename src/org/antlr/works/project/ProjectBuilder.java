@@ -1,11 +1,11 @@
 package org.antlr.works.project;
 
-import org.antlr.xjlib.appkit.utils.XJDialogProgress;
-import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.components.project.CContainerProject;
 import org.antlr.works.engine.EngineRuntime;
 import org.antlr.works.utils.StreamWatcherDelegate;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
+import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
 import java.io.File;
@@ -328,11 +328,11 @@ public class ProjectBuilder implements StreamWatcherDelegate, XJDialogProgressDe
 
     }
 
-    public void streamWatcherDidReceiveString(String string) {
+    public synchronized void streamWatcherDidReceiveString(String string) {
         project.printToConsole(string);
     }
 
-    public void streamWatcherException(Exception e) {
+    public synchronized void streamWatcherException(Exception e) {
         project.printToConsole(e);
     }
 

@@ -539,11 +539,11 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     public void streamWatcherDidStarted() {
     }
 
-    public void streamWatcherDidReceiveString(String string) {
+    public synchronized void streamWatcherDidReceiveString(String string) {
         debugger.getConsole().print(string, Console.LEVEL_NORMAL);
     }
 
-    public void streamWatcherException(Exception e) {
+    public synchronized void streamWatcherException(Exception e) {
         debugger.getConsole().print(e);
     }
 
