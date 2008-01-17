@@ -210,8 +210,10 @@ public class EngineGrammar {
 	}
 
 	protected void createCombinedGrammar() throws Exception {
-		parserGrammar = createNewGrammar(getFileName(), delegate.getText());
-		lexerGrammar = createLexerGrammarFromCombinedGrammar(parserGrammar);
+		createParserGrammar();
+		if ( lexerGrammar==null ) {
+			lexerGrammar = createLexerGrammarFromCombinedGrammar(parserGrammar);
+		}
 	}
 
 	protected Grammar createLexerGrammarFromCombinedGrammar(Grammar grammar) throws Exception {
@@ -232,13 +234,15 @@ public class EngineGrammar {
 	}
 
 	protected void createParserGrammar() throws TokenStreamException, RecognitionException {
-		parserGrammar = createNewGrammar(getFileName(), delegate.getText());
-		parserGrammar.composite.createNFAs();
+		if ( parserGrammar==null ) {
+			parserGrammar = createNewGrammar(getFileName(), delegate.getText());
+		}
 	}
 
 	protected void createLexerGrammar() throws TokenStreamException, RecognitionException {
-		lexerGrammar = createNewGrammar(getFileName(), editor.getText());
-		lexerGrammar.composite.createNFAs();
+		if ( lexerGrammar==null ) {
+			lexerGrammar = createNewGrammar(getFileName(), editor.getText());
+		}
 	}
 
 	public void printLeftRecursionToConsole(List rules) {
@@ -293,7 +297,9 @@ public class EngineGrammar {
 		}
 
 		try {
-			g.composite.createNFAs();
+			if ( g.nfa==null ) {
+				g.composite.createNFAs();
+			}
 			g.createLookaheadDFAs();
 			if(getType() == ElementGrammarName.COMBINED) {
 				// If the grammar is combined, analyze also the lexer
