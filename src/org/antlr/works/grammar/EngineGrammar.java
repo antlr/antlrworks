@@ -211,7 +211,7 @@ public class EngineGrammar {
 
 	protected void createCombinedGrammar() throws Exception {
 		createParserGrammar();
-		if ( lexerGrammar==null ) {
+		if ( lexerGrammar==null || isDirty() ) {
 			lexerGrammar = createLexerGrammarFromCombinedGrammar(parserGrammar);
 		}
 	}
@@ -234,13 +234,13 @@ public class EngineGrammar {
 	}
 
 	protected void createParserGrammar() throws TokenStreamException, RecognitionException {
-		if ( parserGrammar==null ) {
+		if ( parserGrammar==null || isDirty() ) {
 			parserGrammar = createNewGrammar(getFileName(), delegate.getText());
 		}
 	}
 
 	protected void createLexerGrammar() throws TokenStreamException, RecognitionException {
-		if ( lexerGrammar==null ) {
+		if ( lexerGrammar==null || isDirty() ) {
 			lexerGrammar = createNewGrammar(getFileName(), editor.getText());
 		}
 	}
