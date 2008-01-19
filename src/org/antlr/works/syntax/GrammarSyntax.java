@@ -78,6 +78,17 @@ public class GrammarSyntax {
         return count;
     }
 
+    public int getNumberOfErrors() {
+        int count = 0;
+        if(getParserEngine().getRules() != null) {
+            for (ElementRule rule : getParserEngine().getRules()) {
+                if (rule.hasErrors())
+                    count+=rule.getErrors().size();
+            }
+        }
+        return count;
+    }
+
     public List<ElementRule> getDuplicateRules() {
         return duplicateRules;
     }
