@@ -36,7 +36,6 @@ import org.antlr.works.visualization.graphics.GObject;
 
 import java.awt.*;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -76,8 +75,7 @@ public class GPath extends GObject {
 
     public void setContext(GContext context) {
         super.setContext(context);
-        for (Iterator<GPathElement> iterator = elements.iterator(); iterator.hasNext();) {
-            GPathElement element = iterator.next();
+        for (GPathElement element : elements) {
             element.setContext(context);
         }
     }
@@ -108,9 +106,8 @@ public class GPath extends GObject {
 
     public int getNumberOfVisibleElements() {
         int count = 0;
-        for(int i=0; i<elements.size(); i++) {
-            GPathElement element = elements.get(i);
-            if(element.isVisible())
+        for (GPathElement element : elements) {
+            if (element.isVisible())
                 count++;
         }
         return count;
@@ -127,15 +124,14 @@ public class GPath extends GObject {
         context.linkColor = context.nodeColor;
         context.setLineWidth(width);
 
-        for(int i=0; i<elements.size(); i++) {
-            GPathElement element = elements.get(i);
-            if(ignoreElements != null && ignoreElements.contains(element))
+        for (GPathElement element : elements) {
+            if (ignoreElements != null && ignoreElements.contains(element))
                 continue;
 
-            if(!element.isVisible())
+            if (!element.isVisible())
                 continue;
 
-            if(element.isRuleLink && !ruleLink || ruleLink && !element.isRuleLink)
+            if (element.isRuleLink && !ruleLink || ruleLink && !element.isRuleLink)
                 continue;
 
             element.draw();
@@ -162,9 +158,8 @@ public class GPath extends GObject {
     }
 
     public boolean containsPoint(Point p) {
-        for (Iterator<GPathElement> iterator = elements.iterator(); iterator.hasNext();) {
-            GPathElement element = iterator.next();
-            if(element.containsPoint(p))
+        for (GPathElement element : elements) {
+            if (element.containsPoint(p))
                 return true;
         }
         return false;
@@ -172,8 +167,7 @@ public class GPath extends GObject {
 
     public Set<GObject> getObjects() {
         Set<GObject> objects = new HashSet<GObject>();
-        for (Iterator<GPathElement> iterator = elements.iterator(); iterator.hasNext();) {
-            GPathElement element = iterator.next();
+        for (GPathElement element : elements) {
             objects.addAll(element.getObjects());
         }
         return objects;
@@ -187,6 +181,14 @@ public class GPath extends GObject {
             return element.isVisible();
     }
 
+    public void setMaxWidth() {
+        currentLineWidth = MAX_PATH_BLINK_WIDTH;
+    }
+
+    public void setMinWidth() {
+        currentLineWidth = MIN_PATH_BLINK_WIDTH;
+    }
+    
     public void incrementWidth() {
         currentLineWidth += step;
         if(currentLineWidth >= MAX_PATH_BLINK_WIDTH || currentLineWidth <= MIN_PATH_BLINK_WIDTH)

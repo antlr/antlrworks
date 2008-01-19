@@ -31,36 +31,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics.path;
 
-import org.antlr.xjlib.appkit.gview.timer.GTimer;
-import org.antlr.xjlib.appkit.gview.timer.GTimerDelegate;
-import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GObject;
+import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-public class GPathGroup extends GObject implements GTimerDelegate {
+public class GPathGroup extends GObject {
 
     public static final String NOTIF_CURRENT_PATH_DID_CHANGE = "NOTIF_CURRENT_PATH_DID_CHANGE";
     public static int DEFAULT_PATH_WIDTH = 1;
 
     protected List<GPath> graphicPaths = new ArrayList<GPath>();
     protected int selectedPathIndex = 0;
-    protected GTimer timer = new GTimer(this);
 
     protected boolean showRuleLinks = true;
 
     public GPathGroup() {
-    }
-
-    public void setEnable(boolean flag) {
-        if(flag)
-            timer.start();
-        else
-            timer.stop();
     }
 
     public void addPath(GPath path) {
@@ -103,9 +92,8 @@ public class GPathGroup extends GObject implements GTimerDelegate {
         if(getCurrentPath().isVisible())
             return;
 
-        for (Iterator<GPath> iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = iterator.next();
-            if(path.isVisible()) {
+        for (GPath path : graphicPaths) {
+            if (path.isVisible()) {
                 setSelectedPath(graphicPaths.indexOf(path));
                 break;
             }
@@ -131,16 +119,12 @@ public class GPathGroup extends GObject implements GTimerDelegate {
         return selectedPathIndex;
     }
 
+    @Override
     public void setContext(GContext context) {
         super.setContext(context);
-        for (Iterator<GPath> iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = iterator.next();
+        for (GPath path : graphicPaths) {
             path.setContext(context);
         }
-
-        // Start timer here because no the context has been applied to all graphs
-        // (otherwise, a node can be displayed without having a context associated)
-        timer.start();
     }
 
     public void toggleShowRuleLinks() {
@@ -149,8 +133,7 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     }
 
     public void updateShowRuleLinks() {
-        for (Iterator<GPath> iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = iterator.next();
+        for (GPath path : graphicPaths) {
             path.setShowRuleLinks(showRuleLinks);
         }
     }
@@ -169,14 +152,14 @@ public class GPathGroup extends GObject implements GTimerDelegate {
         }
 
         setSelectedPath(graphicPaths.indexOf(selectPath));
+        getCurrentPath().setMaxWidth();
         context.repaint();
     }
 
     public List<GPath> getPathsAtPoint(Point p) {
         List<GPath> paths = new ArrayList<GPath>();
-        for (Iterator<GPath> iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = iterator.next();
-            if(path.containsPoint(p))
+        for (GPath path : graphicPaths) {
+            if (path.containsPoint(p))
                 paths.add(path);
         }
         return paths;
@@ -185,15 +168,14 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     public void draw() {
         GPath currentPath = getCurrentPath();
 
-        for (Iterator<GPath> iterator = graphicPaths.iterator(); iterator.hasNext();) {
-            GPath path = iterator.next();
-            if(path != currentPath) {
+        for (GPath path : graphicPaths) {
+            if (path != currentPath) {
                 path.deselectElement();
             } else {
                 currentPath.selectElement();
             }
 
-            if(path.isVisible() && path != currentPath)
+            if (path.isVisible() && path != currentPath)
                 path.draw(DEFAULT_PATH_WIDTH, null);
         }
 
@@ -204,14 +186,6 @@ public class GPathGroup extends GObject implements GTimerDelegate {
     public void drawSelectedElement() {
         if(getCurrentPath().isVisible() && getCurrentPath().isSelectable())
             getCurrentPath().drawSelectedElement();
-    }
-
-    public void timerFired(GTimer timer) {
-        if(getCurrentPath() == null || context == null || !getCurrentPath().isSelectable())
-            return;
-
-        getCurrentPath().incrementWidth();
-        context.repaint();
     }
 
 }

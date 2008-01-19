@@ -65,9 +65,10 @@ public class GGraphGroup extends GGraphAbstract {
     }
 
     public void setEnable(boolean flag) {
-        pathGroup.setEnable(flag);
+
     }
 
+    @Override
     public void setContext(GContext context) {
         super.setContext(context);
         for (GGraph graph : graphs) {
@@ -99,16 +100,15 @@ public class GGraphGroup extends GGraphAbstract {
         /** First convert the list of NFAStates to a list of Integer containing
          * the state number
          */
-        List statesNumbers = new ArrayList();
-        for(int i=0; i<states.size(); i++) {
-            statesNumbers.add((((NFAState) states.get(i)).stateNumber));
+        List<Integer> statesNumbers = new ArrayList<Integer>();
+        for (Object state : states) {
+            statesNumbers.add((((NFAState) state).stateNumber));
         }
 
         /** Select only the transitions that containing all the state numbers */
         List<FATransition> newCandidates = new ArrayList<FATransition>();
-        for(int c=0; c<candidates.size(); c++) {
-            FATransition t = candidates.get(c);
-            if(t.skippedStates != null && t.skippedStates.containsAll(statesNumbers)) {
+        for (FATransition t : candidates) {
+            if (t.skippedStates != null && t.skippedStates.containsAll(statesNumbers)) {
                 newCandidates.add(t);
             }
         }
@@ -144,9 +144,8 @@ public class GGraphGroup extends GGraphAbstract {
                     // the others (the next state of the path can return no transition at all)
                     if(pathIndex+1 < path.size()) {
                         NFAState nextPathState = (NFAState) path.get(pathIndex+1);
-                        for(int i=0; i<candidateTransitions.size(); i++) {
-                            FATransition t = candidateTransitions.get(i);
-                            if(t.target.stateNumber == nextPathState.stateNumber) {
+                        for (FATransition t : candidateTransitions) {
+                            if (t.target.stateNumber == nextPathState.stateNumber) {
                                 pathIndex++;    // always points to the next element after the transition
                                 return t;
                             }
@@ -385,11 +384,10 @@ public class GGraphGroup extends GGraphAbstract {
         context.linkColor = Color.black;
         context.setLineWidth(1);
 
-        for (int i = 0; i<graphs.size(); i++) {
-            GGraph graph = graphs.get(i);
+        for (GGraph graph : graphs) {
             graph.draw();
             context.setColor(Color.black);
-            context.drawString(context.getRuleFont(), graph.name, TITLE_OFFSET-5, graph.offsetY, GContext.ALIGN_RIGHT);
+            context.drawString(context.getRuleFont(), graph.name, TITLE_OFFSET - 5, graph.offsetY, GContext.ALIGN_RIGHT);
         }
 
         pathGroup.draw();
