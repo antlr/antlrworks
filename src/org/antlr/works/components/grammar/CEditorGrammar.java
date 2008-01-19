@@ -390,6 +390,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         statusBar.add(createSeparator());
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(scmLabel);
+        statusBar.add(Box.createHorizontalGlue());
     }
 
     protected void createInterface() {
