@@ -165,7 +165,7 @@ public class Visual extends EditorTab implements GContextProvider {
     }
 
     public boolean canSaveImage() {
-        return panel.getImageOfView() != null;
+        return getImage() != null;
     }
 
     public BufferedImage getImage() {

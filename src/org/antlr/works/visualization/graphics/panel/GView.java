@@ -102,6 +102,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         this.placeholder = placeholder;
     }
 
+    @SuppressWarnings("unchecked")
     public void setGraphs(List graphs) {
         this.graphs.clear();
 
@@ -150,8 +151,14 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         cachedImageResize = flag;
     }
 
-    public BufferedImage getCachedImage() {
-        return cachedImage;
+    public BufferedImage getImage() {
+        BufferedImage image = new BufferedImage(getPaintWidth(), getPaintHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        Graphics2D g = (Graphics2D)image.getGraphics();
+        g.setColor(Color.white);
+        g.fillRect(0, 0, getPaintWidth(), getPaintHeight());
+        render(g);
+        g.dispose();
+        return image;
     }
 
     public boolean setNextGraph() {
@@ -294,6 +301,14 @@ public class GView extends JPanel implements XJMenuItemDelegate {
         getCurrentGraph().draw();
     }
 
+    public int getPaintWidth() {
+        return getGraphWidth()+offset_x;
+    }
+
+    public int getPaintHeight() {
+        return getGraphHeight()+offset_y+1;
+    }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -302,8 +317,8 @@ public class GView extends JPanel implements XJMenuItemDelegate {
             return;
         }
 
-        int width = getGraphWidth()+offset_x;
-        int height = getGraphHeight()+offset_y+1;
+        int width = getPaintWidth();
+        int height = getPaintHeight();
 
         if(useCachedImage) {
             boolean sizeChanged = cachedImage != null && (cachedImage.getWidth() != width || cachedImage.getHeight() != height);

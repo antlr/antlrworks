@@ -118,7 +118,7 @@ public class GPanel implements XJNotificationObserver {
     }
 
     public BufferedImage getImageOfView() {
-        return view.getCachedImage();
+        return view.getImage();
     }
 
     public void createPanel() {
