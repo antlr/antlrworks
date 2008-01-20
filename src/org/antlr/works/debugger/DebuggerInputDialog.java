@@ -100,6 +100,7 @@ public class DebuggerInputDialog extends XJDialog {
                 if(XJFileChooser.shared().displayOpenDialog(getContentPane(), false)) {
                     inputFileField.setText(XJFileChooser.shared().getSelectedFilePath());
                     AWPrefs.setDebuggerInputFile(inputFileField.getText());
+                    fileInputRadio.setSelected(true);
                 }
             }
         });
@@ -218,7 +219,7 @@ public class DebuggerInputDialog extends XJDialog {
         		contentPane.add(inputFileField, cc.xywh(3, 7, 3, 1));
 
         		//---- browseInputFileButton ----
-        		browseInputFileButton.setText("Browse");
+        		browseInputFileButton.setText("Browse...");
         		contentPane.add(browseInputFileButton, cc.xy(7, 7));
 
         		//---- label2 ----
