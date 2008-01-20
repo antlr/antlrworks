@@ -266,7 +266,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                if(XJAlert.displayAlert(debugger.getWindowComponent(), error.title, error.message, "Show Console", "OK", 1) == 0) {
+                if(XJAlert.displayAlert(debugger.getWindowComponent(), error.title, error.message, "Show Console", "OK", 1, 1) == 0) {
                     debugger.selectConsoleTab();
                 }
             }

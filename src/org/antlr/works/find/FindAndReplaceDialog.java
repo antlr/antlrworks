@@ -148,7 +148,7 @@ public class FindAndReplaceDialog extends XJPanel {
         if(result) return;
 
         if(XJAlert.displayAlert(getJavaContainer(), "End of Document", "The end of the document has been reached.",
-                "Continue", "OK", 0) == 0)
+                "Continue", "OK", 0, 1) == 0)
         {
             delegate.setPositionToTop();
             actionListener.actionPerformed(null);
@@ -159,7 +159,7 @@ public class FindAndReplaceDialog extends XJPanel {
         if(result) return;
 
         if(XJAlert.displayAlert(getJavaContainer(), "Beginning of Document", "The beginning of the document has been reached.",
-                "Continue", "OK", 0) == 0)
+                "Continue", "OK", 0, 1) == 0)
         {
             delegate.setPositionToBottom();
             actionListener.actionPerformed(null);

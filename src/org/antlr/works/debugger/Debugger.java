@@ -474,7 +474,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
                         "The grammar has been modified and needs to be generated and compiled again. You can choose " +
                                 "to cancel the operation, to continue without generating and compiling the grammar or " +
                                 "to generate and compile the grammar.",
-                        new String[] { "Cancel", "Continue", "Generate and compile" }, 2);
+                        new String[] { "Cancel", "Continue", "Generate and compile" }, 2, 0);
                 switch(result) {
                     case 0: return;
                     case 2: options = options | OPTION_BUILD; break;
