@@ -152,6 +152,8 @@ public class GView extends JPanel implements XJMenuItemDelegate {
     }
 
     public BufferedImage getImage() {
+        if(getCurrentGraph() == null) return null;
+        
         BufferedImage image = new BufferedImage(getPaintWidth(), getPaintHeight(), BufferedImage.TYPE_3BYTE_BGR);
         Graphics2D g = (Graphics2D)image.getGraphics();
         g.setColor(Color.white);

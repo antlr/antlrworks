@@ -53,7 +53,7 @@ public class FindAndReplaceDialog extends XJPanel {
 
         initComponents();
 
-        setSize(550, 180);
+        setSize(570, 180);
         setTitle("Find");
         awake();
         center();
