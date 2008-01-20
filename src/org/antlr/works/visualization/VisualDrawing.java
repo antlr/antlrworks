@@ -122,7 +122,7 @@ public class VisualDrawing extends ATEThread {
         ErrorListener.getThreadInstance().setPrintToConsole(false);
 
         try {
-            visual.getEngineGrammar().createGrammars(true);
+            visual.getEngineGrammar().createGrammars();
         } catch (Exception e) {
             // ignore
         } finally {

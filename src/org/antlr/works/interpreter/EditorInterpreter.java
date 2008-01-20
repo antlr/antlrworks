@@ -242,11 +242,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         if(progress == null)
             progress = new XJDialogProgress(editor.getXJFrame());
 
-        if(editor.getEngineGrammar().isDirty()) {
-            progress.setInfo("Preparing...");
-        } else {
-            progress.setInfo("Interpreting...");
-        }
+        progress.setInfo("Interpreting...");
 
         // AW-42: guess always before running the interpreter
         editor.findTokensToIgnore(false);
@@ -287,7 +283,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         Grammar parser;
         Grammar lexer;
         try {
-            eg.createGrammars(true);
+            eg.createGrammars();
         } catch (Exception e) {
             editor.console.print(e);
             return;

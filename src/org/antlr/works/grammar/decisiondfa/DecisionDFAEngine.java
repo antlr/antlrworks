@@ -106,7 +106,7 @@ public class DecisionDFAEngine {
         if(g == null) return;
 
         if(g.decisionsWhoseDFAsUsesSemPreds != null) {
-            for(DFA dfa : (Set<DFA>)g.decisionsWhoseDFAsUsesSemPreds) {
+            for(DFA dfa : g.decisionsWhoseDFAsUsesSemPreds) {
                 usesSemPreds.add(dfa.getDecisionNumber());
             }
         }
@@ -130,7 +130,7 @@ public class DecisionDFAEngine {
     }
 
     public boolean isDecisionPointAroundLocation(int line, int column) {
-        List s = decisionDFA.get(line+1);
+        List<Integer> s = decisionDFA.get(line+1);
         return s != null && (s.contains(column-1) || s.contains(column));
     }
 

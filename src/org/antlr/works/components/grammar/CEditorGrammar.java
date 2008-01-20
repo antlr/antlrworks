@@ -1118,7 +1118,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void grammarChanged() {
-        engineGrammar.makeDirty();
+        engineGrammar.markDirty();
     }
 
     public void consolePrint(String s, int level) {

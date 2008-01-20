@@ -82,7 +82,7 @@ public class CodeGenerate implements Runnable {
     public String getGrammarLanguage() {
         try {
             EngineGrammar eg = provider.getEngineGrammar();
-            eg.createGrammars(true);
+            eg.createGrammars();
             Grammar g = eg.getParserGrammar();
             if(g == null) {
                 g = eg.getLexerGrammar();
@@ -135,7 +135,7 @@ public class CodeGenerate implements Runnable {
     public String getGeneratedClassName(int type) throws Exception {
         String name = null;
         EngineGrammar engine = provider.getEngineGrammar();
-        engine.createGrammars(true);
+        engine.createGrammars();
         if(type == ElementGrammarName.LEXER) {
             Grammar g = engine.getLexerGrammar();
             if(g == null) return null;
