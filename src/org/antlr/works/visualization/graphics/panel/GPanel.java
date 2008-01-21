@@ -133,8 +133,8 @@ public class GPanel implements XJNotificationObserver {
 
     public void createNormalPanel() {
         container.removeAll();
-        container.add(createControlPane(), BorderLayout.NORTH);
         container.add(createVisualizationPane(), BorderLayout.CENTER);
+        container.add(createControlPane(), BorderLayout.SOUTH);
         container.validate();
     }
 
@@ -144,7 +144,7 @@ public class GPanel implements XJNotificationObserver {
         panel.add(createErrorPane(), BorderLayout.NORTH);
         panel.add(createVisualizationPane(), BorderLayout.CENTER);
         container.add(panel, BorderLayout.CENTER);
-        container.add(createControlPane(), BorderLayout.NORTH);
+        container.add(createControlPane(), BorderLayout.SOUTH);
         container.validate();
     }
 
