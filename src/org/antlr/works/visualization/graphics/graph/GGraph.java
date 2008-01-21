@@ -36,11 +36,13 @@ import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.primitive.GDimension;
 import org.antlr.works.visualization.graphics.shape.GLink;
 import org.antlr.works.visualization.graphics.shape.GNode;
+import org.antlr.works.visualization.serializable.SEncoder;
+import org.antlr.works.visualization.serializable.SSerializable;
 
 import java.awt.*;
 import java.util.List;
 
-public class GGraph extends GGraphAbstract {
+public class GGraph extends GGraphAbstract implements SSerializable {
 
     public GDimension dimension;
     public List<GNode> nodes;
@@ -153,4 +155,12 @@ public class GGraph extends GGraphAbstract {
         }
         return false;
     }
+
+    public void encode(SEncoder encoder) {
+        encoder.write(dimension);
+        for(GNode node : nodes) {
+            encoder.write(node);
+        }
+    }
+
 }

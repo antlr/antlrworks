@@ -35,10 +35,12 @@ import org.antlr.works.visualization.fa.FATransition;
 import org.antlr.works.visualization.graphics.GObject;
 import org.antlr.works.visualization.graphics.primitive.GDimension;
 import org.antlr.works.visualization.graphics.primitive.GPoint;
+import org.antlr.works.visualization.serializable.SEncoder;
+import org.antlr.works.visualization.serializable.SSerializable;
 
 import java.awt.*;
 
-public class GLink extends GObject {
+public class GLink extends GObject implements SSerializable {
 
     public FATransition transition;
     public GNode source;
@@ -108,6 +110,13 @@ public class GLink extends GObject {
 
     public void draw() {
         context.drawLink(this);
+    }
+
+    public void encode(SEncoder encoder) {
+        encoder.write(transition);
+        encoder.write(source);
+        encoder.write(target);
+        encoder.write(last);
     }
 
 }

@@ -32,14 +32,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization.fa;
 
 import org.antlr.analysis.NFAState;
+import org.antlr.works.visualization.serializable.SEncoder;
+import org.antlr.works.visualization.serializable.SSerializable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /** Class defining an "GUI" FA state. It is basically the same as a NFAState.
  *
  */
 
-public class FAState {
+public class FAState implements SSerializable {
 
     public int stateNumber = -1;
     public boolean acceptedState = false;
@@ -49,10 +53,6 @@ public class FAState {
     /** If the state represents a reference to an external state, this field
      contains the name of the referenced rule. */
     public String externalRuleRefName = null;
-
-    /** List of skipped states (they won't be displayed but we need to know their
-     number in order to display corrected the error paths) */
-    public Set skippedStates = new HashSet();
 
     /** Temporary variable that is used by FAFactory to know when to build "loop" transition */
     public boolean loop = false;
@@ -181,6 +181,17 @@ public class FAState {
             return String.valueOf(stateNumber);
         else
             return "<"+externalRuleRefName+">";
+    }
+
+    public void encode(SEncoder encoder) {
+        encoder.write(stateNumber);
+        encoder.write(acceptedState);
+        encoder.write(enclosingRuleName);
+        for(FATransition t : transitions) {
+            encoder.write(t);
+        }
+        encoder.write(externalRuleRefName);
+        encoder.write(loop);
     }
 
 }

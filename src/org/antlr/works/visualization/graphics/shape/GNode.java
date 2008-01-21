@@ -38,12 +38,14 @@ import org.antlr.works.visualization.graphics.GObject;
 import org.antlr.works.visualization.graphics.primitive.GDimension;
 import org.antlr.works.visualization.graphics.primitive.GLiteral;
 import org.antlr.works.visualization.graphics.primitive.GPoint;
+import org.antlr.works.visualization.serializable.SEncoder;
+import org.antlr.works.visualization.serializable.SSerializable;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GNode extends GObject {
+public class GNode extends GObject implements SSerializable {
 
     public FAState state;
     public List<GLink> links = new ArrayList<GLink>();
@@ -201,4 +203,11 @@ public class GNode extends GObject {
         return String.valueOf(state.stateNumber);
     }
 
+    public void encode(SEncoder encoder) {
+        encoder.write(state);
+        for(GLink link : links) {
+            encoder.write(link);
+        }
+        encoder.write(lastNodeOfRule);
+    }
 }

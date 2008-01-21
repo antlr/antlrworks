@@ -46,6 +46,7 @@ public class GLiteral {
     public static final String OP_LPAREN = "(";
     public static final String OP_RPAREN = ")";
     public static final String OP_COMA = ",";
+    public static final String OP_NULL = "!";
 
     public static String substract(String a, String b) {
         return a+OP_SUB+OP_LPAREN+b+OP_RPAREN;

@@ -32,9 +32,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.fa;
 
+import org.antlr.works.visualization.serializable.SEncoder;
+import org.antlr.works.visualization.serializable.SSerializable;
+
 import java.util.List;
 
-public class FATransition {
+public class FATransition implements SSerializable {
 
     public FAState source;
     public String label;
@@ -87,4 +90,18 @@ public class FATransition {
         }
         return false;
     }
+
+    public void encode(SEncoder encoder) {
+        encoder.write(source);
+        encoder.write(label);
+        encoder.write(target);
+        encoder.write(loop);
+        encoder.write(externalRuleRef);
+        if(skippedStates != null) {
+            for(Integer s : skippedStates) {
+                encoder.write(s);
+            }
+        }
+    }
+
 }

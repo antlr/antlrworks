@@ -32,8 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization.graphics.primitive;
 
 import org.antlr.works.visualization.graphics.GContext;
+import org.antlr.works.visualization.serializable.SEncoder;
+import org.antlr.works.visualization.serializable.SSerializable;
 
-public class GDimension {
+public class GDimension implements SSerializable {
 
     public String width = "";
     public String up = "";
@@ -116,4 +118,11 @@ public class GDimension {
     public String toString() {
         return "{ "+width+", "+up+"|"+down+" }";
     }
+
+    public void encode(SEncoder encoder) {
+        encoder.write(width);
+        encoder.write(up);
+        encoder.write(down);
+    }
+
 }

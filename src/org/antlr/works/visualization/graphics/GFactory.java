@@ -84,6 +84,11 @@ public class GFactory {
         FAState state = new FAFactory(grammar.getGrammarForRule(rule)).buildNFA(startState, optimize);
         GGraph graph = renderer.render(state);
         graph.setName(rule);
+
+/*        SEncoder encoder = new SXMLEncoder();
+        encoder.write(graph);
+        System.out.println(">> graph = "+encoder.toString());
+  */      
         return graph;
     }
 
