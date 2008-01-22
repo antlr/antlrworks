@@ -6,6 +6,7 @@ import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.visualization.graphics.*;
 import org.antlr.works.visualization.graphics.graph.GGraph;
+import org.antlr.works.visualization.serializable.SEncoder;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 import org.antlr.xjlib.foundation.XJUtils;
 
@@ -56,6 +57,11 @@ public class SDGenerator implements GContextProvider {
         context = new GContext();
         context.setSkin(new SDSkin());
         context.setProvider(this);
+    }
+
+    public void serializeRule(String name, SEncoder encoder) throws Exception {
+        GGraph graph = createGraph(name);
+        encoder.write(graph);
     }
 
     public void renderRuleToEPSFile(String ruleName, String file) throws Exception {

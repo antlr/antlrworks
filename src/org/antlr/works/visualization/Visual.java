@@ -46,6 +46,8 @@ import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.panel.GPanel;
 import org.antlr.works.visualization.skin.Skin;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJFileChooser;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -188,4 +190,17 @@ public class Visual extends EditorTab implements GContextProvider {
         return getContainer();
     }
 
+    public void serializeSyntaxDiagram() {
+        XJFileChooser fc = XJFileChooser.shared();
+        if(fc.displaySaveDialog(editor.getJavaContainer(), "txt", "XML representation", false)) {
+            String[] args = new String[] { "-f", editor.getFilePath(),
+                    "-serialize", fc.getSelectedFilePath(), "-verbose"};
+            try {
+                org.antlr.works.Console.main(args);
+            } catch (Exception e) {
+                e.printStackTrace();
+                XJAlert.display(editor.getJavaContainer(), "Serialize Syntax Diagram", e.toString());
+            }
+        }
+    }
 }

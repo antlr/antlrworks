@@ -132,6 +132,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_EXPORT_EVENT = 115;
 
     public static final int MI_PRIVATE_UNREGISTER = 200;
+    public static final int MI_SERIALIZE_SD = 201;
 
     protected CEditorGrammar editor = null;
     protected XJMenuItem ignoreRuleMenuItem;
@@ -198,7 +199,8 @@ public class EditorMenu implements XJMenuItemDelegate {
         if(AWPrefs.getPrivateMenu()) {
             menu = new XJMenu();
             menu.setTitle("*");
-            menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.unregisterUser"), MI_PRIVATE_UNREGISTER, this));
+            menu.addItem(new XJMenuItem("Unregister user", MI_PRIVATE_UNREGISTER, this));
+            menu.addItem(new XJMenuItem("Serialize Syntax Diagrams...", MI_SERIALIZE_SD, this));
 
             menubar.addCustomMenu(menu);
         }
@@ -813,6 +815,9 @@ public class EditorMenu implements XJMenuItemDelegate {
         switch(itemTag) {
             case MI_PRIVATE_UNREGISTER:
                 AWPrefs.removeUserRegistration();
+                break;
+            case MI_SERIALIZE_SD:
+                editor.visual.serializeSyntaxDiagram();
                 break;
         }
     }
