@@ -35,12 +35,14 @@ public class SXMLEncoder implements SEncoder {
 
     private final Map<SSerializable, Entry> cache = new HashMap<SSerializable, Entry>();
     private final Stack<Entry> stack = new Stack<Entry>();
+    private long uid;
     private Entry root;
 
     public SXMLEncoder() {
     }
 
     public String toString() {
+        uid = 0;
         XMLWriter writer = new XMLWriter();
         root.toXML(writer);
         return writer.toString();
@@ -49,7 +51,7 @@ public class SXMLEncoder implements SEncoder {
     public void write(SSerializable object) {
         Entry entry = cache.get(object);
         if(entry == null) {
-            cache.put(object, entry = new Entry(object));
+            cache.put(object, entry = new Entry(object, uid++));
 
             if(root == null) {
                 root = entry;
@@ -64,7 +66,7 @@ public class SXMLEncoder implements SEncoder {
             stack.pop();
         } else {
             // already being serialized
-            stack.peek().write(entry.hashCode());
+            stack.peek().write(entry.getUID());
         }
     }
 
@@ -84,9 +86,11 @@ public class SXMLEncoder implements SEncoder {
 
         final List<Object> stream = new ArrayList<Object>();
         final Object object;
+        final long uid;
 
-        public Entry(Object object) {
+        public Entry(Object object, long uuid) {
             this.object = object;
+            this.uid = uuid;
         }
 
         public void write(Entry entry) {
@@ -101,6 +105,10 @@ public class SXMLEncoder implements SEncoder {
             stream.add(value);
         }
 
+        public void write(long value) {
+            stream.add(value);
+        }
+
         public void write(boolean value) {
             stream.add(value);
         }
@@ -111,7 +119,21 @@ public class SXMLEncoder implements SEncoder {
                 if(e instanceof Entry) {
                     ((Entry)e).toXML(writer);
                 } else if(e != null) {
-                    writer.open(e.getClass().getSimpleName());
+                    String name = e.getClass().getSimpleName();
+                    if(e instanceof Integer) {
+                        name = "int";
+                    }
+                    if(e instanceof Long) {
+                        name = "long";
+                    }
+                    if(e instanceof Boolean) {
+                        name = "bool";
+                    }
+                    if(e instanceof String) {
+                        name = "str";
+                    }
+
+                    writer.open(name);
                     writer.write(e.toString());
                     writer.close();
                 }
@@ -119,6 +141,9 @@ public class SXMLEncoder implements SEncoder {
             writer.close();
         }
 
+        public long getUID() {
+            return uid;
+        }
     }
 
     public static class XMLWriter {
