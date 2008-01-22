@@ -38,18 +38,26 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class TestSyntaxDiagram extends AbstractTest {
 
     public void testVSQL() throws Exception {
+        assertSD("vsql", "vsql");
+    }
+
+    public void testExpr() throws Exception {
+        assertSD("expr", "expr");
+    }
+
+    private void assertSD(String folder, String name) throws Exception {
         // Read the grammar file
-        String source = getResourceFile(TestConstants.PREFIX+"sd/vsql/vsql.g");
-        String target = File.createTempFile("vsql-sd", ".txt").getAbsolutePath();
+        String source = getResourceFile(TestConstants.PREFIX+"sd/"+folder+"/"+name+".g");
+        String target = File.createTempFile(name+"-sd", ".txt").getAbsolutePath();
 
         // Generate the XML-string representation of the syntax diagram
         String[] args = new String[] { "-f", source, "-serialize", target};
         org.antlr.works.Console.main(args);
 
         // Compare the result with the one that has been pre-generated
-        String expected = getTextFromFile(TestConstants.PREFIX+"sd/vsql/vsql.txt");
+        String expected = getTextFromFile(TestConstants.PREFIX+"sd/"+folder+"/"+name+".txt");
         String actual = XJUtils.getStringFromFile(target);
-        assertEquals("VSQL", expected, actual); 
+        assertEquals(name, expected, actual);
     }
 
 }
