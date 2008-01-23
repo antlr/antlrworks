@@ -308,25 +308,25 @@ public class GRenderer {
     }
 
     public FAState alternativeEndState(FAState alt) {
-        int counter = 1;
+        int counter = alt.getNumberOfTransitions()-1;
         FAState state = alt;
-        while(state != null) {
+        while(true) {
             FATransition transition = state.getFirstTransition();
             if(transition == null)
                 break;
-            else
-                state = transition.target;
+
+            state = transition.target;
 
             // Note: a state can be both an end-of-alternative and an alternative itself ;-)
-
             if(analysis.numberOfIncomingTransition(state)>1) {
-                counter--;
-                if(counter == 0)
+                counter -= analysis.numberOfIncomingTransition(state)-1;
+                if(counter <= 0)
                     break;
             }
 
-            if(state.isAlternative())
-                counter++;
+            if(state.isAlternative()) {
+                counter += state.getNumberOfTransitions()-1;                
+            }
         }
         return state;
     }
