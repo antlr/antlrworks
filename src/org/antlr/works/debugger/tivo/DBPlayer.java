@@ -33,7 +33,6 @@ package org.antlr.works.debugger.tivo;
 
 import org.antlr.runtime.Token;
 import org.antlr.works.debugger.Debugger;
-import org.antlr.works.debugger.events.DBEventErrorNode;
 import org.antlr.works.debugger.events.*;
 import org.antlr.works.debugger.input.DBInputProcessor;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
@@ -61,7 +60,7 @@ public class DBPlayer {
     public void close() {
         debugger = null;
     }
-    
+
     public void setInputBuffer(DBInputProcessor processor) {
         this.processor = processor;
     }
@@ -69,14 +68,14 @@ public class DBPlayer {
     public DBPlayerContextInfo getContextInfo() {
         return contextInfo;
     }
-    
+
     public synchronized void resetPlayEvents(boolean first) {
         debugger.resetGUI();
 
         /** Only reset the input text the first time
-            the events are reset (when the debugger starts).
-            Then, keep rewinding the input text so already received
-            tokens are displayed */
+         the events are reset (when the debugger starts).
+         Then, keep rewinding the input text so already received
+         tokens are displayed */
         if(first)
             processor.reset();
         else
@@ -89,11 +88,12 @@ public class DBPlayer {
         eventPlayedCount = 0;
     }
 
-    public void playEvents(List events, boolean reset) {
+    public void playEvents(List events, int lastEventPosition, boolean reset) {
         if(reset)
             resetPlayEvents(false);
 
-        for(int i=eventPlayedCount; i<events.size(); i++) {
+        int lastIndex = lastEventPosition - 1;
+        for(int i=eventPlayedCount; i< lastEventPosition; i++) {
             DBEvent event = (DBEvent)events.get(i);
 
             try {
@@ -103,12 +103,12 @@ public class DBPlayer {
             }
 
             debugger.addEvent(event, contextInfo);
-            if(i == events.size()-1) {
+            if(i == lastIndex) {
                 // Last event, play the location
                 playLocation();
             }
         }
-        eventPlayedCount = events.size();        
+        eventPlayedCount = lastEventPosition;
     }
 
     public void playEvent(DBEvent event) {
@@ -185,13 +185,13 @@ public class DBPlayer {
                 playEndResync();
                 break;
 
-			case DBEvent.NIL_NODE:
-				playNilNode((DBEventNilNode)event);
-				break;
+            case DBEvent.NIL_NODE:
+                playNilNode((DBEventNilNode)event);
+                break;
 
-			case DBEvent.ERROR_NODE:
-				playErrorNode((DBEventErrorNode)event);
-				break;
+            case DBEvent.ERROR_NODE:
+                playErrorNode((DBEventErrorNode)event);
+                break;
 
             case DBEvent.CREATE_NODE:
                 playCreateNode((DBEventCreateNode)event);
@@ -363,13 +363,13 @@ public class DBPlayer {
         resyncing--;
     }
 
-	public void playNilNode(DBEventNilNode event) {
-		debugger.playerNilNode(event.id);
-	}
+    public void playNilNode(DBEventNilNode event) {
+        debugger.playerNilNode(event.id);
+    }
 
-	public void playErrorNode(DBEventErrorNode event) {
-		debugger.playerErrorNode(event.id, event.text);
-	}
+    public void playErrorNode(DBEventErrorNode event) {
+        debugger.playerErrorNode(event.id, event.text);
+    }
 
     public void playCreateNode(DBEventCreateNode event) {
         if(event.tokenIndex == -1) {

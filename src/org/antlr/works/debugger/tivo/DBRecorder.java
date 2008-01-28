@@ -46,6 +46,7 @@ import org.antlr.xjlib.foundation.XJUtils;
 import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -66,7 +67,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     protected String address;
     protected int port;
 
-    protected ArrayList<DBEvent> events;
+    protected List<DBEvent> events;
     protected int position;
     protected NumberSet breakEvents = new NumberSet();
     protected int stoppedOnEvent = DBEvent.NO_EVENT;
@@ -101,7 +102,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     public void close() {
         debugger = null;
     }
-    
+
     public void showProgress() {
         if(progress == null)
             progress = new XJDialogProgress(debugger.getWindowComponent());
@@ -123,14 +124,11 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     /** Return true if the debugger is alive (i.e. not stopped, stopping, starting) */
     public synchronized boolean isAlive() {
         return status == DBRecorder.STATUS_RUNNING ||
-               status == DBRecorder.STATUS_BREAK;
+                status == DBRecorder.STATUS_BREAK;
     }
 
     public synchronized void reset() {
-        if(events == null)
-            events = new ArrayList<DBEvent>();
-        else
-            events.clear();
+        events = Collections.synchronizedList(new ArrayList<DBEvent>());
         position = -1;
         currentTokenIndex = -1;
         remoteParserStateWarned = false;
@@ -149,17 +147,24 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public synchronized List getCurrentEvents() {
         if(events.size() == 0)
-            return (List)events.clone();
+            return events;
 
         int toIndex = position+1;
         if(toIndex >= events.size())
             toIndex = events.size();
 
-        // Note: clone the list first in order to return
-        // a sublist that can be modified concurrently of the
-        // events list.
-        // Note that toIndex is exclusive for subList();
-        return ((List)events.clone()).subList(0, toIndex);
+        return events.subList(0, toIndex);
+    }
+
+    public synchronized int getCurrentEventPosition() {
+        if(events.size() == 0)
+            return 0;
+
+        int toIndex = position+1;
+        if(toIndex >= events.size())
+            toIndex = events.size();
+
+        return(toIndex);
     }
 
     public void setPositionToEnd() {
@@ -226,7 +231,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         if(event.getEventType() == DBEvent.COMMENCE)
             return event.getEventType();
 
-        if(breakEvents.contains(DBEvent.ALL))
+        if(breakEvents.contains(DBEvent.convertToInteger(DBEvent.ALL)))
             return event.getEventType();
 
         // Stop on debugger breakpoints
@@ -239,11 +244,11 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
             if(debugger.isBreakpointAtToken(((DBEventConsumeToken)event).token))
                 return event.getEventType();
 
-        if(event.getEventType() == DBEvent.CONSUME_TOKEN && breakEvents.contains(DBEvent.CONSUME_TOKEN)) {
+        if(event.getEventType() == DBEvent.CONSUME_TOKEN && breakEvents.contains(DBEvent.convertToInteger(DBEvent.CONSUME_TOKEN))) {
             // Breaks only on consume token from channel 0
             return ((DBEventConsumeToken)event).token.getChannel() == Token.DEFAULT_CHANNEL?event.getEventType() :DBEvent.NO_EVENT;
         } else
-            return breakEvents.contains(event.getEventType())?event.getEventType() :DBEvent.NO_EVENT;
+            return breakEvents.contains(DBEvent.convertToInteger(event.getEventType()))?event.getEventType() :DBEvent.NO_EVENT;
     }
 
     public synchronized void setStatus(int status) {
@@ -278,7 +283,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         playEvents(true);
     }
 
-    public void stepForward(Set breakEvents) {
+    public synchronized void stepForward(Set breakEvents) {
         setIgnoreBreakpoints(false);
         stepContinue(breakEvents);
         if(stepMove(1)) {
@@ -307,7 +312,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     /** This method returns false if no more event is available */
-    public boolean stepMove(int direction) {
+    public synchronized boolean stepMove(int direction) {
         position += direction;
         if(position<0) {
             position = 0;
@@ -361,7 +366,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         eventListener = new DBRecorderEventListener(this);
         cancelled = false;
 
-        boolean connected = false;                                                                 
+        boolean connected = false;
         boolean showProgress = false;
 
         long t = System.currentTimeMillis();
@@ -473,8 +478,8 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     }
 
     /** Check any error coming from the remote parser. Return true if the debugger needs
-      to be paused
-    */
+     to be paused
+     */
     public boolean checkRemoteParserState() {
         if(remoteParserStateWarned)
             return false;
@@ -587,7 +592,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         if(!SwingUtilities.isEventDispatchThread())
             SwingUtilities.invokeLater(new PlayEventRunnable(reset));
         else
-            debugger.playEvents(getCurrentEvents(), reset);
+            debugger.playEvents(events, getCurrentEventPosition(), reset);
     }
 
     public void dialogDidCancel() {

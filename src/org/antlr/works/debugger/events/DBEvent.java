@@ -35,6 +35,15 @@ public class DBEvent {
 
     public static final int NO_EVENT = -1;
 
+    public static final Integer negOne = -1;
+    public static final Integer ints[] = new Integer[28];
+
+    static {
+        for(int i = 0, maxI = ints.length; i < maxI; i++) {
+            ints[i] = i;
+        }
+    }
+
     public static final int ALL = 0;
     public static final int NONE = 1;
     public static final int COMMENCE = 2;
@@ -62,7 +71,7 @@ public class DBEvent {
     public static final int ADD_CHILD = 24;
     public static final int SET_TOKEN_BOUNDARIES = 25;
     public static final int RECOGNITION_EXCEPTION = 26;
-	public static final int ERROR_NODE = 27;
+    public static final int ERROR_NODE = 27;
 
     private int eventType;
 
@@ -92,7 +101,7 @@ public class DBEvent {
             case BEGIN_RESYNC:     return "Begin resync";
             case END_RESYNC:     return "End resync";
             case NIL_NODE: return "Nil node";
-			case ERROR_NODE: return "Error node";
+            case ERROR_NODE: return "Error node";
             case CREATE_NODE: return "Create node";
             case BECOME_ROOT: return "Become root";
             case ADD_CHILD: return "Add child";
@@ -102,6 +111,19 @@ public class DBEvent {
             case ALL:     return "All";
         }
         return "?";
+    }
+
+    public static Integer convertToInteger(int eventType) {
+        Integer retInt;
+        if(eventType < ints.length) {
+            retInt = ints[eventType];
+        } else if (eventType == -1) {
+            retInt = negOne;
+        } else {
+            retInt = eventType;
+        }
+
+        return(retInt);
     }
 
     public int getEventType() {

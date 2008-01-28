@@ -125,7 +125,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     protected int debuggerCursorIndex = -1;
 
     private boolean closing = false;
-    
+
     public Debugger(CEditorGrammar editor) {
         this.editor = editor;
     }
@@ -172,7 +172,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         debuggerStop(true);
 
         splitPanel.close();
-        
+
         controlPanel.close();
         inputPanel.close();
         outputPanel.close();
@@ -597,8 +597,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         eventsPanel.addEvent(event, info);
     }
 
-    public void playEvents(List events, boolean reset) {
-        player.playEvents(events, reset);
+    public void playEvents(List events, int lastEventPosition, boolean reset) {
+        player.playEvents(events, lastEventPosition, reset);
         breaksOnEvent();
     }
 
@@ -634,9 +634,9 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         parseTreeModel.endBacktrack(level, success);
     }
 
-	public void playerNilNode(int id) {
-		astModel.nilNode(id);
-	}
+    public void playerNilNode(int id) {
+        astModel.nilNode(id);
+    }
 
 	public void playerErrorNode(int id, String text) {
 		astModel.errorNode(id, text);
@@ -674,7 +674,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void recorderDidStop() {
         if(closing) return;
-        
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 resetMarkLocationInGrammar();

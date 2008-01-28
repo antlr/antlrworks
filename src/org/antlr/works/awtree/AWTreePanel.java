@@ -1,10 +1,10 @@
 package org.antlr.works.awtree;
 
-import org.antlr.xjlib.appkit.gview.object.GElement;
-import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TreeUtilities;
+import org.antlr.xjlib.appkit.gview.object.GElement;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -117,7 +117,7 @@ public class AWTreePanel extends JPanel {
         box.addElement(createDisplayAsGraphButton());
         //if(XJSystem.isMacOS())
         //    box.add(Box.createHorizontalStrut(15));
-                                                
+
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(box, BorderLayout.SOUTH);
 
@@ -223,7 +223,7 @@ public class AWTreePanel extends JPanel {
     public void setRootVisible(boolean flag) {
         tree.setRootVisible(flag);
     }
-    
+
     public void setRoot(TreeNode node) {
         jTreeModel.setRoot(node);
         treeGraphView.setRoot(node);
@@ -243,7 +243,7 @@ public class AWTreePanel extends JPanel {
 
     public void refresh() {
         jTreeModel.reload();
-        TreeUtilities.expandAll(tree);
+        //TreeUtilities.expandAll(tree);
         treeGraphView.refresh();
     }
 
