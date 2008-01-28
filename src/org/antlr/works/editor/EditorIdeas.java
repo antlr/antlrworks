@@ -80,7 +80,7 @@ public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
 
 
     public boolean ideaManagerWillDisplayIdea() {
-        return !editor.autoCompletionMenu.isVisible();
+        return !editor.autoCompletionMenu.isVisible() && editor.isFileWritable();
     }
 
     public void display(Point p) {
