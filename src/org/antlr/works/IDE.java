@@ -45,9 +45,7 @@ import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.Console;
-import org.antlr.works.utils.ErrorListener;
-import org.antlr.works.utils.HelpManager;
-import org.antlr.works.utils.Localizable;
+import org.antlr.works.utils.*;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
@@ -87,7 +85,8 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         // because we are instanciating a SplashScreen before it)
         XJSystem.setSystemProperties();
         XJApplication.setPropertiesPath(PROPERTIES_PATH);
-
+        XJAlert.setDefaultAlertIcon(IconManager.shared().getIconApplication64x64());
+        
         if(args.length >= 1 && args[0].equals("-stats")) {
             XJApplication.run(new Statistics(), args, "Statistics");
         } else {

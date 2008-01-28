@@ -38,6 +38,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class TextUtils {
 
+    @SuppressWarnings("deprecation")    
     public static void createTabs(JTextPane textPane) {
         int tabSize = AWPrefs.getEditorTabSize();
         int charWidth = AWPrefs.getEditorFontSize();
