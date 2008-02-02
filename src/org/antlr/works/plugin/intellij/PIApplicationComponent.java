@@ -14,7 +14,6 @@ import org.antlr.works.plugin.container.PCXJApplicationInterface;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.utils.IconManager;
 import org.antlr.xjlib.appkit.app.XJApplication;
-import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -62,8 +61,7 @@ public class PIApplicationComponent implements ApplicationComponent, Configurabl
         XJApplication.setDelegate(new PCXJApplicationDelegate());
         XJApplication.setPropertiesPath(IDE.PROPERTIES_PATH);
         XJApplication.setShared(new PCXJApplicationInterface(null));
-        XJAlert.setDefaultAlertIcon(IconManager.shared().getIconApplication64x64());
-                                           
+
         FileTypeManager.getInstance().registerFileType(new PIFileType(), new String[] { "g" });
 
         PIActionNewFile action = new PIActionNewFile();

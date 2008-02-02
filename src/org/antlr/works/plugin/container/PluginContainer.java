@@ -113,7 +113,8 @@ public class PluginContainer implements ComponentContainer {
             }
         };
 
-        ActionManager.getInstance().registerAction(action, a);
+        final String uniqueAction = action+this;
+        ActionManager.getInstance().registerAction(uniqueAction, a);
         a.registerCustomShortcutSet(new CustomShortcutSet(ks),
                 editor.getTextPane());
     }

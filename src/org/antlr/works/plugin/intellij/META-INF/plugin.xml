@@ -2,7 +2,7 @@
 <idea-plugin>
     <name>ANTLRWorks</name>
     <id>ANTLRWorks</id>
-    <version>1.1.6</version>
+    <version>1.1.7</version>
     <description>ANTLRWorks is a grammar development environment for ANTLR v3 grammars. It combines an excellent grammar-aware editor with an interpreter for rapid prototyping and a language-agnostic debugger for isolating grammar errors. ANTLRWorks helps eliminate grammar nondeterminisms, one of the most difficult problems for beginners and experts alike, by highlighting nondeterministic paths in the syntax diagram associated with a grammar. ANTLRWorks' goal is to make grammars more accessible to the average programmer, improve maintainability and readability of grammars by providing excellent grammar navigation and refactoring tools, and address the most common questions and problems encountered by grammar developers</description>
 
     <vendor url="http://www.antlr.org/works">ANTLR Project</vendor>
@@ -10,28 +10,13 @@
     <idea-version since-build="6197"/>
 
     <change-notes><![CDATA[
-Version 1.1.6 - 01/27/2008<br>
+Version 1.1.7 - 01/31/2008<br>
 <br>
 Bug fix:<br>
-    [AW-127] - java.lang.IndexOutOfBoundsException when opening certain files on Linux<br>
-    [AW-129] - Extract rule doesn't respect properly ID boundaries<br>
-    [AW-131] - ANTLR Tool usage is displayed when a grammar file has not been saved<br>
-    [AW-132] - Most keyboard mapping doesn't work for the plugin version inside IntelliJ 7<br>
-    [AW-134] - Check grammar fails to report an alert to the user when there is an exception during analysis<br>
-    [AW-135] - Check grammar does not report errors and warnings in the early stage of analysis<br>
-    [AW-136] - Disable escape key when closing document because default behavior will close the alert by returning the code NO instead of CANCEL<br>
-    [AW-138] - Console output in debugger does not print out all the lines<br>
-    [AW-143] - Cannot export SD in bitmap format on Windows XP<br>
-    [AW-150] - Syntax diagram are not displayed properly for certain rules<br>
-<br>
-Improvement:<br>
-    [AW-130] - Use Metal LAF by default on Linux<br>
-    [AW-133] - DOT path value by default could be "/usr/bin/dot"<br>
-    [AW-139] - Syntax diagram showing warnings/errors consume too much CPU<br>
-    [AW-140] - Number of warnings reported in editor does not reflect the actual number of warnings<br>
+    [AW-151] - Test rig generates the wrong constructor<br>
 ]]>
     </change-notes>
-    
+
     <application-components>
         <component>
             <implementation-class>org.antlr.works.plugin.intellij.PIApplicationComponent</implementation-class>
