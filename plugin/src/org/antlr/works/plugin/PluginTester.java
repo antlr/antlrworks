@@ -1,6 +1,6 @@
 package org.antlr.works.plugin;
 
-import org.antlr.works.components.grammar.CEditorGrammarDefaultDelegate;
+import org.antlr.works.components.editor.ComponentEditorGrammarDefaultDelegate;
 import org.antlr.works.plugin.container.PluginContainer;
 
 import javax.swing.*;
@@ -85,7 +85,7 @@ public class PluginTester {
         panel.add(vertical, BorderLayout.CENTER);
         panel.add(container.getStatusComponent(), BorderLayout.SOUTH);
 
-        container.setEditorGrammarDelegate(new CEditorGrammarDefaultDelegate(vertical));
+        container.setEditorGrammarDelegate(new ComponentEditorGrammarDefaultDelegate(vertical));
 
         container.getContentPane().add(panel);
     }

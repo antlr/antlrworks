@@ -34,7 +34,7 @@ package org.antlr.works.debugger;
 import org.antlr.runtime.ClassicToken;
 import org.antlr.runtime.Token;
 import org.antlr.works.ate.syntax.misc.ATELine;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
 import org.antlr.works.debugger.local.DBLocal;
@@ -111,7 +111,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     protected CustomSplitPanel splitPanel;
     protected Map<Component,CustomToggleButton> components2toggle;
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
 
     protected Set<Integer> breakpoints;
 
@@ -126,7 +126,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     private boolean closing = false;
 
-    public Debugger(CEditorGrammar editor) {
+    public Debugger(ComponentEditorGrammar editor) {
         this.editor = editor;
     }
 

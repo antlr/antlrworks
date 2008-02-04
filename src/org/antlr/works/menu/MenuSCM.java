@@ -32,15 +32,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.appkit.utils.XJDialogProgress;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
 import org.antlr.works.scm.p4.P4;
 import org.antlr.works.scm.p4.P4SubmitDialog;
 import org.antlr.works.stats.StatisticsAW;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.utils.XJDialogProgress;
 
 public class MenuSCM extends MenuAbstract implements SCMDelegate {
 
@@ -48,7 +48,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     protected SCM scm;
     protected boolean silent;
 
-    public MenuSCM(CEditorGrammar editor) {
+    public MenuSCM(ComponentEditorGrammar editor) {
         super(editor);
     }
 

@@ -1,6 +1,4 @@
-package org.antlr.works.components.grammar;
-
-import javax.swing.*;
+package org.antlr.works.components.editor;
 /*
 
 [The "BSD licence"]
@@ -32,27 +30,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class CEditorGrammarDefaultDelegate implements CEditorGrammarDelegate {
-
-    public JSplitPane splitPane;
-
-    public CEditorGrammarDefaultDelegate(JSplitPane splitPane) {
-        this.splitPane = splitPane;
-    }
-
-    public void setBottomComponentVisible(boolean visible) {
-        if(visible) {
-            splitPane.setDividerLocation(splitPane.getLastDividerLocation());
-            // It may happen that the last divider location is already collapsed!
-            // In this case, we use the relative divider location.
-            if(!isBottomComponentVisible())
-                splitPane.setDividerLocation(0.6f);
-        } else {
-            splitPane.setDividerLocation(1.0f);
-        }
-    }
-
-    public boolean isBottomComponentVisible() {
-        return splitPane.getBottomComponent().getHeight() != 0;
-    }
+public interface ComponentEditorGrammarDelegate {
+    public void setBottomComponentVisible(boolean visible);
+    public boolean isBottomComponentVisible();
 }

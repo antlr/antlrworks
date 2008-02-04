@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.generate.CodeDisplay;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
@@ -52,7 +52,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     protected int actionShowCodeType;
     protected boolean actionShowCodeAfterGeneration = false;
 
-    public MenuGenerate(CEditorGrammar editor) {
+    public MenuGenerate(ComponentEditorGrammar editor) {
         super(editor);
         generateCode = new CodeGenerate(editor, this);
         checkGrammar = new CheckGrammar(editor, this);

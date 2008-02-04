@@ -1,7 +1,7 @@
 package org.antlr.works.editor;
 
 import org.antlr.works.ate.swing.ATERenderingView;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 
 import javax.swing.text.*;
 import java.util.HashSet;
@@ -39,10 +39,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory {
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
     protected Set<ATERenderingView> views = new HashSet<ATERenderingView>();
 
-    public EditorATEEditorKit(CEditorGrammar editor) {
+    public EditorATEEditorKit(ComponentEditorGrammar editor) {
         this.editor = editor;
     }
 

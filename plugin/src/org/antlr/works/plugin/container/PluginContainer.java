@@ -4,11 +4,11 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CustomShortcutSet;
-import org.antlr.works.components.ComponentContainer;
-import org.antlr.works.components.ComponentEditor;
-import org.antlr.works.components.grammar.CDocumentGrammar;
-import org.antlr.works.components.grammar.CEditorGrammar;
-import org.antlr.works.components.grammar.CEditorGrammarDefaultDelegate;
+import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.document.ComponentDocumentGrammar;
+import org.antlr.works.components.editor.ComponentEditor;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammarDefaultDelegate;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.plugin.intellij.PIUtils;
 import org.antlr.xjlib.appkit.app.XJApplication;
@@ -58,10 +58,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PluginContainer implements ComponentContainer {
     private JRootPane rootPane;
-    private CEditorGrammar editor;
+    private ComponentEditorGrammar editor;
 
     private XJPreferences prefs;
-    private CDocumentGrammar document;
+    private ComponentDocumentGrammar document;
     private XJMainMenuBar mainMenuBar;
 
     private PCXJFrameInterface frameInterface;
@@ -78,11 +78,11 @@ public class PluginContainer implements ComponentContainer {
         rootPane = new JRootPane();
 
         prefs = new XJPreferences(getClass());
-        document = new CDocumentGrammar();
+        document = new ComponentDocumentGrammar();
         document.setComponentContainer(this);
         document.setDocumentData(new XJDataPlainText());
 
-        editor = new CEditorGrammar(this);
+        editor = new ComponentEditorGrammar(this);
         editor.create();
         
         mainMenuBar = new XJMainMenuBar();
@@ -123,7 +123,7 @@ public class PluginContainer implements ComponentContainer {
         this.delegate = delegate;
     }
 
-    public void setEditorGrammarDelegate(CEditorGrammarDefaultDelegate delegate) {
+    public void setEditorGrammarDelegate(ComponentEditorGrammarDefaultDelegate delegate) {
         editor.setDelegate(delegate);
     }
 

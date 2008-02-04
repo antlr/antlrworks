@@ -1,5 +1,7 @@
-package org.antlr.works.components;
+package org.antlr.works.components.editor;
 
+import org.antlr.works.components.ComponentStatusBar;
+import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.xjlib.appkit.document.XJDocument;

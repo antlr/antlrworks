@@ -33,10 +33,8 @@ package org.antlr.works;
 
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
-import org.antlr.works.components.grammar.CContainerGrammar;
-import org.antlr.works.components.grammar.CDocumentGrammar;
-import org.antlr.works.components.project.CContainerProject;
-import org.antlr.works.components.project.CDocumentProject;
+import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.editor.EditorMenu;
@@ -49,7 +47,6 @@ import org.antlr.works.utils.*;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
-import org.antlr.xjlib.appkit.document.XJDataXML;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJPanel;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
@@ -116,12 +113,8 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
     public void appDidLaunch(String[] args, List<String> documentsToOpenAtStartup) {
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
-        XJApplication.addDocumentType(CDocumentGrammar.class, CContainerGrammar.class, XJDataPlainText.class, "g",
+        XJApplication.addDocumentType(ComponentDocumentGrammar.class, ComponentContainerGrammar.class, XJDataPlainText.class, "g",
                 Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
-        if(AWPrefs.getEnableProjectDocument()) {
-            XJApplication.addDocumentType(CDocumentProject.class, CContainerProject.class, XJDataXML.class, "awp",
-                    Localizable.getLocalizedString(Localizable.PROJECT_TYPE));
-        }
 
         XJApplication.addScheduledTimer(new HelpManager(), 1, true);
 
@@ -446,7 +439,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         List<String> docPath = new ArrayList<String>();
         for (Object o : XJApplication.shared().getDocuments()) {
             XJDocument document = (XJDocument) o;
-            if (document instanceof CDocumentGrammar) {
+            if (document instanceof ComponentDocumentGrammar) {
                 docPath.add(document.getDocumentPath());
             }
         }

@@ -2,7 +2,7 @@ package org.antlr.works.editor;
 
 import org.antlr.works.ate.analysis.ATEAnalysisItem;
 import org.antlr.works.ate.analysis.ATEAnalysisManager;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -46,12 +46,12 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
 
     protected final Color greenColor = new Color(0f, 0.9f, 0.25f, 1.0f);
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
 
     protected int numberOfErrors;
     protected int numberOfWarnings;
 
-    public EditorAnalysisManager(CEditorGrammar editor) {
+    public EditorAnalysisManager(ComponentEditorGrammar editor) {
         this.editor = editor;
     }
 

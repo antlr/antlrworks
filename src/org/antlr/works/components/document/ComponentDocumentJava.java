@@ -1,8 +1,5 @@
-package org.antlr.works.components;
+package org.antlr.works.components.document;
 
-import org.antlr.xjlib.appkit.document.XJDataPlainText;
-import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.foundation.XJUtils;
 /*
 
 [The "BSD licence"]
@@ -34,38 +31,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ComponentDocument extends XJDocument {
-
-    ComponentContainer container;
-
-    public void setComponentContainer(ComponentContainer container) {
-        this.container = container;
-    }
-
-    public ComponentContainer getContainer() {
-        if(container != null)
-            return container;
-        else
-            return (ComponentContainer)getWindow();
-    }
-
-    public void changeDone() {
-        super.changeDone();
-
-        if(container != null)
-            container.setDirty();
-    }
-
-    public void documentWillWriteData() {
-        ComponentContainer w = getContainer();
-        XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        data.setText(XJUtils.getLocalizedText(w.getText()));
-    }
-
-    public void documentDidReadData() {
-        ComponentContainer w = getContainer();
-        XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        w.loadText(XJUtils.getNormalizedText(data.getText()));
-    }
-
+public class ComponentDocumentJava extends ComponentDocument {
 }

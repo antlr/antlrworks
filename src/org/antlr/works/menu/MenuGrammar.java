@@ -33,7 +33,7 @@ package org.antlr.works.menu;
 
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.grammar.*;
 import org.antlr.works.grammar.decisiondfa.DecisionDFA;
 import org.antlr.works.stats.StatisticsAW;
@@ -51,7 +51,7 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
     protected CheckGrammar checkGrammar;
     protected boolean checkingGrammar;
 
-    public MenuGrammar(CEditorGrammar editor) {
+    public MenuGrammar(ComponentEditorGrammar editor) {
         super(editor);
         checkGrammar = new CheckGrammar(editor, this);
     }

@@ -5,7 +5,7 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Rule;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 /*
 
 [The "BSD licence"]
@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class TokensDFA extends GrammarDOTTab {
 
-    public TokensDFA(CEditorGrammar editor) {
+    public TokensDFA(ComponentEditorGrammar editor) {
         super(editor);
     }
 

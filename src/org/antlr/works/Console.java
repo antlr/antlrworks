@@ -2,7 +2,7 @@ package org.antlr.works;
 
 import org.antlr.Tool;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.grammar.EngineGrammarDelegate;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
@@ -119,7 +119,7 @@ public class Console {
         se.setDelegate(new SyntaxDelegate());
         se.processSyntax();
 
-        CEditorGrammar ceg = new CEditorGrammar(null);
+        ComponentEditorGrammar ceg = new ComponentEditorGrammar(null);
         ceg.parserEngine = new GrammarSyntaxEngine();
         EngineGrammar eg = new EngineGrammar(ceg);
         eg.setDelegate(new ConsoleEngineGrammarDelegate());
@@ -145,7 +145,7 @@ public class Console {
         se.setDelegate(new SyntaxDelegate());
         se.processSyntax();
 
-        CEditorGrammar ceg = new CEditorGrammar(null);
+        ComponentEditorGrammar ceg = new ComponentEditorGrammar(null);
         ceg.parserEngine = new GrammarSyntaxEngine();
         EngineGrammar eg = new EngineGrammar(ceg);
         eg.setDelegate(new ConsoleEngineGrammarDelegate());

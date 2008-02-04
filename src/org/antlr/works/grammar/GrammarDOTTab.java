@@ -1,6 +1,6 @@
 package org.antlr.works.grammar;
 
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.decisiondfa.DecisionDFA;
@@ -52,7 +52,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public abstract class GrammarDOTTab extends EditorTab implements Runnable, GViewDelegate {
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
 
     protected JPanel panel;
     protected GView view;
@@ -64,7 +64,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
 
     protected String error;
 
-    public GrammarDOTTab(CEditorGrammar editor) {
+    public GrammarDOTTab(ComponentEditorGrammar editor) {
         this.editor = editor;
     }
 

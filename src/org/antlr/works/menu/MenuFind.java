@@ -1,7 +1,7 @@
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.find.Usages;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.element.ElementRule;
@@ -40,7 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class MenuFind extends MenuAbstract {
 
-    public MenuFind(CEditorGrammar editor) {
+    public MenuFind(ComponentEditorGrammar editor) {
         super(editor);
     }
 

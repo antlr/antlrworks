@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,9 +43,9 @@ public class EditorPersistence {
 
     private Map<String,Map<Object,EditorPersistentObject>> persistence = new HashMap<String, Map<Object,EditorPersistentObject>>();
     private boolean stored = false;
-    private CEditorGrammar editor;
+    private ComponentEditorGrammar editor;
 
-    public EditorPersistence(CEditorGrammar editor) {
+    public EditorPersistence(ComponentEditorGrammar editor) {
         this.editor = editor;
     }
 

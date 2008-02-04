@@ -34,7 +34,7 @@ package org.antlr.works.editor;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.works.syntax.GrammarSyntaxLexer;
@@ -66,7 +66,7 @@ import java.util.List;
 
 public class EditorRules implements XJTreeDelegate {
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
 
     protected boolean programmaticallySelectingRule = false;
     protected boolean selectNextRule = false;
@@ -82,7 +82,7 @@ public class EditorRules implements XJTreeDelegate {
     private TreeSelectionListener tsl;
     private MouseListener ml;
 
-    public EditorRules(CEditorGrammar editor, XJTree rulesTree) {
+    public EditorRules(ComponentEditorGrammar editor, XJTree rulesTree) {
         this.editor = editor;
         this.rulesTree = rulesTree;
 

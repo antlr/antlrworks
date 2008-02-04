@@ -31,15 +31,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 
 import javax.swing.*;
 
 public abstract class MenuAbstract {
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
 
-    public MenuAbstract(CEditorGrammar editor) {
+    public MenuAbstract(ComponentEditorGrammar editor) {
         this.editor = editor;
     }
 

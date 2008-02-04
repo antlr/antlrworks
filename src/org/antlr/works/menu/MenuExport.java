@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.element.ElementRule;
@@ -56,7 +56,7 @@ import java.util.List;
 
 public class MenuExport extends MenuAbstract {
 
-    public MenuExport(CEditorGrammar editor) {
+    public MenuExport(ComponentEditorGrammar editor) {
         super(editor);
     }
 

@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.swing.Toolbar;
@@ -60,9 +60,9 @@ public class EditorToolbar implements XJNotificationObserver {
 
     public JButton find;
 
-    public CEditorGrammar editor;
+    public ComponentEditorGrammar editor;
 
-    public EditorToolbar(CEditorGrammar editor) {
+    public EditorToolbar(ComponentEditorGrammar editor) {
         this.editor = editor;
 
         createInterface();

@@ -2,7 +2,7 @@ package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.grammar.RefactorEngine;
 import org.antlr.works.grammar.RefactorMutator;
 import org.antlr.works.prefs.AWPrefs;
@@ -53,7 +53,7 @@ public class MenuRefactor extends MenuAbstract {
     private RefactorEngine engine;
     private EditorTextMutator mutator;
 
-    public MenuRefactor(CEditorGrammar editor) {
+    public MenuRefactor(ComponentEditorGrammar editor) {
         super(editor);
         engine = new RefactorEngine();
     }

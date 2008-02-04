@@ -254,8 +254,6 @@ public class AWPrefs {
     public static final String PREF_PERSONAL_INFO = "PREF_OUTPUT_DEV_DATE";
     public static final String PREF_PRIVATE_MENU = "PREF_PRIVATE_MENU";
 
-    public static final String PREF_PROJET_DOCUMENT = "PREF_PROJET_DOCUMENT";
-
     public static final String DEFAULT_OUTPUT_PATH;
 
     static {
@@ -565,10 +563,6 @@ public class AWPrefs {
 
     public static boolean getDebuggerAskGen() {
         return getPreferences().getBoolean(PREF_DEBUGGER_ASK_GEN, DEFAULT_DEBUGGER_ASK_GEN);
-    }
-
-    public static boolean getEnableProjectDocument() {
-        return getPreferences().getBoolean(PREF_PROJET_DOCUMENT, false);
     }
 
     public static XJPreferences getPreferences() {

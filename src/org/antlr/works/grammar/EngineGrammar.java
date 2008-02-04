@@ -38,7 +38,7 @@ import org.antlr.Tool;
 import org.antlr.analysis.NFAState;
 import org.antlr.tool.*;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
@@ -62,10 +62,10 @@ public class EngineGrammar {
     private EngineGrammarResult createGrammarResult = new EngineGrammarResult();
     private EngineGrammarResult analyzeResult = new EngineGrammarResult();
 
-    private CEditorGrammar editor;
+    private ComponentEditorGrammar editor;
     private EngineGrammarDelegate delegate;
 
-    public EngineGrammar(CEditorGrammar editor) {
+    public EngineGrammar(ComponentEditorGrammar editor) {
         this.editor = editor;
         errors = new ArrayList<EngineGrammarError>();
         markDirty();

@@ -1,10 +1,3 @@
-package org.antlr.works.components.project;
-
-import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.works.project.ProjectData;
-
-import java.util.Map;
-
 /*
 
 [The "BSD licence"]
@@ -36,40 +29,31 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class CDocumentProject extends XJDocument {
+package org.antlr.works.components.document;
 
-    protected ProjectData data;
+import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.prefs.AWPrefs;
 
-    public CDocumentProject() {
-        data = new ProjectData();
+import java.io.File;
+
+public class ComponentDocumentGrammar extends ComponentDocument {
+
+    public boolean performSave(boolean saveAs) {
+        // Make sure the document can be saved (SCM opened, etc)
+        // before calling the super class method to do
+        // the actual job
+        ComponentContainer w = getContainer();
+        if(w.willSaveDocument()) {
+            if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
+                // Create the backup file if needed
+                File backup = new File(documentPath+"~");
+                if(backup.exists()) backup.delete();
+                new File(documentPath).renameTo(backup);
+            }
+            return super.performSave(saveAs);
+        } else {
+            return false;
+        }
     }
-
-    public ProjectData getData() {
-        return data;
-    }
-
-    /** Override this method to automatically save the project
-     * if it is dirty without asking the user
-     */
-
-    protected boolean performClose_() {
-        if(getDocumentPath() == null)
-            return super.performClose_();
-        else
-            return true;
-    }
-
-    public void documentWillWriteData() {
-        CContainerProject project = (CContainerProject)getWindow();
-        project.documentWillSave();
-        getDocumentData().setDataForKey(null, "projectData", data.getPersistentData());
-    }
-
-    public void documentDidReadData() {
-        data.setPersistentData((Map)getDocumentData().getDataForKey("projectData"));
-        CContainerProject project = (CContainerProject)getWindow();
-        project.documentDidLoad();
-    }
-
 
 }

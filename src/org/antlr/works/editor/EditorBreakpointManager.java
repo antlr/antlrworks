@@ -2,7 +2,7 @@ package org.antlr.works.editor;
 
 import org.antlr.works.ate.breakpoint.ATEBreakpointEntity;
 import org.antlr.works.ate.breakpoint.ATEBreakpointManager;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.syntax.element.ElementRule;
 
 import java.util.ArrayList;
@@ -40,9 +40,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorBreakpointManager extends ATEBreakpointManager {
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
 
-    public EditorBreakpointManager(CEditorGrammar editor) {
+    public EditorBreakpointManager(ComponentEditorGrammar editor) {
         super(editor.textEditor);
         this.editor = editor;
     }

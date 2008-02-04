@@ -1,5 +1,6 @@
-package org.antlr.works.components;
+package org.antlr.works.components.container;
 
+import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;

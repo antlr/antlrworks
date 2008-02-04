@@ -1,7 +1,7 @@
 package org.antlr.works.syntax;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.text.BadLocationException;
@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class GrammarAutoIndent {
 
-    public static void autoIndentOnSpecificKeys(CEditorGrammar editor, Document doc, int offset, int length) throws BadLocationException {
+    public static void autoIndentOnSpecificKeys(ComponentEditorGrammar editor, Document doc, int offset, int length) throws BadLocationException {
         String s = doc.getText(offset-1, length+1);
         if(s.length() < 2)
             return;

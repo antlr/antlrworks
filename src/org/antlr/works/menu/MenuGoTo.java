@@ -33,7 +33,7 @@ package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.element.ElementReference;
 
@@ -42,7 +42,7 @@ import java.util.Set;
 
 public class MenuGoTo extends MenuAbstract {
 
-    public MenuGoTo(CEditorGrammar editor) {
+    public MenuGoTo(ComponentEditorGrammar editor) {
         super(editor);
     }
 

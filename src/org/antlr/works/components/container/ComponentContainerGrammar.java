@@ -29,10 +29,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.components.grammar;
+package org.antlr.works.components.container;
 
-import org.antlr.works.components.ComponentContainer;
-import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.components.editor.ComponentEditor;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
@@ -45,12 +45,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 
-public class CContainerGrammar extends XJWindow implements ComponentContainer {
+public class ComponentContainerGrammar extends XJWindow implements ComponentContainer {
 
     protected ComponentEditor editor;
 
-    public CContainerGrammar() {
-        editor = new CEditorGrammar(this);
+    public ComponentContainerGrammar() {
+        editor = new ComponentEditorGrammar(this);
         editor.create();
         editor.assemble();
 

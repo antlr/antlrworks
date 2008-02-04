@@ -3,7 +3,7 @@ package org.antlr.works.editor;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
 import org.antlr.works.ate.folding.ATEFoldingManager;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementAction;
 import org.antlr.works.syntax.element.ElementRule;
@@ -45,9 +45,9 @@ public class EditorFoldingManager extends ATEFoldingManager {
     protected static final int TAG_RULES = 0;
     protected static final int TAG_ACTIONS = 1;
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
 
-    public EditorFoldingManager(CEditorGrammar editor) {
+    public EditorFoldingManager(ComponentEditorGrammar editor) {
         super(editor.textEditor);
         this.editor = editor;
     }

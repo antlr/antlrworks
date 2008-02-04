@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor;
 
 import org.antlr.works.IDE;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementGrammarName;
@@ -134,7 +134,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_PRIVATE_UNREGISTER = 200;
     public static final int MI_SERIALIZE_SD = 201;
 
-    protected CEditorGrammar editor = null;
+    protected ComponentEditorGrammar editor = null;
     protected XJMenuItem ignoreRuleMenuItem;
 
     public XJMenu menuGrammar;
@@ -142,7 +142,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     /** The resource bundle used to get localized strings */
     protected static ResourceBundle resourceBundle = IDE.getMenusResourceBundle();
 
-    public EditorMenu(CEditorGrammar editor) {
+    public EditorMenu(ComponentEditorGrammar editor) {
         this.editor = editor;
     }
 

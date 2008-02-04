@@ -9,7 +9,7 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.ReadonlyStatusHandler;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.antlr.works.components.grammar.CEditorGrammarDefaultDelegate;
+import org.antlr.works.components.editor.ComponentEditorGrammarDefaultDelegate;
 import org.antlr.works.plugin.container.PluginContainer;
 import org.antlr.works.plugin.container.PluginContainerDelegate;
 import org.jetbrains.annotations.NotNull;
@@ -113,7 +113,7 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
         panel.add(vertical, BorderLayout.CENTER);
         panel.add(container.getStatusComponent(), BorderLayout.SOUTH);
 
-        container.setEditorGrammarDelegate(new CEditorGrammarDefaultDelegate(vertical));
+        container.setEditorGrammarDelegate(new ComponentEditorGrammarDefaultDelegate(vertical));
         container.getContentPane().add(panel);
     }
 

@@ -1,6 +1,6 @@
 package org.antlr.works.menu;
 
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 /*
 
 [The "BSD licence"]
@@ -34,7 +34,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class MenuFolding extends MenuAbstract {
 
-    public MenuFolding(CEditorGrammar editor) {
+    public MenuFolding(ComponentEditorGrammar editor) {
         super(editor);
     }
 

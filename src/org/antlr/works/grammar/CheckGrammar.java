@@ -31,15 +31,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.grammar;
 
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.utils.Console;
 
 public class CheckGrammar implements Runnable {
 
     protected CheckGrammarDelegate delegate;
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
 
-    public CheckGrammar(CEditorGrammar editor, CheckGrammarDelegate delegate) {
+    public CheckGrammar(ComponentEditorGrammar editor, CheckGrammarDelegate delegate) {
         this.editor = editor;
         this.delegate = delegate;
     }

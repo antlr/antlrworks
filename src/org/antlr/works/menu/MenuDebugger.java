@@ -31,13 +31,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.stats.StatisticsAW;
 
 public class MenuDebugger extends MenuAbstract {
 
-    public MenuDebugger(CEditorGrammar editor) {
+    public MenuDebugger(ComponentEditorGrammar editor) {
         super(editor);
     }
 

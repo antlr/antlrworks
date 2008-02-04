@@ -1,11 +1,10 @@
-package org.antlr.works.components.text;
+package org.antlr.works.components.editor;
 
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
 import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
-import org.antlr.works.components.ComponentContainer;
-import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.*;
@@ -41,14 +40,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class CEditorText extends ComponentEditor implements ATEPanelDelegate {
+public class ComponentEditorText extends ComponentEditor implements ATEPanelDelegate {
 
     protected ATEPanel textEditor;
     protected ATELanguageSyntaxEngine syntaxEngine;
 
     protected JLabel cursorLabel;
 
-    public CEditorText(ComponentContainer container) {
+    public ComponentEditorText(ComponentContainer container) {
         super(container);
     }
 

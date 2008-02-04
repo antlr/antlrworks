@@ -40,7 +40,7 @@ import org.antlr.tool.Interpreter;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.EngineGrammar;
@@ -81,9 +81,9 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
     protected String startSymbol = null;
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
 
-    public EditorInterpreter(CEditorGrammar editor) {
+    public EditorInterpreter(ComponentEditorGrammar editor) {
         this.editor = editor;
     }
 

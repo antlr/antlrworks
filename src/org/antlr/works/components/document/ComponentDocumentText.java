@@ -1,6 +1,5 @@
-package org.antlr.works.components.text;
+package org.antlr.works.components.document;
 
-import org.antlr.works.components.ComponentDocument;
 /*
 
 [The "BSD licence"]
@@ -32,5 +31,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class CDocumentText extends ComponentDocument {
+public class ComponentDocumentText extends ComponentDocument {
 }

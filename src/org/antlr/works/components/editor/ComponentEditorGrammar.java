@@ -1,4 +1,4 @@
-package org.antlr.works.components.grammar;
+package org.antlr.works.components.editor;
 
 import org.antlr.Tool;
 import org.antlr.works.ate.ATEPanel;
@@ -11,8 +11,10 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.completion.AutoCompletionMenu;
 import org.antlr.works.completion.AutoCompletionMenuDelegate;
 import org.antlr.works.completion.RuleTemplates;
-import org.antlr.works.components.ComponentContainer;
-import org.antlr.works.components.ComponentEditor;
+import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.editor.ComponentEditorGrammarDelegate;
+import org.antlr.works.components.editor.ComponentEditorGrammarDefaultDelegate;
+import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.*;
 import org.antlr.works.find.FindAndReplace;
@@ -90,7 +92,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class CEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
+public class ComponentEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
         EditorProvider, ATEPanelDelegate,
         XJUndoDelegate, InspectorDelegate,
         GrammarSyntaxDelegate, EngineGrammarDelegate
@@ -168,7 +170,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
 
     protected boolean windowFirstDisplay = true;
     protected String lastSelectedRule;
-    protected CEditorGrammarDelegate delegate;
+    protected ComponentEditorGrammarDelegate delegate;
 
     protected List<EditorTab> tabs = new ArrayList<EditorTab>();
     protected AfterParseOperations afterParserOp;
@@ -186,11 +188,11 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     protected MouseListener ml;
     protected ChangeListener cl;
 
-    public CEditorGrammar(ComponentContainer container) {
+    public ComponentEditorGrammar(ComponentContainer container) {
         super(container);
     }
 
-    public void setDelegate(CEditorGrammarDelegate delegate) {
+    public void setDelegate(ComponentEditorGrammarDelegate delegate) {
         this.delegate = delegate;
     }
 
@@ -231,7 +233,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
         upDownSplitPane.setContinuousLayout(true);
         upDownSplitPane.setOneTouchExpandable(true);
 
-        delegate = new CEditorGrammarDefaultDelegate(upDownSplitPane);
+        delegate = new ComponentEditorGrammarDefaultDelegate(upDownSplitPane);
 
         mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
     }

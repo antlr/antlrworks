@@ -1,11 +1,6 @@
-package org.antlr.works.components.project.file;
+package org.antlr.works.components.editor;
 
-import org.antlr.works.components.ComponentDocument;
-import org.antlr.works.components.ComponentEditor;
-import org.antlr.works.components.java.CDocumentJava;
-import org.antlr.works.components.java.CEditorJava;
-import org.antlr.works.components.project.CContainerProject;
-import org.antlr.works.project.ProjectFileItem;
+import javax.swing.*;
 /*
 
 [The "BSD licence"]
@@ -37,18 +32,27 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class CContainerProjectJava extends CContainerProjectFile {
+public class ComponentEditorGrammarDefaultDelegate implements ComponentEditorGrammarDelegate {
 
-    public CContainerProjectJava(CContainerProject project, ProjectFileItem item) {
-        super(project, item);
+    public JSplitPane splitPane;
+
+    public ComponentEditorGrammarDefaultDelegate(JSplitPane splitPane) {
+        this.splitPane = splitPane;
     }
 
-    public ComponentDocument createDocument() {
-        return new CDocumentJava();
+    public void setBottomComponentVisible(boolean visible) {
+        if(visible) {
+            splitPane.setDividerLocation(splitPane.getLastDividerLocation());
+            // It may happen that the last divider location is already collapsed!
+            // In this case, we use the relative divider location.
+            if(!isBottomComponentVisible())
+                splitPane.setDividerLocation(0.6f);
+        } else {
+            splitPane.setDividerLocation(1.0f);
+        }
     }
 
-    public ComponentEditor createEditor() {
-        return new CEditorJava(this);
+    public boolean isBottomComponentVisible() {
+        return splitPane.getBottomComponent().getHeight() != 0;
     }
-
 }

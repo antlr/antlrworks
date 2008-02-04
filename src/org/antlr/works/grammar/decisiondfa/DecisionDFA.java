@@ -5,7 +5,7 @@ import org.antlr.analysis.DFA;
 import org.antlr.codegen.CodeGenerator;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.grammar.GrammarDOTTab;
 
 import java.util.Collections;
@@ -48,7 +48,7 @@ public class DecisionDFA extends GrammarDOTTab {
 
     protected int decisionNumber;
 
-    public DecisionDFA(CEditorGrammar editor) {
+    public DecisionDFA(ComponentEditorGrammar editor) {
         super(editor);
     }
 

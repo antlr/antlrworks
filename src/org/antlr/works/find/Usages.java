@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.find;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.syntax.element.ElementRule;
 
@@ -56,10 +56,10 @@ public class Usages extends EditorTab {
     protected DefaultMutableTreeNode node;
     protected String lastRule;
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
     protected ATEToken token;
 
-    public Usages(CEditorGrammar editor, ATEToken token) {
+    public Usages(ComponentEditorGrammar editor, ATEToken token) {
         this.editor = editor;
         this.token = token;
 

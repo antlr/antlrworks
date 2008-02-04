@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.grammar.CEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.prefs.AWPrefs;
@@ -54,7 +54,7 @@ import java.awt.image.BufferedImage;
 
 public class Visual extends EditorTab implements GContextProvider {
 
-    protected CEditorGrammar editor;
+    protected ComponentEditorGrammar editor;
 
     protected VisualDrawing drawing;
 
@@ -65,7 +65,7 @@ public class Visual extends EditorTab implements GContextProvider {
 
     protected boolean enable = true;
 
-    public Visual(CEditorGrammar editor) {
+    public Visual(ComponentEditorGrammar editor) {
         this.editor = editor;
 
         skin = new SDSkin();

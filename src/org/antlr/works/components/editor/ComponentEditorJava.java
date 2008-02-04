@@ -1,11 +1,8 @@
-package org.antlr.works.components.project.file;
+package org.antlr.works.components.editor;
 
-import org.antlr.works.components.ComponentDocument;
-import org.antlr.works.components.ComponentEditor;
-import org.antlr.works.components.project.CContainerProject;
-import org.antlr.works.components.text.CDocumentText;
-import org.antlr.works.components.text.CEditorText;
-import org.antlr.works.project.ProjectFileItem;
+import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
+import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
+import org.antlr.works.components.container.ComponentContainer;
 /*
 
 [The "BSD licence"]
@@ -37,18 +34,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class CContainerProjectText extends CContainerProjectFile {
+public class ComponentEditorJava extends ComponentEditorText {
 
-    public CContainerProjectText(CContainerProject project, ProjectFileItem item) {
-        super(project, item);
+    public ComponentEditorJava(ComponentContainer container) {
+        super(container);
     }
 
-    public ComponentDocument createDocument() {
-        return new CDocumentText();
-    }
-
-    public ComponentEditor createEditor() {
-        return new CEditorText(this);
+    public ATELanguageSyntaxEngine createLanguageEngine() {
+        return new ATEJavaSyntaxEngine();
     }
 
 }
