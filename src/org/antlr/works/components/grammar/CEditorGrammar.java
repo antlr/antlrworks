@@ -1166,6 +1166,7 @@ public class CEditorGrammar extends ComponentEditor implements AutoCompletionMen
     }
 
     public void componentActivated() {
+        console.makeCurrent();
         grammarSyntax.resetTokenVocab();
         grammarSyntax.rebuildAll();
         textEditor.getTextPane().setWritable(isFileWritable());
