@@ -128,9 +128,27 @@ public class CodeGenerate implements Runnable {
         return success;
     }
 
-    public static final String LEXER_SUFFIX = "Lexer";
-    public static final String PARSER_SUFFIX = "Parser";
-    public static final String TREEPARSER_SUFFIX = "";
+    /**
+     * Returns true if the grammar type needs a suffix for the generated class files.
+     * Only combined grammars need a suffix.
+     *
+     * @return true if the grammar generated files need a suffix
+     */
+    public boolean hasSuffix() {
+        return provider.getEngineGrammar().isCombinedGrammar();
+    }
+
+    public String getSuffix(int type) {
+        if(hasSuffix()) {
+            switch(type) {
+                case ElementGrammarName.LEXER:
+                    return "Lexer";
+                case ElementGrammarName.PARSER:
+                    return "Parser";
+            }
+        }
+        return "";
+    }
 
     public String getGeneratedClassName(int type) throws Exception {
         String name = null;
@@ -139,21 +157,16 @@ public class CodeGenerate implements Runnable {
         if(type == ElementGrammarName.LEXER) {
             Grammar g = engine.getLexerGrammar();
             if(g == null) return null;
-            name = g.name+LEXER_SUFFIX;
+            name = g.name+getSuffix(type);
         } else if(type == ElementGrammarName.PARSER) {
             Grammar g = engine.getParserGrammar();
             if(g == null) return null;
-
-            if(engine.getType() == ElementGrammarName.TREEPARSER) {
-                name = g.name+TREEPARSER_SUFFIX;
-            } else {
-                name = g.name+PARSER_SUFFIX;
-            }
+            name = g.name+getSuffix(type);
         } else if(type == ElementGrammarName.TREEPARSER) {
             Grammar g = engine.getParserGrammar();
             if(g == null) return null;
             if(engine.getType() != ElementGrammarName.TREEPARSER) return null;
-            name = g.name+TREEPARSER_SUFFIX;
+            name = g.name+getSuffix(type);
         }
         return name;
     }

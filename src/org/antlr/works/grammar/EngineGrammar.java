@@ -121,6 +121,10 @@ public class EngineGrammar {
         return errors;
     }
 
+    public boolean isCombinedGrammar() {
+        return getType() == ElementGrammarName.COMBINED;
+    }
+
     public boolean isTreeParserGrammar() {
         return getType() == ElementGrammarName.TREEPARSER;
     }
