@@ -171,20 +171,29 @@ public class CodeGenerate implements Runnable {
         return name;
     }
 
-    public List<String> getGeneratedTextFileNames() throws Exception {
+    public List<String> getGeneratedFileNames() throws Exception {
         List<String> names = new ArrayList<String>();
 
-        String name = getGeneratedTextFileName(ElementGrammarName.LEXER);
+        String name = getGeneratedFileName(ElementGrammarName.LEXER);
+        if(name != null) {
+            names.add(name);
+        } else if(provider.getEngineGrammar().isParserGrammar()) {
+            // try to use the tokenVocab name for the name of the lexer
+            // if the grammar is a parser grammar
+            // todo use user's provided name if tokenVocab is null or invalid
+            String className = provider.getParserEngine().getTokenVocab();
+            if(className != null) {
+                name = XJUtils.concatPath(getOutputPath(), className+".java");
+                names.add(name);
+            }
+        }
+
+        name = getGeneratedFileName(ElementGrammarName.PARSER);
         if(name != null) {
             names.add(name);
         }
 
-        name = getGeneratedTextFileName(ElementGrammarName.PARSER);
-        if(name != null) {
-            names.add(name);
-        }
-
-        name = getGeneratedTextFileName(ElementGrammarName.TREEPARSER);
+        name = getGeneratedFileName(ElementGrammarName.TREEPARSER);
         if(name != null) {
             names.add(name);
         }
@@ -192,7 +201,7 @@ public class CodeGenerate implements Runnable {
         return names;
     }
 
-    public String getGeneratedTextFileName(int type) throws Exception {
+    public String getGeneratedFileName(int type) throws Exception {
         String className = getGeneratedClassName(type);
         if(className == null) return null;
         return XJUtils.concatPath(getOutputPath(), className+".java");
@@ -200,9 +209,8 @@ public class CodeGenerate implements Runnable {
 
     public boolean isGeneratedTextFileExisting(int type) {
         try {
-            String file = getGeneratedTextFileName(type);
-            if(file == null) return true;
-            return new File(file).exists();
+            String file = getGeneratedFileName(type);
+            return file == null || new File(file).exists();
         } catch (Exception e) {
             provider.getConsole().print(e);
         }
@@ -224,7 +232,7 @@ public class CodeGenerate implements Runnable {
     }
 
     public String getGeneratedText(int type) throws Exception {
-        return XJUtils.getStringFromFile(getGeneratedTextFileName(type));
+        return XJUtils.getStringFromFile(getGeneratedFileName(type));
     }
 
     public void generateInThread(Container parent) {

@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor;
 
 import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.syntax.GrammarSyntaxEngine;
 import org.antlr.xjlib.appkit.document.XJDocument;
 
 import java.awt.*;
@@ -47,5 +48,6 @@ public interface EditorProvider {
     public EngineGrammar getEngineGrammar();
     public EditorConsole getConsole();
     public Container getWindowContainer();
+    public GrammarSyntaxEngine getParserEngine();
 
 }

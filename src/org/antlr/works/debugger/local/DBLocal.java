@@ -73,7 +73,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     public static final String ST_ATTR_CLASSNAME = "class_name";
     public static final String ST_ATTR_INPUT_FILE = "input_file";
     public static final String ST_ATTR_JAVA_PARSER = "java_parser";
-    public static final String ST_ATTR_JAVA_LEXER = "java_parser_lexer";
+    public static final String ST_ATTR_JAVA_LEXER = "java_lexer";
     public static final String ST_ATTR_START_SYMBOL = "start_symbol";
     public static final String ST_ATTR_DEBUG_PORT = "port";
 
@@ -292,7 +292,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         try {
             setStartRule(AWPrefs.getStartSymbol());
 
-            grammarGeneratedFiles = codeGenerator.getGeneratedTextFileNames();
+            grammarGeneratedFiles = codeGenerator.getGeneratedFileNames();
 
             fileRemoteParser = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+".java");
             fileRemoteParserInputTextFile = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
@@ -391,6 +391,17 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         compileGlueCode();
     }
 
+    protected String getLexerName() throws Exception {
+        String lexer = codeGenerator.getGeneratedClassName(ElementGrammarName.LEXER);
+        if(lexer == null) {
+            // The lexer name can be null if the grammar is a treeparser or a parser
+            // Try to lookup the name used by tokenVocab and use it as the lexer name
+            // todo if the tokenVocab token is not present (or invalid - the file does not exist), ask the user
+            lexer = debugger.getProvider().getParserEngine().getTokenVocab();
+        }
+        return lexer;
+    }
+
     protected void generateGlueCode() {
         try {
             StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup", DefaultTemplateLexer.class);
@@ -403,7 +414,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
                 glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(inputFile));
             }
             glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(ElementGrammarName.PARSER));
-            glueCode.setAttribute(ST_ATTR_JAVA_LEXER, codeGenerator.getGeneratedClassName(ElementGrammarName.LEXER));
+            glueCode.setAttribute(ST_ATTR_JAVA_LEXER, getLexerName());
             glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
             glueCode.setAttribute(ST_ATTR_DEBUG_PORT, AWPrefs.getDebugDefaultLocalPort());
 
