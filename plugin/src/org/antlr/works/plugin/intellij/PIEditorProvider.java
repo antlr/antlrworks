@@ -41,8 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class PIEditorProvider implements ApplicationComponent, FileEditorProvider, SettingsSavingComponent {
 
     public boolean accept(@NotNull Project project, @NotNull VirtualFile file) {
-        String ext = file.getExtension();
-        return ext != null && ext.equals("g");
+        return file.getFileType() instanceof PIFileType;
     }
 
     @NotNull
