@@ -51,8 +51,12 @@ import java.util.prefs.Preferences;
 
 public class DebuggerInputDialog extends XJDialog {
 
+    private Debugger debugger;
+
     public DebuggerInputDialog(Debugger debugger, Container parent) {
         super(parent, true);
+
+        this.debugger = debugger;
 
         initComponents();
         setSize(600, 400);
@@ -82,7 +86,7 @@ public class DebuggerInputDialog extends XJDialog {
         for (ElementRule rule : debugger.getSortedRules()) {
             rulesCombo.addItem(rule.name);
         }
-        rulesCombo.setSelectedItem(AWPrefs.getStartSymbol());
+        rulesCombo.setSelectedItem(debugger.getStartRule());
 
         Utils.fillComboWithEOL(eolCombo);
         eolCombo.setSelectedIndex(AWPrefs.getDebuggerEOL());
@@ -112,7 +116,7 @@ public class DebuggerInputDialog extends XJDialog {
             XJAlert.display(getJavaComponent(), "Error", "The input text is too large: "+text.length()+" bytes but preferences can only hold "+Preferences.MAX_VALUE_LENGTH+" bytes. It will be truncated.");
             text = text.substring(0, Preferences.MAX_VALUE_LENGTH-1);
         }
-        AWPrefs.setStartSymbol(getRule());
+        debugger.setStartRule(getRule());
         AWPrefs.setDebuggerInputText(text);
         AWPrefs.setDebuggerEOL(eolCombo.getSelectedIndex());
         AWPrefs.setDebuggerInputMode(textInputRadio.isSelected()?0:1);

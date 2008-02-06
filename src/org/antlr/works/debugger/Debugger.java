@@ -125,6 +125,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     protected int debuggerCursorIndex = -1;
 
     private boolean closing = false;
+    private String startRule;
 
     public Debugger(ComponentEditorGrammar editor) {
         this.editor = editor;
@@ -450,6 +451,17 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public List<ElementRule> getSortedRules() {
         return editor.getSortedRules();
+    }
+
+    public void setStartRule(String rule) {
+        this.startRule = rule;
+    }
+
+    public String getStartRule() {
+        if(startRule == null && !getRules().isEmpty()) {
+            startRule = getRules().get(0).name;
+        }
+        return startRule;
     }
 
     public String getEventsAsString() {

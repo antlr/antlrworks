@@ -239,7 +239,6 @@ public class AWPrefs {
     public static final String PREF_OUTPUT_PATH_SAME = "PREF_OUTPUT_PATH_SAME";
     public static final String PREF_OUTPUT_PATH_CUSTOM = "PREF_OUTPUT_PATH_CUSTOM";
     public static final String PREF_OUTPUT_PATH = "PREF_OUTPUT_PATH";
-    public static final String PREF_START_SYMBOL = "PREF_START_SYMBOL";
     public static final String PREF_DEBUGGER_INPUT_TEXT = "PREF_DEBUGGER_INPUT_TEXT";
     public static final String PREF_DEBUGGER_EOL = "PREF_DEBUGGER_EOL";
     public static final String PREF_DEBUGGER_INPUT_FILE = "PREF_DEBUGGER_INPUT_FILE";
@@ -310,14 +309,6 @@ public class AWPrefs {
 
     public static String getOutputPath() {
         return getPreferences().getString(PREF_OUTPUT_PATH, DEFAULT_OUTPUT_PATH);
-    }
-
-    public static void setStartSymbol(String startSymbol) {
-        getPreferences().setString(PREF_START_SYMBOL, startSymbol);
-    }
-
-    public static String getStartSymbol() {
-        return getPreferences().getString(PREF_START_SYMBOL, "");
     }
 
     public static void setDebuggerInputText(String inputText) {

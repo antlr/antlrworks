@@ -118,14 +118,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         debugger = null;
     }
     
-    public void setStartRule(String rule) {
-        this.startRule = rule;
-    }
-
-    public String getStartRule() {
-        return startRule;
-    }
-
     public boolean canDebugAgain() {
         if(inputMode == 0) {
             return inputText != null;
@@ -235,7 +227,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
                         inputText = dialog.getInputText();
                         inputFile = dialog.getInputFile();
                         inputMode = dialog.getInputMode();
-                        setStartRule(dialog.getRule());
+                        startRule = dialog.getRule();
                         showProgress();
                     } else
                         cancel();
@@ -290,8 +282,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected boolean prepare() {
         try {
-            setStartRule(AWPrefs.getStartSymbol());
-
             grammarGeneratedFiles = codeGenerator.getGeneratedFileNames();
 
             fileRemoteParser = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+".java");
