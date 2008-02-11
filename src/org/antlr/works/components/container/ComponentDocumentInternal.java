@@ -1,12 +1,9 @@
-package org.antlr.works.components.editor;
+package org.antlr.works.components.container;
 
-import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
-import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
-import org.antlr.works.components.container.ComponentContainer;
-/*
+import org.antlr.works.components.document.ComponentDocumentGrammar;/*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005-07 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,14 +31,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ComponentEditorJava extends ComponentEditorText {
+public class ComponentDocumentInternal extends ComponentDocumentGrammar {
 
-    public ComponentEditorJava(ComponentContainer container) {
-        super(container);
-    }
-
-    public ATELanguageSyntaxEngine createLanguageEngine() {
-        return new ATEJavaSyntaxEngine();
+    @Override
+    public boolean isInternalOnly() {
+        return true;
     }
 
 }

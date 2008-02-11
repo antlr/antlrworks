@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor;
 
 import org.antlr.works.IDE;
+import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
@@ -134,7 +135,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     public static final int MI_PRIVATE_UNREGISTER = 200;
     public static final int MI_SERIALIZE_SD = 201;
 
-    protected ComponentEditorGrammar editor = null;
+    protected ComponentContainerGrammar container;
     protected XJMenuItem ignoreRuleMenuItem;
 
     public XJMenu menuGrammar;
@@ -142,16 +143,20 @@ public class EditorMenu implements XJMenuItemDelegate {
     /** The resource bundle used to get localized strings */
     protected static ResourceBundle resourceBundle = IDE.getMenusResourceBundle();
 
-    public EditorMenu(ComponentEditorGrammar editor) {
-        this.editor = editor;
+    public EditorMenu(ComponentContainerGrammar container) {
+        this.container = container;
     }
 
     public void close() {
-        editor = null;
+        container = null;
+    }
+
+    public ComponentEditorGrammar getEditor() {
+        return container.getSelectedEditor();
     }
 
     public boolean isDebuggerRunning() {
-        return editor.debugger.isRunning();
+        return getEditor().debugger.isRunning();
     }
 
     public void customizeFileMenu(XJMenu menu) {
@@ -420,12 +425,12 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public JPopupMenu getContextualMenu(int textIndex) {
-        boolean overReference = editor.getCurrentReference() != null;
-        boolean overToken = editor.getCurrentToken() != null;
-        boolean overRule = editor.getCurrentRule() != null;
-        boolean overSelection = editor.getTextPane().getSelectionStart() != editor.getTextPane().getSelectionEnd();
-        boolean overDecisionDFA = editor.decisionDFAEngine.isDecisionPointAroundLocation(editor.getTextEditor().getLineIndexAtTextPosition(textIndex),
-                editor.getTextEditor().getColumnPositionAtIndex(textIndex));
+        boolean overReference = getEditor().getCurrentReference() != null;
+        boolean overToken = getEditor().getCurrentToken() != null;
+        boolean overRule = getEditor().getCurrentRule() != null;
+        boolean overSelection = getEditor().getTextPane().getSelectionStart() != getEditor().getTextPane().getSelectionEnd();
+        boolean overDecisionDFA = getEditor().decisionDFAEngine.isDecisionPointAroundLocation(getEditor().getTextEditor().getLineIndexAtTextPosition(textIndex),
+                getEditor().getTextEditor().getColumnPositionAtIndex(textIndex));
 
         ContextualMenuFactory factory = new ContextualMenuFactory(this);
         factory.addItem(MI_GOTO_RULE);
@@ -435,11 +440,11 @@ public class EditorMenu implements XJMenuItemDelegate {
         factory.addSeparator();
         if(overToken)
             factory.addItem(MI_RENAME);
-        if(editor.menuRefactor.canReplaceLiteralWithTokenLabel())
+        if(container.getMenuRefactor().canReplaceLiteralWithTokenLabel())
             factory.addItem(MI_REPLACE_LITERAL_WITH_TOKEN_LABEL);
-        if(editor.menuRefactor.canExtractRule())
+        if(container.getMenuRefactor().canExtractRule())
             factory.addItem(MI_EXTRACT_RULE);
-        if(editor.menuRefactor.canInlineRule())
+        if(container.getMenuRefactor().canInlineRule())
             factory.addItem(MI_INLINE_RULE);
 
         if(overToken) {
@@ -461,7 +466,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void menuItemState(final XJMenuItem item) {
-        EditorTab tab = editor.getSelectedTab();
+        EditorTab tab = getEditor().getSelectedTab();
 
         switch(item.getTag()) {
             case XJMainMenuBar.MI_UNDO:
@@ -479,7 +484,7 @@ public class EditorMenu implements XJMenuItemDelegate {
 
             case XJMainMenuBar.MI_CUT:
             case XJMainMenuBar.MI_PASTE:
-                item.setEnabled(editor.isFileWritable());
+                item.setEnabled(getEditor().isFileWritable());
                 break;
 
             case MI_RENAME:
@@ -503,7 +508,7 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_DEBUG_AGAIN:
-                item.setEnabled(!isDebuggerRunning() && editor.debugger.canDebugAgain());
+                item.setEnabled(!isDebuggerRunning() && getEditor().debugger.canDebugAgain());
                 break;
 
             case MI_DEBUG:
@@ -512,10 +517,10 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_GOTO_BACK:
-                item.setEnabled(editor.goToHistory.canGoBack());
+                item.setEnabled(getEditor().goToHistory.canGoBack());
                 break;
             case MI_GOTO_FORWARD:
-                item.setEnabled(editor.goToHistory.canGoForward());
+                item.setEnabled(getEditor().goToHistory.canGoForward());
                 break;
 
             case MI_P4_EDIT:
@@ -543,12 +548,12 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_DEBUG_SHOW_INPUT_TOKENS:
-                item.setTitle(editor.menuDebugger.isInputTokenVisible()?
+                item.setTitle(container.getMenuDebugger().isInputTokenVisible()?
                         resourceBundle.getString("menu.item.hideInputTokens") : resourceBundle.getString("menu.item.showInputTokens"));
                 break;
 
             case MI_HIGHLIGHT_DECISION_DFA:
-                if(editor.decisionDFAEngine.getDecisionDFACount() == 0) {
+                if(getEditor().decisionDFAEngine.getDecisionDFACount() == 0) {
                     item.setSelected(false);
                 } else {
                     item.setSelected(true);
@@ -558,13 +563,12 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public void handleMenuSelected(XJMenu menu) {
-        boolean ignored = editor.rules.getFirstSelectedRuleIgnoredFlag();
+        boolean ignored = getEditor().rules.getFirstSelectedRuleIgnoredFlag();
         ignoreRuleMenuItem.setSelected(ignored);
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
         handleMenuFile(item.getTag());
-        handleMenuView(item.getTag());
         handleMenuFind(item.getTag());
         handleMenuGrammar(item);
         handleMenuRefactor(item.getTag());
@@ -579,19 +583,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuFile(int itemTag) {
         switch(itemTag) {
             case MI_PRINT:
-                editor.print();
-                break;
-        }
-    }
-
-    public void handleMenuView(int itemTag) {
-        switch(itemTag) {
-            case MI_EXPAND_COLLAPSE_RULE:
-                editor.menuFolding.expandCollapseRule();
-                break;
-
-            case MI_EXPAND_COLLAPSE_ACTION:
-                editor.menuFolding.expandCollapseAction();
+                getEditor().print();
                 break;
         }
     }
@@ -599,23 +591,23 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuFind(int itemTag) {
         switch(itemTag) {
             case MI_FIND:
-                editor.menuFind.find();
+                container.getMenuFind().find();
                 break;
 
             case MI_FIND_NEXT:
-                editor.menuFind.findNext();
+                container.getMenuFind().findNext();
                 break;
 
             case MI_FIND_PREV:
-                editor.menuFind.findPrev();
+                container.getMenuFind().findPrev();
                 break;
 
             case MI_FIND_TOKEN:
-                editor.menuFind.findSelection();
+                container.getMenuFind().findSelection();
                 break;
 
             case MI_FIND_USAGE:
-                editor.menuFind.findUsage();
+                container.getMenuFind().findUsage();
                 break;
         }
     }
@@ -623,46 +615,46 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuGrammar(XJMenuItem item) {
         switch(item.getTag()) {
             case MI_SHOW_TOKENS_SD:
-                editor.menuGrammar.showTokensSD();
+                container.getMenuGrammar().showTokensSD();
                 break;
 
             case MI_SHOW_TOKENS_DFA:
-                editor.menuGrammar.showTokensDFA();
+                container.getMenuGrammar().showTokensDFA();
                 break;
 
             case MI_SHOW_DECISION_DFA:
-                editor.menuGrammar.showDecisionDFA();
+                container.getMenuGrammar().showDecisionDFA();
                 break;
 
             case MI_HIGHLIGHT_DECISION_DFA:
-                editor.menuGrammar.highlightDecisionDFA();
+                container.getMenuGrammar().highlightDecisionDFA();
                 break;
 
             case MI_SHOW_DEPENDENCY:
-                editor.menuGrammar.showDependency();
+                container.getMenuGrammar().showDependency();
                 break;
 
             case MI_INSERT_TEMPLATE:
-                editor.menuGrammar.insertRuleFromTemplate();
+                container.getMenuGrammar().insertRuleFromTemplate();
                 break;
 
             case MI_GROUP_RULE:
-                editor.menuGrammar.group();
+                container.getMenuGrammar().group();
                 break;
 
             case MI_UNGROUP_RULE:
-                editor.menuGrammar.ungroup();
+                container.getMenuGrammar().ungroup();
                 break;
 
             case MI_IGNORE_RULE:
                 if(item.isSelected())
-                    editor.menuGrammar.ignore();
+                    container.getMenuGrammar().ignore();
                 else
-                    editor.menuGrammar.consider();
+                    container.getMenuGrammar().consider();
                 break;
 
             case MI_CHECK_GRAMMAR:
-                editor.menuGrammar.checkGrammar();
+                container.getMenuGrammar().checkGrammar();
                 break;
         }
     }
@@ -670,39 +662,39 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuRefactor(int itemTag) {
         switch(itemTag) {
             case MI_RENAME:
-                editor.menuRefactor.rename();
+                container.getMenuRefactor().rename();
                 break;
 
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
-                editor.menuRefactor.replaceLiteralWithTokenLabel();
+                container.getMenuRefactor().replaceLiteralWithTokenLabel();
                 break;
 
             case MI_LITERAL_TO_SINGLEQUOTE:
-                editor.menuRefactor.convertLiteralsToSingleQuote();
+                container.getMenuRefactor().convertLiteralsToSingleQuote();
                 break;
 
             case MI_LITERAL_TO_DOUBLEQUOTE:
-                editor.menuRefactor.convertLiteralsToDoubleQuote();
+                container.getMenuRefactor().convertLiteralsToDoubleQuote();
                 break;
 
             case MI_LITERAL_TO_CSTYLEQUOTE:
-                editor.menuRefactor.convertLiteralsToCStyleQuote();
+                container.getMenuRefactor().convertLiteralsToCStyleQuote();
                 break;
 
             case MI_REMOVE_LEFT_RECURSION:
-                editor.menuRefactor.removeLeftRecursion();
+                container.getMenuRefactor().removeLeftRecursion();
                 break;
 
             case MI_REMOVE_ALL_LEFT_RECURSION:
-                editor.menuRefactor.removeAllLeftRecursion();
+                container.getMenuRefactor().removeAllLeftRecursion();
                 break;
 
             case MI_EXTRACT_RULE:
-                editor.menuRefactor.extractRule();
+                container.getMenuRefactor().extractRule();
                 break;
 
             case MI_INLINE_RULE:
-                editor.menuRefactor.inlineRule();
+                container.getMenuRefactor().inlineRule();
                 break;
         }
     }
@@ -710,35 +702,35 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuGoTo(int itemTag) {
         switch(itemTag) {
             case MI_GOTO_RULE:
-                editor.menuGoTo.goToRule();
+                container.getMenuGoTo().goToRule();
                 break;
 
             case MI_GOTO_DECLARATION:
-                editor.menuGoTo.goToDeclaration();
+                container.getMenuGoTo().goToDeclaration();
                 break;
 
             case MI_GOTO_LINE:
-                editor.menuGoTo.goToLine();
+                container.getMenuGoTo().goToLine();
                 break;
 
             case MI_GOTO_CHARACTER:
-                editor.menuGoTo.goToCharacter();
+                container.getMenuGoTo().goToCharacter();
                 break;
 
             case MI_GOTO_BACK:
-                editor.menuGoTo.goToBackward();
+                container.getMenuGoTo().goToBackward();
                 break;
 
             case MI_GOTO_FORWARD:
-                editor.menuGoTo.goToForward();
+                container.getMenuGoTo().goToForward();
                 break;
 
             case MI_PREV_BREAKPOINT:
-                editor.menuGoTo.goToBreakpoint(-1);
+                container.getMenuGoTo().goToBreakpoint(-1);
                 break;
 
             case MI_NEXT_BREAKPOINT:
-                editor.menuGoTo.goToBreakpoint(1);
+                container.getMenuGoTo().goToBreakpoint(1);
                 break;
         }
     }
@@ -746,19 +738,19 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuGenerate(int itemTag) {
         switch(itemTag) {
             case MI_GENERATE_CODE:
-                editor.menuGenerate.generateCode();
+                container.getMenuGenerate().generateCode();
                 break;
 
             case MI_SHOW_GENERATED_LEXER_CODE:
-                editor.menuGenerate.showGeneratedCode(ElementGrammarName.LEXER);
+                container.getMenuGenerate().showGeneratedCode(ElementGrammarName.LEXER);
                 break;
 
             case MI_SHOW_GENERATED_PARSER_CODE:
-                editor.menuGenerate.showGeneratedCode(ElementGrammarName.PARSER);
+                container.getMenuGenerate().showGeneratedCode(ElementGrammarName.PARSER);
                 break;
 
             case MI_SHOW_RULE_GENCODE:
-                editor.menuGenerate.showRuleGeneratedCode();
+                container.getMenuGenerate().showRuleGeneratedCode();
                 break;
         }
     }
@@ -766,24 +758,24 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuRun(int itemTag) {
         switch(itemTag) {
             case MI_RUN_INTERPRETER:
-                editor.menuDebugger.runInterpreter();
+                container.getMenuDebugger().runInterpreter();
                 break;
 
             case MI_DEBUG:
-                editor.menuDebugger.debug();
+                container.getMenuDebugger().debug();
                 break;
 
             case MI_DEBUG_AGAIN:
-                editor.menuDebugger.debugAgain();
+                container.getMenuDebugger().debugAgain();
                 break;
 
             case MI_DEBUG_REMOTE:
-                editor.menuDebugger.debugRemote();
+                container.getMenuDebugger().debugRemote();
                 break;
 
             case MI_DEBUG_SHOW_INPUT_TOKENS:
-                editor.menuDebugger.toggleInputTokens();
-                editor.refreshMainMenuBar();
+                container.getMenuDebugger().toggleInputTokens();
+                getEditor().refreshMainMenuBar();
                 break;
         }
     }
@@ -791,22 +783,22 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuSCM(int itemTag) {
         switch(itemTag) {
             case MI_P4_EDIT:
-                editor.menuSCM.editFile();
+                container.getMenuSCM().editFile();
                 break;
             case MI_P4_ADD:
-                editor.menuSCM.addFile();
+                container.getMenuSCM().addFile();
                 break;
             case MI_P4_DELETE:
-                editor.menuSCM.deleteFile();
+                container.getMenuSCM().deleteFile();
                 break;
             case MI_P4_REVERT:
-                editor.menuSCM.revertFile();
+                container.getMenuSCM().revertFile();
                 break;
             case MI_P4_SUBMIT:
-                editor.menuSCM.submitFile();
+                container.getMenuSCM().submitFile();
                 break;
             case MI_P4_SYNC:
-                editor.menuSCM.sync();
+                container.getMenuSCM().sync();
                 break;
         }
     }
@@ -817,7 +809,7 @@ public class EditorMenu implements XJMenuItemDelegate {
                 AWPrefs.removeUserRegistration();
                 break;
             case MI_SERIALIZE_SD:
-                editor.visual.serializeSyntaxDiagram();
+                getEditor().visual.serializeSyntaxDiagram();
                 break;
         }
     }
@@ -825,27 +817,27 @@ public class EditorMenu implements XJMenuItemDelegate {
     public void handleMenuExport(int itemTag) {
         switch(itemTag) {
             case MI_EXPORT_AS_IMAGE:
-                editor.menuExport.exportAsImage();
+                container.getMenuExport().exportAsImage();
                 break;
 
             case MI_EXPORT_AS_EPS:
-                editor.menuExport.exportAsEPS();
+                container.getMenuExport().exportAsEPS();
                 break;
 
             case MI_EXPORT_AS_DOT:
-                editor.menuExport.exportAsDOT();
+                container.getMenuExport().exportAsDOT();
                 break;
 
             case MI_EXPORT_ALL_AS_IMAGE:
-                editor.menuExport.exportAllRulesAsImage();
+                container.getMenuExport().exportAllRulesAsImage();
                 break;
 
             case MI_EXPORT_ALL_AS_EPS:
-                editor.menuExport.exportAllRulesAsEPS();
+                container.getMenuExport().exportAllRulesAsEPS();
                 break;
 
             case MI_EXPORT_EVENT:
-                editor.menuExport.exportEventsAsTextFile();
+                container.getMenuExport().exportEventsAsTextFile();
                 break;
         }
     }

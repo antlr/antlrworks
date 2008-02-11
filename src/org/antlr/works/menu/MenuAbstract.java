@@ -31,15 +31,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
+import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 
 import javax.swing.*;
 
 public abstract class MenuAbstract {
 
-    protected ComponentEditorGrammar editor;
+    private ComponentContainerGrammar editor;
 
-    public MenuAbstract(ComponentEditorGrammar editor) {
+    public MenuAbstract(ComponentContainerGrammar editor) {
         this.editor = editor;
     }
 
@@ -47,15 +48,19 @@ public abstract class MenuAbstract {
         editor = null;
     }
 
+    public ComponentEditorGrammar getEditor() {
+        return editor.getSelectedEditor();
+    }
+
     public JTextPane getTextPane() {
-        return editor.getTextPane();
+        return getEditor().getTextPane();
     }
 
     public void setCaretPosition(int position) {
-        editor.setCaretPosition(position);
+        getEditor().setCaretPosition(position);
     }
 
     public int getCaretPosition() {
-        return editor.getCaretPosition();
+        return getEditor().getCaretPosition();
     }
 }

@@ -124,13 +124,13 @@ public class EditorToolbar implements XJNotificationObserver {
     public void addActions() {
         backward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.menuGoTo.goToBackward();
+                editor.goToBackward();
             }
         });
 
         forward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.menuGoTo.goToForward();
+                editor.goToForward();
             }
         });
 
@@ -160,19 +160,19 @@ public class EditorToolbar implements XJNotificationObserver {
 
         find.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.menuFind.find();
+                editor.find();
             }
         });
 
         debug.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.menuDebugger.debug();
+                editor.debug();
             }
         });
 
         debugAgain.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.menuDebugger.debugAgain();
+                editor.debugAgain();
             }
         });
 

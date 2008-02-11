@@ -1,6 +1,7 @@
 package org.antlr.works.components.document;
 
 import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.foundation.XJUtils;
@@ -37,36 +38,53 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public abstract class ComponentDocument extends XJDocument {
 
-    ComponentContainer container;
+    private ComponentContainer container;
+    private ComponentEditor editor;
 
-    public void setComponentContainer(ComponentContainer container) {
-        this.container = container;
+    public ComponentEditor getEditor() {
+        return editor;
+    }
+
+    public void setEditor(ComponentEditor editor) {
+        this.editor = editor;
     }
 
     public ComponentContainer getContainer() {
-        if(container != null)
+        // The container is usually the window of the document. However, for internal container,
+        // the container is InternalContainer and does not extends from XJWindow.
+        if(container != null) {
             return container;
-        else
-            return (ComponentContainer)getWindow();
+        } else {
+            return (ComponentContainer) getWindow();
+        }
     }
 
+    public void setContainer(ComponentContainer container) {
+        this.container = container;
+    }
+
+    @Override
+    public void awake() {
+        super.awake();
+        editor.awake();
+    }
+
+    @Override
     public void changeDone() {
         super.changeDone();
-
-        if(container != null)
-            container.setDirty();
+        getContainer().setDirty();
     }
 
+    @Override
     public void documentWillWriteData() {
-        ComponentContainer w = getContainer();
         XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        data.setText(XJUtils.getLocalizedText(w.getText()));
+        data.setText(XJUtils.getLocalizedText(editor.getText()));
     }
 
+    @Override
     public void documentDidReadData() {
-        ComponentContainer w = getContainer();
         XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        w.loadText(XJUtils.getNormalizedText(data.getText()));
+        editor.loadText(XJUtils.getNormalizedText(data.getText()));
     }
 
 }

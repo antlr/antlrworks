@@ -444,7 +444,7 @@ public class GPanel implements XJNotificationObserver {
         }
 
         public JPopupMenu getContextualMenu() {
-            ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
+            ContextualMenuFactory factory = editor.createContextualMenuFactory();
             factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
             factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
             return factory.menu;

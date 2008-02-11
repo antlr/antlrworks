@@ -119,7 +119,7 @@ public class Console {
         se.setDelegate(new SyntaxDelegate());
         se.processSyntax();
 
-        ComponentEditorGrammar ceg = new ComponentEditorGrammar(null);
+        ComponentEditorGrammar ceg = new ComponentEditorGrammar();
         ceg.parserEngine = new GrammarSyntaxEngine();
         EngineGrammar eg = new EngineGrammar(ceg);
         eg.setDelegate(new ConsoleEngineGrammarDelegate());
@@ -145,7 +145,7 @@ public class Console {
         se.setDelegate(new SyntaxDelegate());
         se.processSyntax();
 
-        ComponentEditorGrammar ceg = new ComponentEditorGrammar(null);
+        ComponentEditorGrammar ceg = new ComponentEditorGrammar();
         ceg.parserEngine = new GrammarSyntaxEngine();
         EngineGrammar eg = new EngineGrammar(ceg);
         eg.setDelegate(new ConsoleEngineGrammarDelegate());

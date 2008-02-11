@@ -33,7 +33,7 @@ package org.antlr.works.menu;
 
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.grammar.*;
 import org.antlr.works.grammar.decisiondfa.DecisionDFA;
 import org.antlr.works.stats.StatisticsAW;
@@ -48,84 +48,77 @@ import java.util.List;
 
 public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, XJDialogProgressDelegate {
 
-    protected CheckGrammar checkGrammar;
-    protected boolean checkingGrammar;
+    private CheckGrammar checkGrammar;
+    private boolean checkingGrammar;
 
-    public MenuGrammar(ComponentEditorGrammar editor) {
+    public MenuGrammar(ComponentContainerGrammar editor) {
         super(editor);
-        checkGrammar = new CheckGrammar(editor, this);
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        checkGrammar.close();
     }
 
     public void showTokensSD() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_TOKENS_SD);
-        editor.visual.setRule(new ElementRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);
-        editor.makeBottomComponentVisible();
+        getEditor().visual.setRule(new ElementRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);
+        getEditor().makeBottomComponentVisible();
     }
 
     public void showTokensDFA() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_TOKENS_DFA);
-        TokensDFA decision = new TokensDFA(editor);
+        TokensDFA decision = new TokensDFA(getEditor());
         decision.launch();
     }
 
     public void showDecisionDFA() {
-        DecisionDFA decision = new DecisionDFA(editor);
+        DecisionDFA decision = new DecisionDFA(getEditor());
         decision.launch();
     }
 
     public void highlightDecisionDFA() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_DECISION_DFA);
         try {
-            if(editor.decisionDFAEngine.getDecisionDFACount() == 0) {
-                editor.decisionDFAEngine.discoverAllDecisions();
+            if(getEditor().decisionDFAEngine.getDecisionDFACount() == 0) {
+                getEditor().decisionDFAEngine.discoverAllDecisions();
             } else {
-                editor.decisionDFAEngine.reset();
+                getEditor().decisionDFAEngine.reset();
             }
-            editor.decisionDFAEngine.refresh();
-            editor.decisionDFAEngine.refreshMenu();
+            getEditor().decisionDFAEngine.refresh();
+            getEditor().decisionDFAEngine.refreshMenu();
         } catch (Exception e) {
             e.printStackTrace();
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot show the DFA:\n"+e.toString());
+            XJAlert.display(getEditor().getWindowContainer(), "Error", "Cannot show the DFA:\n"+e.toString());
         }
     }
 
     public void showDependency() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_RULE_DEPENDENCY);
-        RulesDependency dependency = new RulesDependency(editor);
+        RulesDependency dependency = new RulesDependency(getEditor());
         dependency.launch();
     }
 
     public void insertRuleFromTemplate() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INSERT_RULE_TEMPLATE);
-        editor.ruleTemplates.display();
+        getEditor().ruleTemplates.display();
     }
 
     public void group() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_RULE_GROUP);
 
-        String s = (String)JOptionPane.showInputDialog(editor.getWindowContainer(), "Group Name:", "Group",
+        String s = (String)JOptionPane.showInputDialog(getEditor().getWindowContainer(), "Group Name:", "Group",
                 JOptionPane.QUESTION_MESSAGE, null, null, "Group");
         if(s != null && s.length() > 0) {
-            List<ElementRule> rules = editor.rules.getSelectedRules();
+            List<ElementRule> rules = getEditor().rules.getSelectedRules();
             if(!rules.isEmpty()) {
-                editor.beginGroupChange("Group");
+                getEditor().beginGroupChange("Group");
 
                 ElementRule firstRule = rules.get(0);
                 ElementRule lastRule = rules.get(rules.size()-1);
 
                 int end = lastRule.getEndIndex();
-                editor.textEditor.insertText(end+1, "\n"+GrammarSyntaxParser.END_GROUP+"\n");
+                getEditor().getTextEditor().insertText(end+1, "\n"+GrammarSyntaxParser.END_GROUP+"\n");
 
                 int start = firstRule.getStartIndex();
-                editor.textEditor.insertText(start-1, "\n"+ GrammarSyntaxParser.BEGIN_GROUP+s+"\n");
+                getEditor().getTextEditor().insertText(start-1, "\n"+ GrammarSyntaxParser.BEGIN_GROUP+s+"\n");
 
-                editor.endGroupChange();
+                getEditor().endGroupChange();
             }
         }
     }
@@ -133,48 +126,50 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
     public void ungroup() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_RULE_UNGROUP);
 
-        ElementGroup openGroup = editor.rules.getSelectedGroup();
+        ElementGroup openGroup = getEditor().rules.getSelectedGroup();
         if(openGroup == null) {
             // No open group selected in the tree. Try to find the closest open group
             // by moving backward
-            openGroup = editor.rules.findOpenGroupClosestToLocation(editor.getTextPane().getSelectionStart());
+            openGroup = getEditor().rules.findOpenGroupClosestToLocation(getEditor().getTextPane().getSelectionStart());
             if(openGroup == null) {
                 // Still no open group ? Give up
-                XJAlert.display(editor.getWindowContainer(), "Ungroup", "Cannot ungroup because no enclosing group has been found.");
+                XJAlert.display(getEditor().getWindowContainer(), "Ungroup", "Cannot ungroup because no enclosing group has been found.");
                 return;
             }
         }
 
-        ElementGroup closingGroup = editor.rules.findClosingGroupForGroup(openGroup);
+        ElementGroup closingGroup = getEditor().rules.findClosingGroupForGroup(openGroup);
 
-        editor.beginGroupChange("Ungroup");
+        getEditor().beginGroupChange("Ungroup");
 
         if(closingGroup != null) {
             // End of file is considered as a closing group but no group really exists
             // for that purpose
             ATEToken t = closingGroup.token;
-            editor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
+            getEditor().replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
         }
 
         ATEToken t = openGroup.token;
-        editor.replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
+        getEditor().replaceText(t.getStartIndex()-1, t.getEndIndex(), "");
 
-        editor.endGroupChange();
+        getEditor().endGroupChange();
     }
 
     public void ignore() {
-        editor.rules.ignoreSelectedRules(true);
+        getEditor().rules.ignoreSelectedRules(true);
     }
 
     public void consider() {
-        editor.rules.ignoreSelectedRules(false);
+        getEditor().rules.ignoreSelectedRules(false);
     }
 
     public void checkGrammar() {
-        editor.showProgress("Checking Grammar...", this);
+        getEditor().showProgress("Checking Grammar...", this);
 
-        editor.console.makeCurrent();
-        editor.console.println("Checking Grammar...");
+        getEditor().console.makeCurrent();
+        getEditor().console.println("Checking Grammar...");
+
+        checkGrammar = new CheckGrammar(getEditor(), this);
         checkGrammar.check();
 
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CHECK_GRAMMAR);
@@ -185,23 +180,29 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
     }
 
     public void checkGrammarDidEnd(EngineGrammarResult result) {
+        checkGrammar.close();
+        checkGrammar = null;
+
         checkingGrammar = false;
-        editor.hideProgress();
+        getEditor().hideProgress();
         if(result.isSuccess()) {
-            XJAlert.display(editor.getWindowContainer(), "Success", "Check Grammar succeeded.");
+            XJAlert.display(getEditor().getWindowContainer(), "Success", "Check Grammar succeeded.");
         } else {
             if(result.getErrorCount() > 0) {
-                XJAlert.display(editor.getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
+                XJAlert.display(getEditor().getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
             } else if(result.getWarningCount() > 0) {
-                XJAlert.display(editor.getWindowContainer(), "Warning", "Check Grammar reported some warnings:\n"+result.getFirstWarningMessage()+"\nConsult the console for more information.");
+                XJAlert.display(getEditor().getWindowContainer(), "Warning", "Check Grammar reported some warnings:\n"+result.getFirstWarningMessage()+"\nConsult the console for more information.");
             } else {
-                XJAlert.display(editor.getWindowContainer(), "Error", "Check Grammar reported some errors.\nConsult the console for more information.");                
+                XJAlert.display(getEditor().getWindowContainer(), "Error", "Check Grammar reported some errors.\nConsult the console for more information.");
             }
         }
     }
 
     public void dialogDidCancel() {
-        if(checkingGrammar)
+        if(checkingGrammar) {
             checkGrammar.cancel();
+            checkGrammar.close();
+            checkGrammar = null;
+        }
     }
 }

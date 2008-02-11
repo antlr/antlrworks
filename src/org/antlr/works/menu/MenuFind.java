@@ -1,12 +1,10 @@
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.find.Usages;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.element.ElementRule;
-
-import java.util.Iterator;
 /*
 
 [The "BSD licence"]
@@ -40,52 +38,49 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class MenuFind extends MenuAbstract {
 
-    public MenuFind(ComponentEditorGrammar editor) {
+    public MenuFind(ComponentContainerGrammar editor) {
         super(editor);
     }
 
     public void find() {
-        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_DIALOG);
-        editor.findAndReplace.find();
+        getEditor().find();
     }
 
     public void findNext() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_NEXT);
-        editor.findAndReplace.next();
+        getEditor().findAndReplace.next();
     }
 
     public void findPrev() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_PREVIOUS);
-        editor.findAndReplace.prev();
+        getEditor().findAndReplace.prev();
     }
 
     public void findSelection() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_TEXT_AT_CARET);
-        editor.findAndReplace.setFindString(editor.getTextPane().getSelectedText());
-        editor.findAndReplace.next();
+        getEditor().findAndReplace.setFindString(getEditor().getTextPane().getSelectedText());
+        getEditor().findAndReplace.next();
     }
 
     public void findUsage() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_USAGES);
 
-        ATEToken token = editor.getCurrentToken();
+        ATEToken token = getEditor().getCurrentToken();
         if(token == null)
             return;
 
-        Usages usage = new Usages(editor, token);
-        editor.addTab(usage);
+        Usages usage = new Usages(getEditor(), token);
+        getEditor().addTab(usage);
 
-        Iterator<ATEToken> iterator = editor.getTokens().iterator();
-        while(iterator.hasNext()) {
-            ATEToken candidate = iterator.next();
-            if(candidate.getAttribute().equals(token.getAttribute())) {
-                ElementRule matchedRule = editor.rules.getEnclosingRuleAtPosition(candidate.getStartIndex());
-                if(matchedRule != null)
-                    usage.addMatch(matchedRule, candidate);
+        for (ATEToken ateToken : getEditor().getTokens()) {
+            if (ateToken.getAttribute().equals(token.getAttribute())) {
+                ElementRule matchedRule = getEditor().rules.getEnclosingRuleAtPosition(ateToken.getStartIndex());
+                if (matchedRule != null)
+                    usage.addMatch(matchedRule, ateToken);
             }
         }
 
-        editor.makeBottomComponentVisible();
+        getEditor().makeBottomComponentVisible();
     }
 
 }

@@ -736,40 +736,10 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public JPopupMenu treeGetContextualMenu() {
-        ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
+        ContextualMenuFactory factory = editor.createContextualMenuFactory();
         factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
         factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
         return factory.menu;
-    }
-
-    public static final String KEY_SPLITPANE_A = "KEY_SPLITPANE_A";
-    public static final String KEY_SPLITPANE_B = "KEY_SPLITPANE_B";
-    public static final String KEY_SPLITPANE_C = "KEY_SPLITPANE_C";
-
-    public void setPersistentData(Map data) {
-        if(data == null)
-            return;
-
-/*        Integer i = (Integer)data.get(KEY_SPLITPANE_A);
-        if(i != null)
-            ioSplitPane.setDividerLocation(i.intValue());
-
-        i = (Integer)data.get(KEY_SPLITPANE_B);
-        if(i != null)
-            ioTreeSplitPane.setDividerLocation(i.intValue());
-
-        i = (Integer)data.get(KEY_SPLITPANE_C);
-        if(i != null)
-            treeInfoPanelSplitPane.setDividerLocation(i.intValue());*/
-    }
-
-    public Map getPersistentData() {
-        /*Map data = new HashMap();
-        data.put(KEY_SPLITPANE_A, new Integer(ioSplitPane.getDividerLocation()));
-        data.put(KEY_SPLITPANE_B, new Integer(ioTreeSplitPane.getDividerLocation()));
-        data.put(KEY_SPLITPANE_C, new Integer(treeInfoPanelSplitPane.getDividerLocation()));
-        return data;*/
-        return new HashMap();
     }
 
     public void panelDoDetach(DetachablePanel panel) {

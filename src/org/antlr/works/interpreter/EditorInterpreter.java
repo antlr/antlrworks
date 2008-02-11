@@ -60,9 +60,7 @@ import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 public class EditorInterpreter extends EditorTab implements Runnable, AWTreePanelDelegate {
@@ -365,27 +363,10 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     }
 
     public JPopupMenu awTreeGetContextualMenu() {
-        ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
+        ContextualMenuFactory factory = editor.createContextualMenuFactory();
         factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
         factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
         return factory.menu;
-    }
-
-    public static final String KEY_SPLITPANE_A = "KEY_SPLITPANE_A";
-
-    public void setPersistentData(Map data) {
-        if(data == null)
-            return;
-
-        Integer i = (Integer)data.get(KEY_SPLITPANE_A);
-        if(i != null)
-            splitPane.setDividerLocation(i.intValue());
-    }
-
-    public Map<String,Integer> getPersistentData() {
-        Map<String,Integer> data = new HashMap<String, Integer>();
-        data.put(KEY_SPLITPANE_A, splitPane.getDividerLocation());
-        return data;
     }
 
 }

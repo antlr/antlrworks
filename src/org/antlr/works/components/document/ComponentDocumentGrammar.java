@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.components.document;
 
-import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.prefs.AWPrefs;
 
 import java.io.File;
@@ -42,8 +41,7 @@ public class ComponentDocumentGrammar extends ComponentDocument {
         // Make sure the document can be saved (SCM opened, etc)
         // before calling the super class method to do
         // the actual job
-        ComponentContainer w = getContainer();
-        if(w.willSaveDocument()) {
+        if(getEditor().componentDocumentWillSave()) {
             if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
                 // Create the backup file if needed
                 File backup = new File(documentPath+"~");

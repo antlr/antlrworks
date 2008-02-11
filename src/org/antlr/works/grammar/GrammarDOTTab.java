@@ -255,7 +255,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
     protected class CustomGView extends GView {
 
         public JPopupMenu getContextualMenu(GElement element) {
-            ContextualMenuFactory factory = new ContextualMenuFactory(editor.editorMenu);
+            ContextualMenuFactory factory = editor.createContextualMenuFactory();
             factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
             factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
             factory.addItem(EditorMenu.MI_EXPORT_AS_DOT);

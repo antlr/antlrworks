@@ -31,44 +31,43 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.stats.StatisticsAW;
 
 public class MenuDebugger extends MenuAbstract {
 
-    public MenuDebugger(ComponentEditorGrammar editor) {
+    public MenuDebugger(ComponentContainerGrammar editor) {
         super(editor);
     }
 
     public void runInterpreter() {
         try {
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INTERPRETER_MENU);
-            editor.selectInterpreterTab();
-            editor.interpreter.interpret();
+            getEditor().selectInterpreterTab();
+            getEditor().interpreter.interpret();
         } catch (Exception e) {
-            editor.console.print(e);
+            getEditor().console.print(e);
         }
     }
 
     public void debug() {
-        editor.debugger.launchLocalDebugger(Debugger.OPTION_NONE);
+        getEditor().debug();
     }
 
     public void debugAgain() {
-        editor.debugger.launchLocalDebugger(Debugger.OPTION_AGAIN);
+        getEditor().debugAgain();
     }
 
     public void debugRemote() {
-        editor.debugger.launchRemoteDebugger();
+        getEditor().debugger.launchRemoteDebugger();
     }
 
     public void toggleInputTokens() {
-        editor.debugger.toggleInputTokensBox();
+        getEditor().debugger.toggleInputTokensBox();
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
     }
 
     public boolean isInputTokenVisible() {
-        return editor.debugger.isInputTokenVisible();
+        return getEditor().debugger.isInputTokenVisible();
     }
 }

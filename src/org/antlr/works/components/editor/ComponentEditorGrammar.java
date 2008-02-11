@@ -11,10 +11,6 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.completion.AutoCompletionMenu;
 import org.antlr.works.completion.AutoCompletionMenuDelegate;
 import org.antlr.works.completion.RuleTemplates;
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.editor.ComponentEditorGrammarDelegate;
-import org.antlr.works.components.editor.ComponentEditorGrammarDefaultDelegate;
-import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.*;
 import org.antlr.works.find.FindAndReplace;
@@ -22,7 +18,7 @@ import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.grammar.EngineGrammarDelegate;
 import org.antlr.works.grammar.decisiondfa.DecisionDFAEngine;
 import org.antlr.works.interpreter.EditorInterpreter;
-import org.antlr.works.menu.*;
+import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.navigation.GoToHistory;
 import org.antlr.works.navigation.GoToRule;
 import org.antlr.works.prefs.AWPrefs;
@@ -36,10 +32,6 @@ import org.antlr.works.utils.Console;
 import org.antlr.works.utils.Utils;
 import org.antlr.works.visualization.Visual;
 import org.antlr.xjlib.appkit.app.XJApplication;
-import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
-import org.antlr.xjlib.appkit.menu.XJMenu;
-import org.antlr.xjlib.appkit.menu.XJMenuItem;
-import org.antlr.xjlib.appkit.menu.XJMenuItemCheck;
 import org.antlr.xjlib.appkit.swing.XJTree;
 import org.antlr.xjlib.appkit.text.XJURLLabel;
 import org.antlr.xjlib.appkit.undo.XJUndo;
@@ -50,16 +42,18 @@ import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.awt.print.PrinterException;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 /*
 
@@ -130,23 +124,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public EditorConsole console;
     public EditorToolbar toolbar;
-    public EditorMenu editorMenu;
     public EditorIdeas editorIdeas;
     public EditorTips editorTips;
     public EditorInspector editorInspector;
     public EditorPersistence persistence;
-
-    /* Menu */
-
-    public MenuFolding menuFolding;
-    public MenuFind menuFind;
-    public MenuGrammar menuGrammar;
-    public MenuRefactor menuRefactor;
-    public MenuGoTo menuGoTo;
-    public MenuGenerate menuGenerate;
-    public MenuDebugger menuDebugger;
-    public MenuSCM menuSCM;
-    public MenuExport menuExport;
 
     public ATEPanel textEditor;
 
@@ -163,16 +144,12 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     protected JLabel scmLabel;
     protected ConsoleStatus consoleStatus;
 
-    protected JSplitPane rulesTextSplitPane;
-    protected JSplitPane upDownSplitPane;
-
     /* Other */
 
     protected boolean windowFirstDisplay = true;
     protected String lastSelectedRule;
     protected ComponentEditorGrammarDelegate delegate;
 
-    protected List<EditorTab> tabs = new ArrayList<EditorTab>();
     protected AfterParseOperations afterParserOp;
 
     /* Grammar */
@@ -185,11 +162,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     protected EditorATEEditorKit editorKit;
 
-    protected MouseListener ml;
-    protected ChangeListener cl;
+    public ComponentEditorGrammar() {
 
-    public ComponentEditorGrammar(ComponentContainer container) {
-        super(container);
     }
 
     public void setDelegate(ComponentEditorGrammarDelegate delegate) {
@@ -202,11 +176,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         createInterface();
 
         initEditor();
-        initMenus();
-
         initManagers();
         initComponents();
-
         initAutoCompletion();
         initTools();
 
@@ -217,25 +188,32 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void assemble() {
-        rulesTextSplitPane = new JSplitPane();
-        rulesTextSplitPane.setBorder(null);
-        rulesTextSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        rulesTextSplitPane.setLeftComponent(rulesScrollPane);
-        rulesTextSplitPane.setRightComponent(textEditor);
-        rulesTextSplitPane.setContinuousLayout(true);
-        rulesTextSplitPane.setOneTouchExpandable(true);
+        // todo still used?
+        //delegate = new ComponentEditorGrammarDefaultDelegate(upDownSplitPane);
 
-        upDownSplitPane = new JSplitPane();
-        upDownSplitPane.setBorder(null);
-        upDownSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        upDownSplitPane.add(rulesTextSplitPane, JSplitPane.TOP);
-        upDownSplitPane.add(tabbedPane, JSplitPane.BOTTOM);
-        upDownSplitPane.setContinuousLayout(true);
-        upDownSplitPane.setOneTouchExpandable(true);
+        //mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
+        // todo replace mainPanel with textEditor directly?
+        mainPanel.add(textEditor, BorderLayout.CENTER);
+    }
 
-        delegate = new ComponentEditorGrammarDefaultDelegate(upDownSplitPane);
+    public Component getComponentRules() {
+        return rulesScrollPane;
+    }
 
-        mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
+    public Component getComponentEditor() {
+        return textEditor;
+    }
+
+    public EditorTab getComponentSD() {
+        return visual;
+    }
+
+    public EditorTab getComponentInterpreter() {
+        return interpreter;
+    }
+
+    public EditorTab getComponentConsole() {
+        return console;
     }
 
     protected void initComponents() {
@@ -275,7 +253,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         console = new EditorConsole(this);
         console.makeCurrent();
 
-        editorMenu = new EditorMenu(this);
         editorIdeas = new EditorIdeas(this);
         editorTips = new EditorTips(this);
         editorInspector = new EditorInspector(grammarSyntax, decisionDFAEngine, this);
@@ -284,18 +261,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
         engineGrammar = new EngineGrammar(this);
         engineGrammar.setDelegate(this);
-    }
-
-    protected void initMenus() {
-        menuFolding = new MenuFolding(this);
-        menuFind = new MenuFind(this);
-        menuGrammar = new MenuGrammar(this);
-        menuRefactor = new MenuRefactor(this);
-        menuGoTo = new MenuGoTo(this);
-        menuGenerate = new MenuGenerate(this);
-        menuDebugger = new MenuDebugger(this);
-        menuSCM = new MenuSCM(this);
-        menuExport = new MenuExport(this);
     }
 
     protected void initManagers() {
@@ -315,8 +280,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     protected void awakeInstances() {
         editorIdeas.awake();
         editorTips.awake();
-
-        menuSCM.awake();
 
         interpreter.awake();
         debugger.awake();
@@ -350,13 +313,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public JComponent getRulesComponent() {
         return rulesScrollPane;
-    }
-
-    protected void createTabbedPane() {
-        tabbedPane = new JTabbedPane();
-        tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
-        tabbedPane.addMouseListener(ml = new TabbedPaneMouseListener());
-        tabbedPane.addChangeListener(cl = new TabbedPaneChangeListener());
     }
 
     public JComponent getTabbedComponent() {
@@ -398,18 +354,17 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     protected void createInterface() {
         createTextEditor();
         createRulesPane();
-        createTabbedPane();
         createToolbar();
         createStatusBar();
     }
 
     protected void awakeInterface() {
-        addTab(visual);
-        addTab(interpreter);
-        addTab(debugger);
-        addTab(console);
+        //addTab(visual);
+        //addTab(interpreter);
+        //addTab(debugger);
+        //addTab(console);
 
-        selectVisualizationTab();
+        //selectVisualizationTab();
     }
 
     protected void register() {
@@ -446,7 +401,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         debugger.close();
 
         console.close();
-        editorMenu.close();
         editorIdeas.close();
         editorTips.close();
         editorInspector.close();
@@ -461,16 +415,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         afterParserOp.stop();
         afterParserOp = null;
 
-        menuFolding.close();
-        menuFind.close();
-        menuGrammar.close();
-        menuRefactor.close();
-        menuGoTo.close();
-        menuGenerate.close();
-        menuDebugger.close();
-        menuSCM.close();
-        menuExport.close();
-
         breakpointManager.close();
         foldingManager.close();
         underlyingManager.close();
@@ -483,17 +427,15 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
         editorKit.close();
 
-        tabbedPane.removeMouseListener(ml);
-        tabbedPane.removeChangeListener(cl);
-
-        ml = null;
-        cl = null;
-
         consoleStatus = null;
         rulesTree.close();
         rulesTree = null;
         
         super.close();
+    }
+
+    public void addTab(EditorTab tab) {
+        container.addTab(tab);
     }
 
     public void selectVisualizationTab() {
@@ -515,42 +457,12 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         makeBottomComponentVisible();
     }
 
-    public void addTab(EditorTab tab) {
-        /** Replace any existing tab with this one if the title matches. Don't
-         * replace the first three tabs because they are always visible.
-         */
-        int index = getSimilarTab(tab);
-        if(index > 3) {
-            tabs.remove(index);
-            tabs.add(index, tab);
-            tabbedPane.removeTabAt(index);
-            tabbedPane.insertTab(tab.getTabName(), null, tab.getTabComponent(), null, index);
-        } else {
-            tabs.add(tab);
-            tabbedPane.add(tab.getTabName(), tab.getTabComponent());
-        }
-
-        selectTab(tab.getTabComponent());
-    }
-
-    public int getSimilarTab(EditorTab tab) {
-        for (int i = 0; i < tabs.size(); i++) {
-            EditorTab t = tabs.get(i);
-            if(t.getTabName().equals(tab.getTabName()))
-                return i;
-        }
-        return -1;
-    }
-
     public EditorTab getSelectedTab() {
-        return tabs.get(tabbedPane.getSelectedIndex());
+        return container.getSelectedTab();
     }
 
     public void selectTab(Component c) {
-        if(tabbedPane.getSelectedComponent() != c) {
-            tabbedPane.setSelectedComponent(c);
-            refreshMainMenuBar();
-        }
+        container.selectTab(c);
     }
 
     public void makeBottomComponentVisible() {
@@ -742,19 +654,23 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void createRuleAtIndex(boolean lexer, String name, String content) {
-        menuRefactor.createRuleAtIndex(lexer, name, content);
+        // todo
+        //menuRefactor.createRuleAtIndex(lexer, name, content);
     }
 
     public void deleteRuleAtCurrentPosition() {
-        menuRefactor.deleteRuleAtIndex(getCaretPosition());
+        // todo
+    //    menuRefactor.deleteRuleAtIndex(getCaretPosition());
     }
 
     public void removeLeftRecursion() {
-        menuRefactor.removeLeftRecursion();
+        // todo
+  //      menuRefactor.removeLeftRecursion();
     }
 
     public void convertLiteralsToSingleQuote() {
-        menuRefactor.convertLiteralsToSingleQuote();
+        // todo
+//        menuRefactor.convertLiteralsToSingleQuote();
     }
 
     public void replaceText(int leftIndex, int rightIndex, String text) {
@@ -946,22 +862,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return textEditor.getCaretPosition();
     }
 
-    public void customizeFileMenu(XJMenu menu) {
-        editorMenu.customizeFileMenu(menu);
-    }
-
-    public void customizeMenuBar(XJMainMenuBar menubar) {
-        editorMenu.customizeMenuBar(menubar);
-    }
-
-    public void menuItemState(XJMenuItem item) {
-        editorMenu.menuItemState(item);
-    }
-
-    public void handleMenuSelected(XJMenu menu) {
-        editorMenu.handleMenuSelected(menu);
-    }
-
     public void updateVisualization(boolean immediate) {
         if(visual.isEnable()) {
             ElementRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
@@ -1053,14 +953,16 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         if(selectedObjects.isEmpty())
             return null;
 
-        ContextualMenuFactory factory = new ContextualMenuFactory(editorMenu);
+        // todo
+        /*ContextualMenuFactory factory = new ContextualMenuFactory(editorMenu);
         factory.addItem(EditorMenu.MI_GROUP_RULE);
         factory.addItem(EditorMenu.MI_UNGROUP_RULE);
         factory.addSeparator();
         XJMenuItemCheck item = (XJMenuItemCheck) factory.addItem(EditorMenu.MI_IGNORE_RULE);
         item.setSelected(rules.getFirstSelectedRuleIgnoredFlag());
 
-        return factory.menu;
+        return factory.menu;*/
+        return null;
     }
 
     /** Parser delegate methods
@@ -1142,11 +1044,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void componentShouldLayout(Dimension size) {
-        if(rulesTextSplitPane != null)
-            rulesTextSplitPane.setDividerLocation((int)(size.width*0.2));
-        if(upDownSplitPane != null)
-            upDownSplitPane.setDividerLocation((int)(size.height*0.5));
-
         interpreter.componentShouldLayout();
         debugger.componentShouldLayout(size);
     }
@@ -1154,8 +1051,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public void componentDidAwake() {
         updateInformation();
         updateCursorInfo();
-        menuSCM.setSilent(true);
-        menuSCM.queryFileStatus();
 
         // Request focus in the text pane. A little bit later because
         // in desktop mode, the focus is not taken into account if
@@ -1282,9 +1177,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void ateInvokePopUp(Component component, int x, int y) {
-        JPopupMenu m = editorMenu.getContextualMenu(textEditor.getTextIndexAtPosition(x, y));
+        // todo
+        /*JPopupMenu m = editorMenu.getContextualMenu(textEditor.getTextIndexAtPosition(x, y));
         if(m != null)
-            m.show(component,  x, y);
+            m.show(component,  x, y);*/
     }
 
     public void ateCaretUpdate(int index) {
@@ -1355,17 +1251,20 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public boolean componentDocumentWillSave() {
         AWPrefs.setLastSavedDocument(getFilePath());
 
-        if(menuSCM.isFileWritable())
+        // todo
+
+        /*if(menuSCM.isFileWritable())
             return true;
 
-        if(XJAlert.displayAlertYESNO(getWindowContainer(), "Cannot Save", "This file is currently closed in the SCM depot.\nDo you want to open it for edit before saving its content ?") == XJAlert.YES) {
+        if(XJAlert.displayAlertYESNO(getWindowContainer(), "Cannot Save", "This file is currently closed in the SCM depot.\nDo you want to open it for edit before saving its content?") == XJAlert.YES) {
             // Open the file using the SCM
             menuSCM.editFile();
             // Will save the file again once the SCM commands
             // is completed (see scmCommandsDidComplete)
             wasSaving = true;
         }
-        return false;
+        return false;*/
+        return true;
     }
 
     public void scmCommandsDidComplete() {
@@ -1373,38 +1272,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
             wasSaving = false;
             getDocument().performSave(false);
         }
-    }
-
-    public static final String KEY_SPLITPANE_A = "KEY_SPLITPANE_A";
-    public static final String KEY_SPLITPANE_B = "KEY_SPLITPANE_B";
-    public static final String KEY_INTERPRETER = "KEY_INTERPRETER";
-    public static final String KEY_DEBUGGER = "KEY_DEBUGGER";
-
-    public void setPersistentData(Map data) {
-        if(data == null)
-            return;
-
-        Integer i = (Integer)data.get(KEY_SPLITPANE_A);
-        if(i != null && rulesTextSplitPane != null)
-            rulesTextSplitPane.setDividerLocation(i.intValue());
-
-        i = (Integer)data.get(KEY_SPLITPANE_B);
-        if(i != null && upDownSplitPane != null)
-            upDownSplitPane.setDividerLocation(i.intValue());
-
-        interpreter.setPersistentData((Map) data.get(KEY_INTERPRETER));
-        debugger.setPersistentData((Map) data.get(KEY_DEBUGGER));
-    }
-
-    public Map<String, Object> getPersistentData() {
-        Map<String,Object> data = new HashMap<String, Object>();
-        if(rulesTextSplitPane != null)
-            data.put(KEY_SPLITPANE_A, rulesTextSplitPane.getDividerLocation());
-        if(upDownSplitPane != null)
-            data.put(KEY_SPLITPANE_B, upDownSplitPane.getDividerLocation());
-        data.put(KEY_INTERPRETER, interpreter.getPersistentData());
-        data.put(KEY_DEBUGGER, debugger.getPersistentData());
-        return data;
     }
 
     public void print() {
@@ -1427,6 +1294,41 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void hideProgress() {
         progress.close();
+    }
+
+    public void goToBackward() {
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_BACK);
+
+        if(goToHistory.canGoBack()) {
+            setCaretPosition(goToHistory.getBackPosition(getCaretPosition()));
+            refreshMainMenuBar();
+        }
+    }
+
+    public void goToForward() {
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_FORWARD);
+
+        if(goToHistory.canGoForward()) {
+            setCaretPosition(goToHistory.getForwardPosition());
+            refreshMainMenuBar();
+        }
+    }
+
+    public void find() {
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_DIALOG);
+        findAndReplace.find();
+    }
+
+    public void debug() {
+        debugger.launchLocalDebugger(Debugger.OPTION_NONE);
+    }
+
+    public void debugAgain() {
+        debugger.launchLocalDebugger(Debugger.OPTION_AGAIN);
+    }
+
+    public ContextualMenuFactory createContextualMenuFactory() {
+        return container.createContextualMenuFactory();
     }
 
     /** This class is used to perform after parsing operations in another
@@ -1524,45 +1426,5 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         }
     }
 
-    protected class TabbedPaneMouseListener extends MouseAdapter {
-
-        protected static final int CLOSING_INDEX_LIMIT = 4;
-
-        public void displayPopUp(MouseEvent event) {
-            if(tabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
-                return;
-
-            if(!event.isPopupTrigger())
-                return;
-
-            JPopupMenu popup = new JPopupMenu();
-            JMenuItem item = new JMenuItem("Close");
-            item.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent event) {
-                    if(tabbedPane.getSelectedIndex() < CLOSING_INDEX_LIMIT)
-                        return;
-
-                    tabs.remove(tabbedPane.getSelectedIndex());
-                    tabbedPane.removeTabAt(tabbedPane.getSelectedIndex());
-                }
-            });
-            popup.add(item);
-            popup.show(event.getComponent(), event.getX(), event.getY());
-        }
-
-        public void mousePressed(MouseEvent event) {
-            displayPopUp(event);
-        }
-
-        public void mouseReleased(MouseEvent event) {
-            displayPopUp(event);
-        }
-    }
-
-    protected class TabbedPaneChangeListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            refreshMainMenuBar();
-        }
-    }
 
 }

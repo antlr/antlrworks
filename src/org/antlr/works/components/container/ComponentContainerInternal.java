@@ -7,11 +7,10 @@ import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 
-import java.awt.*;
-/*
+import java.awt.*;/*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-07 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,30 +38,71 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface ComponentContainer {
+public class ComponentContainerInternal implements ComponentContainer {
 
-    public void setEditor(ComponentEditor editor);
-    public ComponentEditor getEditor();
-    public void setDocument(ComponentDocument document);
-    public ComponentDocument getDocument();
+    private ComponentDocument document;
+    private ComponentContainer mainContainer;
+    private ComponentEditor editor;
 
-    public Dimension getSize();
-    
-    // todo see if this is really needed
-    public XJFrameInterface getXJFrame();
-    // todo see if this is really needed
-    public XJMainMenuBar getMainMenuBar();
+    public ComponentContainerInternal(ComponentContainer mainContainer) {
+        this.mainContainer = mainContainer;
+    }
 
-    public void becomingVisibleForTheFirstTime();
+    public void setEditor(ComponentEditor editor) {
+        this.editor = editor;
+    }
 
-    public void setDirty();
-    public void close();
+    public ComponentEditor getEditor() {
+        return editor;
+    }
 
-    public ContextualMenuFactory createContextualMenuFactory();
+    public void setDocument(ComponentDocument document) {
+        this.document = document;
+    }
 
-    // todo see if EditorTab should be renamed ContainerTab
-    EditorTab getSelectedTab();
-    void selectTab(Component c);
-    void addTab(EditorTab tab);
+    public ComponentDocument getDocument() {
+        return document;
+    }
 
+    public Dimension getSize() {
+        return mainContainer.getSize();
+    }
+
+    public XJFrameInterface getXJFrame() {
+        return mainContainer.getXJFrame();
+    }
+
+    public XJMainMenuBar getMainMenuBar() {
+        return mainContainer.getMainMenuBar();
+    }
+
+    public void becomingVisibleForTheFirstTime() {
+        // todo cleanup
+        getEditor().componentDidAwake();
+        getEditor().componentShouldLayout(mainContainer.getSize());
+    }
+
+    public void close() {
+        getEditor().close();
+    }
+
+    public void setDirty() {
+        mainContainer.setDirty();
+    }
+
+    public ContextualMenuFactory createContextualMenuFactory() {
+        return mainContainer.createContextualMenuFactory();
+    }
+
+    public EditorTab getSelectedTab() {
+        return mainContainer.getSelectedTab();
+    }
+
+    public void selectTab(Component c) {
+        mainContainer.selectTab(c);
+    }
+
+    public void addTab(EditorTab tab) {
+        mainContainer.addTab(tab);
+    }
 }

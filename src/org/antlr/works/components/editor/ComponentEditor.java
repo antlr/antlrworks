@@ -2,13 +2,11 @@ package org.antlr.works.components.editor;
 
 import org.antlr.works.components.ComponentStatusBar;
 import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefsDialog;
-import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
-import org.antlr.xjlib.appkit.menu.XJMenu;
-import org.antlr.xjlib.appkit.menu.XJMenuItem;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
@@ -20,7 +18,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Map;
 
 /*
 
@@ -56,15 +53,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public abstract class ComponentEditor implements XJNotificationObserver {
 
     protected ComponentContainer container;
+    protected ComponentDocument document;
+
     protected JPanel mainPanel;
     protected Box statusBar;
 
     protected ComponentListener cl;
     protected PropertyChangeListener pcl;
 
-    public ComponentEditor(ComponentContainer container) {
-        this.container = container;
-
+    public ComponentEditor() {
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.addComponentListener(cl = new MainPanelComponentListener());
 
@@ -88,6 +85,19 @@ public abstract class ComponentEditor implements XJNotificationObserver {
 
     }
 
+    public void awake() {
+        create();
+        assemble();
+    }
+
+    public ComponentContainer getContainer() {
+        return container;
+    }
+
+    public void setContainer(ComponentContainer container) {
+        this.container = container;
+    }
+
     public void refreshMainMenuBar() {
         if(getXJFrame().getMainMenuBar() != null)
             getXJFrame().getMainMenuBar().refreshState();
@@ -101,8 +111,12 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         return statusBar;
     }
 
-    public XJDocument getDocument() {
-        return container.getDocument();
+    public void setDocument(ComponentDocument document) {
+        this.document = document;
+    }
+
+    public ComponentDocument getDocument() {
+        return document;
     }
 
     public XJFrameInterface getXJFrame() {
@@ -165,14 +179,6 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         return true;
     }
 
-    public void setPersistentData(Map data) {
-
-    }
-
-    public Map<String, Object> getPersistentData() {
-        return null;
-    }
-
     public void componentShouldLayout(Dimension size) {
 
     }
@@ -180,32 +186,10 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     public void componentDidAwake() {
     }
 
-    public void customizeFileMenu(XJMenu menu) {
-    }
-
-    public void customizeEditMenu(XJMenu menu) {
-    }
-
-    public void customizeWindowMenu(XJMenu menu) {
-    }
-
-    public void customizeHelpMenu(XJMenu menu) {
-    }
-
-    public void customizeMenuBar(XJMainMenuBar menubar) {
-    }
-
-    public void menuItemState(XJMenuItem item) {
-    }
-
-    public void handleMenuSelected(XJMenu menu) {
-    }
-
     public void componentActivated() {
     }
 
     public void componentDidHide() {
-
     }
 
     public void componentIsSelected() {
@@ -221,6 +205,8 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     }
 
     protected class MainPanelComponentListener extends ComponentAdapter {
+
+        @Override
         public void componentHidden(ComponentEvent e) {
             componentDidHide();
         }

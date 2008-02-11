@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CustomShortcutSet;
 import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
@@ -14,7 +15,6 @@ import org.antlr.works.plugin.intellij.PIUtils;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJPreferences;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
-import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
@@ -230,7 +230,7 @@ public class PluginContainer implements ComponentContainer {
             delegate.pluginDocumentDidChange();
     }
 
-    public XJDocument getDocument() {
+    public ComponentDocument getDocument() {
         return document;
     }
 

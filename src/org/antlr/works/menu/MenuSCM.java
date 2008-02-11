@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.scm.SCM;
 import org.antlr.works.scm.SCMDelegate;
@@ -48,12 +48,12 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     protected SCM scm;
     protected boolean silent;
 
-    public MenuSCM(ComponentEditorGrammar editor) {
+    public MenuSCM(ComponentContainerGrammar editor) {
         super(editor);
     }
 
     public void awake() {
-        scm = new P4(this, editor.console);
+        scm = new P4(this, getEditor().console);
     }
 
     public void setSilent(boolean silent) {
@@ -96,7 +96,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     public void revertFile() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SCM_REVERT);
         if(check()) {
-            if(XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Revert", "Are you sure you want to discard your changes to the file ?") == XJAlert.YES) {
+            if(XJAlert.displayAlertYESNO(getEditor().getWindowContainer(), "Revert", "Are you sure you want to discard your changes to the file ?") == XJAlert.YES) {
                 showProgress("Revert");
                 scm.revertFile(getFilePath());
             }
@@ -106,7 +106,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     public void submitFile() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SCM_SUBMIT);
         if(check()) {
-            P4SubmitDialog dialog = new P4SubmitDialog(editor.getWindowContainer());
+            P4SubmitDialog dialog = new P4SubmitDialog(getEditor().getWindowContainer());
             if(dialog.runModal() == P4SubmitDialog.BUTTON_OK) {
                 showProgress("Submit");
                 scm.submitFile(getFilePath(), dialog.getDescription(), dialog.getRemainOpen());
@@ -124,7 +124,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
 
     protected boolean check() {
         if(getFilePath() == null) {
-            XJAlert.display(editor.getWindowContainer(), "SCM Error", "The file must be saved to the disk before any SCM command can be executed.");
+            XJAlert.display(getEditor().getWindowContainer(), "SCM Error", "The file must be saved to the disk before any SCM command can be executed.");
             return false;
         }
         return true;
@@ -132,14 +132,14 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
 
     protected void displayErrors() {
         if(scm.hasErrors()) {
-            XJAlert.display(editor.getWindowContainer(), "SCM Error", scm.getErrorsDescription());
+            XJAlert.display(getEditor().getWindowContainer(), "SCM Error", scm.getErrorsDescription());
             scm.resetErrors();
         }
     }
 
     protected void showProgress(String title) {
         if(progress == null)
-            progress = new XJDialogProgress(editor.getWindowContainer());
+            progress = new XJDialogProgress(getEditor().getWindowContainer());
         
         progress.setInfo(title);
         progress.setCancellable(false);
@@ -153,7 +153,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     }
 
     protected String getFilePath() {
-        return editor.getFilePath();
+        return getEditor().getFilePath();
     }
 
     public void scmCommandsDidComplete() {
@@ -161,15 +161,15 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
             hideProgress();
             displayErrors();
         }
-        editor.scmCommandsDidComplete();
+        getEditor().scmCommandsDidComplete();
     }
 
     public void scmFileStatusDidChange(String status) {
-        editor.updateSCMStatus(status);
+        getEditor().updateSCMStatus(status);
     }
 
     public void scmLog(String log) {
-        editor.console.println(log);
+        getEditor().console.println(log);
     }
 
 }

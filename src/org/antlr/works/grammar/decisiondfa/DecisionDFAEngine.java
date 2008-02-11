@@ -198,7 +198,7 @@ public class DecisionDFAEngine {
     }
 
     public void refreshMenu() {
-        editor.getXJFrame().getMainMenuBar().refreshMenuState(editor.editorMenu.menuGrammar);
+        editor.refreshMainMenuBar();
     }
 
     public void refresh() {

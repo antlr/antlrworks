@@ -33,7 +33,7 @@ package org.antlr.works;
 
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
-import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
@@ -46,7 +46,6 @@ import org.antlr.works.utils.Console;
 import org.antlr.works.utils.*;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
-import org.antlr.xjlib.appkit.document.XJDataPlainText;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJPanel;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
@@ -111,11 +110,11 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         }
     }
 
+    @Override
     public void appDidLaunch(String[] args, List<String> documentsToOpenAtStartup) {
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
-        XJApplication.addDocumentType(ComponentDocumentGrammar.class, ComponentContainerGrammar.class, XJDataPlainText.class, "g",
-                Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
 
+        XJApplication.addDocumentFactory(new ComponentDocumentFactory());
         XJApplication.addScheduledTimer(new HelpManager(), 1, true);
 
         AWPrefsDialog.applyCommonPrefs();

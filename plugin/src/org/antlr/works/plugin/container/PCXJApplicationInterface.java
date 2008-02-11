@@ -128,10 +128,6 @@ public class PCXJApplicationInterface implements XJApplicationInterface {
         IDE.showHelp(container==null?null:container.getParent());
     }
 
-    public XJDocument newDocumentOfData(Class dataClass) {
-        return null;
-    }
-
     public boolean openDocuments(List<String> files) {
         return false;
     }
