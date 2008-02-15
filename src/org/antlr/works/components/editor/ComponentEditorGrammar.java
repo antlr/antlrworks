@@ -1018,7 +1018,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public boolean ensureDocumentSaved() {
-        return getDocument().getDocumentPath() != null || getDocument().performSave(false) == XJApplication.YES;
+        return getDocument().getDocumentPath() != null || getDocument().save(false) == XJApplication.YES;
     }
 
     public void grammarChanged() {
@@ -1085,7 +1085,12 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public void componentDocumentContentChanged() {
         // Called when the document associated file has changed on the disk
         int oldCursorPosition = getCaretPosition();
-        getDocument().reload();
+        try {
+            getDocument().reload();
+        } catch (Exception e) {
+            // todo alert
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         grammarChanged();
         setCaretPosition(Math.min(oldCursorPosition, getText().length()));
     }
@@ -1270,7 +1275,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public void scmCommandsDidComplete() {
         if(wasSaving) {
             wasSaving = false;
-            getDocument().performSave(false);
+            getDocument().save(false);
         }
     }
 

@@ -168,7 +168,7 @@ public class PluginContainer implements ComponentContainer {
     }
 
     public void load(String file) {
-        document.performLoad(file);
+        document.load(file);
     }
 
     public Container getContentPane() {

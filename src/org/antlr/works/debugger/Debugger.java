@@ -369,7 +369,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public void grammarGenerated() {
-        editor.getDocument().performAutoSave();
+        editor.getDocument().autoSave();
         dateOfModificationOnDisk = editor.getDocument().getDateOfModificationOnDisk();
     }
 

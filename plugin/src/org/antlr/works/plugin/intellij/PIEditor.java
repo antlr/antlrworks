@@ -144,7 +144,7 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     }
 
     public void save() {
-        container.getDocument().performAutoSave();
+        container.getDocument().autoSave();
         notifyFileModified();
     }
 

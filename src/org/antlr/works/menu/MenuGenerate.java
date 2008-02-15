@@ -82,7 +82,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     }
 
     protected void generateCodeProcessContinued() {
-        if(!getEditor().getDocument().performAutoSave())
+        if(!getEditor().getDocument().autoSave())
             return;
 
         generateCode.setDebug(false);

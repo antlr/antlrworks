@@ -380,8 +380,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public void appWillTerminate() {
-        saveAllOpenedDocuments();
-
+        rememberAllOpenedDocuments();
         StatisticsAW.shared().close();
     }
 
@@ -434,10 +433,12 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         return success;
     }
 
-    private void saveAllOpenedDocuments() {
+    private void rememberAllOpenedDocuments() {
         List<String> docPath = new ArrayList<String>();
         for (Object o : XJApplication.shared().getDocuments()) {
             XJDocument document = (XJDocument) o;
+            if(document.isInternalOnly()) continue;
+            
             if (document instanceof ComponentDocumentGrammar) {
                 docPath.add(document.getDocumentPath());
             }

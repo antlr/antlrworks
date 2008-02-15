@@ -58,7 +58,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// todo why the need ot an IndividualComponentContainer?
 public class ComponentContainerGrammar extends XJWindow implements ComponentContainer {
 
     private List<ComponentContainer> containers = new ArrayList<ComponentContainer>();
@@ -109,7 +108,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
         // todo use selected editor
         getMenuSCM().awake();
-        
+
         editorsTab = new JTabbedPane();
 
         bottomTab = new JTabbedPane();
@@ -140,7 +139,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         editorsTab.addChangeListener(new EditorsTabChangeListener());
         bottomTab.addMouseListener(ml = new TabbedPaneMouseListener());
         bottomTab.addChangeListener(cl = new TabbedPaneChangeListener());
-        
+
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(null);
         mainPanel.add(editorsTab);
@@ -230,7 +229,11 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
         addDocument(doc);
         doc.awake();
-        doc.performLoad(file);
+        try {
+            doc.load(file);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
         addGrammar(container);
         containers.add(container);
@@ -276,6 +279,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     @Override
     public void becomingVisibleForTheFirstTime() {
         addGrammar(this);
+
+        // todo remove that before production
         open("/Users/bovet/Grammars/split/ExprLex.g");
 
         // todo lazily using current editor?
@@ -309,18 +314,22 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         return this;
     }
 
+    @Override
     public void customizeFileMenu(XJMenu menu) {
         editorMenu.customizeFileMenu(menu);
     }
 
+    @Override
     public void customizeMenuBar(XJMainMenuBar menubar) {
         editorMenu.customizeMenuBar(menubar);
     }
 
+    @Override
     public void menuItemState(XJMenuItem item) {
         editorMenu.menuItemState(item);
     }
 
+    @Override
     public void handleMenuSelected(XJMenu menu) {
         editorMenu.handleMenuSelected(menu);
     }
@@ -457,10 +466,12 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             popup.show(event.getComponent(), event.getX(), event.getY());
         }
 
+        @Override
         public void mousePressed(MouseEvent event) {
             displayPopUp(event);
         }
 
+        @Override
         public void mouseReleased(MouseEvent event) {
             displayPopUp(event);
         }

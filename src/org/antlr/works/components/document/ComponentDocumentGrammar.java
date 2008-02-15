@@ -37,7 +37,8 @@ import java.io.File;
 
 public class ComponentDocumentGrammar extends ComponentDocument {
 
-    public boolean performSave(boolean saveAs) {
+    @Override
+    public boolean save(boolean saveAs) {
         // Make sure the document can be saved (SCM opened, etc)
         // before calling the super class method to do
         // the actual job
@@ -48,7 +49,7 @@ public class ComponentDocumentGrammar extends ComponentDocument {
                 if(backup.exists()) backup.delete();
                 new File(documentPath).renameTo(backup);
             }
-            return super.performSave(saveAs);
+            return super.save(saveAs);
         } else {
             return false;
         }
