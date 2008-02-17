@@ -145,7 +145,7 @@ public class PCXJApplicationInterface implements XJApplicationInterface {
     public void addDocument(XJDocument document) {
     }
 
-    public XJDocument getDocumentForPath(String path) {
+    public XJWindow getWindowContainingDocumentForPath(String path) {
         return null;
     }
 

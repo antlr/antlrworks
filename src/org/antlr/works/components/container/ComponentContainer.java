@@ -56,7 +56,7 @@ public interface ComponentContainer {
     public void becomingVisibleForTheFirstTime();
 
     public void setDirty();
-    public void close();
+    public boolean close();
 
     public ContextualMenuFactory createContextualMenuFactory();
 

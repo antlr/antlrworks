@@ -304,6 +304,7 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(downloadPathField, AWPrefs.PREF_DOWNLOAD_PATH, AWPrefs.DEFAULT_DOWNLOAD_PATH);
     }
 
+    @Override
     public void becomingVisibleForTheFirstTime() {
         lafIndex = lafCombo.getSelectedIndex();
         javacPathField.setEnabled(javacCustomPathButton.isSelected());
@@ -317,11 +318,13 @@ public class AWPrefsDialog extends XJPanel {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_PREFERENCES);
     }
 
-    public void close() {
+    @Override
+    public boolean close() {
         apply();
-        super.close();
+        return super.close();
     }
 
+    @Override
     public boolean isAuxiliaryWindow() {
         return true;
     }

@@ -248,8 +248,11 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     }
 
     @Override
-    public void close() {
-        super.close();
+    public boolean close() {
+        if(!super.close()) {
+            return false;
+        }
+
         for(ComponentContainer container : containers) {
             if(container != this) {
                 container.close();
@@ -258,14 +261,15 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
         closeMenus();
 
-        // todo handle the correct closing of all
-        //editor.close();
+        editor.close();
 
         bottomTab.removeMouseListener(ml);
         bottomTab.removeChangeListener(cl);
 
         ml = null;
         cl = null;
+
+        return true;
     }
 
     public void setDocument(ComponentDocument document) {

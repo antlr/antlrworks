@@ -48,6 +48,7 @@ import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJPanel;
+import org.antlr.xjlib.appkit.frame.XJWindow;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
@@ -135,7 +136,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
                     break;
 
                 case AWPrefs.STARTUP_OPEN_LAST_OPENED_DOC:
-                    if(XJApplication.shared().getDocuments().size() == 0) {
+                    if(XJApplication.shared().getWindows().isEmpty()) {
                         if(!XJApplication.shared().openLastUsedDocument()) {
                             closeSplashScreen();
                             XJApplication.shared().newDocument();
@@ -144,7 +145,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
                     break;
 
                 case AWPrefs.STARTUP_OPEN_LAST_SAVED_DOC:
-                    if(XJApplication.shared().getDocuments().size() == 0) {
+                    if(XJApplication.shared().getWindows().isEmpty()) {
                         if(!XJApplication.shared().openDocument(AWPrefs.getLastSavedDocument())) {
                             closeSplashScreen();
                             XJApplication.shared().newDocument();
@@ -435,10 +436,8 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
     private void rememberAllOpenedDocuments() {
         List<String> docPath = new ArrayList<String>();
-        for (Object o : XJApplication.shared().getDocuments()) {
-            XJDocument document = (XJDocument) o;
-            if(document.isInternalOnly()) continue;
-            
+        for (XJWindow window : XJApplication.shared().getWindows()) {
+            XJDocument document = window.getDocument();
             if (document instanceof ComponentDocumentGrammar) {
                 docPath.add(document.getDocumentPath());
             }

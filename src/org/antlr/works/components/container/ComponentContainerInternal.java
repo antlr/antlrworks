@@ -82,8 +82,9 @@ public class ComponentContainerInternal implements ComponentContainer {
         getEditor().componentShouldLayout(mainContainer.getSize());
     }
 
-    public void close() {
+    public boolean close() {
         getEditor().close();
+        return true;
     }
 
     public void setDirty() {
