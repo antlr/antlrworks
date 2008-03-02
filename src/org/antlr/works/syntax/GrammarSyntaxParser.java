@@ -42,7 +42,7 @@ import java.util.*;
 /**
  * This class is the main ANTLRWorks parser for the ANTLR 3 grammar. Its purpose is to quickly parse the relevant
  * information needed for the syntax (references, actions, blocks, etc) without spending too much time in parsing
- * all details of the grammar.
+ * all the details of the grammar.
  */
 public class GrammarSyntaxParser extends ATESyntaxParser {
 
@@ -70,6 +70,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     public List<ElementBlock> blocks = new ArrayList<ElementBlock>();         // tokens {}, options {}
     public List<ElementAction> actions = new ArrayList<ElementAction>();        // { action } in rules
     public List<ElementReference> references = new ArrayList<ElementReference>();
+    public List<ElementImport> imports = new ArrayList<ElementImport>();
     public List<ATEToken> decls = new ArrayList<ATEToken>();
 
     public ElementGrammarName name;
@@ -127,6 +128,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             if(matchName()) continue;
             if(matchScope()) continue; // scope before block
             if(matchBlock()) continue;
+            if(matchImport()) continue;
             if(matchRule()) continue;
 
             if(matchRuleGroup()) continue; // before single comment
@@ -147,6 +149,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         blocks.clear();
         actions.clear();
         references.clear();
+        imports.clear();
         decls.clear();
         currentRule = null;
         declaredReferenceNames.clear();
@@ -317,6 +320,35 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         rewind();
         return false;
+    }
+
+    /**
+     * Matches an import statement:
+     *
+     * import JavaDecl, JavaAnnotations, JavaExpr, JavaStat, JavaLexerRules;
+     *
+     *
+     * @return true if an import is matched
+     */
+    private boolean matchImport() {
+        mark();
+
+        // Must begin with the keyword 'scope'
+        if(!matchID(0, "import")) return false;
+
+        while(!matchSEMI(0)) {
+            imports.add(new ElementImport(name, T(0)));
+            if(!matchID(0)) {
+                rewind();
+                return false;
+            }
+            if(!matchChar(0, ",")) {
+                rewind();
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
