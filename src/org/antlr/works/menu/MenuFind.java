@@ -43,44 +43,44 @@ public class MenuFind extends MenuAbstract {
     }
 
     public void find() {
-        getEditor().find();
+        getSelectedEditor().find();
     }
 
     public void findNext() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_NEXT);
-        getEditor().findAndReplace.next();
+        getSelectedEditor().findAndReplace.next();
     }
 
     public void findPrev() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_PREVIOUS);
-        getEditor().findAndReplace.prev();
+        getSelectedEditor().findAndReplace.prev();
     }
 
     public void findSelection() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_TEXT_AT_CARET);
-        getEditor().findAndReplace.setFindString(getEditor().getTextPane().getSelectedText());
-        getEditor().findAndReplace.next();
+        getSelectedEditor().findAndReplace.setFindString(getSelectedEditor().getTextPane().getSelectedText());
+        getSelectedEditor().findAndReplace.next();
     }
 
     public void findUsage() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_USAGES);
 
-        ATEToken token = getEditor().getCurrentToken();
+        ATEToken token = getSelectedEditor().getCurrentToken();
         if(token == null)
             return;
 
-        Usages usage = new Usages(getEditor(), token);
-        getEditor().addTab(usage);
+        Usages usage = new Usages(getSelectedEditor(), token);
+        getSelectedEditor().addTab(usage);
 
-        for (ATEToken ateToken : getEditor().getTokens()) {
+        for (ATEToken ateToken : getSelectedEditor().getTokens()) {
             if (ateToken.getAttribute().equals(token.getAttribute())) {
-                ElementRule matchedRule = getEditor().rules.getEnclosingRuleAtPosition(ateToken.getStartIndex());
+                ElementRule matchedRule = getSelectedEditor().rules.getEnclosingRuleAtPosition(ateToken.getStartIndex());
                 if (matchedRule != null)
                     usage.addMatch(matchedRule, ateToken);
             }
         }
 
-        getEditor().makeBottomComponentVisible();
+        getSelectedEditor().makeBottomComponentVisible();
     }
 
 }

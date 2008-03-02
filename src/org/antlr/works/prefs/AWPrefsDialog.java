@@ -319,9 +319,9 @@ public class AWPrefsDialog extends XJPanel {
     }
 
     @Override
-    public boolean close() {
+    public boolean close(boolean force) {
         apply();
-        return super.close();
+        return super.close(force);
     }
 
     @Override

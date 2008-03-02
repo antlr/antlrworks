@@ -64,7 +64,7 @@ public class CheckGrammar implements Runnable {
         try {
             result = editor.getEngineGrammar().analyze();
         } catch (Exception e) {
-            editor.getConsole().print(e);
+            editor.getConsole().println(e);
             // Result cannot be null, so report the exception
             result = new EngineGrammarResult(e);
         }

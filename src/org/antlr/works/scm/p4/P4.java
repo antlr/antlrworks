@@ -273,7 +273,7 @@ public class P4 implements SCM {
                 completion.processTerminated();
 
             } catch (Exception e) {
-                console.print(e);
+                console.println(e);
             }
             return success;
         }
@@ -492,7 +492,7 @@ public class P4 implements SCM {
                         delegate.streamWatcherDidReceiveText(this, line);
                 }
             } catch (IOException e) {
-                console.print(e);
+                console.println(e);
             }
             if(delegate != null)
                 delegate.streamWatcherDidEnd(this);

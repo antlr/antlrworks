@@ -660,7 +660,7 @@ public class EditorRules implements XJTreeDelegate {
             }
             return true;
         } catch (BadLocationException e) {
-            editor.console.print(e);
+            editor.console.println(e);
             return false;
         }
     }

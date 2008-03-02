@@ -54,16 +54,18 @@ public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory {
         editor = null;
     }
 
+    @Override
     public ViewFactory getViewFactory() {
         return this;
     }
 
+    @Override
     public Document createDefaultDocument() {
         return new DefaultStyledDocument();
     }
 
     public View create(Element elem) {
-        ATERenderingView v = new EditorATERenderingView(elem, editor.getTextEditor(), editor.getDebugger());
+        ATERenderingView v = new EditorATERenderingView(elem, editor);
         views.add(v);
         return v;
     }

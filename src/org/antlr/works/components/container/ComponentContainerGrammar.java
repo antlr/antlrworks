@@ -31,15 +31,24 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.components.container;
 
+import org.antlr.works.ate.syntax.misc.ATELine;
+import org.antlr.works.components.ComponentToolbar;
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.editor.EditorMenu;
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.api.DebuggerDelegate;
+import org.antlr.works.editor.EditorConsole;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.generate.CodeGenerate;
+import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.syntax.element.ElementBlock;
+import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.utils.Console;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
@@ -47,16 +56,15 @@ import org.antlr.xjlib.appkit.frame.XJWindow;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class ComponentContainerGrammar extends XJWindow implements ComponentContainer {
 
@@ -66,8 +74,10 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     private ComponentEditor editor;
     private ComponentContainer selectedContainer;
+    private ComponentContainerGrammarMenu componentContainerGrammarMenu;
 
-    private EditorMenu editorMenu;
+    private ComponentToolbar toolbar;
+    private Debugger debugger;
 
     private MenuFind menuFind;
     private MenuGrammar menuGrammar;
@@ -88,6 +98,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     private JPanel sdPanel;
     private JPanel interpreterPanel;
     private JPanel consolePanel;
+    private JPanel debuggerPanel;
 
     private JSplitPane verticalSplit;
     private JSplitPane horizontalSplit;
@@ -99,7 +110,103 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     public ComponentContainerGrammar() {
         selectedContainer = this;
+
         initMenus();
+
+        debugger = new Debugger(new ContainerDebuggerDelegate());
+        toolbar = new ComponentToolbar(this);
+    }
+
+    // todo remove this class when container closes
+    public class ContainerDebuggerDelegate implements DebuggerDelegate {
+
+        public void debuggerStarted() {
+            selectTab(debuggerPanel);
+            // todo
+            //container.selectDebuggerTab();
+
+            ((EditorConsole)getConsole()).makeCurrent();
+
+            for(ComponentContainer c : containers) {
+                c.getEditor().setEditable(false);
+            }
+            refreshMainMenuBar();
+        }
+
+        public void debuggerStopped() {
+            for(ComponentContainer c : containers) {
+                c.getEditor().setEditable(true);
+            }
+            refreshMainMenuBar();
+        }
+
+        public void debuggerSetLocation(String grammar, int line, int column) {
+            int grammarIndex = computeAbsoluteGrammarIndex(line, column);
+            if(grammarIndex >= 0) {
+                getSelectedEditor().setDebuggerLocation(grammarIndex);
+            }
+        }
+
+        public void debuggerSelectText(String grammar, int line, int column) {
+            int grammarIndex = computeAbsoluteGrammarIndex(line, column);
+            if(grammarIndex >= 0) {
+                getSelectedEditor().selectTextRange(grammarIndex, grammarIndex+1);
+            }
+        }
+
+        public EngineGrammar getEngineGrammar() {
+            return getSelectedEditor().getEngineGrammar();
+        }
+
+        public XJDocument getDocument() {
+            return getSelectedEditor().getDocument();
+        }
+
+        public List<ElementRule> getRules() {
+            return getSelectedEditor().getRules();
+        }
+
+        public List<ElementRule> getSortedRules() {
+            return getSelectedEditor().getSortedRules();
+        }
+
+        public boolean ensureDocumentSaved() {
+            return getSelectedEditor().ensureDocumentSaved();
+        }
+
+        public CodeGenerate getCodeGenerate() {
+            return new CodeGenerate(getSelectedEditor(), null);
+        }
+
+        public String getTokenVocab() {
+            return getSelectedEditor().getParserEngine().getTokenVocab();
+        }
+
+        public Container getContainer() {
+            return getSelectedEditor().getJavaContainer();
+        }
+
+        public Console getConsole() {
+            return getSelectedEditor().getConsole();
+        }
+
+        public List<ElementBlock> getBlocks() {
+            return getSelectedEditor().getBlocks();
+        }
+
+        public Set<Integer> getBreakpoints() {
+            return getSelectedEditor().breakpointManager.getBreakpoints();
+        }
+
+        private int computeAbsoluteGrammarIndex(int lineIndex, int column) {
+            List<ATELine> lines = getSelectedEditor().getLines();
+            if(lineIndex-1<0 || lineIndex-1 >= lines.size())
+                return -1;
+
+            ATELine line = lines.get(lineIndex-1);
+            return line.position+column-1;
+        }
+
     }
 
     @Override
@@ -108,6 +215,9 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
         // todo use selected editor
         getMenuSCM().awake();
+
+        debugger.awake();
+        toolbar.awake();
 
         editorsTab = new JTabbedPane();
 
@@ -134,6 +244,10 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         consolePanel = new JPanel(new BorderLayout());
         consolePanel.setBorder(null);
         bottomTab.addTab("Console", consolePanel);
+
+        debuggerPanel = new JPanel(new BorderLayout());
+        debuggerPanel.setBorder(null);
+        bottomTab.addTab("Debugger", debuggerPanel);
 
         // todo remove this listener when closing
         editorsTab.addChangeListener(new EditorsTabChangeListener());
@@ -170,7 +284,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     }
 
     private void initMenus() {
-        editorMenu = new EditorMenu(this);
+        componentContainerGrammarMenu = new ComponentContainerGrammarMenu(this);
 
         menuFind = new MenuFind(this);
         menuGrammar = new MenuGrammar(this);
@@ -183,7 +297,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     }
 
     private void closeMenus() {
-        editorMenu.close();
+        componentContainerGrammarMenu.close();
 
         menuFind.close();
         menuGrammar.close();
@@ -193,6 +307,12 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         menuDebugger.close();
         menuSCM.close();
         menuExport.close();
+    }
+
+    public void refreshMainMenuBar() {
+        if(getXJFrame().getMainMenuBar() != null) {
+            getXJFrame().getMainMenuBar().refreshState();
+        }
     }
 
     @Override
@@ -222,10 +342,18 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         editorsTab.addTab(container.getDocument().getDocumentName(), c);
     }
 
+    public void openGrammar(String text) {
+        String currentFolder = XJUtils.getPathByDeletingLastComponent(getDocument().getDocumentPath());
+        open(XJUtils.concatPath(currentFolder, text+".g"));
+    }
+
     public void open(String file) {
+        // todo handle non-existing file
+        System.out.println("Open file "+file);
+
         ComponentDocumentFactory factory = new ComponentDocumentFactory();
         ComponentDocumentInternal doc = factory.createInternalDocument(this);
-        ComponentContainerInternal container = (ComponentContainerInternal) doc.getContainer();
+        MenuFactory container = (MenuFactory) doc.getContainer();
 
         addDocument(doc);
         doc.awake();
@@ -237,6 +365,17 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
         addGrammar(container);
         containers.add(container);
+        selectGrammar(file);
+    }
+
+    public void selectGrammar(String file) {
+        for(ComponentContainer c : containers) {
+            if(c.getDocument().getDocumentPath().equals(file)) {
+                editorsTab.setSelectedIndex(containers.indexOf(c)+1);
+                return;
+            }
+        }
+        editorsTab.setSelectedIndex(0);
     }
 
     public ComponentEditorGrammar getSelectedEditor() {
@@ -247,9 +386,25 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         return selectedContainer;
     }
 
-    @Override
+    public Debugger getDebugger() {
+        return debugger;
+    }
+
+    public void debug() {
+        debugger.launchLocalDebugger(Debugger.OPTION_NONE);
+    }
+
+    public void debugAgain() {
+        debugger.launchLocalDebugger(Debugger.OPTION_AGAIN);
+    }
+
     public boolean close() {
-        if(!super.close()) {
+        return close(false);
+    }
+
+    @Override
+    public boolean close(boolean force) {
+        if(!super.close(force)) {
             return false;
         }
 
@@ -262,6 +417,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         closeMenus();
 
         editor.close();
+        debugger.close();
+        toolbar.close();
 
         bottomTab.removeMouseListener(ml);
         bottomTab.removeChangeListener(cl);
@@ -284,9 +441,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     public void becomingVisibleForTheFirstTime() {
         addGrammar(this);
 
-        // todo remove that before production
-        open("/Users/bovet/Grammars/split/ExprLex.g");
-
         // todo lazily using current editor?
         getMenuSCM().setSilent(true);
         getMenuSCM().queryFileStatus();
@@ -299,6 +453,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         // todo not really nice here
         getSelectedEditor().componentDidAwake();
         getSelectedEditor().componentShouldLayout(getSize());
+
+        debugger.componentShouldLayout(getSize());
 
         for(ComponentContainer container : containers) {
             if(container == this) continue;
@@ -320,22 +476,22 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     @Override
     public void customizeFileMenu(XJMenu menu) {
-        editorMenu.customizeFileMenu(menu);
+        componentContainerGrammarMenu.customizeFileMenu(menu);
     }
 
     @Override
     public void customizeMenuBar(XJMainMenuBar menubar) {
-        editorMenu.customizeMenuBar(menubar);
+        componentContainerGrammarMenu.customizeMenuBar(menubar);
     }
 
     @Override
     public void menuItemState(XJMenuItem item) {
-        editorMenu.menuItemState(item);
+        componentContainerGrammarMenu.menuItemState(item);
     }
 
     @Override
     public void handleMenuSelected(XJMenu menu) {
-        editorMenu.handleMenuSelected(menu);
+        componentContainerGrammarMenu.handleMenuSelected(menu);
     }
 
     @Override
@@ -355,7 +511,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     }
 
     public ContextualMenuFactory createContextualMenuFactory() {
-        return new ContextualMenuFactory(editorMenu);
+        return new ContextualMenuFactory(componentContainerGrammarMenu);
     }
 
     public void addTab(EditorTab tab) {
@@ -400,6 +556,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
                 return getSelectedEditor().getComponentInterpreter();
             case 2:
                 return getSelectedEditor().getComponentConsole();
+            case 3:
+                return debugger;
             default:
                 return indexToEditorTab.get(index);
         }
@@ -494,12 +652,14 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             selectedContainer = componentToContainer.get(c);
             ComponentEditorGrammar editor = (ComponentEditorGrammar) selectedContainer.getEditor();
 
-            setComponent(toolbarPanel, editor.getToolbarComponent());
+            // todo update the toolbar when switch editor
+            setComponent(toolbarPanel, toolbar.getToolbar());
             setComponent(rulesPanel, editor.getComponentRules());
 
             setComponent(sdPanel, editor.getComponentSD());
             setComponent(interpreterPanel, editor.getComponentInterpreter());
             setComponent(consolePanel, editor.getComponentConsole());
+            setComponent(debuggerPanel, debugger);
 
             bottomPanel.removeAll();
             bottomPanel.add(bottomTab, BorderLayout.CENTER);

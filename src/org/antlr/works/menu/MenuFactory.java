@@ -1,9 +1,9 @@
-package org.antlr.works.components.container;
+package org.antlr.works.menu;
 
+import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 
@@ -38,13 +38,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ComponentContainerInternal implements ComponentContainer {
+public class MenuFactory implements ComponentContainer {
 
     private ComponentDocument document;
     private ComponentContainer mainContainer;
     private ComponentEditor editor;
 
-    public ComponentContainerInternal(ComponentContainer mainContainer) {
+    public MenuFactory(ComponentContainer mainContainer) {
         this.mainContainer = mainContainer;
     }
 

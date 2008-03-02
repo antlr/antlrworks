@@ -40,8 +40,8 @@ import org.antlr.tool.Interpreter;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;
+import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.menu.ContextualMenuFactory;
@@ -257,7 +257,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
             editor.getEngineGrammar().analyze();
             process();
         } catch(Exception e) {
-            editor.console.print(e);
+            editor.console.println(e);
         } finally {
             runEnded();
         }
@@ -283,7 +283,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         try {
             eg.createGrammars();
         } catch (Exception e) {
-            editor.console.print(e);
+            editor.console.println(e);
             return;
         }
 
@@ -312,7 +312,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
                 t = parseEngine.parse(startSymbol);
             }
         } catch (Exception e) {
-            editor.console.print(e);
+            editor.console.println(e);
         }
 
         if(parser != null && t != null) {
@@ -364,8 +364,8 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
     public JPopupMenu awTreeGetContextualMenu() {
         ContextualMenuFactory factory = editor.createContextualMenuFactory();
-        factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
-        factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
+        factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_EPS);
+        factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_IMAGE);
         return factory.menu;
     }
 

@@ -99,7 +99,7 @@ public class DBPlayer {
             try {
                 playEvent(event);
             } catch(Exception e) {
-                debugger.getConsole().print(e);
+                debugger.getConsole().println(e);
             }
 
             debugger.addEvent(event, contextInfo);
@@ -313,13 +313,8 @@ public class DBPlayer {
     }
 
     public void playLocation() {
-        debugger.resetMarkLocationInGrammar();
-
-        int index = debugger.computeAbsoluteGrammarIndex(lastLocationLine, lastLocationPos);
-        if(index < 0)
-            return;
-
-        debugger.markLocationInGrammar(index);
+        debugger.resetGrammarLocation();
+        debugger.setGrammarLocation(lastLocationLine, lastLocationPos);
     }
 
     public void playMark(DBEventMark event) {

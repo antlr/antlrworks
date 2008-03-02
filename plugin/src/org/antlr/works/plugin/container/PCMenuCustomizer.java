@@ -1,11 +1,11 @@
 package org.antlr.works.plugin.container;
 
+import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuBarCustomizer;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
 import org.antlr.xjlib.foundation.XJSystem;
-import org.antlr.works.editor.EditorMenu;
 /*
 
 [The "BSD licence"]
@@ -60,9 +60,9 @@ public class PCMenuCustomizer implements XJMenuBarCustomizer {
             menu.insertItemAfter(new XJMenuItem("About", XJMainMenuBar.MI_ABOUT, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
             menu.insertSeparatorAfter(XJMainMenuBar.MI_HELP);
         }
-        menu.insertItemAfter(new XJMenuItem("Check for Updates", EditorMenu.MI_CHECK_UPDATES, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
-        menu.insertItemAfter(new XJMenuItem("Send Feedback", EditorMenu.MI_SEND_FEEDBACK, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
-        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", EditorMenu.MI_SUBMIT_STATS, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Check for Updates", ComponentContainerGrammarMenu.MI_CHECK_UPDATES, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Send Feedback", ComponentContainerGrammarMenu.MI_SEND_FEEDBACK, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", ComponentContainerGrammarMenu.MI_SUBMIT_STATS, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
         menu.insertSeparatorAfter(XJMainMenuBar.MI_HELP);
     }
 

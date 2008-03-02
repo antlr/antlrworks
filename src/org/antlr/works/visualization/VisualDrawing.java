@@ -179,7 +179,7 @@ public class VisualDrawing extends ATEThread {
     }
 
     public void threadReportException(Exception e) {
-        visual.getConsole().print(e);
+        visual.getConsole().println(e);
     }
 
     public void threadRun() throws Exception {

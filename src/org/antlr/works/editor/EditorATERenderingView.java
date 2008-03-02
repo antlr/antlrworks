@@ -1,8 +1,7 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.swing.ATERenderingView;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 
 import javax.swing.text.*;
 import java.awt.*;
@@ -39,18 +38,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorATERenderingView extends ATERenderingView {
 
-    protected Debugger debugger;
+    private ComponentEditorGrammar editor;
 
-    public EditorATERenderingView(Element elem, ATEPanel textEditor, Debugger debugger) {
-        super(elem, textEditor);
-        this.debugger = debugger;
+    public EditorATERenderingView(Element elem, ComponentEditorGrammar editor) {
+        super(elem, editor.getTextEditor());
+        this.editor = editor;
         displayOp = new EditorDisplayOperation();
     }
 
     @Override
     public void close() {
         super.close();
-        debugger = null;
+        editor = null;
         displayOp = null;
     }
 
@@ -59,12 +58,8 @@ public class EditorATERenderingView extends ATERenderingView {
         public int renderTextPortion(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute)
                 throws BadLocationException
         {
-            if(debugger == null) {
-                return super.renderTextPortion(g, x, y, start, end, max, doc, attribute);
-            }
-
-            final int debuggerCursorIndex = debugger.getDebuggerCursorIndex();
-            if(debuggerCursorIndex == -1) {
+            final int debuggerIndex = editor.getDebuggerLocation();
+            if(debuggerIndex == -1) {
                 return super.renderTextPortion(g, x, y, start, end, max, doc, attribute);
             }
 
@@ -72,18 +67,18 @@ public class EditorATERenderingView extends ATERenderingView {
             if(start + length > max)
                 length = max - start;
 
-            if(debuggerCursorIndex >= start && debuggerCursorIndex < start+length) {
+            if(debuggerIndex >= start && debuggerIndex < start+length) {
                 final Segment text = getLineBuffer();
-                doc.getText(debuggerCursorIndex, 1, text);
+                doc.getText(debuggerIndex, 1, text);
                 final char c = text.first();
 
-                if(debuggerCursorIndex == start) {
+                if(debuggerIndex == start) {
                     drawDebuggerCursor(g, x, y, c);
                     return super.renderTextPortion(g, x, y, start, end, max, doc, attribute);
                 } else {
-                    x = super.renderTextPortion(g, x, y, start, debuggerCursorIndex-1, max, doc, attribute);
+                    x = super.renderTextPortion(g, x, y, start, debuggerIndex-1, max, doc, attribute);
                     drawDebuggerCursor(g, x, y, c);
-                    return super.renderTextPortion(g, x, y, debuggerCursorIndex-1, end, max, doc, attribute);
+                    return super.renderTextPortion(g, x, y, debuggerIndex-1, end, max, doc, attribute);
                 }
             } else {
                 return super.renderTextPortion(g, x, y, start, end, max, doc, attribute);

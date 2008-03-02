@@ -109,7 +109,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     public DBLocal(Debugger debugger) {
         this.debugger = debugger;
-        this.codeGenerator = new CodeGenerate(debugger.getProvider(), null);
+        this.codeGenerator = debugger.getDelegate().getCodeGenerate();
     }
 
     public void close() {
@@ -145,7 +145,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     public void showProgress() {
         if(progress == null)
-            progress = new XJDialogProgress(debugger.getWindowComponent());
+            progress = new XJDialogProgress(debugger.getContainer());
         progress.setInfo("Preparing...");
         progress.setIndeterminate(false);
         progress.setProgress(0);
@@ -220,7 +220,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
                 public void run() {
                     hideProgress();
 
-                    DebuggerInputDialog dialog = new DebuggerInputDialog(debugger, debugger.getWindowComponent());
+                    DebuggerInputDialog dialog = new DebuggerInputDialog(debugger, debugger.getContainer());
                     dialog.setInputText(rawInputText);
                     if(dialog.runModal() == XJDialog.BUTTON_OK) {
                         rawInputText = dialog.getRawInputText();
@@ -234,7 +234,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
                 }
             });
         } catch (Exception e) {
-            debugger.getConsole().print(e);
+            debugger.getConsole().println(e);
         }
     }
 
@@ -258,8 +258,9 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                if(XJAlert.displayAlert(debugger.getWindowComponent(), error.title, error.message, "Show Console", "OK", 1, 1) == 0) {
-                    debugger.selectConsoleTab();
+                if(XJAlert.displayAlert(debugger.getContainer(), error.title, error.message, "Show Console", "OK", 1, 1) == 0) {
+                    // todo
+                    //debugger.selectConsoleTab();
                 }
             }
         });
@@ -290,7 +291,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
             new File(outputFileDir).mkdirs();
         } catch(Exception e) {
-            debugger.getConsole().print(e);               
+            debugger.getConsole().println(e);
             String msg = ErrorListener.getThreadInstance().getFirstErrorMessage();
             StringBuffer sb = new StringBuffer("Error while preparing the grammar:\n");
             if(msg != null) {
@@ -329,7 +330,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         try {
             debugger.getGrammar().analyze();
         } catch (Exception e) {
-            debugger.getConsole().print(e);
+            debugger.getConsole().println(e);
             errorMessage = e.getLocalizedMessage();
         }
         if(errorMessage != null) {
@@ -343,10 +344,10 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             if(!codeGenerator.generate())
                 errorMessage = codeGenerator.getLastError();
         } catch (Exception e) {
-            debugger.getConsole().print(e);
+            debugger.getConsole().println(e);
             errorMessage = e.toString();
         } catch (OutOfMemoryError e) {
-            debugger.getConsole().print(e);
+            debugger.getConsole().println(e);
             errorMessage = e.toString();
         }
 
@@ -387,7 +388,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             // The lexer name can be null if the grammar is a treeparser or a parser
             // Try to lookup the name used by tokenVocab and use it as the lexer name
             // todo if the tokenVocab token is not present (or invalid - the file does not exist), ask the user
-            lexer = debugger.getProvider().getParserEngine().getTokenVocab();
+            lexer = debugger.getDelegate().getTokenVocab();
         }
         return lexer;
     }
@@ -410,7 +411,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
             XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
         } catch(Exception e) {
-            debugger.getConsole().print(e);
+            debugger.getConsole().println(e);
             reportError("Error while generating the glue-code:\n"+e.toString());
         }
     }
@@ -477,7 +478,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         try {
             XJUtils.writeStringToFile(inputText, fileRemoteParserInputTextFile);
         } catch (IOException e) {
-            debugger.getConsole().print(e);
+            debugger.getConsole().println(e);
             reportError("Error while generating the input text:\n"+e.toString());
         }
     }
@@ -545,7 +546,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     public synchronized void streamWatcherException(Exception e) {
-        debugger.getConsole().print(e);
+        debugger.getConsole().println(e);
     }
 
     protected static class ErrorReporter {

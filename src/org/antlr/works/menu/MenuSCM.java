@@ -53,7 +53,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     }
 
     public void awake() {
-        scm = new P4(this, getEditor().console);
+        scm = new P4(this, getSelectedEditor().console);
     }
 
     public void setSilent(boolean silent) {
@@ -96,7 +96,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     public void revertFile() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SCM_REVERT);
         if(check()) {
-            if(XJAlert.displayAlertYESNO(getEditor().getWindowContainer(), "Revert", "Are you sure you want to discard your changes to the file ?") == XJAlert.YES) {
+            if(XJAlert.displayAlertYESNO(getSelectedEditor().getWindowContainer(), "Revert", "Are you sure you want to discard your changes to the file ?") == XJAlert.YES) {
                 showProgress("Revert");
                 scm.revertFile(getFilePath());
             }
@@ -106,7 +106,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     public void submitFile() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SCM_SUBMIT);
         if(check()) {
-            P4SubmitDialog dialog = new P4SubmitDialog(getEditor().getWindowContainer());
+            P4SubmitDialog dialog = new P4SubmitDialog(getSelectedEditor().getWindowContainer());
             if(dialog.runModal() == P4SubmitDialog.BUTTON_OK) {
                 showProgress("Submit");
                 scm.submitFile(getFilePath(), dialog.getDescription(), dialog.getRemainOpen());
@@ -124,7 +124,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
 
     protected boolean check() {
         if(getFilePath() == null) {
-            XJAlert.display(getEditor().getWindowContainer(), "SCM Error", "The file must be saved to the disk before any SCM command can be executed.");
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "SCM Error", "The file must be saved to the disk before any SCM command can be executed.");
             return false;
         }
         return true;
@@ -132,14 +132,14 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
 
     protected void displayErrors() {
         if(scm.hasErrors()) {
-            XJAlert.display(getEditor().getWindowContainer(), "SCM Error", scm.getErrorsDescription());
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "SCM Error", scm.getErrorsDescription());
             scm.resetErrors();
         }
     }
 
     protected void showProgress(String title) {
         if(progress == null)
-            progress = new XJDialogProgress(getEditor().getWindowContainer());
+            progress = new XJDialogProgress(getSelectedEditor().getWindowContainer());
         
         progress.setInfo(title);
         progress.setCancellable(false);
@@ -153,7 +153,7 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
     }
 
     protected String getFilePath() {
-        return getEditor().getFilePath();
+        return getSelectedEditor().getFilePath();
     }
 
     public void scmCommandsDidComplete() {
@@ -161,15 +161,15 @@ public class MenuSCM extends MenuAbstract implements SCMDelegate {
             hideProgress();
             displayErrors();
         }
-        getEditor().scmCommandsDidComplete();
+        getSelectedEditor().scmCommandsDidComplete();
     }
 
     public void scmFileStatusDidChange(String status) {
-        getEditor().updateSCMStatus(status);
+        getSelectedEditor().updateSCMStatus(status);
     }
 
     public void scmLog(String log) {
-        getEditor().console.println(log);
+        getSelectedEditor().console.println(log);
     }
 
 }

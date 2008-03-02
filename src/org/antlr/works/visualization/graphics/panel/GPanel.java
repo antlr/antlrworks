@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics.panel;
 
+import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.swing.Toolbar;
@@ -445,8 +445,8 @@ public class GPanel implements XJNotificationObserver {
 
         public JPopupMenu getContextualMenu() {
             ContextualMenuFactory factory = editor.createContextualMenuFactory();
-            factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
-            factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
+            factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_EPS);
+            factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_IMAGE);
             return factory.menu;
         }
 

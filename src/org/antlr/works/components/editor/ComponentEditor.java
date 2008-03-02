@@ -103,10 +103,6 @@ public abstract class ComponentEditor implements XJNotificationObserver {
             getXJFrame().getMainMenuBar().refreshState();
     }
 
-    public JComponent getToolbarComponent() {
-        return null;
-    }
-
     public JComponent getStatusComponent() {
         return statusBar;
     }
@@ -202,6 +198,10 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     }
 
     public void notificationDebuggerStopped() {
+    }
+
+    public void setEditable(boolean flag) {
+
     }
 
     protected class MainPanelComponentListener extends ComponentAdapter {

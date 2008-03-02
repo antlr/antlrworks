@@ -131,7 +131,7 @@ public class GFactory {
                 if(console == null)
                     e.printStackTrace();
                 else
-                    console.print(e);
+                    console.println(e);
             }
         }
 

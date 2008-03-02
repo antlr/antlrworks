@@ -33,8 +33,7 @@ package org.antlr.works.debugger;
 
 import org.antlr.runtime.ClassicToken;
 import org.antlr.runtime.Token;
-import org.antlr.works.ate.syntax.misc.ATELine;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.debugger.api.DebuggerDelegate;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
 import org.antlr.works.debugger.local.DBLocal;
@@ -47,12 +46,8 @@ import org.antlr.works.debugger.tree.DBASTModel;
 import org.antlr.works.debugger.tree.DBASTPanel;
 import org.antlr.works.debugger.tree.DBParseTreeModel;
 import org.antlr.works.debugger.tree.DBParseTreePanel;
-import org.antlr.works.editor.EditorConsole;
-import org.antlr.works.editor.EditorMenu;
-import org.antlr.works.editor.EditorProvider;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.EngineGrammar;
-import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.swing.CustomSplitPanel;
@@ -64,6 +59,7 @@ import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.Utils;
+import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.xjlib.appkit.utils.XJAlert;
@@ -111,7 +107,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     protected CustomSplitPanel splitPanel;
     protected Map<Component,CustomToggleButton> components2toggle;
 
-    protected ComponentEditorGrammar editor;
+    //protected ComponentContainerGrammar container;
 
     protected Set<Integer> breakpoints;
 
@@ -127,8 +123,10 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     private boolean closing = false;
     private String startRule;
 
-    public Debugger(ComponentEditorGrammar editor) {
-        this.editor = editor;
+    private DebuggerDelegate delegate;
+
+    public Debugger(DebuggerDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public void awake() {
@@ -195,7 +193,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
                 b.removeActionListener(al);
             }
         }
-        editor = null;
+
+        delegate = null;
     }
 
     public void componentShouldLayout(Dimension size) {
@@ -311,10 +310,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         return inputPanel.isInputTokensBoxVisible();
     }
 
-    public void selectConsoleTab() {
-        editor.selectConsoleTab();
-    }
-
     public DBOutputPanel getOutputPanel() {
         return outputPanel;
     }
@@ -327,24 +322,24 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         return player;
     }
 
-    public Container getWindowComponent() {
-        return editor.getWindowContainer();
-    }
-
-    public EditorConsole getConsole() {
-        return editor.getConsole();
+    public DebuggerDelegate getDelegate() {
+        return delegate;
     }
 
     public List<ElementBlock> getBlocks() {
-        return editor.getBlocks();
+        return delegate.getBlocks();
     }
 
-    public EditorProvider getProvider() {
-        return editor;
+    public Container getWindowContainer() {
+        return XJApplication.getActiveContainer();
     }
 
     public Container getContainer() {
         return panel;
+    }
+
+    public Console getConsole() {
+        return delegate.getConsole();
     }
 
     public void updateStatusInfo() {
@@ -360,21 +355,21 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public EngineGrammar getGrammar() {
-        return editor.getEngineGrammar();
+        return delegate.getEngineGrammar();
     }
 
     public boolean needsToGenerateGrammar() {
-        return dateOfModificationOnDisk != editor.getDocument().getDateOfModificationOnDisk()
-                || editor.getDocument().isDirty();
+        return dateOfModificationOnDisk != delegate.getDocument().getDateOfModificationOnDisk()
+                || delegate.getDocument().isDirty();
     }
 
     public void grammarGenerated() {
-        editor.getDocument().autoSave();
-        dateOfModificationOnDisk = editor.getDocument().getDateOfModificationOnDisk();
+        delegate.getDocument().autoSave();
+        dateOfModificationOnDisk = delegate.getDocument().getDateOfModificationOnDisk();
     }
 
     public void queryGrammarBreakpoints() {
-        this.breakpoints = editor.breakpointManager.getBreakpoints();
+        this.breakpoints = delegate.getBreakpoints();
     }
 
     public boolean isBreakpointAtLine(int line) {
@@ -396,12 +391,12 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
             DBInputTextTokenInfo info = inputPanel.getTokenInfoForToken(token);
             if(info == null)
-                setGrammarPosition(line, pos);
+                selectGrammarText(line, pos);
             else
-                setGrammarPosition(info.line, info.charInLine);
+                selectGrammarText(info.line, info.charInLine);
         } else {
             /** If token is null, the line and pos will be provided as parameters */
-            setGrammarPosition(line, pos);
+            selectGrammarText(line, pos);
         }
 
         inputPanel.selectToken(token);
@@ -409,48 +404,32 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         astPanel.selectToken(token);
     }
 
-    public int grammarIndex;
-
-    public void setGrammarPosition(int line, int pos) {
-        grammarIndex = computeAbsoluteGrammarIndex(line, pos);
-        if(grammarIndex >= 0) {
-            if(editor.getTextPane().hasFocus()) {
-                // If the text pane will lose its focus,
-                // delay the text selection otherwise
-                // the selection will be hidden
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        editor.selectTextRange(grammarIndex, grammarIndex+1);
-                    }
-                });
-            } else
-                editor.selectTextRange(grammarIndex, grammarIndex+1);
-        }
+    public void selectGrammarText(int line, int pos) {
+        // todo name of the grammar
+        delegate.debuggerSelectText(null, line, pos);
     }
 
-    public void markLocationInGrammar(int index) {
-        try {
-            editor.setCaretPosition(index);
-            debuggerCursorIndex = index;
-        } catch(Exception e) {
-            getConsole().print(e);
-        }
+    public void setGrammarLocation(int line, int pos) {
+        // todo name of the grammar
+        delegate.debuggerSetLocation(null, line, pos);
     }
 
-    public void resetMarkLocationInGrammar() {
-        debuggerCursorIndex = -1;
+    public void resetGrammarLocation() {
+        // todo name of the grammar
+        delegate.debuggerSetLocation(null, -1, -1);
     }
 
+    // todo usage of this method should be refactored
     public int getDebuggerCursorIndex() {
         return debuggerCursorIndex;
     }
 
     public List<ElementRule> getRules() {
-        return editor.getRules();
+        return delegate.getRules();
     }
 
     public List<ElementRule> getSortedRules() {
-        return editor.getSortedRules();
+        return delegate.getSortedRules();
     }
 
     public void setStartRule(String rule) {
@@ -473,16 +452,15 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public void launchLocalDebugger(int options) {
-        // If the grammar is dirty, build it anyway
         if(getGrammar().getType() == ElementGrammarName.TREEPARSER) {
-            XJAlert.display(editor.getWindowContainer(), "Unsupported Grammar Type",
+            XJAlert.display(getWindowContainer(), "Unsupported Grammar Type",
                     "ANTLRWorks supports tree grammar debugging only if you \"debug remote\".");
             return;
         }
 
         if(needsToGenerateGrammar()) {
             if(AWPrefs.getDebuggerAskGen()) {
-                int result = XJAlert.displayCustomAlert(editor.getWindowContainer(), "Generate and compile",
+                int result = XJAlert.displayCustomAlert(getWindowContainer(), "Generate and compile",
                         "The grammar has been modified and needs to be generated and compiled again. You can choose " +
                                 "to cancel the operation, to continue without generating and compiling the grammar or " +
                                 "to generate and compile the grammar.",
@@ -497,7 +475,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
             }
         }
 
-        if((options & OPTION_BUILD) > 0 && !editor.ensureDocumentSaved()) {
+        if((options & OPTION_BUILD) > 0 && !delegate.ensureDocumentSaved()) {
             return;
         }
 
@@ -520,7 +498,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void launchRemoteDebugger() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOTE_DEBUGGER);
-        DBRemoteConnectDialog dialog = new DBRemoteConnectDialog(getWindowComponent());
+        DBRemoteConnectDialog dialog = new DBRemoteConnectDialog(getWindowContainer());
         if(dialog.runModal() == XJDialog.BUTTON_OK) {
             debuggerLaunch(dialog.getAddress(), dialog.getPort(), true);
         }
@@ -528,7 +506,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void debuggerLaunch(String address, int port, boolean remote) {
         if(remote && !debuggerLaunchGrammar()) {
-            XJAlert.display(editor.getWindowContainer(), "Error",
+            XJAlert.display(getWindowContainer(), "Error",
                     "Cannot launch the debugger.\nException while parsing grammar.");
             return;
         }
@@ -543,22 +521,19 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void connectionSuccess() {
         // First set the flag to true before doing anything else
-        // (don't send the notification before for example)
         running = true;
 
+        // The  send the notification
+        // todo still needed with the delegate?
         XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STARTED);
-        editor.selectDebuggerTab();
 
-        editor.console.makeCurrent();
-
-        editor.getTextPane().setEditable(false);
-        editor.getTextPane().getCaret().setVisible(false);
+        delegate.debuggerStarted();
 
         player.resetPlayEvents(true);
     }
 
     public void connectionFailed() {
-        XJAlert.display(editor.getWindowContainer(), "Connection Error",
+        XJAlert.display(getWindowContainer(), "Connection Error",
                 "Cannot launch the debugger.\nTime-out waiting to connect to the remote parser.");
     }
 
@@ -569,7 +544,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         try {
             getGrammar().analyze();
         } catch (Exception e) {
-            editor.getConsole().print(e);
+            getConsole().print(e);
             return false;
         }
         return true;
@@ -577,7 +552,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void debuggerStop(boolean force) {
         if(recorder.getStatus() == DBRecorder.STATUS_STOPPING) {
-            if(force || XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES) {
+            if(force || XJAlert.displayAlertYESNO(getWindowContainer(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES) {
                 local.forceStop();
                 recorder.stop();
             }
@@ -594,15 +569,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         eventsPanel.clear();
         parseTreePanel.clear();
         astPanel.clear();
-    }
-
-    public int computeAbsoluteGrammarIndex(int lineIndex, int pos) {
-        List<ATELine> lines = editor.getLines();
-        if(lineIndex-1<0 || lineIndex-1 >= lines.size())
-            return -1;
-
-        ATELine line = lines.get(lineIndex-1);
-        return line.position+pos-1;
     }
 
     public void addEvent(DBEvent event, DBPlayerContextInfo info) {
@@ -689,34 +655,28 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                resetMarkLocationInGrammar();
-                editor.getTextPane().setEditable(true);
-                editor.getTextPane().requestFocusInWindow();
-
-                // Tells the caret to be visible a little bit later
-                // to let Swing focus the component
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        editor.getTextPane().getCaret().setVisible(true);
-                    }
-                });
+                resetGrammarLocation();
 
                 inputPanel.stop();
                 running = false;
-                editor.refreshMainMenuBar();
+
+                delegate.debuggerStopped();
                 XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_DEBUG_STOPPED);
             }
         });
     }
 
+    @Override
     public boolean canExportToBitmap() {
         return getExportableGView() != null;
     }
 
+    @Override
     public boolean canExportToEPS() {
         return getExportableGView() != null;
     }
 
+    @Override
     public GView getExportableGView() {
         Component c = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
         if(Utils.isComponentChildOf(c, parseTreePanel))
@@ -736,10 +696,12 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public JPopupMenu treeGetContextualMenu() {
-        ContextualMenuFactory factory = editor.createContextualMenuFactory();
-        factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
-        factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
-        return factory.menu;
+        /*ContextualMenuFactory factory = container.createContextualMenuFactory();
+        factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_EPS);
+        factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_IMAGE);
+        return factory.menu;*/
+        // todo
+        return null;
     }
 
     public void panelDoDetach(DetachablePanel panel) {
@@ -764,7 +726,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public Container panelParentContainer() {
-        return editor.getJavaContainer();
+        return delegate.getContainer();
     }
 
     public boolean canDebugAgain() {
@@ -775,7 +737,4 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         getConsole().println("["+o.getClass().getName()+" - event "+getNumberOfEvents()+"] Warning: "+message, Console.LEVEL_WARNING);
     }
 
-    public String getOutputPath() {
-        return editor.getOutputPath();
-    }
 }

@@ -79,7 +79,7 @@ public class DBOutputPanel extends DetachablePanel implements StreamWatcherDeleg
     }
 
     public synchronized void streamWatcherException(Exception e) {
-        debugger.getConsole().print(e);
+        debugger.getConsole().println(e);
     }
 
 }

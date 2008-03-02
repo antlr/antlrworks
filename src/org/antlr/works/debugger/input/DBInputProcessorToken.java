@@ -301,9 +301,12 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    textPane.scrollRectToVisible(textPane.modelToView(currentTokenIndexInText));
+                    Rectangle r = textPane.modelToView(currentTokenIndexInText);
+                    if(r != null) {
+                        textPane.scrollRectToVisible(r);                        
+                    }
                 } catch (BadLocationException e) {
-                    debugger.getConsole().print(e);
+                    debugger.getConsole().println(e);
                 }
             }
         });

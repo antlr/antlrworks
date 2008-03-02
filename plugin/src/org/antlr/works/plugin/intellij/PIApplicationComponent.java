@@ -110,7 +110,7 @@ public class PIApplicationComponent implements ApplicationComponent, Configurabl
     }
 
     public void disposeUIResources() {
-        prefsDialog.close();
+        prefsDialog.close(false);
         prefsDialog = null;
     }
 }

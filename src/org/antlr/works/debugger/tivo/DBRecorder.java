@@ -105,7 +105,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public void showProgress() {
         if(progress == null)
-            progress = new XJDialogProgress(debugger.getWindowComponent());
+            progress = new XJDialogProgress(debugger.getContainer());
         progress.setInfo("Connecting...");
         progress.setIndeterminate(true);
         progress.setDelegate(this);
@@ -473,7 +473,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
         if(!grammarFileName.equals(remoteParserGrammarFileName)) {
             String message = "Warning: the grammar used by the remote parser is not the same ("+remoteParserGrammarFileName+").";
-            XJAlert.display(debugger.getWindowComponent(), "Grammar Mismatch", message);
+            XJAlert.display(debugger.getContainer(), "Grammar Mismatch", message);
         }
     }
 
@@ -490,7 +490,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     String message = "Invalid token indexes (current index is "+currentTokenIndex+" at event "+currentTokenIndexEventNumber+" while the same index was used at event "+lastTokenIndexEventNumber+"). Make sure that the remote parser implements the getTokenIndex() method of Token. The indexes must be unique for each consumed token.";
-                    XJAlert.display(debugger.getWindowComponent(), "Invalid Token Indexes", message);
+                    XJAlert.display(debugger.getContainer(), "Invalid Token Indexes", message);
                 }
             });
 

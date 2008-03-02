@@ -11,7 +11,6 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.completion.AutoCompletionMenu;
 import org.antlr.works.completion.AutoCompletionMenuDelegate;
 import org.antlr.works.completion.RuleTemplates;
-import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.*;
 import org.antlr.works.find.FindAndReplace;
 import org.antlr.works.grammar.EngineGrammar;
@@ -24,10 +23,7 @@ import org.antlr.works.navigation.GoToRule;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.syntax.*;
-import org.antlr.works.syntax.element.ElementAction;
-import org.antlr.works.syntax.element.ElementBlock;
-import org.antlr.works.syntax.element.ElementReference;
-import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.syntax.element.*;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.Utils;
 import org.antlr.works.visualization.Visual;
@@ -118,12 +114,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public EditorRules rules;
     public Visual visual;
     public EditorInterpreter interpreter;
-    public Debugger debugger;
 
     /* Editor */
 
     public EditorConsole console;
-    public EditorToolbar toolbar;
     public EditorIdeas editorIdeas;
     public EditorTips editorTips;
     public EditorInspector editorInspector;
@@ -162,6 +156,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     protected EditorATEEditorKit editorKit;
 
+    private int debuggerLocation = -1;
+
     public ComponentEditorGrammar() {
 
     }
@@ -182,7 +178,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         initTools();
 
         awakeInstances();
-        awakeInterface();
 
         register();
     }
@@ -246,7 +241,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         parserEngine = new GrammarSyntaxEngine();
         grammarSyntax = new GrammarSyntax(this);
         interpreter = new EditorInterpreter(this);
-        debugger = new Debugger(this);
     }
 
     protected void initEditor() {
@@ -282,9 +276,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         editorTips.awake();
 
         interpreter.awake();
-        debugger.awake();
-
-        toolbar.awake();
 
         rules.setKeyBindings(textEditor.getKeyBindings());
 
@@ -319,10 +310,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return tabbedPane;
     }
 
-    protected void createToolbar() {
-        toolbar = new EditorToolbar(this);
-    }
-
     protected void createStatusBar() {
         infoLabel = new JLabel();
         cursorLabel = new JLabel();
@@ -354,17 +341,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     protected void createInterface() {
         createTextEditor();
         createRulesPane();
-        createToolbar();
         createStatusBar();
-    }
-
-    protected void awakeInterface() {
-        //addTab(visual);
-        //addTab(interpreter);
-        //addTab(debugger);
-        //addTab(console);
-
-        //selectVisualizationTab();
     }
 
     protected void register() {
@@ -398,7 +375,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         decisionDFAEngine.close();
         grammarSyntax.close();
         interpreter.close();
-        debugger.close();
 
         console.close();
         editorIdeas.close();
@@ -421,7 +397,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         analysisManager.close();
 
         textEditor.close();
-        toolbar.close();
 
         getXJFrame().unregisterUndo(this);
 
@@ -444,11 +419,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void selectInterpreterTab() {
         selectTab(interpreter.getTabComponent());
-        makeBottomComponentVisible();
-    }
-
-    public void selectDebuggerTab() {
-        selectTab(debugger.getTabComponent());
         makeBottomComponentVisible();
     }
 
@@ -480,10 +450,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return delegate != null && delegate.isBottomComponentVisible();
     }
 
-    public JComponent getToolbarComponent() {
-        return toolbar.getToolbar();
-    }
-
     public EngineGrammar getEngineGrammar() {
         return engineGrammar;
     }
@@ -498,10 +464,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public ATEPanel getTextEditor() {
         return textEditor;
-    }
-
-    public Debugger getDebugger() {
-        return debugger;
     }
 
     public GrammarSyntax getSyntax() {
@@ -685,6 +647,15 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         textEditor.deselectTextRange();
     }
 
+    public void setDebuggerLocation(int index) {
+        this.debuggerLocation = index;
+        textEditor.getTextPane().setCaretPosition(index);
+    }
+
+    public int getDebuggerLocation() {
+        return debuggerLocation;
+    }
+
     public int getSelectionLeftIndexOnTokenBoundary() {
         ATEToken t = getTokenAtPosition(getTextPane().getSelectionStart(), true);
         if(t == null)
@@ -782,12 +753,16 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return parserEngine.getReferences();
     }
 
+    public List<ElementImport> getImports() {
+        return parserEngine.getImports();
+    }
+
     public List<ATEToken> getTokens() {
         return textEditor.getTokens();
     }
 
     public List<ATELine> getLines() {
-        return textEditor.getLines();
+        return textEditor.getLines();    
     }
 
     public void goToHistoryRememberCurrentPosition() {
@@ -800,10 +775,17 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public ElementReference getReferenceAtPosition(int pos) {
-        List<ElementReference> refs = getReferences();
-        for (ElementReference ref : refs) {
+        for (ElementReference ref : getReferences()) {
             if (ref.containsIndex(pos))
                 return ref;
+        }
+        return null;
+    }
+
+    public ElementImport getImportAtPosition(int pos) {
+        for (ElementImport element : getImports()) {
+            if (element.containsIndex(pos))
+                return element;
         }
         return null;
     }
@@ -955,10 +937,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
         // todo
         /*ContextualMenuFactory factory = new ContextualMenuFactory(editorMenu);
-        factory.addItem(EditorMenu.MI_GROUP_RULE);
-        factory.addItem(EditorMenu.MI_UNGROUP_RULE);
+        factory.addItem(ComponentContainerGrammarMenu.MI_GROUP_RULE);
+        factory.addItem(ComponentContainerGrammarMenu.MI_UNGROUP_RULE);
         factory.addSeparator();
-        XJMenuItemCheck item = (XJMenuItemCheck) factory.addItem(EditorMenu.MI_IGNORE_RULE);
+        XJMenuItemCheck item = (XJMenuItemCheck) factory.addItem(ComponentContainerGrammarMenu.MI_IGNORE_RULE);
         item.setSelected(rules.getFirstSelectedRuleIgnoredFlag());
 
         return factory.menu;*/
@@ -1043,9 +1025,26 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         editorIdeas.hide();
     }
 
+    @Override
+    public void setEditable(boolean flag) {
+        getTextPane().setEditable(flag);
+        if(flag) {
+            getTextPane().requestFocusInWindow();
+
+            // Tells the caret to be visible a little bit later
+            // to let Swing focus the component
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    getTextPane().getCaret().setVisible(true);
+                }
+            });
+        } else {
+            getTextPane().getCaret().setVisible(flag);
+        }
+    }
+
     public void componentShouldLayout(Dimension size) {
         interpreter.componentShouldLayout();
-        debugger.componentShouldLayout(size);
     }
 
     public void componentDidAwake() {
@@ -1162,8 +1161,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void ateMousePressed(Point point) {
-        if(!debugger.isRunning())
-            editorIdeas.display(point);
+        // todo use rather a propery of the editor like readOnly?
+        //if(!debugger.isRunning())
+//            editorIdeas.display(point);
     }
 
     public void ateMouseExited() {
@@ -1192,8 +1192,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         updateCursorInfo();
         if(getTextPane().hasFocus()) {
             editorIdeas.hide();
-            if(!debugger.isRunning())
-                editorIdeas.display(getCaretPosition());
+            // todo use a property of the editor like readonly?
+            //if(!debugger.isRunning())
+            //    editorIdeas.display(getCaretPosition());
         }
 
         // Update the auto-completion list
@@ -1322,14 +1323,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public void find() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_DIALOG);
         findAndReplace.find();
-    }
-
-    public void debug() {
-        debugger.launchLocalDebugger(Debugger.OPTION_NONE);
-    }
-
-    public void debugAgain() {
-        debugger.launchLocalDebugger(Debugger.OPTION_AGAIN);
     }
 
     public ContextualMenuFactory createContextualMenuFactory() {

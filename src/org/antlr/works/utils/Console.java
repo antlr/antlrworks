@@ -43,5 +43,8 @@ public interface Console {
 
     public void println(String s);
     public void println(String s, int level);
+    public void println(Throwable e);
+
+    public void print(String string, int level);
     public void print(Throwable e);
 }

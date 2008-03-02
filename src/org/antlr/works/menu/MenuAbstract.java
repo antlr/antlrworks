@@ -38,29 +38,33 @@ import javax.swing.*;
 
 public abstract class MenuAbstract {
 
-    private ComponentContainerGrammar editor;
+    private ComponentContainerGrammar container;
 
-    public MenuAbstract(ComponentContainerGrammar editor) {
-        this.editor = editor;
+    public MenuAbstract(ComponentContainerGrammar container) {
+        this.container = container;
     }
 
     public void close() {
-        editor = null;
+        container = null;
     }
 
-    public ComponentEditorGrammar getEditor() {
-        return editor.getSelectedEditor();
+    public ComponentContainerGrammar getContainer() {
+        return container;
+    }
+
+    public ComponentEditorGrammar getSelectedEditor() {
+        return container.getSelectedEditor();
     }
 
     public JTextPane getTextPane() {
-        return getEditor().getTextPane();
+        return getSelectedEditor().getTextPane();
     }
 
     public void setCaretPosition(int position) {
-        getEditor().setCaretPosition(position);
+        getSelectedEditor().setCaretPosition(position);
     }
 
     public int getCaretPosition() {
-        return getEditor().getCaretPosition();
+        return getSelectedEditor().getCaretPosition();
     }
 }

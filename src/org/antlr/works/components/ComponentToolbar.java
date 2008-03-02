@@ -1,6 +1,6 @@
-package org.antlr.works.editor;
+package org.antlr.works.components;
 
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.swing.Toolbar;
@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorToolbar implements XJNotificationObserver {
+public class ComponentToolbar implements XJNotificationObserver {
 
     public Toolbar toolbar;
 
@@ -60,10 +60,10 @@ public class EditorToolbar implements XJNotificationObserver {
 
     public JButton find;
 
-    public ComponentEditorGrammar editor;
+    public ComponentContainerGrammar container;
 
-    public EditorToolbar(ComponentEditorGrammar editor) {
-        this.editor = editor;
+    public ComponentToolbar(ComponentContainerGrammar container) {
+        this.container = container;
 
         createInterface();
         addActions();
@@ -75,7 +75,7 @@ public class EditorToolbar implements XJNotificationObserver {
     }
 
     public void close() {
-        editor = null;
+        container = null;
         AWPrefs.getPreferences().unbindFromPreferences(sort, AWPrefs.PREF_TOOLBAR_SORT);        
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
@@ -92,7 +92,7 @@ public class EditorToolbar implements XJNotificationObserver {
         } else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED)) {
             find.setEnabled(true);
             debug.setEnabled(true);
-            debugAgain.setEnabled(editor.debugger.canDebugAgain());
+            debugAgain.setEnabled(container.getDebugger().canDebugAgain());
         }
     }
 
@@ -115,7 +115,8 @@ public class EditorToolbar implements XJNotificationObserver {
     }
 
     public void awake() {
-        editor.rules.setSorted(AWPrefs.getPreferences().getBoolean(AWPrefs.PREF_TOOLBAR_SORT, false));
+        // todo
+//        container.getSelectedEditor().rules.setSorted(AWPrefs.getPreferences().getBoolean(AWPrefs.PREF_TOOLBAR_SORT, false));
         sd.setSelected(true);
         coloring.setSelected(true);
         ideas.setSelected(true);
@@ -124,55 +125,55 @@ public class EditorToolbar implements XJNotificationObserver {
     public void addActions() {
         backward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.goToBackward();
+                container.getSelectedEditor().goToBackward();
             }
         });
 
         forward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.goToForward();
+                container.getSelectedEditor().goToForward();
             }
         });
 
         sort.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.toggleRulesSorting();
+                container.getSelectedEditor().toggleRulesSorting();
             }
         });
 
         sd.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.toggleSyntaxDiagram();
+                container.getSelectedEditor().toggleSyntaxDiagram();
             }
         });
 
         coloring.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.toggleSyntaxColoring();
+                container.getSelectedEditor().toggleSyntaxColoring();
             }
         });
 
         ideas.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.toggleIdeas();
+                container.getSelectedEditor().toggleIdeas();
             }
         });
 
         find.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.find();
+                container.getSelectedEditor().find();
             }
         });
 
         debug.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.debug();
+                container.debug();
             }
         });
 
         debugAgain.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                editor.debugAgain();
+                container.debugAgain();
             }
         });
 

@@ -1,7 +1,18 @@
-/*
+package org.antlr.works.debugger.api;
+
+import org.antlr.works.generate.CodeGenerate;
+import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.syntax.element.ElementBlock;
+import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.utils.Console;
+import org.antlr.xjlib.appkit.document.XJDocument;
+
+import java.awt.*;
+import java.util.List;
+import java.util.Set;/*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-07 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,45 +40,32 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.menu;
+public interface DebuggerDelegate {
 
-import org.antlr.works.components.container.ComponentContainerGrammar;
-import org.antlr.works.stats.StatisticsAW;
+    void debuggerStarted();
+    void debuggerStopped();
 
-public class MenuDebugger extends MenuAbstract {
+    void debuggerSetLocation(String grammar, int line, int column);
+    void debuggerSelectText(String grammar, int line, int column);
 
-    public MenuDebugger(ComponentContainerGrammar editor) {
-        super(editor);
-    }
+    Container getContainer();
+    
+    CodeGenerate getCodeGenerate();
+    String getTokenVocab();
+    Console getConsole();
 
-    public void runInterpreter() {
-        try {
-            StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INTERPRETER_MENU);
-            getSelectedEditor().selectInterpreterTab();
-            getSelectedEditor().interpreter.interpret();
-        } catch (Exception e) {
-            getSelectedEditor().console.println(e);
-        }
-    }
+    List<ElementBlock> getBlocks();
 
-    public void debug() {
-        getContainer().debug();
-    }
+    EngineGrammar getEngineGrammar();
 
-    public void debugAgain() {
-        getContainer().debugAgain();
-    }
+    Set<Integer> getBreakpoints();
 
-    public void debugRemote() {
-        getContainer().getDebugger().launchRemoteDebugger();
-    }
+    XJDocument getDocument();
 
-    public void toggleInputTokens() {
-        getContainer().getDebugger().toggleInputTokensBox();
-        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
-    }
+    List<ElementRule> getRules();
 
-    public boolean isInputTokenVisible() {
-        return getContainer().getDebugger().isInputTokenVisible();
-    }
+    List<ElementRule> getSortedRules();
+
+    boolean ensureDocumentSaved();
+
 }

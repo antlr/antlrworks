@@ -1,11 +1,11 @@
 package org.antlr.works.plugin.container;
 
+import org.antlr.works.IDE;
+import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
 import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
-import org.antlr.works.IDE;
-import org.antlr.works.editor.EditorMenu;
 /*
 
 [The "BSD licence"]
@@ -53,13 +53,13 @@ public class PCMenuHelpDelegate implements XJMenuItemDelegate {
             case XJMainMenuBar.MI_HELP:
                 IDE.showHelp(container.getParent());
                 break;
-            case EditorMenu.MI_SUBMIT_STATS:
+            case ComponentContainerGrammarMenu.MI_SUBMIT_STATS:
                 IDE.submitStats(container.getParent());
                 break;
-            case EditorMenu.MI_SEND_FEEDBACK:
+            case ComponentContainerGrammarMenu.MI_SEND_FEEDBACK:
                 IDE.submitFeedback(container.getParent());
                 break;
-            case EditorMenu.MI_CHECK_UPDATES:
+            case ComponentContainerGrammarMenu.MI_CHECK_UPDATES:
                 IDE.checkUpdates(container.getParent());
                 break;
         }

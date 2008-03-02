@@ -1,7 +1,7 @@
 package org.antlr.works.grammar;
 
+import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.decisiondfa.DecisionDFA;
 import org.antlr.works.menu.ContextualMenuFactory;
@@ -256,9 +256,9 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
 
         public JPopupMenu getContextualMenu(GElement element) {
             ContextualMenuFactory factory = editor.createContextualMenuFactory();
-            factory.addItem(EditorMenu.MI_EXPORT_AS_EPS);
-            factory.addItem(EditorMenu.MI_EXPORT_AS_IMAGE);
-            factory.addItem(EditorMenu.MI_EXPORT_AS_DOT);
+            factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_EPS);
+            factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_IMAGE);
+            factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_DOT);
             return factory.menu;
         }
 
@@ -281,7 +281,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
                 while ( (line = br.readLine()) != null)
                     editor.console.println(type + ":" + line);
             } catch (IOException e) {
-                editor.console.print(e);
+                editor.console.println(e);
             }
         }
     }

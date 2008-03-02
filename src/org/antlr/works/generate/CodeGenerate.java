@@ -93,7 +93,7 @@ public class CodeGenerate implements Runnable {
                 return null;
             }
         } catch (Exception e) {
-            provider.getConsole().print(e);
+            provider.getConsole().println(e);
         }
         return null;
     }
@@ -212,7 +212,7 @@ public class CodeGenerate implements Runnable {
             String file = getGeneratedFileName(type);
             return file == null || new File(file).exists();
         } catch (Exception e) {
-            provider.getConsole().print(e);
+            provider.getConsole().println(e);
         }
         return false;
     }
@@ -271,7 +271,7 @@ public class CodeGenerate implements Runnable {
             }
         } catch (Exception e) {
             generateError = e.toString();
-            provider.getConsole().print(e);
+            provider.getConsole().println(e);
         }
 
         SwingUtilities.invokeLater(new Runnable() {

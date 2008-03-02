@@ -55,6 +55,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     protected List<ElementBlock> blocks;
     protected List<ElementAction> actions;
     protected List<ElementReference> references;
+    protected List<ElementImport> imports;
     protected List<ATEToken> decls;
 
     protected ElementGrammarName name;
@@ -83,6 +84,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         if(blocks != null) blocks.clear();
         if(actions != null) actions.clear();
         if(references != null) references.clear();
+        if(imports != null) imports.clear();
         if(decls != null) decls.clear();
     }
 
@@ -174,6 +176,10 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         return references;
     }
 
+    public synchronized List<ElementImport> getImports() {
+        return imports;
+    }
+
     public synchronized List<ATEToken> getDecls() {
         return decls;
     }
@@ -188,7 +194,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
             for (ElementBlock block : blocks) {
                 if (block.isTokenBlock) {
                     names.addAll(block.getDeclaredTokensAsString());
-                }
+                }                                                         
             }
         }
         return names;
@@ -237,6 +243,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         this.blocks = new ArrayList<ElementBlock>(gp.blocks);
         this.actions = new ArrayList<ElementAction>(gp.actions);
         this.references = new ArrayList<ElementReference>(gp.references);
+        this.imports = new ArrayList<ElementImport>(gp.imports);
         this.decls = new ArrayList<ATEToken>(gp.decls);
         this.name = gp.name;
     }

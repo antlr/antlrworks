@@ -75,23 +75,23 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     protected void generateCodeProcess() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GENERATE_CODE);
 
-        if(!getEditor().ensureDocumentSaved())
+        if(!getSelectedEditor().ensureDocumentSaved())
             return;
 
         checkGrammar.check();
     }
 
     protected void generateCodeProcessContinued() {
-        if(!getEditor().getDocument().autoSave())
+        if(!getSelectedEditor().getDocument().autoSave())
             return;
 
         generateCode.setDebug(false);
-        generateCode.generateInThread(getEditor().getJavaContainer());
+        generateCode.generateInThread(getSelectedEditor().getJavaContainer());
     }
 
     public boolean checkLanguage() {
         if(!isKnownLanguage()) {
-            XJAlert.display(getEditor().getWindowContainer(), "Error", "Can only show generated grammar for Java language");
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Can only show generated grammar for Java language");
             return false;
         } else
             return true;
@@ -107,12 +107,12 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
 
         if(type == ElementGrammarName.LEXER) {
             if(!generateCode.supportsLexer()) {
-                XJAlert.display(getEditor().getWindowContainer(), "Error", "Cannot generate the lexer because there is no lexer in this grammar.");
+                XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot generate the lexer because there is no lexer in this grammar.");
                 return;
             }
         } else {
             if(!generateCode.supportsParser()) {
-                XJAlert.display(getEditor().getWindowContainer(), "Error", "Cannot generate the parser because there is no parser in this grammar.");
+                XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot generate the parser because there is no parser in this grammar.");
                 return;
             }
         }
@@ -123,10 +123,10 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     public void showRuleGeneratedCode() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_RULE_GENERATED_CODE);
 
-        if(getEditor().getCurrentRule() == null) {
-            XJAlert.display(getEditor().getWindowContainer(), "Error", "A rule must be selected first.");
+        if(getSelectedEditor().getCurrentRule() == null) {
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "A rule must be selected first.");
         } else {
-            ElementRule r = getEditor().getCurrentRule();
+            ElementRule r = getSelectedEditor().getCurrentRule();
             checkAndShowGeneratedCode(r.name, r.lexer?ElementGrammarName.LEXER:ElementGrammarName.PARSER);
         }
     }
@@ -137,7 +137,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
 
         if(!generateCode.isGeneratedTextFileExisting(type)
                 || generateCode.isFileModifiedSinceLastGeneration()
-                || getEditor().getDocument().isDirty()) {
+                || getSelectedEditor().getDocument().isDirty()) {
             // Generate automatically the code and call again
             // this method (using actionShowCodeRule as flag)
             actionShowCodeRule = rule;
@@ -151,12 +151,12 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     }
 
     private void showGeneratedCode(String rule, int type) {
-        CodeDisplay dc = new CodeDisplay(getEditor().getXJFrame());
+        CodeDisplay dc = new CodeDisplay(getSelectedEditor().getXJFrame());
         String title;
         try {
             title = generateCode.getGeneratedClassName(type)+".java";
         } catch (Exception e) {
-            XJAlert.display(getEditor().getWindowContainer(), "Error", "Cannot cannot get the name of the generated file:\n"+e.toString());
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot cannot get the name of the generated file:\n"+e.toString());
             return;
         }
 
@@ -164,7 +164,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
         try {
             text = generateCode.getGeneratedText(type);
         } catch (Exception e) {
-            XJAlert.display(getEditor().getWindowContainer(), "Error", "Exception while reading the generated file:\n"+e.toString());
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Exception while reading the generated file:\n"+e.toString());
             return;
         }
 
@@ -179,15 +179,15 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
                 text = text.substring(startIndex, stopIndex);
                 title = rule;
             } else {
-                XJAlert.display(getEditor().getWindowContainer(), "Error", "Cannot find markers for rule \""+rule+"\"");
+                XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot find markers for rule \""+rule+"\"");
                 return;
             }
         }
         dc.setText(text);
         dc.setTitle(title);
 
-        getEditor().addTab(dc);
-        getEditor().makeBottomComponentVisible();
+        getSelectedEditor().addTab(dc);
+        getSelectedEditor().makeBottomComponentVisible();
     }
 
     public boolean codeGenerateDisplaySuccess() {
@@ -209,7 +209,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
         if(result.getErrorCount() == 0) {
             generateCodeProcessContinued();
         } else {
-            XJAlert.display(getEditor().getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
         }
     }
 }

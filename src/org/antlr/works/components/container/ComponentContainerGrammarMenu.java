@@ -29,11 +29,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.editor;
+package org.antlr.works.components.container;
 
 import org.antlr.works.IDE;
-import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementGrammarName;
@@ -44,7 +44,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ResourceBundle;
 
-public class EditorMenu implements XJMenuItemDelegate {
+public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
 
     public static final int MI_PRINT = 5;
 
@@ -143,7 +143,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     /** The resource bundle used to get localized strings */
     protected static ResourceBundle resourceBundle = IDE.getMenusResourceBundle();
 
-    public EditorMenu(ComponentContainerGrammar container) {
+    public ComponentContainerGrammarMenu(ComponentContainerGrammar container) {
         this.container = container;
     }
 
@@ -156,7 +156,7 @@ public class EditorMenu implements XJMenuItemDelegate {
     }
 
     public boolean isDebuggerRunning() {
-        return getEditor().debugger.isRunning();
+        return container.getDebugger().isRunning();
     }
 
     public void customizeFileMenu(XJMenu menu) {
@@ -508,7 +508,7 @@ public class EditorMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_DEBUG_AGAIN:
-                item.setEnabled(!isDebuggerRunning() && getEditor().debugger.canDebugAgain());
+                item.setEnabled(!isDebuggerRunning() && container.getDebugger().canDebugAgain());
                 break;
 
             case MI_DEBUG:

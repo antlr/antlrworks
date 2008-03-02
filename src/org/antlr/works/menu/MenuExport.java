@@ -63,7 +63,7 @@ public class MenuExport extends MenuAbstract {
     public void exportEventsAsTextFile() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_EXPORT_EVENTS_AS_TEXT);
 
-        if(!XJFileChooser.shared().displaySaveDialog(getEditor().getWindowContainer(), "txt", "Text file", false))
+        if(!XJFileChooser.shared().displaySaveDialog(getSelectedEditor().getWindowContainer(), "txt", "Text file", false))
             return;
 
         String file = XJFileChooser.shared().getSelectedFilePath();
@@ -72,17 +72,17 @@ public class MenuExport extends MenuAbstract {
 
         try {
             FileWriter writer = new FileWriter(file);
-            writer.write(getEditor().debugger.getEventsAsString());
+            writer.write(getContainer().getDebugger().getEventsAsString());
             writer.close();
         } catch (IOException e) {
-            XJAlert.display(getEditor().getWindowContainer(), "Error", "Cannot save text file: "+file+"\nError: "+e);
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot save text file: "+file+"\nError: "+e);
         }
     }
 
     public void exportAsImage() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_EXPORT_AS_BITMAP);
 
-        EditorTab tab = getEditor().getSelectedTab();
+        EditorTab tab = getSelectedEditor().getSelectedTab();
         if(!tab.canExportToBitmap())
             return;
 
@@ -105,15 +105,15 @@ public class MenuExport extends MenuAbstract {
         if(asImage) {
             extensions = lookupAvailableImageFormat();            
         }
-        if(!XJFileChooser.shared().displayChooseDirectory(getEditor().getWindowContainer(), extensions, extensions, !asImage)) {
+        if(!XJFileChooser.shared().displayChooseDirectory(getSelectedEditor().getWindowContainer(), extensions, extensions, !asImage)) {
             return;
         }
 
         String directory = XJFileChooser.shared().getSelectedFilePath();
         String extension = XJFileChooser.shared().getSelectedFileExtension();
 
-        SDGenerator sd = new SDGenerator(getEditor().getEngineGrammar());
-        for(ElementRule rule : getEditor().getRules()) {
+        SDGenerator sd = new SDGenerator(getSelectedEditor().getEngineGrammar());
+        for(ElementRule rule : getSelectedEditor().getRules()) {
             try {
                 if(asImage) {
                     sd.renderRuleToBitmapFile(rule.name, extension, XJUtils.concatPath(directory, rule.name+"."+extension));
@@ -121,18 +121,18 @@ public class MenuExport extends MenuAbstract {
                     sd.renderRuleToEPSFile(rule.name, XJUtils.concatPath(directory, rule.name+".eps"));
                 }
             } catch (Exception e) {
-                XJAlert.display(getEditor().getWindowContainer(), "Error", "Images cannot be saved because:\n"+e);
+                XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Images cannot be saved because:\n"+e);
             }
         }
     }
 
     public void exportRuleAsImage() {
-        if(!getEditor().visual.canSaveImage()) {
-            XJAlert.display(getEditor().getWindowContainer(), "Export Rule to Bitmap Image", "There is no rule at cursor position.");
+        if(!getSelectedEditor().visual.canSaveImage()) {
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Export Rule to Bitmap Image", "There is no rule at cursor position.");
             return;
         }
 
-        saveImageToDisk(getEditor().visual.getImage());
+        saveImageToDisk(getSelectedEditor().visual.getImage());
     }
 
     public void exportGViewAsImage(GView view) {
@@ -141,12 +141,12 @@ public class MenuExport extends MenuAbstract {
 
     public void saveImageToDisk(BufferedImage image) {
         List<String> extensions = lookupAvailableImageFormat();
-        if(XJFileChooser.shared().displaySaveDialog(getEditor().getWindowContainer(), extensions, extensions, false)) {
+        if(XJFileChooser.shared().displaySaveDialog(getSelectedEditor().getWindowContainer(), extensions, extensions, false)) {
             String file = XJFileChooser.shared().getSelectedFilePath();
             try {
                 ImageIO.write(image, file.substring(file.lastIndexOf(".")+1), new File(file));
             } catch (IOException e) {
-                XJAlert.display(getEditor().getWindowContainer(), "Error", "Image \""+file+"\" cannot be saved because:\n"+e);
+                XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Image \""+file+"\" cannot be saved because:\n"+e);
             }
         }
     }
@@ -164,7 +164,7 @@ public class MenuExport extends MenuAbstract {
     public void exportAsEPS() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_EXPORT_AS_EPS);
 
-        EditorTab tab = getEditor().getSelectedTab();
+        EditorTab tab = getSelectedEditor().getSelectedTab();
         if(!tab.canExportToEPS())
             return;
 
@@ -175,19 +175,19 @@ public class MenuExport extends MenuAbstract {
     }
 
     protected void exportRuleAsEPS() {
-        if(getEditor().rules.getEnclosingRuleAtPosition(getEditor().getCaretPosition()) == null) {
-            XJAlert.display(getEditor().getWindowContainer(), "Export Rule to EPS", "There is no rule at cursor position.");
+        if(getSelectedEditor().rules.getEnclosingRuleAtPosition(getSelectedEditor().getCaretPosition()) == null) {
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Export Rule to EPS", "There is no rule at cursor position.");
             return;
         }
 
-        GGraphAbstract graph = getEditor().visual.getCurrentGraph();
+        GGraphAbstract graph = getSelectedEditor().visual.getCurrentGraph();
 
         if(graph == null) {
-            XJAlert.display(getEditor().getWindowContainer(), "Export Rule to EPS", "There is no graphical visualization.");
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Export Rule to EPS", "There is no graphical visualization.");
             return;
         }
 
-        if(!XJFileChooser.shared().displaySaveDialog(getEditor().getWindowContainer(), "eps", "EPS file", false))
+        if(!XJFileChooser.shared().displaySaveDialog(getSelectedEditor().getWindowContainer(), "eps", "EPS file", false))
             return;
 
         String file = XJFileChooser.shared().getSelectedFilePath();
@@ -205,13 +205,13 @@ public class MenuExport extends MenuAbstract {
 
             XJUtils.writeStringToFile(engine.getPSText(), file);
         } catch (Exception e) {
-            getEditor().console.print(e);
-            XJAlert.display(getEditor().getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
+            getSelectedEditor().console.println(e);
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
         }
     }
 
     protected void exportGViewAsEPS(GView view) {
-        if(!XJFileChooser.shared().displaySaveDialog(getEditor().getWindowContainer(), "eps", "EPS file", false))
+        if(!XJFileChooser.shared().displaySaveDialog(getSelectedEditor().getWindowContainer(), "eps", "EPS file", false))
             return;
 
         String file = XJFileChooser.shared().getSelectedFilePath();
@@ -221,19 +221,19 @@ public class MenuExport extends MenuAbstract {
         try {
             XJUtils.writeStringToFile(view.getEPS(), file);
         } catch (Exception e) {
-            getEditor().console.print(e);
-            XJAlert.display(getEditor().getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
+            getSelectedEditor().console.println(e);
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
         }
     }
 
     public void exportAsDOT() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_EXPORT_AS_DOT);
 
-        EditorTab tab = getEditor().getSelectedTab();
+        EditorTab tab = getSelectedEditor().getSelectedTab();
         if(!tab.canExportToDOT())
             return;
 
-        if(!XJFileChooser.shared().displaySaveDialog(getEditor().getWindowContainer(), "dot", "DOT file", false))
+        if(!XJFileChooser.shared().displaySaveDialog(getSelectedEditor().getWindowContainer(), "dot", "DOT file", false))
             return;
 
         String file = XJFileChooser.shared().getSelectedFilePath();
@@ -243,8 +243,8 @@ public class MenuExport extends MenuAbstract {
         try {
             XJUtils.writeStringToFile(tab.getDOTString(), file);
         } catch (Exception e) {
-            getEditor().console.print(e);
-            XJAlert.display(getEditor().getWindowContainer(), "Error", "Cannot export to DOT file: "+file+"\nError: "+e);
+            getSelectedEditor().console.println(e);
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot export to DOT file: "+file+"\nError: "+e);
         }
     }
 

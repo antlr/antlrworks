@@ -33,11 +33,11 @@ package org.antlr.works;
 
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
+import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
-import org.antlr.works.editor.EditorMenu;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.stats.Statistics;
@@ -329,21 +329,21 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public void customizeHelpMenu(XJMenu menu) {
-        menu.insertItemAfter(new XJMenuItem("Check for Updates", EditorMenu.MI_CHECK_UPDATES, this), XJMainMenuBar.MI_HELP);
-        menu.insertItemAfter(new XJMenuItem("Send Feedback", EditorMenu.MI_SEND_FEEDBACK, this), XJMainMenuBar.MI_HELP);
-        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", EditorMenu.MI_SUBMIT_STATS, this), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Check for Updates", ComponentContainerGrammarMenu.MI_CHECK_UPDATES, this), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Send Feedback", ComponentContainerGrammarMenu.MI_SEND_FEEDBACK, this), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", ComponentContainerGrammarMenu.MI_SUBMIT_STATS, this), XJMainMenuBar.MI_HELP);
         menu.insertSeparatorAfter(XJMainMenuBar.MI_HELP);
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
         switch(item.getTag()) {
-            case EditorMenu.MI_SUBMIT_STATS:
+            case ComponentContainerGrammarMenu.MI_SUBMIT_STATS:
                 submitStats(getDefaultParent());
                 break;
-            case EditorMenu.MI_SEND_FEEDBACK:
+            case ComponentContainerGrammarMenu.MI_SEND_FEEDBACK:
                 submitFeedback(getDefaultParent());
                 break;
-            case EditorMenu.MI_CHECK_UPDATES:
+            case ComponentContainerGrammarMenu.MI_CHECK_UPDATES:
                 checkUpdates(getDefaultParent());
                 break;
         }

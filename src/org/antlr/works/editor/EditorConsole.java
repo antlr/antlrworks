@@ -131,7 +131,7 @@ public class EditorConsole extends EditorTab implements Console {
         print(s+"\n", level);
     }
 
-    public synchronized void print(Throwable e) {
+    public synchronized void println(Throwable e) {
         println(XJUtils.stackTrace(e), Console.LEVEL_ERROR);
     }
 
@@ -153,6 +153,10 @@ public class EditorConsole extends EditorTab implements Console {
         if(getMode() == Console.MODE_VERBOSE) {
             editor.consolePrint(s, level);            
         }
+    }
+
+    public synchronized void print(Throwable e) {
+        print(XJUtils.stackTrace(e), Console.LEVEL_ERROR);
     }
 
     public String getTabName() {
