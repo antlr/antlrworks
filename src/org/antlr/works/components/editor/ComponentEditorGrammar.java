@@ -1027,7 +1027,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     @Override
     public void setEditable(boolean flag) {
-        getTextPane().setEditable(flag);
+        textEditor.setEditable(flag);
         if(flag) {
             getTextPane().requestFocusInWindow();
 
@@ -1161,9 +1161,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void ateMousePressed(Point point) {
-        // todo use rather a propery of the editor like readOnly?
-        //if(!debugger.isRunning())
-//            editorIdeas.display(point);
+        if(textEditor.getTextPane().isWritable()) {
+            editorIdeas.display(point);
+        }
     }
 
     public void ateMouseExited() {
@@ -1191,9 +1191,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         updateCursorInfo();
         if(getTextPane().hasFocus()) {
             editorIdeas.hide();
-            // todo use a property of the editor like readonly?
-            //if(!debugger.isRunning())
-            //    editorIdeas.display(getCaretPosition());
+            if(textEditor.getTextPane().isWritable()) {
+                editorIdeas.display(getCaretPosition());
+            }
         }
 
         // Update the auto-completion list

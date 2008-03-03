@@ -105,110 +105,18 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     private List<EditorTab> tabs = new ArrayList<EditorTab>();
 
+    private EditorsTabChangeListener etc;
     private MouseListener ml;
     private ChangeListener cl;
 
     public ComponentContainerGrammar() {
         selectedContainer = this;
+        containers.add(this);
 
         initMenus();
 
         debugger = new Debugger(new ContainerDebuggerDelegate());
         toolbar = new ComponentToolbar(this);
-    }
-
-    // todo remove this class when container closes
-    public class ContainerDebuggerDelegate implements DebuggerDelegate {
-
-        public void debuggerStarted() {
-            selectTab(debuggerPanel);
-
-            ((EditorConsole)getConsole()).makeCurrent();
-
-            for(ComponentContainer c : containers) {
-                c.getEditor().setEditable(false);
-            }
-            refreshMainMenuBar();
-        }
-
-        public void debuggerStopped() {
-            for(ComponentContainer c : containers) {
-                c.getEditor().setEditable(true);
-            }
-            refreshMainMenuBar();
-        }
-
-        public void debuggerSetLocation(String grammar, int line, int column) {
-            int grammarIndex = computeAbsoluteGrammarIndex(line, column);
-            if(grammarIndex >= 0) {
-                getSelectedEditor().setDebuggerLocation(grammarIndex);
-            }
-        }
-
-        public void debuggerSelectText(String grammar, int line, int column) {
-            int grammarIndex = computeAbsoluteGrammarIndex(line, column);
-            if(grammarIndex >= 0) {
-                getSelectedEditor().selectTextRange(grammarIndex, grammarIndex+1);
-            }
-        }
-
-        public EngineGrammar getEngineGrammar() {
-            return getSelectedEditor().getEngineGrammar();
-        }
-
-        public XJDocument getDocument() {
-            return getSelectedEditor().getDocument();
-        }
-
-        public List<ElementRule> getRules() {
-            return getSelectedEditor().getRules();
-        }
-
-        public List<ElementRule> getSortedRules() {
-            return getSelectedEditor().getSortedRules();
-        }
-
-        public boolean ensureDocumentSaved() {
-            return getSelectedEditor().ensureDocumentSaved();
-        }
-
-        public CodeGenerate getCodeGenerate() {
-            return new CodeGenerate(getSelectedEditor(), null);
-        }
-
-        public String getTokenVocab() {
-            return getSelectedEditor().getParserEngine().getTokenVocab();
-        }
-
-        public Container getContainer() {
-            return getSelectedEditor().getJavaContainer();
-        }
-
-        public Console getConsole() {
-            return getSelectedEditor().getConsole();
-        }
-
-        public List<ElementBlock> getBlocks() {
-            return getSelectedEditor().getBlocks();
-        }
-
-        public Set<Integer> getBreakpoints() {
-            return getSelectedEditor().breakpointManager.getBreakpoints();
-        }
-
-        public ContextualMenuFactory createContextualMenuFactory() {
-            return ComponentContainerGrammar.this.createContextualMenuFactory();
-        }
-
-        private int computeAbsoluteGrammarIndex(int lineIndex, int column) {
-            List<ATELine> lines = getSelectedEditor().getLines();
-            if(lineIndex-1<0 || lineIndex-1 >= lines.size())
-                return -1;
-
-            ATELine line = lines.get(lineIndex-1);
-            return line.position+column-1;
-        }
-
     }
 
     @Override
@@ -252,8 +160,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         debuggerPanel.setBorder(null);
         bottomTab.addTab("Debugger", debuggerPanel);
 
-        // todo remove this listener when closing
-        editorsTab.addChangeListener(new EditorsTabChangeListener());
+        editorsTab.addChangeListener(etc = new EditorsTabChangeListener());
         bottomTab.addMouseListener(ml = new TabbedPaneMouseListener());
         bottomTab.addChangeListener(cl = new TabbedPaneChangeListener());
 
@@ -345,10 +252,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     public void openGrammar(String text) {
         String currentFolder = XJUtils.getPathByDeletingLastComponent(getDocument().getDocumentPath());
-        open(XJUtils.concatPath(currentFolder, text+".g"));
-    }
+        String file = XJUtils.concatPath(currentFolder, text+".g");
 
-    public void open(String file) {
         // todo handle non-existing file
         System.out.println("Open file "+file);
 
@@ -356,7 +261,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         ComponentDocumentInternal doc = factory.createInternalDocument(this);
         MenuFactory container = (MenuFactory) doc.getContainer();
 
-        addDocument(doc);
         doc.awake();
         try {
             doc.load(file);
@@ -364,6 +268,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
+        addDocument(doc);
         addGrammar(container);
         containers.add(container);
         selectGrammar(file);
@@ -372,7 +277,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     public void selectGrammar(String file) {
         for(ComponentContainer c : containers) {
             if(c.getDocument().getDocumentPath().equals(file)) {
-                editorsTab.setSelectedIndex(containers.indexOf(c)+1);
+                editorsTab.setSelectedIndex(containers.indexOf(c));
                 return;
             }
         }
@@ -410,9 +315,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         }
 
         for(ComponentContainer container : containers) {
-            if(container != this) {
-                container.close();
-            }
+            if(container == this) continue;
+            container.close();
         }
 
         closeMenus();
@@ -421,6 +325,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         debugger.close();
         toolbar.close();
 
+        editorsTab.removeChangeListener(etc);
         bottomTab.removeMouseListener(ml);
         bottomTab.removeChangeListener(cl);
 
@@ -605,6 +510,99 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     public MenuExport getMenuExport() {
         return menuExport;
+    }
+
+    public class ContainerDebuggerDelegate implements DebuggerDelegate {
+
+        public void debuggerStarted() {
+            selectTab(debuggerPanel);
+
+            ((EditorConsole)getConsole()).makeCurrent();
+
+            for(ComponentContainer c : containers) {
+                c.getEditor().setEditable(false);
+            }
+            refreshMainMenuBar();
+        }
+
+        public void debuggerStopped() {
+            for(ComponentContainer c : containers) {
+                c.getEditor().setEditable(true);
+            }
+            refreshMainMenuBar();
+        }
+
+        public void debuggerSetLocation(String grammar, int line, int column) {
+            int grammarIndex = computeAbsoluteGrammarIndex(line, column);
+            if(grammarIndex >= 0) {
+                getSelectedEditor().setDebuggerLocation(grammarIndex);
+            }
+        }
+
+        public void debuggerSelectText(String grammar, int line, int column) {
+            int grammarIndex = computeAbsoluteGrammarIndex(line, column);
+            if(grammarIndex >= 0) {
+                getSelectedEditor().selectTextRange(grammarIndex, grammarIndex+1);
+            }
+        }
+
+        public EngineGrammar getEngineGrammar() {
+            return getSelectedEditor().getEngineGrammar();
+        }
+
+        public XJDocument getDocument() {
+            return getSelectedEditor().getDocument();
+        }
+
+        public List<ElementRule> getRules() {
+            return getSelectedEditor().getRules();
+        }
+
+        public List<ElementRule> getSortedRules() {
+            return getSelectedEditor().getSortedRules();
+        }
+
+        public boolean ensureDocumentSaved() {
+            return getSelectedEditor().ensureDocumentSaved();
+        }
+
+        public CodeGenerate getCodeGenerate() {
+            return new CodeGenerate(getSelectedEditor(), null);
+        }
+
+        public String getTokenVocab() {
+            return getSelectedEditor().getParserEngine().getTokenVocab();
+        }
+
+        public Container getContainer() {
+            return getSelectedEditor().getJavaContainer();
+        }
+
+        public Console getConsole() {
+            return getSelectedEditor().getConsole();
+        }
+
+        public List<ElementBlock> getBlocks() {
+            return getSelectedEditor().getBlocks();
+        }
+
+        public Set<Integer> getBreakpoints() {
+            return getSelectedEditor().breakpointManager.getBreakpoints();
+        }
+
+        public ContextualMenuFactory createContextualMenuFactory() {
+            return ComponentContainerGrammar.this.createContextualMenuFactory();
+        }
+
+        private int computeAbsoluteGrammarIndex(int lineIndex, int column) {
+            List<ATELine> lines = getSelectedEditor().getLines();
+            if(lineIndex-1<0 || lineIndex-1 >= lines.size())
+                return -1;
+
+            ATELine line = lines.get(lineIndex-1);
+            return line.position+column-1;
+        }
+
     }
 
     public class TabbedPaneMouseListener extends MouseAdapter {

@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 /*
 
@@ -100,10 +99,9 @@ public class IdeaManager {
 
     public List<IdeaAction> generateIdeaActions(int position) {
         List<IdeaAction> actions = new ArrayList<IdeaAction>();
-        for(Iterator<IdeaProvider> iter = providers.iterator(); iter.hasNext(); ) {
-            IdeaProvider provider = iter.next();
+        for (IdeaProvider provider : providers) {
             List<IdeaAction> pactions = provider.ideaProviderGetActions(position);
-            if(pactions != null && !pactions.isEmpty()) {
+            if (pactions != null && !pactions.isEmpty()) {
                 actions.addAll(pactions);
             }
         }
