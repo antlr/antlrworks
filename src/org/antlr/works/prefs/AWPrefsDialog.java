@@ -68,11 +68,7 @@ public class AWPrefsDialog extends XJPanel {
         prepareSyntaxTab();
         prepareCompilerTab();
         prepareDebuggerTab();
-        prepareSCMTab();
         prepareUpdateTab();
-
-        if(IDE.isPlugin())
-            tabbedPane1.remove(tabSCM);
 
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -275,15 +271,6 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(askGenButton, AWPrefs.PREF_DEBUGGER_ASK_GEN, AWPrefs.DEFAULT_DEBUGGER_ASK_GEN);
     }
 
-    public void prepareSCMTab() {
-        getPreferences().bindToPreferences(enablePerforceCheckBox, AWPrefs.PREF_SCM_P4_ENABLED, false);
-        getPreferences().bindToPreferences(p4PortField, AWPrefs.PREF_SCM_P4_PORT, "");
-        getPreferences().bindToPreferences(p4UserField, AWPrefs.PREF_SCM_P4_USER, "");
-        getPreferences().bindToPreferences(p4PasswordField, AWPrefs.PREF_SCM_P4_PASSWORD, "");
-        getPreferences().bindToPreferences(p4ClientField, AWPrefs.PREF_SCM_P4_CLIENT, "");
-        getPreferences().bindToPreferences(p4ExecPathField, AWPrefs.PREF_SCM_P4_EXEC, "");
-    }
-
     public void prepareUpdateTab() {
         browseUpdateDownloadPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -469,18 +456,6 @@ public class AWPrefsDialog extends XJPanel {
         label36 = new JLabel();
         detachablePanelChildrenButton = new JCheckBox();
         askGenButton = new JCheckBox();
-        tabSCM = new JPanel();
-        enablePerforceCheckBox = new JCheckBox();
-        label18 = new JLabel();
-        p4PortField = new JTextField();
-        label19 = new JLabel();
-        p4UserField = new JTextField();
-        label21 = new JLabel();
-        p4PasswordField = new JPasswordField();
-        label20 = new JLabel();
-        p4ClientField = new JTextField();
-        label17 = new JLabel();
-        p4ExecPathField = new JTextField();
         tabUpdates = new JPanel();
         label7 = new JLabel();
         updateTypeCombo = new JComboBox();
@@ -1187,72 +1162,6 @@ public class AWPrefsDialog extends XJPanel {
         			tabbedPane1.addTab("Debugger", tabDebugger);
 
 
-        			//======== tabSCM ========
-        			{
-        				tabSCM.setLayout(new FormLayout(
-        					new ColumnSpec[] {
-        						new ColumnSpec(Sizes.dluX(10)),
-        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        						new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
-        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        						new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        						new ColumnSpec(Sizes.dluX(10))
-        					},
-        					new RowSpec[] {
-        						new RowSpec(Sizes.dluY(10)),
-        						FormFactory.LINE_GAP_ROWSPEC,
-        						FormFactory.DEFAULT_ROWSPEC,
-        						FormFactory.LINE_GAP_ROWSPEC,
-        						new RowSpec(Sizes.DLUY5),
-        						FormFactory.LINE_GAP_ROWSPEC,
-        						FormFactory.DEFAULT_ROWSPEC,
-        						FormFactory.LINE_GAP_ROWSPEC,
-        						FormFactory.DEFAULT_ROWSPEC,
-        						FormFactory.LINE_GAP_ROWSPEC,
-        						FormFactory.DEFAULT_ROWSPEC,
-        						FormFactory.LINE_GAP_ROWSPEC,
-        						FormFactory.DEFAULT_ROWSPEC,
-        						FormFactory.LINE_GAP_ROWSPEC,
-        						new RowSpec(Sizes.DLUY5),
-        						FormFactory.LINE_GAP_ROWSPEC,
-        						FormFactory.DEFAULT_ROWSPEC,
-        						FormFactory.LINE_GAP_ROWSPEC,
-        						new RowSpec(Sizes.dluY(10))
-        					}));
-
-        				//---- enablePerforceCheckBox ----
-        				enablePerforceCheckBox.setText("Enable Perforce");
-        				tabSCM.add(enablePerforceCheckBox, cc.xy(5, 3));
-
-        				//---- label18 ----
-        				label18.setText("Port:");
-        				tabSCM.add(label18, cc.xy(3, 7));
-        				tabSCM.add(p4PortField, cc.xy(5, 7));
-
-        				//---- label19 ----
-        				label19.setText("User:");
-        				tabSCM.add(label19, cc.xy(3, 9));
-        				tabSCM.add(p4UserField, cc.xy(5, 9));
-
-        				//---- label21 ----
-        				label21.setText("Password:");
-        				tabSCM.add(label21, cc.xy(3, 11));
-        				tabSCM.add(p4PasswordField, cc.xy(5, 11));
-
-        				//---- label20 ----
-        				label20.setText("Client:");
-        				tabSCM.add(label20, cc.xy(3, 13));
-        				tabSCM.add(p4ClientField, cc.xy(5, 13));
-
-        				//---- label17 ----
-        				label17.setText("P4 executable path:");
-        				tabSCM.add(label17, cc.xy(3, 17));
-        				tabSCM.add(p4ExecPathField, cc.xy(5, 17));
-        			}
-        			tabbedPane1.addTab("SCM", tabSCM);
-
-
         			//======== tabUpdates ========
         			{
         				tabUpdates.setLayout(new FormLayout(
@@ -1447,18 +1356,6 @@ public class AWPrefsDialog extends XJPanel {
     private JLabel label36;
     private JCheckBox detachablePanelChildrenButton;
     private JCheckBox askGenButton;
-    private JPanel tabSCM;
-    private JCheckBox enablePerforceCheckBox;
-    private JLabel label18;
-    private JTextField p4PortField;
-    private JLabel label19;
-    private JTextField p4UserField;
-    private JLabel label21;
-    private JPasswordField p4PasswordField;
-    private JLabel label20;
-    private JTextField p4ClientField;
-    private JLabel label17;
-    private JTextField p4ExecPathField;
     private JPanel tabUpdates;
     private JLabel label7;
     private JComboBox updateTypeCombo;

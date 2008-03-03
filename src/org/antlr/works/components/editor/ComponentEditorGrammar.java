@@ -909,14 +909,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         cursorLabel.setText(textEditor.getCurrentLinePosition()+":"+textEditor.getCurrentColumnPosition());
     }
 
-    public void updateSCMStatus(String status) {
-        scmLabel.setVisible(AWPrefs.getP4Enabled());
-        if(status != null)
-            scmLabel.setText("SCM Status: "+status);
-        else
-            scmLabel.setText("");
-    }
-
     /** Rules delegate methods
      *
      */
@@ -1017,7 +1009,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void notificationPrefsChanged() {
         applyPrefs();
-        updateSCMStatus(null);
     }
 
     public void notificationDebuggerStarted() {

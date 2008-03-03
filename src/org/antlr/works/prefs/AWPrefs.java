@@ -161,14 +161,6 @@ public class AWPrefs {
         return getPreferences().getBoolean(getSyntaxItalicKey(identifier), getSyntaxDefaultItalic(identifier));
     }
 
-    // SCM - Perforce
-    public static final String PREF_SCM_P4_ENABLED = "PREF_SCM_ENABLE_P4";
-    public static final String PREF_SCM_P4_PORT = "PREF_SCM_P4_PORT";
-    public static final String PREF_SCM_P4_USER = "PREF_SCM_P4_USER";
-    public static final String PREF_SCM_P4_PASSWORD = "PREF_SCM_P4_PASSWORD";
-    public static final String PREF_SCM_P4_CLIENT = "PREF_SCM_P4_CLIENT";
-    public static final String PREF_SCM_P4_EXEC = "PREF_SCM_P4_EXEC";
-
     // Compiler
     public static final String PREF_JAVAC_CUSTOM_PATH = "PREF_JAVAC_CUSTOM_PATH";
     public static final String PREF_JAVAC_PATH = "PREF_JAVAC_PATH";
@@ -410,30 +402,6 @@ public class AWPrefs {
         } else {
             return new String[0];
         }
-    }
-
-    public static boolean getP4Enabled() {
-        return getPreferences().getBoolean(PREF_SCM_P4_ENABLED, false);
-    }
-
-    public static String getP4Port() {
-        return getPreferences().getString(PREF_SCM_P4_PORT, "");
-    }
-
-    public static String getP4User() {
-        return getPreferences().getString(PREF_SCM_P4_USER, "");
-    }
-
-    public static String getP4Password() {
-        return getPreferences().getString(PREF_SCM_P4_PASSWORD, "");
-    }
-
-    public static String getP4Client() {
-        return getPreferences().getString(PREF_SCM_P4_CLIENT, "");
-    }
-
-    public static String getP4ExecPath() {
-        return getPreferences().getString(PREF_SCM_P4_EXEC, "");
     }
 
     public static boolean getJavaCCustomPath() {

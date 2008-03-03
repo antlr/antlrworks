@@ -111,14 +111,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public static final int MI_DEBUG_REMOTE = 83;
     public static final int MI_DEBUG_SHOW_INPUT_TOKENS = 86;
 
-    // SCM
-    public static final int MI_P4_EDIT = 90;
-    public static final int MI_P4_ADD = 91;
-    public static final int MI_P4_DELETE = 92;
-    public static final int MI_P4_REVERT = 93;
-    public static final int MI_P4_SUBMIT = 94;
-    public static final int MI_P4_SYNC = 95;
-
     // Help
     public static final int MI_SUBMIT_STATS = 100;
     public static final int MI_SEND_FEEDBACK = 101;
@@ -194,8 +186,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
         createRefactorMenu(menubar);
         createGenerateMenu(menubar);
         createRunMenu(menubar);
-        if(!IDE.isPlugin())
-            createSCMMenu(menubar);
         createPrivateMenu(menubar);
     }
 
@@ -209,22 +199,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
 
             menubar.addCustomMenu(menu);
         }
-    }
-
-    private void createSCMMenu(XJMainMenuBar menubar) {
-        XJMenu menu;
-        menu = new XJMenu();
-        menu.setTitle(resourceBundle.getString("menu.title.scm"));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmOpenForEdit"), MI_P4_EDIT, this));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmMarkForAdd"), MI_P4_ADD, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmMarkForDelete"), MI_P4_DELETE, this));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmRevert"), MI_P4_REVERT, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmSubmit"), MI_P4_SUBMIT, this));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.scmSync"), MI_P4_SYNC, this));
-
-        menubar.addCustomMenu(menu);
     }
 
     private void createRunMenu(XJMainMenuBar menubar) {
@@ -523,18 +497,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
                 item.setEnabled(getEditor().goToHistory.canGoForward());
                 break;
 
-            case MI_P4_EDIT:
-            case MI_P4_ADD:
-            case MI_P4_DELETE:
-            case MI_P4_REVERT:
-            case MI_P4_SUBMIT:
-            case MI_P4_SYNC:
-                if(isDebuggerRunning())
-                    item.setEnabled(false);
-                else
-                    item.setEnabled(AWPrefs.getP4Enabled());
-                break;
-
             case MI_EXPORT_AS_IMAGE:
                 item.setEnabled(tab.canExportToBitmap());
                 break;
@@ -575,7 +537,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
         handleMenuGoTo(item.getTag());
         handleMenuGenerate(item.getTag());
         handleMenuRun(item.getTag());
-        handleMenuSCM(item.getTag());
         handleMenuPrivate(item.getTag());
         handleMenuExport(item.getTag());
     }
@@ -776,29 +737,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
             case MI_DEBUG_SHOW_INPUT_TOKENS:
                 container.getMenuDebugger().toggleInputTokens();
                 getEditor().refreshMainMenuBar();
-                break;
-        }
-    }
-
-    public void handleMenuSCM(int itemTag) {
-        switch(itemTag) {
-            case MI_P4_EDIT:
-                container.getMenuSCM().editFile();
-                break;
-            case MI_P4_ADD:
-                container.getMenuSCM().addFile();
-                break;
-            case MI_P4_DELETE:
-                container.getMenuSCM().deleteFile();
-                break;
-            case MI_P4_REVERT:
-                container.getMenuSCM().revertFile();
-                break;
-            case MI_P4_SUBMIT:
-                container.getMenuSCM().submitFile();
-                break;
-            case MI_P4_SYNC:
-                container.getMenuSCM().sync();
                 break;
         }
     }

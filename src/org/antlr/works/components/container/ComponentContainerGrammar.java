@@ -85,7 +85,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     private MenuGoTo menuGoTo;
     private MenuGenerate menuGenerate;
     private MenuDebugger menuDebugger;
-    private MenuSCM menuSCM;
     private MenuExport menuExport;
 
     private JTabbedPane editorsTab;
@@ -122,9 +121,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     @Override
     public void awake() {
         super.awake();
-
-        // todo use selected editor
-        getMenuSCM().awake();
 
         menuGenerate.awake();
         debugger.awake();
@@ -201,7 +197,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         menuGoTo = new MenuGoTo(this);
         menuGenerate = new MenuGenerate(this);
         menuDebugger = new MenuDebugger(this);
-        menuSCM = new MenuSCM(this);
         menuExport = new MenuExport(this);
     }
 
@@ -213,7 +208,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         menuGoTo.close();
         menuGenerate.close();
         menuDebugger.close();
-        menuSCM.close();
         menuExport.close();
     }
 
@@ -346,10 +340,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     @Override
     public void becomingVisibleForTheFirstTime() {
         addGrammar(this);
-
-        // todo lazily using current editor?
-        getMenuSCM().setSilent(true);
-        getMenuSCM().queryFileStatus();
 
         if(verticalSplit != null)
             verticalSplit.setDividerLocation((int)(getSize().width*0.2));
@@ -502,10 +492,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     public MenuDebugger getMenuDebugger() {
         return menuDebugger;
-    }
-
-    public MenuSCM getMenuSCM() {
-        return menuSCM;
     }
 
     public MenuExport getMenuExport() {
