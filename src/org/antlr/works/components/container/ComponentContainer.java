@@ -7,6 +7,7 @@ import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 
+import javax.swing.*;
 import java.awt.*;
 /*
 
@@ -59,6 +60,7 @@ public interface ComponentContainer {
     public boolean close();
 
     public ContextualMenuFactory createContextualMenuFactory();
+    public JPopupMenu getContextualMenu(int textIndex);
 
     // todo see if EditorTab should be renamed ContainerTab
     EditorTab getSelectedTab();

@@ -34,7 +34,7 @@ package org.antlr.works.generate;
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
-import org.antlr.works.editor.EditorProvider;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.grammar.EngineGrammar;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.syntax.element.ElementGrammarName;
@@ -55,19 +55,19 @@ public class CodeGenerate implements Runnable {
 
     protected boolean debug = true;
 
-    protected EditorProvider provider;
+    protected ComponentEditorGrammar editor;
     protected CodeGenerateDelegate delegate;
 
     protected long dateOfModificationOnDisk = 0;
     protected String lastError;
 
-    public CodeGenerate(EditorProvider provider, CodeGenerateDelegate delegate) {
-        this.provider = provider;
+    public CodeGenerate(ComponentEditorGrammar editor, CodeGenerateDelegate delegate) {
+        this.editor = editor;
         this.delegate = delegate;
     }
 
     public void close() {
-        provider = null;
+        editor = null;
         delegate = null;
     }
 
@@ -76,12 +76,12 @@ public class CodeGenerate implements Runnable {
     }
 
     public String getOutputPath() {
-        return provider.getOutputPath();
+        return editor.getOutputPath();
     }
 
     public String getGrammarLanguage() {
         try {
-            EngineGrammar eg = provider.getEngineGrammar();
+            EngineGrammar eg = editor.getEngineGrammar();
             eg.createGrammars();
             Grammar g = eg.getParserGrammar();
             if(g == null) {
@@ -93,13 +93,13 @@ public class CodeGenerate implements Runnable {
                 return null;
             }
         } catch (Exception e) {
-            provider.getConsole().println(e);
+            editor.getConsole().println(e);
         }
         return null;
     }
 
     public String getGrammarName() {
-        return provider.getEngineGrammar().getName();
+        return editor.getEngineGrammar().getName();
     }
 
     public String getLastError() {
@@ -112,16 +112,16 @@ public class CodeGenerate implements Runnable {
 
         String[] params;
         if(debug)
-            params = new String[] { "-debug", "-o", getOutputPath(), "-lib", provider.getFileFolder(), provider.getFilePath() };
+            params = new String[] { "-debug", "-o", getOutputPath(), "-lib", editor.getFileFolder(), editor.getFilePath() };
         else
-            params = new String[] { "-o", getOutputPath(), "-lib", provider.getFileFolder(), provider.getFilePath() };
+            params = new String[] { "-o", getOutputPath(), "-lib", editor.getFileFolder(), editor.getFilePath() };
 
         Tool antlr = new Tool(Utils.concat(params, AWPrefs.getANTLR3Options()));
         antlr.process();
 
         boolean success = !el.hasErrors();
         if(success) {
-            dateOfModificationOnDisk = provider.getDocument().getDateOfModificationOnDisk();
+            dateOfModificationOnDisk = editor.getDocument().getDateOfModificationOnDisk();
         }
         lastError = el.getFirstErrorMessage();
         el.clear();
@@ -135,7 +135,7 @@ public class CodeGenerate implements Runnable {
      * @return true if the grammar generated files need a suffix
      */
     public boolean hasSuffix() {
-        return provider.getEngineGrammar().isCombinedGrammar();
+        return editor.getEngineGrammar().isCombinedGrammar();
     }
 
     public String getSuffix(int type) {
@@ -152,7 +152,7 @@ public class CodeGenerate implements Runnable {
 
     public String getGeneratedClassName(int type) throws Exception {
         String name = null;
-        EngineGrammar engine = provider.getEngineGrammar();
+        EngineGrammar engine = editor.getEngineGrammar();
         engine.createGrammars();
         if(type == ElementGrammarName.LEXER) {
             Grammar g = engine.getLexerGrammar();
@@ -177,11 +177,11 @@ public class CodeGenerate implements Runnable {
         String name = getGeneratedFileName(ElementGrammarName.LEXER);
         if(name != null) {
             names.add(name);
-        } else if(provider.getEngineGrammar().isParserGrammar()) {
+        } else if(editor.getEngineGrammar().isParserGrammar()) {
             // try to use the tokenVocab name for the name of the lexer
             // if the grammar is a parser grammar
             // todo use user's provided name if tokenVocab is null or invalid
-            String className = provider.getParserEngine().getTokenVocab();
+            String className = editor.getParserEngine().getTokenVocab();
             if(className != null) {
                 name = XJUtils.concatPath(getOutputPath(), className+".java");
                 names.add(name);
@@ -212,22 +212,22 @@ public class CodeGenerate implements Runnable {
             String file = getGeneratedFileName(type);
             return file == null || new File(file).exists();
         } catch (Exception e) {
-            provider.getConsole().println(e);
+            editor.getConsole().println(e);
         }
         return false;
     }
 
     public boolean isFileModifiedSinceLastGeneration() {
-        return dateOfModificationOnDisk != provider.getDocument().getDateOfModificationOnDisk();
+        return dateOfModificationOnDisk != editor.getDocument().getDateOfModificationOnDisk();
     }
 
     public boolean supportsLexer() {
-        int type = provider.getEngineGrammar().getType();
+        int type = editor.getEngineGrammar().getType();
         return type == ElementGrammarName.COMBINED || type == ElementGrammarName.LEXER;
     }
 
     public boolean supportsParser() {
-        int type = provider.getEngineGrammar().getType();
+        int type = editor.getEngineGrammar().getType();
         return type == ElementGrammarName.COMBINED || type == ElementGrammarName.PARSER || type == ElementGrammarName.TREEPARSER;
     }
 
@@ -248,10 +248,10 @@ public class CodeGenerate implements Runnable {
     public void generateInThreadDidTerminate() {
         progress.close();
         if(generateError != null)
-            XJAlert.display(provider.getWindowContainer(), "Error", "Cannot generate the grammar because:\n"+generateError);
+            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the grammar because:\n"+generateError);
         else {
             if(delegate == null || delegate.codeGenerateDisplaySuccess())
-                XJAlert.display(provider.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+getOutputPath());
+                XJAlert.display(editor.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+getOutputPath());
             else
                 delegate.codeGenerateDidComplete();
         }
@@ -263,7 +263,7 @@ public class CodeGenerate implements Runnable {
     public void run() {
         generateError = null;
 
-        provider.getConsole().setMode(Console.MODE_VERBOSE);
+        editor.getConsole().setMode(Console.MODE_VERBOSE);
 
         try {
             if(!generate()) {
@@ -271,7 +271,7 @@ public class CodeGenerate implements Runnable {
             }
         } catch (Exception e) {
             generateError = e.toString();
-            provider.getConsole().println(e);
+            editor.getConsole().println(e);
         }
 
         SwingUtilities.invokeLater(new Runnable() {

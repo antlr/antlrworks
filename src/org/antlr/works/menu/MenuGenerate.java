@@ -45,26 +45,27 @@ import org.antlr.xjlib.appkit.utils.XJAlert;
 
 public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, CheckGrammarDelegate {
 
-    public CodeGenerate generateCode;
-    protected CheckGrammar checkGrammar;
+    private CodeGenerate generateCode;
+    private CheckGrammar checkGrammar;
 
-    protected String actionShowCodeRule;
-    protected int actionShowCodeType;
-    protected boolean actionShowCodeAfterGeneration = false;
+    private String actionShowCodeRule;
+    private int actionShowCodeType;
+    private boolean actionShowCodeAfterGeneration = false;
 
     public MenuGenerate(ComponentContainerGrammar editor) {
         super(editor);
-        // todo
-        //generateCode = new CodeGenerate(editor, this);
-        //checkGrammar = new CheckGrammar(editor, this);
+    }
+
+    public void awake() {
+        generateCode = new CodeGenerate(getSelectedEditor(), this);
+        checkGrammar = new CheckGrammar(getSelectedEditor(), this);
     }
 
     @Override
     public void close() {
         super.close();
-        // todo
-        //generateCode.close();
-        //checkGrammar.close();
+        generateCode.close();
+        checkGrammar.close();
     }
 
     public void generateCode() {

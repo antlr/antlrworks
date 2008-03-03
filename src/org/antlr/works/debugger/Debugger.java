@@ -33,6 +33,7 @@ package org.antlr.works.debugger;
 
 import org.antlr.runtime.ClassicToken;
 import org.antlr.runtime.Token;
+import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.debugger.api.DebuggerDelegate;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
@@ -48,6 +49,7 @@ import org.antlr.works.debugger.tree.DBParseTreeModel;
 import org.antlr.works.debugger.tree.DBParseTreePanel;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.swing.CustomSplitPanel;
@@ -117,8 +119,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     protected boolean running;
     protected long dateOfModificationOnDisk = 0;
-
-    protected int debuggerCursorIndex = -1;
 
     private boolean closing = false;
     private String startRule;
@@ -373,10 +373,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public boolean isBreakpointAtLine(int line) {
-        if(breakpoints == null)
-            return false;
-        else
-            return breakpoints.contains(Integer.valueOf(line));
+        return breakpoints != null && breakpoints.contains(line);
     }
 
     public boolean isBreakpointAtToken(Token token) {
@@ -417,11 +414,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     public void resetGrammarLocation() {
         // todo name of the grammar
         delegate.debuggerSetLocation(null, -1, -1);
-    }
-
-    // todo usage of this method should be refactored
-    public int getDebuggerCursorIndex() {
-        return debuggerCursorIndex;
     }
 
     public List<ElementRule> getRules() {
@@ -696,12 +688,10 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public JPopupMenu treeGetContextualMenu() {
-        /*ContextualMenuFactory factory = container.createContextualMenuFactory();
+        ContextualMenuFactory factory = delegate.createContextualMenuFactory();
         factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_EPS);
         factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_IMAGE);
-        return factory.menu;*/
-        // todo
-        return null;
+        return factory.menu;
     }
 
     public void panelDoDetach(DetachablePanel panel) {

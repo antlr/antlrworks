@@ -1,6 +1,7 @@
 package org.antlr.works.components.editor;
 
 import org.antlr.Tool;
+import org.antlr.works.actions.ActionRefactor;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
@@ -11,6 +12,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.completion.AutoCompletionMenu;
 import org.antlr.works.completion.AutoCompletionMenuDelegate;
 import org.antlr.works.completion.RuleTemplates;
+import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.editor.*;
 import org.antlr.works.find.FindAndReplace;
 import org.antlr.works.grammar.EngineGrammar;
@@ -27,7 +29,7 @@ import org.antlr.works.syntax.element.*;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.Utils;
 import org.antlr.works.visualization.Visual;
-import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.menu.XJMenuItemCheck;
 import org.antlr.xjlib.appkit.swing.XJTree;
 import org.antlr.xjlib.appkit.text.XJURLLabel;
 import org.antlr.xjlib.appkit.undo.XJUndo;
@@ -83,7 +85,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public class ComponentEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
-        EditorProvider, ATEPanelDelegate,
+        ATEPanelDelegate,
         XJUndoDelegate, InspectorDelegate,
         GrammarSyntaxDelegate, EngineGrammarDelegate
 {
@@ -155,6 +157,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     private XJDialogProgress progress;
 
     protected EditorATEEditorKit editorKit;
+    private ActionRefactor actionRefactor;
 
     private int debuggerLocation = -1;
 
@@ -186,8 +189,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         // todo still used?
         //delegate = new ComponentEditorGrammarDefaultDelegate(upDownSplitPane);
 
-        //mainPanel.add(upDownSplitPane, BorderLayout.CENTER);
-        // todo replace mainPanel with textEditor directly?
         mainPanel.add(textEditor, BorderLayout.CENTER);
     }
 
@@ -241,6 +242,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         parserEngine = new GrammarSyntaxEngine();
         grammarSyntax = new GrammarSyntax(this);
         interpreter = new EditorInterpreter(this);
+
+        actionRefactor = new ActionRefactor(this);
     }
 
     protected void initEditor() {
@@ -292,7 +295,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     protected void createRulesPane() {
         rulesTree = new RuleTree();
-        
+
         rulesTree.setBorder(null);
         // Apparently, if I don't set the tooltip here, nothing is displayed (weird)
         rulesTree.setToolTipText("");
@@ -384,7 +387,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         persistence.close();
         engineGrammar.close();
         parserEngine.close();
-                         
+
         rules.close();
         visual.close();
 
@@ -405,7 +408,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         consoleStatus = null;
         rulesTree.close();
         rulesTree = null;
-        
+
+        actionRefactor.close();
+        actionRefactor = null;
+
         super.close();
     }
 
@@ -616,23 +622,19 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void createRuleAtIndex(boolean lexer, String name, String content) {
-        // todo
-        //menuRefactor.createRuleAtIndex(lexer, name, content);
+        actionRefactor.createRuleAtIndex(lexer, name, content);
     }
 
     public void deleteRuleAtCurrentPosition() {
-        // todo
-    //    menuRefactor.deleteRuleAtIndex(getCaretPosition());
+        actionRefactor.deleteRuleAtIndex(getCaretPosition());
     }
 
     public void removeLeftRecursion() {
-        // todo
-  //      menuRefactor.removeLeftRecursion();
+        actionRefactor.removeLeftRecursion();
     }
 
     public void convertLiteralsToSingleQuote() {
-        // todo
-//        menuRefactor.convertLiteralsToSingleQuote();
+        actionRefactor.convertLiteralsToSingleQuote();
     }
 
     public void replaceText(int leftIndex, int rightIndex, String text) {
@@ -762,7 +764,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public List<ATELine> getLines() {
-        return textEditor.getLines();    
+        return textEditor.getLines();
     }
 
     public void goToHistoryRememberCurrentPosition() {
@@ -935,16 +937,14 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         if(selectedObjects.isEmpty())
             return null;
 
-        // todo
-        /*ContextualMenuFactory factory = new ContextualMenuFactory(editorMenu);
+        ContextualMenuFactory factory = container.createContextualMenuFactory();
         factory.addItem(ComponentContainerGrammarMenu.MI_GROUP_RULE);
         factory.addItem(ComponentContainerGrammarMenu.MI_UNGROUP_RULE);
         factory.addSeparator();
         XJMenuItemCheck item = (XJMenuItemCheck) factory.addItem(ComponentContainerGrammarMenu.MI_IGNORE_RULE);
         item.setSelected(rules.getFirstSelectedRuleIgnoredFlag());
 
-        return factory.menu;*/
-        return null;
+        return factory.menu;
     }
 
     /** Parser delegate methods
@@ -1000,7 +1000,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public boolean ensureDocumentSaved() {
-        return getDocument().getDocumentPath() != null || getDocument().save(false) == XJApplication.YES;
+        return getDocument().getDocumentPath() != null || getDocument().save(false);
     }
 
     public void grammarChanged() {
@@ -1087,8 +1087,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         try {
             getDocument().reload();
         } catch (Exception e) {
-            // todo alert
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
+            XJAlert.display(getWindowContainer(), "Error Reloading Document", "An error occurred when reloading the document:\n"+e.toString());
         }
         grammarChanged();
         setCaretPosition(Math.min(oldCursorPosition, getText().length()));
@@ -1182,10 +1182,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void ateInvokePopUp(Component component, int x, int y) {
-        // todo
-        /*JPopupMenu m = editorMenu.getContextualMenu(textEditor.getTextIndexAtPosition(x, y));
+        JPopupMenu m = container.getContextualMenu(textEditor.getTextIndexAtPosition(x, y));
         if(m != null)
-            m.show(component,  x, y);*/
+            m.show(component,  x, y);
     }
 
     public void ateCaretUpdate(int index) {
@@ -1329,6 +1328,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return container.createContextualMenuFactory();
     }
 
+    public ActionRefactor getActionRefactor() {
+        return actionRefactor;
+    }
+
     /** This class is used to perform after parsing operations in another
      * thread than the main event thread.
      */
@@ -1344,7 +1347,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     protected static class RuleTree extends XJTree {
-        
+
         @Override
         public String getToolTipText(MouseEvent e) {
             TreePath path = getPathForLocation(e.getX(), e.getY());
@@ -1362,7 +1365,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
             else
                 return r.getErrorMessageHTML();
         }
-    }          
+    }
 
     protected class ConsoleStatus {
 

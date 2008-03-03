@@ -2,6 +2,7 @@ package org.antlr.works.debugger.api;
 
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.syntax.element.ElementBlock;
 import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
@@ -68,4 +69,5 @@ public interface DebuggerDelegate {
 
     boolean ensureDocumentSaved();
 
+    ContextualMenuFactory createContextualMenuFactory();
 }

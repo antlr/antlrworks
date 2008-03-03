@@ -7,6 +7,7 @@ import org.antlr.works.editor.EditorTab;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 
+import javax.swing.*;
 import java.awt.*;/*
 
 [The "BSD licence"]
@@ -93,6 +94,10 @@ public class MenuFactory implements ComponentContainer {
 
     public ContextualMenuFactory createContextualMenuFactory() {
         return mainContainer.createContextualMenuFactory();
+    }
+
+    public JPopupMenu getContextualMenu(int textIndex) {
+        return mainContainer.getContextualMenu(textIndex);
     }
 
     public EditorTab getSelectedTab() {

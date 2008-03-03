@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.components.container;
 
+import org.antlr.works.actions.ActionRefactor;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.ComponentToolbar;
 import org.antlr.works.components.document.ComponentDocument;
@@ -81,7 +82,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     private MenuFind menuFind;
     private MenuGrammar menuGrammar;
-    private MenuRefactor menuRefactor;
     private MenuGoTo menuGoTo;
     private MenuGenerate menuGenerate;
     private MenuDebugger menuDebugger;
@@ -122,8 +122,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
         public void debuggerStarted() {
             selectTab(debuggerPanel);
-            // todo
-            //container.selectDebuggerTab();
 
             ((EditorConsole)getConsole()).makeCurrent();
 
@@ -198,6 +196,10 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             return getSelectedEditor().breakpointManager.getBreakpoints();
         }
 
+        public ContextualMenuFactory createContextualMenuFactory() {
+            return ComponentContainerGrammar.this.createContextualMenuFactory();
+        }
+
         private int computeAbsoluteGrammarIndex(int lineIndex, int column) {
             List<ATELine> lines = getSelectedEditor().getLines();
             if(lineIndex-1<0 || lineIndex-1 >= lines.size())
@@ -216,6 +218,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         // todo use selected editor
         getMenuSCM().awake();
 
+        menuGenerate.awake();
         debugger.awake();
         toolbar.awake();
 
@@ -288,7 +291,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
         menuFind = new MenuFind(this);
         menuGrammar = new MenuGrammar(this);
-        menuRefactor = new MenuRefactor(this);
         menuGoTo = new MenuGoTo(this);
         menuGenerate = new MenuGenerate(this);
         menuDebugger = new MenuDebugger(this);
@@ -301,7 +303,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
         menuFind.close();
         menuGrammar.close();
-        menuRefactor.close();
         menuGoTo.close();
         menuGenerate.close();
         menuDebugger.close();
@@ -514,6 +515,10 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         return new ContextualMenuFactory(componentContainerGrammarMenu);
     }
 
+    public JPopupMenu getContextualMenu(int textIndex) {
+        return componentContainerGrammarMenu.getContextualMenu(textIndex);
+    }
+
     public void addTab(EditorTab tab) {
         /** Replace any existing tab with this one if the title matches. Don't
          * replace the first three tabs because they are always visible.
@@ -578,8 +583,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         return menuGrammar;
     }
 
-    public MenuRefactor getMenuRefactor() {
-        return menuRefactor;
+    public ActionRefactor getMenuRefactor() {
+        return getSelectedEditor().getActionRefactor();
     }
 
     public MenuGoTo getMenuGoTo() {
