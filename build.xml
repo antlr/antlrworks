@@ -185,7 +185,8 @@
         </exec>
     </target>
 
-    <target name="distribute" depends="clean, zip-source, build, build-plugin, build-noplugin, prepare-osx">
+    <!--<target name="distribute" depends="clean, zip-source, build, build-plugin, build-noplugin, prepare-osx">-->
+    <target name="distribute" depends="clean, zip-source, build, prepare-osx">
     </target>
 
 </project>
