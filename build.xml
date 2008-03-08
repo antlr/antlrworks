@@ -158,7 +158,7 @@
         </zip>
     </target>
 
-    <target name="prepare-osx">
+    <target name="prepare-osx" if="is-macos">
         <copy todir="${osx.build.dir}">
             <fileset dir="${osx.dir}" excludes="Info.plist"/>
         </copy>
