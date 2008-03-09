@@ -204,13 +204,18 @@ public class ATETextPane extends JTextPane
         }
     }
 
-    protected void indentText(int start, int stop, int direction) throws BadLocationException {
+    protected void indentText(final int start, final int stop, final int direction) throws BadLocationException {
         final String text = getText();
 
         final int begin = findBeginningLineBoundary(start);
-        final int end = findEndLineBoundary(stop);
+        int end = findEndLineBoundary(stop);
 
-        final StringBuffer modifiedPortion = new StringBuffer();
+        // skip the last line if the cursor is located at the beginning of it
+        if(stop == findBeginningLineBoundary(stop)) {
+            end = findEndLineBoundary(stop-1);
+        }
+
+        final StringBuilder modifiedPortion = new StringBuilder();
 
         int selectionStart = start;
         int selectionEnd = stop;

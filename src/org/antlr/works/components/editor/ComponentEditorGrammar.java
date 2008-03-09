@@ -1242,32 +1242,13 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         interpreter.setRules(getRules());
     }
 
-    public boolean wasSaving = false;
-
+    @Override
     public boolean componentDocumentWillSave() {
         AWPrefs.setLastSavedDocument(getFilePath());
-
-        // todo
-
-        /*if(menuSCM.isFileWritable())
-            return true;
-
-        if(XJAlert.displayAlertYESNO(getWindowContainer(), "Cannot Save", "This file is currently closed in the SCM depot.\nDo you want to open it for edit before saving its content?") == XJAlert.YES) {
-            // Open the file using the SCM
-            menuSCM.editFile();
-            // Will save the file again once the SCM commands
-            // is completed (see scmCommandsDidComplete)
-            wasSaving = true;
+        if(!isFileWritable()) {
+            XJAlert.display(getWindowContainer(), "Cannot Save", "This file cannot be saved. Check the file permission on the disk and try again.");
         }
-        return false;*/
-        return true;
-    }
-
-    public void scmCommandsDidComplete() {
-        if(wasSaving) {
-            wasSaving = false;
-            getDocument().save(false);
-        }
+        return false;
     }
 
     public void print() {

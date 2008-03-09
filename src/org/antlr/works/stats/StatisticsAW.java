@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.stats;
 
-import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.xjlib.appkit.app.XJApplication;
 
 import java.util.*;
 
@@ -103,14 +103,6 @@ public class StatisticsAW {
     public static final int EVENT_LOCAL_DEBUGGER = 92;
     public static final int EVENT_LOCAL_DEBUGGER_BUILD = 93;
     public static final int EVENT_REMOTE_DEBUGGER = 94;
-
-    /* Menu SCM */
-    public static final int EVENT_SCM_EDIT = 100;
-    public static final int EVENT_SCM_ADD = 101;
-    public static final int EVENT_SCM_REVERT = 102;
-    public static final int EVENT_SCM_DELETE = 103;
-    public static final int EVENT_SCM_SUBMIT = 104;
-    public static final int EVENT_SCM_SYNC = 105;
 
     /* Toolbar toggle */
     public static final int EVENT_TOGGLE_SYNTAX_COLORING = 120;
@@ -195,13 +187,6 @@ public class StatisticsAW {
         register(EVENT_LOCAL_DEBUGGER, "Debug");
         register(EVENT_LOCAL_DEBUGGER_BUILD, "Build and debug");
         register(EVENT_REMOTE_DEBUGGER, "Remote debug");
-
-        register(EVENT_SCM_EDIT, "SCM edit");
-        register(EVENT_SCM_ADD, "SCM add");
-        register(EVENT_SCM_REVERT, "SCM revert");
-        register(EVENT_SCM_DELETE, "SCM delete");
-        register(EVENT_SCM_SUBMIT, "SCM submit");
-        register(EVENT_SCM_SYNC, "SCM sync");
 
         register(EVENT_TOGGLE_SYNTAX_COLORING, "Toggle syntax coloring");
         register(EVENT_TOGGLE_SYNTAX_DIAGRAM, "Toggle syntax diagram");

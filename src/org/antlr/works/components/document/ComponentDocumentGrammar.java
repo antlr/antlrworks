@@ -39,8 +39,7 @@ public class ComponentDocumentGrammar extends ComponentDocument {
 
     @Override
     public boolean save(boolean saveAs) {
-        // Make sure the document can be saved (SCM opened, etc)
-        // before calling the super class method to do
+        // Make sure the document can be saved before calling the super class method to do
         // the actual job
         if(getEditor().componentDocumentWillSave()) {
             if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
