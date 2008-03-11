@@ -56,7 +56,7 @@ public class EditorPersistence {
     public void store() {
         if(stored)
             return;
-
+        
         stored = true;
         store(editor.getSyntaxEngine().getSyntax().getRules(), KEY_RULES);
         store(editor.getSyntaxEngine().getSyntax().getActions(), KEY_ACTIONS);

@@ -66,6 +66,9 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         this.delegate = delegate;
         this.antlrEngineGrammar = new AntlrEngineGrammar(this);
 
+        // todo not really nice
+        syntax = new GrammarSyntax(this, (GrammarSyntaxParser)parser);
+
         parserRefAttr = new SimpleAttributeSet();
         lexerRefAttr = new SimpleAttributeSet();
         labelAttr = new SimpleAttributeSet();

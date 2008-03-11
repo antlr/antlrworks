@@ -65,8 +65,8 @@ public abstract class ComponentDocument extends XJDocument {
 
     @Override
     public void awake() {
-        editor.awake();
         super.awake();
+        editor.awake();
     }
 
     @Override

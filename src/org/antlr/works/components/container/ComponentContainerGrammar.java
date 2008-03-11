@@ -615,7 +615,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         }
 
         public CodeGenerate getCodeGenerate() {
-            return new CodeGenerate(getSyntaxEngine().getSyntax(), getSelectedEditor(), null);
+            return new CodeGenerate(getSelectedEditor(), null);
         }
 
         public String getTokenVocab() {

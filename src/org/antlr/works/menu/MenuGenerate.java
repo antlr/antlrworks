@@ -57,7 +57,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     }
 
     public void awake() {
-        generateCode = new CodeGenerate(getSelectedEditor().getSyntaxEngine().getSyntax(), getSelectedEditor(), this);
+        generateCode = new CodeGenerate(getSelectedEditor(), this);
         checkGrammar = new CheckGrammar(getSelectedEditor(), this);
     }
 

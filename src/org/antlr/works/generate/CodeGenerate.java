@@ -37,7 +37,6 @@ import org.antlr.tool.Grammar;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
 import org.antlr.works.grammar.element.ElementGrammarName;
-import org.antlr.works.grammar.syntax.GrammarSyntax;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
@@ -53,7 +52,6 @@ import java.util.List;
 
 public class CodeGenerate implements Runnable {
 
-    private GrammarSyntax syntax;
     private boolean debug = true;
 
     protected ComponentEditorGrammar editor;
@@ -62,8 +60,7 @@ public class CodeGenerate implements Runnable {
     protected long dateOfModificationOnDisk = 0;
     protected String lastError;
 
-    public CodeGenerate(GrammarSyntax syntax, ComponentEditorGrammar editor, CodeGenerateDelegate delegate) {
-        this.syntax = syntax;
+    public CodeGenerate(ComponentEditorGrammar editor, CodeGenerateDelegate delegate) {
         this.editor = editor;
         this.delegate = delegate;
     }
@@ -174,7 +171,7 @@ public class CodeGenerate implements Runnable {
     }
 
     public List<String> getGeneratedFileNames() throws Exception {
-        return syntax.getAllGeneratedFiles();
+        return editor.getSyntaxEngine().getSyntax().getAllGeneratedFiles();
 /*        List<String> names = new ArrayList<String>();
 
         String name = getGeneratedFileName(ElementGrammarName.LEXER);
