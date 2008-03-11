@@ -35,7 +35,6 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import org.antlr.works.IDE;
-import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.HelpManager;
 import org.antlr.xjlib.appkit.app.XJApplication;
@@ -319,7 +318,6 @@ public class AWPrefsDialog extends XJPanel {
     public static void applyCommonPrefs() {
         // * WARNING *
         // This function is called at startup and when applying preferences
-        ATESyntaxEngine.setDelay(AWPrefs.getParserDelay());
         XJApplication.setAutoSave(AWPrefs.getAutoSaveEnabled(), AWPrefs.getAutoSaveDelay());
     }
 

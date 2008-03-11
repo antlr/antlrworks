@@ -4,7 +4,7 @@ import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.debugger.Debugger;
-import org.antlr.works.swing.DetachablePanel;
+import org.antlr.works.utils.DetachablePanel;
 import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.xjlib.appkit.swing.XJTable;
 import org.antlr.xjlib.appkit.swing.XJTableDelegate;

@@ -2,16 +2,8 @@ package org.antlr.works;
 
 import org.antlr.Tool;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.EngineGrammar;
-import org.antlr.works.grammar.EngineGrammarDelegate;
-import org.antlr.works.syntax.GrammarSyntaxEngine;
-import org.antlr.works.visualization.SDGenerator;
-import org.antlr.works.visualization.serializable.SEncoder;
-import org.antlr.works.visualization.serializable.SXMLEncoder;
 import org.antlr.xjlib.foundation.XJUtils;
 
-import java.io.File;
 import java.io.IOException;
 
 /*
@@ -115,14 +107,15 @@ public class Console {
     }
 
     private void generateSyntaxDiagrams(String format) throws Exception {
-        GrammarSyntaxEngine se = new GrammarSyntaxEngine();
+        // todo update
+        /*GrammarSyntaxEngine se = new GrammarSyntaxEngine();
         se.setDelegate(new SyntaxDelegate());
         se.processSyntax();
 
         ComponentEditorGrammar ceg = new ComponentEditorGrammar();
-        ceg.parserEngine = new GrammarSyntaxEngine();
-        EngineGrammar eg = new EngineGrammar(ceg);
-        eg.setDelegate(new ConsoleEngineGrammarDelegate());
+        ceg.syntaxEngine = new GrammarSyntaxEngine();
+        AntlrEngineGrammar eg = new AntlrEngineGrammar(ceg);
+        eg.setDelegate(new ConsoleAntlrGrammarEngineDelegate());
         SDGenerator gen = new SDGenerator(eg);
 
         if(verbose) System.out.println("Begin");
@@ -137,18 +130,19 @@ public class Console {
                 gen.renderRuleToBitmapFile(name, format, file);
             }
         }
-        if(verbose) System.out.println("Done");
+        if(verbose) System.out.println("Done");    */
     }
 
     private void serializeSyntaxDiagrams() throws Exception {
-        GrammarSyntaxEngine se = new GrammarSyntaxEngine();
+        // todo update
+        /*GrammarSyntaxEngine se = new GrammarSyntaxEngine();
         se.setDelegate(new SyntaxDelegate());
         se.processSyntax();
 
         ComponentEditorGrammar ceg = new ComponentEditorGrammar();
-        ceg.parserEngine = new GrammarSyntaxEngine();
-        EngineGrammar eg = new EngineGrammar(ceg);
-        eg.setDelegate(new ConsoleEngineGrammarDelegate());
+        ceg.syntaxEngine = new GrammarSyntaxEngine();
+        AntlrEngineGrammar eg = new AntlrEngineGrammar(ceg);
+        eg.setDelegate(new ConsoleAntlrGrammarEngineDelegate());
         SDGenerator gen = new SDGenerator(eg);
 
         if(verbose) System.out.println("Begin");
@@ -162,7 +156,7 @@ public class Console {
             content.append(encoder.toString());
         }
         XJUtils.writeStringToFile(content.toString(), outputFile);
-        if(verbose) System.out.println("Done");
+        if(verbose) System.out.println("Done");   */
     }
 
     private static String getArgumentValue(String[] args, String name) {
@@ -197,7 +191,7 @@ public class Console {
         }
     }
 
-    public class ConsoleEngineGrammarDelegate implements EngineGrammarDelegate {
+    public class ConsoleAntlrGrammarEngineDelegate {
 
         public String getFileName() {
             return file;

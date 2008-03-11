@@ -47,8 +47,6 @@ public abstract class ATESyntaxEngine {
 
     protected List<ATEToken> tokens;
 
-    protected static int delay = 250;
-
     public ATESyntaxEngine() {
         lexer = createLexer();
         parser = createParser();
@@ -64,10 +62,6 @@ public abstract class ATESyntaxEngine {
 
     public void setDelegate(ATESyntaxEngineDelegate delegate) {
         this.delegate = delegate;
-    }
-
-    public static void setDelay(int delay) {
-        ATESyntaxEngine.delay = delay;
     }
 
     public synchronized List<ATEToken> getTokens() {
@@ -90,10 +84,10 @@ public abstract class ATESyntaxEngine {
         return parser;
     }
 
-    protected synchronized void lexerDidRun(ATESyntaxLexer lexer) {
+    protected void lexerDidRun(ATESyntaxLexer lexer) {
     }
 
-    protected synchronized void parserDidRun(ATESyntaxParser parser) {
+    protected void parserDidRun(ATESyntaxParser parser) {
     }
 
     public abstract ATESyntaxLexer createLexer();

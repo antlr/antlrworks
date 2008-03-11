@@ -38,13 +38,13 @@ import org.antlr.works.IDE;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.debugger.Debugger;
-import org.antlr.works.debugger.DebuggerInputDialog;
-import org.antlr.works.engine.EngineRuntime;
+import org.antlr.works.debugger.DebuggerEngine;
+import org.antlr.works.dialog.DebuggerInputDialog;
 import org.antlr.works.generate.CodeGenerate;
+import org.antlr.works.grammar.element.ElementBlock;
+import org.antlr.works.grammar.element.ElementGrammarName;
+import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.GrammarSyntaxParser;
-import org.antlr.works.syntax.element.ElementBlock;
-import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.StreamWatcher;
@@ -328,7 +328,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected void analyzeGrammar() {
         String errorMessage = null;
         try {
-            debugger.getGrammar().analyze();
+            debugger.getSyntaxEngine().getAntlrGrammar().analyze();
         } catch (Exception e) {
             debugger.getConsole().println(e);
             errorMessage = e.getLocalizedMessage();
@@ -469,7 +469,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     protected void compileFiles(String[] files) {
-        String error = EngineRuntime.compileFiles(debugger.getConsole(), files, outputFileDir, this);
+        String error = DebuggerEngine.compileFiles(debugger.getConsole(), files, outputFileDir, this);
         if(error != null)
             reportError(error);
     }
@@ -514,7 +514,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         if(!checkForLaunch())
             return false;
 
-        String classPath = EngineRuntime.getClassPath(outputFileDir);
+        String classPath = DebuggerEngine.getClassPath(outputFileDir);
         IDE.debugVerbose(debugger.getConsole(), getClass(), "Launch with path: "+classPath);
 
         try {

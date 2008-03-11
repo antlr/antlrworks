@@ -43,14 +43,14 @@ import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
+import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.swing.Toolbar;
-import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.TextUtils;
+import org.antlr.works.utils.Toolbar;
 import org.antlr.works.utils.Utils;
 import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.xjlib.appkit.utils.XJDialogProgress;
@@ -254,7 +254,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
     public void run() {
         try {
-            editor.getEngineGrammar().analyze();
+            editor.getSyntaxEngine().getAntlrGrammar().analyze();
             process();
         } catch(Exception e) {
             editor.console.println(e);
@@ -277,7 +277,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
         CharStream input = new ANTLRStringStream(Utils.convertRawTextWithEOL(textPane.getText(), eolCombo));
 
-        EngineGrammar eg = editor.getEngineGrammar();
+        AntlrEngineGrammar eg = editor.getSyntaxEngine().getAntlrGrammar();
         Grammar parser;
         Grammar lexer;
         try {

@@ -33,8 +33,8 @@ package org.antlr.works.menu;
 
 import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.visualization.SDGenerator;
 import org.antlr.works.visualization.Visual;
 import org.antlr.works.visualization.graphics.GContext;
@@ -112,7 +112,7 @@ public class MenuExport extends MenuAbstract {
         String directory = XJFileChooser.shared().getSelectedFilePath();
         String extension = XJFileChooser.shared().getSelectedFileExtension();
 
-        SDGenerator sd = new SDGenerator(getSelectedEditor().getEngineGrammar());
+        SDGenerator sd = new SDGenerator(getSelectedEditor().getSyntaxEngine());
         for(ElementRule rule : getSelectedEditor().getRules()) {
             try {
                 if(asImage) {

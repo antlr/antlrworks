@@ -1,9 +1,9 @@
 package org.antlr.works.ate.analysis;
 
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
-import org.antlr.works.tooltip.ToolTipList;
-import org.antlr.works.tooltip.ToolTipListDelegate;
 import org.antlr.works.utils.OverlayObject;
+import org.antlr.works.utils.ToolTipList;
+import org.antlr.works.utils.ToolTipListDelegate;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 
 import javax.swing.*;
 import java.awt.*;

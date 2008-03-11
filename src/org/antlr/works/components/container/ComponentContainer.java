@@ -67,4 +67,7 @@ public interface ComponentContainer {
     void selectTab(Component c);
     void addTab(EditorTab tab);
 
+    void documentLoaded(ComponentDocument document);
+
+    void editorParsed(ComponentEditor editor);
 }

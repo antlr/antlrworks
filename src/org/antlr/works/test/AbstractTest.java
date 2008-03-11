@@ -1,11 +1,14 @@
 package org.antlr.works.test;
 
-import org.antlr.xjlib.foundation.XJUtils;
 import junit.framework.TestCase;
+import org.antlr.Tool;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
-import org.antlr.works.syntax.GrammarSyntaxEngine;
-import org.antlr.works.syntax.GrammarSyntaxParser;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngineDelegate;
+import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
+import org.antlr.works.utils.Console;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.IOException;
 /*
@@ -39,9 +42,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate {
+public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate, GrammarSyntaxEngineDelegate {
 
-    protected GrammarSyntaxEngine engine = new GrammarSyntaxEngine();
+    protected GrammarSyntaxEngine engine = new GrammarSyntaxEngine(this);
     protected String text;
 
     public void parseFile(String fileName) throws IOException {
@@ -67,8 +70,36 @@ public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate {
         return XJUtils.getStringFromFile(getResourceFile(fileName));
     }
 
+    public String getFileName() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public String getText() {
         return text;
+    }
+
+    public Tool getANTLRTool() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Console getConsole() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void rulesChanged() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void antlrEngineGrammarDidAnalyze() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String getTokenVocabFile(String tokenVocabName) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public GrammarSyntaxEngine getSyntaxEngine() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void ateEngineWillParse() {

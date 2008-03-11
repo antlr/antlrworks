@@ -1,10 +1,10 @@
 package org.antlr.works.debugger.api;
 
 import org.antlr.works.generate.CodeGenerate;
-import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.grammar.element.ElementBlock;
+import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.menu.ContextualMenuFactory;
-import org.antlr.works.syntax.element.ElementBlock;
-import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.xjlib.appkit.document.XJDocument;
 
@@ -57,7 +57,7 @@ public interface DebuggerDelegate {
 
     List<ElementBlock> getBlocks();
 
-    EngineGrammar getEngineGrammar();
+    GrammarSyntaxEngine getSyntaxEngine();
 
     Set<Integer> getBreakpoints();
 

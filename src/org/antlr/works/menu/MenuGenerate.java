@@ -37,10 +37,10 @@ import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
 import org.antlr.works.grammar.CheckGrammar;
 import org.antlr.works.grammar.CheckGrammarDelegate;
-import org.antlr.works.grammar.EngineGrammarResult;
+import org.antlr.works.grammar.antlr.AntlrGrammarResult;
+import org.antlr.works.grammar.element.ElementGrammarName;
+import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.element.ElementGrammarName;
-import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 
 public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, CheckGrammarDelegate {
@@ -57,7 +57,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
     }
 
     public void awake() {
-        generateCode = new CodeGenerate(getSelectedEditor(), this);
+        generateCode = new CodeGenerate(getSelectedEditor().getSyntaxEngine().getSyntax(), getSelectedEditor(), this);
         checkGrammar = new CheckGrammar(getSelectedEditor(), this);
     }
 
@@ -206,7 +206,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
         // do nothing
     }
 
-    public void checkGrammarDidEnd(EngineGrammarResult result) {
+    public void checkGrammarDidEnd(AntlrGrammarResult result) {
         if(result.getErrorCount() == 0) {
             generateCodeProcessContinued();
         } else {

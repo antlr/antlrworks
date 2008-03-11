@@ -1,7 +1,7 @@
 package org.antlr.works.awtree;
 
-import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.IconManager;
+import org.antlr.works.utils.Toolbar;
 import org.antlr.works.utils.TreeUtilities;
 import org.antlr.xjlib.appkit.gview.object.GElement;
 import org.antlr.xjlib.appkit.utils.XJAlert;

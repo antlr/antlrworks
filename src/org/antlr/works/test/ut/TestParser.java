@@ -5,13 +5,13 @@ import junit.textui.TestRunner;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.EditorInspector;
 import org.antlr.works.editor.EditorRules;
-import org.antlr.works.syntax.GrammarSyntax;
-import org.antlr.works.syntax.GrammarSyntaxDelegate;
-import org.antlr.works.syntax.GrammarSyntaxEngine;
-import org.antlr.works.syntax.element.ElementBlock;
-import org.antlr.works.syntax.element.ElementGrammarName;
-import org.antlr.works.syntax.element.ElementReference;
-import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.grammar.element.ElementBlock;
+import org.antlr.works.grammar.element.ElementGrammarName;
+import org.antlr.works.grammar.element.ElementReference;
+import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.syntax.GrammarSyntax;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngineDelegate;
 import org.antlr.works.test.AbstractTest;
 import org.antlr.works.test.TestConstants;
 
@@ -47,7 +47,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class TestParser extends AbstractTest implements GrammarSyntaxDelegate {
+public class TestParser extends AbstractTest implements GrammarSyntaxEngineDelegate {
 
     private String vocabFile;
 
@@ -183,8 +183,8 @@ public class TestParser extends AbstractTest implements GrammarSyntaxDelegate {
     }
 
     private void assertInspector(int errors) {
-        GrammarSyntax syntax = new GrammarSyntax(this);
-        syntax.rebuildAll();
+        GrammarSyntaxEngine syntax = new GrammarSyntaxEngine(this);
+        syntax.getSyntax().rebuildAll();
         EditorInspector inspector = new EditorInspector(syntax, null, new MockInspectorDelegate());
         assertEquals("Errors", errors, inspector.getErrors().size());
     }
@@ -209,7 +209,7 @@ public class TestParser extends AbstractTest implements GrammarSyntaxDelegate {
         return vocabFile;
     }
 
-    public GrammarSyntaxEngine getParserEngine() {
+    public GrammarSyntaxEngine getSyntaxEngine() {
         return engine;
     }
 

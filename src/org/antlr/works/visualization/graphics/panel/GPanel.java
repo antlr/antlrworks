@@ -33,11 +33,11 @@ package org.antlr.works.visualization.graphics.panel;
 
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.swing.Toolbar;
-import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.IconManager;
+import org.antlr.works.utils.Toolbar;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;

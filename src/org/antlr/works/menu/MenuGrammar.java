@@ -34,12 +34,16 @@ package org.antlr.works.menu;
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.container.ComponentContainerGrammar;
-import org.antlr.works.grammar.*;
+import org.antlr.works.grammar.CheckGrammar;
+import org.antlr.works.grammar.CheckGrammarDelegate;
+import org.antlr.works.grammar.RulesDependency;
+import org.antlr.works.grammar.TokensDFA;
+import org.antlr.works.grammar.antlr.AntlrGrammarResult;
 import org.antlr.works.grammar.decisiondfa.DecisionDFA;
+import org.antlr.works.grammar.element.ElementGroup;
+import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.GrammarSyntaxParser;
-import org.antlr.works.syntax.element.ElementGroup;
-import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
 
@@ -113,7 +117,7 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
                 ElementRule lastRule = rules.get(rules.size()-1);
 
                 int end = lastRule.getEndIndex();
-                getSelectedEditor().getTextEditor().insertText(end+1, "\n"+GrammarSyntaxParser.END_GROUP+"\n");
+                getSelectedEditor().getTextEditor().insertText(end+1, "\n"+ GrammarSyntaxParser.END_GROUP+"\n");
 
                 int start = firstRule.getStartIndex();
                 getSelectedEditor().getTextEditor().insertText(start-1, "\n"+ GrammarSyntaxParser.BEGIN_GROUP+s+"\n");
@@ -179,7 +183,7 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
         checkingGrammar = true;
     }
 
-    public void checkGrammarDidEnd(EngineGrammarResult result) {
+    public void checkGrammarDidEnd(AntlrGrammarResult result) {
         checkGrammar.close();
         checkGrammar = null;
 

@@ -147,7 +147,8 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
     public void addToken(Token token) {
         ParseTreeNode ruleNode = rules.peek();
-        ParseTreeNode elementNode = new ParseTreeNode(token, debugger.getGrammar().getANTLRGrammar());
+        // todo this is way to long to access the needed grammar
+        ParseTreeNode elementNode = new ParseTreeNode(token, debugger.getSyntaxEngine().getAntlrGrammar().getANTLRGrammar());
         elementNode.setPosition(line, pos);
         addNode(ruleNode, elementNode);
         addNodeToCurrentBacktrack(elementNode);

@@ -2,10 +2,10 @@ package org.antlr.works.components.document;
 
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.components.container.ComponentContainerInternal;
 import org.antlr.works.components.container.ComponentDocumentInternal;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.menu.MenuFactory;
 import org.antlr.works.utils.Localizable;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
 import org.antlr.xjlib.appkit.document.XJDocument;
@@ -62,7 +62,7 @@ public class ComponentDocumentFactory extends XJDocumentFactory {
         doc.setDocumentData(new XJDataPlainText());
         doc.setDocumentFileType(getExtensions(), getDescriptionString());
 
-        MenuFactory container = new MenuFactory(mainContainer);
+        ComponentContainerInternal container = new ComponentContainerInternal(mainContainer);
         container.setDocument(doc);
         doc.setContainer(container);
 

@@ -65,8 +65,8 @@ public abstract class ComponentDocument extends XJDocument {
 
     @Override
     public void awake() {
-        super.awake();
         editor.awake();
+        super.awake();
     }
 
     @Override
@@ -85,6 +85,7 @@ public abstract class ComponentDocument extends XJDocument {
     public void documentDidReadData() {
         XJDataPlainText data = (XJDataPlainText)getDocumentData();
         editor.loadText(XJUtils.getNormalizedText(data.getText()));
+        getContainer().documentLoaded(this);
     }
 
 }

@@ -3,8 +3,8 @@ package org.antlr.works.menu;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.find.Usages;
+import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.element.ElementRule;
 /*
 
 [The "BSD licence"]

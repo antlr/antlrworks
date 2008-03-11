@@ -33,8 +33,8 @@ package org.antlr.works.visualization.graphics;
 
 import org.antlr.analysis.NFAState;
 import org.antlr.tool.Grammar;
-import org.antlr.works.grammar.EngineGrammar;
-import org.antlr.works.grammar.EngineGrammarError;
+import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
+import org.antlr.works.grammar.antlr.AntlrGrammarError;
 import org.antlr.works.utils.Console;
 import org.antlr.works.visualization.fa.FAFactory;
 import org.antlr.works.visualization.fa.FAState;
@@ -66,39 +66,39 @@ public class GFactory {
         this.console = console;
     }
 
-    public List buildGraphsForRule(EngineGrammar grammar, String rule, List<EngineGrammarError> errors) throws Exception {
-        if(grammar == null)
+    public List buildGraphsForRule(AntlrEngineGrammar antlrEngineGrammar, String rule, List<AntlrGrammarError> errors) throws Exception {
+        if(antlrEngineGrammar == null)
             return null;
         
         if(errors == null || errors.size() == 0)
-            return Collections.singletonList(buildGraphsForRule(grammar, rule));
+            return Collections.singletonList(buildGraphsForRule(antlrEngineGrammar, rule));
         else
-            return buildGraphsForErrors(grammar, rule, errors);
+            return buildGraphsForErrors(antlrEngineGrammar, rule, errors);
     }
 
-    public GGraph buildGraphsForRule(EngineGrammar grammar, String rule) throws Exception {
-        NFAState startState = grammar.getRuleStartState(rule);
+    public GGraph buildGraphsForRule(AntlrEngineGrammar antlrEngineGrammar, String rule) throws Exception {
+        NFAState startState = antlrEngineGrammar.getRuleStartState(rule);
         if(startState == null)
             return null;
 
-        FAState state = new FAFactory(grammar.getGrammarForRule(rule)).buildNFA(startState, optimize);
+        FAState state = new FAFactory(antlrEngineGrammar.getGrammarForRule(rule)).buildNFA(startState, optimize);
         GGraph graph = renderer.render(state);
         graph.setName(rule);
 
         return graph;
     }
 
-    public List<GGraphGroup> buildGraphsForErrors(EngineGrammar grammar, String rule, List<EngineGrammarError> errors) throws Exception {
+    public List<GGraphGroup> buildGraphsForErrors(AntlrEngineGrammar antlrEngineGrammar, String rule, List<AntlrGrammarError> errors) throws Exception {
         List<GGraphGroup> graphs = new ArrayList<GGraphGroup>();
 
-        for (EngineGrammarError error : errors) {
-            graphs.add(buildGraphGroup(grammar.getGrammarForRule(rule), error));
+        for (AntlrGrammarError error : errors) {
+            graphs.add(buildGraphGroup(antlrEngineGrammar.getGrammarForRule(rule), error));
         }
 
         return graphs;
     }
 
-    private GGraphGroup buildGraphGroup(Grammar grammar, EngineGrammarError error) {
+    private GGraphGroup buildGraphGroup(Grammar grammar, AntlrGrammarError error) {
         // Create one GGraph for each error rules
         List<GGraph> graphs = new ArrayList<GGraph>();
         FAFactory factory = new FAFactory(grammar);

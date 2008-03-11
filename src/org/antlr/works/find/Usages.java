@@ -34,7 +34,7 @@ package org.antlr.works.find;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.grammar.element.ElementRule;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

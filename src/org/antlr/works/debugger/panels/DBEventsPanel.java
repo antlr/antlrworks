@@ -3,7 +3,7 @@ package org.antlr.works.debugger.panels;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
-import org.antlr.works.swing.DetachablePanel;
+import org.antlr.works.utils.DetachablePanel;
 import org.antlr.xjlib.appkit.swing.XJTable;
 import org.antlr.xjlib.appkit.swing.XJTableView;
 

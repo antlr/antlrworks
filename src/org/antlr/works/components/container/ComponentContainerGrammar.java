@@ -44,11 +44,13 @@ import org.antlr.works.debugger.api.DebuggerDelegate;
 import org.antlr.works.editor.EditorConsole;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.generate.CodeGenerate;
-import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.grammar.element.ElementBlock;
+import org.antlr.works.grammar.element.ElementImport;
+import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.syntax.GrammarSyntax;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.element.ElementBlock;
-import org.antlr.works.syntax.element.ElementRule;
 import org.antlr.works.utils.Console;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.document.XJDocument;
@@ -64,6 +66,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 
@@ -241,41 +244,67 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     public void addGrammar(ComponentContainer container) {
         Component c = container.getEditor().getPanel();
         componentToContainer.put(c, container);
-        editorsTab.addTab(container.getDocument().getDocumentName(), c);
+        containers.add(container);
     }
 
-    public void openGrammar(String text) {
-        String currentFolder = XJUtils.getPathByDeletingLastComponent(getDocument().getDocumentPath());
-        String file = XJUtils.concatPath(currentFolder, text+".g");
+    public boolean loadGrammar(String name) {
+        if(grammars.containsKey(name)) return true;
 
-        // todo handle non-existing file
-        System.out.println("Open file "+file);
+        String currentFolder = XJUtils.getPathByDeletingLastComponent(getDocument().getDocumentPath());
+        String file = XJUtils.concatPath(currentFolder, name);
+        if(!new File(file).exists()) {
+            return false;
+        }
 
         ComponentDocumentFactory factory = new ComponentDocumentFactory();
         ComponentDocumentInternal doc = factory.createInternalDocument(this);
-        MenuFactory container = (MenuFactory) doc.getContainer();
+        ComponentContainerInternal container = (ComponentContainerInternal) doc.getContainer();
 
         doc.awake();
         try {
             doc.load(file);
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
+            return false;
         }
 
         addDocument(doc);
         addGrammar(container);
-        containers.add(container);
-        selectGrammar(file);
+
+        grammars.put(name, new GrammarDescription(name, container));
+
+        return true;
     }
 
-    public void selectGrammar(String file) {
+    private Map<String, GrammarDescription> grammars = new HashMap<String, GrammarDescription>();
+
+    public static class GrammarDescription {
+        private String name;
+        private ComponentContainer container;
+
+        public GrammarDescription(String name, ComponentContainer container) {
+            this.name = name;
+            this.container = container;
+        }
+    }
+
+    public void selectGrammar(ComponentContainer container) {
+        selectGrammar(XJUtils.getPathByDeletingPathExtension(container.getDocument().getDocumentName()));
+    }
+
+    public void selectGrammar(String name) {
         for(ComponentContainer c : containers) {
-            if(c.getDocument().getDocumentPath().equals(file)) {
-                editorsTab.setSelectedIndex(containers.indexOf(c));
+            if(XJUtils.getPathByDeletingPathExtension(c.getDocument().getDocumentName()).equals(name)) {
+                c.getDocument().getDocumentName();
+                Component panel = c.getEditor().getPanel();
+                if(editorsTab.indexOfComponent(panel) == -1) {
+                    editorsTab.addTab(c.getDocument().getDocumentName(), panel);
+                }
+                editorsTab.setSelectedComponent(panel);
                 return;
             }
         }
-        editorsTab.setSelectedIndex(0);
+
     }
 
     public ComponentEditorGrammar getSelectedEditor() {
@@ -340,6 +369,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     @Override
     public void becomingVisibleForTheFirstTime() {
         addGrammar(this);
+        selectGrammar(this);
 
         if(verticalSplit != null)
             verticalSplit.setDividerLocation((int)(getSize().width*0.2));
@@ -437,6 +467,38 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         selectTab(tab.getTabComponent());
     }
 
+    public void documentLoaded(ComponentDocument document) {
+
+    }
+
+    private Map<String, GrammarSyntax> syntaxes = new HashMap<String, GrammarSyntax>();
+
+    public void editorParsed(ComponentEditor editor) {
+        System.out.println("Editor "+editor.getDocument().getDocumentName()+" parsed");
+
+        ComponentEditorGrammar eg = (ComponentEditorGrammar) editor;
+        GrammarSyntax syntax = eg.getSyntaxEngine().getSyntax();
+
+        String name = editor.getDocument().getDocumentName();
+        syntaxes.put(name, syntax);
+
+        // make sure all the imported grammars are loaded
+        for(ElementImport element : syntax.getImports()) {
+            loadGrammar(element.getName()+".g");
+        }
+
+        // update the hierarchy starting with the root grammar
+        // todo use a thread for that
+        updateHierarchy();
+    }
+
+    private void updateHierarchy() {
+        // always start with the root grammar
+        String name = getDocument().getDocumentName();
+        GrammarSyntax syntax = syntaxes.get(name);
+        syntax.updateHierarchy(syntaxes);
+    }
+
     public int getSimilarTab(EditorTab tab) {
         for (int i = 0; i < tabs.size(); i++) {
             EditorTab t = tabs.get(i);
@@ -532,8 +594,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             }
         }
 
-        public EngineGrammar getEngineGrammar() {
-            return getSelectedEditor().getEngineGrammar();
+        public GrammarSyntaxEngine getSyntaxEngine() {
+            return getSelectedEditor().getSyntaxEngine();
         }
 
         public XJDocument getDocument() {
@@ -553,11 +615,11 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         }
 
         public CodeGenerate getCodeGenerate() {
-            return new CodeGenerate(getSelectedEditor(), null);
+            return new CodeGenerate(getSyntaxEngine().getSyntax(), getSelectedEditor(), null);
         }
 
         public String getTokenVocab() {
-            return getSelectedEditor().getParserEngine().getTokenVocab();
+            return getSelectedEditor().getSyntaxEngine().getSyntax().getTokenVocab();
         }
 
         public Container getContainer() {
@@ -569,7 +631,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         }
 
         public List<ElementBlock> getBlocks() {
-            return getSelectedEditor().getBlocks();
+            return getSelectedEditor().getSyntaxEngine().getSyntax().getBlocks();
         }
 
         public Set<Integer> getBreakpoints() {

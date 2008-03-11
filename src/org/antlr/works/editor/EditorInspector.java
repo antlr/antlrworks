@@ -2,14 +2,14 @@ package org.antlr.works.editor;
 
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.editor.idea.IdeaAction;
 import org.antlr.works.grammar.RefactorEngine;
 import org.antlr.works.grammar.decisiondfa.DecisionDFAEngine;
-import org.antlr.works.idea.IdeaAction;
-import org.antlr.works.syntax.GrammarSyntax;
-import org.antlr.works.syntax.element.ElementGrammarName;
-import org.antlr.works.syntax.element.ElementReference;
-import org.antlr.works.syntax.element.ElementRule;
-import org.antlr.works.syntax.element.ElementToken;
+import org.antlr.works.grammar.element.ElementGrammarName;
+import org.antlr.works.grammar.element.ElementReference;
+import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.element.ElementToken;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import java.awt.*;
@@ -49,18 +49,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorInspector {
 
-    private GrammarSyntax syntax;
+    private GrammarSyntaxEngine engine;
     private DecisionDFAEngine decisionDFAEngine;
     private InspectorDelegate delegate;
 
-    public EditorInspector(GrammarSyntax syntax, DecisionDFAEngine decisionDFAEngine, InspectorDelegate delegate) {
-        this.syntax = syntax;
+    public EditorInspector(GrammarSyntaxEngine engine, DecisionDFAEngine decisionDFAEngine, InspectorDelegate delegate) {
+        this.engine = engine;
         this.decisionDFAEngine = decisionDFAEngine;
         this.delegate = delegate;
     }
 
     public void close() {
-        syntax = null;
+        engine = null;
         decisionDFAEngine = null;
         delegate = null;
     }
@@ -118,7 +118,7 @@ public class EditorInspector {
     }
 
     private ElementGrammarName getGrammarName() {
-        return syntax.getParserEngine().getName();
+        return engine.getSyntax().getElementName();
     }
 
     private String getGrammarNameFromFile() {
@@ -130,7 +130,7 @@ public class EditorInspector {
     }
 
     protected void discoverInvalidCharLiteralTokens(List<EditorInspectorItem> items) {
-        List<ATEToken> tokens = syntax.getParserEngine().getTokens();
+        List<ATEToken> tokens = engine.getTokens();
         if(tokens == null)
             return;
 
@@ -148,7 +148,7 @@ public class EditorInspector {
     }
 
     protected void discoverUndefinedReferences(List<EditorInspectorItem> items) {
-        List<ElementReference> undefinedRefs = syntax.getUndefinedReferences();
+        List<ElementReference> undefinedRefs = engine.getSyntax().getUndefinedReferences();
         if(undefinedRefs == null)
             return;
 
@@ -162,7 +162,7 @@ public class EditorInspector {
     }
 
     protected void discoverDuplicateRules(List<EditorInspectorItem> items) {
-        List<ElementRule> rules = syntax.getDuplicateRules();
+        List<ElementRule> rules = engine.getSyntax().getDuplicateRules();
         if(rules == null)
             return;
 
@@ -176,7 +176,7 @@ public class EditorInspector {
     }
 
     protected void discoverLeftRecursionRules(List<EditorInspectorItem> items) {
-        List<ElementRule> rules = syntax.getParserEngine().getRules();
+        List<ElementRule> rules = engine.getSyntax().getRules();
         if(rules == null)
             return;
 
@@ -193,7 +193,7 @@ public class EditorInspector {
     }
 
     protected void discoverLeftRecursiveRulesSet(List<EditorInspectorItem> items) {
-        List<ElementRule> rules = syntax.getParserEngine().getRules();
+        List<ElementRule> rules = engine.getSyntax().getRules();
         if(rules == null)
             return;
 

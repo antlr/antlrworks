@@ -192,7 +192,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     }
 
     public InputTreeNode createNode(Token token) {
-        InputTreeNode node = new InputTreeNode((DBTreeToken)token, debugger.getGrammar().getANTLRGrammar());
+        InputTreeNode node = new InputTreeNode((DBTreeToken)token, debugger.getSyntaxEngine().getAntlrGrammar().getANTLRGrammar());
         node.setPosition(line, pos);
         return node;
     }

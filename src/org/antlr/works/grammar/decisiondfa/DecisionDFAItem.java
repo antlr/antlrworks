@@ -2,7 +2,7 @@ package org.antlr.works.grammar.decisiondfa;
 
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorInspectorItem;
-import org.antlr.works.idea.IdeaAction;
+import org.antlr.works.editor.idea.IdeaAction;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,6 +6,7 @@ import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Rule;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
 /*
 
 [The "BSD licence"]
@@ -45,7 +46,7 @@ public class TokensDFA extends GrammarDOTTab {
 
     @Override
     public String getDOTString() throws Exception {
-        EngineGrammar eg = editor.getEngineGrammar();
+        AntlrEngineGrammar eg = editor.getSyntaxEngine().getAntlrGrammar();
         eg.analyze();
 
         Grammar g = eg.getLexerGrammar();

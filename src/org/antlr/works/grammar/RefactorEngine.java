@@ -2,8 +2,8 @@ package org.antlr.works.grammar;
 
 import org.antlr.works.ate.syntax.misc.ATEScope;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.syntax.GrammarSyntaxLexer;
-import org.antlr.works.syntax.element.*;
+import org.antlr.works.grammar.element.*;
+import org.antlr.works.grammar.syntax.GrammarSyntaxLexer;
 
 import java.util.List;
 /*

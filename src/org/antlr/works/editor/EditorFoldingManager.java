@@ -4,9 +4,9 @@ import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
 import org.antlr.works.ate.folding.ATEFoldingManager;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.grammar.element.ElementAction;
+import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.element.ElementAction;
-import org.antlr.works.syntax.element.ElementRule;
 
 import java.util.List;
 /*
@@ -83,21 +83,19 @@ public class EditorFoldingManager extends ATEFoldingManager {
     }
 
     public void provideFoldingEntities() {
-        List<ElementRule> rules = editor.parserEngine.getRules();
+        List<ElementRule> rules = editor.getSyntaxEngine().getSyntax().getRules();
         if(rules != null) {
-            for(int index=0; index<rules.size(); index++) {
-                ElementRule rule = rules.get(index);
+            for (ElementRule rule : rules) {
                 addEntity(rule);
             }
         }
 
         // Add only actions that are in expanded rules
         if(AWPrefs.getFoldingEnabled() && AWPrefs.getDisplayActionsAnchorsFolding()) {
-            List<ElementAction> actions = editor.parserEngine.getActions();
+            List<ElementAction> actions = editor.getSyntaxEngine().getSyntax().getActions();
             if(actions != null) {
-                for(int index=0; index<actions.size(); index++) {
-                    ElementAction action = actions.get(index);
-                    if(action.rule.isExpanded())
+                for (ElementAction action : actions) {
+                    if (action.rule.isExpanded())
                         addEntity(action);
                 }
             }
@@ -108,9 +106,9 @@ public class EditorFoldingManager extends ATEFoldingManager {
         if(entities == null || entities.isEmpty())
             return null;
         // @todo optimize using a map ?
-        for(int index=0; index<entities.size(); index++) {
-            ATEFoldingEntity entity = (ATEFoldingEntity)entities.get(index);
-            if(entity.foldingEntityID().equals(identifier))
+        for (Object entity1 : entities) {
+            ATEFoldingEntity entity = (ATEFoldingEntity) entity1;
+            if (entity.foldingEntityID().equals(identifier))
                 return entity;
         }
         return null;
@@ -118,9 +116,9 @@ public class EditorFoldingManager extends ATEFoldingManager {
 
     public ATEFoldingEntity getEntityForKey(Object key, int tag) {
         if(tag == TAG_ACTIONS)
-            return getEntityForIdentifier(editor.parserEngine.getActions(), (String)key);
+            return getEntityForIdentifier(editor.getSyntaxEngine().getSyntax().getActions(), (String)key);
         else if(tag == TAG_RULES)
-            return getEntityForIdentifier(editor.parserEngine.getRules(), (String)key);
+            return getEntityForIdentifier(editor.getSyntaxEngine().getSyntax().getRules(), (String)key);
         else
             return null;
     }

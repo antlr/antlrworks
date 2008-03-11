@@ -48,19 +48,14 @@ import org.antlr.works.debugger.tree.DBASTPanel;
 import org.antlr.works.debugger.tree.DBParseTreeModel;
 import org.antlr.works.debugger.tree.DBParseTreePanel;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.grammar.element.ElementBlock;
+import org.antlr.works.grammar.element.ElementGrammarName;
+import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.swing.CustomSplitPanel;
-import org.antlr.works.swing.CustomToggleButton;
-import org.antlr.works.swing.DetachablePanel;
-import org.antlr.works.swing.DetachablePanelDelegate;
-import org.antlr.works.syntax.element.ElementBlock;
-import org.antlr.works.syntax.element.ElementGrammarName;
-import org.antlr.works.syntax.element.ElementRule;
-import org.antlr.works.utils.Console;
-import org.antlr.works.utils.Utils;
+import org.antlr.works.utils.*;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.gview.GView;
@@ -354,8 +349,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         eventsPanel.updateOnBreakEvent();
     }
 
-    public EngineGrammar getGrammar() {
-        return delegate.getEngineGrammar();
+    public GrammarSyntaxEngine getSyntaxEngine() {
+        return delegate.getSyntaxEngine();
     }
 
     public boolean needsToGenerateGrammar() {
@@ -444,7 +439,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public void launchLocalDebugger(int options) {
-        if(getGrammar().getType() == ElementGrammarName.TREEPARSER) {
+        if(getSyntaxEngine().getSyntax().getType() == ElementGrammarName.TREEPARSER) {
             XJAlert.display(getWindowContainer(), "Unsupported Grammar Type",
                     "ANTLRWorks supports tree grammar debugging only if you \"debug remote\".");
             return;
@@ -505,7 +500,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
         queryGrammarBreakpoints();
 
-        inputPanel.prepareForGrammar(getGrammar());
+        inputPanel.prepareForGrammar(getSyntaxEngine());
         player.setInputBuffer(inputPanel.getInputBuffer());
 
         recorder.connect(address, port);
@@ -534,7 +529,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public boolean debuggerLaunchGrammar() {
         try {
-            getGrammar().analyze();
+            getSyntaxEngine().getAntlrGrammar().analyze();
         } catch (Exception e) {
             getConsole().print(e);
             return false;

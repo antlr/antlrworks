@@ -294,7 +294,7 @@ Version 1.0ea9 - 06/02/06
 - syntax: added exception clause of rule
 - stats can be sent without launching AW (-stats to submit and -stats -erase to erase stats)
 
-- fixed a bug in the DOT engine that could prevent a DOT graph to be correctly displayed
+- fixed a bug in the DOT antlr that could prevent a DOT graph to be correctly displayed
 - fixed a bug where ANTLRWorks would freeze when replacing literals with token label
 - fixed a bug where stats about programming and language implementation experience were inverted
 
@@ -337,7 +337,7 @@ Version 1.0ea8 - 03/11/06
 - fixed a bug when reading the tokenVocab file (was missing the first character)
 - fixed a bug where ANTLR would not be able to read the tokenVocab file (missing path)
 - fixed a bug in the code generation (problem with grammar name)
-- fixed a bug in the syntax diagram engine where a link from a rule to another rule would start at the wrong state
+- fixed a bug in the syntax diagram antlr where a link from a rule to another rule would start at the wrong state
 - fixed a bug in the syntax diagram path drawing where some paths were not correctly rendered
 
 Version 1.0ea7 - 12/15/05

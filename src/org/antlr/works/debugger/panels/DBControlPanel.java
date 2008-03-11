@@ -6,9 +6,9 @@ import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 import org.antlr.works.debugger.tivo.DBRecorder;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.NumberSet;
+import org.antlr.works.utils.Toolbar;
 
 import javax.swing.*;
 import java.awt.*;

@@ -34,9 +34,9 @@ package org.antlr.works.components.container;
 import org.antlr.works.IDE;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.xjlib.appkit.menu.*;
 
 import javax.swing.*;

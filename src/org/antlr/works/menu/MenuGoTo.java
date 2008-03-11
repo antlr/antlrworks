@@ -34,9 +34,9 @@ package org.antlr.works.menu;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.grammar.element.ElementImport;
+import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.syntax.element.ElementImport;
-import org.antlr.works.syntax.element.ElementReference;
 
 import javax.swing.*;
 import java.util.Set;
@@ -57,7 +57,7 @@ public class MenuGoTo extends MenuAbstract {
 
         ElementReference ref = getSelectedEditor().getCurrentReference();
         if(ref != null) {
-            for(ATEToken decl : getSelectedEditor().parserEngine.getDecls()) {
+            for(ATEToken decl : getSelectedEditor().getSyntaxEngine().getSyntax().getDecls()) {
                 if(decl.getAttribute().equals(ref.token.getAttribute())) {
                     getSelectedEditor().goToHistoryRememberCurrentPosition();
                     setCaretPosition(decl.start);
@@ -70,7 +70,7 @@ public class MenuGoTo extends MenuAbstract {
         ElementImport imp = getSelectedEditor().getImportAtPosition(getSelectedEditor().getCaretPosition());
         if(imp != null) {
             ComponentContainerGrammar g = (ComponentContainerGrammar) getSelectedEditor().getContainer();
-            g.openGrammar(imp.token.getAttribute());
+            g.selectGrammar(imp.getName());
         }
     }
 
@@ -86,7 +86,7 @@ public class MenuGoTo extends MenuAbstract {
 
         while(true) {
             line += direction;
-            if(line < 0 || line > getSelectedEditor().parserEngine.getMaxLines()-1)
+            if(line < 0 || line > getSelectedEditor().syntaxEngine.getMaxLines()-1)
                 break;
 
             if(breakpoints.contains(Integer.valueOf(line))) {

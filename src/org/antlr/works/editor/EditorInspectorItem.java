@@ -2,8 +2,8 @@ package org.antlr.works.editor;
 
 import org.antlr.works.ate.ATEUnderlyingManager;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.idea.IdeaAction;
-import org.antlr.works.idea.IdeaActionDelegate;
+import org.antlr.works.editor.idea.IdeaAction;
+import org.antlr.works.editor.idea.IdeaActionDelegate;
 
 import java.awt.*;
 import java.util.List;

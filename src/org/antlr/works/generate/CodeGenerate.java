@@ -35,9 +35,10 @@ import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.EngineGrammar;
+import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
+import org.antlr.works.grammar.element.ElementGrammarName;
+import org.antlr.works.grammar.syntax.GrammarSyntax;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.syntax.element.ElementGrammarName;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.utils.Utils;
@@ -48,12 +49,12 @@ import org.antlr.xjlib.foundation.XJUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CodeGenerate implements Runnable {
 
-    protected boolean debug = true;
+    private GrammarSyntax syntax;
+    private boolean debug = true;
 
     protected ComponentEditorGrammar editor;
     protected CodeGenerateDelegate delegate;
@@ -61,7 +62,8 @@ public class CodeGenerate implements Runnable {
     protected long dateOfModificationOnDisk = 0;
     protected String lastError;
 
-    public CodeGenerate(ComponentEditorGrammar editor, CodeGenerateDelegate delegate) {
+    public CodeGenerate(GrammarSyntax syntax, ComponentEditorGrammar editor, CodeGenerateDelegate delegate) {
+        this.syntax = syntax;
         this.editor = editor;
         this.delegate = delegate;
     }
@@ -81,7 +83,7 @@ public class CodeGenerate implements Runnable {
 
     public String getGrammarLanguage() {
         try {
-            EngineGrammar eg = editor.getEngineGrammar();
+            AntlrEngineGrammar eg = editor.getSyntaxEngine().getAntlrGrammar();
             eg.createGrammars();
             Grammar g = eg.getParserGrammar();
             if(g == null) {
@@ -99,7 +101,7 @@ public class CodeGenerate implements Runnable {
     }
 
     public String getGrammarName() {
-        return editor.getEngineGrammar().getName();
+        return editor.getSyntaxEngine().getSyntax().getName();
     }
 
     public String getLastError() {
@@ -135,7 +137,7 @@ public class CodeGenerate implements Runnable {
      * @return true if the grammar generated files need a suffix
      */
     public boolean hasSuffix() {
-        return editor.getEngineGrammar().isCombinedGrammar();
+        return editor.getSyntaxEngine().getSyntax().isCombinedGrammar();
     }
 
     public String getSuffix(int type) {
@@ -152,36 +154,37 @@ public class CodeGenerate implements Runnable {
 
     public String getGeneratedClassName(int type) throws Exception {
         String name = null;
-        EngineGrammar engine = editor.getEngineGrammar();
-        engine.createGrammars();
+        AntlrEngineGrammar antlrEngineGrammar = editor.getSyntaxEngine().getAntlrGrammar();
+        antlrEngineGrammar.createGrammars();
         if(type == ElementGrammarName.LEXER) {
-            Grammar g = engine.getLexerGrammar();
+            Grammar g = antlrEngineGrammar.getLexerGrammar();
             if(g == null) return null;
             name = g.name+getSuffix(type);
         } else if(type == ElementGrammarName.PARSER) {
-            Grammar g = engine.getParserGrammar();
+            Grammar g = antlrEngineGrammar.getParserGrammar();
             if(g == null) return null;
             name = g.name+getSuffix(type);
         } else if(type == ElementGrammarName.TREEPARSER) {
-            Grammar g = engine.getParserGrammar();
+            Grammar g = antlrEngineGrammar.getParserGrammar();
             if(g == null) return null;
-            if(engine.getType() != ElementGrammarName.TREEPARSER) return null;
+            if(!editor.getSyntaxEngine().getSyntax().isTreeParserGrammar()) return null;
             name = g.name+getSuffix(type);
         }
         return name;
     }
 
     public List<String> getGeneratedFileNames() throws Exception {
-        List<String> names = new ArrayList<String>();
+        return syntax.getAllGeneratedFiles();
+/*        List<String> names = new ArrayList<String>();
 
         String name = getGeneratedFileName(ElementGrammarName.LEXER);
         if(name != null) {
             names.add(name);
-        } else if(editor.getEngineGrammar().isParserGrammar()) {
+        } else if(editor.getSyntaxEngine().isParserGrammar()) {
             // try to use the tokenVocab name for the name of the lexer
             // if the grammar is a parser grammar
             // todo use user's provided name if tokenVocab is null or invalid
-            String className = editor.getParserEngine().getTokenVocab();
+            String className = editor.getSyntaxEngine().getTokenVocab();
             if(className != null) {
                 name = XJUtils.concatPath(getOutputPath(), className+".java");
                 names.add(name);
@@ -198,7 +201,7 @@ public class CodeGenerate implements Runnable {
             names.add(name);
         }
 
-        return names;
+        return names;*/
     }
 
     public String getGeneratedFileName(int type) throws Exception {
@@ -222,12 +225,12 @@ public class CodeGenerate implements Runnable {
     }
 
     public boolean supportsLexer() {
-        int type = editor.getEngineGrammar().getType();
+        int type = editor.getSyntaxEngine().getSyntax().getType();
         return type == ElementGrammarName.COMBINED || type == ElementGrammarName.LEXER;
     }
 
     public boolean supportsParser() {
-        int type = editor.getEngineGrammar().getType();
+        int type = editor.getSyntaxEngine().getSyntax().getType();
         return type == ElementGrammarName.COMBINED || type == ElementGrammarName.PARSER || type == ElementGrammarName.TREEPARSER;
     }
 

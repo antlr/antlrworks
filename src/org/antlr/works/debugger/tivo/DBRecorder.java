@@ -468,7 +468,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         //Tool.VERSION
         //System.out.println(listener.version);
 
-        String grammarFileName = debugger.getGrammar().getFileName();
+        String grammarFileName = debugger.getSyntaxEngine().getAntlrGrammar().getFileName();
         String remoteParserGrammarFileName = XJUtils.getLastPathComponent(listener.grammarFileName);
 
         if(!grammarFileName.equals(remoteParserGrammarFileName)) {

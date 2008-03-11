@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.grammar;
 
 import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.grammar.antlr.AntlrGrammarResult;
 import org.antlr.works.utils.Console;
 
 public class CheckGrammar implements Runnable {
@@ -53,20 +54,21 @@ public class CheckGrammar implements Runnable {
         new Thread(this).start();
     }
 
-    public void cancel() {        
-        editor.getEngineGrammar().cancel();
+    public void cancel() {
+        // todo at engine level? syntax engine is for syntax while the other is for antlr grammar
+        editor.getSyntaxEngine().getAntlrGrammar().cancel();
     }
 
     public void run() {
         editor.getConsole().setMode(Console.MODE_VERBOSE);
         delegate.checkGrammarDidBegin();
-        EngineGrammarResult result;
+        AntlrGrammarResult result;
         try {
-            result = editor.getEngineGrammar().analyze();
+            result = editor.getSyntaxEngine().getAntlrGrammar().analyze();
         } catch (Exception e) {
             editor.getConsole().println(e);
             // Result cannot be null, so report the exception
-            result = new EngineGrammarResult(e);
+            result = new AntlrGrammarResult(e);
         }
         delegate.checkGrammarDidEnd(result);
     }

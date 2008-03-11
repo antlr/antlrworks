@@ -3,8 +3,8 @@ package org.antlr.works.components;
 import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.IconManager;
+import org.antlr.works.utils.Toolbar;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 

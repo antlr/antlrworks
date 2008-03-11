@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.editor;
 
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.swing.Toolbar;
 import org.antlr.works.utils.Console;
+import org.antlr.works.utils.Toolbar;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;

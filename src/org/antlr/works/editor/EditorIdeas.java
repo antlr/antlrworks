@@ -1,8 +1,8 @@
 package org.antlr.works.editor;
 
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.idea.*;
-import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.editor.idea.*;
+import org.antlr.works.grammar.element.ElementRule;
 
 import java.awt.*;
 import java.util.ArrayList;

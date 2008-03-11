@@ -2,7 +2,7 @@ package org.antlr.works.debugger.panels;
 
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.swing.DetachablePanel;
+import org.antlr.works.utils.DetachablePanel;
 import org.antlr.works.utils.StreamWatcherDelegate;
 import org.antlr.works.utils.TextPane;
 import org.antlr.works.utils.TextUtils;

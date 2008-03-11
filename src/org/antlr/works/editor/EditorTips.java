@@ -2,9 +2,9 @@ package org.antlr.works.editor;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.tips.TipsManager;
-import org.antlr.works.tips.TipsOverlay;
-import org.antlr.works.tips.TipsProvider;
+import org.antlr.works.editor.tips.TipsManager;
+import org.antlr.works.editor.tips.TipsOverlay;
+import org.antlr.works.editor.tips.TipsProvider;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;

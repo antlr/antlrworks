@@ -2,9 +2,8 @@ package org.antlr.works.grammar;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.syntax.element.ElementGrammarName;
-import org.antlr.works.syntax.element.ElementReference;
-import org.antlr.works.syntax.element.ElementRule;
+import org.antlr.works.grammar.element.ElementReference;
+import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 
 import java.util.ArrayList;
@@ -66,7 +65,7 @@ public class RulesDependency extends GrammarDOTTab {
         }
 
         includeLexerRefs = true;
-        if(!rule.lexer && editor.getEngineGrammar().getType() == ElementGrammarName.COMBINED) {
+        if(!rule.lexer && editor.getSyntaxEngine().getSyntax().isCombinedGrammar()) {
             includeLexerRefs = XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Rule Dependency Graph", "Do you want to include lexer references ?") == XJAlert.YES;
         }
 

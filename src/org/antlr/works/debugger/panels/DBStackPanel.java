@@ -1,9 +1,9 @@
 package org.antlr.works.debugger.panels;
 
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.utils.DetachablePanel;
 import org.antlr.xjlib.appkit.swing.XJTable;
 import org.antlr.xjlib.appkit.swing.XJTableView;
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.swing.DetachablePanel;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
