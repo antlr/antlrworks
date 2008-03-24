@@ -412,16 +412,17 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void selectVisualizationTab() {
-        selectTab(visual.getTabComponent());
+        container.selectSyntaxDiagramTab(this);
+        makeBottomComponentVisible();
     }
 
     public void selectInterpreterTab() {
-        selectTab(interpreter.getTabComponent());
+        container.selectInterpreterTab(this);
         makeBottomComponentVisible();
     }
 
     public void selectConsoleTab() {
-        selectTab(console.getTabComponent());
+        container.selectConsoleTab(this);
         makeBottomComponentVisible();
     }
 

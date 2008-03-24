@@ -48,6 +48,7 @@ import org.antlr.xjlib.foundation.XJUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CodeGenerate implements Runnable {
@@ -171,7 +172,13 @@ public class CodeGenerate implements Runnable {
     }
 
     public List<String> getGeneratedFileNames() throws Exception {
-        return editor.getSyntaxEngine().getSyntax().getAllGeneratedFiles();
+        System.out.println("****************");
+        List<String> files = new ArrayList<String>();
+        for(String name : editor.getSyntaxEngine().getSyntax().getAllGeneratedNames()) {
+            files.add(XJUtils.concatPath(getOutputPath(), name+".java"));
+        }
+        System.out.println(files);
+        return files;
 /*        List<String> names = new ArrayList<String>();
 
         String name = getGeneratedFileName(ElementGrammarName.LEXER);

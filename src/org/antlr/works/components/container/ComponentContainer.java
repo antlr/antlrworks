@@ -70,4 +70,8 @@ public interface ComponentContainer {
     void documentLoaded(ComponentDocument document);
 
     void editorParsed(ComponentEditor editor);
+    
+    void selectConsoleTab(ComponentEditor editor);
+    void selectInterpreterTab(ComponentEditor editor);
+    void selectSyntaxDiagramTab(ComponentEditor editor);
 }

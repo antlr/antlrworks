@@ -1,5 +1,6 @@
 package org.antlr.works.grammar.syntax;
 
+import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
@@ -347,9 +348,22 @@ public class GrammarSyntax {
         rebuildAll();
     }
 
-    public List<String> getAllGeneratedFiles() throws Exception {
-        GrammarGeneratedFiles gen = GrammarGeneratedFiles.getInstance(engine.getSyntax());
-        return gen.getGeneratedNames();
+    public List<String> getAllGeneratedNames() throws Exception {
+        Grammar g = engine.getAntlrGrammar().getANTLRGrammar();
+        System.out.println("Implicit = "+g.getImplicitlyGeneratedLexerFileName());
+        System.out.println("Recognized = "+g.getRecognizerName());
+        for(Grammar gd : g.getDelegates()) {
+            System.out.println("Implicit = "+gd.getImplicitlyGeneratedLexerFileName());
+            System.out.println("Recognized = "+gd.getRecognizerName());            
+        }
+        System.out.println("************");
+        List<String> names = new ArrayList<String>();        
+        for(GrammarSyntax other : depends) {
+            //names.addAll(other.getAllGeneratedNames());
+        }
+        GrammarGeneratedFiles gen = GrammarGeneratedFiles.getInstance(this);
+        names.addAll(gen.getGeneratedNames());
+        return names;
     }
 
     public void updateHierarchy(Map<String, GrammarSyntax> entities) {

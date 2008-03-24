@@ -467,6 +467,21 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         selectTab(tab.getTabComponent());
     }
 
+    public void selectConsoleTab(ComponentEditor editor) {
+        switchToEditor((ComponentEditorGrammar) editor);
+        selectTab(consolePanel);
+    }
+
+    public void selectInterpreterTab(ComponentEditor editor) {
+        switchToEditor((ComponentEditorGrammar) editor);
+        selectTab(interpreterPanel);
+    }
+
+    public void selectSyntaxDiagramTab(ComponentEditor editor) {
+        switchToEditor((ComponentEditorGrammar) editor);
+        selectTab(sdPanel);
+    }
+
     public void documentLoaded(ComponentDocument document) {
 
     }
@@ -530,6 +545,37 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             bottomTab.setSelectedComponent(c);
             getSelectedEditor().refreshMainMenuBar();
         }
+    }
+
+    private void switchToEditor(ComponentEditorGrammar editor) {
+        setComponent(toolbarPanel, toolbar.getToolbar());
+        setComponent(rulesPanel, editor.getComponentRules());
+
+        setComponent(sdPanel, editor.getComponentSD());
+        setComponent(interpreterPanel, editor.getComponentInterpreter());
+        setComponent(consolePanel, editor.getComponentConsole());
+        setComponent(debuggerPanel, debugger);
+
+        bottomPanel.removeAll();
+        bottomPanel.add(bottomTab, BorderLayout.CENTER);
+        bottomPanel.add(editor.getStatusComponent(), BorderLayout.SOUTH);
+        bottomPanel.revalidate();
+        bottomPanel.repaint();
+
+        editor.refreshMainMenuBar();
+
+        setTitle(selectedContainer.getDocument().getDocumentPath());
+    }
+
+    public void setComponent(JPanel panel, EditorTab tab) {
+        setComponent(panel, tab.getTabComponent());
+    }
+
+    public void setComponent(JPanel panel, Component c) {
+        panel.removeAll();
+        panel.add(c);
+        panel.revalidate();
+        panel.repaint();
     }
 
     public MenuFind getMenuFind() {
@@ -704,34 +750,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             ComponentEditorGrammar editor = (ComponentEditorGrammar) selectedContainer.getEditor();
 
             // todo update the toolbar when switch editor
-            setComponent(toolbarPanel, toolbar.getToolbar());
-            setComponent(rulesPanel, editor.getComponentRules());
-
-            setComponent(sdPanel, editor.getComponentSD());
-            setComponent(interpreterPanel, editor.getComponentInterpreter());
-            setComponent(consolePanel, editor.getComponentConsole());
-            setComponent(debuggerPanel, debugger);
-
-            bottomPanel.removeAll();
-            bottomPanel.add(bottomTab, BorderLayout.CENTER);
-            bottomPanel.add(editor.getStatusComponent(), BorderLayout.SOUTH);
-            bottomPanel.revalidate();
-            bottomPanel.repaint();
-
-            editor.refreshMainMenuBar();
-
-            setTitle(selectedContainer.getDocument().getDocumentPath());
+            switchToEditor(editor);
         }
 
-        public void setComponent(JPanel panel, EditorTab tab) {
-            setComponent(panel, tab.getTabComponent());
-        }
-
-        public void setComponent(JPanel panel, Component c) {
-            panel.removeAll();
-            panel.add(c);
-            panel.revalidate();
-            panel.repaint();
-        }
     }
 }

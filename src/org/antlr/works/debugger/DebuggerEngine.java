@@ -11,6 +11,7 @@ import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 /*
@@ -209,6 +210,7 @@ public class DebuggerEngine {
                 args[4] = Utils.quotePath(outputFileDir);
                 System.arraycopy(files, 0, args, 5, files.length);
 
+                System.out.println("> "+ Arrays.asList(args));
                 IDE.debugVerbose(console, DebuggerEngine.class, "Compile: "+Utils.toString(args));
 
                 Process p = Runtime.getRuntime().exec(args);

@@ -112,6 +112,18 @@ public class ComponentContainerInternal implements ComponentContainer {
         mainContainer.addTab(tab);
     }
 
+    public void selectConsoleTab(ComponentEditor editor) {
+        mainContainer.selectConsoleTab(editor);
+    }
+
+    public void selectInterpreterTab(ComponentEditor editor) {
+        mainContainer.selectInterpreterTab(editor);
+    }
+
+    public void selectSyntaxDiagramTab(ComponentEditor editor) {
+        mainContainer.selectSyntaxDiagramTab(editor);
+    }
+
     public void documentLoaded(ComponentDocument document) {
         System.out.println("Document "+document.getDocumentName()+" loaded");
     }
