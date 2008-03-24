@@ -54,7 +54,8 @@ public class GrammarSyntax {
     private List<ElementImport> imports;
     private List<ATEToken> decls;
 
-    private List<GrammarSyntax> depends = new ArrayList<GrammarSyntax>();
+    private GrammarSyntax parent;
+    private List<GrammarSyntax> children = new ArrayList<GrammarSyntax>();
 
     private List<ElementRule> duplicateRules = new ArrayList<ElementRule>();
     private List<ElementReference> undefinedReferences = new ArrayList<ElementReference>();
@@ -325,6 +326,7 @@ public class GrammarSyntax {
 
         Set<String> tokenVocabNames = getTokenVocabNames();
         existingReferences.addAll(tokenVocabNames);
+        // todo does it really update the list of references that this class uses?
         engine.resolveReferencesWithExternalNames(tokenVocabNames);
 
         undefinedReferences.clear();
@@ -333,8 +335,9 @@ public class GrammarSyntax {
             return;
 
         for (ElementReference ref : references) {
-            if (!existingReferences.contains(ref.token.getAttribute()))
-                undefinedReferences.add(ref);
+            if (existingReferences.contains(ref.token.getAttribute())) continue;
+            if (!getGrammarsDeclaringRule(ref.token.getAttribute()).isEmpty()) continue;
+            undefinedReferences.add(ref);
         }
     }
 
@@ -354,11 +357,11 @@ public class GrammarSyntax {
         System.out.println("Recognized = "+g.getRecognizerName());
         for(Grammar gd : g.getDelegates()) {
             System.out.println("Implicit = "+gd.getImplicitlyGeneratedLexerFileName());
-            System.out.println("Recognized = "+gd.getRecognizerName());            
+            System.out.println("Recognized = "+gd.getRecognizerName());
         }
         System.out.println("************");
-        List<String> names = new ArrayList<String>();        
-        for(GrammarSyntax other : depends) {
+        List<String> names = new ArrayList<String>();
+        for(GrammarSyntax other : children) {
             //names.addAll(other.getAllGeneratedNames());
         }
         GrammarGeneratedFiles gen = GrammarGeneratedFiles.getInstance(this);
@@ -367,10 +370,12 @@ public class GrammarSyntax {
     }
 
     public void updateHierarchy(Map<String, GrammarSyntax> entities) {
-        depends.clear();
+        children.clear();
         for(ElementImport element : imports) {
             GrammarSyntax d = entities.get(element.getName()+".g");
-            depends.add(d);
+            d.setParent(this);
+            children.add(d);
+            d.updateHierarchy(entities);
         }
     }
 
@@ -383,4 +388,36 @@ public class GrammarSyntax {
         return engine.getDelegate();
     }
 
+    public GrammarSyntax getParent() {
+        return parent;
+    }
+
+    public void setParent(GrammarSyntax parent) {
+        this.parent = parent;
+    }
+
+    public boolean isRuleOverriding(String name) {
+        if(parent != null) {
+            for(ATEToken decl : parent.getDecls()) {
+                if(decl.getAttribute().equals(name)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public List<String> getGrammarsDeclaringRule(String name) {
+        List<String> grammars = new ArrayList<String>();
+        for(GrammarSyntax child : children) {
+            for(ATEToken decl : child.getDecls()) {
+                if(decl.getAttribute().equals(name)) {
+                    grammars.add(child.getName());
+                    break;
+                }
+            }
+            grammars.addAll(child.getGrammarsDeclaringRule(name));
+        }
+        return grammars;
+    }
 }

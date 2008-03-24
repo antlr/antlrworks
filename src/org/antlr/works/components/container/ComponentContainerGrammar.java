@@ -301,6 +301,11 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
                     editorsTab.addTab(c.getDocument().getDocumentName(), panel);
                 }
                 editorsTab.setSelectedComponent(panel);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        getSelectedEditor().getTextEditor().getTextPane().requestFocusInWindow();
+                    }
+                });
                 return;
             }
         }

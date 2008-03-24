@@ -49,6 +49,10 @@ public class ComponentContainerInternal implements ComponentContainer {
         this.mainContainer = mainContainer;
     }
 
+    public ComponentContainer getMainContainer() {
+        return mainContainer;
+    }
+
     public void setEditor(ComponentEditor editor) {
         this.editor = editor;
     }
@@ -122,6 +126,10 @@ public class ComponentContainerInternal implements ComponentContainer {
 
     public void selectSyntaxDiagramTab(ComponentEditor editor) {
         mainContainer.selectSyntaxDiagramTab(editor);
+    }
+
+    public void selectGrammar(String name) {
+        mainContainer.selectGrammar(name);
     }
 
     public void documentLoaded(ComponentDocument document) {

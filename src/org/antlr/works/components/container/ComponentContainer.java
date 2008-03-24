@@ -74,4 +74,6 @@ public interface ComponentContainer {
     void selectConsoleTab(ComponentEditor editor);
     void selectInterpreterTab(ComponentEditor editor);
     void selectSyntaxDiagramTab(ComponentEditor editor);
+
+    void selectGrammar(String name);
 }

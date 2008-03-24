@@ -36,9 +36,11 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.ElementReference;
+import org.antlr.works.grammar.syntax.GrammarSyntax;
 import org.antlr.works.stats.StatisticsAW;
 
 import javax.swing.*;
+import java.util.List;
 import java.util.Set;
 
 public class MenuGoTo extends MenuAbstract {
@@ -55,22 +57,33 @@ public class MenuGoTo extends MenuAbstract {
     public void goToDeclaration() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_DECLARATION);
 
-        ElementReference ref = getSelectedEditor().getCurrentReference();
+        final ElementReference ref = getSelectedEditor().getCurrentReference();
         if(ref != null) {
-            for(ATEToken decl : getSelectedEditor().getSyntaxEngine().getSyntax().getDecls()) {
-                if(decl.getAttribute().equals(ref.token.getAttribute())) {
-                    getSelectedEditor().goToHistoryRememberCurrentPosition();
-                    setCaretPosition(decl.start);
-                    break;
-                }
+            GrammarSyntax syntax = getSelectedEditor().getSyntaxEngine().getSyntax();
+            List<String> grammars = syntax.getGrammarsDeclaringRule(ref.token.getAttribute());
+            if(!grammars.isEmpty()) {
+                getSelectedEditor().getContainer().selectGrammar(grammars.get(0));
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        GrammarSyntax syntax = getSelectedEditor().getSyntaxEngine().getSyntax();
+                        getSelectedEditor().goToHistoryRememberCurrentPosition();
+                        for(ATEToken decl : syntax.getDecls()) {
+                            if(decl.getAttribute().equals(ref.token.getAttribute())) {
+                                setCaretPosition(decl.start);
+                                break;
+                            }
+                        }
+                    }
+                });
+
             }
             return;
         }
 
         ElementImport imp = getSelectedEditor().getImportAtPosition(getSelectedEditor().getCaretPosition());
         if(imp != null) {
-            ComponentContainerGrammar g = (ComponentContainerGrammar) getSelectedEditor().getContainer();
-            g.selectGrammar(imp.getName());
+            getSelectedEditor().getContainer().selectGrammar(imp.getName());
         }
     }
 
