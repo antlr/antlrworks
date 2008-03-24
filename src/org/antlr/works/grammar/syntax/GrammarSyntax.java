@@ -420,4 +420,13 @@ public class GrammarSyntax {
         }
         return grammars;
     }
+
+    public ATEToken getFirstDeclaration(String name) {
+        for(ATEToken decl : getDecls()) {
+            if(decl.getAttribute().equals(name)) {
+                return decl;
+            }
+        }
+        return null;
+    }
 }

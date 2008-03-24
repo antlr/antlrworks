@@ -42,6 +42,10 @@ public class ElementReference implements Comparable {
         this.token = token;
     }
 
+    public String getName() {
+        return token.getAttribute();
+    }
+    
     public int compareTo(Object o) {
         ElementReference otherRef = (ElementReference)o;
         return token.compareTo(otherRef.token);

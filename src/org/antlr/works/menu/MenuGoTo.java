@@ -56,27 +56,32 @@ public class MenuGoTo extends MenuAbstract {
 
     public void goToDeclaration() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_DECLARATION);
+        getSelectedEditor().goToHistoryRememberCurrentPosition();
 
         final ElementReference ref = getSelectedEditor().getCurrentReference();
         if(ref != null) {
             GrammarSyntax syntax = getSelectedEditor().getSyntaxEngine().getSyntax();
-            List<String> grammars = syntax.getGrammarsDeclaringRule(ref.token.getAttribute());
-            if(!grammars.isEmpty()) {
-                getSelectedEditor().getContainer().selectGrammar(grammars.get(0));
+            ATEToken decl = syntax.getFirstDeclaration(ref.getName());
+            if(decl == null) {
+                // this grammar does not contain the declaration. Search in the other children
+                List<String> grammars = syntax.getGrammarsDeclaringRule(ref.getName());
+                if(!grammars.isEmpty()) {
+                    getSelectedEditor().getContainer().selectGrammar(grammars.get(0));
 
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        GrammarSyntax syntax = getSelectedEditor().getSyntaxEngine().getSyntax();
-                        getSelectedEditor().goToHistoryRememberCurrentPosition();
-                        for(ATEToken decl : syntax.getDecls()) {
-                            if(decl.getAttribute().equals(ref.token.getAttribute())) {
+                    // set the caret position
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            GrammarSyntax syntax = getSelectedEditor().getSyntaxEngine().getSyntax();
+                            ATEToken decl = syntax.getFirstDeclaration(ref.getName());
+                            if(decl != null) {
                                 setCaretPosition(decl.start);
-                                break;
                             }
                         }
-                    }
-                });
+                    });
 
+                }
+            } else {
+                setCaretPosition(decl.start);
             }
             return;
         }
