@@ -1,5 +1,6 @@
 package org.antlr.works.debugger.tree;
 
+import org.antlr.runtime.CharStream;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener.ProxyTree;
 /*
@@ -88,6 +89,13 @@ public class DBTreeToken implements Token {
     public void setTokenIndex(int index) {
 		tree.tokenIndex = index;
 	}
+
+    public CharStream getInputStream() {
+        return null;
+    }
+
+    public void setInputStream(CharStream input) {
+    }
 
     public String toString() {
 		String tokenIndexS = tree.tokenIndex>=0?(",@"+tree.tokenIndex):"";

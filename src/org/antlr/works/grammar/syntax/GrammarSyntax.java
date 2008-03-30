@@ -6,7 +6,6 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
 import org.antlr.works.grammar.element.*;
-import org.antlr.works.grammar.generation.GrammarGeneratedFiles;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.IOException;
