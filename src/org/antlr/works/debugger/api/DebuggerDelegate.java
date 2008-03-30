@@ -70,4 +70,6 @@ public interface DebuggerDelegate {
     boolean ensureDocumentSaved();
 
     ContextualMenuFactory createContextualMenuFactory();
+
+    void selectConsoleTab();
 }

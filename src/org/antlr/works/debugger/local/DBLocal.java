@@ -59,6 +59,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -109,11 +110,13 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     public DBLocal(Debugger debugger) {
         this.debugger = debugger;
-        this.codeGenerator = debugger.getDelegate().getCodeGenerate();
     }
 
     public void close() {
-        codeGenerator.close();
+        // todo same when creating it
+        if(codeGenerator != null) {
+            codeGenerator.close();
+        }
         codeGenerator = null;
         debugger = null;
     }
@@ -259,8 +262,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 if(XJAlert.displayAlert(debugger.getContainer(), error.title, error.message, "Show Console", "OK", 1, 1) == 0) {
-                    // todo
-                    //debugger.selectConsoleTab();
+                    debugger.selectConsoleTab();
                 }
             }
         });
@@ -283,6 +285,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected boolean prepare() {
         try {
+            codeGenerator = debugger.getDelegate().getCodeGenerate();
             grammarGeneratedFiles = codeGenerator.getGeneratedFileNames();
 
             fileRemoteParser = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+".java");
@@ -469,6 +472,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     protected void compileFiles(String[] files) {
+        // todo debug only
+        System.out.println(">> "+ Arrays.asList(files));
         String error = DebuggerEngine.compileFiles(debugger.getConsole(), files, outputFileDir, this);
         if(error != null)
             reportError(error);

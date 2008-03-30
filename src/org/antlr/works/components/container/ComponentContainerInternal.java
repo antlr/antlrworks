@@ -139,4 +139,8 @@ public class ComponentContainerInternal implements ComponentContainer {
     public void editorParsed(ComponentEditor editor) {
         mainContainer.editorParsed(editor);
     }
+
+    public void editorContentChanged() {
+        mainContainer.editorContentChanged();
+    }
 }

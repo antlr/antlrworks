@@ -722,4 +722,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         getConsole().println("["+o.getClass().getName()+" - event "+getNumberOfEvents()+"] Warning: "+message, Console.LEVEL_WARNING);
     }
 
+    public void selectConsoleTab() {
+        delegate.selectConsoleTab();
+    }
 }

@@ -352,20 +352,16 @@ public class GrammarSyntax {
     }
 
     public List<String> getAllGeneratedNames() throws Exception {
-        Grammar g = engine.getAntlrGrammar().getANTLRGrammar();
-        System.out.println("Implicit = "+g.getImplicitlyGeneratedLexerFileName());
-        System.out.println("Recognized = "+g.getRecognizerName());
-        for(Grammar gd : g.getDelegates()) {
-            System.out.println("Implicit = "+gd.getImplicitlyGeneratedLexerFileName());
-            System.out.println("Recognized = "+gd.getRecognizerName());
-        }
-        System.out.println("************");
         List<String> names = new ArrayList<String>();
-        for(GrammarSyntax other : children) {
-            //names.addAll(other.getAllGeneratedNames());
+        Grammar g = engine.getAntlrGrammar().getANTLRGrammar();
+        names.add(g.getRecognizerName());
+        Grammar lexer = getAntlrGrammar().getLexerGrammar();
+        if(lexer != null) {
+            names.add(lexer.getRecognizerName());
         }
-        GrammarGeneratedFiles gen = GrammarGeneratedFiles.getInstance(this);
-        names.addAll(gen.getGeneratedNames());
+        for(Grammar gd : g.getDelegates()) {
+            names.add(gd.getRecognizerName());
+        }
         return names;
     }
 
@@ -373,9 +369,11 @@ public class GrammarSyntax {
         children.clear();
         for(ElementImport element : imports) {
             GrammarSyntax d = entities.get(element.getName()+".g");
-            d.setParent(this);
-            children.add(d);
-            d.updateHierarchy(entities);
+            if(d != null) {
+                d.setParent(this);
+                children.add(d);
+                d.updateHierarchy(entities);                
+            }
         }
     }
 

@@ -517,12 +517,12 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     public void ateEngineWillParse() {
         if(delegate != null)
-            delegate.ateParserWillParse();
+            delegate.ateEngineWillParse();
     }
 
     public void ateEngineDidParse() {
         if(delegate != null)
-            delegate.ateParserDidParse();
+            delegate.ateEngineDidParse();
     }
 
     public void ateAutoIndent(int offset, int length) {

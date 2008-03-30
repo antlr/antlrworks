@@ -312,6 +312,33 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     }
 
+    @Override
+    public void dirtyChanged() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                updateEditorDirtyFlag();
+            }
+        });
+    }
+
+    public void editorContentChanged() {
+        updateEditorDirtyFlag();
+    }
+
+    private void updateEditorDirtyFlag() {
+        for (ComponentContainer c : containers) {
+            Component panel = c.getEditor().getPanel();
+            int index = editorsTab.indexOfComponent(panel);
+            if (index == -1) continue;
+
+            if (c.getDocument().isDirty()) {
+                editorsTab.setTitleAt(index, "* " + c.getDocument().getDocumentName());
+            } else {
+                editorsTab.setTitleAt(index, c.getDocument().getDocumentName());
+            }
+        }
+    }
+
     public ComponentEditorGrammar getSelectedEditor() {
         return (ComponentEditorGrammar) getSelectedContainer().getEditor();
     }
@@ -691,6 +718,10 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
         public ContextualMenuFactory createContextualMenuFactory() {
             return ComponentContainerGrammar.this.createContextualMenuFactory();
+        }
+
+        public void selectConsoleTab() {
+            getSelectedEditor().selectConsoleTab();
         }
 
         private int computeAbsoluteGrammarIndex(int lineIndex, int column) {

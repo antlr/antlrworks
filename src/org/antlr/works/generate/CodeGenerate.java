@@ -172,40 +172,12 @@ public class CodeGenerate implements Runnable {
     }
 
     public List<String> getGeneratedFileNames() throws Exception {
-        System.out.println("****************");
         List<String> files = new ArrayList<String>();
         for(String name : editor.getSyntaxEngine().getSyntax().getAllGeneratedNames()) {
             files.add(XJUtils.concatPath(getOutputPath(), name+".java"));
         }
         System.out.println(files);
         return files;
-/*        List<String> names = new ArrayList<String>();
-
-        String name = getGeneratedFileName(ElementGrammarName.LEXER);
-        if(name != null) {
-            names.add(name);
-        } else if(editor.getSyntaxEngine().isParserGrammar()) {
-            // try to use the tokenVocab name for the name of the lexer
-            // if the grammar is a parser grammar
-            // todo use user's provided name if tokenVocab is null or invalid
-            String className = editor.getSyntaxEngine().getTokenVocab();
-            if(className != null) {
-                name = XJUtils.concatPath(getOutputPath(), className+".java");
-                names.add(name);
-            }
-        }
-
-        name = getGeneratedFileName(ElementGrammarName.PARSER);
-        if(name != null) {
-            names.add(name);
-        }
-
-        name = getGeneratedFileName(ElementGrammarName.TREEPARSER);
-        if(name != null) {
-            names.add(name);
-        }
-
-        return names;*/
     }
 
     public String getGeneratedFileName(int type) throws Exception {

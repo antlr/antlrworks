@@ -921,11 +921,11 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     /** Parser delegate methods
      */
-    public void ateParserWillParse() {
+    public void ateEngineWillParse() {
         persistence.store();
     }
 
-    public void ateParserDidParse() {
+    public void ateEngineDidParse() {
         updateInformation();
         updateCursorInfo();
 
@@ -980,6 +980,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     private void grammarChanged() {
         syntaxEngine.markDirty();
+        container.editorContentChanged();
     }
 
     public void consolePrint(String s, int level) {
