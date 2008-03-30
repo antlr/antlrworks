@@ -1,11 +1,12 @@
-package org.antlr.works.grammar.syntax;
+package org.antlr.works.ate.gutter;
 
-import org.antlr.Tool;
-import org.antlr.works.utils.Console;
+import org.antlr.works.ate.ATEPanel;
+
+import java.util.List;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2007 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -33,23 +34,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface GrammarSyntaxEngineDelegate {
+public abstract class ATEGutterItemManager {
 
-    String getFileName();
-    String getText();
+    protected ATEPanel textEditor;
 
-    Tool getANTLRTool();
+    public ATEGutterItemManager(ATEPanel textEditor) {
+        this.textEditor = textEditor;
+    }
 
-    Console getConsole();
+    public void close() {
+        textEditor = null;
+    }
 
-    void rulesChanged();
-
-    void antlrEngineGrammarDidAnalyze();
-
-    String getTokenVocabFile(String tokenVocabName);
-
-    GrammarSyntaxEngine getSyntaxEngine();
-    GrammarSyntaxParser getParser();
-
-    void gotoToRule(String grammar, String name);
+    public abstract List<ATEGutterItem> getGutterItems();
 }

@@ -1,4 +1,12 @@
-package org.antlr.works.ate.breakpoint;
+package org.antlr.works.ate.gutter;
+
+import org.antlr.works.utils.OverlayObject;
+import org.antlr.works.utils.ToolTipList;
+import org.antlr.works.utils.ToolTipListDelegate;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+
+import javax.swing.*;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -30,12 +38,46 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface ATEBreakpointEntity {
-    public int breakpointEntityUniqueID();
+/** This class handles the overlay used by the ATEGutter class to display
+ * information about the current icon located under the mouse location.
+ */
 
-    public int breakpointEntityIndex();
-    public int breakpointEntityLine();
+public class ATEGutterItemOverlay extends OverlayObject implements ToolTipListDelegate {
 
-    public void breakpointEntitySetBreakpoint(boolean flag);
-    public boolean breakpointEntityIsBreakpoint();
+    public ToolTipList toolTip;
+    public Point location;
+
+    public ATEGutterItemOverlay(XJFrameInterface parentFrame, JComponent parentComponent) {
+        super(parentFrame, parentComponent);
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
+        resize();
+    }
+
+    public void setText(String text) {
+        toolTip.setText(text);
+    }
+
+    public void resize() {
+        toolTip.resize();
+        if(location != null) {
+            content.setBounds(location.x,  location.y, toolTip.getWidth(), toolTip.getHeight());
+        }
+    }
+
+    public JComponent overlayCreateInterface() {
+        toolTip = new ToolTipList(this);
+        return toolTip;
+    }
+
+    public boolean overlayWillDisplay() {
+        return true;
+    }
+
+    public void toolTipListHide() {
+        hide();
+    }
+
 }

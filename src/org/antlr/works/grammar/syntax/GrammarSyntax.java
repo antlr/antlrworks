@@ -53,8 +53,8 @@ public class GrammarSyntax {
     private List<ElementImport> imports;
     private List<ATEToken> decls;
 
-    private GrammarSyntax parent;
-    private List<GrammarSyntax> children = new ArrayList<GrammarSyntax>();
+    private GrammarSyntax parentSyntax;
+    private List<GrammarSyntax> importedSyntax = new ArrayList<GrammarSyntax>();
 
     private List<ElementRule> duplicateRules = new ArrayList<ElementRule>();
     private List<ElementReference> undefinedReferences = new ArrayList<ElementReference>();
@@ -76,6 +76,10 @@ public class GrammarSyntax {
         this.imports = new ArrayList<ElementImport>(parser.imports);
         this.decls = new ArrayList<ATEToken>(parser.decls);
         this.name = parser.name;
+
+        for(ElementRule r : rules) {
+            r.setSyntax(this);
+        }
     }
 
     public List<ElementRule> getRules() {
@@ -335,7 +339,7 @@ public class GrammarSyntax {
 
         for (ElementReference ref : references) {
             if (existingReferences.contains(ref.token.getAttribute())) continue;
-            if (!getGrammarsDeclaringRule(ref.token.getAttribute()).isEmpty()) continue;
+            if (!getGrammarsOverriddenByRule(ref.token.getAttribute()).isEmpty()) continue;
             undefinedReferences.add(ref);
         }
     }
@@ -365,13 +369,13 @@ public class GrammarSyntax {
     }
 
     public void updateHierarchy(Map<String, GrammarSyntax> entities) {
-        children.clear();
+        importedSyntax.clear();
         for(ElementImport element : imports) {
             GrammarSyntax d = entities.get(element.getName()+".g");
             if(d != null) {
                 d.setParent(this);
-                children.add(d);
-                d.updateHierarchy(entities);                
+                importedSyntax.add(d);
+                d.updateHierarchy(entities);
             }
         }
     }
@@ -386,34 +390,45 @@ public class GrammarSyntax {
     }
 
     public GrammarSyntax getParent() {
-        return parent;
+        return parentSyntax;
     }
 
     public void setParent(GrammarSyntax parent) {
-        this.parent = parent;
+        this.parentSyntax = parent;
     }
 
-    public boolean isRuleOverriding(String name) {
-        if(parent != null) {
-            for(ATEToken decl : parent.getDecls()) {
-                if(decl.getAttribute().equals(name)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public List<String> getGrammarsDeclaringRule(String name) {
+    /**
+     * Returns the list of grammars that overrides the rule specified
+     * in parameter. Overrides has the same meaning than in Java: the rule
+     * of a parent grammar is declared again in one or more child grammar.
+     */
+    public List<String> getGrammarsOverriddenByRule(String name) {
         List<String> grammars = new ArrayList<String>();
-        for(GrammarSyntax child : children) {
+        for(GrammarSyntax child : importedSyntax) {
             for(ATEToken decl : child.getDecls()) {
                 if(decl.getAttribute().equals(name)) {
                     grammars.add(child.getName());
                     break;
                 }
             }
-            grammars.addAll(child.getGrammarsDeclaringRule(name));
+            grammars.addAll(child.getGrammarsOverriddenByRule(name));
+        }
+        return grammars;
+    }
+
+    /**
+     * Returns the list of grammars that this rule overrides.
+     */
+    public List<String> getGrammarsOverridingRule(String name) {
+        List<String> grammars = new ArrayList<String>();
+        if(parentSyntax != null) {
+            for(ATEToken decl : parentSyntax.getDecls()) {
+                if(decl.getAttribute().equals(name)) {
+                    grammars.add(parentSyntax.getName());
+                    break;
+                }
+            }
+            grammars.addAll(parentSyntax.getGrammarsOverridingRule(name));
         }
         return grammars;
     }

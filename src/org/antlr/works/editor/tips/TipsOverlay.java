@@ -7,7 +7,6 @@ import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Iterator;
 import java.util.List;
 /*
 
@@ -51,8 +50,8 @@ public class TipsOverlay extends OverlayObject implements ToolTipListDelegate {
 
     public void setTips(List<String> tips) {
         toolTip.clear();
-        for(Iterator<String> iter = tips.iterator(); iter.hasNext();) {
-            toolTip.addLine(iter.next());
+        for (String tip : tips) {
+            toolTip.addLine(tip);
         }
         toolTip.selectFirstLine();
     }

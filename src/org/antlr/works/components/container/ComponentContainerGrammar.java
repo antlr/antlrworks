@@ -292,7 +292,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         selectGrammar(XJUtils.getPathByDeletingPathExtension(container.getDocument().getDocumentName()));
     }
 
-    public void selectGrammar(String name) {
+    public ComponentEditorGrammar selectGrammar(String name) {
         for(ComponentContainer c : containers) {
             if(XJUtils.getPathByDeletingPathExtension(c.getDocument().getDocumentName()).equals(name)) {
                 c.getDocument().getDocumentName();
@@ -306,10 +306,10 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
                         getSelectedEditor().getTextEditor().getTextPane().requestFocus();
                     }
                 });
-                break;
+                return getSelectedEditor();
             }
         }
-
+        return null;
     }
 
     @Override
@@ -713,7 +713,9 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         }
 
         public Set<Integer> getBreakpoints() {
-            return getSelectedEditor().breakpointManager.getBreakpoints();
+            // todo
+            return null;
+            //return getSelectedEditor().breakpointManager.getBreakpoints();
         }
 
         public ContextualMenuFactory createContextualMenuFactory() {

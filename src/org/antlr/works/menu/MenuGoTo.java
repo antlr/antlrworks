@@ -64,7 +64,7 @@ public class MenuGoTo extends MenuAbstract {
             ATEToken decl = syntax.getFirstDeclaration(ref.getName());
             if(decl == null) {
                 // this grammar does not contain the declaration. Search in the other children
-                List<String> grammars = syntax.getGrammarsDeclaringRule(ref.getName());
+                List<String> grammars = syntax.getGrammarsOverriddenByRule(ref.getName());
                 if(!grammars.isEmpty()) {
                     getSelectedEditor().getContainer().selectGrammar(grammars.get(0));
 
@@ -98,7 +98,8 @@ public class MenuGoTo extends MenuAbstract {
         else
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_NEXT_BRKPT);
 
-        Set<Integer> breakpoints = getSelectedEditor().breakpointManager.getBreakpoints();
+        // todo 
+        Set<Integer> breakpoints = null; //getSelectedEditor().breakpointManager.getBreakpoints();
         int line = getSelectedEditor().getTextEditor().getLineIndexAtTextPosition(getCaretPosition());
         if(line == -1) return;
 

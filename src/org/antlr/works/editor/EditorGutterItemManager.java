@@ -1,9 +1,12 @@
-package org.antlr.works.ate.breakpoint;
+package org.antlr.works.editor;
 
-import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.ate.gutter.ATEGutterItem;
+import org.antlr.works.ate.gutter.ATEGutterItemManager;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.grammar.element.ElementRule;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 /*
 
 [The "BSD licence"]
@@ -35,21 +38,29 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class ATEBreakpointManager {
+public class EditorGutterItemManager extends ATEGutterItemManager {
 
-    protected ATEPanel textEditor;
+    protected ComponentEditorGrammar editor;
 
-    public ATEBreakpointManager(ATEPanel textEditor) {
-        this.textEditor = textEditor;
+    public EditorGutterItemManager(ComponentEditorGrammar editor) {
+        super(editor.textEditor);
+        this.editor = editor;
     }
 
-    public Set<Integer> getBreakpoints() {
-        return textEditor.getGutter().getBreakpoints();
+    public List<ATEGutterItem> getGutterItems() {
+        List<ATEGutterItem> entities = new ArrayList<ATEGutterItem>();
+        List<ElementRule> rules = editor.getSyntaxEngine().getSyntax().getRules();
+        if(rules != null) {
+            for(ElementRule r : rules) {
+                entities.add(r);
+            }
+        }
+        return entities;
     }
 
+    @Override
     public void close() {
-        textEditor = null;
+        super.close();
+        editor = null;
     }
-
-    public abstract List<? extends ATEBreakpointEntity> getBreakpointEntities();
 }

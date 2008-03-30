@@ -31,8 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.ate;
 
-import org.antlr.works.ate.breakpoint.ATEBreakpointEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
+import org.antlr.works.ate.gutter.ATEGutterItem;
+import org.antlr.works.ate.gutter.ATEGutterItemOverlay;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.utils.IconManager;
 
@@ -43,14 +44,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ATEGutter extends JComponent {
 
-    private static final int BREAKPOINT_WIDTH = 9;
-    private static final int BREAKPOINT_HEIGHT = 9;
     private static final int FOLDING_ICON_WIDTH = 9;
     private static final int FOLDING_ICON_HEIGHT = 9;
 
@@ -58,19 +55,22 @@ public class ATEGutter extends JComponent {
 
     private static final Color BACKGROUND_COLOR = new Color(240,240,240);
     private static final Stroke FOLDING_DASHED_STROKE = new BasicStroke(0.0f, BasicStroke.CAP_BUTT,
-                                                    BasicStroke.JOIN_MITER, 1.0f, new float[] { 1.0f}, 0.0f);
+            BasicStroke.JOIN_MITER, 1.0f, new float[] { 1.0f}, 0.0f);
     private static final Font LINE_NUMBER_FONT = new Font("Courier", Font.PLAIN, 12);
 
     private ATEPanel textEditor;
 
-    private List<BreakpointInfo> breakpoints = new ArrayList<BreakpointInfo>();
+    private List<ItemInfo> items = new ArrayList<ItemInfo>();
 
     private List<FoldingInfo> foldingInfos = new ArrayList<FoldingInfo>();
     private boolean foldingEnabled = false;
 
     private FontMetrics lineNumberMetrics;
     private int offsetForLineNumber;
+    private int gutterItemWidth;
     private boolean lineNumberEnabled;
+
+    private ATEGutterItemOverlay overlay;
 
     private transient Image collapseDown;
     private transient Image collapseUp;
@@ -82,6 +82,8 @@ public class ATEGutter extends JComponent {
 
     public ATEGutter(ATEPanel textEditor) {
         this.textEditor = textEditor;
+
+        this.overlay = new ATEGutterItemOverlay(textEditor.getParentFrame(), this);
 
         collapseDown = IconManager.shared().getIconCollapseDown().getImage();
         collapseUp = IconManager.shared().getIconCollapseUp().getImage();
@@ -108,21 +110,15 @@ public class ATEGutter extends JComponent {
         repaint();
     }
 
-    public Set<Integer> getBreakpoints() {
-        // Returns a set containing all lines which contains a breakpoint
-        Set<Integer> set = new HashSet<Integer>();
-        for (BreakpointInfo info : breakpoints) {
-            if (info.entity.breakpointEntityIsBreakpoint())
-                set.add(info.entity.breakpointEntityLine());
-        }
-        return set;
-    }
-
-    protected void toggleBreakpoint(BreakpointInfo info) {
+    protected void itemAction(ItemInfo info, Point location) {
         if(info == null)
             return;
 
-        info.entity.breakpointEntitySetBreakpoint(!info.entity.breakpointEntityIsBreakpoint());
+        int type = getItemTypeAtLocation(info, location);
+        if(type == -1)
+            return;
+
+        info.item.itemAction(type);
         repaint();
     }
 
@@ -152,15 +148,17 @@ public class ATEGutter extends JComponent {
         int startIndex = textEditor.textPane.viewToModel(new Point(clip.x, clip.y));
         int endIndex = textEditor.textPane.viewToModel(new Point(clip.x+clip.width, clip.y+clip.height));
 
-        breakpoints.clear();
-        if(textEditor.breakpointManager != null) {
-            List<? extends ATEBreakpointEntity> entities = textEditor.breakpointManager.getBreakpointEntities();
-            for (ATEBreakpointEntity entity : entities) {
-                int index = entity.breakpointEntityIndex();
+        items.clear();
+        if(textEditor.gutterItemManager != null) {
+            List<ATEGutterItem> items = textEditor.gutterItemManager.getGutterItems();
+            for (ATEGutterItem item : items) {
+                int index = item.getItemIndex();
                 if (index >= startIndex && index <= endIndex) {
-                    int y = getLineYPixelPosition(entity.breakpointEntityIndex());
-                    Rectangle r = new Rectangle(offsetForLineNumber, y - BREAKPOINT_HEIGHT / 2, BREAKPOINT_WIDTH, BREAKPOINT_HEIGHT);
-                    breakpoints.add(new BreakpointInfo(entity, r));
+                    int y = getLineYPixelPosition(item.getItemIndex());
+                    int width = item.getItemWidth();
+                    int height = item.getItemHeight();
+                    Rectangle r = new Rectangle(offsetForLineNumber, y - height / 2, width, height);
+                    this.items.add(new ItemInfo(item, r));
                 }
             }
         }
@@ -196,10 +194,18 @@ public class ATEGutter extends JComponent {
                 offsetForLineNumber = lineNumberMetrics.stringWidth(String.valueOf(lines.size()));
             }
         }
+
+        gutterItemWidth = 0;
+        if(textEditor.gutterItemManager != null) {
+            List<ATEGutterItem> items = textEditor.gutterItemManager.getGutterItems();
+            for (ATEGutterItem item : items) {
+                gutterItemWidth = Math.max(gutterItemWidth, item.getItemWidth());
+            }
+        }
     }
 
-    public BreakpointInfo getBreakpointInfoAtPoint(Point p) {
-        for (BreakpointInfo info : breakpoints) {
+    public ItemInfo getItemInfoAtPoint(Point p) {
+        for (ItemInfo info : items) {
             if (info.contains(p))
                 return info;
         }
@@ -218,15 +224,16 @@ public class ATEGutter extends JComponent {
         return OFFSET_FROM_TEXT+FOLDING_ICON_WIDTH/2;
     }
 
+    @Override
     public void paintComponent(Graphics g) {
-        Rectangle r = g.getClipBounds();
+        Rectangle r = getVisibleRect();
 
         updateInfo(r);
         updateSize();
 
         paintGutter(g, r);
         paintFolding((Graphics2D)g, r);
-        paintBreakpoints((Graphics2D)g, r);
+        paintItems((Graphics2D)g, r);
 
         if(lineNumberEnabled) {
             paintLineNumbers((Graphics2D)g, r);
@@ -244,15 +251,19 @@ public class ATEGutter extends JComponent {
         g.drawLine(clip.x+clip.width-getOffsetFromText(), clip.y, clip.x+clip.width-getOffsetFromText(), clip.y+clip.height);
     }
 
-    private void paintBreakpoints(Graphics2D g, Rectangle clip) {
+    private void paintItems(Graphics2D g, Rectangle clip) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
 
         g.setColor(Color.red);
-        for (BreakpointInfo info : breakpoints) {
-            if (info.entity.breakpointEntityIsBreakpoint()) {
-                Rectangle r = info.r;
-                if (clip.intersects(r)) {
-                    g.fillArc(r.x, r.y, r.width, r.height, 0, 360);
+        for (ItemInfo info : items) {
+            Rectangle r = info.r;
+            if (clip.intersects(r)) {
+                ATEGutterItem item = info.item;
+                int x = r.x;
+                for(int t : item.getItemTypes()) {
+                    ImageIcon i = item.getItemIcon(t);
+                    g.drawImage(i.getImage(), x, r.y, null);
+                    x += i.getIconWidth();
                 }
             }
         }
@@ -322,7 +333,7 @@ public class ATEGutter extends JComponent {
 
     public Dimension getPreferredSize() {
         Dimension d = textEditor.textPane.getSize();
-        d.width = 25+offsetForLineNumber;
+        d.width = gutterItemWidth+offsetForLineNumber+FOLDING_ICON_WIDTH+2;
         return d;
     }
 
@@ -330,12 +341,12 @@ public class ATEGutter extends JComponent {
         g.drawImage(image, p.x-image.getWidth(null)/2, p.y-image.getHeight(null)/2, null);
     }
 
-    protected static class BreakpointInfo {
-        public ATEBreakpointEntity entity;
+    protected static class ItemInfo {
+        public ATEGutterItem item;
         public Rectangle r;
 
-        public BreakpointInfo(ATEBreakpointEntity entity, Rectangle r) {
-            this.entity = entity;
+        public ItemInfo(ATEGutterItem item, Rectangle r) {
+            this.item = item;
             this.r = r;
         }
 
@@ -369,19 +380,51 @@ public class ATEGutter extends JComponent {
         }
     }
 
+    private int getItemTypeAtLocation(ItemInfo ii, Point location) {
+        ATEGutterItem item = ii.item;
+        int width = item.getItemWidth();
+        for (int i = item.getItemTypes().size()-1; i >= 0; i--) {
+            int t = item.getItemTypes().get(i);
+            width -= item.getItemIcon(t).getIconWidth();
+            if (location.x > ii.r.x + width) {
+                return t;
+            }
+        }
+        return -1;
+    }
+
     protected class MyMouseAdapter extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
-            toggleBreakpoint(getBreakpointInfoAtPoint(e.getPoint()));
+            itemAction(getItemInfoAtPoint(e.getPoint()), e.getPoint());
             toggleFolding(getFoldingInfoAtPoint(e.getPoint()));
+            overlay.hide();
         }
 
         public void mouseExited(MouseEvent e) {
             setCursor(Cursor.getDefaultCursor());
+            overlay.hide();
         }
     }
 
     protected class MyMouseMotionAdapter extends MouseMotionAdapter {
         public void mouseMoved(MouseEvent e) {
+            String tooltip = null;
+            ItemInfo ii = getItemInfoAtPoint(e.getPoint());
+            if(ii != null) {
+                int type = getItemTypeAtLocation(ii, e.getPoint());
+                if(type != -1) {
+                    tooltip = ii.item.getItemTooltip(type);
+                    Point p = SwingUtilities.convertPoint(ATEGutter.this, new Point(0, ii.r.y), textEditor.getParentFrame().getJavaContainer());
+                    overlay.setLocation(p);
+                }
+            }
+            if(tooltip != null && tooltip.length() > 0) {
+                overlay.setText(tooltip);
+                overlay.display();
+            } else {
+                overlay.hide();
+            }
+
             if(!foldingEnabled)
                 return;
 

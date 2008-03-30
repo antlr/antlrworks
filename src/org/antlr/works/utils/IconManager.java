@@ -209,4 +209,16 @@ public class IconManager {
         return createImageIcon(path+"lexer.png");
     }
 
+    public ImageIcon getIconBreakpoint() {
+        return createImageIcon(path+"breakpoint.png");
+    }
+
+    public ImageIcon getIconOverride() {
+        return createImageIcon(path+"override.png");
+    }
+
+    public ImageIcon getIconOverridden() {
+        return createImageIcon(path+"overridden.png");
+    }
+
 }

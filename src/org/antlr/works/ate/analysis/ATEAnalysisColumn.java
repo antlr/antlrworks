@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.Iterator;
 import java.util.List;
 /*
 
@@ -109,8 +108,7 @@ public class ATEAnalysisColumn extends JPanel {
     }
 
     protected void paintStrips(Graphics2D g, List<ATEAnalysisItem> items) {
-        for(Iterator<ATEAnalysisItem> iter = items.iterator(); iter.hasNext(); ) {
-            ATEAnalysisItem item = iter.next();
+        for (ATEAnalysisItem item : items) {
             g.setColor(item.color);
             g.fill(composeIndicatorRectangle(item.line, 0));
         }
@@ -140,9 +138,8 @@ public class ATEAnalysisColumn extends JPanel {
             int[] types = getAnalysisManager().getAvailableTypes();
             for(int type=0; type<types.length; type++) {
                 List<ATEAnalysisItem> items = getAnalysisManager().getItemsForType(type);
-                for(int item=0; item<items.size(); item++) {
-                    ATEAnalysisItem ai = items.get(item);
-                    if(composeIndicatorRectangle(ai.line, 2).contains(p)) {
+                for (ATEAnalysisItem ai : items) {
+                    if (composeIndicatorRectangle(ai.line, 2).contains(p)) {
                         return ai.index;
                     }
                 }
@@ -203,9 +200,8 @@ public class ATEAnalysisColumn extends JPanel {
                 int[] types = manager.getAvailableTypes();
                 for(int type=0; type<types.length; type++) {
                     List<ATEAnalysisItem> items = manager.getItemsForType(type);
-                    for(int item=0; item<items.size(); item++) {
-                        ATEAnalysisItem ai = items.get(item);
-                        if(composeIndicatorRectangle(ai.line, 2).contains(point)) {
+                    for (ATEAnalysisItem ai : items) {
+                        if (composeIndicatorRectangle(ai.line, 2).contains(point)) {
                             sb.append(ai.description);
                             sb.append("\n");
                         }

@@ -2,8 +2,8 @@ package org.antlr.works.ate;
 
 import org.antlr.works.ate.analysis.ATEAnalysisColumn;
 import org.antlr.works.ate.analysis.ATEAnalysisManager;
-import org.antlr.works.ate.breakpoint.ATEBreakpointManager;
 import org.antlr.works.ate.folding.ATEFoldingManager;
+import org.antlr.works.ate.gutter.ATEGutterItemManager;
 import org.antlr.works.ate.swing.ATEAutoIndentation;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
@@ -69,7 +69,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected ATEGutter gutter;
     protected ATEAnalysisColumn analysisColumn;
 
-    protected ATEBreakpointManager breakpointManager;
+    protected ATEGutterItemManager gutterItemManager;
     protected ATEFoldingManager foldingManager;
     protected ATEUnderlyingManager underlyingManager;
     protected ATEAnalysisManager analysisManager;
@@ -122,8 +122,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         this.delegate = delegate;
     }
 
-    public void setBreakpointManager(ATEBreakpointManager manager) {
-        this.breakpointManager = manager;
+    public void setBreakpointManager(ATEGutterItemManager manager) {
+        this.gutterItemManager = manager;
     }
 
     public void setFoldingManager(ATEFoldingManager manager) {

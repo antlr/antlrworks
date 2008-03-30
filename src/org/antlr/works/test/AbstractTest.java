@@ -62,6 +62,10 @@ public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate, G
         return (GrammarSyntaxParser) engine.getParser();
     }
 
+    public void gotoToRule(String grammar, String name) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public String getResourceFile(String fileName) {
         return getClass().getResource(fileName).getFile();
     }

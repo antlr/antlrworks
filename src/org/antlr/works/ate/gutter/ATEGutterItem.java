@@ -1,11 +1,6 @@
-package org.antlr.works.editor;
+package org.antlr.works.ate.gutter;
 
-import org.antlr.works.ate.breakpoint.ATEBreakpointEntity;
-import org.antlr.works.ate.breakpoint.ATEBreakpointManager;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.element.ElementRule;
-
-import java.util.ArrayList;
+import javax.swing.*;
 import java.util.List;
 /*
 
@@ -38,26 +33,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorBreakpointManager extends ATEBreakpointManager {
+public interface ATEGutterItem {
 
-    protected ComponentEditorGrammar editor;
+    public int getItemUniqueID();
 
-    public EditorBreakpointManager(ComponentEditorGrammar editor) {
-        super(editor.textEditor);
-        this.editor = editor;
-    }
+    public int getItemIndex();
+    public int getItemLine();
 
-    public List<? extends ATEBreakpointEntity> getBreakpointEntities() {
-        List<ElementRule> entities = new ArrayList<ElementRule>();
-        List<ElementRule> rules = editor.getSyntaxEngine().getSyntax().getRules();
-        if(rules != null)
-            entities.addAll(rules);
-        return entities;
-    }
+    public List<Integer> getItemTypes();
+    public int getItemWidth();
+    public int getItemHeight();
+    public ImageIcon getItemIcon(int type);
+    public String getItemTooltip(int type);
 
-    @Override
-    public void close() {
-        super.close();
-        editor = null;
-    }
+    public void itemAction(int type);
 }

@@ -108,7 +108,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     /* Managers */
 
-    public EditorBreakpointManager breakpointManager;
+    public EditorGutterItemManager breakpointManager;
     public EditorFoldingManager foldingManager;
     public EditorUnderlyingManager underlyingManager;
     public EditorAnalysisManager analysisManager;
@@ -255,7 +255,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     protected void initManagers() {
-        breakpointManager = new EditorBreakpointManager(this);
+        breakpointManager = new EditorGutterItemManager(this);
         textEditor.setBreakpointManager(breakpointManager);
 
         foldingManager = new EditorFoldingManager(this);
@@ -469,6 +469,29 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public GrammarSyntaxParser getParser() {
         return (GrammarSyntaxParser) syntaxEngine.getParser();
+    }
+
+    public void gotoToRule(String grammar, final String name) {
+        if(!grammar.equals(getSyntaxEngine().getSyntax().getName())) {
+            // rule is in another editor
+            final ComponentEditorGrammar editor = getContainer().selectGrammar(grammar);
+            // set the caret position
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    editor.gotoToRule(name);
+                }
+            });
+        } else {
+            // rule is in current editor
+            gotoToRule(name);
+        }
+    }
+
+    public void gotoToRule(String name) {
+        ATEToken decl = getSyntaxEngine().getSyntax().getFirstDeclaration(name);
+        if(decl != null) {
+            setCaretPosition(decl.start);
+        }
     }
 
     public void toggleAutoIndent() {

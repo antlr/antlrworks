@@ -2,6 +2,7 @@ package org.antlr.works.components.container;
 
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.editor.ComponentEditor;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
@@ -128,8 +129,8 @@ public class ComponentContainerInternal implements ComponentContainer {
         mainContainer.selectSyntaxDiagramTab(editor);
     }
 
-    public void selectGrammar(String name) {
-        mainContainer.selectGrammar(name);
+    public ComponentEditorGrammar selectGrammar(String name) {
+        return mainContainer.selectGrammar(name);
     }
 
     public void documentLoaded(ComponentDocument document) {

@@ -2,7 +2,6 @@ package org.antlr.works.editor.tips;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 /*
 
@@ -96,10 +95,9 @@ public class TipsManager {
 
     public List<String> generateTips(int position) {
         List<String> tips = new ArrayList<String>();
-        for(Iterator<TipsProvider> iter = providers.iterator(); iter.hasNext(); ) {
-            TipsProvider provider = iter.next();
+        for (TipsProvider provider : providers) {
             List<String> ptips = provider.tipsProviderGetTips(position);
-            if(ptips != null && !ptips.isEmpty()) {
+            if (ptips != null && !ptips.isEmpty()) {
                 tips.addAll(ptips);
             }
         }

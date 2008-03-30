@@ -1,12 +1,15 @@
 package org.antlr.works.grammar.element;
 
-import org.antlr.works.ate.breakpoint.ATEBreakpointEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
+import org.antlr.works.ate.gutter.ATEGutterItem;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.EditorPersistentObject;
 import org.antlr.works.grammar.antlr.AntlrGrammarError;
+import org.antlr.works.grammar.syntax.GrammarSyntax;
 import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
+import org.antlr.works.utils.IconManager;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ElementRule extends ElementScopable implements Comparable, EditorPersistentObject, ATEFoldingEntity, ATEBreakpointEntity {
+public class ElementRule extends ElementScopable implements Comparable, EditorPersistentObject, ATEFoldingEntity, ATEGutterItem {
 
     public String name;
     public ATEToken start;
@@ -62,6 +65,8 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     // Set of rules that are mutually left recursive (cannot be fixed by ANTLRWorks)
     public Set leftRecursiveRulesSet;
 
+    public boolean hierarchyAnalyzed = false;
+
     public List<AntlrGrammarError> errors;
     public boolean needsToBuildErrors = true;
 
@@ -75,6 +80,8 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
 
     protected int actionsStartIndex = -1;
     protected int actionsEndIndex = -1;
+
+    private GrammarSyntax syntax;
 
     public ElementRule(String name) {
         this.name = name;
@@ -94,6 +101,15 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         // Called when the rule has been completely parsed
         // Do not analyze the left recursion now, but on-demand.
         leftRecursionAnalyzed = false;
+        hierarchyAnalyzed = false;
+    }
+
+    public GrammarSyntax getSyntax() {
+        return syntax;
+    }
+
+    public void setSyntax(GrammarSyntax syntax) {
+        this.syntax = syntax;
     }
 
     public void setReferencesIndexes(int startIndex, int endIndex) {
@@ -317,7 +333,7 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     public boolean containsIndex(int index) {
         return index >= getStartIndex() && index <= getEndIndex();
     }
-    
+
     public int compareTo(Object o) {
         ElementRule otherRule = (ElementRule) o;
         return this.name.compareTo(otherRule.name);
@@ -375,24 +391,110 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         return 0;
     }
 
-    public int breakpointEntityUniqueID() {
+    public int getItemUniqueID() {
         return getUniqueIdentifier();
     }
 
-    public int breakpointEntityIndex() {
+    public int getItemIndex() {
         return getStartIndex();
     }
 
-    public int breakpointEntityLine() {
+    public int getItemLine() {
         return start.startLineNumber;
     }
 
-    public void breakpointEntitySetBreakpoint(boolean flag) {
-        this.breakpoint = flag;
+    public static final int ITEM_TYPE_BREAKPOINT = 1;
+    public static final int ITEM_TYPE_OVERRIDE = 2;
+    public static final int ITEM_TYPE_OVERRIDDEN = 3;
+
+    public boolean override = false;
+    public List<String> overrideGrammars;
+    public boolean isOverridden = false;
+    public List<String> overriddenGrammars;
+
+    public List<Integer> types = new ArrayList<Integer>();
+
+    private void analyzeHierarchy() {
+        // Look at the grammar this rule overrides
+        overrideGrammars = syntax.getGrammarsOverriddenByRule(name);
+        override = !overrideGrammars.isEmpty();
+
+        // Look at the grammar this rule is overridden by
+        overriddenGrammars = syntax.getGrammarsOverridingRule(name);
+        isOverridden = !overriddenGrammars.isEmpty();
     }
 
-    public boolean breakpointEntityIsBreakpoint() {
-        return breakpoint;
+    public synchronized List<Integer> getItemTypes() {
+        if(!hierarchyAnalyzed) {
+            analyzeHierarchy();
+            hierarchyAnalyzed = true;
+
+            types.clear();
+            if(breakpoint) {
+                types.add(ITEM_TYPE_BREAKPOINT);
+            }
+            if(override) {
+                types.add(ITEM_TYPE_OVERRIDE);
+            }
+            if(isOverridden) {
+                types.add(ITEM_TYPE_OVERRIDDEN);                
+            }
+        }
+        return types;
+    }
+
+    public int getItemWidth() {
+        int width = 0;
+        for(int type : getItemTypes()) {
+            width += getItemIcon(type).getIconWidth();
+        }
+        return width;
+    }
+
+    public int getItemHeight() {
+        int height = 0;
+        for(int type : getItemTypes()) {
+            height = Math.max(height, getItemIcon(type).getIconHeight());
+        }
+        return height;
+    }
+
+    public ImageIcon getItemIcon(int type) {
+        if(type == ITEM_TYPE_BREAKPOINT) {
+            return IconManager.shared().getIconBreakpoint();
+        }
+        if(type == ITEM_TYPE_OVERRIDE) {
+            return IconManager.shared().getIconOverride();
+        }
+        if(type == ITEM_TYPE_OVERRIDDEN) {
+            return IconManager.shared().getIconOverridden();
+        }
+        return null;
+    }
+
+    public String getItemTooltip(int type) {
+        if(type == ITEM_TYPE_BREAKPOINT) {
+            return "Breakpoint";
+        }
+        if(type == ITEM_TYPE_OVERRIDE) {
+            return "Overrides rule in "+overrideGrammars;
+        }
+        if(type == ITEM_TYPE_OVERRIDDEN) {
+            return "Is overridden in "+overriddenGrammars;
+        }
+        return null;
+    }
+
+    public void itemAction(int type) {
+        if(type == ITEM_TYPE_BREAKPOINT) {
+            breakpoint = !breakpoint;
+        }
+        if(type == ITEM_TYPE_OVERRIDE) {
+            syntax.getDelegate().gotoToRule(overrideGrammars.get(0), name);
+        }
+        if(type == ITEM_TYPE_OVERRIDDEN) {
+            syntax.getDelegate().gotoToRule(overriddenGrammars.get(0), name);
+        }
     }
 
     public Object getPersistentID() {

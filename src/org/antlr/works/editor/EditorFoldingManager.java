@@ -95,8 +95,11 @@ public class EditorFoldingManager extends ATEFoldingManager {
             List<ElementAction> actions = editor.getSyntaxEngine().getSyntax().getActions();
             if(actions != null) {
                 for (ElementAction action : actions) {
-                    if (action.rule.isExpanded())
-                        addEntity(action);
+                    if (action.rule.isExpanded()) {
+                        // since 1.2, don't display action folding icon to avoid visual clutter
+                        // maybe re-introduce it if the folding is supported one day in the editor
+                        //addEntity(action);
+                    }
                 }
             }
         }
