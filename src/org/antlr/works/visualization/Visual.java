@@ -103,7 +103,7 @@ public class Visual extends EditorTab implements GContextProvider {
         this.enable = flag;
     }
 
-    public boolean isEnable() {
+    public boolean isEnabled() {
         return enable;
     }
 
@@ -123,12 +123,12 @@ public class Visual extends EditorTab implements GContextProvider {
     }
 
     public void setText(String text, String filename) {
-        if(isEnable())
+        if(isEnabled())
             drawing.setText(text);
     }
 
     public void setRule(ElementRule rule, boolean immediate) {
-        if(isEnable())
+        if(isEnabled())
             drawing.setRule(rule, immediate);
     }
 

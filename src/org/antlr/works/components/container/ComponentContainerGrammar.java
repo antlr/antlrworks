@@ -521,8 +521,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     private Map<String, GrammarSyntax> syntaxes = new HashMap<String, GrammarSyntax>();
 
     public void editorParsed(ComponentEditor editor) {
-        System.out.println("Editor "+editor.getDocument().getDocumentName()+" parsed");
-
         ComponentEditorGrammar eg = (ComponentEditorGrammar) editor;
         GrammarSyntax syntax = eg.getSyntaxEngine().getSyntax();
 
@@ -535,7 +533,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         }
 
         // update the hierarchy starting with the root grammar
-        // todo use a thread for that
         updateHierarchy();
     }
 
@@ -593,6 +590,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         bottomPanel.add(editor.getStatusComponent(), BorderLayout.SOUTH);
         bottomPanel.revalidate();
         bottomPanel.repaint();
+
+        toolbar.updateStates();
 
         editor.refreshMainMenuBar();
 
@@ -787,7 +786,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             selectedContainer = componentToContainer.get(c);
             ComponentEditorGrammar editor = (ComponentEditorGrammar) selectedContainer.getEditor();
 
-            // todo update the toolbar when switch editor
             switchToEditor(editor);
         }
 

@@ -503,19 +503,31 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         textEditor.toggleSyntaxColoring();
     }
 
+    public boolean isSyntaxColored() {
+        return textEditor.isSyntaxColoring();
+    }
+
     public void toggleRulesSorting() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_RULE_SORT);
         rules.toggleSorting();
         interpreter.setRules(getRules());
     }
 
+    public boolean isRulesSorted() {
+        return rules.isSorted();
+    }
+
     public void toggleSyntaxDiagram() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_SYNTAX_DIAGRAM);
-        visual.setEnable(!visual.isEnable());
-        if(visual.isEnable()) {
+        visual.setEnable(!visual.isEnabled());
+        if(visual.isEnabled()) {
             visual.setText(getText(), getFileName());
         }
         updateVisualization(false);
+    }
+
+    public boolean isSyntaxDiagramDisplayed() {
+        return visual.isEnabled();
     }
 
     public void toggleNFAOptimization() {
@@ -526,6 +538,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public void toggleIdeas() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_IDEAS);
         editorIdeas.toggleEnabled();
+    }
+
+    public boolean isIdeasEnabled() {
+        return editorIdeas.isEnabled();
     }
 
     public void toggleTips() {
@@ -845,7 +861,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void updateVisualization(boolean immediate) {
-        if(visual.isEnable()) {
+        if(visual.isEnabled()) {
             ElementRule r = rules.getEnclosingRuleAtPosition(getCaretPosition());
             if(r == null) {
                 visual.setPlaceholder("Select a rule to display its syntax diagram");
@@ -969,7 +985,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     private void afterParseOperations() {
         container.editorParsed(this);
-        // todo do at engine level?
         syntaxEngine.getSyntax().parserDidParse();
 
         persistence.restore();
@@ -1062,9 +1077,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         });
     }
 
+    @Override
     public void componentActivated() {
         console.makeCurrent();
-        // todo do at engine level?
         syntaxEngine.getSyntax().resetTokenVocab();
         syntaxEngine.getSyntax().rebuildAll();
         textEditor.getTextPane().setWritable(isFileWritable());
@@ -1072,6 +1087,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         updateInformation();
     }
 
+    @Override
     public void componentDidHide() {
         // Hide the ideas if the component is hidden. For example, in the project
         // window, if a component is hidden, the ideas have to be also hidden otherwise
@@ -1079,6 +1095,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         editorIdeas.hide();
     }
 
+    @Override
     public void componentIsSelected() {
         getTextPane().requestFocusInWindow();
     }

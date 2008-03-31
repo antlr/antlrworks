@@ -67,6 +67,10 @@ public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
         ideaManager.setEnabled(!ideaManager.enabled());
     }
 
+    public boolean isEnabled() {
+        return ideaManager.enabled();
+    }
+
     public List<IdeaAction> ideaProviderGetActions(int position) {
         List<IdeaAction> actions = new ArrayList<IdeaAction>();
         List<EditorInspectorItem> items = editor.editorInspector.getAllItemsAtIndex(position);
