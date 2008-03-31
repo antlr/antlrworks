@@ -610,6 +610,8 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
                     autoIndent.indent(offset, length);
                 }
 
+                gutter.changeUpdate(offset, length, insert);
+
                 changeOccurred();
             }
         }

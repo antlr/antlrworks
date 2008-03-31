@@ -47,7 +47,7 @@ public abstract class ATEFoldingManager {
         this.textEditor = textEditor;
     }
 
-    public void close() {
+    public void close() {      
         textEditor = null;
     }
 

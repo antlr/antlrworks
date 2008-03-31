@@ -101,7 +101,10 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         // Called when the rule has been completely parsed
         // Do not analyze the left recursion now, but on-demand.
         leftRecursionAnalyzed = false;
-        hierarchyAnalyzed = false;
+    }
+
+    public void resetHierarchy() {
+        hierarchyAnalyzed = false;        
     }
 
     public GrammarSyntax getSyntax() {
@@ -391,16 +394,12 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         return 0;
     }
 
-    public int getItemUniqueID() {
-        return getUniqueIdentifier();
-    }
-
     public int getItemIndex() {
         return getStartIndex();
     }
 
-    public int getItemLine() {
-        return start.startLineNumber;
+    public void setItemIndex(int index) {        
+        start.start = index;
     }
 
     public static final int ITEM_TYPE_BREAKPOINT = 1;

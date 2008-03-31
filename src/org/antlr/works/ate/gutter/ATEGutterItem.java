@@ -35,10 +35,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public interface ATEGutterItem {
 
-    public int getItemUniqueID();
-
     public int getItemIndex();
-    public int getItemLine();
+    public void setItemIndex(int index);
 
     public List<Integer> getItemTypes();
     public int getItemWidth();

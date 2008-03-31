@@ -48,14 +48,14 @@ public class EditorGutterItemManager extends ATEGutterItemManager {
     }
 
     public List<ATEGutterItem> getGutterItems() {
-        List<ATEGutterItem> entities = new ArrayList<ATEGutterItem>();
+        List<ATEGutterItem> items = new ArrayList<ATEGutterItem>();
         List<ElementRule> rules = editor.getSyntaxEngine().getSyntax().getRules();
         if(rules != null) {
             for(ElementRule r : rules) {
-                entities.add(r);
+                items.add(r);
             }
         }
-        return entities;
+        return items;
     }
 
     @Override

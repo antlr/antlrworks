@@ -987,6 +987,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         visual.setText(getText(), getFileName());
         updateVisualization(false);
 
+        // Tell the gutter to reset its list of items
+        textEditor.getGutter().resetGutterItems();
+        
         // Damage the editor and repaint it
         textEditor.damage();
         textEditor.repaint();

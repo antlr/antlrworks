@@ -552,7 +552,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             if(t.getTabName().equals(tab.getTabName()))
                 return i;
         }
-        return -1;
+        return -1;        
     }
 
     public EditorTab getSelectedTab() {

@@ -79,6 +79,7 @@ public class ATEGutter extends JComponent {
     private transient Image delimiter;
     private transient Image delimiterUp;
     private transient Image delimiterDown;
+    private List<ATEGutterItem> gutterItems;
 
     public ATEGutter(ATEPanel textEditor) {
         this.textEditor = textEditor;
@@ -139,6 +140,24 @@ public class ATEGutter extends JComponent {
         }
     }
 
+    public void resetGutterItems() {
+        gutterItems = textEditor.gutterItemManager.getGutterItems();
+    }
+
+    public void changeUpdate(int offset, int length, boolean insert) {
+        // To avoid the gutter items to move around when typing character,
+        // adapt their index in real-time by incrementing or decrementing
+        // their position based on the changes done in the editor.
+        // The position might not be 100% accurate but at least if avoid
+        // some ugly ui shift between a keystroke and the actual analysis
+        // of the item
+        for(ATEGutterItem item : gutterItems) {
+            if(item.getItemIndex() > offset) {
+                item.setItemIndex(item.getItemIndex()+length);
+            }
+        }
+    }
+
     public void updateInfo(Rectangle clip) {
 
         /** Make sure we are only updating objects in the current visible range
@@ -149,9 +168,8 @@ public class ATEGutter extends JComponent {
         int endIndex = textEditor.textPane.viewToModel(new Point(clip.x+clip.width, clip.y+clip.height));
 
         items.clear();
-        if(textEditor.gutterItemManager != null) {
-            List<ATEGutterItem> items = textEditor.gutterItemManager.getGutterItems();
-            for (ATEGutterItem item : items) {
+        if(gutterItems != null) {
+            for (ATEGutterItem item : gutterItems) {
                 int index = item.getItemIndex();
                 if (index >= startIndex && index <= endIndex) {
                     int y = getLineYPixelPosition(item.getItemIndex());

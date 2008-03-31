@@ -378,6 +378,7 @@ public class GrammarSyntax {
                 d.updateHierarchy(entities);
             }
         }
+        resetRules();
     }
 
 
@@ -440,5 +441,11 @@ public class GrammarSyntax {
             }
         }
         return null;
+    }
+
+    public void resetRules() {
+        for(ElementRule r : rules) {
+            r.resetHierarchy();
+        }
     }
 }
