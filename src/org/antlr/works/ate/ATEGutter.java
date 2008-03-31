@@ -151,10 +151,12 @@ public class ATEGutter extends JComponent {
         // The position might not be 100% accurate but at least if avoid
         // some ugly ui shift between a keystroke and the actual analysis
         // of the item
-        for(ATEGutterItem item : gutterItems) {
-            if(item.getItemIndex() > offset) {
-                item.setItemIndex(item.getItemIndex()+length);
-            }
+        if(gutterItems != null) {
+            for(ATEGutterItem item : gutterItems) {
+                if(item.getItemIndex() > offset) {
+                    item.setItemIndex(item.getItemIndex()+length);
+                }
+            }            
         }
     }
 

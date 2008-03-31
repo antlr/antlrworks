@@ -288,28 +288,27 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         }
     }
 
-    public void selectGrammar(ComponentContainer container) {
-        selectGrammar(XJUtils.getPathByDeletingPathExtension(container.getDocument().getDocumentName()));
-    }
-
     public ComponentEditorGrammar selectGrammar(String name) {
         for(ComponentContainer c : containers) {
             if(XJUtils.getPathByDeletingPathExtension(c.getDocument().getDocumentName()).equals(name)) {
-                c.getDocument().getDocumentName();
-                Component panel = c.getEditor().getPanel();
-                if(editorsTab.indexOfComponent(panel) == -1) {
-                    editorsTab.addTab(c.getDocument().getDocumentName(), panel);
-                }
-                editorsTab.setSelectedComponent(panel);
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        getSelectedEditor().getTextEditor().getTextPane().requestFocus();
-                    }
-                });
-                return getSelectedEditor();
+                return selectGrammar(c);
             }
         }
         return null;
+    }
+
+    private ComponentEditorGrammar selectGrammar(ComponentContainer c) {
+        Component panel = c.getEditor().getPanel();
+        if(editorsTab.indexOfComponent(panel) == -1) {
+            editorsTab.addTab(c.getDocument().getDocumentName(), panel);
+        }
+        editorsTab.setSelectedComponent(panel);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                getSelectedEditor().getTextEditor().getTextPane().requestFocus();
+            }
+        });
+        return getSelectedEditor();
     }
 
     @Override
@@ -331,10 +330,14 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             int index = editorsTab.indexOfComponent(panel);
             if (index == -1) continue;
 
+            String title = c.getDocument().getDocumentName();
+            if(title == null) {
+                title = "";
+            }
             if (c.getDocument().isDirty()) {
-                editorsTab.setTitleAt(index, "* " + c.getDocument().getDocumentName());
+                editorsTab.setTitleAt(index, "* " + title);
             } else {
-                editorsTab.setTitleAt(index, c.getDocument().getDocumentName());
+                editorsTab.setTitleAt(index, title);
             }
         }
     }
