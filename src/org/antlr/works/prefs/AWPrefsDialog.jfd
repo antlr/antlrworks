@@ -2378,7 +2378,7 @@
                 <string>javax.swing.JTextField</string> 
                 <void method="setProperty"> 
                  <string>text</string> 
-                 <string>0xC001</string> 
+                 <string>491000</string> 
                 </void> 
                 <void property="name"> 
                  <string>debugDefaultLocalPortField</string> 

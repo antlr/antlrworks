@@ -1055,7 +1055,7 @@ public class AWPrefsDialog extends XJPanel {
         				tabDebugger.add(label33, cc.xy(3, 3));
 
         				//---- debugDefaultLocalPortField ----
-        				debugDefaultLocalPortField.setText("0xC001");
+        				debugDefaultLocalPortField.setText("491000");
         				tabDebugger.add(debugDefaultLocalPortField, cc.xy(5, 3));
 
         				//---- label34 ----

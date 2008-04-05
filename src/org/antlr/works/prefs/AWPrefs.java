@@ -213,7 +213,7 @@ public class AWPrefs {
     public static final Color DEFAULT_LOOKAHEAD_TOKEN_COLOR = Color.blue;
 
     public static final String PREF_DEBUG_LOCALPORT = "PREF_DEBUG_LOCALPORT";
-    public static final int DEFAULT_DEBUG_LOCALPORT = 0xC001;
+    public static final int DEFAULT_DEBUG_LOCALPORT = 49100;
 
     public static final String PREF_DEBUG_LAUNCHTIMEOUT = "PREF_DEBUG_LAUNCHTIMEOUT";
     public static final int DEFAULT_DEBUG_LAUNCHTIMEOUT = 5;
