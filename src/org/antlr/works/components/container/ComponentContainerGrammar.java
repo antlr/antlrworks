@@ -47,7 +47,7 @@ import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.ElementRule;
-import org.antlr.works.grammar.syntax.GrammarSyntax;
+import org.antlr.works.grammar.engine.GrammarProperties;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
@@ -521,17 +521,17 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     }
 
-    private Map<String, GrammarSyntax> syntaxes = new HashMap<String, GrammarSyntax>();
+    private Map<String, GrammarProperties> syntaxes = new HashMap<String, GrammarProperties>();
 
     public void editorParsed(ComponentEditor editor) {
         ComponentEditorGrammar eg = (ComponentEditorGrammar) editor;
-        GrammarSyntax syntax = eg.getSyntaxEngine().getSyntax();
+        GrammarProperties properties = eg.getSyntaxEngine().getSyntax();
 
         String name = editor.getDocument().getDocumentName();
-        syntaxes.put(name, syntax);
+        syntaxes.put(name, properties);
 
         // make sure all the imported grammars are loaded
-        for(ElementImport element : syntax.getImports()) {
+        for(ElementImport element : properties.getImports()) {
             loadGrammar(element.getName()+".g");
         }
 
@@ -542,8 +542,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     private void updateHierarchy() {
         // always start with the root grammar
         String name = getDocument().getDocumentName();
-        GrammarSyntax syntax = syntaxes.get(name);
-        syntax.updateHierarchy(syntaxes);
+        GrammarProperties properties = syntaxes.get(name);
+        properties.updateHierarchy(syntaxes);
     }
 
     public int getSimilarTab(EditorTab tab) {

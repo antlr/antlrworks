@@ -38,7 +38,7 @@ import org.antlr.works.grammar.CheckGrammar;
 import org.antlr.works.grammar.CheckGrammarDelegate;
 import org.antlr.works.grammar.RulesDependency;
 import org.antlr.works.grammar.TokensDFA;
-import org.antlr.works.grammar.antlr.AntlrGrammarResult;
+import org.antlr.works.grammar.antlr.ANTLRGrammarResult;
 import org.antlr.works.grammar.decisiondfa.DecisionDFA;
 import org.antlr.works.grammar.element.ElementGroup;
 import org.antlr.works.grammar.element.ElementRule;
@@ -183,7 +183,7 @@ public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, X
         checkingGrammar = true;
     }
 
-    public void checkGrammarDidEnd(AntlrGrammarResult result) {
+    public void checkGrammarDidEnd(ANTLRGrammarResult result) {
         checkGrammar.close();
         checkGrammar = null;
 

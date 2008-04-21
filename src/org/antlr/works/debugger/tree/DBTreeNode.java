@@ -1,7 +1,6 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
-import org.antlr.tool.Grammar;
 import org.antlr.works.awtree.AWTreeNode;
 
 import java.awt.*;
@@ -40,7 +39,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class DBTreeNode extends AWTreeNode {
 
     protected Token token;
-    protected Grammar grammar;
 
     protected int line;
     protected int pos;
@@ -51,9 +49,8 @@ public class DBTreeNode extends AWTreeNode {
 
     }
     
-    public DBTreeNode(Token token, Grammar grammar) {
+    public DBTreeNode(Token token) {
         this.token = token;
-        this.grammar = grammar;
     }
 
     public void setPosition(int line, int pos) {
@@ -125,7 +122,7 @@ public class DBTreeNode extends AWTreeNode {
 
     public String toString() {
         if(token != null)
-            return token.getText(); //+" <"+grammar.getTokenDisplayName(token.getType())+">"
+            return token.getText();
         else
             return "?";
     }

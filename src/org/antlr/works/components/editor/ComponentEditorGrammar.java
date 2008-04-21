@@ -5,7 +5,6 @@ import org.antlr.works.actions.ActionRefactor;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
-import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.ate.syntax.misc.ATEToken;
@@ -23,9 +22,9 @@ import org.antlr.works.grammar.element.ElementAction;
 import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.engine.GrammarEngine;
+import org.antlr.works.grammar.engine.GrammarEngineImpl;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngineDelegate;
-import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
 import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
@@ -90,8 +89,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ComponentEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
         ATEPanelDelegate,
-        XJUndoDelegate, InspectorDelegate,
-        GrammarSyntaxEngineDelegate {
+        XJUndoDelegate, InspectorDelegate {
 
     /* Completion */
 
@@ -115,7 +113,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     /* Components */
 
-    public GrammarSyntaxEngine syntaxEngine;
+    public GrammarEngine engine;
+    //public GrammarSyntaxEngine syntaxEngine;
     public EditorRules rules;
     public Visual visual;
     public EditorInterpreter interpreter;
@@ -236,7 +235,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     protected void initCore() {
         afterParserOp = new AfterParseOperations();
 
-        syntaxEngine = new GrammarSyntaxEngine(this);
+        engine = new GrammarEngineImpl(new GrammarSyntaxEngine());
 
         decisionDFAEngine = new DecisionDFAEngine(this);
         interpreter = new EditorInterpreter(this);
@@ -249,7 +248,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
         editorIdeas = new EditorIdeas(this);
         editorTips = new EditorTips(this);
-        editorInspector = new EditorInspector(syntaxEngine, decisionDFAEngine, this);
+        editorInspector = new EditorInspector(engine, decisionDFAEngine, this);
 
         persistence = new EditorPersistence(this);
     }
@@ -276,7 +275,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
         rules.setKeyBindings(textEditor.getKeyBindings());
 
-        textEditor.setParserEngine(syntaxEngine);
+        textEditor.setParserEngine(engine.getSyntaxEngine());
     }
 
     protected void createTextEditor() {
@@ -378,7 +377,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         editorInspector.close();
 
         persistence.close();
-        syntaxEngine.close();
+        engine.close();
 
         rules.close();
         visual.close();
@@ -467,12 +466,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return textEditor;
     }
 
-    public GrammarSyntaxParser getParser() {
-        return (GrammarSyntaxParser) syntaxEngine.getParser();
-    }
-
     public void gotoToRule(String grammar, final String name) {
-        if(!grammar.equals(getSyntaxEngine().getSyntax().getName())) {
+        if(!grammar.equals(engine.getGrammarName())) {
             // rule is in another editor
             final ComponentEditorGrammar editor = getContainer().selectGrammar(grammar);
             // set the caret position
@@ -488,9 +483,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void gotoToRule(String name) {
-        ATEToken decl = getSyntaxEngine().getSyntax().getFirstDeclaration(name);
-        if(decl != null) {
-            setCaretPosition(decl.start);
+        int index = engine.getFirstDeclarationPosition(name);
+        if(index != -1) {
+            setCaretPosition(index);
         }
     }
 
@@ -758,8 +753,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return getXJFrame().getJavaContainer();
     }
 
-    public GrammarSyntaxEngine getSyntaxEngine() {
-        return syntaxEngine;
+    public GrammarEngine getGrammarEngine() {
+        return engine;
     }
 
     public List<ElementRule> getRules() {
@@ -791,7 +786,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public ElementReference getReferenceAtPosition(int pos) {
-        for (ElementReference ref : syntaxEngine.getSyntax().getReferences()) {
+        for (ElementReference ref : engine.getReferences()) {
             if (ref.containsIndex(pos))
                 return ref;
         }
@@ -799,7 +794,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public ElementImport getImportAtPosition(int pos) {
-        for (ElementImport element : syntaxEngine.getSyntax().getImports()) {
+        for (ElementImport element : engine.getImports()) {
             if (element.containsIndex(pos))
                 return element;
         }
@@ -835,7 +830,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public ElementAction getCurrentAction() {
-        List<ElementAction> actions = syntaxEngine.getSyntax().getActions();
+        List<ElementAction> actions = engine.getActions();
         int position = getCaretPosition();
         for (ElementAction action : actions) {
             if (action.containsIndex(position))
@@ -867,7 +862,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
                 visual.setPlaceholder("Select a rule to display its syntax diagram");
             } else {
                 if(r.hasErrors() && r.needsToBuildErrors()) {
-                    syntaxEngine.computeRuleErrors(r);
+                    engine.computeRuleErrors(r);
                     try {
                         visual.createGraphsForRule(r);
                     } catch (Exception e) {
@@ -896,9 +891,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void updateInformation() {
         String t;
-        int size = 0;
-        if(syntaxEngine.getSyntax().getRules() != null)
-            size = syntaxEngine.getSyntax().getRules().size();
+        int size = engine.getNumberOfRules();
         switch(size) {
             case 0:
                 t = "No rules";
@@ -911,7 +904,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
                 break;
         }
 
-        int warnings = syntaxEngine.getSyntax().getNumberOfErrors();
+        int warnings = engine.getNumberOfErrors();
         if(warnings > 0)
             t += " ("+warnings+" warning"+(warnings>0?"s":"")+")";
 
@@ -985,7 +978,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     private void afterParseOperations() {
         container.editorParsed(this);
-        syntaxEngine.getSyntax().parserDidParse();
+        engine.parseDidParse();
 
         persistence.restore();
 
@@ -1020,7 +1013,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     private void grammarChanged() {
-        syntaxEngine.markDirty();
+        engine.markDirty();
         container.editorContentChanged();
     }
 
@@ -1032,10 +1025,12 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         consoleStatus.clearMessage();
     }
 
+    @Override
     public void notificationPrefsChanged() {
         applyPrefs();
     }
 
+    @Override
     public void notificationDebuggerStarted() {
         refreshMainMenuBar();
         editorIdeas.hide();
@@ -1059,10 +1054,12 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         }
     }
 
+    @Override
     public void componentShouldLayout(Dimension size) {
         interpreter.componentShouldLayout();
     }
 
+    @Override
     public void componentDidAwake() {
         updateInformation();
         updateCursorInfo();
@@ -1080,8 +1077,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     @Override
     public void componentActivated() {
         console.makeCurrent();
-        syntaxEngine.getSyntax().resetTokenVocab();
-        syntaxEngine.getSyntax().rebuildAll();
+        engine.reset();
         textEditor.getTextPane().setWritable(isFileWritable());
         textEditor.refresh();
         updateInformation();
@@ -1118,8 +1114,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
      */
 
     public List<String> autoCompletionMenuGetMatchingWordsForPartialWord(String partialWord) {
-        if(syntaxEngine == null || syntaxEngine.getSyntax().getRules() == null)
+        if(engine.getNumberOfRules() == 0) {
             return null;
+        }
 
         partialWord = partialWord.toLowerCase();
         List<String> matchingRules = new ArrayList<String>();
@@ -1127,7 +1124,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         if(rules.isRuleAtIndex(getCaretPosition())) {
             // Inside a rule - show all rules in alphabetical order
 
-            List<ElementRule> sortedRules = Collections.list(Collections.enumeration(syntaxEngine.getSyntax().getRules()));
+            List<ElementRule> sortedRules = Collections.list(Collections.enumeration(engine.getRules()));
             Collections.sort(sortedRules,new Comparator<ElementRule>() {
                 public int compare(ElementRule o1, ElementRule o2) {
                     return o1.name.compareToIgnoreCase(o2.name);
@@ -1141,7 +1138,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         } else {
             // Not inside rule - show only undefined rules
 
-            List<ElementReference> sortedUndefinedReferences = Collections.list(Collections.enumeration(syntaxEngine.getSyntax().getUndefinedReferences()));
+            List<ElementReference> sortedUndefinedReferences = Collections.list(Collections.enumeration(engine.getUndefinedReferences()));
             Collections.sort(sortedUndefinedReferences,new Comparator<ElementReference>() {
                 public int compare(ElementReference o1, ElementReference o2) {
                     return o1.rule.name.compareToIgnoreCase(o2.rule.name);
@@ -1241,25 +1238,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void checkGrammarVersion() {
-        // Check to see if "class" and "extends" are in the grammar text which
-        // means that the grammar is probably an ANTLR version 2 grammar.
-
-        boolean version2 = false;
-        List<ATEToken> tokens = syntaxEngine.getTokens();
-        for(int index=0; index<tokens.size(); index++) {
-            ATEToken t = tokens.get(index);
-            if(t.type == ATESyntaxLexer.TOKEN_ID && t.getAttribute().equals("class")) {
-                if(index+2<tokens.size()) {
-                    ATEToken t2 = tokens.get(index+2);
-                    if(t2.type == ATESyntaxLexer.TOKEN_ID && t2.getAttribute().equals("extends")) {
-                        version2 = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if(version2) {
+        if(engine.isVersion2()) {
             XJAlert.display(getWindowContainer(), "Incompatible Grammar Version", "This grammar does not appear to be an ANTLR 3.x grammar." +
                     "\nANTLRWorks includes ANTLR 3.x and therefore only ANTLR 3.x grammars are recognized.");
         }

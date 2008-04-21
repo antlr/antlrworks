@@ -43,7 +43,7 @@ import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
+import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
@@ -254,7 +254,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
     public void run() {
         try {
-            editor.getSyntaxEngine().getAntlrGrammar().analyze();
+            editor.getGrammarEngine().analyze();
             process();
         } catch(Exception e) {
             editor.console.println(e);
@@ -277,7 +277,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
         CharStream input = new ANTLRStringStream(Utils.convertRawTextWithEOL(textPane.getText(), eolCombo));
 
-        AntlrEngineGrammar eg = editor.getSyntaxEngine().getAntlrGrammar();
+        ANTLRGrammarEngine eg = editor.getGrammarEngine().getANTLRGrammarEngine();
         Grammar parser;
         Grammar lexer;
         try {

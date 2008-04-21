@@ -43,7 +43,8 @@ public class PCMenuBarDelegate implements XJMenuBarDelegate {
     }
 
     public void menuItemState(XJMenuItem item) {
-        container.getEditor().menuItemState(item);
+        // todo
+        //container.getEditor().menuItemState(item);
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {

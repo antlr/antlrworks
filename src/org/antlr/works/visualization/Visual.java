@@ -34,7 +34,7 @@ package org.antlr.works.visualization;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorTab;
-import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
+import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.prefs.AWPrefs;
@@ -154,7 +154,7 @@ public class Visual extends EditorTab implements GContextProvider {
         return drawing.refresh();
     }
     
-    public AntlrEngineGrammar getEngineGrammar() {
+    public ANTLRGrammarEngine getEngineGrammar() {
         return editor.getSyntaxEngine().getAntlrGrammar();
     }
 

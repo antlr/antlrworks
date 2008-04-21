@@ -9,7 +9,7 @@ import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.element.ElementToken;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
+import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import java.awt.*;
@@ -49,11 +49,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorInspector {
 
-    private GrammarSyntaxEngine engine;
+    private GrammarEngine engine;
     private DecisionDFAEngine decisionDFAEngine;
     private InspectorDelegate delegate;
 
-    public EditorInspector(GrammarSyntaxEngine engine, DecisionDFAEngine decisionDFAEngine, InspectorDelegate delegate) {
+    public EditorInspector(GrammarEngine engine, DecisionDFAEngine decisionDFAEngine, InspectorDelegate delegate) {
         this.engine = engine;
         this.decisionDFAEngine = decisionDFAEngine;
         this.delegate = delegate;
@@ -118,7 +118,7 @@ public class EditorInspector {
     }
 
     private ElementGrammarName getGrammarName() {
-        return engine.getSyntax().getElementName();
+        return engine.getElementName();
     }
 
     private String getGrammarNameFromFile() {
@@ -148,7 +148,7 @@ public class EditorInspector {
     }
 
     protected void discoverUndefinedReferences(List<EditorInspectorItem> items) {
-        List<ElementReference> undefinedRefs = engine.getSyntax().getUndefinedReferences();
+        List<ElementReference> undefinedRefs = engine.getUndefinedReferences();
         if(undefinedRefs == null)
             return;
 
@@ -162,7 +162,7 @@ public class EditorInspector {
     }
 
     protected void discoverDuplicateRules(List<EditorInspectorItem> items) {
-        List<ElementRule> rules = engine.getSyntax().getDuplicateRules();
+        List<ElementRule> rules = engine.getDuplicateRules();
         if(rules == null)
             return;
 
@@ -176,7 +176,7 @@ public class EditorInspector {
     }
 
     protected void discoverLeftRecursionRules(List<EditorInspectorItem> items) {
-        List<ElementRule> rules = engine.getSyntax().getRules();
+        List<ElementRule> rules = engine.getRules();
         if(rules == null)
             return;
 
@@ -193,7 +193,7 @@ public class EditorInspector {
     }
 
     protected void discoverLeftRecursiveRulesSet(List<EditorInspectorItem> items) {
-        List<ElementRule> rules = engine.getSyntax().getRules();
+        List<ElementRule> rules = engine.getRules();
         if(rules == null)
             return;
 

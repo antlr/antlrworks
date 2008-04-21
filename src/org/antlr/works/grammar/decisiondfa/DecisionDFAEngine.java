@@ -6,7 +6,7 @@ import org.antlr.tool.Grammar;
 import org.antlr.tool.Rule;
 import org.antlr.works.ate.ATEUnderlyingManager;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
+import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 
 import java.awt.*;
 import java.util.*;
@@ -89,7 +89,7 @@ public class DecisionDFAEngine {
             lineIndexes.add(editor.getTextEditor().getLineIndexAtTextPosition(index));
         }
 
-        AntlrEngineGrammar antlrEngineGrammar = editor.getSyntaxEngine().getAntlrGrammar();
+        ANTLRGrammarEngine antlrEngineGrammar = editor.getGrammarEngine().getANTLRGrammarEngine();
         antlrEngineGrammar.analyze();
         discoveredLexerGrammar = antlrEngineGrammar.getLexerGrammar();
         discoveredParserGrammar = antlrEngineGrammar.getParserGrammar();

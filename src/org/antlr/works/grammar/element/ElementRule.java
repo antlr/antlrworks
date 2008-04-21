@@ -4,8 +4,8 @@ import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.gutter.ATEGutterItem;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.EditorPersistentObject;
-import org.antlr.works.grammar.antlr.AntlrGrammarError;
-import org.antlr.works.grammar.syntax.GrammarSyntax;
+import org.antlr.works.grammar.antlr.ANTLRGrammarError;
+import org.antlr.works.grammar.engine.GrammarProperties;
 import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
 import org.antlr.works.utils.IconManager;
 
@@ -67,7 +67,7 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
 
     public boolean hierarchyAnalyzed = false;
 
-    public List<AntlrGrammarError> errors;
+    public List<ANTLRGrammarError> errors;
     public boolean needsToBuildErrors = true;
 
     protected GrammarSyntaxParser parser;
@@ -81,7 +81,7 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     protected int actionsStartIndex = -1;
     protected int actionsEndIndex = -1;
 
-    private GrammarSyntax syntax;
+    private GrammarProperties properties;
 
     public ElementRule(String name) {
         this.name = name;
@@ -107,12 +107,12 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         hierarchyAnalyzed = false;        
     }
 
-    public GrammarSyntax getSyntax() {
-        return syntax;
+    public GrammarProperties getSyntax() {
+        return properties;
     }
 
-    public void setSyntax(GrammarSyntax syntax) {
-        this.syntax = syntax;
+    public void setSyntax(GrammarProperties properties) {
+        this.properties = properties;
     }
 
     public void setReferencesIndexes(int startIndex, int endIndex) {
@@ -219,11 +219,11 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         return alts;
     }
 
-    public void setErrors(List<AntlrGrammarError> errors) {
+    public void setErrors(List<ANTLRGrammarError> errors) {
         this.errors = errors;
     }
 
-    public List<AntlrGrammarError> getErrors() {
+    public List<ANTLRGrammarError> getErrors() {
         return errors;
     }
 
@@ -312,15 +312,15 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public String getErrorMessageString(int index) {
-        AntlrGrammarError error = errors.get(index);
+        ANTLRGrammarError error = errors.get(index);
         return error.messageText;
     }
 
     public String getErrorMessageHTML() {
         StringBuffer message = new StringBuffer();
         message.append("<html>");
-        for (Iterator<AntlrGrammarError> iterator = errors.iterator(); iterator.hasNext();) {
-            AntlrGrammarError error = iterator.next();
+        for (Iterator<ANTLRGrammarError> iterator = errors.iterator(); iterator.hasNext();) {
+            ANTLRGrammarError error = iterator.next();
             message.append(error.messageText);
             if(iterator.hasNext())
                 message.append("<br>");
@@ -415,11 +415,11 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
 
     private void analyzeHierarchy() {
         // Look at the grammar this rule overrides
-        overrideGrammars = syntax.getGrammarsOverriddenByRule(name);
+        overrideGrammars = properties.getGrammarsOverriddenByRule(name);
         override = !overrideGrammars.isEmpty();
 
         // Look at the grammar this rule is overridden by
-        overriddenGrammars = syntax.getGrammarsOverridingRule(name);
+        overriddenGrammars = properties.getGrammarsOverridingRule(name);
         isOverridden = !overriddenGrammars.isEmpty();
     }
 
@@ -489,10 +489,10 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
             breakpoint = !breakpoint;
         }
         if(type == ITEM_TYPE_OVERRIDE) {
-            syntax.getDelegate().gotoToRule(overrideGrammars.get(0), name);
+            properties.getDelegate().gotoToRule(overrideGrammars.get(0), name);
         }
         if(type == ITEM_TYPE_OVERRIDDEN) {
-            syntax.getDelegate().gotoToRule(overriddenGrammars.get(0), name);
+            properties.getDelegate().gotoToRule(overriddenGrammars.get(0), name);
         }
     }
 

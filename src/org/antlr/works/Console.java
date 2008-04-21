@@ -114,7 +114,7 @@ public class Console {
 
         ComponentEditorGrammar ceg = new ComponentEditorGrammar();
         ceg.syntaxEngine = new GrammarSyntaxEngine();
-        AntlrEngineGrammar eg = new AntlrEngineGrammar(ceg);
+        ANTLRGrammarEngine eg = new ANTLRGrammarEngine(ceg);
         eg.setDelegate(new ConsoleAntlrGrammarEngineDelegate());
         SDGenerator gen = new SDGenerator(eg);
 
@@ -141,7 +141,7 @@ public class Console {
 
         ComponentEditorGrammar ceg = new ComponentEditorGrammar();
         ceg.syntaxEngine = new GrammarSyntaxEngine();
-        AntlrEngineGrammar eg = new AntlrEngineGrammar(ceg);
+        ANTLRGrammarEngine eg = new ANTLRGrammarEngine(ceg);
         eg.setDelegate(new ConsoleAntlrGrammarEngineDelegate());
         SDGenerator gen = new SDGenerator(eg);
 

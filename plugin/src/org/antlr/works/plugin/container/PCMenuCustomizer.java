@@ -67,6 +67,7 @@ public class PCMenuCustomizer implements XJMenuBarCustomizer {
     }
 
     public void customizeMenuBar(XJMainMenuBar menubar) {
-        container.getEditor().customizeMenuBar(menubar);
+        // todo
+        //container.getEditor().customizeMenuBar(menubar);
     }
 }

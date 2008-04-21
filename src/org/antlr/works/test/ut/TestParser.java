@@ -9,9 +9,8 @@ import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
-import org.antlr.works.grammar.syntax.GrammarSyntax;
+import org.antlr.works.grammar.engine.GrammarProperties;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngineDelegate;
 import org.antlr.works.test.AbstractTest;
 import org.antlr.works.test.TestConstants;
 
@@ -47,7 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class TestParser extends AbstractTest implements GrammarSyntaxEngineDelegate {
+public class TestParser extends AbstractTest {
 
     private String vocabFile;
 
@@ -132,7 +131,7 @@ public class TestParser extends AbstractTest implements GrammarSyntaxEngineDeleg
 
         // now add the remaining token as if they were read from a tokenVocab file
         Set<String> names = new HashSet<String>();
-        GrammarSyntax.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        GrammarProperties.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
         getParser().resolveReferencesWithExternalNames(names);
         assertParserProperties(40, 18, 7, 40, 199+4); // verified by hand
 
@@ -144,7 +143,7 @@ public class TestParser extends AbstractTest implements GrammarSyntaxEngineDeleg
         assertInspector(69);
 
         Set<String> names = new HashSet<String>();
-        GrammarSyntax.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        GrammarProperties.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
         getParser().resolveReferencesWithExternalNames(names);
 
         assertParserProperties(36, 14, 7, 36, 170); // verified by hand
@@ -157,7 +156,7 @@ public class TestParser extends AbstractTest implements GrammarSyntaxEngineDeleg
 
         Set<String> names = new HashSet<String>();
         //todo handle vocabfile in a better way
-        GrammarSyntax.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        GrammarProperties.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
         getParser().resolveReferencesWithExternalNames(names);
 
         assertParserProperties(36, 37, 23, 36, 177); // verified by hand

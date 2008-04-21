@@ -24,7 +24,6 @@ import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -57,6 +56,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public class PluginContainer implements ComponentContainer {
+    
     private JRootPane rootPane;
     private ComponentEditorGrammar editor;
 
@@ -167,7 +167,7 @@ public class PluginContainer implements ComponentContainer {
         return editor.getStatusComponent();
     }
 
-    public void load(String file) {
+    public void load(String file) throws Exception {
         document.load(file);
     }
 
@@ -210,15 +210,9 @@ public class PluginContainer implements ComponentContainer {
         return editor.componentDocumentWillSave();
     }
 
-    public void close() {
+    public boolean close() {
         editor.close();
-    }
-
-    public void setPersistentData(Map data) {
-    }
-
-    public Map getPersistentData() {
-        return null;
+        return true;
     }
 
     public ComponentEditor getEditor() {

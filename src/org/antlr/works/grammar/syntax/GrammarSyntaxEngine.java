@@ -35,8 +35,6 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
-import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.element.ElementToken;
 import org.antlr.works.prefs.AWPrefs;
 
@@ -44,16 +42,11 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
-import java.util.Set;
 
 public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
     public static final Color COLOR_PARSER = new Color(0.42f, 0, 0.42f);
     public static final Color COLOR_LEXER = new Color(0, 0, 0.5f);
-
-    private GrammarSyntax syntax;
-    private GrammarSyntaxEngineDelegate delegate;
-    private AntlrEngineGrammar antlrEngineGrammar;
 
     private SimpleAttributeSet parserRefAttr;
     private SimpleAttributeSet lexerRefAttr;
@@ -62,13 +55,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     // todo prefs for that
     private SimpleAttributeSet blockLabelAttr;
 
-    public GrammarSyntaxEngine(GrammarSyntaxEngineDelegate delegate) {
-        this.delegate = delegate;
-        this.antlrEngineGrammar = new AntlrEngineGrammar(this);
-
-        // todo not really nice
-        syntax = new GrammarSyntax(this, (GrammarSyntaxParser)parser);
-
+    public GrammarSyntaxEngine() {
         parserRefAttr = new SimpleAttributeSet();
         lexerRefAttr = new SimpleAttributeSet();
         labelAttr = new SimpleAttributeSet();
@@ -76,21 +63,9 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         blockLabelAttr = new SimpleAttributeSet();
     }
 
-    public GrammarSyntaxEngineDelegate getDelegate() {
-        return delegate;
-    }
-    
-    public synchronized GrammarSyntax getSyntax() {
-        return syntax;
-    }
-
     @Override
     public void close() {
         super.close();
-        antlrEngineGrammar.close();
-        antlrEngineGrammar = null;
-        syntax = null;
-        delegate = null;
     }
 
     @Override
@@ -164,28 +139,4 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         return attr;
     }
 
-    @Override
-    protected synchronized void parserDidRun(ATESyntaxParser parser) {
-        syntax = new GrammarSyntax(this, (GrammarSyntaxParser)parser);
-    }
-
-    public String getTokenVocabFile(String tokenVocabName) {
-        return delegate.getTokenVocabFile(tokenVocabName);
-    }
-
-    public void resolveReferencesWithExternalNames(Set<String> tokenVocabNames) {
-        ((GrammarSyntaxParser)parser).resolveReferencesWithExternalNames(tokenVocabNames);
-    }
-
-    public AntlrEngineGrammar getAntlrGrammar() {
-        return antlrEngineGrammar;
-    }
-
-    public void markDirty() {
-        antlrEngineGrammar.markDirty();
-    }
-
-    public void computeRuleErrors(ElementRule r) {
-        antlrEngineGrammar.computeRuleErrors(r);        
-    }
 }

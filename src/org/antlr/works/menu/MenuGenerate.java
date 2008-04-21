@@ -37,7 +37,7 @@ import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
 import org.antlr.works.grammar.CheckGrammar;
 import org.antlr.works.grammar.CheckGrammarDelegate;
-import org.antlr.works.grammar.antlr.AntlrGrammarResult;
+import org.antlr.works.grammar.antlr.ANTLRGrammarResult;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
@@ -206,7 +206,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
         // do nothing
     }
 
-    public void checkGrammarDidEnd(AntlrGrammarResult result) {
+    public void checkGrammarDidEnd(ANTLRGrammarResult result) {
         if(result.getErrorCount() == 0) {
             generateCodeProcessContinued();
         } else {

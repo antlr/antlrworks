@@ -84,12 +84,6 @@ public abstract class ATESyntaxEngine {
         return parser;
     }
 
-    protected void lexerDidRun(ATESyntaxLexer lexer) {
-    }
-
-    protected void parserDidRun(ATESyntaxParser parser) {
-    }
-
     public abstract ATESyntaxLexer createLexer();
     public abstract ATESyntaxParser createParser();
     public abstract AttributeSet getAttributeForToken(ATEToken token);
@@ -102,12 +96,10 @@ public abstract class ATESyntaxEngine {
         // First run the lexer
         lexer.tokenize(delegate.getText());
         tokens = new ArrayList<ATEToken>(lexer.getTokens());
-        lexerDidRun(lexer);
 
         // And then the parser if it exists
         if(parser != null) {
             parser.parse(tokens);
-            parserDidRun(parser);
         }
     }
 

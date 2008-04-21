@@ -1,11 +1,14 @@
-package org.antlr.works.grammar.syntax;
+package org.antlr.works.grammar.engine;
 
-import org.antlr.Tool;
-import org.antlr.works.utils.Console;
-/*
+import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
+import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
+import org.antlr.works.grammar.element.*;
+
+import java.util.List;/*
 
 [The "BSD licence"]
-Copyright (c) 2005-2007 Jean Bovet
+Copyright (c) 2005-07 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -33,23 +36,45 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface GrammarSyntaxEngineDelegate {
+public interface GrammarEngine {
 
-    String getFileName();
-    String getText();
+    void close();
 
-    Tool getANTLRTool();
+    ANTLRGrammarEngine getANTLRGrammarEngine();
+    ATESyntaxEngine getSyntaxEngine();
 
-    Console getConsole();
+    ElementGrammarName getElementName();
+    String getGrammarName();
 
-    void rulesChanged();
+    List<ElementRule> getRules();
+    List<ElementRule> getDuplicateRules();
+    ElementRule getRuleWithName(String name);
+    ElementRule getRuleAtIndex(int index);
 
-    void antlrEngineGrammarDidAnalyze();
+    List<ElementReference> getReferences();
+    List<ElementReference> getUndefinedReferences();
 
-    String getTokenVocabFile(String tokenVocabName);
+    List<ElementImport> getImports();
+    List<ElementAction> getActions();
+    List<ElementGroup> getGroups();
 
-    GrammarSyntaxEngine getSyntaxEngine();
-    GrammarSyntaxParser getParser();
+    int getNumberOfLines();
+    int getNumberOfRules();
+    int getNumberOfErrors();
 
-    void gotoToRule(String grammar, String name);
+    int getFirstDeclarationPosition(String name);
+    List<String> getGrammarsOverriddenByRule(String name);
+
+    List<ATEToken> getTokens();
+
+    void analyze() throws Exception;
+    void computeRuleErrors(ElementRule rule);
+
+    // todo needed?
+    void parseDidParse();
+    void markDirty();
+    void reset();
+
+    boolean isVersion2();
+    boolean isCombinedGrammar();
 }

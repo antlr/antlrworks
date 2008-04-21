@@ -1,7 +1,6 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
-import org.antlr.tool.Grammar;
 import org.antlr.works.awtree.AWTreeModel;
 import org.antlr.works.awtree.AWTreeNode;
 import org.antlr.works.debugger.Debugger;
@@ -147,8 +146,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
     public void addToken(Token token) {
         ParseTreeNode ruleNode = rules.peek();
-        // todo this is way to long to access the needed grammar
-        ParseTreeNode elementNode = new ParseTreeNode(token, debugger.getSyntaxEngine().getAntlrGrammar().getANTLRGrammar());
+        ParseTreeNode elementNode = new ParseTreeNode(token);
         elementNode.setPosition(line, pos);
         addNode(ruleNode, elementNode);
         addNodeToCurrentBacktrack(elementNode);
@@ -201,8 +199,8 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
             this.e = e;
         }
 
-        public ParseTreeNode(Token token, Grammar grammar) {
-            super(token, grammar);
+        public ParseTreeNode(Token token) {
+            super(token);
         }
 
         public String toString() {

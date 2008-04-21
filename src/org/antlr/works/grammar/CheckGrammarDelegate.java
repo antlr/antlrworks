@@ -31,9 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.grammar;
 
-import org.antlr.works.grammar.antlr.AntlrGrammarResult;
+import org.antlr.works.grammar.antlr.ANTLRGrammarResult;
 
 public interface CheckGrammarDelegate {
     public void checkGrammarDidBegin();
-    public void checkGrammarDidEnd(AntlrGrammarResult errorMsg);
+    public void checkGrammarDidEnd(ANTLRGrammarResult errorMsg);
 }

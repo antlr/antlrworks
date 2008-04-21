@@ -1,7 +1,6 @@
 package org.antlr.works.debugger.input;
 
 import org.antlr.runtime.Token;
-import org.antlr.tool.Grammar;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.tree.DBTreeNode;
@@ -192,7 +191,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     }
 
     public InputTreeNode createNode(Token token) {
-        InputTreeNode node = new InputTreeNode((DBTreeToken)token, debugger.getSyntaxEngine().getAntlrGrammar().getANTLRGrammar());
+        InputTreeNode node = new InputTreeNode((DBTreeToken)token);
         node.setPosition(line, pos);
         return node;
     }
@@ -255,8 +254,8 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
         public boolean breakpoint = false;
 
-        public InputTreeNode(DBTreeToken token, Grammar grammar) {
-            super(token, grammar);
+        public InputTreeNode(DBTreeToken token) {
+            super(token);
         }
 
         public void toggleBreakpoint() {
@@ -274,7 +273,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
         public String toString() {
             if(token != null)
-                return token.getText(); //+" <"+grammar.getTokenDisplayName(token.getType())+">"
+                return token.getText();
             else
                 return "nil";
         }

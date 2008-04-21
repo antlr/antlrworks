@@ -1,16 +1,12 @@
-package org.antlr.works.grammar;
+package org.antlr.works.grammar.antlr;
 
-import org.antlr.analysis.DFA;
 import org.antlr.analysis.NFAState;
-import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
-import org.antlr.tool.Rule;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
-/*
+import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.engine.GrammarProperties;/*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005-07 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,33 +34,33 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class TokensDFA extends GrammarDOTTab {
+public interface ANTLRGrammarEngine {
 
-    public TokensDFA(ComponentEditorGrammar editor) {
-        super(editor);
-    }
+    // todo remove
+    GrammarProperties getSyntax();
 
-    @Override
-    public String getDOTString() throws Exception {
-        ANTLRGrammarEngine eg = editor.getGrammarEngine().getANTLRGrammarEngine();
-        eg.analyze();
+    void close();
 
-        Grammar g = eg.getLexerGrammar();
-        if(g == null) {
-            throw new Exception("Cannot show tokens DFA because there is no lexer grammar");
-        }
-        Rule r = g.getRule(Grammar.ARTIFICIAL_TOKENS_RULENAME);
-        NFAState s = (NFAState)r.startState.transition(0).target;
-        DFA dfa = g.getLookaheadDFA(s.getDecisionNumber());
+    // todo
+    void markDirty();
 
-        DOTGenerator dg = new DOTGenerator(g);
-        dg.setArrowheadType("none");
-        dg.setRankdir("LR");    // Left-to-right
-        return dg.getDOT( dfa.startState );
-    }
+    boolean hasGrammar();
 
-    public String getTabName() {
-        return Grammar.ARTIFICIAL_TOKENS_RULENAME+" DFA";
-    }
+    Grammar getDefaultGrammar();
+    Grammar getParserGrammar();
+    Grammar getLexerGrammar();
 
+    NFAState getRuleStartState(String name) throws Exception;
+    Grammar getGrammarForRule(String name) throws Exception;
+
+    String getFileName();
+
+    // todo expose?
+    void createGrammars() throws Exception;
+
+    ANTLRGrammarResult analyze() throws Exception;
+    void cancel();
+
+    // todo expose?
+    void computeRuleErrors(ElementRule rule);
 }

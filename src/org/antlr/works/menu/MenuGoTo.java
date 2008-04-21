@@ -32,11 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
-import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.ElementReference;
-import org.antlr.works.grammar.syntax.GrammarSyntax;
+import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.stats.StatisticsAW;
 
 import javax.swing.*;
@@ -60,28 +59,28 @@ public class MenuGoTo extends MenuAbstract {
 
         final ElementReference ref = getSelectedEditor().getCurrentReference();
         if(ref != null) {
-            GrammarSyntax syntax = getSelectedEditor().getSyntaxEngine().getSyntax();
-            ATEToken decl = syntax.getFirstDeclaration(ref.getName());
-            if(decl == null) {
+            GrammarEngine engine = getSelectedEditor().getGrammarEngine();
+            int index = engine.getFirstDeclarationPosition(ref.getName());
+            if(index == -1) {
                 // this grammar does not contain the declaration. Search in the other children
-                List<String> grammars = syntax.getGrammarsOverriddenByRule(ref.getName());
+                List<String> grammars = engine.getGrammarsOverriddenByRule(ref.getName());
                 if(!grammars.isEmpty()) {
                     getSelectedEditor().getContainer().selectGrammar(grammars.get(0));
 
                     // set the caret position
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            GrammarSyntax syntax = getSelectedEditor().getSyntaxEngine().getSyntax();
-                            ATEToken decl = syntax.getFirstDeclaration(ref.getName());
-                            if(decl != null) {
-                                setCaretPosition(decl.start);
+                            GrammarEngine engine = getSelectedEditor().getGrammarEngine();
+                            int index = engine.getFirstDeclarationPosition(ref.getName());
+                            if(index != -1) {
+                                setCaretPosition(index);
                             }
                         }
                     });
 
                 }
             } else {
-                setCaretPosition(decl.start);
+                setCaretPosition(index);
             }
             return;
         }
@@ -105,7 +104,7 @@ public class MenuGoTo extends MenuAbstract {
 
         while(true) {
             line += direction;
-            if(line < 0 || line > getSelectedEditor().syntaxEngine.getMaxLines()-1)
+            if(line < 0 || line > getSelectedEditor().getGrammarEngine().getNumberOfLines()-1)
                 break;
 
             if(breakpoints.contains(Integer.valueOf(line))) {

@@ -35,7 +35,7 @@ import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.tool.Grammar;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
+import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
@@ -81,7 +81,7 @@ public class CodeGenerate implements Runnable {
 
     public String getGrammarLanguage() {
         try {
-            AntlrEngineGrammar eg = editor.getSyntaxEngine().getAntlrGrammar();
+            ANTLRGrammarEngine eg = editor.getSyntaxEngine().getAntlrGrammar();
             eg.createGrammars();
             Grammar g = eg.getParserGrammar();
             if(g == null) {
@@ -152,7 +152,7 @@ public class CodeGenerate implements Runnable {
 
     public String getGeneratedClassName(int type) throws Exception {
         String name = null;
-        AntlrEngineGrammar antlrEngineGrammar = editor.getSyntaxEngine().getAntlrGrammar();
+        ANTLRGrammarEngine antlrEngineGrammar = editor.getSyntaxEngine().getAntlrGrammar();
         antlrEngineGrammar.createGrammars();
         if(type == ElementGrammarName.LEXER) {
             Grammar g = antlrEngineGrammar.getLexerGrammar();

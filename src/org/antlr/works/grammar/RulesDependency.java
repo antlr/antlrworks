@@ -65,7 +65,7 @@ public class RulesDependency extends GrammarDOTTab {
         }
 
         includeLexerRefs = true;
-        if(!rule.lexer && editor.getSyntaxEngine().getSyntax().isCombinedGrammar()) {
+        if(!rule.lexer && editor.getGrammarEngine().isCombinedGrammar()) {
             includeLexerRefs = XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Rule Dependency Graph", "Do you want to include lexer references ?") == XJAlert.YES;
         }
 
@@ -113,7 +113,7 @@ public class RulesDependency extends GrammarDOTTab {
             dependency.append(";\n");
 
             if (!visitedRules.contains(refRuleName))
-                buildGraph(editor.rules.getRuleWithName(refRuleName));
+                buildGraph(editor.getGrammarEngine().getRuleWithName(refRuleName));
         }
     }
 

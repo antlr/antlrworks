@@ -5,7 +5,6 @@ import org.antlr.Tool;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngineDelegate;
 import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
 import org.antlr.works.utils.Console;
 import org.antlr.xjlib.foundation.XJUtils;
@@ -42,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate, GrammarSyntaxEngineDelegate {
+public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate {
 
     protected GrammarSyntaxEngine engine = new GrammarSyntaxEngine(this);
     protected String text;

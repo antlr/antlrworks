@@ -39,7 +39,7 @@ import org.antlr.works.grammar.element.ElementAction;
 import org.antlr.works.grammar.element.ElementGroup;
 import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
-import org.antlr.works.grammar.syntax.GrammarSyntax;
+import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.syntax.GrammarSyntaxLexer;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.IconManager;
@@ -120,8 +120,8 @@ public class EditorRules implements XJTreeDelegate {
                 new RuleMoveDownAction());
     }
 
-    public GrammarSyntax getSyntaxEngine() {
-        return editor.getSyntaxEngine().getSyntax();
+    public GrammarEngine getGrammarEngine() {
+        return editor.getGrammarEngine();
     }
 
     public boolean isSorted() {
@@ -149,7 +149,6 @@ public class EditorRules implements XJTreeDelegate {
      * This method iterates over all rules and all blocks inside each rule to
      * find a sequence of token equals to "$channel=HIDDEN" or "skip()".
      */
-
     public void findTokensToIgnore(boolean reset) {
         List<ElementRule> rules = getRules();
         if(rules == null || rules.isEmpty())
@@ -212,9 +211,9 @@ public class EditorRules implements XJTreeDelegate {
     public class RuleMoveUpAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
             ElementRule sourceRule = getEnclosingRuleAtPosition(editor.getCaretPosition());
-            int previousRuleIndex = getSyntaxEngine().getRules().indexOf(sourceRule)-1;
+            int previousRuleIndex = getGrammarEngine().getRules().indexOf(sourceRule)-1;
             if(previousRuleIndex>=0) {
-                ElementRule targetRule = getSyntaxEngine().getRuleAtIndex(previousRuleIndex);
+                ElementRule targetRule = getGrammarEngine().getRuleAtIndex(previousRuleIndex);
                 moveRule(sourceRule, targetRule, true);
             }
         }
@@ -223,8 +222,8 @@ public class EditorRules implements XJTreeDelegate {
     public class RuleMoveDownAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
             ElementRule targetRule = getEnclosingRuleAtPosition(editor.getCaretPosition());
-            int nextRuleIndex = getSyntaxEngine().getRules().indexOf(targetRule)+1;
-            ElementRule sourceRule = getSyntaxEngine().getRuleAtIndex(nextRuleIndex);
+            int nextRuleIndex = getGrammarEngine().getRules().indexOf(targetRule)+1;
+            ElementRule sourceRule = getGrammarEngine().getRuleAtIndex(nextRuleIndex);
             if(sourceRule != null) {
                 moveRule(sourceRule, targetRule, true);
                 selectNextRule = true;
@@ -252,7 +251,7 @@ public class EditorRules implements XJTreeDelegate {
 
     public ElementGroup findOpenGroupClosestToLocation(int location) {
         // Look backward into the list of groups
-        List<ElementGroup> groups = getSyntaxEngine().getGroups();
+        List<ElementGroup> groups = getGrammarEngine().getGroups();
         if(groups == null || groups.isEmpty())
             return null;
 
@@ -271,7 +270,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementGroup findClosingGroupForGroup(ElementGroup group) {
-        List<ElementGroup> groups = getSyntaxEngine().getGroups();
+        List<ElementGroup> groups = getGrammarEngine().getGroups();
         if(groups == null || groups.isEmpty())
             return null;
 
@@ -294,7 +293,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public List<ElementRule> getRules() {
-        return getSyntaxEngine().getRules();
+        return getGrammarEngine().getRules();
     }
 
     public List<ElementRule> getSortedRules() {
@@ -335,7 +334,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementRule getLastRule() {
-        List<ElementRule> rules = getSyntaxEngine().getRules();
+        List<ElementRule> rules = getGrammarEngine().getRules();
         if(rules != null && !rules.isEmpty())
             return rules.get(rules.size()-1);
         else
@@ -343,7 +342,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementRule getLastParserRule() {
-        List<ElementRule> rules = getSyntaxEngine().getRules();
+        List<ElementRule> rules = getGrammarEngine().getRules();
         for(int index = rules.size()-1; index>0; index--) {
             ElementRule rule = rules.get(index);
             if(!rule.lexer)
@@ -353,7 +352,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementRule getLastLexerRule() {
-        List<ElementRule> rules = getSyntaxEngine().getRules();
+        List<ElementRule> rules = getGrammarEngine().getRules();
         for(int index = rules.size()-1; index>0; index--) {
             ElementRule rule = rules.get(index);
             if(rule.lexer)
@@ -362,22 +361,12 @@ public class EditorRules implements XJTreeDelegate {
         return null;
     }
 
-    // todo already in GrammarSyntax
-    public ElementRule getRuleWithName(String name) {
-        List<ElementRule> rules = getSyntaxEngine().getRules();
-        for (ElementRule r : rules) {
-            if (r.name.equals(name))
-                return r;
-        }
-        return null;
-    }
-
     public List<String> getRulesStartingWith(String match) {
         List<String> matches = new ArrayList<String>();
-        if(getSyntaxEngine().getRules() == null)
+        if(getGrammarEngine().getRules() == null)
             return matches;
 
-        List<ElementRule> rules = getSyntaxEngine().getRules();
+        List<ElementRule> rules = getGrammarEngine().getRules();
         for (ElementRule r : rules) {
             String rname = r.name.toLowerCase();
             if (rname.startsWith(match) && !matches.contains(r.name))
@@ -387,11 +376,11 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public List<ElementReference> getReferencesInRule(ElementRule rule) {
-        if(getSyntaxEngine().getRules() == null)
+        if(getGrammarEngine().getRules() == null)
             return null;
 
         List<ElementReference> refs = new ArrayList<ElementReference>();
-        for (ElementReference r : getSyntaxEngine().getReferences()) {
+        for (ElementReference r : getGrammarEngine().getReferences()) {
             if (r.rule == rule)
                 refs.add(r);
         }
@@ -399,10 +388,10 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementRule getEnclosingRuleAtPosition(int pos) {
-        if(getSyntaxEngine().getRules() == null)
+        if(getGrammarEngine().getRules() == null)
             return null;
 
-        for (ElementRule r : getSyntaxEngine().getRules()) {
+        for (ElementRule r : getGrammarEngine().getRules()) {
             if (r.containsIndex(pos))
                 return r;
         }
@@ -410,7 +399,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementRule selectRuleInTreeAtPosition(int pos) {
-        if(programmaticallySelectingRule || getSyntaxEngine().getRules() == null)
+        if(programmaticallySelectingRule || getGrammarEngine().getRules() == null)
             return null;
 
         programmaticallySelectingRule = true;
@@ -421,12 +410,12 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementRule selectRuleNameInTree(String name) {
-        if(programmaticallySelectingRule || getSyntaxEngine().getRules() == null)
+        if(programmaticallySelectingRule || getGrammarEngine().getRules() == null)
             return null;
 
         ElementRule rule = null;
         programmaticallySelectingRule = true;
-        for (ElementRule r : getSyntaxEngine().getRules()) {
+        for (ElementRule r : getGrammarEngine().getRules()) {
             if (r.name.equals(name)) {
                 selectRuleInTree(r);
                 rule = r;
@@ -438,10 +427,10 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public ElementRule getRuleAtIndex(int index) {
-        if(getSyntaxEngine().getRules() == null)
+        if(getGrammarEngine().getRules() == null)
             return null;
 
-        for (ElementRule r : getSyntaxEngine().getRules()) {
+        for (ElementRule r : getGrammarEngine().getRules()) {
             if (index >= r.getStartIndex() && index <= r.getEndIndex())
                 return r;
         }
@@ -454,8 +443,8 @@ public class EditorRules implements XJTreeDelegate {
 
     public void selectNextRule() {
         ElementRule rule = getEnclosingRuleAtPosition(editor.getCaretPosition());
-        int index = getSyntaxEngine().getRules().indexOf(rule)+1;
-        rule = getSyntaxEngine().getRuleAtIndex(index);
+        int index = getGrammarEngine().getRules().indexOf(rule)+1;
+        rule = getGrammarEngine().getRuleAtIndex(index);
         if(rule != null) {
             editor.setCaretPosition(rule.getStartIndex());
             editor.rulesCaretPositionDidChange();
@@ -490,8 +479,8 @@ public class EditorRules implements XJTreeDelegate {
 
         rulesTreeRootNode.removeAllChildren();
 
-        List<ElementRule> rules = getSyntaxEngine().getRules();
-        List<ElementGroup> groups = getSyntaxEngine().getGroups();
+        List<ElementRule> rules = getGrammarEngine().getRules();
+        List<ElementGroup> groups = getGrammarEngine().getGroups();
         if(rules == null || groups == null)
             return;
 

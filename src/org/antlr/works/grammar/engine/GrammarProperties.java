@@ -1,11 +1,12 @@
-package org.antlr.works.grammar.syntax;
+package org.antlr.works.grammar.engine;
 
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.grammar.antlr.AntlrEngineGrammar;
 import org.antlr.works.grammar.element.*;
+import org.antlr.works.grammar.syntax.GrammarSyntaxLexer;
+import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.IOException;
@@ -41,7 +42,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarSyntax {
+public class GrammarProperties {
+
+    private GrammarProperties parentProperties;
+    private final List<GrammarProperties> importedProperties = new ArrayList<GrammarProperties>();
 
     private ElementGrammarName name;
 
@@ -53,21 +57,18 @@ public class GrammarSyntax {
     private List<ElementImport> imports;
     private List<ATEToken> decls;
 
-    private GrammarSyntax parentSyntax;
-    private List<GrammarSyntax> importedSyntax = new ArrayList<GrammarSyntax>();
+    private final List<ElementRule> duplicateRules = new ArrayList<ElementRule>();
+    private final List<ElementReference> undefinedReferences = new ArrayList<ElementReference>();
+    // todo used?
+    private final List<ElementRule> hasLeftRecursionRules = new ArrayList<ElementRule>();
 
-    private List<ElementRule> duplicateRules = new ArrayList<ElementRule>();
-    private List<ElementReference> undefinedReferences = new ArrayList<ElementReference>();
-    private List<ElementRule> hasLeftRecursionRules = new ArrayList<ElementRule>();
-
-    private Set<String> tokenVocabNames = new HashSet<String>();
+    private final Set<String> tokenVocabNames = new HashSet<String>();
     private String tokenVocabName;
 
-    private GrammarSyntaxEngine engine;
+    public GrammarProperties() {
+    }
 
-    public GrammarSyntax(GrammarSyntaxEngine engine, GrammarSyntaxParser parser) {
-        this.engine = engine;
-
+    public void update(GrammarSyntaxParser parser) {
         this.rules = new ArrayList<ElementRule>(parser.rules);
         this.groups = new ArrayList<ElementGroup>(parser.groups);
         this.blocks = new ArrayList<ElementBlock>(parser.blocks);
@@ -356,25 +357,26 @@ public class GrammarSyntax {
 
     public List<String> getAllGeneratedNames() throws Exception {
         List<String> names = new ArrayList<String>();
-        Grammar g = engine.getAntlrGrammar().getANTLRGrammar();
+        Grammar g = engine.getAntlrGrammar().getDefaultGrammar();
         names.add(g.getRecognizerName());
+        for(Grammar gd : g.getDelegates()) {
+            names.add(gd.getRecognizerName());
+        }
+
         Grammar lexer = getAntlrGrammar().getLexerGrammar();
         if(lexer != null) {
             names.add(lexer.getRecognizerName());
         }
-        for(Grammar gd : g.getDelegates()) {
-            names.add(gd.getRecognizerName());
-        }
         return names;
     }
 
-    public void updateHierarchy(Map<String, GrammarSyntax> entities) {
-        importedSyntax.clear();
+    public void updateHierarchy(Map<String, GrammarProperties> entities) {
+        importedProperties.clear();
         for(ElementImport element : imports) {
-            GrammarSyntax d = entities.get(element.getName()+".g");
+            GrammarProperties d = entities.get(element.getName()+".g");
             if(d != null) {
                 d.setParent(this);
-                importedSyntax.add(d);
+                importedProperties.add(d);
                 d.updateHierarchy(entities);
             }
         }
@@ -382,20 +384,12 @@ public class GrammarSyntax {
     }
 
 
-    public AntlrEngineGrammar getAntlrGrammar() {
-        return engine.getAntlrGrammar();
+    public GrammarProperties getParent() {
+        return parentProperties;
     }
 
-    public GrammarSyntaxEngineDelegate getDelegate() {
-        return engine.getDelegate();
-    }
-
-    public GrammarSyntax getParent() {
-        return parentSyntax;
-    }
-
-    public void setParent(GrammarSyntax parent) {
-        this.parentSyntax = parent;
+    public void setParent(GrammarProperties parent) {
+        this.parentProperties = parent;
     }
 
     /**
@@ -405,7 +399,7 @@ public class GrammarSyntax {
      */
     public List<String> getGrammarsOverriddenByRule(String name) {
         List<String> grammars = new ArrayList<String>();
-        for(GrammarSyntax child : importedSyntax) {
+        for(GrammarProperties child : importedProperties) {
             for(ATEToken decl : child.getDecls()) {
                 if(decl.getAttribute().equals(name)) {
                     grammars.add(child.getName());
@@ -422,19 +416,28 @@ public class GrammarSyntax {
      */
     public List<String> getGrammarsOverridingRule(String name) {
         List<String> grammars = new ArrayList<String>();
-        if(parentSyntax != null) {
-            for(ATEToken decl : parentSyntax.getDecls()) {
+        if(parentProperties != null) {
+            for(ATEToken decl : parentProperties.getDecls()) {
                 if(decl.getAttribute().equals(name)) {
-                    grammars.add(parentSyntax.getName());
+                    grammars.add(parentProperties.getName());
                     break;
                 }
             }
-            grammars.addAll(parentSyntax.getGrammarsOverridingRule(name));
+            grammars.addAll(parentProperties.getGrammarsOverridingRule(name));
         }
         return grammars;
     }
 
-    public ATEToken getFirstDeclaration(String name) {
+    public int getFirstDeclarationPosition(String name) {
+        ATEToken token = getFirstDeclaration(name);
+        if(token != null) {
+            return token.start;
+        } else {
+            return -1;
+        }
+    }
+
+    private ATEToken getFirstDeclaration(String name) {
         for(ATEToken decl : getDecls()) {
             if(decl.getAttribute().equals(name)) {
                 return decl;

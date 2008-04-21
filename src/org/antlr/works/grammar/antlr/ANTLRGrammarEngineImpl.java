@@ -40,9 +40,8 @@ import org.antlr.tool.*;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.element.ElementRule;
-import org.antlr.works.grammar.syntax.GrammarSyntax;
+import org.antlr.works.grammar.engine.GrammarProperties;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngineDelegate;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 
@@ -52,23 +51,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class AntlrEngineGrammar {
+public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
 
     private Grammar parserGrammar;
     private Grammar lexerGrammar;
-    private List<AntlrGrammarError> errors;
+    private List<ANTLRGrammarError> errors;
 
     private boolean needsToCreateGrammar;
     private boolean needsToAnalyzeGrammar;
 
-    private AntlrGrammarResult createGrammarResult = new AntlrGrammarResult();
-    private AntlrGrammarResult analyzeResult = new AntlrGrammarResult();
+    private ANTLRGrammarResult createGrammarResult = new ANTLRGrammarResult();
+    private ANTLRGrammarResult analyzeResult = new ANTLRGrammarResult();
 
     private GrammarSyntaxEngine engine;
 
-    public AntlrEngineGrammar(GrammarSyntaxEngine engine) {
+    public ANTLRGrammarEngineImpl(GrammarSyntaxEngine engine) {
         this.engine = engine;
-        errors = new ArrayList<AntlrGrammarError>();
+        errors = new ArrayList<ANTLRGrammarError>();
         markDirty();
     }
 
@@ -76,12 +75,8 @@ public class AntlrEngineGrammar {
         errors = null;
     }
 
-    public GrammarSyntax getSyntax() {
+    public GrammarProperties getSyntax() {
         return engine.getSyntax();
-    }
-
-    public GrammarSyntaxEngineDelegate getDelegate() {
-        return engine.getDelegate();
     }
 
     public void markDirty() {
@@ -116,7 +111,7 @@ public class AntlrEngineGrammar {
             return getParserGrammar();
     }
 
-    public List<AntlrGrammarError> getErrors() {
+    public List<ANTLRGrammarError> getErrors() {
         return errors;
     }
 
@@ -133,7 +128,7 @@ public class AntlrEngineGrammar {
         return false;
     }
 
-    public Grammar getANTLRGrammar() {
+    public Grammar getDefaultGrammar() {
         switch(getSyntax().getType()) {
             case ElementGrammarName.COMBINED:
                 return parserGrammar;
@@ -228,7 +223,7 @@ public class AntlrEngineGrammar {
         lexerGrammar = createNewGrammar(getFileName(), getDelegate().getText());
     }
 
-    public void printLeftRecursionToConsole(List rules) {
+    private void printLeftRecursionToConsole(List rules) {
         StringBuffer info = new StringBuffer();
         info.append("Aborting because the following rules are mutually left-recursive:");
         for (Object rule : rules) {
@@ -239,7 +234,7 @@ public class AntlrEngineGrammar {
         getDelegate().getConsole().println(info.toString(), Console.LEVEL_ERROR);
     }
 
-    public void markLeftRecursiveRules(List rules) {
+    private void markLeftRecursiveRules(List rules) {
         // 'rules' is a list of set of rules given by ANTLR
         for (Object rule : rules) {
             Set rulesSet = (Set) rule;
@@ -253,7 +248,7 @@ public class AntlrEngineGrammar {
         }
     }
 
-    public AntlrGrammarResult analyze() throws Exception {
+    public ANTLRGrammarResult analyze() throws Exception {
         // if there is no need to analyze the grammar, return the previous result
         if(!needsToAnalyzeGrammar) {
             return analyzeCompleted(null);
@@ -265,7 +260,7 @@ public class AntlrEngineGrammar {
 
         createGrammars();
 
-        Grammar g = getANTLRGrammar();
+        Grammar g = getDefaultGrammar();
         if(g == null) {
             return analyzeCompleted(el);
         }
@@ -302,7 +297,7 @@ public class AntlrEngineGrammar {
         return analyzeCompleted(el);
     }
 
-    public AntlrGrammarResult analyzeCompleted(ErrorListener el) throws InvocationTargetException, InterruptedException {
+    private ANTLRGrammarResult analyzeCompleted(ErrorListener el) throws InvocationTargetException, InterruptedException {
         if(SwingUtilities.isEventDispatchThread()) {
             getDelegate().antlrEngineGrammarDidAnalyze();
         } else {
@@ -328,8 +323,8 @@ public class AntlrEngineGrammar {
         return getCompleteResult();
     }
 
-    private AntlrGrammarResult getCompleteResult() {
-        AntlrGrammarResult result = new AntlrGrammarResult();
+    private ANTLRGrammarResult getCompleteResult() {
+        ANTLRGrammarResult result = new ANTLRGrammarResult();
         result.errors.clear();
         result.errors.addAll(createGrammarResult.errors);
         result.errors.addAll(analyzeResult.errors);
@@ -345,7 +340,7 @@ public class AntlrEngineGrammar {
     }
 
     public void cancel() {
-        Grammar g = getANTLRGrammar();
+        Grammar g = getDefaultGrammar();
         if(g != null)
             g.externallyAbortNFAToDFAConversion();
     }
@@ -369,8 +364,8 @@ public class AntlrEngineGrammar {
             errors.add(buildNonRegularDecisionError((NonRegularDecisionMessage)o));
     }
 
-    private AntlrGrammarError buildNonDeterministicError(GrammarNonDeterminismMessage message) {
-        AntlrGrammarError error = new AntlrGrammarError();
+    private ANTLRGrammarError buildNonDeterministicError(GrammarNonDeterminismMessage message) {
+        ANTLRGrammarError error = new ANTLRGrammarError();
         error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
 
         List labels = message.probe.getSampleNonDeterministicInputSequence(message.problemState);
@@ -383,8 +378,8 @@ public class AntlrEngineGrammar {
         return error;
     }
 
-    private AntlrGrammarError buildUnreachableAltsError(GrammarUnreachableAltsMessage message) {
-        AntlrGrammarError error = new AntlrGrammarError();
+    private ANTLRGrammarError buildUnreachableAltsError(GrammarUnreachableAltsMessage message) {
+        ANTLRGrammarError error = new ANTLRGrammarError();
 
         error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
         error.setMessageText("The following alternatives are unreachable: "+message.alts);
@@ -393,8 +388,8 @@ public class AntlrEngineGrammar {
         return error;
     }
 
-    private AntlrGrammarError buildNonRegularDecisionError(NonRegularDecisionMessage message) {
-        AntlrGrammarError error = new AntlrGrammarError();
+    private ANTLRGrammarError buildNonRegularDecisionError(NonRegularDecisionMessage message) {
+        ANTLRGrammarError error = new ANTLRGrammarError();
 
         error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
         error.setMessageText(message.toString());
@@ -411,14 +406,14 @@ public class AntlrEngineGrammar {
         getDelegate().rulesChanged();
     }
 
-    private void updateRuleWithErrors(ElementRule rule, List<AntlrGrammarError> errors) throws Exception {
+    private void updateRuleWithErrors(ElementRule rule, List<ANTLRGrammarError> errors) throws Exception {
         rule.setErrors(errors);
         rule.setNeedsToBuildErrors(true);
     }
 
-    private List<AntlrGrammarError> fetchErrorsForRule(ElementRule rule) {
-        List<AntlrGrammarError> errors = new ArrayList<AntlrGrammarError>();
-        for (AntlrGrammarError error : getErrors()) {
+    private List<ANTLRGrammarError> fetchErrorsForRule(ElementRule rule) {
+        List<ANTLRGrammarError> errors = new ArrayList<ANTLRGrammarError>();
+        for (ANTLRGrammarError error : getErrors()) {
             if (error.line >= rule.start.startLineNumber && error.line <= rule.end.startLineNumber)
                 errors.add(error);
         }
@@ -426,21 +421,21 @@ public class AntlrEngineGrammar {
     }
 
     public void computeRuleErrors(ElementRule rule) {
-        List<AntlrGrammarError> errors = rule.getErrors();
-        for (AntlrGrammarError error : errors) {
+        List<ANTLRGrammarError> errors = rule.getErrors();
+        for (ANTLRGrammarError error : errors) {
             Object o = error.getMessage();
             if (o instanceof GrammarUnreachableAltsMessage)
-                computeRuleError(rule, error, (GrammarUnreachableAltsMessage) o);
+                computeRuleError(error, (GrammarUnreachableAltsMessage) o);
             else if (o instanceof GrammarNonDeterminismMessage)
-                computeRuleError(rule, error, (GrammarNonDeterminismMessage) o);
+                computeRuleError(error, (GrammarNonDeterminismMessage) o);
             else if (o instanceof NonRegularDecisionMessage)
-                computeRuleError(rule, error, (NonRegularDecisionMessage) o);
+                computeRuleError(error, (NonRegularDecisionMessage) o);
         }
 
         rule.setNeedsToBuildErrors(false);
     }
 
-    private void computeRuleError(ElementRule rule, AntlrGrammarError error, GrammarNonDeterminismMessage message) {
+    private void computeRuleError(ANTLRGrammarError error, GrammarNonDeterminismMessage message) {
         List nonDetAlts = message.probe.getNonDeterministicAltsForState(message.problemState);
         Set disabledAlts = message.probe.getDisabledAlternatives(message.problemState);
 
@@ -470,7 +465,7 @@ public class AntlrEngineGrammar {
         }
     }
 
-    private void computeRuleError(ElementRule rule, AntlrGrammarError error, GrammarUnreachableAltsMessage message) {
+    private void computeRuleError(ANTLRGrammarError error, GrammarUnreachableAltsMessage message) {
         NFAState state = message.probe.dfa.getNFADecisionStartState();
         for (Object alt : message.alts) {
             error.addUnreachableAlt(state, (Integer) alt);
@@ -479,7 +474,7 @@ public class AntlrEngineGrammar {
         }
     }
 
-    private void computeRuleError(ElementRule rule, AntlrGrammarError error, NonRegularDecisionMessage message) {
+    private void computeRuleError(ANTLRGrammarError error, NonRegularDecisionMessage message) {
         NFAState state = message.probe.dfa.getNFADecisionStartState();
         for (Object alt : message.altsWithRecursion) {
             // Use currently the unreachable alt for display purpose only
