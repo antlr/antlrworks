@@ -1,13 +1,17 @@
 package org.antlr.works.grammar.engine;
 
+import org.antlr.Tool;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
+import org.antlr.works.grammar.antlr.ANTLRGrammarEngineImpl;
 import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 
-import java.util.List;/*
+import java.util.List;
+
+/*
 
 [The "BSD licence"]
 Copyright (c) 2005-07 Jean Bovet
@@ -40,16 +44,24 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class GrammarEngineImpl implements GrammarEngine {
 
-    private GrammarProperties properties;
-    private ANTLRGrammarEngine antlrEngine;
-    private GrammarSyntaxEngine syntaxEngine;
+    private GrammarEngineDelegate delegate;
 
-    public GrammarEngineImpl(GrammarSyntaxEngine syntaxEngine) {
-        this.syntaxEngine = syntaxEngine;
+    private final GrammarProperties properties = new GrammarProperties();
+    private final ANTLRGrammarEngine antlrEngine = new ANTLRGrammarEngineImpl();
+    private final GrammarSyntaxEngine syntaxEngine = new GrammarSyntaxEngine();
+
+    public GrammarEngineImpl(GrammarEngineDelegate delegate) {
+        this.delegate = delegate;
+
+        properties.setGrammarEngine(this);
+        properties.setSyntaxEngine(syntaxEngine);
+        properties.setAntlrEngine(antlrEngine);
+        antlrEngine.setGrammarEngine(this);
     }
 
     public void close() {
-        // todo used?
+        antlrEngine.close();
+        syntaxEngine.close();
     }
 
     public ANTLRGrammarEngine getANTLRGrammarEngine() {
@@ -58,6 +70,10 @@ public class GrammarEngineImpl implements GrammarEngine {
 
     public ATESyntaxEngine getSyntaxEngine() {
         return syntaxEngine;
+    }
+
+    public int getType() {
+        return properties.getType();
     }
 
     public ElementGrammarName getElementName() {
@@ -104,6 +120,10 @@ public class GrammarEngineImpl implements GrammarEngine {
         return properties.getGroups();
     }
 
+    public List<ElementBlock> getBlocks() {
+        return properties.getBlocks();
+    }
+
     public int getNumberOfLines() {
         return syntaxEngine.getMaxLines();
     }
@@ -114,6 +134,10 @@ public class GrammarEngineImpl implements GrammarEngine {
 
     public int getNumberOfErrors() {
         return properties.getNumberOfErrors();
+    }
+
+    public String getTokenVocab() {
+        return properties.getTokenVocab();
     }
 
     public int getFirstDeclarationPosition(String name) {
@@ -170,4 +194,29 @@ public class GrammarEngineImpl implements GrammarEngine {
     public boolean isCombinedGrammar() {
         return properties.isCombinedGrammar();
     }
+
+    public void antlrGrammarEngineAnalyzeCompleted() {
+        delegate.engineAnalyzeCompleted();
+    }
+
+    public String getGrammarFileName() {
+        return delegate.getGrammarFileName();
+    }
+
+    public String getGrammarText() {
+        return delegate.getGrammarText();
+    }
+
+    public String getTokenVocabFile(String name) {
+        return delegate.getTokenVocabFile(name);
+    }
+
+    public Tool getANTLRTool() {
+        return delegate.getANTLRTool();
+    }
+
+    public void reportError(String error) {
+        delegate.reportError(error);
+    }
+    
 }

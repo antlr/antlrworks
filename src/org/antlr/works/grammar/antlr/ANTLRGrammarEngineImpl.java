@@ -34,15 +34,12 @@ package org.antlr.works.grammar.antlr;
 
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
-import org.antlr.Tool;
 import org.antlr.analysis.NFAState;
 import org.antlr.tool.*;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.element.ElementRule;
-import org.antlr.works.grammar.engine.GrammarProperties;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
-import org.antlr.works.utils.Console;
+import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.utils.ErrorListener;
 
 import javax.swing.*;
@@ -60,23 +57,22 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
     private boolean needsToCreateGrammar;
     private boolean needsToAnalyzeGrammar;
 
-    private ANTLRGrammarResult createGrammarResult = new ANTLRGrammarResult();
-    private ANTLRGrammarResult analyzeResult = new ANTLRGrammarResult();
+    private final ANTLRGrammarResult createGrammarResult = new ANTLRGrammarResult();
+    private final ANTLRGrammarResult analyzeResult = new ANTLRGrammarResult();
 
-    private GrammarSyntaxEngine engine;
+    private GrammarEngine engine;
 
-    public ANTLRGrammarEngineImpl(GrammarSyntaxEngine engine) {
-        this.engine = engine;
+    public ANTLRGrammarEngineImpl() {
         errors = new ArrayList<ANTLRGrammarError>();
         markDirty();
     }
 
-    public void close() {
-        errors = null;
+    public void setGrammarEngine(GrammarEngine engine) {
+        this.engine = engine;
     }
 
-    public GrammarProperties getSyntax() {
-        return engine.getSyntax();
+    public void close() {
+        errors = null;
     }
 
     public void markDirty() {
@@ -116,7 +112,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
     }
 
     public boolean hasGrammar() {
-        switch(getSyntax().getType()) {
+        switch(engine.getType()) {
             case ElementGrammarName.COMBINED:
                 return parserGrammar != null;
             case ElementGrammarName.TREEPARSER:
@@ -129,7 +125,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
     }
 
     public Grammar getDefaultGrammar() {
-        switch(getSyntax().getType()) {
+        switch(engine.getType()) {
             case ElementGrammarName.COMBINED:
                 return parserGrammar;
             case ElementGrammarName.TREEPARSER:
@@ -139,15 +135,6 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
                 return lexerGrammar;
         }
         return null;
-    }
-
-    public Tool getANTLRTool() {
-        return getDelegate().getANTLRTool();
-    }
-
-    public String getFileName() {
-        String fileName = getDelegate().getFileName();
-        return fileName==null?"<notsaved>":fileName;
     }
 
     public void createGrammars() throws Exception {
@@ -160,7 +147,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         lexerGrammar = null;
 
         try {
-            switch(getSyntax().getType()) {
+            switch(engine.getType()) {
                 case ElementGrammarName.COMBINED:
                     createCombinedGrammar();
                     break;
@@ -184,11 +171,11 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         }
     }
 
-    private Grammar createNewGrammar(String filename, String content) throws TokenStreamException, RecognitionException {
+    private Grammar createNewGrammar() throws TokenStreamException, RecognitionException {
         Grammar g = new Grammar();
-        g.setTool(getANTLRTool());
-        g.setFileName(filename);
-        g.setGrammarContent(content);
+        g.setTool(engine.getANTLRTool());
+        g.setFileName(engine.getGrammarFileName());
+        g.setGrammarContent(engine.getGrammarText());
         g.composite.createNFAs();
         return g;
     }
@@ -205,7 +192,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
 
         Grammar lexerGrammar = new Grammar();
         lexerGrammar.implicitLexer = true;
-        lexerGrammar.setTool(getANTLRTool());
+        lexerGrammar.setTool(engine.getANTLRTool());
         lexerGrammar.setFileName("<internally-generated-lexer>");
         lexerGrammar.importTokenVocabulary(grammar);
 
@@ -216,11 +203,11 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
     }
 
     private void createParserGrammar() throws TokenStreamException, RecognitionException {
-        parserGrammar = createNewGrammar(getFileName(), getDelegate().getText());
+        parserGrammar = createNewGrammar();
     }
 
     private void createLexerGrammar() throws TokenStreamException, RecognitionException {
-        lexerGrammar = createNewGrammar(getFileName(), getDelegate().getText());
+        lexerGrammar = createNewGrammar();
     }
 
     private void printLeftRecursionToConsole(List rules) {
@@ -231,7 +218,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
             info.append("\n    ");
             info.append(rulesSet);
         }
-        getDelegate().getConsole().println(info.toString(), Console.LEVEL_ERROR);
+        engine.reportError(info.toString());
     }
 
     private void markLeftRecursiveRules(List rules) {
@@ -240,7 +227,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
             Set rulesSet = (Set) rule;
             for (Object aRulesSet : rulesSet) {
                 String name = (String) aRulesSet;
-                ElementRule r = getSyntax().getRuleWithName(name);
+                ElementRule r = engine.getRuleWithName(name);
                 if (r == null)
                     continue;
                 r.setLeftRecursiveRulesSet(rulesSet);
@@ -280,7 +267,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
                 g.composite.createNFAs();
             }
             g.createLookaheadDFAs();
-            if(getSyntax().isCombinedGrammar()) {
+            if(engine.isCombinedGrammar()) {
                 // If the grammar is combined, analyze also the lexer
                 if(lexerGrammar != null) {
                     lexerGrammar.composite.createNFAs();
@@ -299,11 +286,11 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
 
     private ANTLRGrammarResult analyzeCompleted(ErrorListener el) throws InvocationTargetException, InterruptedException {
         if(SwingUtilities.isEventDispatchThread()) {
-            getDelegate().antlrEngineGrammarDidAnalyze();
+            engine.antlrGrammarEngineAnalyzeCompleted();
         } else {
             SwingUtilities.invokeAndWait(new Runnable() {
                 public void run() {
-                    getDelegate().antlrEngineGrammarDidAnalyze();
+                    engine.antlrGrammarEngineAnalyzeCompleted();
                 }
             });
         }
@@ -399,11 +386,9 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
     }
 
     private void markRulesWithWarningsOrErrors() throws Exception {
-        for (ElementRule rule : getSyntax().getRules()) {
+        for (ElementRule rule : engine.getRules()) {
             updateRuleWithErrors(rule, fetchErrorsForRule(rule));
         }
-
-        getDelegate().rulesChanged();
     }
 
     private void updateRuleWithErrors(ElementRule rule, List<ANTLRGrammarError> errors) throws Exception {

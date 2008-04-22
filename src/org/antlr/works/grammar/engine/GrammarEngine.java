@@ -1,5 +1,6 @@
 package org.antlr.works.grammar.engine;
 
+import org.antlr.Tool;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
@@ -43,6 +44,8 @@ public interface GrammarEngine {
     ANTLRGrammarEngine getANTLRGrammarEngine();
     ATESyntaxEngine getSyntaxEngine();
 
+    int getType();
+
     ElementGrammarName getElementName();
     String getGrammarName();
 
@@ -57,11 +60,13 @@ public interface GrammarEngine {
     List<ElementImport> getImports();
     List<ElementAction> getActions();
     List<ElementGroup> getGroups();
+    List<ElementBlock> getBlocks();
 
     int getNumberOfLines();
     int getNumberOfRules();
     int getNumberOfErrors();
 
+    String getTokenVocab();
     int getFirstDeclarationPosition(String name);
     List<String> getGrammarsOverriddenByRule(String name);
 
@@ -77,4 +82,15 @@ public interface GrammarEngine {
 
     boolean isVersion2();
     boolean isCombinedGrammar();
+
+    void antlrGrammarEngineAnalyzeCompleted();
+
+    String getGrammarFileName();
+    String getGrammarText();
+    String getTokenVocabFile(String name);
+
+    Tool getANTLRTool();
+
+    void reportError(String error);
+
 }

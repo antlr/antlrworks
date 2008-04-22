@@ -3,7 +3,7 @@ package org.antlr.works.grammar.antlr;
 import org.antlr.analysis.NFAState;
 import org.antlr.tool.Grammar;
 import org.antlr.works.grammar.element.ElementRule;
-import org.antlr.works.grammar.engine.GrammarProperties;/*
+import org.antlr.works.grammar.engine.GrammarEngine;/*
 
 [The "BSD licence"]
 Copyright (c) 2005-07 Jean Bovet
@@ -36,8 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public interface ANTLRGrammarEngine {
 
-    // todo remove
-    GrammarProperties getSyntax();
+    void setGrammarEngine(GrammarEngine engine);
 
     void close();
 
@@ -52,8 +51,6 @@ public interface ANTLRGrammarEngine {
 
     NFAState getRuleStartState(String name) throws Exception;
     Grammar getGrammarForRule(String name) throws Exception;
-
-    String getFileName();
 
     // todo expose?
     void createGrammars() throws Exception;

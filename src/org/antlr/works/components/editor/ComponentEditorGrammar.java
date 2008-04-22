@@ -23,8 +23,8 @@ import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.engine.GrammarEngine;
+import org.antlr.works.grammar.engine.GrammarEngineDelegate;
 import org.antlr.works.grammar.engine.GrammarEngineImpl;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.interpreter.EditorInterpreter;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
@@ -88,8 +88,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public class ComponentEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
-        ATEPanelDelegate,
-        XJUndoDelegate, InspectorDelegate {
+        ATEPanelDelegate, XJUndoDelegate, InspectorDelegate, GrammarEngineDelegate {
 
     /* Completion */
 
@@ -235,7 +234,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     protected void initCore() {
         afterParserOp = new AfterParseOperations();
 
-        engine = new GrammarEngineImpl(new GrammarSyntaxEngine());
+        engine = new GrammarEngineImpl(this);
 
         decisionDFAEngine = new DecisionDFAEngine(this);
         interpreter = new EditorInterpreter(this);
@@ -452,12 +451,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return console;
     }
 
-    public void rulesChanged() {
-        // Clear graphic cache because we have to redraw each rule again
-        visual.clearCacheGraphs();
-        rules.refreshRules();
-    }
-
     public ATETextPane getTextPane() {
         return textEditor.getTextPane();
     }
@@ -634,6 +627,19 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return getTextPane().getText();
     }
 
+    public String getGrammarFileName() {
+        String fileName = getFileName();
+        return fileName==null?"<notsaved>":fileName;
+    }
+
+    public String getGrammarText() {
+        return getText();
+    }
+
+    public void reportError(String error) {
+        getConsole().println(error, Console.LEVEL_ERROR);
+    }
+
     public Tool getANTLRTool() {
         String[] params = AWPrefs.getANTLR3Options();
         if(getFileFolder() != null) {
@@ -644,6 +650,22 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         } else {
             return new Tool();
         }
+    }
+
+    /**
+     * This method gets called when the grammar has been analyzed by ANTLR. It has
+     * to update the syntax diagram and the rule information to reflect any error detected.
+     */
+    public void engineAnalyzeCompleted() {
+        // Clear graphic cache because we have to redraw each rule again
+        visual.clearCacheGraphs();
+        rules.refreshRules();
+
+        // Try to update the graph first and if they cannot be updated (i.e. the cache is empty), draw them again.
+        if(!visual.update()) {
+            updateVisualization(true);
+        }
+        updateInformation();
     }
 
     public void createRuleAtIndex(boolean lexer, String name, String content) {
@@ -875,18 +897,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         } else {
             visual.setPlaceholder("Syntax Diagram Disabled");
         }
-    }
-
-    /**
-     * This method gets called by AntlrGrammar once the grammar has been analyzed. It has
-     * to update the syntax diagram and the rule information to reflect any error detected.
-     */
-    public void antlrEngineGrammarDidAnalyze() {
-        // Try to update the graph first and if they cannot be updated (i.e. the cache is empty), draw them again.
-        if(!visual.update()) {
-            updateVisualization(true);
-        }
-        updateInformation();
     }
 
     public void updateInformation() {

@@ -51,7 +51,6 @@ import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.element.ElementRule;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
@@ -347,10 +346,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         astPanel.updateOnBreakEvent();
         stackPanel.updateOnBreakEvent();
         eventsPanel.updateOnBreakEvent();
-    }
-
-    public GrammarSyntaxEngine getSyntaxEngine() {
-        return delegate.getSyntaxEngine();
     }
 
     public boolean needsToGenerateGrammar() {

@@ -1,15 +1,8 @@
-package org.antlr.works.debugger.api;
+package org.antlr.works.grammar.engine;
 
-import org.antlr.works.generate.CodeGenerate;
-import org.antlr.works.grammar.element.ElementBlock;
-import org.antlr.works.grammar.element.ElementRule;
-import org.antlr.works.menu.ContextualMenuFactory;
-import org.antlr.works.utils.Console;
-import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.Tool;
 
-import java.awt.*;
-import java.util.List;
-import java.util.Set;/*
+/*
 
 [The "BSD licence"]
 Copyright (c) 2005-07 Jean Bovet
@@ -40,33 +33,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface DebuggerDelegate {
+public interface GrammarEngineDelegate {
 
-    void debuggerStarted();
-    void debuggerStopped();
+    String getGrammarFileName();
+    String getGrammarText();
 
-    void debuggerSetLocation(String grammar, int line, int column);
-    void debuggerSelectText(String grammar, int line, int column);
+    String getTokenVocabFile(String name);
 
-    Container getContainer();
-    
-    CodeGenerate getCodeGenerate();
-    String getTokenVocab();
-    Console getConsole();
+    Tool getANTLRTool();
 
-    List<ElementBlock> getBlocks();
+    void reportError(String error);
 
-    Set<Integer> getBreakpoints();
+    void engineAnalyzeCompleted();
 
-    XJDocument getDocument();
-
-    List<ElementRule> getRules();
-
-    List<ElementRule> getSortedRules();
-
-    boolean ensureDocumentSaved();
-
-    ContextualMenuFactory createContextualMenuFactory();
-
-    void selectConsoleTab();
 }

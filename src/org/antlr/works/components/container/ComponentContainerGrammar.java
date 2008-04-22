@@ -48,7 +48,6 @@ import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.engine.GrammarProperties;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
@@ -521,14 +520,14 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     }
 
-    private Map<String, GrammarProperties> syntaxes = new HashMap<String, GrammarProperties>();
+    private Map<String, GrammarProperties> properties = new HashMap<String, GrammarProperties>();
 
     public void editorParsed(ComponentEditor editor) {
         ComponentEditorGrammar eg = (ComponentEditorGrammar) editor;
-        GrammarProperties properties = eg.getSyntaxEngine().getSyntax();
+        GrammarProperties properties = eg.getGrammarEngine();
 
         String name = editor.getDocument().getDocumentName();
-        syntaxes.put(name, properties);
+        this.properties.put(name, properties);
 
         // make sure all the imported grammars are loaded
         for(ElementImport element : properties.getImports()) {
@@ -542,8 +541,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     private void updateHierarchy() {
         // always start with the root grammar
         String name = getDocument().getDocumentName();
-        GrammarProperties properties = syntaxes.get(name);
-        properties.updateHierarchy(syntaxes);
+        GrammarProperties properties = this.properties.get(name);
+        properties.updateHierarchy(this.properties);
     }
 
     public int getSimilarTab(EditorTab tab) {
@@ -674,10 +673,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             }
         }
 
-        public GrammarSyntaxEngine getSyntaxEngine() {
-            return getSelectedEditor().getSyntaxEngine();
-        }
-
         public XJDocument getDocument() {
             return getSelectedEditor().getDocument();
         }
@@ -699,7 +694,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         }
 
         public String getTokenVocab() {
-            return getSelectedEditor().getSyntaxEngine().getSyntax().getTokenVocab();
+            return getSelectedEditor().getGrammarEngine().getTokenVocab();
         }
 
         public Container getContainer() {
@@ -711,7 +706,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         }
 
         public List<ElementBlock> getBlocks() {
-            return getSelectedEditor().getSyntaxEngine().getSyntax().getBlocks();
+            return getSelectedEditor().getGrammarEngine().getBlocks();
         }
 
         public Set<Integer> getBreakpoints() {

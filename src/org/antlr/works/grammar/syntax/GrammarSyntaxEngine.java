@@ -42,6 +42,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
+import java.util.Set;
 
 public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
@@ -54,6 +55,9 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     private SimpleAttributeSet actionRefAttr;
     // todo prefs for that
     private SimpleAttributeSet blockLabelAttr;
+
+    private GrammarSyntaxLexer lexer = new GrammarSyntaxLexer();
+    private GrammarSyntaxParser parser = new GrammarSyntaxParser();
 
     public GrammarSyntaxEngine() {
         parserRefAttr = new SimpleAttributeSet();
@@ -91,12 +95,12 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
     @Override
     public ATESyntaxLexer createLexer() {
-        return new GrammarSyntaxLexer();
+        return lexer;
     }
 
     @Override
     public ATESyntaxParser createParser() {
-        return new GrammarSyntaxParser();
+        return parser;
     }
 
     @Override
@@ -139,4 +143,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         return attr;
     }
 
+    public void resolveReferencesWithExternalNames(Set<String> names) {
+        parser.resolveReferencesWithExternalNames(names);
+    }
 }

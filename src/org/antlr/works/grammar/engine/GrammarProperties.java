@@ -4,7 +4,9 @@ import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.element.*;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.grammar.syntax.GrammarSyntaxLexer;
 import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
 import org.antlr.xjlib.foundation.XJUtils;
@@ -65,9 +67,26 @@ public class GrammarProperties {
     private final Set<String> tokenVocabNames = new HashSet<String>();
     private String tokenVocabName;
 
+    private GrammarEngine engine;
+    private GrammarSyntaxEngine syntaxEngine;
+    private ANTLRGrammarEngine antlrEngine;
+
     public GrammarProperties() {
     }
 
+    public void setGrammarEngine(GrammarEngine engine) {
+        this.engine = engine;
+    }
+
+    public void setSyntaxEngine(GrammarSyntaxEngine syntaxEngine) {
+        this.syntaxEngine = syntaxEngine;
+    }
+
+    public void setAntlrEngine(ANTLRGrammarEngine antlrEngine) {
+        this.antlrEngine = antlrEngine;
+    }
+
+    // todo call this one
     public void update(GrammarSyntaxParser parser) {
         this.rules = new ArrayList<ElementRule>(parser.rules);
         this.groups = new ArrayList<ElementGroup>(parser.groups);
@@ -331,7 +350,7 @@ public class GrammarProperties {
         Set<String> tokenVocabNames = getTokenVocabNames();
         existingReferences.addAll(tokenVocabNames);
         // todo does it really update the list of references that this class uses?
-        engine.resolveReferencesWithExternalNames(tokenVocabNames);
+        syntaxEngine.resolveReferencesWithExternalNames(tokenVocabNames);
 
         undefinedReferences.clear();
         List<ElementReference> references = getReferences();
@@ -357,13 +376,13 @@ public class GrammarProperties {
 
     public List<String> getAllGeneratedNames() throws Exception {
         List<String> names = new ArrayList<String>();
-        Grammar g = engine.getAntlrGrammar().getDefaultGrammar();
+        Grammar g = antlrEngine.getDefaultGrammar();
         names.add(g.getRecognizerName());
         for(Grammar gd : g.getDelegates()) {
             names.add(gd.getRecognizerName());
         }
 
-        Grammar lexer = getAntlrGrammar().getLexerGrammar();
+        Grammar lexer = antlrEngine.getLexerGrammar();
         if(lexer != null) {
             names.add(lexer.getRecognizerName());
         }
@@ -382,7 +401,6 @@ public class GrammarProperties {
         }
         resetRules();
     }
-
 
     public GrammarProperties getParent() {
         return parentProperties;
