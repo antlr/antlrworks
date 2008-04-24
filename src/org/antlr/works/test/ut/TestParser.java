@@ -9,10 +9,6 @@ import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
-import org.antlr.works.grammar.engine.GrammarEngine;
-import org.antlr.works.grammar.engine.GrammarEngineImpl;
-import org.antlr.works.grammar.engine.GrammarPropertiesImpl;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.test.AbstractTest;
 import org.antlr.works.test.TestConstants;
 
@@ -50,8 +46,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class TestParser extends AbstractTest {
 
-    private String vocabFile;
-
     public static void main(String[] args) {
         new TestRunner().doRun(new TestSuite(TestParser.class));
     }
@@ -73,9 +67,9 @@ public class TestParser extends AbstractTest {
 
     public void testIgnoreRules() throws Exception {
         parseFile(TestConstants.PREFIX+"ignore_rules.g");
-        EditorRules.findTokensToIgnore(getParser().rules, true);
+        EditorRules.findTokensToIgnore(getEngine().getRules(), true);
         int ignored = 0;
-        for(ElementRule r : getParser().rules) {
+        for(ElementRule r : getEngine().getRules()) {
             if(r.ignored) ignored++;
         }
         assertEquals("ignored rules", 3, ignored);
@@ -83,28 +77,28 @@ public class TestParser extends AbstractTest {
 
     public void testGrammarType() throws Exception {
         parseFile(TestConstants.PREFIX+"type/combined.g");
-        assertEquals("combined grammar", ElementGrammarName.COMBINED, getParser().name.getType());
+        assertEquals("combined grammar", ElementGrammarName.COMBINED, getEngine().getType());
 
         parseFile(TestConstants.PREFIX+"type/parser.g");
-        assertEquals("parser grammar", ElementGrammarName.PARSER, getParser().name.getType());
+        assertEquals("parser grammar", ElementGrammarName.PARSER, getEngine().getType());
 
         parseFile(TestConstants.PREFIX+"type/lexer.g");
-        assertEquals("lexer grammar", ElementGrammarName.LEXER, getParser().name.getType());
+        assertEquals("lexer grammar", ElementGrammarName.LEXER, getEngine().getType());
 
         parseFile(TestConstants.PREFIX+"type/tree.g");
-        assertEquals("tree grammar", ElementGrammarName.TREEPARSER, getParser().name.getType());
+        assertEquals("tree grammar", ElementGrammarName.TREEPARSER, getEngine().getType());
     }
 
     public void testSyntaxBlock() throws Exception {
         parseFile(TestConstants.BLOCKS);
         assertInspector(0);
 
-        assertEquals("grammar name", "demo", getParser().name.getName());
+        assertEquals("grammar name", "demo", getEngine().getGrammarName());
 
-        ElementBlock tokensBlock = getParser().blocks.get(0);
+        ElementBlock tokensBlock = getEngine().getBlocks().get(0);
         assertEquals("tokens block", Arrays.asList("FOO", "OTHER", "LAST"), tokensBlock.getDeclaredTokensAsString());
 
-        ElementBlock optionsBlock = getParser().blocks.get(1);
+        ElementBlock optionsBlock = getEngine().getBlocks().get(1);
         assertEquals("tokenVocab", "DataViewExpressions", optionsBlock.getTokenVocab());
     }
 
@@ -112,10 +106,10 @@ public class TestParser extends AbstractTest {
         parseFile(TestConstants.REFERENCES);
         assertInspector(0);
 
-        assertEquals("grammar name", "references", getParser().name.getName());
+        assertEquals("grammar name", "references", getEngine().getGrammarName());
 
-        assertEquals("declarations", Arrays.asList("FOO", "OTHER", "LAST", "rule_a", "BAR"), getDeclsAsString(getParser().decls));
-        assertEquals("references", Arrays.asList("FOO", "BAR", "OTHER"), getRefsAsString(getParser().references));
+        assertEquals("declarations", Arrays.asList("FOO", "OTHER", "LAST", "rule_a", "BAR"), getDeclsAsString(getEngine().getDecls()));
+        assertEquals("references", Arrays.asList("FOO", "BAR", "OTHER"), getRefsAsString(getEngine().getReferences()));
     }
 
     public void testMantra() throws Exception {
@@ -133,8 +127,12 @@ public class TestParser extends AbstractTest {
 
         // now add the remaining token as if they were read from a tokenVocab file
         Set<String> names = new HashSet<String>();
-        GrammarPropertiesImpl.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
-        getParser().resolveReferencesWithExternalNames(names);
+        readTokenVocabFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        getSyntaxEngine().resolveReferencesWithExternalNames(names);
+
+        // update the engine
+        getEngine().parserCompleted();
+
         assertParserProperties(40, 18, 7, 40, 199+4); // verified by hand
 
         assertInspector(0);
@@ -145,8 +143,11 @@ public class TestParser extends AbstractTest {
         assertInspector(69);
 
         Set<String> names = new HashSet<String>();
-        GrammarPropertiesImpl.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
-        getParser().resolveReferencesWithExternalNames(names);
+        readTokenVocabFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        getSyntaxEngine().resolveReferencesWithExternalNames(names);
+
+        // update the engine
+        getEngine().parserCompleted();
 
         assertParserProperties(36, 14, 7, 36, 170); // verified by hand
         assertInspector(0);
@@ -157,10 +158,12 @@ public class TestParser extends AbstractTest {
         assertInspector(69);
 
         Set<String> names = new HashSet<String>();
-        //todo handle vocabfile in a better way
-        GrammarPropertiesImpl.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
-        getParser().resolveReferencesWithExternalNames(names);
+        readTokenVocabFile(getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        getSyntaxEngine().resolveReferencesWithExternalNames(names);
 
+        // update the engine
+        getEngine().parserCompleted();
+        
         assertParserProperties(36, 37, 23, 36, 177); // verified by hand
         assertInspector(0);
     }
@@ -168,25 +171,23 @@ public class TestParser extends AbstractTest {
     /*********************** HELPER ***************************************/
 
     private void printParserProperties() {
-        System.out.println("Rules="+getParser().rules.size());
-        System.out.println("Actions="+getParser().actions.size());
-        System.out.println("Blocks="+getParser().blocks.size());
-        System.out.println("Decls="+getParser().decls.size());
-        System.out.println("Refs="+getParser().references.size());
+        System.out.println("Rules="+getEngine().getNumberOfRules());
+        System.out.println("Actions="+getEngine().getActions().size());
+        System.out.println("Blocks="+getEngine().getBlocks().size());
+        System.out.println("Decls="+getEngine().getDecls().size());
+        System.out.println("Refs="+getEngine().getReferences().size());
     }
 
     private void assertParserProperties(int rules, int actions, int blocks, int decls, int references) {
-        assertEquals("Number of rules", rules, getParser().rules.size());
-        assertEquals("Number of actions", actions, getParser().actions.size());
-        assertEquals("Number of blocks", blocks, getParser().blocks.size());
-        assertEquals("Number of declarations", decls, getParser().decls.size());
-        assertEquals("Number of references", references, getParser().references.size());
+        assertEquals("Number of rules", rules, getEngine().getNumberOfRules());
+        assertEquals("Number of actions", actions, getEngine().getActions().size());
+        assertEquals("Number of blocks", blocks, getEngine().getBlocks().size());
+        assertEquals("Number of declarations", decls, getEngine().getDecls().size());
+        assertEquals("Number of references", references, getEngine().getReferences().size());
     }
 
     private void assertInspector(int errors) {
-        GrammarEngine engine = new GrammarEngineImpl(new MockGrammarEngineDelegate());
-        engine.getGrammarProperties().reset();
-        EditorInspector inspector = new EditorInspector(engine, null, new MockInspectorDelegate());
+        EditorInspector inspector = new EditorInspector(getEngine(), null, new MockInspectorDelegate());
         assertEquals("Errors", errors, inspector.getErrors().size());
     }
 
@@ -204,14 +205,6 @@ public class TestParser extends AbstractTest {
             names.add(token.token.getAttribute());
         }
         return names;
-    }
-
-    public String getTokenVocabFile(String tokenVocabName) {
-        return vocabFile;
-    }
-
-    public GrammarSyntaxEngine getSyntaxEngine() {
-        return engine;
     }
 
 }

@@ -72,4 +72,8 @@ public class EditorInspectorItem implements IdeaActionDelegate {
     public void ideaActionFire(IdeaAction action, int actionID) {
     }
 
+    @Override
+    public String toString() {
+        return description;
+    }
 }

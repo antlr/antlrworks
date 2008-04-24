@@ -40,22 +40,22 @@ public class TestRefactor extends AbstractTest {
     public void testRename_1() throws Exception {
         parseFile(TestConstants.REFACTOR_ORIGINAL_A);
 
-        assertEquals("grammar name", "references", getParser().name.getName());
+        assertEquals("grammar name", "references", getEngine().getGrammarName());
 
         String originalText = getTextFromFile(TestConstants.REFACTOR_ORIGINAL_A);
 
         TestRefactorMutator mutator = new TestRefactorMutator();
         RefactorEngine engine = new RefactorEngine();
         engine.setMutator(mutator);
-        engine.setTokens(getParser().getTokens());
+        engine.setTokens(getEngine().getTokens());
 
         mutator.setText(originalText);
-        engine.renameToken(getParser().decls.get(1), "OTHER_2");
+        engine.renameToken(getEngine().getDecls().get(1), "OTHER_2");
 
         assertEquals("rename OTHER -> OTHER_2", getTextFromFile(TestConstants.RENAME_OTHER), mutator.getText());
 
         mutator.setText(originalText);
-        engine.renameToken(getParser().decls.get(4), "RAB");
+        engine.renameToken(getEngine().getDecls().get(4), "RAB");
 
         assertEquals("rename BAR -> RAB", getTextFromFile(TestConstants.RENAME_BAR), mutator.getText());
     }
@@ -63,17 +63,17 @@ public class TestRefactor extends AbstractTest {
     public void testRename_2() throws Exception {
         parseFile(TestConstants.REFACTOR_ORIGINAL_B);
 
-        assertEquals("grammar name", "test", getParser().name.getName());
+        assertEquals("grammar name", "test", getEngine().getGrammarName());
 
         String originalText = getTextFromFile(TestConstants.REFACTOR_ORIGINAL_B);
 
         TestRefactorMutator mutator = new TestRefactorMutator();
         RefactorEngine engine = new RefactorEngine();
         engine.setMutator(mutator);
-        engine.setTokens(getParser().getTokens());
+        engine.setTokens(getEngine().getTokens());
 
         mutator.setText(originalText);
-        engine.renameToken(getParser().decls.get(0), "foo");
+        engine.renameToken(getEngine().getDecls().get(0), "foo");
 
         assertEquals("rename n_expression -> foo", getTextFromFile(TestConstants.RENAME_B), mutator.getText());
     }

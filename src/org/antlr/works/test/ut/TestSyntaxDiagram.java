@@ -57,6 +57,8 @@ public class TestSyntaxDiagram extends AbstractTest {
         // Compare the result with the one that has been pre-generated
         String expected = getTextFromFile(TestConstants.PREFIX+"sd/"+folder+"/"+name+".txt");
         String actual = XJUtils.getStringFromFile(target);
+        // normalize the line ending
+        expected = expected.replaceAll("\\\r\\\n", "\\\n");
         assertEquals(name, expected, actual);
     }
 

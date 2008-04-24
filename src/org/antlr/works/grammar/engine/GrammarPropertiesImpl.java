@@ -346,7 +346,6 @@ public class GrammarPropertiesImpl implements GrammarProperties {
 
         Set<String> tokenVocabNames = getTokenVocabNames();
         existingReferences.addAll(tokenVocabNames);
-        // todo does it really update the list of references that this class uses?
         syntaxEngine.resolveReferencesWithExternalNames(tokenVocabNames);
 
         undefinedReferences.clear();
@@ -369,6 +368,7 @@ public class GrammarPropertiesImpl implements GrammarProperties {
 
     public void parserCompleted() {
         update((GrammarSyntaxParser) syntaxEngine.getParser());
+        resetTokenVocab();
         rebuildAll();
     }
 

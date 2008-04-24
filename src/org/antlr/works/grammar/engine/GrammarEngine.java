@@ -1,11 +1,11 @@
 package org.antlr.works.grammar.engine;
 
 import org.antlr.Tool;
-import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.antlr.ANTLRGrammarResult;
 import org.antlr.works.grammar.element.*;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 
 import java.util.List;/*
 
@@ -44,7 +44,7 @@ public interface GrammarEngine {
 
     GrammarProperties getGrammarProperties();
     ANTLRGrammarEngine getANTLRGrammarEngine();
-    ATESyntaxEngine getSyntaxEngine();
+    GrammarSyntaxEngine getSyntaxEngine();
 
     int getType();
 
@@ -65,6 +65,7 @@ public interface GrammarEngine {
     List<ElementAction> getActions();
     List<ElementGroup> getGroups();
     List<ElementBlock> getBlocks();
+    List<ATEToken> getDecls();
 
     int getNumberOfLines();
     int getNumberOfRules();

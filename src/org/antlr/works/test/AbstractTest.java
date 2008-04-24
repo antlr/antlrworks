@@ -3,13 +3,15 @@ package org.antlr.works.test;
 import junit.framework.TestCase;
 import org.antlr.Tool;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
-import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
+import org.antlr.works.grammar.engine.GrammarEngine;
+import org.antlr.works.grammar.engine.GrammarEngineDelegate;
+import org.antlr.works.grammar.engine.GrammarEngineImpl;
+import org.antlr.works.grammar.engine.GrammarPropertiesImpl;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
-import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
-import org.antlr.works.utils.Console;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.IOException;
+import java.util.Set;
 /*
 
 [The "BSD licence"]
@@ -41,28 +43,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate {
+public class AbstractTest extends TestCase {
 
-    protected GrammarSyntaxEngine engine = new GrammarSyntaxEngine();
-    protected String text;
+    private GrammarEngine engine = new GrammarEngineImpl(new MyGrammarEngineDelegate());
+    private String text;
+    private String vocabFile;
 
     public void parseFile(String fileName) throws IOException {
         this.text = getTextFromFile(fileName);
-
-        engine.setDelegate(this);
-        engine.process();
-    }
-
-    public ATESyntaxLexer getLexer() {
-        return engine.getLexer();
-    }
-
-    public GrammarSyntaxParser getParser() {
-        return (GrammarSyntaxParser) engine.getParser();
-    }
-
-    public void gotoToRule(String grammar, String name) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        engine.getSyntaxEngine().setDelegate(new MySyntaxEngineDelegate());
+        engine.getSyntaxEngine().processSyntax();
+        engine.parserCompleted();
     }
 
     public String getResourceFile(String fileName) {
@@ -73,42 +64,70 @@ public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate {
         return XJUtils.getStringFromFile(getResourceFile(fileName));
     }
 
-    public String getFileName() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     public String getText() {
         return text;
     }
 
-    public Tool getANTLRTool() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Console getConsole() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void rulesChanged() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void antlrEngineGrammarDidAnalyze() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public String getTokenVocabFile(String tokenVocabName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public GrammarEngine getEngine() {
+        return engine;
     }
 
     public GrammarSyntaxEngine getSyntaxEngine() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return engine.getSyntaxEngine();
     }
 
-    public void ateEngineWillParse() {
-
+    public void readTokenVocabFile(String resourceFile, Set<String> names) throws IOException {
+        vocabFile = resourceFile;
+        GrammarPropertiesImpl.readTokenVocabFromFile(vocabFile, names);
     }
 
-    public void ateEngineDidParse() {
+    private class MyGrammarEngineDelegate implements GrammarEngineDelegate {
+
+        public void engineAnalyzeCompleted() {
+
+        }
+
+        public Tool getANTLRTool() {
+            return null;
+        }
+
+        public String getGrammarFileName() {
+            return null;
+        }
+
+        public String getGrammarText() {
+            return getText();
+        }
+
+        public String getTokenVocabFile(String name) {
+            return vocabFile;
+        }
+
+        public void gotoToRule(String grammar, String name) {
+
+        }
+
+        public void reportError(Exception e) {
+            e.printStackTrace();
+        }
+
+        public void reportError(String error) {
+            System.err.println(error);
+        }
+    }
+
+    private class MySyntaxEngineDelegate implements ATESyntaxEngineDelegate {
+
+        public void ateEngineDidParse() {
+
+        }
+
+        public void ateEngineWillParse() {
+
+        }
+
+        public String getText() {
+            return text;
+        }
     }
 }

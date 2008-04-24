@@ -2,7 +2,6 @@ package org.antlr.works.grammar.engine;
 
 import org.antlr.Tool;
 import org.antlr.tool.Grammar;
-import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
@@ -74,7 +73,7 @@ public class GrammarEngineImpl implements GrammarEngine {
         return antlrEngine;
     }
 
-    public ATESyntaxEngine getSyntaxEngine() {
+    public GrammarSyntaxEngine getSyntaxEngine() {
         return syntaxEngine;
     }
 
@@ -148,6 +147,10 @@ public class GrammarEngineImpl implements GrammarEngine {
 
     public List<ElementBlock> getBlocks() {
         return properties.getBlocks();
+    }
+
+    public List<ATEToken> getDecls() {
+        return properties.getDecls();
     }
 
     public int getNumberOfLines() {

@@ -1,11 +1,11 @@
 package org.antlr.works;
 
 import org.antlr.Tool;
-import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
 import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.engine.GrammarEngineDelegate;
 import org.antlr.works.grammar.engine.GrammarEngineImpl;
+import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.visualization.SDGenerator;
 import org.antlr.works.visualization.serializable.SEncoder;
 import org.antlr.works.visualization.serializable.SXMLEncoder;
@@ -115,16 +115,58 @@ public class Console {
     }
 
     private void generateSyntaxDiagrams(String format) throws Exception {
-        // todo test
+        processSyntaxDiagram(new GeneratePSDDelegate(format));
+    }
+
+    private void serializeSyntaxDiagrams() throws Exception {
+        processSyntaxDiagram(new SerializePSDDelegate());
+    }
+
+    private void processSyntaxDiagram(ProcessSyntaxDiagramDelegate delegate) throws Exception {
         GrammarEngine engine = new GrammarEngineImpl(new EngineDelegate());
-        ATESyntaxEngine syntaxEngine = engine.getSyntaxEngine();
+        GrammarSyntaxEngine syntaxEngine = engine.getSyntaxEngine();
+
+        syntaxEngine.setDelegate(new SyntaxDelegate());
         syntaxEngine.processSyntax();
 
+        engine.parserCompleted();
+        
         SDGenerator gen = new SDGenerator(engine);
 
-        if(verbose) System.out.println("Begin");
-        new File(outputDirectory).mkdirs();
+        delegate.beginProcess();
         for(String name : engine.getRuleNames()) {
+            delegate.processRule(name, gen);
+        }
+        delegate.endProcess();
+    }
+
+    private interface ProcessSyntaxDiagramDelegate {
+
+        void beginProcess();
+        void endProcess() throws Exception;
+
+        void processRule(String name, SDGenerator gen) throws Exception;
+
+    }
+
+    private class GeneratePSDDelegate implements ProcessSyntaxDiagramDelegate {
+
+        private String format;
+
+        public GeneratePSDDelegate(String format) {
+            this.format = format;
+        }
+
+        public void beginProcess() {
+            if(verbose) System.out.println("Begin");
+            new File(outputDirectory).mkdirs();
+        }
+
+        public void endProcess() throws IOException {
+            if(verbose) System.out.println("Done");
+        }
+
+        public void processRule(String name, SDGenerator gen) throws Exception {
             if(verbose) System.out.println("Generate rule "+name);
 
             String file = XJUtils.concatPath(outputDirectory, name+"."+format);
@@ -134,30 +176,30 @@ public class Console {
                 gen.renderRuleToBitmapFile(name, format, file);
             }
         }
-        if(verbose) System.out.println("Done");
     }
 
-    private void serializeSyntaxDiagrams() throws Exception {
-        // todo test
+    private class SerializePSDDelegate implements ProcessSyntaxDiagramDelegate {
 
-        GrammarEngine engine = new GrammarEngineImpl(new EngineDelegate());
-        ATESyntaxEngine syntaxEngine = engine.getSyntaxEngine();
-        syntaxEngine.processSyntax();
+        private StringBuilder content;
 
-        SDGenerator gen = new SDGenerator(engine);
+        public void beginProcess() {
+            if(verbose) System.out.println("Begin");
+            new File(XJUtils.getPathByDeletingLastComponent(outputFile)).mkdirs();
+            content = new StringBuilder();
+        }
 
-        if(verbose) System.out.println("Begin");
-        new File(XJUtils.getPathByDeletingLastComponent(outputFile)).mkdirs();
-        StringBuffer content = new StringBuffer();
-        for(String name : engine.getRuleNames()) {
+        public void endProcess() throws IOException {
+            XJUtils.writeStringToFile(content.toString(), outputFile);
+            if(verbose) System.out.println("Done");
+        }
+
+        public void processRule(String name, SDGenerator gen) throws Exception {
             if(verbose) System.out.println("Generate rule "+name);
             SEncoder encoder = new SXMLEncoder();
             gen.serializeRule(name, encoder);
             content.append("\n\n------").append(name).append("------\n\n");
             content.append(encoder.toString());
         }
-        XJUtils.writeStringToFile(content.toString(), outputFile);
-        if(verbose) System.out.println("Done");
     }
 
     private static String getArgumentValue(String[] args, String name) {
@@ -217,7 +259,7 @@ public class Console {
         }
 
         public String getGrammarFileName() {
-            return null;
+            return "<nofile>";
         }
 
         public String getGrammarText() {
