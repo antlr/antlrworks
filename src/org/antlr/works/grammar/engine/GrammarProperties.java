@@ -51,13 +51,13 @@ public class GrammarProperties {
 
     private ElementGrammarName name;
 
-    private List<ElementRule> rules;
-    private List<ElementGroup> groups;
-    private List<ElementBlock> blocks;
-    private List<ElementAction> actions;
-    private List<ElementReference> references;
-    private List<ElementImport> imports;
-    private List<ATEToken> decls;
+    private final List<ElementRule> rules = new ArrayList<ElementRule>();
+    private final List<ElementGroup> groups = new ArrayList<ElementGroup>();
+    private final List<ElementBlock> blocks = new ArrayList<ElementBlock>();
+    private final List<ElementAction> actions = new ArrayList<ElementAction>();
+    private final List<ElementReference> references = new ArrayList<ElementReference>();
+    private final List<ElementImport> imports = new ArrayList<ElementImport>();
+    private final List<ATEToken> decls = new ArrayList<ATEToken>();
 
     private final List<ElementRule> duplicateRules = new ArrayList<ElementRule>();
     private final List<ElementReference> undefinedReferences = new ArrayList<ElementReference>();
@@ -88,17 +88,31 @@ public class GrammarProperties {
 
     // todo call this one
     public void update(GrammarSyntaxParser parser) {
-        this.rules = new ArrayList<ElementRule>(parser.rules);
-        this.groups = new ArrayList<ElementGroup>(parser.groups);
-        this.blocks = new ArrayList<ElementBlock>(parser.blocks);
-        this.actions = new ArrayList<ElementAction>(parser.actions);
-        this.references = new ArrayList<ElementReference>(parser.references);
-        this.imports = new ArrayList<ElementImport>(parser.imports);
-        this.decls = new ArrayList<ATEToken>(parser.decls);
+        rules.clear();
+        rules.addAll(parser.rules);
+
+        groups.clear();
+        groups.addAll(parser.groups);
+
+        blocks.clear();
+        blocks.addAll(parser.blocks);
+
+        actions.clear();
+        actions.addAll(parser.actions);
+
+        references.clear();
+        references.addAll(parser.references);
+
+        imports.clear();
+        imports.addAll(parser.imports);
+
+        decls.clear();
+        decls.addAll(parser.decls);
+
         this.name = parser.name;
 
         for(ElementRule r : rules) {
-            r.setSyntax(this);
+            r.setEngine(engine);
         }
     }
 

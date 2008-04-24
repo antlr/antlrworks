@@ -49,7 +49,7 @@ public class EditorGutterItemManager extends ATEGutterItemManager {
 
     public List<ATEGutterItem> getGutterItems() {
         List<ATEGutterItem> items = new ArrayList<ATEGutterItem>();
-        List<ElementRule> rules = editor.getSyntaxEngine().getSyntax().getRules();
+        List<ElementRule> rules = editor.getGrammarEngine().getRules();
         if(rules != null) {
             for(ElementRule r : rules) {
                 items.add(r);

@@ -56,9 +56,6 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     // todo prefs for that
     private SimpleAttributeSet blockLabelAttr;
 
-    private GrammarSyntaxLexer lexer = new GrammarSyntaxLexer();
-    private GrammarSyntaxParser parser = new GrammarSyntaxParser();
-
     public GrammarSyntaxEngine() {
         parserRefAttr = new SimpleAttributeSet();
         lexerRefAttr = new SimpleAttributeSet();
@@ -95,12 +92,12 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
     @Override
     public ATESyntaxLexer createLexer() {
-        return lexer;
+        return new GrammarSyntaxLexer();
     }
 
     @Override
     public ATESyntaxParser createParser() {
-        return parser;
+        return new GrammarSyntaxParser();
     }
 
     @Override
@@ -144,6 +141,6 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     }
 
     public void resolveReferencesWithExternalNames(Set<String> names) {
-        parser.resolveReferencesWithExternalNames(names);
+        ((GrammarSyntaxParser)getParser()).resolveReferencesWithExternalNames(names);
     }
 }

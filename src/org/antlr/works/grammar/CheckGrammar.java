@@ -56,7 +56,7 @@ public class CheckGrammar implements Runnable {
 
     public void cancel() {
         // todo at engine level? syntax engine is for syntax while the other is for antlr grammar
-        editor.getSyntaxEngine().getAntlrGrammar().cancel();
+        editor.getGrammarEngine().cancelAnalyze();
     }
 
     public void run() {
@@ -64,7 +64,7 @@ public class CheckGrammar implements Runnable {
         delegate.checkGrammarDidBegin();
         ANTLRGrammarResult result;
         try {
-            result = editor.getSyntaxEngine().getAntlrGrammar().analyze();
+            result = editor.getGrammarEngine().analyze();
         } catch (Exception e) {
             editor.getConsole().println(e);
             // Result cannot be null, so report the exception

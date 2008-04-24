@@ -1,6 +1,7 @@
 package org.antlr.works.visualization;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.visualization.graphics.*;
@@ -47,11 +48,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class SDGenerator implements GContextProvider {
 
-    public GrammarSyntaxEngine syntaxEngine;
+    public GrammarEngine engine;
     public GContext context;
 
-    public SDGenerator(GrammarSyntaxEngine syntaxEngine) {
-        this.syntaxEngine = syntaxEngine;
+    public SDGenerator(GrammarEngine engine) {
+        this.engine = engine;
 
         context = new GContext();
         context.setSkin(new SDSkin());
@@ -95,7 +96,7 @@ public class SDGenerator implements GContextProvider {
     }
 
     private GGraph createGraph(String ruleName) throws Exception {
-        GGraph graph = new GFactory().buildGraphsForRule(syntaxEngine.getAntlrGrammar(), ruleName);
+        GGraph graph = new GFactory().buildGraphsForRule(engine.getANTLRGrammarEngine(), ruleName);
         graph.setContext(context);
         graph.render(0,0);
         return graph;

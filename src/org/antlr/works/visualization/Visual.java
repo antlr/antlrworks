@@ -155,7 +155,7 @@ public class Visual extends EditorTab implements GContextProvider {
     }
     
     public ANTLRGrammarEngine getEngineGrammar() {
-        return editor.getSyntaxEngine().getAntlrGrammar();
+        return editor.getGrammarEngine().getANTLRGrammarEngine();
     }
 
     public Container getContainer() {

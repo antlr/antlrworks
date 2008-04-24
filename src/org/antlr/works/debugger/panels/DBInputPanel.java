@@ -4,7 +4,7 @@ import org.antlr.runtime.Token;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.input.DBInputProcessor;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
-import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
+import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.utils.DetachablePanel;
 
 import java.awt.*;
@@ -68,8 +68,8 @@ public class DBInputPanel extends DetachablePanel {
         mainPanel.add(currentPanel.getComponent(), BorderLayout.CENTER);
     }
 
-    public void prepareForGrammar(GrammarSyntaxEngine engineGrammar) {
-        if(engineGrammar.getSyntax().isTreeParserGrammar())
+    public void prepareForGrammar(GrammarEngine engineGrammar) {
+        if(engineGrammar.isTreeParserGrammar())
             setCurrentPanel(inputTreePanel);
         else
             setCurrentPanel(inputTokenPanel);

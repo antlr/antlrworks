@@ -5,7 +5,7 @@ import org.antlr.works.ate.gutter.ATEGutterItem;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.EditorPersistentObject;
 import org.antlr.works.grammar.antlr.ANTLRGrammarError;
-import org.antlr.works.grammar.engine.GrammarProperties;
+import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
 import org.antlr.works.utils.IconManager;
 
@@ -81,7 +81,7 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     protected int actionsStartIndex = -1;
     protected int actionsEndIndex = -1;
 
-    private GrammarProperties properties;
+    private GrammarEngine engine;
 
     public ElementRule(String name) {
         this.name = name;
@@ -107,12 +107,12 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         hierarchyAnalyzed = false;        
     }
 
-    public GrammarProperties getSyntax() {
-        return properties;
+    public GrammarEngine getEngine() {
+        return engine;
     }
 
-    public void setSyntax(GrammarProperties properties) {
-        this.properties = properties;
+    public void setEngine(GrammarEngine engine) {
+        this.engine = engine;
     }
 
     public void setReferencesIndexes(int startIndex, int endIndex) {
@@ -415,11 +415,11 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
 
     private void analyzeHierarchy() {
         // Look at the grammar this rule overrides
-        overrideGrammars = properties.getGrammarsOverriddenByRule(name);
+        overrideGrammars = engine.getGrammarsOverriddenByRule(name);
         override = !overrideGrammars.isEmpty();
 
         // Look at the grammar this rule is overridden by
-        overriddenGrammars = properties.getGrammarsOverridingRule(name);
+        overriddenGrammars = engine.getGrammarsOverridingRule(name);
         isOverridden = !overriddenGrammars.isEmpty();
     }
 
@@ -485,14 +485,16 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public void itemAction(int type) {
-        if(type == ITEM_TYPE_BREAKPOINT) {
-            breakpoint = !breakpoint;
-        }
-        if(type == ITEM_TYPE_OVERRIDE) {
-            properties.getDelegate().gotoToRule(overrideGrammars.get(0), name);
-        }
-        if(type == ITEM_TYPE_OVERRIDDEN) {
-            properties.getDelegate().gotoToRule(overriddenGrammars.get(0), name);
+        switch (type) {
+            case ITEM_TYPE_BREAKPOINT:
+                breakpoint = !breakpoint;
+                break;
+            case ITEM_TYPE_OVERRIDE:
+                engine.gotoToRule(overrideGrammars.get(0), name);
+                break;
+            case ITEM_TYPE_OVERRIDDEN:
+                engine.gotoToRule(overriddenGrammars.get(0), name);
+                break;
         }
     }
 

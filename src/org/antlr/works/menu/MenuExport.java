@@ -112,7 +112,7 @@ public class MenuExport extends MenuAbstract {
         String directory = XJFileChooser.shared().getSelectedFilePath();
         String extension = XJFileChooser.shared().getSelectedFileExtension();
 
-        SDGenerator sd = new SDGenerator(getSelectedEditor().getSyntaxEngine());
+        SDGenerator sd = new SDGenerator(getSelectedEditor().getGrammarEngine());
         for(ElementRule rule : getSelectedEditor().getRules()) {
             try {
                 if(asImage) {

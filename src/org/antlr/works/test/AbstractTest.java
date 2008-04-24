@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class AbstractTest extends TestCase implements ATESyntaxEngineDelegate {
 
-    protected GrammarSyntaxEngine engine = new GrammarSyntaxEngine(this);
+    protected GrammarSyntaxEngine engine = new GrammarSyntaxEngine();
     protected String text;
 
     public void parseFile(String fileName) throws IOException {

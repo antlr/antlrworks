@@ -3,6 +3,7 @@ package org.antlr.works.debugger.api;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.utils.Console;
 import org.antlr.xjlib.appkit.document.XJDocument;
@@ -42,6 +43,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public interface DebuggerDelegate {
 
+    GrammarEngine getGrammarEngine();
+
     void debuggerStarted();
     void debuggerStopped();
 
@@ -69,4 +72,5 @@ public interface DebuggerDelegate {
     ContextualMenuFactory createContextualMenuFactory();
 
     void selectConsoleTab();
+
 }

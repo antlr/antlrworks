@@ -640,6 +640,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         getConsole().println(error, Console.LEVEL_ERROR);
     }
 
+    public void reportError(Exception e) {
+        getConsole().println(e);
+    }
+
     public Tool getANTLRTool() {
         String[] params = AWPrefs.getANTLR3Options();
         if(getFileFolder() != null) {

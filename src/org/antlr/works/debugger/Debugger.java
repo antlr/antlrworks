@@ -434,7 +434,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public void launchLocalDebugger(int options) {
-        if(getSyntaxEngine().getSyntax().getType() == ElementGrammarName.TREEPARSER) {
+        if(delegate.getGrammarEngine().getType() == ElementGrammarName.TREEPARSER) {
             XJAlert.display(getWindowContainer(), "Unsupported Grammar Type",
                     "ANTLRWorks supports tree grammar debugging only if you \"debug remote\".");
             return;
@@ -495,7 +495,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
         queryGrammarBreakpoints();
 
-        inputPanel.prepareForGrammar(getSyntaxEngine());
+        inputPanel.prepareForGrammar(delegate.getGrammarEngine());
         player.setInputBuffer(inputPanel.getInputBuffer());
 
         recorder.connect(address, port);
@@ -524,7 +524,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public boolean debuggerLaunchGrammar() {
         try {
-            getSyntaxEngine().getAntlrGrammar().analyze();
+            delegate.getGrammarEngine().analyze();
         } catch (Exception e) {
             getConsole().print(e);
             return false;

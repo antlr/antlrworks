@@ -1,11 +1,13 @@
 package org.antlr.works.grammar.engine;
 
 import org.antlr.Tool;
+import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngineImpl;
+import org.antlr.works.grammar.antlr.ANTLRGrammarResult;
 import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 
@@ -64,6 +66,10 @@ public class GrammarEngineImpl implements GrammarEngine {
         syntaxEngine.close();
     }
 
+    public GrammarProperties getGrammarProperties() {
+        return properties;
+    }
+
     public ANTLRGrammarEngine getANTLRGrammarEngine() {
         return antlrEngine;
     }
@@ -82,6 +88,22 @@ public class GrammarEngineImpl implements GrammarEngine {
 
     public String getGrammarName() {
         return properties.getName();
+    }
+
+    public String getGrammarLanguage() {
+        try {
+            antlrEngine.createGrammars();
+            Grammar g = antlrEngine.getParserGrammar();
+            if(g == null) {
+                g = antlrEngine.getLexerGrammar();
+            }
+            if(g != null) {
+                return (String)g.getOption("language");
+            }
+        } catch (Exception e) {
+            delegate.reportError(e);
+        }
+        return null;
     }
 
     public List<ElementRule> getRules() {
@@ -140,6 +162,10 @@ public class GrammarEngineImpl implements GrammarEngine {
         return properties.getTokenVocab();
     }
 
+    public List<String> getAllGeneratedNames() throws Exception {
+        return properties.getAllGeneratedNames();
+    }
+
     public int getFirstDeclarationPosition(String name) {
         return properties.getFirstDeclarationPosition(name);
     }
@@ -148,12 +174,20 @@ public class GrammarEngineImpl implements GrammarEngine {
         return properties.getGrammarsOverriddenByRule(name);
     }
 
+    public List<String> getGrammarsOverridingRule(String name) {
+        return properties.getGrammarsOverridingRule(name);
+    }
+
     public List<ATEToken> getTokens() {
         return syntaxEngine.getTokens();
     }
 
-    public void analyze() throws Exception {
-        antlrEngine.analyze();
+    public ANTLRGrammarResult analyze() throws Exception {
+        return antlrEngine.analyze();
+    }
+
+    public void cancelAnalyze() {
+        antlrEngine.cancel();
     }
 
     public void computeRuleErrors(ElementRule rule) {
@@ -195,6 +229,10 @@ public class GrammarEngineImpl implements GrammarEngine {
         return properties.isCombinedGrammar();
     }
 
+    public boolean isTreeParserGrammar() {
+        return properties.isTreeParserGrammar();
+    }
+
     public void antlrGrammarEngineAnalyzeCompleted() {
         delegate.engineAnalyzeCompleted();
     }
@@ -218,5 +256,8 @@ public class GrammarEngineImpl implements GrammarEngine {
     public void reportError(String error) {
         delegate.reportError(error);
     }
-    
+
+    public void gotoToRule(String grammar, String name) {
+        delegate.gotoToRule(grammar, name);
+    }
 }

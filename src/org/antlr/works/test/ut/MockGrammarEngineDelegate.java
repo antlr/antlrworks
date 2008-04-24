@@ -1,11 +1,12 @@
-package org.antlr.works.grammar.engine;
+package org.antlr.works.test.ut;
 
 import org.antlr.Tool;
+import org.antlr.works.grammar.engine.GrammarEngineDelegate;
 
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-07 Jean Bovet
+Copyright (c) 2005-08 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,21 +33,37 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+public class MockGrammarEngineDelegate implements GrammarEngineDelegate {
 
-public interface GrammarEngineDelegate {
+    public String getGrammarFileName() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-    String getGrammarFileName();
-    String getGrammarText();
+    public String getGrammarText() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-    String getTokenVocabFile(String name);
+    public String getTokenVocabFile(String name) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-    Tool getANTLRTool();
+    public Tool getANTLRTool() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-    void reportError(String error);
-    void reportError(Exception e);
+    public void reportError(String error) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-    void gotoToRule(String grammar, String name);
+    public void reportError(Exception e) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-    void engineAnalyzeCompleted();
+    public void gotoToRule(String grammar, String name) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 
+    public void engineAnalyzeCompleted() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

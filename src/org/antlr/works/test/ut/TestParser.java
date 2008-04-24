@@ -9,6 +9,8 @@ import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.engine.GrammarEngine;
+import org.antlr.works.grammar.engine.GrammarEngineImpl;
 import org.antlr.works.grammar.engine.GrammarProperties;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.test.AbstractTest;
@@ -182,9 +184,9 @@ public class TestParser extends AbstractTest {
     }
 
     private void assertInspector(int errors) {
-        GrammarSyntaxEngine syntax = new GrammarSyntaxEngine(this);
-        syntax.getSyntax().rebuildAll();
-        EditorInspector inspector = new EditorInspector(syntax, null, new MockInspectorDelegate());
+        GrammarEngine engine = new GrammarEngineImpl(new MockGrammarEngineDelegate());
+        engine.getGrammarProperties().rebuildAll();
+        EditorInspector inspector = new EditorInspector(engine, null, new MockInspectorDelegate());
         assertEquals("Errors", errors, inspector.getErrors().size());
     }
 

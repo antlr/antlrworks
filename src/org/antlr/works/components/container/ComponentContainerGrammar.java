@@ -47,6 +47,7 @@ import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.engine.GrammarProperties;
 import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
@@ -523,8 +524,9 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     private Map<String, GrammarProperties> properties = new HashMap<String, GrammarProperties>();
 
     public void editorParsed(ComponentEditor editor) {
+        // todo use GrammarEngine instead?
         ComponentEditorGrammar eg = (ComponentEditorGrammar) editor;
-        GrammarProperties properties = eg.getGrammarEngine();
+        GrammarProperties properties = eg.getGrammarEngine().getGrammarProperties();
 
         String name = editor.getDocument().getDocumentName();
         this.properties.put(name, properties);
@@ -640,6 +642,10 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     }
 
     public class ContainerDebuggerDelegate implements DebuggerDelegate {
+
+        public GrammarEngine getGrammarEngine() {
+            return getSelectedEditor().getGrammarEngine();
+        }
 
         public void debuggerStarted() {
             selectTab(debuggerPanel);

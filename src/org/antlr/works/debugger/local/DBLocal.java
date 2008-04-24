@@ -331,7 +331,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected void analyzeGrammar() {
         String errorMessage = null;
         try {
-            debugger.getSyntaxEngine().getAntlrGrammar().analyze();
+            debugger.getDelegate().getGrammarEngine().analyze();
         } catch (Exception e) {
             debugger.getConsole().println(e);
             errorMessage = e.getLocalizedMessage();

@@ -83,7 +83,7 @@ public class EditorFoldingManager extends ATEFoldingManager {
     }
 
     public void provideFoldingEntities() {
-        List<ElementRule> rules = editor.getSyntaxEngine().getSyntax().getRules();
+        List<ElementRule> rules = editor.getGrammarEngine().getRules();
         if(rules != null) {
             for (ElementRule rule : rules) {
                 addEntity(rule);
@@ -92,7 +92,7 @@ public class EditorFoldingManager extends ATEFoldingManager {
 
         // Add only actions that are in expanded rules
         if(AWPrefs.getFoldingEnabled() && AWPrefs.getDisplayActionsAnchorsFolding()) {
-            List<ElementAction> actions = editor.getSyntaxEngine().getSyntax().getActions();
+            List<ElementAction> actions = editor.getGrammarEngine().getActions();
             if(actions != null) {
                 for (ElementAction action : actions) {
                     if (action.rule.isExpanded()) {
@@ -119,9 +119,9 @@ public class EditorFoldingManager extends ATEFoldingManager {
 
     public ATEFoldingEntity getEntityForKey(Object key, int tag) {
         if(tag == TAG_ACTIONS)
-            return getEntityForIdentifier(editor.getSyntaxEngine().getSyntax().getActions(), (String)key);
+            return getEntityForIdentifier(editor.getGrammarEngine().getActions(), (String)key);
         else if(tag == TAG_RULES)
-            return getEntityForIdentifier(editor.getSyntaxEngine().getSyntax().getRules(), (String)key);
+            return getEntityForIdentifier(editor.getGrammarEngine().getRules(), (String)key);
         else
             return null;
     }

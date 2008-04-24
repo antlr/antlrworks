@@ -4,6 +4,7 @@ import org.antlr.Tool;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
+import org.antlr.works.grammar.antlr.ANTLRGrammarResult;
 import org.antlr.works.grammar.element.*;
 
 import java.util.List;/*
@@ -41,6 +42,7 @@ public interface GrammarEngine {
 
     void close();
 
+    GrammarProperties getGrammarProperties();
     ANTLRGrammarEngine getANTLRGrammarEngine();
     ATESyntaxEngine getSyntaxEngine();
 
@@ -48,6 +50,7 @@ public interface GrammarEngine {
 
     ElementGrammarName getElementName();
     String getGrammarName();
+    String getGrammarLanguage();
 
     List<ElementRule> getRules();
     List<ElementRule> getDuplicateRules();
@@ -67,12 +70,17 @@ public interface GrammarEngine {
     int getNumberOfErrors();
 
     String getTokenVocab();
+    List<String> getAllGeneratedNames() throws Exception;
+
     int getFirstDeclarationPosition(String name);
     List<String> getGrammarsOverriddenByRule(String name);
+    List<String> getGrammarsOverridingRule(String name);
 
     List<ATEToken> getTokens();
 
-    void analyze() throws Exception;
+    ANTLRGrammarResult analyze() throws Exception;
+    void cancelAnalyze();
+
     void computeRuleErrors(ElementRule rule);
 
     // todo needed?
@@ -82,6 +90,7 @@ public interface GrammarEngine {
 
     boolean isVersion2();
     boolean isCombinedGrammar();
+    boolean isTreeParserGrammar();
 
     void antlrGrammarEngineAnalyzeCompleted();
 
@@ -92,5 +101,6 @@ public interface GrammarEngine {
     Tool getANTLRTool();
 
     void reportError(String error);
+    void gotoToRule(String grammar, String name);
 
 }

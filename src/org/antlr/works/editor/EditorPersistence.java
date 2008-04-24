@@ -58,15 +58,15 @@ public class EditorPersistence {
             return;
         
         stored = true;
-        store(editor.getSyntaxEngine().getSyntax().getRules(), KEY_RULES);
-        store(editor.getSyntaxEngine().getSyntax().getActions(), KEY_ACTIONS);
+        store(editor.getGrammarEngine().getRules(), KEY_RULES);
+        store(editor.getGrammarEngine().getActions(), KEY_ACTIONS);
     }
 
     public void restore() {
         if(stored) {
             stored = false;
-            restore(editor.getSyntaxEngine().getSyntax().getRules(), KEY_RULES);
-            restore(editor.getSyntaxEngine().getSyntax().getActions(), KEY_ACTIONS);
+            restore(editor.getGrammarEngine().getRules(), KEY_RULES);
+            restore(editor.getGrammarEngine().getActions(), KEY_ACTIONS);
         }
     }
     
