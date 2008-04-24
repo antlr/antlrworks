@@ -356,7 +356,7 @@ public class AutoCompletionMenu extends OverlayObject {
                     break;
 
                 case KeyEvent.VK_ESCAPE:
-                    //@todo it'd be cool to do intellij CTRL+mouse = goto...but it won't work in this class :(
+                    // it'd be cool to do intellij CTRL+mouse = goto...but it won't work in this class :(
                     content.setVisible(false);   
                     e.consume();
                     break;

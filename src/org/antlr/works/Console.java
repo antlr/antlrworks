@@ -1,9 +1,17 @@
 package org.antlr.works;
 
 import org.antlr.Tool;
+import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
+import org.antlr.works.grammar.engine.GrammarEngine;
+import org.antlr.works.grammar.engine.GrammarEngineDelegate;
+import org.antlr.works.grammar.engine.GrammarEngineImpl;
+import org.antlr.works.visualization.SDGenerator;
+import org.antlr.works.visualization.serializable.SEncoder;
+import org.antlr.works.visualization.serializable.SXMLEncoder;
 import org.antlr.xjlib.foundation.XJUtils;
 
+import java.io.File;
 import java.io.IOException;
 
 /*
@@ -107,20 +115,16 @@ public class Console {
     }
 
     private void generateSyntaxDiagrams(String format) throws Exception {
-        // todo update
-        /*GrammarSyntaxEngine se = new GrammarSyntaxEngine();
-        se.setDelegate(new SyntaxDelegate());
-        se.processSyntax();
+        // todo test
+        GrammarEngine engine = new GrammarEngineImpl(new EngineDelegate());
+        ATESyntaxEngine syntaxEngine = engine.getSyntaxEngine();
+        syntaxEngine.processSyntax();
 
-        ComponentEditorGrammar ceg = new ComponentEditorGrammar();
-        ceg.syntaxEngine = new GrammarSyntaxEngine();
-        ANTLRGrammarEngine eg = new ANTLRGrammarEngine(ceg);
-        eg.setDelegate(new ConsoleAntlrGrammarEngineDelegate());
-        SDGenerator gen = new SDGenerator(eg);
+        SDGenerator gen = new SDGenerator(engine);
 
         if(verbose) System.out.println("Begin");
         new File(outputDirectory).mkdirs();
-        for(String name : se.getRuleNames()) {
+        for(String name : engine.getRuleNames()) {
             if(verbose) System.out.println("Generate rule "+name);
 
             String file = XJUtils.concatPath(outputDirectory, name+"."+format);
@@ -130,25 +134,22 @@ public class Console {
                 gen.renderRuleToBitmapFile(name, format, file);
             }
         }
-        if(verbose) System.out.println("Done");    */
+        if(verbose) System.out.println("Done");
     }
 
     private void serializeSyntaxDiagrams() throws Exception {
-        // todo update
-        /*GrammarSyntaxEngine se = new GrammarSyntaxEngine();
-        se.setDelegate(new SyntaxDelegate());
-        se.processSyntax();
+        // todo test
 
-        ComponentEditorGrammar ceg = new ComponentEditorGrammar();
-        ceg.syntaxEngine = new GrammarSyntaxEngine();
-        ANTLRGrammarEngine eg = new ANTLRGrammarEngine(ceg);
-        eg.setDelegate(new ConsoleAntlrGrammarEngineDelegate());
-        SDGenerator gen = new SDGenerator(eg);
+        GrammarEngine engine = new GrammarEngineImpl(new EngineDelegate());
+        ATESyntaxEngine syntaxEngine = engine.getSyntaxEngine();
+        syntaxEngine.processSyntax();
+
+        SDGenerator gen = new SDGenerator(engine);
 
         if(verbose) System.out.println("Begin");
         new File(XJUtils.getPathByDeletingLastComponent(outputFile)).mkdirs();
         StringBuffer content = new StringBuffer();
-        for(String name : se.getRuleNames()) {
+        for(String name : engine.getRuleNames()) {
             if(verbose) System.out.println("Generate rule "+name);
             SEncoder encoder = new SXMLEncoder();
             gen.serializeRule(name, encoder);
@@ -156,7 +157,7 @@ public class Console {
             content.append(encoder.toString());
         }
         XJUtils.writeStringToFile(content.toString(), outputFile);
-        if(verbose) System.out.println("Done");   */
+        if(verbose) System.out.println("Done");
     }
 
     private static String getArgumentValue(String[] args, String name) {
@@ -191,22 +192,6 @@ public class Console {
         }
     }
 
-    public class ConsoleAntlrGrammarEngineDelegate {
-
-        public String getFileName() {
-            return file;
-        }
-
-        public String getText() {
-            return getGrammarText();
-        }
-
-
-        public Tool getANTLRTool() {
-            return new Tool();
-        }
-    }
-
     public class SyntaxDelegate implements ATESyntaxEngineDelegate {
 
 
@@ -221,4 +206,38 @@ public class Console {
         }
     }
 
+    private class EngineDelegate implements GrammarEngineDelegate {
+        
+        public void engineAnalyzeCompleted() {
+
+        }
+
+        public Tool getANTLRTool() {
+            return null;
+        }
+
+        public String getGrammarFileName() {
+            return null;
+        }
+
+        public String getGrammarText() {
+            return Console.this.getGrammarText();
+        }
+
+        public String getTokenVocabFile(String name) {
+            return null;
+        }
+
+        public void gotoToRule(String grammar, String name) {
+
+        }
+
+        public void reportError(Exception e) {
+
+        }
+
+        public void reportError(String error) {
+
+        }
+    }
 }

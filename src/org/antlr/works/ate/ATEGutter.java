@@ -99,7 +99,7 @@ public class ATEGutter extends JComponent {
     }
 
     public void setFoldingEnabled(boolean foldingEnabled) {
-        // @todo currently disabled
+        // currently disabled
         //this.foldingEnabled = foldingEnabled;
     }
 

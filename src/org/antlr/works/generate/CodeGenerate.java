@@ -33,9 +33,7 @@ package org.antlr.works.generate;
 
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
-import org.antlr.tool.Grammar;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
@@ -113,49 +111,6 @@ public class CodeGenerate implements Runnable {
         return success;
     }
 
-    /**
-     * Returns true if the grammar type needs a suffix for the generated class files.
-     * Only combined grammars need a suffix.
-     *
-     * @return true if the grammar generated files need a suffix
-     */
-    public boolean hasSuffix() {
-        return editor.getGrammarEngine().isCombinedGrammar();
-    }
-
-    public String getSuffix(int type) {
-        if(hasSuffix()) {
-            switch(type) {
-                case ElementGrammarName.LEXER:
-                    return "Lexer";
-                case ElementGrammarName.PARSER:
-                    return "Parser";
-            }
-        }
-        return "";
-    }
-
-    public String getGeneratedClassName(int type) throws Exception {
-        String name = null;
-        ANTLRGrammarEngine antlrEngineGrammar = editor.getGrammarEngine().getANTLRGrammarEngine();
-        antlrEngineGrammar.createGrammars();
-        if(type == ElementGrammarName.LEXER) {
-            Grammar g = antlrEngineGrammar.getLexerGrammar();
-            if(g == null) return null;
-            name = g.name+getSuffix(type);
-        } else if(type == ElementGrammarName.PARSER) {
-            Grammar g = antlrEngineGrammar.getParserGrammar();
-            if(g == null) return null;
-            name = g.name+getSuffix(type);
-        } else if(type == ElementGrammarName.TREEPARSER) {
-            Grammar g = antlrEngineGrammar.getParserGrammar();
-            if(g == null) return null;
-            if(!editor.getGrammarEngine().isTreeParserGrammar()) return null;
-            name = g.name+getSuffix(type);
-        }
-        return name;
-    }
-
     public List<String> getGeneratedFileNames() throws Exception {
         List<String> files = new ArrayList<String>();
         for(String name : editor.getGrammarEngine().getAllGeneratedNames()) {
@@ -166,7 +121,7 @@ public class CodeGenerate implements Runnable {
     }
 
     public String getGeneratedFileName(int type) throws Exception {
-        String className = getGeneratedClassName(type);
+        String className = editor.getGrammarEngine().getGeneratedClassName(type);
         if(className == null) return null;
         return XJUtils.concatPath(getOutputPath(), className+".java");
     }

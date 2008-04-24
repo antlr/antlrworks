@@ -155,7 +155,7 @@ public class MenuGenerate extends MenuAbstract implements CodeGenerateDelegate, 
         CodeDisplay dc = new CodeDisplay(getSelectedEditor().getXJFrame());
         String title;
         try {
-            title = generateCode.getGeneratedClassName(type)+".java";
+            title = getSelectedEditor().getGrammarEngine().getGeneratedClassName(type)+".java";
         } catch (Exception e) {
             XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot cannot get the name of the generated file:\n"+e.toString());
             return;

@@ -56,7 +56,6 @@ public class GView extends JPanel implements XJMenuItemDelegate {
 
     protected String placeholder;
     protected BufferedImage cachedImage = null;
-    protected Dimension outOfMemoryDimension = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     protected List graphs = new ArrayList();
     protected int currentGraphIndex = 0;
@@ -337,22 +336,12 @@ public class GView extends JPanel implements XJMenuItemDelegate {
 
             if(cachedImage == null) {
                 // Create a new cache image.
-                // @todo See what to do with this memory problem (leak somewhere)
-                if(width<outOfMemoryDimension.width && height<outOfMemoryDimension.height) {
-                    try {
-                        cachedImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-                        Graphics2D gCache = (Graphics2D)cachedImage.getGraphics();
-                        gCache.setColor(Color.white);
-                        gCache.fillRect(0, 0, width, height);
-                        render(gCache);
-                        gCache.dispose();
-                    } catch(OutOfMemoryError e) {
-                        outOfMemoryDimension.width = width;
-                        outOfMemoryDimension.height = height;
-                        cachedImage = null;
-                        System.err.println("Out of memory, disabling cache ("+(int)(width*height*3.0/(1024*1024))+" Mb)");
-                    }
-                }
+                cachedImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+                Graphics2D gCache = (Graphics2D)cachedImage.getGraphics();
+                gCache.setColor(Color.white);
+                gCache.fillRect(0, 0, width, height);
+                render(gCache);
+                gCache.dispose();
             } else if(cachedImageRerender) {
                 // Only render the cachedImage without re-creating it again
                 Graphics2D gCache = (Graphics2D)cachedImage.getGraphics();

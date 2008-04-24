@@ -56,6 +56,7 @@ public interface GrammarEngine {
     List<ElementRule> getDuplicateRules();
     ElementRule getRuleWithName(String name);
     ElementRule getRuleAtIndex(int index);
+    List<String> getRuleNames();
 
     List<ElementReference> getReferences();
     List<ElementReference> getUndefinedReferences();
@@ -71,6 +72,7 @@ public interface GrammarEngine {
 
     String getTokenVocab();
     List<String> getAllGeneratedNames() throws Exception;
+    String getGeneratedClassName(int type) throws Exception;
 
     int getFirstDeclarationPosition(String name);
     List<String> getGrammarsOverriddenByRule(String name);
@@ -83,8 +85,7 @@ public interface GrammarEngine {
 
     void computeRuleErrors(ElementRule rule);
 
-    // todo needed?
-    void parseDidParse();
+    void parserCompleted();
     void markDirty();
     void reset();
 

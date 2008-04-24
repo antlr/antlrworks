@@ -48,7 +48,7 @@ public class GrammarEngineImpl implements GrammarEngine {
 
     private GrammarEngineDelegate delegate;
 
-    private final GrammarProperties properties = new GrammarProperties();
+    private final GrammarProperties properties = new GrammarPropertiesImpl();
     private final ANTLRGrammarEngine antlrEngine = new ANTLRGrammarEngineImpl();
     private final GrammarSyntaxEngine syntaxEngine = new GrammarSyntaxEngine();
 
@@ -122,6 +122,10 @@ public class GrammarEngineImpl implements GrammarEngine {
         return properties.getRuleAtIndex(index);
     }
 
+    public List<String> getRuleNames() {
+        return properties.getRuleNames();
+    }
+
     public List<ElementReference> getReferences() {
         return properties.getReferences();
     }
@@ -166,6 +170,48 @@ public class GrammarEngineImpl implements GrammarEngine {
         return properties.getAllGeneratedNames();
     }
 
+    /**
+     * Returns true if the grammar type needs a suffix for the generated class files.
+     * Only combined grammars need a suffix.
+     *
+     * @return true if the grammar generated files need a suffix
+     */
+    private boolean hasSuffix() {
+        return isCombinedGrammar();
+    }
+
+    private String getSuffix(int type) {
+        if(hasSuffix()) {
+            switch(type) {
+                case ElementGrammarName.LEXER:
+                    return "Lexer";
+                case ElementGrammarName.PARSER:
+                    return "Parser";
+            }
+        }
+        return "";
+    }
+
+    public String getGeneratedClassName(int type) throws Exception {
+        String name = null;
+        antlrEngine.createGrammars();
+        if(type == ElementGrammarName.LEXER) {
+            Grammar g = antlrEngine.getLexerGrammar();
+            if(g == null) return null;
+            name = g.name+getSuffix(type);
+        } else if(type == ElementGrammarName.PARSER) {
+            Grammar g = antlrEngine.getParserGrammar();
+            if(g == null) return null;
+            name = g.name+getSuffix(type);
+        } else if(type == ElementGrammarName.TREEPARSER) {
+            Grammar g = antlrEngine.getParserGrammar();
+            if(g == null) return null;
+            if(!isTreeParserGrammar()) return null;
+            name = g.name+getSuffix(type);
+        }
+        return name;
+    }
+
     public int getFirstDeclarationPosition(String name) {
         return properties.getFirstDeclarationPosition(name);
     }
@@ -194,8 +240,8 @@ public class GrammarEngineImpl implements GrammarEngine {
         antlrEngine.computeRuleErrors(rule);
     }
 
-    public void parseDidParse() {
-        properties.parserDidParse();
+    public void parserCompleted() {
+        properties.parserCompleted();
     }
 
     public void markDirty() {
@@ -203,8 +249,7 @@ public class GrammarEngineImpl implements GrammarEngine {
     }
 
     public void reset() {
-        properties.resetTokenVocab();
-        properties.rebuildAll();
+        properties.reset();
     }
 
     public boolean isVersion2() {

@@ -59,7 +59,6 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -386,7 +385,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     protected String getLexerName() throws Exception {
-        String lexer = codeGenerator.getGeneratedClassName(ElementGrammarName.LEXER);
+        String lexer = debugger.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.LEXER);
         if(lexer == null) {
             // The lexer name can be null if the grammar is a treeparser or a parser
             // Try to lookup the name used by tokenVocab and use it as the lexer name
@@ -407,7 +406,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             } else {
                 glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(inputFile));
             }
-            glueCode.setAttribute(ST_ATTR_JAVA_PARSER, codeGenerator.getGeneratedClassName(ElementGrammarName.PARSER));
+            glueCode.setAttribute(ST_ATTR_JAVA_PARSER, debugger.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.PARSER));
             glueCode.setAttribute(ST_ATTR_JAVA_LEXER, getLexerName());
             glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
             glueCode.setAttribute(ST_ATTR_DEBUG_PORT, AWPrefs.getDebugDefaultLocalPort());
@@ -472,8 +471,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     protected void compileFiles(String[] files) {
-        // todo debug only
-        System.out.println(">> "+ Arrays.asList(files));
         String error = DebuggerEngine.compileFiles(debugger.getConsole(), files, outputFileDir, this);
         if(error != null)
             reportError(error);

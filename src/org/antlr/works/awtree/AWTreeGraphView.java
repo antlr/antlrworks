@@ -183,9 +183,9 @@ public class AWTreeGraphView extends GView {
 
     /** This method rebuild the tree incrementally using the information provided
      * by the tree model. This method is faster than rebuildNoModel() for large tree.
+     *
+     * Note: actually it is slower because of the adjustElement...() method which is called too often
      */
-    //@todo actually it is slower because of the adjustElement...() method which is called too often
-
     public void rebuildWithModel() {
         for(int n=0; n<model.getNewNodesCount(); n++) {
             TreeNode parent = model.getNewNodeParentAtIndex(n);

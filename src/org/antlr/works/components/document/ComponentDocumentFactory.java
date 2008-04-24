@@ -72,7 +72,6 @@ public class ComponentDocumentFactory extends XJDocumentFactory {
     }
 
     private void createAndBindEditor(ComponentDocument document) {
-        // todo make from parameter?
         ComponentEditor editor = new ComponentEditorGrammar();
 
         editor.setDocument(document);

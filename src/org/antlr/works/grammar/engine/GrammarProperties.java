@@ -1,18 +1,12 @@
 package org.antlr.works.grammar.engine;
 
-import org.antlr.tool.Grammar;
-import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
-import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
-import org.antlr.works.grammar.syntax.GrammarSyntaxLexer;
-import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
-import org.antlr.xjlib.foundation.XJUtils;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -44,451 +38,53 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class GrammarProperties {
+public interface GrammarProperties {
 
-    private GrammarProperties parentProperties;
-    private final List<GrammarProperties> importedProperties = new ArrayList<GrammarProperties>();
+    void setParent(GrammarProperties properties);
 
-    private ElementGrammarName name;
+    void setGrammarEngine(GrammarEngine engine);
+    void setSyntaxEngine(GrammarSyntaxEngine syntaxEngine);
+    void setAntlrEngine(ANTLRGrammarEngine antlrEngine);
 
-    private final List<ElementRule> rules = new ArrayList<ElementRule>();
-    private final List<ElementGroup> groups = new ArrayList<ElementGroup>();
-    private final List<ElementBlock> blocks = new ArrayList<ElementBlock>();
-    private final List<ElementAction> actions = new ArrayList<ElementAction>();
-    private final List<ElementReference> references = new ArrayList<ElementReference>();
-    private final List<ElementImport> imports = new ArrayList<ElementImport>();
-    private final List<ATEToken> decls = new ArrayList<ATEToken>();
+    List<ElementRule> getRules();
+    List<ElementRule> getDuplicateRules();
+    ElementRule getRuleWithName(String name);
+    ElementRule getRuleAtIndex(int index);
+    List<String> getRuleNames();
 
-    private final List<ElementRule> duplicateRules = new ArrayList<ElementRule>();
-    private final List<ElementReference> undefinedReferences = new ArrayList<ElementReference>();
-    // todo used?
-    private final List<ElementRule> hasLeftRecursionRules = new ArrayList<ElementRule>();
+    List<ElementReference> getUndefinedReferences();
 
-    private final Set<String> tokenVocabNames = new HashSet<String>();
-    private String tokenVocabName;
+    List<ElementGroup> getGroups();
+    List<ElementBlock> getBlocks();
+    List<ElementAction> getActions();
+    List<ElementReference> getReferences();
+    List<ElementImport> getImports();
+    List<ATEToken> getDecls();
 
-    private GrammarEngine engine;
-    private GrammarSyntaxEngine syntaxEngine;
-    private ANTLRGrammarEngine antlrEngine;
+    ElementGrammarName getElementName();
+    String getName();
 
-    public GrammarProperties() {
-    }
+    List<String> getAllGeneratedNames() throws Exception;
 
-    public void setGrammarEngine(GrammarEngine engine) {
-        this.engine = engine;
-    }
+    String getTokenVocab();
 
-    public void setSyntaxEngine(GrammarSyntaxEngine syntaxEngine) {
-        this.syntaxEngine = syntaxEngine;
-    }
+    int getNumberOfRulesWithErrors();
+    int getNumberOfErrors();
 
-    public void setAntlrEngine(ANTLRGrammarEngine antlrEngine) {
-        this.antlrEngine = antlrEngine;
-    }
+    int getFirstDeclarationPosition(String name);
 
-    public List<ElementRule> getRules() {
-        return rules;
-    }
+    List<String> getGrammarsOverriddenByRule(String name);
+    List<String> getGrammarsOverridingRule(String name);
+    void updateHierarchy(Map<String, GrammarProperties> entities);
 
-    public ElementRule getRuleWithName(String name) {
-        List<ElementRule> rules = getRules();
-        for (ElementRule r : rules) {
-            if (r.name.equals(name))
-                return r;
-        }
-        return null;
-    }
+    int getType();
 
-    public List<ElementGroup> getGroups() {
-        return groups;
-    }
+    boolean isParserGrammar();
+    boolean isLexerGrammar();
+    boolean isCombinedGrammar();
+    boolean isTreeParserGrammar();
 
-    public List<ElementBlock> getBlocks() {
-        return blocks;
-    }
+    void reset();
+    void parserCompleted();
 
-    public List<ElementAction> getActions() {
-        return actions;
-    }
-
-    public List<ElementReference> getReferences() {
-        return references;
-    }
-
-    public List<ElementImport> getImports() {
-        return imports;
-    }
-
-    public List<ATEToken> getDecls() {
-        return decls;
-    }
-
-    public ElementGrammarName getElementName() {
-        return name;
-    }
-
-    public String getName() {
-        if(name == null) {
-            return null;
-        } else {
-            return name.getName();
-        }
-    }
-
-    public int getType() {
-        if(name == null) {
-            return -1;
-        } else {
-            return name.getType();
-        }
-    }
-
-    public boolean isParserGrammar() {
-        return getType() == ElementGrammarName.PARSER;
-    }
-
-    public boolean isLexerGrammar() {
-        return getType() == ElementGrammarName.LEXER;
-    }
-
-    public boolean isCombinedGrammar() {
-        return getType() == ElementGrammarName.COMBINED;
-    }
-
-    public boolean isTreeParserGrammar() {
-        return getType() == ElementGrammarName.TREEPARSER;
-    }
-
-    public List<String> getDeclaredTokenNames() {
-        List<String> names = new ArrayList<String>();
-        if(blocks != null) {
-            for (ElementBlock block : blocks) {
-                if (block.isTokenBlock) {
-                    names.addAll(block.getDeclaredTokensAsString());
-                }
-            }
-        }
-        return names;
-    }
-
-    public List<String> getPredefinedReferences() {
-        return GrammarSyntaxParser.predefinedReferences;
-    }
-
-    public synchronized String getTokenVocab() {
-        if(blocks == null)
-            return null;
-
-        for (ElementBlock block : blocks) {
-            if (block.isOptionsBlock)
-                return block.getTokenVocab();
-        }
-        return null;
-    }
-
-    public synchronized List<String> getRuleNames() {
-        List<String> names = new ArrayList<String>();
-        if(rules != null) {
-            for (ElementRule rule : rules) {
-                names.add(rule.name);
-            }
-        }
-        return names;
-    }
-
-    public synchronized ElementRule getRuleAtIndex(int index) {
-        if(index < 0 || index >= rules.size())
-            return null;
-        else
-            return rules.get(index);
-    }
-
-    public int getNumberOfRulesWithErrors() {
-        int count = 0;
-        if(getRules() != null) {
-            for (ElementRule rule : getRules()) {
-                if (rule.hasErrors())
-                    count++;
-            }
-        }
-        return count;
-    }
-
-    public int getNumberOfErrors() {
-        int count = 0;
-        if(getRules() != null) {
-            for (ElementRule rule : getRules()) {
-                if (rule.hasErrors())
-                    count+=rule.getErrors().size();
-            }
-        }
-        return count;
-    }
-
-    public List<ElementRule> getDuplicateRules() {
-        return duplicateRules;
-    }
-
-    public List<ElementReference> getUndefinedReferences() {
-        return undefinedReferences;
-    }
-
-    public void resetTokenVocab() {
-        tokenVocabName = null;
-        tokenVocabNames.clear();
-    }
-
-    public Set<String> getTokenVocabNames() {
-        String tokenVocab = getTokenVocab();
-        if(tokenVocab == null) {
-            tokenVocabName = null;
-            tokenVocabNames.clear();
-            return tokenVocabNames;
-        }
-
-        if(tokenVocabName != null && tokenVocabName.equals(tokenVocab))
-            return tokenVocabNames;
-
-        tokenVocabName = tokenVocab;
-        tokenVocabNames.clear();
-
-        try {
-            String file = engine.getTokenVocabFile(tokenVocabName+".tokens");
-            if(file != null) {
-                readTokenVocabFromFile(file, tokenVocabNames);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return tokenVocabNames;
-    }
-
-    public static boolean readTokenVocabFromFile(String filePath, Set<String> tokenNames) throws IOException {
-        // Read the tokens from the file if it exists
-        List<ATEToken> tokens = parsePropertiesString(XJUtils.getStringFromFile(filePath));
-        // Add each token name to the list of tokenVocabNames
-        for (ATEToken t : tokens) {
-            tokenNames.add(t.getAttribute());
-        }
-
-        return true;
-    }
-
-    private static List<ATEToken> parsePropertiesString(final String content) {
-
-        class ParseProperties extends ATESyntaxParser {
-
-            public List<ATEToken> propertiesTokens;
-
-            public void parseTokens() {
-                propertiesTokens = new ArrayList<ATEToken>();
-                while(nextToken()) {
-                    if(T(0).type == ATESyntaxLexer.TOKEN_ID) {
-                        if(isChar(1, "=") || isChar(1, "\n"))
-                            propertiesTokens.add(T(0));
-                    }
-                }
-            }
-
-        }
-
-        GrammarSyntaxLexer lexer = new GrammarSyntaxLexer();
-        lexer.tokenize(content);
-
-        ParseProperties parser = new ParseProperties();
-        parser.parse(lexer.getTokens());
-        return parser.propertiesTokens;
-    }
-
-    public void rebuildHasLeftRecursionRulesList() {
-        if(getRules() == null)
-            return;
-
-        hasLeftRecursionRules.clear();
-        for (ElementRule r : getRules()) {
-            // hasLeftRecursion has a side-effect to analyze the rule
-            if (r.hasLeftRecursion()) {
-                hasLeftRecursionRules.add(r);
-            }
-        }
-    }
-
-    public void rebuildDuplicateRulesList() {
-        List<ElementRule> rules = getRules();
-        if(rules == null)
-            return;
-
-        List<ElementRule> sortedRules = Collections.list(Collections.enumeration(rules));
-        Collections.sort(sortedRules);
-        Iterator<ElementRule> iter = sortedRules.iterator();
-        ElementRule currentRule = null;
-        duplicateRules.clear();
-        while(iter.hasNext()) {
-            ElementRule nextRule = iter.next();
-            if(currentRule != null && currentRule.name.equals(nextRule.name) && !duplicateRules.contains(currentRule)) {
-                duplicateRules.add(currentRule);
-                duplicateRules.add(nextRule);
-            }
-            currentRule = nextRule;
-        }
-    }
-
-    public void rebuildUndefinedReferencesList() {
-        List<String> existingReferences = getRuleNames();
-        existingReferences.addAll(getDeclaredTokenNames());
-        existingReferences.addAll(getPredefinedReferences());
-
-        Set<String> tokenVocabNames = getTokenVocabNames();
-        existingReferences.addAll(tokenVocabNames);
-        // todo does it really update the list of references that this class uses?
-        syntaxEngine.resolveReferencesWithExternalNames(tokenVocabNames);
-
-        undefinedReferences.clear();
-        List<ElementReference> references = getReferences();
-        if(references == null)
-            return;
-
-        for (ElementReference ref : references) {
-            if (existingReferences.contains(ref.token.getAttribute())) continue;
-            if (!getGrammarsOverriddenByRule(ref.token.getAttribute()).isEmpty()) continue;
-            undefinedReferences.add(ref);
-        }
-    }
-
-    public void rebuildAll() {
-        rebuildDuplicateRulesList();
-        rebuildUndefinedReferencesList();
-        rebuildHasLeftRecursionRulesList();
-    }
-
-    public void parserDidParse() {
-        update((GrammarSyntaxParser) syntaxEngine.getParser());
-        rebuildAll();
-    }
-
-    private void update(GrammarSyntaxParser parser) {
-        rules.clear();
-        rules.addAll(parser.rules);
-
-        groups.clear();
-        groups.addAll(parser.groups);
-
-        blocks.clear();
-        blocks.addAll(parser.blocks);
-
-        actions.clear();
-        actions.addAll(parser.actions);
-
-        references.clear();
-        references.addAll(parser.references);
-
-        imports.clear();
-        imports.addAll(parser.imports);
-
-        decls.clear();
-        decls.addAll(parser.decls);
-
-        this.name = parser.name;
-
-        for(ElementRule r : rules) {
-            r.setEngine(engine);
-        }
-    }
-
-    public List<String> getAllGeneratedNames() throws Exception {
-        List<String> names = new ArrayList<String>();
-        Grammar g = antlrEngine.getDefaultGrammar();
-        names.add(g.getRecognizerName());
-        for(Grammar gd : g.getDelegates()) {
-            names.add(gd.getRecognizerName());
-        }
-
-        Grammar lexer = antlrEngine.getLexerGrammar();
-        if(lexer != null) {
-            names.add(lexer.getRecognizerName());
-        }
-        return names;
-    }
-
-    public void updateHierarchy(Map<String, GrammarProperties> entities) {
-        importedProperties.clear();
-        for(ElementImport element : imports) {
-            GrammarProperties d = entities.get(element.getName()+".g");
-            if(d != null) {
-                d.setParent(this);
-                importedProperties.add(d);
-                d.updateHierarchy(entities);
-            }
-        }
-        resetRules();
-    }
-
-    public GrammarProperties getParent() {
-        return parentProperties;
-    }
-
-    public void setParent(GrammarProperties parent) {
-        this.parentProperties = parent;
-    }
-
-    /**
-     * Returns the list of grammars that overrides the rule specified
-     * in parameter. Overrides has the same meaning than in Java: the rule
-     * of a parent grammar is declared again in one or more child grammar.
-     */
-    public List<String> getGrammarsOverriddenByRule(String name) {
-        List<String> grammars = new ArrayList<String>();
-        for(GrammarProperties child : importedProperties) {
-            for(ATEToken decl : child.getDecls()) {
-                if(decl.getAttribute().equals(name)) {
-                    grammars.add(child.getName());
-                    break;
-                }
-            }
-            grammars.addAll(child.getGrammarsOverriddenByRule(name));
-        }
-        return grammars;
-    }
-
-    /**
-     * Returns the list of grammars that this rule overrides.
-     */
-    public List<String> getGrammarsOverridingRule(String name) {
-        List<String> grammars = new ArrayList<String>();
-        if(parentProperties != null) {
-            for(ATEToken decl : parentProperties.getDecls()) {
-                if(decl.getAttribute().equals(name)) {
-                    grammars.add(parentProperties.getName());
-                    break;
-                }
-            }
-            grammars.addAll(parentProperties.getGrammarsOverridingRule(name));
-        }
-        return grammars;
-    }
-
-    public int getFirstDeclarationPosition(String name) {
-        ATEToken token = getFirstDeclaration(name);
-        if(token != null) {
-            return token.start;
-        } else {
-            return -1;
-        }
-    }
-
-    private ATEToken getFirstDeclaration(String name) {
-        for(ATEToken decl : getDecls()) {
-            if(decl.getAttribute().equals(name)) {
-                return decl;
-            }
-        }
-        return null;
-    }
-
-    public void resetRules() {
-        for(ElementRule r : rules) {
-            r.resetHierarchy();
-        }
-    }
 }

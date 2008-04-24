@@ -105,7 +105,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     /* Managers */
 
-    public EditorGutterItemManager breakpointManager;
+    public EditorGutterItemManager gutterItemManager;
     public EditorFoldingManager foldingManager;
     public EditorUnderlyingManager underlyingManager;
     public EditorAnalysisManager analysisManager;
@@ -113,7 +113,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     /* Components */
 
     public GrammarEngine engine;
-    //public GrammarSyntaxEngine syntaxEngine;
     public EditorRules rules;
     public Visual visual;
     public EditorInterpreter interpreter;
@@ -131,31 +130,30 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     /* Swing */
 
-    protected JScrollPane rulesScrollPane;
-    protected XJTree rulesTree;
+    private JScrollPane rulesScrollPane;
+    private XJTree rulesTree;
 
-    protected JTabbedPane tabbedPane;
+    private JTabbedPane tabbedPane;
 
-    protected JLabel infoLabel;
-    protected JLabel cursorLabel;
-    protected JLabel writableLabel;
-    protected JLabel scmLabel;
-    protected ConsoleStatus consoleStatus;
+    private JLabel infoLabel;
+    private JLabel cursorLabel;
+    private JLabel writableLabel;
+    private JLabel scmLabel;
+    private ConsoleStatus consoleStatus;
 
     /* Other */
 
-    protected boolean windowFirstDisplay = true;
-    protected String lastSelectedRule;
-    protected ComponentEditorGrammarDelegate delegate;
+    private ActionRefactor actionRefactor;
+    private int debuggerLocation = -1;
 
-    protected AfterParseOperations afterParserOp;
+    private boolean windowFirstDisplay = true;
+    private String lastSelectedRule;
+    private ComponentEditorGrammarDelegate delegate;
+
+    private AfterParseOperations afterParserOp;
 
     /* Progress */
     private XJDialogProgress progress;
-
-    // todo classify
-    private ActionRefactor actionRefactor;
-    private int debuggerLocation = -1;
 
     public ComponentEditorGrammar() {
 
@@ -253,8 +251,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     protected void initManagers() {
-        breakpointManager = new EditorGutterItemManager(this);
-        textEditor.setBreakpointManager(breakpointManager);
+        gutterItemManager = new EditorGutterItemManager(this);
+        textEditor.setBreakpointManager(gutterItemManager);
 
         foldingManager = new EditorFoldingManager(this);
         textEditor.setFoldingManager(foldingManager);
@@ -384,7 +382,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         afterParserOp.stop();
         afterParserOp = null;
 
-        breakpointManager.close();
+        gutterItemManager.close();
         foldingManager.close();
         underlyingManager.close();
         analysisManager.close();
@@ -991,7 +989,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     private void afterParseOperations() {
-        engine.parseDidParse();
+        engine.parserCompleted();
         container.editorParsed(this);
 
         persistence.restore();

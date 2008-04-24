@@ -50,9 +50,7 @@ public interface ComponentContainer {
 
     public Dimension getSize();
     
-    // todo see if this is really needed
     public XJFrameInterface getXJFrame();
-    // todo see if this is really needed
     public XJMainMenuBar getMainMenuBar();
 
     public void becomingVisibleForTheFirstTime();
@@ -63,7 +61,6 @@ public interface ComponentContainer {
     public ContextualMenuFactory createContextualMenuFactory();
     public JPopupMenu getContextualMenu(int textIndex);
 
-    // todo see if EditorTab should be renamed ContainerTab
     EditorTab getSelectedTab();
     void selectTab(Component c);
     void addTab(EditorTab tab);

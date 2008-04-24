@@ -55,7 +55,6 @@ public class CheckGrammar implements Runnable {
     }
 
     public void cancel() {
-        // todo at engine level? syntax engine is for syntax while the other is for antlr grammar
         editor.getGrammarEngine().cancelAnalyze();
     }
 

@@ -278,8 +278,6 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         CharStream input = new ANTLRStringStream(Utils.convertRawTextWithEOL(textPane.getText(), eolCombo));
 
         ANTLRGrammarEngine eg = editor.getGrammarEngine().getANTLRGrammarEngine();
-        Grammar parser;
-        Grammar lexer;
         try {
             eg.createGrammars();
         } catch (Exception e) {
@@ -287,8 +285,8 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
             return;
         }
 
-        parser = eg.getParserGrammar();
-        lexer = eg.getLexerGrammar();
+        Grammar parser = eg.getParserGrammar();
+        Grammar lexer = eg.getLexerGrammar();
         if(lexer == null) {
             throw new RuntimeException("Lexer is null. Check the grammar before running the interpreter.");
         }

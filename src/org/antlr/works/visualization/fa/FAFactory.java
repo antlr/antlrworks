@@ -166,11 +166,7 @@ public class FAFactory {
     public String nameOfExternalReferencedRule(Transition transition) {
         if(transition instanceof RuleClosureTransition) {
             RuleClosureTransition rct = (RuleClosureTransition)transition;
-            // @todo to finish
-            String tokenName = g.getRuleName(rct.rule.index);
-            //System.out.println(tokenName);
-            //System.err.println(g.getTokenDisplayName(g.getTokenType(tokenName)));
-            return tokenName;
+            return g.getRuleName(rct.rule.index);
         } else
             return null;
     }

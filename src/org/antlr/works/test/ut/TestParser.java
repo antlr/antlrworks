@@ -11,7 +11,7 @@ import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.engine.GrammarEngineImpl;
-import org.antlr.works.grammar.engine.GrammarProperties;
+import org.antlr.works.grammar.engine.GrammarPropertiesImpl;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import org.antlr.works.test.AbstractTest;
 import org.antlr.works.test.TestConstants;
@@ -133,7 +133,7 @@ public class TestParser extends AbstractTest {
 
         // now add the remaining token as if they were read from a tokenVocab file
         Set<String> names = new HashSet<String>();
-        GrammarProperties.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        GrammarPropertiesImpl.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
         getParser().resolveReferencesWithExternalNames(names);
         assertParserProperties(40, 18, 7, 40, 199+4); // verified by hand
 
@@ -145,7 +145,7 @@ public class TestParser extends AbstractTest {
         assertInspector(69);
 
         Set<String> names = new HashSet<String>();
-        GrammarProperties.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        GrammarPropertiesImpl.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
         getParser().resolveReferencesWithExternalNames(names);
 
         assertParserProperties(36, 14, 7, 36, 170); // verified by hand
@@ -158,7 +158,7 @@ public class TestParser extends AbstractTest {
 
         Set<String> names = new HashSet<String>();
         //todo handle vocabfile in a better way
-        GrammarProperties.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
+        GrammarPropertiesImpl.readTokenVocabFromFile(vocabFile = getResourceFile(TestConstants.PREFIX+"mantra/Mantra.tokens"), names);
         getParser().resolveReferencesWithExternalNames(names);
 
         assertParserProperties(36, 37, 23, 36, 177); // verified by hand
@@ -185,7 +185,7 @@ public class TestParser extends AbstractTest {
 
     private void assertInspector(int errors) {
         GrammarEngine engine = new GrammarEngineImpl(new MockGrammarEngineDelegate());
-        engine.getGrammarProperties().rebuildAll();
+        engine.getGrammarProperties().reset();
         EditorInspector inspector = new EditorInspector(engine, null, new MockInspectorDelegate());
         assertEquals("Errors", errors, inspector.getErrors().size());
     }

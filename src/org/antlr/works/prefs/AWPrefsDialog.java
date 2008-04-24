@@ -299,7 +299,7 @@ public class AWPrefsDialog extends XJPanel {
         browseCustomClassPathButton.setEnabled(classpathCustomButton.isSelected());
         outputPathField.setEnabled(outputPathCustomRadio.isSelected());
         browseOutputPathButton.setEnabled(outputPathCustomRadio.isSelected());
-        // @todo disable for now
+        // not implemented
         //actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_PREFERENCES);
     }

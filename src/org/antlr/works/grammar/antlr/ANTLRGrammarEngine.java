@@ -39,8 +39,6 @@ public interface ANTLRGrammarEngine {
     void setGrammarEngine(GrammarEngine engine);
 
     void close();
-
-    // todo
     void markDirty();
 
     boolean hasGrammar();
@@ -52,12 +50,10 @@ public interface ANTLRGrammarEngine {
     NFAState getRuleStartState(String name) throws Exception;
     Grammar getGrammarForRule(String name) throws Exception;
 
-    // todo expose?
     void createGrammars() throws Exception;
+    void computeRuleErrors(ElementRule rule);
 
     ANTLRGrammarResult analyze() throws Exception;
     void cancel();
 
-    // todo expose?
-    void computeRuleErrors(ElementRule rule);
 }
