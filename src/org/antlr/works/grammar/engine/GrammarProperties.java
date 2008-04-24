@@ -86,36 +86,6 @@ public class GrammarProperties {
         this.antlrEngine = antlrEngine;
     }
 
-    // todo call this one
-    public void update(GrammarSyntaxParser parser) {
-        rules.clear();
-        rules.addAll(parser.rules);
-
-        groups.clear();
-        groups.addAll(parser.groups);
-
-        blocks.clear();
-        blocks.addAll(parser.blocks);
-
-        actions.clear();
-        actions.addAll(parser.actions);
-
-        references.clear();
-        references.addAll(parser.references);
-
-        imports.clear();
-        imports.addAll(parser.imports);
-
-        decls.clear();
-        decls.addAll(parser.decls);
-
-        this.name = parser.name;
-
-        for(ElementRule r : rules) {
-            r.setEngine(engine);
-        }
-    }
-
     public List<ElementRule> getRules() {
         return rules;
     }
@@ -158,11 +128,19 @@ public class GrammarProperties {
     }
 
     public String getName() {
-        return name.getName();
+        if(name == null) {
+            return null;
+        } else {
+            return name.getName();
+        }
     }
 
     public int getType() {
-        return name.getType();
+        if(name == null) {
+            return -1;
+        } else {
+            return name.getType();
+        }
     }
 
     public boolean isParserGrammar() {
@@ -385,7 +363,37 @@ public class GrammarProperties {
     }
 
     public void parserDidParse() {
+        update((GrammarSyntaxParser) syntaxEngine.getParser());
         rebuildAll();
+    }
+
+    private void update(GrammarSyntaxParser parser) {
+        rules.clear();
+        rules.addAll(parser.rules);
+
+        groups.clear();
+        groups.addAll(parser.groups);
+
+        blocks.clear();
+        blocks.addAll(parser.blocks);
+
+        actions.clear();
+        actions.addAll(parser.actions);
+
+        references.clear();
+        references.addAll(parser.references);
+
+        imports.clear();
+        imports.addAll(parser.imports);
+
+        decls.clear();
+        decls.addAll(parser.decls);
+
+        this.name = parser.name;
+
+        for(ElementRule r : rules) {
+            r.setEngine(engine);
+        }
     }
 
     public List<String> getAllGeneratedNames() throws Exception {

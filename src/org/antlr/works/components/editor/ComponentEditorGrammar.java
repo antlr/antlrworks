@@ -991,8 +991,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     private void afterParseOperations() {
-        container.editorParsed(this);
         engine.parseDidParse();
+        container.editorParsed(this);
 
         persistence.restore();
 
