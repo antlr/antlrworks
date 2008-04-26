@@ -33,6 +33,7 @@ package org.antlr.works.editor;
 
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.utils.Console;
+import org.antlr.works.utils.ConsoleHelper;
 import org.antlr.works.utils.Toolbar;
 import org.antlr.xjlib.foundation.XJUtils;
 
@@ -54,16 +55,6 @@ public class EditorConsole extends EditorTab implements Console {
 
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     protected Map<Thread,Integer> modeByThread = new HashMap<Thread, Integer>();
-
-    protected static EditorConsole current = null;
-
-    public static synchronized void setCurrent(EditorConsole console) {
-        current = console;
-    }
-
-    public static synchronized EditorConsole getCurrent() {
-        return current;
-    }
 
     public EditorConsole(ComponentEditorGrammar editor) {
         this.editor = editor;
@@ -90,8 +81,8 @@ public class EditorConsole extends EditorTab implements Console {
 
     public void close() {
         editor = null;
-        if(current == this) {
-            current = null;
+        if(ConsoleHelper.getCurrent() == this) {
+            ConsoleHelper.setCurrent(null);
         }
     }
 
@@ -104,7 +95,7 @@ public class EditorConsole extends EditorTab implements Console {
     }
 
     public void makeCurrent() {
-        EditorConsole.setCurrent(this);
+        ConsoleHelper.setCurrent(this);
     }
 
     public Container getContainer() {

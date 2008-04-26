@@ -8,6 +8,8 @@ import org.antlr.works.grammar.engine.GrammarEngineDelegate;
 import org.antlr.works.grammar.engine.GrammarEngineImpl;
 import org.antlr.works.grammar.engine.GrammarPropertiesImpl;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
+import org.antlr.works.utils.Console;
+import org.antlr.works.utils.ConsoleHelper;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.IOException;
@@ -48,6 +50,11 @@ public class AbstractTest extends TestCase {
     private GrammarEngine engine = new GrammarEngineImpl(new MyGrammarEngineDelegate());
     private String text;
     private String vocabFile;
+
+    @Override
+    protected void setUp() throws Exception {
+        ConsoleHelper.setCurrent(new MyConsole());
+    }
 
     public void parseFile(String fileName) throws IOException {
         this.text = getTextFromFile(fileName);
@@ -128,6 +135,32 @@ public class AbstractTest extends TestCase {
 
         public String getText() {
             return text;
+        }
+    }
+
+    private class MyConsole implements Console {
+
+        public void setMode(int mode) {
+        }
+
+        public void println(String s) {
+            System.out.println(s);
+        }
+
+        public void println(String s, int level) {
+            System.out.println(s);
+        }
+
+        public void println(Throwable e) {
+            System.out.println(e.toString());
+        }
+
+        public void print(String string, int level) {
+            System.out.println(string);
+        }
+
+        public void print(Throwable e) {
+            System.out.println(e.toString());
         }
     }
 }
