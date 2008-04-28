@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
-import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.engine.GrammarEngine;
@@ -42,9 +42,9 @@ import javax.swing.*;
 import java.util.List;
 import java.util.Set;
 
-public class MenuGoTo extends MenuAbstract {
+public class ActionGoTo extends ActionAbstract {
 
-    public MenuGoTo(ComponentContainerGrammar editor) {
+    public ActionGoTo(ComponentContainer editor) {
         super(editor);
     }
 

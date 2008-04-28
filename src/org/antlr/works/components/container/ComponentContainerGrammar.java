@@ -31,14 +31,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.components.container;
 
-import org.antlr.works.actions.ActionRefactor;
 import org.antlr.works.ate.syntax.misc.ATELine;
-import org.antlr.works.components.ComponentToolbar;
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.toolbar.ComponentToolbar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.api.DebuggerDelegate;
 import org.antlr.works.editor.EditorConsole;
@@ -49,7 +48,9 @@ import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.engine.GrammarProperties;
-import org.antlr.works.menu.*;
+import org.antlr.works.menu.ActionDebugger;
+import org.antlr.works.menu.ActionRefactor;
+import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
 import org.antlr.xjlib.appkit.app.XJApplication;
@@ -70,7 +71,8 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 
-public class ComponentContainerGrammar extends XJWindow implements ComponentContainer {
+public class ComponentContainerGrammar extends XJWindow
+        implements ComponentContainer {
 
     private List<ComponentContainer> containers = new ArrayList<ComponentContainer>();
     private Map<Component, ComponentContainer> componentToContainer = new HashMap<Component, ComponentContainer>();
@@ -82,13 +84,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
     private ComponentToolbar toolbar;
     private Debugger debugger;
-
-    private MenuFind menuFind;
-    private MenuGrammar menuGrammar;
-    private MenuGoTo menuGoTo;
-    private MenuGenerate menuGenerate;
-    private MenuDebugger menuDebugger;
-    private MenuExport menuExport;
 
     private JTabbedPane editorsTab;
     private JTabbedPane bottomTab;
@@ -117,9 +112,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         selectedContainer = this;
         containers.add(this);
 
-        initMenus();
-
         debugger = new Debugger(new ContainerDebuggerDelegate());
+        componentContainerGrammarMenu = new ComponentContainerGrammarMenu(this);
         toolbar = new ComponentToolbar(this);
     }
 
@@ -127,7 +121,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     public void awake() {
         super.awake();
 
-        menuGenerate.awake();
+        componentContainerGrammarMenu.awake();
+
         debugger.awake();
         toolbar.awake();
 
@@ -192,28 +187,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
 
         getContentPane().add(panel);
         pack();
-    }
-
-    private void initMenus() {
-        componentContainerGrammarMenu = new ComponentContainerGrammarMenu(this);
-
-        menuFind = new MenuFind(this);
-        menuGrammar = new MenuGrammar(this);
-        menuGoTo = new MenuGoTo(this);
-        menuGenerate = new MenuGenerate(this);
-        menuDebugger = new MenuDebugger(this);
-        menuExport = new MenuExport(this);
-    }
-
-    private void closeMenus() {
-        componentContainerGrammarMenu.close();
-
-        menuFind.close();
-        menuGrammar.close();
-        menuGoTo.close();
-        menuGenerate.close();
-        menuDebugger.close();
-        menuExport.close();
     }
 
     public void refreshMainMenuBar() {
@@ -344,12 +317,13 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         return debugger;
     }
 
-    public void debug() {
-        debugger.launchLocalDebugger(Debugger.OPTION_NONE);
+    // todo extract same interface for other actions
+    public ActionDebugger getActionDebugger() {
+        return componentContainerGrammarMenu.getActionDebugger();
     }
 
-    public void debugAgain() {
-        debugger.launchLocalDebugger(Debugger.OPTION_AGAIN);
+    public ActionRefactor getActionRefactor() {
+        return componentContainerGrammarMenu.getActionRefactor();
     }
 
     public boolean close() {
@@ -367,7 +341,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             container.close();
         }
 
-        closeMenus();
+        componentContainerGrammarMenu.close();
 
         editor.close();
         debugger.close();
@@ -598,34 +572,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         panel.add(c);
         panel.revalidate();
         panel.repaint();
-    }
-
-    public MenuFind getMenuFind() {
-        return menuFind;
-    }
-
-    public MenuGrammar getMenuGrammar() {
-        return menuGrammar;
-    }
-
-    public ActionRefactor getMenuRefactor() {
-        return getSelectedEditor().getActionRefactor();
-    }
-
-    public MenuGoTo getMenuGoTo() {
-        return menuGoTo;
-    }
-
-    public MenuGenerate getMenuGenerate() {
-        return menuGenerate;
-    }
-
-    public MenuDebugger getMenuDebugger() {
-        return menuDebugger;
-    }
-
-    public MenuExport getMenuExport() {
-        return menuExport;
     }
 
     public class ContainerDebuggerDelegate implements DebuggerDelegate {

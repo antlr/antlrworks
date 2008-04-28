@@ -1,7 +1,7 @@
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.find.Usages;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
@@ -36,9 +36,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class MenuFind extends MenuAbstract {
+public class ActionFind extends ActionAbstract {
 
-    public MenuFind(ComponentContainerGrammar editor) {
+    public ActionFind(ComponentContainer editor) {
         super(editor);
     }
 

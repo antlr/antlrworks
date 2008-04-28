@@ -1,6 +1,6 @@
-package org.antlr.works.components;
+package org.antlr.works.components.toolbar;
 
-import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
@@ -60,9 +60,9 @@ public class ComponentToolbar implements XJNotificationObserver {
 
     public JButton find;
 
-    public ComponentContainerGrammar container;
+    public ComponentContainer container;
 
-    public ComponentToolbar(ComponentContainerGrammar container) {
+    public ComponentToolbar(ComponentContainer container) {
         this.container = container;
 
         createInterface();
@@ -172,13 +172,13 @@ public class ComponentToolbar implements XJNotificationObserver {
 
         debug.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.debug();
+                container.getActionDebugger().debug();
             }
         });
 
         debugAgain.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.debugAgain();
+                container.getActionDebugger().debugAgain();
             }
         });
 

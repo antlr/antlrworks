@@ -35,7 +35,7 @@ import org.antlr.works.IDE;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.element.ElementGrammarName;
-import org.antlr.works.menu.ContextualMenuFactory;
+import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.menu.*;
 
@@ -127,20 +127,46 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public static final int MI_PRIVATE_UNREGISTER = 200;
     public static final int MI_SERIALIZE_SD = 201;
 
-    protected ComponentContainerGrammar container;
-    protected XJMenuItem ignoreRuleMenuItem;
+    private ActionFind actionFind;
+    private ActionGrammar actionGrammar;
+    private ActionGoTo actionGoTo;
+    private ActionGenerate actionGenerate;
+    private ActionDebugger actionDebugger;
+    private ActionExport actionExport;
+    private ActionRefactor actionRefactor;
 
-    public XJMenu menuGrammar;
+    private ComponentContainer container;
+    private XJMenuItem ignoreRuleMenuItem;
 
     /** The resource bundle used to get localized strings */
-    protected static ResourceBundle resourceBundle = IDE.getMenusResourceBundle();
+    private static ResourceBundle resourceBundle = IDE.getMenusResourceBundle();
 
-    public ComponentContainerGrammarMenu(ComponentContainerGrammar container) {
+    public ComponentContainerGrammarMenu(ComponentContainer container) {
         this.container = container;
+
+        actionFind = new ActionFind(container);
+        actionGrammar = new ActionGrammar(container);
+        actionGoTo = new ActionGoTo(container);
+        actionGenerate = new ActionGenerate(container);
+        actionDebugger = new ActionDebuggerImpl(container);
+        actionExport = new ActionExport(container);
+        actionRefactor = new ActionRefactorImpl(container);
     }
 
     public void close() {
+        actionFind.close();
+        actionGrammar.close();
+        actionGoTo.close();
+        actionGenerate.close();
+        actionDebugger.close();
+        actionExport.close();
+        actionRefactor.close();
+
         container = null;
+    }
+
+    public void awake() {
+        actionGenerate.awake();
     }
 
     public ComponentEditorGrammar getEditor() {
@@ -148,7 +174,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     }
 
     public boolean isDebuggerRunning() {
-        return container.getDebugger().isRunning();
+        return actionDebugger.isRunning();
     }
 
     public void customizeFileMenu(XJMenu menu) {
@@ -274,15 +300,16 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     }
 
     private void createGrammarMenu(XJMainMenuBar menubar) {
-        menuGrammar = new XJMenu();
-        menuGrammar.setTitle(resourceBundle.getString("menu.title.grammar"));
-        menuGrammar.addItem(new XJMenuItemCheck(resourceBundle.getString("menu.item.highlightDecisionDFA"), MI_HIGHLIGHT_DECISION_DFA, this, false));
-        menuGrammar.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showRuleDependencyGraph"), MI_SHOW_DEPENDENCY, this));
-        menuGrammar.addSeparator();
-        menuGrammar.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensSyntaxDiagram"), MI_SHOW_TOKENS_SD, this));
-        menuGrammar.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensDFA"), MI_SHOW_TOKENS_DFA, this));
-        menuGrammar.addSeparator();
-        menuGrammar.addItem(new XJMenuItem(resourceBundle.getString("menu.item.insertRuleFromTemplate"), KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
+        XJMenu menu;
+        menu = new XJMenu();
+        menu.setTitle(resourceBundle.getString("menu.title.grammar"));
+        menu.addItem(new XJMenuItemCheck(resourceBundle.getString("menu.item.highlightDecisionDFA"), MI_HIGHLIGHT_DECISION_DFA, this, false));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showRuleDependencyGraph"), MI_SHOW_DEPENDENCY, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensSyntaxDiagram"), MI_SHOW_TOKENS_SD, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensDFA"), MI_SHOW_TOKENS_DFA, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.insertRuleFromTemplate"), KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
 
         XJMenu rules = new XJMenu();
         rules.setTitle(resourceBundle.getString("menu.title.rules"));
@@ -299,12 +326,12 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
 
         menu.addSeparator();*/
 
-        menuGrammar.addItem(rules);
+        menu.addItem(rules);
         //menu.addItem(folding);
-        menuGrammar.addSeparator();
-        menuGrammar.addItem(new XJMenuItem(resourceBundle.getString("menu.item.checkGrammar"), KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.checkGrammar"), KeyEvent.VK_R, MI_CHECK_GRAMMAR, this));
 
-        menubar.addCustomMenu(menuGrammar);
+        menubar.addCustomMenu(menu);
     }
 
     private void createFindMenu(XJMainMenuBar menubar) {
@@ -414,11 +441,11 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
         factory.addSeparator();
         if(overToken)
             factory.addItem(MI_RENAME);
-        if(container.getMenuRefactor().canReplaceLiteralWithTokenLabel())
+        if(actionRefactor.canReplaceLiteralWithTokenLabel())
             factory.addItem(MI_REPLACE_LITERAL_WITH_TOKEN_LABEL);
-        if(container.getMenuRefactor().canExtractRule())
+        if(actionRefactor.canExtractRule())
             factory.addItem(MI_EXTRACT_RULE);
-        if(container.getMenuRefactor().canInlineRule())
+        if(actionRefactor.canInlineRule())
             factory.addItem(MI_INLINE_RULE);
 
         if(overToken) {
@@ -482,7 +509,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_DEBUG_AGAIN:
-                item.setEnabled(!isDebuggerRunning() && container.getDebugger().canDebugAgain());
+                item.setEnabled(!isDebuggerRunning() && actionDebugger.canDebugAgain());
                 break;
 
             case MI_DEBUG:
@@ -510,7 +537,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_DEBUG_SHOW_INPUT_TOKENS:
-                item.setTitle(container.getMenuDebugger().isInputTokenVisible()?
+                item.setTitle(actionDebugger.isInputTokenVisible()?
                         resourceBundle.getString("menu.item.hideInputTokens") : resourceBundle.getString("menu.item.showInputTokens"));
                 break;
 
@@ -552,23 +579,23 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public void handleMenuFind(int itemTag) {
         switch(itemTag) {
             case MI_FIND:
-                container.getMenuFind().find();
+                actionFind.find();
                 break;
 
             case MI_FIND_NEXT:
-                container.getMenuFind().findNext();
+                actionFind.findNext();
                 break;
 
             case MI_FIND_PREV:
-                container.getMenuFind().findPrev();
+                actionFind.findPrev();
                 break;
 
             case MI_FIND_TOKEN:
-                container.getMenuFind().findSelection();
+                actionFind.findSelection();
                 break;
 
             case MI_FIND_USAGE:
-                container.getMenuFind().findUsage();
+                actionFind.findUsage();
                 break;
         }
     }
@@ -576,46 +603,46 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public void handleMenuGrammar(XJMenuItem item) {
         switch(item.getTag()) {
             case MI_SHOW_TOKENS_SD:
-                container.getMenuGrammar().showTokensSD();
+                actionGrammar.showTokensSD();
                 break;
 
             case MI_SHOW_TOKENS_DFA:
-                container.getMenuGrammar().showTokensDFA();
+                actionGrammar.showTokensDFA();
                 break;
 
             case MI_SHOW_DECISION_DFA:
-                container.getMenuGrammar().showDecisionDFA();
+                actionGrammar.showDecisionDFA();
                 break;
 
             case MI_HIGHLIGHT_DECISION_DFA:
-                container.getMenuGrammar().highlightDecisionDFA();
+                actionGrammar.highlightDecisionDFA();
                 break;
 
             case MI_SHOW_DEPENDENCY:
-                container.getMenuGrammar().showDependency();
+                actionGrammar.showDependency();
                 break;
 
             case MI_INSERT_TEMPLATE:
-                container.getMenuGrammar().insertRuleFromTemplate();
+                actionGrammar.insertRuleFromTemplate();
                 break;
 
             case MI_GROUP_RULE:
-                container.getMenuGrammar().group();
+                actionGrammar.group();
                 break;
 
             case MI_UNGROUP_RULE:
-                container.getMenuGrammar().ungroup();
+                actionGrammar.ungroup();
                 break;
 
             case MI_IGNORE_RULE:
                 if(item.isSelected())
-                    container.getMenuGrammar().ignore();
+                    actionGrammar.ignore();
                 else
-                    container.getMenuGrammar().consider();
+                    actionGrammar.consider();
                 break;
 
             case MI_CHECK_GRAMMAR:
-                container.getMenuGrammar().checkGrammar();
+                actionGrammar.checkGrammar();
                 break;
         }
     }
@@ -623,39 +650,39 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public void handleMenuRefactor(int itemTag) {
         switch(itemTag) {
             case MI_RENAME:
-                container.getMenuRefactor().rename();
+                actionRefactor.rename();
                 break;
 
             case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
-                container.getMenuRefactor().replaceLiteralWithTokenLabel();
+                actionRefactor.replaceLiteralWithTokenLabel();
                 break;
 
             case MI_LITERAL_TO_SINGLEQUOTE:
-                container.getMenuRefactor().convertLiteralsToSingleQuote();
+                actionRefactor.convertLiteralsToSingleQuote();
                 break;
 
             case MI_LITERAL_TO_DOUBLEQUOTE:
-                container.getMenuRefactor().convertLiteralsToDoubleQuote();
+                actionRefactor.convertLiteralsToDoubleQuote();
                 break;
 
             case MI_LITERAL_TO_CSTYLEQUOTE:
-                container.getMenuRefactor().convertLiteralsToCStyleQuote();
+                actionRefactor.convertLiteralsToCStyleQuote();
                 break;
 
             case MI_REMOVE_LEFT_RECURSION:
-                container.getMenuRefactor().removeLeftRecursion();
+                actionRefactor.removeLeftRecursion();
                 break;
 
             case MI_REMOVE_ALL_LEFT_RECURSION:
-                container.getMenuRefactor().removeAllLeftRecursion();
+                actionRefactor.removeAllLeftRecursion();
                 break;
 
             case MI_EXTRACT_RULE:
-                container.getMenuRefactor().extractRule();
+                actionRefactor.extractRule();
                 break;
 
             case MI_INLINE_RULE:
-                container.getMenuRefactor().inlineRule();
+                actionRefactor.inlineRule();
                 break;
         }
     }
@@ -663,35 +690,35 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public void handleMenuGoTo(int itemTag) {
         switch(itemTag) {
             case MI_GOTO_RULE:
-                container.getMenuGoTo().goToRule();
+                actionGoTo.goToRule();
                 break;
 
             case MI_GOTO_DECLARATION:
-                container.getMenuGoTo().goToDeclaration();
+                actionGoTo.goToDeclaration();
                 break;
 
             case MI_GOTO_LINE:
-                container.getMenuGoTo().goToLine();
+                actionGoTo.goToLine();
                 break;
 
             case MI_GOTO_CHARACTER:
-                container.getMenuGoTo().goToCharacter();
+                actionGoTo.goToCharacter();
                 break;
 
             case MI_GOTO_BACK:
-                container.getMenuGoTo().goToBackward();
+                actionGoTo.goToBackward();
                 break;
 
             case MI_GOTO_FORWARD:
-                container.getMenuGoTo().goToForward();
+                actionGoTo.goToForward();
                 break;
 
             case MI_PREV_BREAKPOINT:
-                container.getMenuGoTo().goToBreakpoint(-1);
+                actionGoTo.goToBreakpoint(-1);
                 break;
 
             case MI_NEXT_BREAKPOINT:
-                container.getMenuGoTo().goToBreakpoint(1);
+                actionGoTo.goToBreakpoint(1);
                 break;
         }
     }
@@ -699,19 +726,19 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public void handleMenuGenerate(int itemTag) {
         switch(itemTag) {
             case MI_GENERATE_CODE:
-                container.getMenuGenerate().generateCode();
+                actionGenerate.generateCode();
                 break;
 
             case MI_SHOW_GENERATED_LEXER_CODE:
-                container.getMenuGenerate().showGeneratedCode(ElementGrammarName.LEXER);
+                actionGenerate.showGeneratedCode(ElementGrammarName.LEXER);
                 break;
 
             case MI_SHOW_GENERATED_PARSER_CODE:
-                container.getMenuGenerate().showGeneratedCode(ElementGrammarName.PARSER);
+                actionGenerate.showGeneratedCode(ElementGrammarName.PARSER);
                 break;
 
             case MI_SHOW_RULE_GENCODE:
-                container.getMenuGenerate().showRuleGeneratedCode();
+                actionGenerate.showRuleGeneratedCode();
                 break;
         }
     }
@@ -719,23 +746,23 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public void handleMenuRun(int itemTag) {
         switch(itemTag) {
             case MI_RUN_INTERPRETER:
-                container.getMenuDebugger().runInterpreter();
+                actionDebugger.runInterpreter();
                 break;
 
             case MI_DEBUG:
-                container.getMenuDebugger().debug();
+                actionDebugger.debug();
                 break;
 
             case MI_DEBUG_AGAIN:
-                container.getMenuDebugger().debugAgain();
+                actionDebugger.debugAgain();
                 break;
 
             case MI_DEBUG_REMOTE:
-                container.getMenuDebugger().debugRemote();
+                actionDebugger.debugRemote();
                 break;
 
             case MI_DEBUG_SHOW_INPUT_TOKENS:
-                container.getMenuDebugger().toggleInputTokens();
+                actionDebugger.toggleInputTokens();
                 getEditor().refreshMainMenuBar();
                 break;
         }
@@ -755,29 +782,36 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public void handleMenuExport(int itemTag) {
         switch(itemTag) {
             case MI_EXPORT_AS_IMAGE:
-                container.getMenuExport().exportAsImage();
+                actionExport.exportAsImage();
                 break;
 
             case MI_EXPORT_AS_EPS:
-                container.getMenuExport().exportAsEPS();
+                actionExport.exportAsEPS();
                 break;
 
             case MI_EXPORT_AS_DOT:
-                container.getMenuExport().exportAsDOT();
+                actionExport.exportAsDOT();
                 break;
 
             case MI_EXPORT_ALL_AS_IMAGE:
-                container.getMenuExport().exportAllRulesAsImage();
+                actionExport.exportAllRulesAsImage();
                 break;
 
             case MI_EXPORT_ALL_AS_EPS:
-                container.getMenuExport().exportAllRulesAsEPS();
+                actionExport.exportAllRulesAsEPS();
                 break;
 
             case MI_EXPORT_EVENT:
-                container.getMenuExport().exportEventsAsTextFile();
+                actionExport.exportEventsAsTextFile();
                 break;
         }
     }
 
+    public ActionRefactor getActionRefactor() {
+        return actionRefactor;
+    }
+
+    public ActionDebugger getActionDebugger() {
+        return actionDebugger;
+    }
 }

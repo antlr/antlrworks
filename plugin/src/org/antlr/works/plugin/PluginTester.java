@@ -1,7 +1,10 @@
 package org.antlr.works.plugin;
 
+import org.antlr.works.IDE;
 import org.antlr.works.components.editor.ComponentEditorGrammarDefaultDelegate;
+import org.antlr.works.plugin.container.PCXJApplicationDelegate;
 import org.antlr.works.plugin.container.PluginContainer;
+import org.antlr.xjlib.appkit.app.XJApplication;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,9 +45,11 @@ public class PluginTester {
     protected JSplitPane vertical;
 
     private void createAndShowGUI() {
+        XJApplication.setDelegate(new PCXJApplicationDelegate());
+        XJApplication.setPropertiesPath(IDE.PROPERTIES_PATH);
+        
         container = new PluginContainer();
-        //container.load("/Users/bovet/Desktop/Java/java.g");
-        container.load("/Users/bovet/Desktop/TestAW.g");
+        container.load("/Users/bovet/Grammars/syntax.g");
         assemble();
 
         JFrame.setDefaultLookAndFeelDecorated(true);

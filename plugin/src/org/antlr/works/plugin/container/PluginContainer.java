@@ -6,24 +6,27 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CustomShortcutSet;
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.components.document.ComponentDocument;
+import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.components.editor.ComponentEditorGrammarDefaultDelegate;
+import org.antlr.works.components.toolbar.ComponentToolbar;
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogAbout;
-import org.antlr.works.plugin.intellij.PIUtils;
+import org.antlr.works.editor.EditorTab;
+import org.antlr.works.menu.ActionDebugger;
+import org.antlr.works.menu.ActionRefactor;
+import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJPreferences;
-import org.antlr.xjlib.appkit.document.XJDataPlainText;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
 
 import javax.swing.*;
-import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 /*
 
 [The "BSD licence"]
@@ -62,6 +65,7 @@ public class PluginContainer implements ComponentContainer {
 
     private XJPreferences prefs;
     private ComponentDocumentGrammar document;
+    private ComponentToolbar toolbar;
     private XJMainMenuBar mainMenuBar;
 
     private PCXJFrameInterface frameInterface;
@@ -78,13 +82,14 @@ public class PluginContainer implements ComponentContainer {
         rootPane = new JRootPane();
 
         prefs = new XJPreferences(getClass());
-        document = new ComponentDocumentGrammar();
-        document.setComponentContainer(this);
-        document.setDocumentData(new XJDataPlainText());
 
-        editor = new ComponentEditorGrammar(this);
-        editor.create();
-        
+        document = new ComponentDocumentFactory().createInternalDocument(this);
+
+        editor = (ComponentEditorGrammar) document.getEditor();
+        editor.awake();
+
+        toolbar = new ComponentToolbar(this);
+
         mainMenuBar = new XJMainMenuBar();
         mainMenuBar.setDelegate(new PCMenuBarDelegate(this));
         mainMenuBar.setCustomizer(new PCMenuCustomizer(this));
@@ -93,7 +98,8 @@ public class PluginContainer implements ComponentContainer {
 
 
         // Must register custom action in order to override the default mechanism in IntelliJ 7
-        if(PIUtils.isRunningWithIntelliJ7OrAbove()) {
+        // todo add back (don't use with plugin tester)
+/*        if(PIUtils.isRunningWithIntelliJ7OrAbove()) {
             registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
                     DefaultEditorKit.beginLineAction);
             registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, Event.SHIFT_MASK),
@@ -103,7 +109,7 @@ public class PluginContainer implements ComponentContainer {
                     DefaultEditorKit.endLineAction);
             registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_END, Event.SHIFT_MASK),
                     DefaultEditorKit.selectionEndLineAction);
-        }
+        }   */
     }
 
     public void registerKeyBinding(KeyStroke ks, final String action) {
@@ -152,7 +158,8 @@ public class PluginContainer implements ComponentContainer {
     }
 
     public JComponent getTabbedComponent() {
-        return editor.getTabbedComponent();
+        return null;
+        //return editor.getTabbedComponent();
     }
 
     public JComponent getMenubarComponent() {
@@ -160,15 +167,20 @@ public class PluginContainer implements ComponentContainer {
     }
 
     public JComponent getToolbarComponent() {
-        return editor.getToolbarComponent();
+        return toolbar.getToolbar();
     }
 
     public JComponent getStatusComponent() {
         return editor.getStatusComponent();
     }
 
-    public void load(String file) throws Exception {
-        document.load(file);
+    public void load(String file) {
+        try {
+            document.load(file);
+        } catch (Exception e) {
+            // todo alert?
+            e.printStackTrace();
+        }
     }
 
     public Container getContentPane() {
@@ -198,18 +210,6 @@ public class PluginContainer implements ComponentContainer {
 
     // ******** ComponentContainer **********
 
-    public void loadText(String text) {
-        editor.loadText(text);
-    }
-
-    public String getText() {
-        return editor.getText();
-    }
-
-    public boolean willSaveDocument() {
-        return editor.componentDocumentWillSave();
-    }
-
     public boolean close() {
         editor.close();
         return true;
@@ -236,4 +236,91 @@ public class PluginContainer implements ComponentContainer {
         return mainMenuBar;
     }
 
+    public void setEditor(ComponentEditor editor) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setDocument(ComponentDocument document) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Dimension getSize() {
+        return rootPane.getSize();
+    }
+
+    public ContextualMenuFactory createContextualMenuFactory() {
+
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public JPopupMenu getContextualMenu(int textIndex) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public EditorTab getSelectedTab() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void selectTab(Component c) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void addTab(EditorTab tab) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void documentLoaded(ComponentDocument document) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void editorParsed(ComponentEditor editor) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void selectConsoleTab(ComponentEditor editor) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void selectInterpreterTab(ComponentEditor editor) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void selectSyntaxDiagramTab(ComponentEditor editor) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public ComponentEditorGrammar selectGrammar(String name) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void editorContentChanged() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    // ----- ComponentToolbarDelegate
+
+    public Debugger getDebugger() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public ActionDebugger getActionDebugger() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public ActionRefactor getActionRefactor() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public ComponentEditorGrammar getSelectedEditor() {
+        return editor;
+    }
+
+    public void debug() {
+
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void debugAgain() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

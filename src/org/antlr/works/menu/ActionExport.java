@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
@@ -54,9 +54,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuExport extends MenuAbstract {
+public class ActionExport extends ActionAbstract {
 
-    public MenuExport(ComponentContainerGrammar editor) {
+    public ActionExport(ComponentContainer editor) {
         super(editor);
     }
 
@@ -70,9 +70,12 @@ public class MenuExport extends MenuAbstract {
         if(file == null)
             return;
 
+
+
+
         try {
             FileWriter writer = new FileWriter(file);
-            writer.write(getContainer().getDebugger().getEventsAsString());
+            writer.write(getContainer().getActionDebugger().getEventsAsString());
             writer.close();
         } catch (IOException e) {
             XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot save text file: "+file+"\nError: "+e);

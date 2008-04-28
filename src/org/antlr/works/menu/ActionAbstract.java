@@ -31,43 +31,40 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.container.ComponentContainerGrammar;
-import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 
-public class MenuDebugger extends MenuAbstract {
+import javax.swing.*;
 
-    public MenuDebugger(ComponentContainerGrammar editor) {
-        super(editor);
+public abstract class ActionAbstract {
+
+    private ComponentContainer container;
+
+    public ActionAbstract(ComponentContainer container) {
+        this.container = container;
     }
 
-    public void runInterpreter() {
-        try {
-            StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INTERPRETER_MENU);
-            getSelectedEditor().selectInterpreterTab();
-            getSelectedEditor().interpreter.interpret();
-        } catch (Exception e) {
-            getSelectedEditor().console.println(e);
-        }
+    public void close() {
+        container = null;
     }
 
-    public void debug() {
-        getContainer().debug();
+    public ComponentContainer getContainer() {
+        return container;
     }
 
-    public void debugAgain() {
-        getContainer().debugAgain();
+    public ComponentEditorGrammar getSelectedEditor() {
+        return container.getSelectedEditor();
     }
 
-    public void debugRemote() {
-        getContainer().getDebugger().launchRemoteDebugger();
+    public JTextPane getTextPane() {
+        return getSelectedEditor().getTextPane();
     }
 
-    public void toggleInputTokens() {
-        getContainer().getDebugger().toggleInputTokensBox();
-        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
+    public void setCaretPosition(int position) {
+        getSelectedEditor().setCaretPosition(position);
     }
 
-    public boolean isInputTokenVisible() {
-        return getContainer().getDebugger().isInputTokenVisible();
+    public int getCaretPosition() {
+        return getSelectedEditor().getCaretPosition();
     }
 }

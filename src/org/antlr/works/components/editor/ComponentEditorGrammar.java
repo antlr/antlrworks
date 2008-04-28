@@ -1,7 +1,6 @@
 package org.antlr.works.components.editor;
 
 import org.antlr.Tool;
-import org.antlr.works.actions.ActionRefactor;
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelDelegate;
 import org.antlr.works.ate.ATETextPane;
@@ -138,7 +137,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     /* Other */
 
-    private ActionRefactor actionRefactor;
     private int debuggerLocation = -1;
 
     private boolean windowFirstDisplay = true;
@@ -231,7 +229,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
         decisionDFAEngine = new DecisionDFAEngine(this);
         interpreter = new EditorInterpreter(this);
-        actionRefactor = new ActionRefactor(this);
     }
 
     protected void initEditor() {
@@ -384,9 +381,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         consoleStatus = null;
         rulesTree.close();
         rulesTree = null;
-
-        actionRefactor.close();
-        actionRefactor = null;
 
         super.close();
     }
@@ -659,19 +653,19 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void createRuleAtIndex(boolean lexer, String name, String content) {
-        actionRefactor.createRuleAtIndex(lexer, name, content);
+        container.getActionRefactor().createRuleAtIndex(lexer, name, content);
     }
 
     public void deleteRuleAtCurrentPosition() {
-        actionRefactor.deleteRuleAtIndex(getCaretPosition());
+        container.getActionRefactor().deleteRuleAtIndex(getCaretPosition());
     }
 
     public void removeLeftRecursion() {
-        actionRefactor.removeLeftRecursion();
+        container.getActionRefactor().removeLeftRecursion();
     }
 
     public void convertLiteralsToSingleQuote() {
-        actionRefactor.convertLiteralsToSingleQuote();
+        container.getActionRefactor().convertLiteralsToSingleQuote();
     }
 
     public void replaceText(int leftIndex, int rightIndex, String text) {
@@ -1303,10 +1297,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public ContextualMenuFactory createContextualMenuFactory() {
         return container.createContextualMenuFactory();
-    }
-
-    public ActionRefactor getActionRefactor() {
-        return actionRefactor;
     }
 
     public Set<Integer> getBreakpoints() {

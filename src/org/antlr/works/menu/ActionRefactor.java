@@ -1,7 +1,11 @@
+package org.antlr.works.menu;
+
+import org.antlr.works.ate.syntax.misc.ATEToken;
+
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-08 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,43 +32,32 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+public interface ActionRefactor {
 
-package org.antlr.works.menu;
+    // todo see which methods are used and which ones should be private
+    void rename();
 
-import org.antlr.works.components.container.ComponentContainerGrammar;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+    boolean canReplaceLiteralWithTokenLabel();
+    void replaceLiteralWithTokenLabel();
+    void replaceLiteralTokenWithTokenLabel(ATEToken t, String name);
 
-import javax.swing.*;
+    void convertLiteralsToSingleQuote();
+    void convertLiteralsToDoubleQuote();
+    void convertLiteralsToCStyleQuote();
 
-public abstract class MenuAbstract {
+    void removeLeftRecursion();
+    void removeAllLeftRecursion();
 
-    private ComponentContainerGrammar container;
+    boolean canExtractRule();
+    void extractRule();
 
-    public MenuAbstract(ComponentContainerGrammar container) {
-        this.container = container;
-    }
+    boolean canInlineRule();
+    void inlineRule();
 
-    public void close() {
-        container = null;
-    }
+    void createRuleAtIndex(boolean lexer, String name, String content);
+    void deleteRuleAtIndex(int index);
+    int insertionIndexForRule(boolean lexer);
+    String createRule(String name, String content);
 
-    public ComponentContainerGrammar getContainer() {
-        return container;
-    }
-
-    public ComponentEditorGrammar getSelectedEditor() {
-        return container.getSelectedEditor();
-    }
-
-    public JTextPane getTextPane() {
-        return getSelectedEditor().getTextPane();
-    }
-
-    public void setCaretPosition(int position) {
-        getSelectedEditor().setCaretPosition(position);
-    }
-
-    public int getCaretPosition() {
-        return getSelectedEditor().getCaretPosition();
-    }
+    void close();
 }

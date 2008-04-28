@@ -3,7 +3,10 @@ package org.antlr.works.components.container;
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.menu.ActionDebugger;
+import org.antlr.works.menu.ActionRefactor;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
@@ -141,5 +144,21 @@ public class ComponentContainerInternal implements ComponentContainer {
 
     public void editorContentChanged() {
         mainContainer.editorContentChanged();
+    }
+
+    public Debugger getDebugger() {
+        return mainContainer.getDebugger();
+    }
+
+    public ComponentEditorGrammar getSelectedEditor() {
+        return mainContainer.getSelectedEditor();
+    }
+
+    public ActionDebugger getActionDebugger() {
+        return mainContainer.getActionDebugger();
+    }
+
+    public ActionRefactor getActionRefactor() {
+        return mainContainer.getActionRefactor();
     }
 }

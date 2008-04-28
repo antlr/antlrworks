@@ -1,12 +1,9 @@
-package org.antlr.works.plugin.container;
+package org.antlr.works.menu;
 
-import org.antlr.works.IDE;
-import org.antlr.works.utils.Localizable;
-import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005-08 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -33,22 +30,22 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+public interface ActionDebugger {
 
-public class PCXJApplicationDelegate extends XJApplicationDelegate {
+    void runInterpreter();
 
-    @Override
-    public Class appPreferencesClass() {
-        return IDE.class;
-    }
+    void debug();
+    void debugAgain();
+    void debugRemote();
 
-    @Override
-    public String appVersionShort() {
-        return Localizable.getLocalizedString(Localizable.APP_VERSION_SHORT);
-    }
+    void toggleInputTokens();
 
-    @Override
-    public String appVersionLong() {
-        return Localizable.getLocalizedString(Localizable.APP_VERSION_LONG);
-    }
+    boolean isInputTokenVisible();
+    boolean isRunning();
+    boolean canDebugAgain();
+
+    String getEventsAsString();
+
+    void close();
 
 }

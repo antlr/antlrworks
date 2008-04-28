@@ -33,7 +33,7 @@ package org.antlr.works.menu;
 
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.grammar.CheckGrammar;
 import org.antlr.works.grammar.CheckGrammarDelegate;
 import org.antlr.works.grammar.RulesDependency;
@@ -50,12 +50,12 @@ import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
 import javax.swing.*;
 import java.util.List;
 
-public class MenuGrammar extends MenuAbstract implements CheckGrammarDelegate, XJDialogProgressDelegate {
+public class ActionGrammar extends ActionAbstract implements CheckGrammarDelegate, XJDialogProgressDelegate {
 
     private CheckGrammar checkGrammar;
     private boolean checkingGrammar;
 
-    public MenuGrammar(ComponentContainerGrammar editor) {
+    public ActionGrammar(ComponentContainer editor) {
         super(editor);
     }
 
