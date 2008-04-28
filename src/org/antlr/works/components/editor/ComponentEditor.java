@@ -149,6 +149,11 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         return s;
     }
 
+    public void becomingVisibleForTheFirstTime() {
+        componentDidAwake();
+        componentShouldLayout(getContainer().getSize());
+    }
+
     /** For subclass only
      *
      */

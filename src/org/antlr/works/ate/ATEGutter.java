@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.ate;
 
 import org.antlr.works.ate.folding.ATEFoldingEntity;
+import org.antlr.works.ate.gutter.ATEGutterColumnManager;
 import org.antlr.works.ate.gutter.ATEGutterItem;
 import org.antlr.works.ate.gutter.ATEGutterItemOverlay;
 import org.antlr.works.ate.syntax.misc.ATELine;
@@ -79,7 +80,6 @@ public class ATEGutter extends JComponent {
     private transient Image delimiter;
     private transient Image delimiterUp;
     private transient Image delimiterDown;
-    private List<ATEGutterItem> gutterItems;
 
     public ATEGutter(ATEPanel textEditor) {
         this.textEditor = textEditor;
@@ -141,22 +141,25 @@ public class ATEGutter extends JComponent {
     }
 
     public void resetGutterItems() {
-        gutterItems = textEditor.gutterItemManager.getGutterItems();
+        // todo cache each items in each manager and reset here?
     }
 
     public void changeUpdate(int offset, int length, boolean insert) {
         // To avoid the gutter items to move around when typing character,
         // adapt their index in real-time by incrementing or decrementing
         // their position based on the changes done in the editor.
-        // The position might not be 100% accurate but at least if avoid
+        // The position might not be 100% accurate but at least it avoids
         // some ugly ui shift between a keystroke and the actual analysis
-        // of the item
-        if(gutterItems != null) {
-            for(ATEGutterItem item : gutterItems) {
-                if(item.getItemIndex() > offset) {
-                    item.setItemIndex(item.getItemIndex()+length);
+        // of the items
+        if(textEditor.gutterColumnsManager != null) {
+            ATEGutterColumnManager manager = textEditor.gutterColumnsManager;
+            for(String column : manager.getColumns()) {
+                for(ATEGutterItem item : manager.getGutterItems(column)) {
+                    if(item.getItemIndex() > offset) {
+                        item.setItemIndex(item.getItemIndex()+length);
+                    }
                 }
-            }            
+            }
         }
     }
 
@@ -170,16 +173,21 @@ public class ATEGutter extends JComponent {
         int endIndex = textEditor.textPane.viewToModel(new Point(clip.x+clip.width, clip.y+clip.height));
 
         items.clear();
-        if(gutterItems != null) {
-            for (ATEGutterItem item : gutterItems) {
-                int index = item.getItemIndex();
-                if (index >= startIndex && index <= endIndex) {
-                    int y = getLineYPixelPosition(item.getItemIndex());
-                    int width = item.getItemWidth();
-                    int height = item.getItemHeight();
-                    Rectangle r = new Rectangle(offsetForLineNumber, y - height / 2, width, height);
-                    this.items.add(new ItemInfo(item, r));
+        if(textEditor.gutterColumnsManager != null) {
+            ATEGutterColumnManager manager = textEditor.gutterColumnsManager;
+            int offsetX = offsetForLineNumber;
+            for(String column : manager.getColumns()) {
+                for (ATEGutterItem item : manager.getGutterItems(column)) {
+                    int index = item.getItemIndex();
+                    if (index >= startIndex && index <= endIndex) {
+                        int y = getLineYPixelPosition(item.getItemIndex());
+                        int width = item.getItemWidth();
+                        int height = item.getItemHeight();
+                        Rectangle r = new Rectangle(offsetX, y - height / 2, width, height);
+                        this.items.add(new ItemInfo(item, r));
+                    }
                 }
+                offsetX += manager.getColumnWidth(column);
             }
         }
 
@@ -216,11 +224,8 @@ public class ATEGutter extends JComponent {
         }
 
         gutterItemWidth = 0;
-        if(textEditor.gutterItemManager != null) {
-            List<ATEGutterItem> items = textEditor.gutterItemManager.getGutterItems();
-            for (ATEGutterItem item : items) {
-                gutterItemWidth = Math.max(gutterItemWidth, item.getItemWidth());
-            }
+        if(textEditor.gutterColumnsManager != null) {
+            gutterItemWidth = textEditor.gutterColumnsManager.getWidth();
         }
     }
 
@@ -413,10 +418,37 @@ public class ATEGutter extends JComponent {
         return -1;
     }
 
+    private boolean handleClickInColumn(Point point) {
+        if(textEditor.gutterColumnsManager == null) return false;
+
+        ATEGutterColumnManager manager = textEditor.gutterColumnsManager;
+        if(point.x < offsetForLineNumber) return false;
+
+        String column = null;
+        int width = offsetForLineNumber;
+        for(String c : manager.getColumns()) {
+            width += manager.getColumnWidth(c);
+            if(point.x < width) {
+                column = c;
+                break;
+            }
+        }
+        if(column == null) return false;
+
+        // use only y-axis
+        point.x = 0;
+        int index = textEditor.textPane.viewToModel(point);
+
+        return manager.handleClickInColumn(column, index);
+    }
+
     protected class MyMouseAdapter extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
-            itemAction(getItemInfoAtPoint(e.getPoint()), e.getPoint());
-            toggleFolding(getFoldingInfoAtPoint(e.getPoint()));
+            if(!handleClickInColumn(e.getPoint())) {
+                itemAction(getItemInfoAtPoint(e.getPoint()), e.getPoint());
+                toggleFolding(getFoldingInfoAtPoint(e.getPoint()));
+            }
+            textEditor.damage();
             overlay.hide();
         }
 

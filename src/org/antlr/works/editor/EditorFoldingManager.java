@@ -108,7 +108,7 @@ public class EditorFoldingManager extends ATEFoldingManager {
     public ATEFoldingEntity getEntityForIdentifier(List entities, String identifier) {
         if(entities == null || entities.isEmpty())
             return null;
-        // @todo optimize using a map ?
+        // optimize using a map ?
         for (Object entity1 : entities) {
             ATEFoldingEntity entity = (ATEFoldingEntity) entity1;
             if (entity.foldingEntityID().equals(identifier))

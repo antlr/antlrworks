@@ -97,8 +97,7 @@ public class MenuGoTo extends MenuAbstract {
         else
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_NEXT_BRKPT);
 
-        // todo 
-        Set<Integer> breakpoints = null; //getSelectedEditor().breakpointManager.getBreakpoints();
+        Set<Integer> breakpoints = getSelectedEditor().getBreakpoints();
         int line = getSelectedEditor().getTextEditor().getLineIndexAtTextPosition(getCaretPosition());
         if(line == -1) return;
 

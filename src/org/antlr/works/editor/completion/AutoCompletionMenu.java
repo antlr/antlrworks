@@ -403,7 +403,7 @@ public class AutoCompletionMenu extends OverlayObject {
 
                 default: //good.mdiehl: if they type anything not part of an identifier, close the autocomplete (ctrl,alt,shift are ok)
                     if (!(isAlphaNumericOr_(keyCode) || isFunctionKey(keyCode)) ){
-                        System.out.println(keyCode); //good.mdiehl: find out which key was pressed that is killing autocomplete
+                        //System.out.println(keyCode); //good.mdiehl: find out which key was pressed that is killing autocomplete
                         content.setVisible(false);
                     }
             }

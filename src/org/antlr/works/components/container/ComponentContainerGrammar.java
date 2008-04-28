@@ -111,6 +111,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     private MouseListener ml;
     private ChangeListener cl;
 
+    private Set<String> grammars = new HashSet<String>();
+
     public ComponentContainerGrammar() {
         selectedContainer = this;
         containers.add(this);
@@ -248,7 +250,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     }
 
     public boolean loadGrammar(String name) {
-        if(grammars.containsKey(name)) return true;
+        if(grammars.contains(name)) return true;
 
         String currentFolder = XJUtils.getPathByDeletingLastComponent(getDocument().getDocumentPath());
         String file = XJUtils.concatPath(currentFolder, name);
@@ -271,21 +273,9 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         addDocument(doc);
         addGrammar(container);
 
-        grammars.put(name, new GrammarDescription(name, container));
+        grammars.add(name);
 
         return true;
-    }
-
-    private Map<String, GrammarDescription> grammars = new HashMap<String, GrammarDescription>();
-
-    public static class GrammarDescription {
-        private String name;
-        private ComponentContainer container;
-
-        public GrammarDescription(String name, ComponentContainer container) {
-            this.name = name;
-            this.container = container;
-        }
     }
 
     public ComponentEditorGrammar selectGrammar(String name) {
@@ -411,9 +401,7 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
         if(horizontalSplit != null)
             horizontalSplit.setDividerLocation((int)(getSize().height*0.5));
 
-        // todo not really nice here
-        getSelectedEditor().componentDidAwake();
-        getSelectedEditor().componentShouldLayout(getSize());
+        getSelectedEditor().becomingVisibleForTheFirstTime();
 
         debugger.componentShouldLayout(getSize());
 
@@ -524,7 +512,6 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
     private Map<String, GrammarProperties> properties = new HashMap<String, GrammarProperties>();
 
     public void editorParsed(ComponentEditor editor) {
-        // todo use GrammarEngine instead?
         ComponentEditorGrammar eg = (ComponentEditorGrammar) editor;
         GrammarProperties properties = eg.getGrammarEngine().getGrammarProperties();
 
@@ -715,10 +702,8 @@ public class ComponentContainerGrammar extends XJWindow implements ComponentCont
             return getSelectedEditor().getGrammarEngine().getBlocks();
         }
 
-        public Set<Integer> getBreakpoints() {
-            // todo
-            return null;
-            //return getSelectedEditor().breakpointManager.getBreakpoints();
+        public Set<Integer> getBreakpoints() {            
+            return getSelectedEditor().getBreakpoints();
         }
 
         public ContextualMenuFactory createContextualMenuFactory() {

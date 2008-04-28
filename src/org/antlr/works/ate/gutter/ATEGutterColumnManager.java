@@ -1,11 +1,7 @@
-package org.antlr.works.editor;
+package org.antlr.works.ate.gutter;
 
-import org.antlr.works.ate.gutter.ATEGutterItem;
-import org.antlr.works.ate.gutter.ATEGutterItemManager;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.ate.ATEPanel;
 
-import java.util.ArrayList;
 import java.util.List;
 /*
 
@@ -38,29 +34,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorGutterItemManager extends ATEGutterItemManager {
+public abstract class ATEGutterColumnManager extends ATEGutterManager {
 
-    protected ComponentEditorGrammar editor;
-
-    public EditorGutterItemManager(ComponentEditorGrammar editor) {
-        super(editor.textEditor);
-        this.editor = editor;
+    protected ATEGutterColumnManager(ATEPanel textEditor) {
+        super(textEditor);
     }
 
-    public List<ATEGutterItem> getGutterItems() {
-        List<ATEGutterItem> items = new ArrayList<ATEGutterItem>();
-        List<ElementRule> rules = editor.getGrammarEngine().getRules();
-        if(rules != null) {
-            for(ElementRule r : rules) {
-                items.add(r);
-            }
+    public int getWidth() {
+        int width = 0;
+        for(String c : getColumns()) {
+            width += getColumnWidth(c);
         }
-        return items;
+        return width;
     }
 
-    @Override
-    public void close() {
-        super.close();
-        editor = null;
-    }
+    public abstract String[] getColumns();
+    public abstract int getColumnWidth(String column);    
+    public abstract boolean handleClickInColumn(String column, int rowTextIndex);
+    public abstract List<ATEGutterItem> getGutterItems(String column);
+
 }

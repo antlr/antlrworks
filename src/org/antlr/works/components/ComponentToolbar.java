@@ -122,8 +122,6 @@ public class ComponentToolbar implements XJNotificationObserver {
     }
 
     public void awake() {
-        // todo finish
-        //container.getSelectedEditor().rules.setSorted(AWPrefs.getPreferences().getBoolean(AWPrefs.PREF_TOOLBAR_SORT, false));
         sd.setSelected(true);
         coloring.setSelected(true);
         ideas.setSelected(true);

@@ -59,6 +59,7 @@ public interface DebuggerDelegate {
 
     List<ElementBlock> getBlocks();
 
+    // todo ask per grammar
     Set<Integer> getBreakpoints();
 
     XJDocument getDocument();

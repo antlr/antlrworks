@@ -61,8 +61,6 @@ public class GrammarPropertiesImpl implements GrammarProperties {
 
     private final List<ElementRule> duplicateRules = new ArrayList<ElementRule>();
     private final List<ElementReference> undefinedReferences = new ArrayList<ElementReference>();
-    // todo used?
-    private final List<ElementRule> hasLeftRecursionRules = new ArrayList<ElementRule>();
 
     private final Set<String> tokenVocabNames = new HashSet<String>();
     private String tokenVocabName;
@@ -310,12 +308,9 @@ public class GrammarPropertiesImpl implements GrammarProperties {
         if(getRules() == null)
             return;
 
-        hasLeftRecursionRules.clear();
         for (ElementRule r : getRules()) {
             // hasLeftRecursion has a side-effect to analyze the rule
-            if (r.hasLeftRecursion()) {
-                hasLeftRecursionRules.add(r);
-            }
+            r.hasLeftRecursion();
         }
     }
 

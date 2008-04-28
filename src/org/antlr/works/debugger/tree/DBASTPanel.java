@@ -214,7 +214,6 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
 
     public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey) {
         DBASTModel.ASTNode n = (DBASTModel.ASTNode)node;
-		System.out.println("n="+n);
 		debugger.selectToken(n.token, n.token.getLine(), n.token.getCharPositionInLine());
     }
 

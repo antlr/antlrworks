@@ -41,6 +41,7 @@ import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.syntax.GrammarSyntaxLexer;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.IconManager;
 import org.antlr.xjlib.appkit.swing.XJTree;
@@ -102,6 +103,8 @@ public class EditorRules implements XJTreeDelegate {
         rulesTree.setCellRenderer(new RulesTableRenderer());
         rulesTree.setRowHeight(17);
         rulesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+
+        setSorted(AWPrefs.getPreferences().getBoolean(AWPrefs.PREF_TOOLBAR_SORT, false));        
     }
 
     public void close() {
@@ -202,10 +205,7 @@ public class EditorRules implements XJTreeDelegate {
 
     public boolean getFirstSelectedRuleIgnoredFlag() {
         List<ElementRule> selectedRules = getSelectedRules();
-        if(selectedRules == null || selectedRules.isEmpty())
-            return false;
-        else
-            return (selectedRules.get(0)).ignored;
+        return !(selectedRules == null || selectedRules.isEmpty()) && (selectedRules.get(0)).ignored;
     }
 
     public class RuleMoveUpAction extends AbstractAction {

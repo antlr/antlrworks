@@ -103,8 +103,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     protected CustomSplitPanel splitPanel;
     protected Map<Component,CustomToggleButton> components2toggle;
 
-    //protected ComponentContainerGrammar container;
-
     protected Set<Integer> breakpoints;
 
     protected DBLocal local;

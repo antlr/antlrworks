@@ -402,9 +402,8 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         start.start = index;
     }
 
-    public static final int ITEM_TYPE_BREAKPOINT = 1;
-    public static final int ITEM_TYPE_OVERRIDE = 2;
-    public static final int ITEM_TYPE_OVERRIDDEN = 3;
+    public static final int ITEM_TYPE_OVERRIDE = 1;
+    public static final int ITEM_TYPE_OVERRIDDEN = 2;
 
     public boolean override = false;
     public List<String> overrideGrammars;
@@ -429,9 +428,6 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
             hierarchyAnalyzed = true;
 
             types.clear();
-            if(breakpoint) {
-                types.add(ITEM_TYPE_BREAKPOINT);
-            }
             if(override) {
                 types.add(ITEM_TYPE_OVERRIDE);
             }
@@ -459,9 +455,6 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public ImageIcon getItemIcon(int type) {
-        if(type == ITEM_TYPE_BREAKPOINT) {
-            return IconManager.shared().getIconBreakpoint();
-        }
         if(type == ITEM_TYPE_OVERRIDE) {
             return IconManager.shared().getIconOverride();
         }
@@ -472,9 +465,6 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public String getItemTooltip(int type) {
-        if(type == ITEM_TYPE_BREAKPOINT) {
-            return "Breakpoint";
-        }
         if(type == ITEM_TYPE_OVERRIDE) {
             return "Overrides rule in "+overrideGrammars;
         }
@@ -486,9 +476,6 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
 
     public void itemAction(int type) {
         switch (type) {
-            case ITEM_TYPE_BREAKPOINT:
-                breakpoint = !breakpoint;
-                break;
             case ITEM_TYPE_OVERRIDE:
                 engine.gotoToRule(overrideGrammars.get(0), name);
                 break;

@@ -95,7 +95,6 @@ public class ElementBlock extends ElementScopable {
             if(t.getAttribute().equals("tokenVocab") && index+2<internalTokens.size()) {
                 t = internalTokens.get(index+2);
                 tokenVocab = t.getAttribute();
-                //System.out.println(">> tokenVocab = "+tokenVocab);
             }
         }
     }
@@ -123,7 +122,6 @@ public class ElementBlock extends ElementScopable {
 
             }
         }
-        //System.out.println("Declared tokens="+declaredTokens);
     }
 
     public String getTokenVocab() {

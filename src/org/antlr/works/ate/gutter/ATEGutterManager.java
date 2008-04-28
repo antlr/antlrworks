@@ -2,11 +2,10 @@ package org.antlr.works.ate.gutter;
 
 import org.antlr.works.ate.ATEPanel;
 
-import java.util.List;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-08 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -33,12 +32,11 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-
-public abstract class ATEGutterItemManager {
+public abstract class ATEGutterManager {
 
     protected ATEPanel textEditor;
 
-    public ATEGutterItemManager(ATEPanel textEditor) {
+    public ATEGutterManager(ATEPanel textEditor) {
         this.textEditor = textEditor;
     }
 
@@ -46,5 +44,4 @@ public abstract class ATEGutterItemManager {
         textEditor = null;
     }
 
-    public abstract List<ATEGutterItem> getGutterItems();
 }

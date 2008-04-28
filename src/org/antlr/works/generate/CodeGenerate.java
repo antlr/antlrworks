@@ -116,7 +116,6 @@ public class CodeGenerate implements Runnable {
         for(String name : editor.getGrammarEngine().getAllGeneratedNames()) {
             files.add(XJUtils.concatPath(getOutputPath(), name+".java"));
         }
-        System.out.println(files);
         return files;
     }
 

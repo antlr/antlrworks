@@ -83,9 +83,7 @@ public class ComponentContainerInternal implements ComponentContainer {
     }
 
     public void becomingVisibleForTheFirstTime() {
-        // todo cleanup
-        getEditor().componentDidAwake();
-        getEditor().componentShouldLayout(mainContainer.getSize());
+        getEditor().becomingVisibleForTheFirstTime();
     }
 
     public boolean close() {

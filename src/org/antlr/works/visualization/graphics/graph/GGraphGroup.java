@@ -226,12 +226,6 @@ public class GGraphGroup extends GGraphAbstract {
          * to the path.
          */
 
-        /*System.out.println("***");
-        for (Iterator iterator = path.iterator(); iterator.hasNext();) {
-            NFAState state = (NFAState)iterator.next();
-            System.out.println(state+" - "+state.enclosingRule.name);
-        } */
-
         NFAState state;
         GNode node;
         NFAState nextState = null;

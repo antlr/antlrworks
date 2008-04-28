@@ -52,9 +52,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.print.PrinterException;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 /*
 
@@ -105,7 +103,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     /* Managers */
 
-    public EditorGutterItemManager gutterItemManager;
+    public EditorGutterColumnManager gutterColumnManager;
     public EditorFoldingManager foldingManager;
     public EditorUnderlyingManager underlyingManager;
     public EditorAnalysisManager analysisManager;
@@ -133,12 +131,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     private JScrollPane rulesScrollPane;
     private XJTree rulesTree;
 
-    private JTabbedPane tabbedPane;
-
     private JLabel infoLabel;
     private JLabel cursorLabel;
     private JLabel writableLabel;
-    private JLabel scmLabel;
     private ConsoleStatus consoleStatus;
 
     /* Other */
@@ -251,8 +246,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     protected void initManagers() {
-        gutterItemManager = new EditorGutterItemManager(this);
-        textEditor.setBreakpointManager(gutterItemManager);
+        gutterColumnManager = new EditorGutterColumnManager(this);
+        textEditor.setGutterColumnManager(gutterColumnManager);
 
         foldingManager = new EditorFoldingManager(this);
         textEditor.setFoldingManager(foldingManager);
@@ -299,15 +294,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return rulesScrollPane;
     }
 
-    public JComponent getTabbedComponent() {
-        return tabbedPane;
-    }
-
     protected void createStatusBar() {
         infoLabel = new JLabel();
         cursorLabel = new JLabel();
         writableLabel = new JLabel();
-        scmLabel = new JLabel();
         consoleStatus = new ConsoleStatus();
 
         statusBar.add(Box.createHorizontalStrut(5));
@@ -326,8 +316,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         statusBar.add(consoleStatus.getPanel());
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(createSeparator());
-        statusBar.add(Box.createHorizontalStrut(5));
-        statusBar.add(scmLabel);
         statusBar.add(Box.createHorizontalGlue());
     }
 
@@ -382,7 +370,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         afterParserOp.stop();
         afterParserOp = null;
 
-        gutterItemManager.close();
+        gutterColumnManager.close();
         foldingManager.close();
         underlyingManager.close();
         analysisManager.close();
@@ -782,10 +770,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public List<ElementRule> getRules() {
-        if(rules.isSorted()) {
-            return rules.getSortedRules();
-        } else
-            return rules.getRules();
+        return rules.getRules();
     }
 
     public List<ElementRule> getSortedRules() {
@@ -1322,6 +1307,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public ActionRefactor getActionRefactor() {
         return actionRefactor;
+    }
+
+    public Set<Integer> getBreakpoints() {
+        return gutterColumnManager.getBreakpoints();
     }
 
     /** This class is used to perform after parsing operations in another
