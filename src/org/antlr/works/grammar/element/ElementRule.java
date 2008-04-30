@@ -4,7 +4,7 @@ import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.gutter.ATEGutterItem;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.EditorPersistentObject;
-import org.antlr.works.grammar.antlr.ANTLRGrammarError;
+import org.antlr.works.grammar.antlr.GrammarError;
 import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
 import org.antlr.works.utils.IconManager;
@@ -67,7 +67,7 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
 
     public boolean hierarchyAnalyzed = false;
 
-    public List<ANTLRGrammarError> errors;
+    public List<GrammarError> errors;
     public boolean needsToBuildErrors = true;
 
     protected GrammarSyntaxParser parser;
@@ -219,11 +219,11 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
         return alts;
     }
 
-    public void setErrors(List<ANTLRGrammarError> errors) {
+    public void setErrors(List<GrammarError> errors) {
         this.errors = errors;
     }
 
-    public List<ANTLRGrammarError> getErrors() {
+    public List<GrammarError> getErrors() {
         return errors;
     }
 
@@ -312,15 +312,15 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public String getErrorMessageString(int index) {
-        ANTLRGrammarError error = errors.get(index);
+        GrammarError error = errors.get(index);
         return error.messageText;
     }
 
     public String getErrorMessageHTML() {
         StringBuffer message = new StringBuffer();
         message.append("<html>");
-        for (Iterator<ANTLRGrammarError> iterator = errors.iterator(); iterator.hasNext();) {
-            ANTLRGrammarError error = iterator.next();
+        for (Iterator<GrammarError> iterator = errors.iterator(); iterator.hasNext();) {
+            GrammarError error = iterator.next();
             message.append(error.messageText);
             if(iterator.hasNext())
                 message.append("<br>");

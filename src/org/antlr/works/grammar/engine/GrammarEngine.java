@@ -3,7 +3,7 @@ package org.antlr.works.grammar.engine;
 import org.antlr.Tool;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
-import org.antlr.works.grammar.antlr.ANTLRGrammarResult;
+import org.antlr.works.grammar.antlr.GrammarResult;
 import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 
@@ -81,7 +81,7 @@ public interface GrammarEngine {
 
     List<ATEToken> getTokens();
 
-    ANTLRGrammarResult analyze() throws Exception;
+    GrammarResult analyze() throws Exception;
     void cancelAnalyze();
 
     void computeRuleErrors(ElementRule rule);

@@ -53,7 +53,7 @@ public interface ANTLRGrammarEngine {
     void createGrammars() throws Exception;
     void computeRuleErrors(ElementRule rule);
 
-    ANTLRGrammarResult analyze() throws Exception;
+    GrammarResult analyze() throws Exception;
     void cancel();
 
 }

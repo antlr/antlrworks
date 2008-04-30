@@ -37,7 +37,7 @@ import org.antlr.tool.Message;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ANTLRGrammarError {
+public class GrammarError {
 
     /** Array of array of NFAState states */
     public List<List> paths = new ArrayList<List>();
@@ -60,7 +60,7 @@ public class ANTLRGrammarError {
     public String messageText;
     public Message message;
 
-    public ANTLRGrammarError() {
+    public GrammarError() {
     }
 
     public void addPath(List path, boolean disabled) {

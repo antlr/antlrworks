@@ -6,7 +6,7 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngineImpl;
-import org.antlr.works.grammar.antlr.ANTLRGrammarResult;
+import org.antlr.works.grammar.antlr.GrammarResult;
 import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 
@@ -231,7 +231,7 @@ public class GrammarEngineImpl implements GrammarEngine {
         return syntaxEngine.getTokens();
     }
 
-    public ANTLRGrammarResult analyze() throws Exception {
+    public GrammarResult analyze() throws Exception {
         return antlrEngine.analyze();
     }
 

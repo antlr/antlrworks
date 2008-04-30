@@ -1,5 +1,7 @@
 package org.antlr.works.utils;
 
+import org.antlr.xjlib.foundation.XJSystem;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileInputStream;
@@ -97,7 +99,7 @@ public class Utils {
      * @return The quoted path if needed
      */
     public static String quotePath(String path) {
-        if(path == null || path.length() == 0)
+        if(path == null || path.length() == 0 || XJSystem.isMacOS())
             return path;
 
         path = unquotePath(path);

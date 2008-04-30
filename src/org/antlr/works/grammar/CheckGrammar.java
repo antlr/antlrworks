@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.grammar;
 
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.antlr.ANTLRGrammarResult;
+import org.antlr.works.grammar.antlr.GrammarResult;
 import org.antlr.works.utils.Console;
 
 public class CheckGrammar implements Runnable {
@@ -61,13 +61,13 @@ public class CheckGrammar implements Runnable {
     public void run() {
         editor.getConsole().setMode(Console.MODE_VERBOSE);
         delegate.checkGrammarDidBegin();
-        ANTLRGrammarResult result;
+        GrammarResult result;
         try {
             result = editor.getGrammarEngine().analyze();
         } catch (Exception e) {
             editor.getConsole().println(e);
             // Result cannot be null, so report the exception
-            result = new ANTLRGrammarResult(e);
+            result = new GrammarResult(e);
         }
         delegate.checkGrammarDidEnd(result);
     }

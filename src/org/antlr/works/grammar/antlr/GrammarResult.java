@@ -36,17 +36,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ANTLRGrammarResult {
+public class GrammarResult {
 
     public Exception e;
     public List<Message> errors = new LinkedList<Message>();
     public List<Message> warnings = new LinkedList<Message>();
 
-    public ANTLRGrammarResult(Exception e) {
+    public GrammarResult(Exception e) {
         this.e = e;
     }
 
-    public ANTLRGrammarResult() {
+    public GrammarResult() {
     }
 
     public List<Message> getErrors() {

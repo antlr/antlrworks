@@ -52,18 +52,18 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
 
     private Grammar parserGrammar;
     private Grammar lexerGrammar;
-    private List<ANTLRGrammarError> errors;
+    private List<GrammarError> errors;
 
     private boolean needsToCreateGrammar;
     private boolean needsToAnalyzeGrammar;
 
-    private final ANTLRGrammarResult createGrammarResult = new ANTLRGrammarResult();
-    private final ANTLRGrammarResult analyzeResult = new ANTLRGrammarResult();
+    private final GrammarResult createGrammarResult = new GrammarResult();
+    private final GrammarResult analyzeResult = new GrammarResult();
 
     private GrammarEngine engine;
 
     public ANTLRGrammarEngineImpl() {
-        errors = new ArrayList<ANTLRGrammarError>();
+        errors = new ArrayList<GrammarError>();
         markDirty();
     }
 
@@ -107,7 +107,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
             return getParserGrammar();
     }
 
-    public List<ANTLRGrammarError> getErrors() {
+    public List<GrammarError> getErrors() {
         return errors;
     }
 
@@ -235,7 +235,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         }
     }
 
-    public ANTLRGrammarResult analyze() throws Exception {
+    public GrammarResult analyze() throws Exception {
         // if there is no need to analyze the grammar, return the previous result
         if(!needsToAnalyzeGrammar) {
             return analyzeCompleted(null);
@@ -284,7 +284,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         return analyzeCompleted(el);
     }
 
-    private ANTLRGrammarResult analyzeCompleted(ErrorListener el) throws InvocationTargetException, InterruptedException {
+    private GrammarResult analyzeCompleted(ErrorListener el) throws InvocationTargetException, InterruptedException {
         if(SwingUtilities.isEventDispatchThread()) {
             engine.antlrGrammarEngineAnalyzeCompleted();
         } else {
@@ -310,8 +310,8 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         return getCompleteResult();
     }
 
-    private ANTLRGrammarResult getCompleteResult() {
-        ANTLRGrammarResult result = new ANTLRGrammarResult();
+    private GrammarResult getCompleteResult() {
+        GrammarResult result = new GrammarResult();
         result.errors.clear();
         result.errors.addAll(createGrammarResult.errors);
         result.errors.addAll(analyzeResult.errors);
@@ -351,8 +351,8 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
             errors.add(buildNonRegularDecisionError((NonRegularDecisionMessage)o));
     }
 
-    private ANTLRGrammarError buildNonDeterministicError(GrammarNonDeterminismMessage message) {
-        ANTLRGrammarError error = new ANTLRGrammarError();
+    private GrammarError buildNonDeterministicError(GrammarNonDeterminismMessage message) {
+        GrammarError error = new GrammarError();
         error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
 
         List labels = message.probe.getSampleNonDeterministicInputSequence(message.problemState);
@@ -365,8 +365,8 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         return error;
     }
 
-    private ANTLRGrammarError buildUnreachableAltsError(GrammarUnreachableAltsMessage message) {
-        ANTLRGrammarError error = new ANTLRGrammarError();
+    private GrammarError buildUnreachableAltsError(GrammarUnreachableAltsMessage message) {
+        GrammarError error = new GrammarError();
 
         error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
         error.setMessageText("The following alternatives are unreachable: "+message.alts);
@@ -375,8 +375,8 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         return error;
     }
 
-    private ANTLRGrammarError buildNonRegularDecisionError(NonRegularDecisionMessage message) {
-        ANTLRGrammarError error = new ANTLRGrammarError();
+    private GrammarError buildNonRegularDecisionError(NonRegularDecisionMessage message) {
+        GrammarError error = new GrammarError();
 
         error.setLine(message.probe.dfa.getDecisionASTNode().getLine()-1);
         error.setMessageText(message.toString());
@@ -391,14 +391,14 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         }
     }
 
-    private void updateRuleWithErrors(ElementRule rule, List<ANTLRGrammarError> errors) throws Exception {
+    private void updateRuleWithErrors(ElementRule rule, List<GrammarError> errors) throws Exception {
         rule.setErrors(errors);
         rule.setNeedsToBuildErrors(true);
     }
 
-    private List<ANTLRGrammarError> fetchErrorsForRule(ElementRule rule) {
-        List<ANTLRGrammarError> errors = new ArrayList<ANTLRGrammarError>();
-        for (ANTLRGrammarError error : getErrors()) {
+    private List<GrammarError> fetchErrorsForRule(ElementRule rule) {
+        List<GrammarError> errors = new ArrayList<GrammarError>();
+        for (GrammarError error : getErrors()) {
             if (error.line >= rule.start.startLineNumber && error.line <= rule.end.startLineNumber)
                 errors.add(error);
         }
@@ -406,8 +406,8 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
     }
 
     public void computeRuleErrors(ElementRule rule) {
-        List<ANTLRGrammarError> errors = rule.getErrors();
-        for (ANTLRGrammarError error : errors) {
+        List<GrammarError> errors = rule.getErrors();
+        for (GrammarError error : errors) {
             Object o = error.getMessage();
             if (o instanceof GrammarUnreachableAltsMessage)
                 computeRuleError(error, (GrammarUnreachableAltsMessage) o);
@@ -420,7 +420,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         rule.setNeedsToBuildErrors(false);
     }
 
-    private void computeRuleError(ANTLRGrammarError error, GrammarNonDeterminismMessage message) {
+    private void computeRuleError(GrammarError error, GrammarNonDeterminismMessage message) {
         List nonDetAlts = message.probe.getNonDeterministicAltsForState(message.problemState);
         Set disabledAlts = message.probe.getDisabledAlternatives(message.problemState);
 
@@ -450,7 +450,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         }
     }
 
-    private void computeRuleError(ANTLRGrammarError error, GrammarUnreachableAltsMessage message) {
+    private void computeRuleError(GrammarError error, GrammarUnreachableAltsMessage message) {
         NFAState state = message.probe.dfa.getNFADecisionStartState();
         for (Object alt : message.alts) {
             error.addUnreachableAlt(state, (Integer) alt);
@@ -459,7 +459,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         }
     }
 
-    private void computeRuleError(ANTLRGrammarError error, NonRegularDecisionMessage message) {
+    private void computeRuleError(GrammarError error, NonRegularDecisionMessage message) {
         NFAState state = message.probe.dfa.getNFADecisionStartState();
         for (Object alt : message.altsWithRecursion) {
             // Use currently the unreachable alt for display purpose only
