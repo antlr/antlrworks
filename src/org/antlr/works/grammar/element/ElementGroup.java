@@ -39,6 +39,10 @@ public class ElementGroup {
     public boolean openGroup = false;
     public ATEToken token;
 
+    public ElementGroup(String name) {
+        this.name = name;
+    }
+
     public ElementGroup(String name, int ruleIndex, ATEToken token) {
         this.name = name;
         this.ruleIndex = ruleIndex;

@@ -34,6 +34,7 @@ package org.antlr.works.editor;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.grammar.element.ElementAction;
 import org.antlr.works.grammar.element.ElementGroup;
@@ -90,7 +91,7 @@ public class EditorRules implements XJTreeDelegate {
         rulesTree.setDelegate(this);
         rulesTree.setEnableDragAndDrop();
 
-        rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeUserObject((ElementRule)null));
+        rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeUserObject(editor));
         rulesTreeModel = new DefaultTreeModel(rulesTreeRootNode);
         rulesTreeExpandedNodes = new ArrayList<String>();
 
@@ -98,8 +99,7 @@ public class EditorRules implements XJTreeDelegate {
         rulesTree.addMouseListener(ml = new RuleTreeMouseListener());
         rulesTree.addTreeSelectionListener(tsl = new RuleTreeSelectionListener());
 
-        rulesTree.setRootVisible(false);
-        rulesTree.setShowsRootHandles(true);
+        rulesTree.setRootVisible(true);
         rulesTree.setCellRenderer(new RulesTableRenderer());
         rulesTree.setRowHeight(17);
         rulesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
@@ -789,6 +789,7 @@ public class EditorRules implements XJTreeDelegate {
 
     public static class RuleTreeUserObject implements Transferable {
 
+        public ComponentEditor editor;
         public ElementRule rule;
         public ElementGroup group;
 
@@ -800,13 +801,20 @@ public class EditorRules implements XJTreeDelegate {
             this.group = group;
         }
 
+        public RuleTreeUserObject(ComponentEditor editor) {
+            this.editor = editor;
+        }
+
         public String toString() {
             if(group != null)
                 return group.name;
             else if(rule != null)
                 return rule.name;
-            else
+            else if(editor != null && editor.getDocument() != null) {
+                return editor.getDocument().getDocumentName();
+            } else {
                 return "";
+            }
         }
 
         public DataFlavor[] getTransferDataFlavors() {

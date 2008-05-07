@@ -5,6 +5,8 @@ import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.Toolbar;
+import org.antlr.xjlib.appkit.swing.XJRollOverButton;
+import org.antlr.xjlib.appkit.swing.XJRollOverButtonToggle;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 
@@ -98,18 +100,18 @@ public class ComponentToolbar implements XJNotificationObserver {
 
     public void createInterface() {
         toolbar = Toolbar.createHorizontalToolbar();
-        toolbar.addElement(sd = (JToggleButton)createNewButton(IconManager.shared().getIconSyntaxDiagram(), "Toggle Syntax diagram", true));
-        toolbar.addElement(coloring = (JToggleButton)createNewButton(IconManager.shared().getIconColoring(), "Toggle Syntax coloring", true));
-        toolbar.addElement(ideas = (JToggleButton)createNewButton(IconManager.shared().getIconIdea(), "Toggle Syntax ideas", true));
+        toolbar.addElement(sd = createToggleButton(IconManager.shared().getIconSyntaxDiagram(), "Toggle Syntax diagram"));
+        toolbar.addElement(coloring = createToggleButton(IconManager.shared().getIconColoring(), "Toggle Syntax coloring"));
+        toolbar.addElement(ideas = createToggleButton(IconManager.shared().getIconIdea(), "Toggle Syntax ideas"));
         toolbar.addGroupSeparator();
-        toolbar.addElement(sort = (JToggleButton)createNewButton(IconManager.shared().getIconSort(), "Toggle Sort rules", true));
-        toolbar.addElement(find = (JButton)createNewButton(IconManager.shared().getIconFind(), "Find text", false));
+        toolbar.addElement(sort = createToggleButton(IconManager.shared().getIconSort(), "Toggle Sort rules"));
+        toolbar.addElement(find = createButton(IconManager.shared().getIconFind(), "Find text"));
         toolbar.addGroupSeparator();
-        toolbar.addElement(backward = (JButton)createNewButton(IconManager.shared().getIconBackward(), "Back", false));
-        toolbar.addElement(forward = (JButton)createNewButton(IconManager.shared().getIconForward(), "Forward", false));
+        toolbar.addElement(backward = createButton(IconManager.shared().getIconBackward(), "Back"));
+        toolbar.addElement(forward = createButton(IconManager.shared().getIconForward(), "Forward"));
         toolbar.addGroupSeparator();
-        toolbar.addElement(debug = (JButton)createNewButton(IconManager.shared().getIconDebug(), "Debug", false));
-        toolbar.addElement(debugAgain = (JButton)createNewButton(IconManager.shared().getIconDebugAgain(), "Debug Again", false));
+        toolbar.addElement(debug = createButton(IconManager.shared().getIconDebug(), "Debug"));
+        toolbar.addElement(debugAgain = createButton(IconManager.shared().getIconDebugAgain(), "Debug Again"));
 
         AWPrefs.getPreferences().bindToPreferences(sort, AWPrefs.PREF_TOOLBAR_SORT, false);
     }
@@ -184,18 +186,25 @@ public class ComponentToolbar implements XJNotificationObserver {
 
     }
 
-    public AbstractButton createNewButton(ImageIcon icon, String tooltip, boolean toggle) {
-        AbstractButton button;
-        if(toggle)
-            button = new JToggleButton(icon);
-        else
-            button = new JButton(icon);
-        button.setToolTipText(tooltip);
-        Dimension d = new Dimension(32, 32);
+    public JButton createButton(ImageIcon icon, String tooltip) {
+        JButton b = XJRollOverButton.createButton(icon);
+        b.setToolTipText(tooltip);
+        adjustSize(b);
+        return b;
+    }
+
+    public JToggleButton createToggleButton(ImageIcon icon, String tooltip) {
+        JToggleButton b = XJRollOverButtonToggle.createButton(icon);
+        b.setToolTipText(tooltip);
+        adjustSize(b);
+        return b;
+    }
+
+    private void adjustSize(AbstractButton button) {
+        Dimension d = new Dimension(24, 24);
         button.setMinimumSize(d);
         button.setMaximumSize(d);
         button.setPreferredSize(d);
-        button.setFocusable(false);
-        return button;
     }
+
 }

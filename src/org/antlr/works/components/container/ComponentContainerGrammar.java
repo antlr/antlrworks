@@ -60,6 +60,7 @@ import org.antlr.xjlib.appkit.frame.XJWindow;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
+import org.antlr.xjlib.appkit.swing.XJTabbedPane;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
@@ -85,7 +86,7 @@ public class ComponentContainerGrammar extends XJWindow
     private ComponentToolbar toolbar;
     private Debugger debugger;
 
-    private JTabbedPane editorsTab;
+    private XJTabbedPane editorsTab;
     private JTabbedPane bottomTab;
 
     private JPanel toolbarPanel;
@@ -126,7 +127,7 @@ public class ComponentContainerGrammar extends XJWindow
         debugger.awake();
         toolbar.awake();
 
-        editorsTab = new JTabbedPane();
+        editorsTab = new XJTabbedPane();
 
         bottomTab = new JTabbedPane();
         bottomTab.setTabPlacement(JTabbedPane.BOTTOM);
@@ -160,15 +161,11 @@ public class ComponentContainerGrammar extends XJWindow
         bottomTab.addMouseListener(ml = new TabbedPaneMouseListener());
         bottomTab.addChangeListener(cl = new TabbedPaneChangeListener());
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(null);
-        mainPanel.add(editorsTab);
-
         verticalSplit = new JSplitPane();
         verticalSplit.setBorder(null);
         verticalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         verticalSplit.setLeftComponent(rulesPanel);
-        verticalSplit.setRightComponent(mainPanel);
+        verticalSplit.setRightComponent(editorsTab);
         verticalSplit.setContinuousLayout(true);
         verticalSplit.setOneTouchExpandable(true);
 
@@ -262,10 +259,10 @@ public class ComponentContainerGrammar extends XJWindow
 
     private ComponentEditorGrammar selectGrammar(ComponentContainer c) {
         Component panel = c.getEditor().getPanel();
-        if(editorsTab.indexOfComponent(panel) == -1) {
-            editorsTab.addTab(c.getDocument().getDocumentName(), panel);
+        if(!editorsTab.hasComponent(panel)) {
+            editorsTab.addComponent(c.getDocument().getDocumentName(), panel);
         }
-        editorsTab.setSelectedComponent(panel);
+        editorsTab.selectComponent(panel);
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 getSelectedEditor().getTextEditor().getTextPane().requestFocus();
@@ -717,7 +714,7 @@ public class ComponentContainerGrammar extends XJWindow
     private class EditorsTabChangeListener implements ChangeListener {
 
         public void stateChanged(ChangeEvent event) {
-            Component c = ((JTabbedPane) event.getSource()).getSelectedComponent();
+            Component c = editorsTab.getSelectedComponent();
             selectedContainer = componentToContainer.get(c);
             ComponentEditorGrammar editor = (ComponentEditorGrammar) selectedContainer.getEditor();
 
