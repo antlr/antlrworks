@@ -1,4 +1,4 @@
-package org.antlr.works.components.toolbar;
+package org.antlr.works.components;
 
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.debugger.Debugger;

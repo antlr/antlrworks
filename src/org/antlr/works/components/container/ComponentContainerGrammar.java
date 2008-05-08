@@ -32,12 +32,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.components.container;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
+import org.antlr.works.components.ComponentToolbar;
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.components.toolbar.ComponentToolbar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.api.DebuggerDelegate;
 import org.antlr.works.editor.EditorConsole;

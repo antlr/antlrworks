@@ -61,6 +61,7 @@ import org.antlr.works.utils.*;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.swing.XJRotableToggleButton;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 
@@ -104,7 +105,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     protected DBControlPanel controlPanel;
 
     protected CustomSplitPanel splitPanel;
-    protected Map<Component,CustomToggleButton> components2toggle;
+    protected Map<Component, XJRotableToggleButton> components2toggle;
 
     protected Map<Integer, Set<String>> breakpoints;
 
@@ -128,7 +129,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     public void awake() {
         panel = new JPanel(new BorderLayout());
         splitPanel = new CustomSplitPanel();
-        components2toggle = new HashMap<Component, CustomToggleButton>();
+        components2toggle = new HashMap<Component, XJRotableToggleButton>();
 
         controlPanel = new DBControlPanel(this);
 
@@ -184,10 +185,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         parseTreeModel.close();
         astModel.close();
 
-        for(CustomToggleButton b : components2toggle.values()) {
-            for(ActionListener al : b.getActionListeners()) {
-                b.removeActionListener(al);
-            }
+        for(XJRotableToggleButton b : components2toggle.values()) {
+            b.removeAllActionListeners();
         }
 
         delegate = null;
@@ -219,13 +218,12 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         return b;
     }
 
-    public JToggleButton createToggleButton(String title, int tag, Component c) {
-        CustomToggleButton b = new CustomToggleButton(title);
-        b.setTag(tag);
+    public XJRotableToggleButton createToggleButton(String title, final int tag, Component c) {
+        XJRotableToggleButton b = new XJRotableToggleButton(title);
         b.setFocusable(false);
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                performToggleButtonAction((CustomToggleButton)e.getSource());
+                performToggleButtonAction(tag);
             }
 
         });
@@ -254,12 +252,12 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void setComponentVisible(Component c, boolean flag) {
         c.setVisible(flag);
-        JToggleButton b = components2toggle.get(c);
+        XJRotableToggleButton b = components2toggle.get(c);
         b.setSelected(flag);
     }
 
-    public void performToggleButtonAction(CustomToggleButton button) {
-        switch(button.getTag()) {
+    public void performToggleButtonAction(int tag) {
+        switch(tag) {
             case TOGGLE_INPUT:
                 toggleComponents(inputPanel, outputPanel, CustomSplitPanel.LEFT_INDEX);
                 break;
@@ -701,14 +699,14 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
             c.setVisible(false);
             splitPanel.setComponent(null, panel.getTag());
 
-            CustomToggleButton button = components2toggle.get(c);
+            XJRotableToggleButton button = components2toggle.get(c);
             button.setSelected(false);
         }
         splitPanel.setComponent(panel, panel.getTag());
     }
 
     public void panelDoClose(DetachablePanel panel) {
-        CustomToggleButton button = components2toggle.get(panel);
+        XJRotableToggleButton button = components2toggle.get(panel);
         button.setSelected(false);
     }
 
