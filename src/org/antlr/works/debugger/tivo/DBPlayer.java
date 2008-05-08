@@ -215,12 +215,12 @@ public class DBPlayer {
     }
 
     public void playEnterRule(DBEventEnterRule event) {
-        debugger.playerPushRule(event.name);
+        debugger.playerPushRule(event);
         processor.removeAllLT();
     }
 
     public void playExitRule(DBEventExitRule event) {
-        debugger.playerPopRule(event.name);
+        debugger.playerPopRule(event);
         processor.removeAllLT();
     }
 

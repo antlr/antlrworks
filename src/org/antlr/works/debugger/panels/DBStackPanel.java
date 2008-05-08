@@ -1,6 +1,7 @@
 package org.antlr.works.debugger.panels;
 
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.events.DBEventEnterRule;
 import org.antlr.works.utils.DetachablePanel;
 import org.antlr.xjlib.appkit.swing.XJTable;
 import org.antlr.xjlib.appkit.swing.XJTableView;
@@ -48,7 +49,7 @@ public class DBStackPanel extends DetachablePanel {
 
     private XJTableView infoTableView;
     private DBStackPanel.RuleTableDataModel ruleTableDataModel;
-    private Stack<String> rules = new Stack<String>();
+    private Stack<DBEventEnterRule> rules = new Stack<DBEventEnterRule>();
 
     public DBStackPanel(Debugger debugger) {
         super("Stack", debugger);
@@ -87,25 +88,33 @@ public class DBStackPanel extends DetachablePanel {
         });
     }
 
-    public void pushRule(String ruleName) {
-        rules.push(ruleName);
-        ruleTableDataModel.add(ruleName);
+    public void pushRule(DBEventEnterRule rule) {
+        rules.push(rule);
+        ruleTableDataModel.add(rule.name);
     }
 
     public void popRule() {
-        ruleTableDataModel.remove(rules.peek());
+        ruleTableDataModel.remove(rules.peek().name);
         rules.pop();
+    }
+
+    public DBEventEnterRule peekRule() {
+        if(rules.isEmpty()) {
+            return null;
+        } else {
+            return rules.peek();            
+        }
     }
 
     public class RuleTableDataModel extends AbstractTableModel {
 
-        protected java.util.List<Object> rules = new ArrayList<Object>();
+        protected java.util.List<String> rules = new ArrayList<String>();
 
-        public void add(Object rule) {
+        public void add(String rule) {
             rules.add(rule);
         }
 
-        public void remove(Object rule) {
+        public void remove(String rule) {
             rules.remove(rule);
         }
 

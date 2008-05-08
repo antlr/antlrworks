@@ -596,6 +596,7 @@ public class ComponentContainerGrammar extends XJWindow
         }
 
         public void debuggerSetLocation(String grammar, int line, int column) {
+            selectGrammar(grammar);
             int grammarIndex = computeAbsoluteGrammarIndex(line, column);
             if(grammarIndex >= 0) {
                 getSelectedEditor().setDebuggerLocation(grammarIndex);
@@ -603,6 +604,7 @@ public class ComponentContainerGrammar extends XJWindow
         }
 
         public void debuggerSelectText(String grammar, int line, int column) {
+            selectGrammar(grammar);
             int grammarIndex = computeAbsoluteGrammarIndex(line, column);
             if(grammarIndex >= 0) {
                 getSelectedEditor().selectTextRange(grammarIndex, grammarIndex+1);

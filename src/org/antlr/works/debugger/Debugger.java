@@ -36,6 +36,8 @@ import org.antlr.runtime.Token;
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.debugger.api.DebuggerDelegate;
 import org.antlr.works.debugger.events.DBEvent;
+import org.antlr.works.debugger.events.DBEventEnterRule;
+import org.antlr.works.debugger.events.DBEventExitRule;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
 import org.antlr.works.debugger.local.DBLocal;
 import org.antlr.works.debugger.panels.*;
@@ -59,6 +61,7 @@ import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 
 import javax.swing.*;
@@ -389,19 +392,25 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         astPanel.selectToken(token);
     }
 
+    private String getCurrentGrammarName() {
+        DBEventEnterRule rule = stackPanel.peekRule();
+        if(rule == null) {
+            return null;
+        } else {
+            return XJUtils.getPathByDeletingPathExtension(XJUtils.getLastPathComponent(rule.grammarFileName));
+        }
+    }
+
     public void selectGrammarText(int line, int pos) {
-        // todo name of the grammar
-        delegate.debuggerSelectText(null, line, pos);
+        delegate.debuggerSelectText(getCurrentGrammarName(), line, pos);
     }
 
     public void setGrammarLocation(int line, int pos) {
-        // todo name of the grammar
-        delegate.debuggerSetLocation(null, line, pos);
+        delegate.debuggerSetLocation(getCurrentGrammarName(), line, pos);
     }
 
     public void resetGrammarLocation() {
-        // todo name of the grammar
-        delegate.debuggerSetLocation(null, -1, -1);
+        delegate.debuggerSetLocation(getCurrentGrammarName(), -1, -1);
     }
 
     public List<ElementRule> getRules() {
@@ -564,13 +573,13 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         parseTreeModel.setLocation(line, pos);
     }
 
-    public void playerPushRule(String ruleName) {
-        stackPanel.pushRule(ruleName);
-        parseTreeModel.pushRule(ruleName);
-        astModel.pushRule(ruleName);
+    public void playerPushRule(DBEventEnterRule rule) {
+        stackPanel.pushRule(rule);
+        parseTreeModel.pushRule(rule.name);
+        astModel.pushRule(rule.name);
     }
 
-    public void playerPopRule(String ruleName) {
+    public void playerPopRule(DBEventExitRule ruleName) {
         stackPanel.popRule();
         parseTreeModel.popRule();
         astModel.popRule();
