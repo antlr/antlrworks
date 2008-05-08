@@ -407,6 +407,9 @@ public class GrammarPropertiesImpl implements GrammarProperties {
         Grammar lexer = antlrEngine.getLexerGrammar();
         if(lexer != null) {
             names.add(lexer.getRecognizerName());
+            for(Grammar gd : lexer.getDelegates()) {
+                names.add(gd.getRecognizerName());
+            }
         }
         return names;
     }

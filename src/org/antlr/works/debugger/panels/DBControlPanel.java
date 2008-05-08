@@ -9,6 +9,7 @@ import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.NumberSet;
 import org.antlr.works.utils.Toolbar;
+import org.antlr.xjlib.appkit.swing.XJRollOverButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -99,7 +100,7 @@ public class DBControlPanel extends JPanel {
     }
 
     public JButton createStopButton() {
-        JButton button = new JButton(IconManager.shared().getIconStop());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconStop());
         button.setToolTipText("Stop");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
@@ -112,7 +113,7 @@ public class DBControlPanel extends JPanel {
     }
 
     public JButton createStepBackButton() {
-        JButton button = new JButton(IconManager.shared().getIconStepBackward());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconStepBackward());
         button.setToolTipText("Step Back");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -125,7 +126,7 @@ public class DBControlPanel extends JPanel {
     }
 
     public JButton createStepForwardButton() {
-        JButton button = new JButton(IconManager.shared().getIconStepForward());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconStepForward());
         button.setToolTipText("Step Forward");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -138,7 +139,7 @@ public class DBControlPanel extends JPanel {
     }
 
     public JButton createStepOverButton() {
-        JButton button = new JButton(IconManager.shared().getIconStepOver());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconStepOver());
         button.setToolTipText("Step Over");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -151,7 +152,7 @@ public class DBControlPanel extends JPanel {
     }
 
     public JButton createGoToStartButton() {
-        JButton button = new JButton(IconManager.shared().getIconGoToStart());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconGoToStart());
         button.setToolTipText("Go To Start");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
@@ -166,7 +167,7 @@ public class DBControlPanel extends JPanel {
     }
 
     public JButton createGoToEndButton() {
-        JButton button = new JButton(IconManager.shared().getIconGoToEnd());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconGoToEnd());
         button.setToolTipText("Go To End");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
@@ -180,7 +181,7 @@ public class DBControlPanel extends JPanel {
     }
 
     public JButton createFastForwardButton() {
-        JButton button = new JButton(IconManager.shared().getIconFastForward());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconFastForward());
         button.setToolTipText("Fast forward");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {

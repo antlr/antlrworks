@@ -11,7 +11,6 @@ import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 /*
@@ -187,24 +186,16 @@ public class ComponentToolbar implements XJNotificationObserver {
     }
 
     public JButton createButton(ImageIcon icon, String tooltip) {
-        JButton b = XJRollOverButton.createButton(icon);
+        JButton b = XJRollOverButton.createMediumButton(icon);
         b.setToolTipText(tooltip);
-        adjustSize(b);
         return b;
     }
 
     public JToggleButton createToggleButton(ImageIcon icon, String tooltip) {
-        JToggleButton b = XJRollOverButtonToggle.createButton(icon);
+        JToggleButton b = XJRollOverButtonToggle.createMediumButton(icon);
         b.setToolTipText(tooltip);
-        adjustSize(b);
         return b;
     }
 
-    private void adjustSize(AbstractButton button) {
-        Dimension d = new Dimension(24, 24);
-        button.setMinimumSize(d);
-        button.setMaximumSize(d);
-        button.setPreferredSize(d);
-    }
 
 }

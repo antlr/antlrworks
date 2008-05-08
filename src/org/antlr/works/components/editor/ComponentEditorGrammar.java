@@ -749,7 +749,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public String getOutputPath() {
         if(AWPrefs.getOutputPathSameAsDocument()) {
-            return XJUtils.getPathByDeletingLastComponent(getFilePath());
+            return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(getFilePath()), "output");
         } else {
             return AWPrefs.getOutputPath();
         }

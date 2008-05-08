@@ -53,6 +53,7 @@ import org.antlr.works.utils.TextUtils;
 import org.antlr.works.utils.Toolbar;
 import org.antlr.works.utils.Utils;
 import org.antlr.xjlib.appkit.gview.GView;
+import org.antlr.xjlib.appkit.swing.XJRollOverButton;
 import org.antlr.xjlib.appkit.utils.XJDialogProgress;
 
 import javax.swing.*;
@@ -140,7 +141,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     }
 
     public JButton createRunButton() {
-        JButton button = new JButton(IconManager.shared().getIconRun());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconRun());
         button.setToolTipText("Run");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
