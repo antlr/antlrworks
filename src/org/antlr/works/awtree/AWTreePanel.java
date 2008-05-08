@@ -4,6 +4,7 @@ import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.Toolbar;
 import org.antlr.works.utils.TreeUtilities;
 import org.antlr.xjlib.appkit.gview.object.GElement;
+import org.antlr.xjlib.appkit.swing.XJRollOverButton;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 
 import javax.swing.*;
@@ -125,7 +126,7 @@ public class AWTreePanel extends JPanel {
     }
 
     public JButton createDisplayAsGraphButton() {
-        JButton button = new JButton(IconManager.shared().getIconGraph());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconGraph());
         button.setToolTipText("Display as Graph");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
@@ -137,7 +138,7 @@ public class AWTreePanel extends JPanel {
     }
 
     public JButton createExpandAllButton() {
-        JButton button = new JButton(IconManager.shared().getIconExpandAll());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconExpandAll());
         button.setToolTipText("Expand All");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
@@ -149,7 +150,7 @@ public class AWTreePanel extends JPanel {
     }
 
     public JButton createCollapseAllButton() {
-        JButton button = new JButton(IconManager.shared().getIconCollapseAll());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconCollapseAll());
         button.setToolTipText("Collapse All");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
@@ -190,7 +191,7 @@ public class AWTreePanel extends JPanel {
     }
 
     public JButton createDisplayAsListButton() {
-        JButton button = new JButton(IconManager.shared().getIconListTree());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconListTree());
         button.setToolTipText("Display as List");
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {

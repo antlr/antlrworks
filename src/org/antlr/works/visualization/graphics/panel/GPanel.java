@@ -44,6 +44,7 @@ import org.antlr.works.visualization.graphics.graph.GGraphGroup;
 import org.antlr.works.visualization.graphics.path.GPathGroup;
 import org.antlr.works.visualization.skin.nfa.NFASkin;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
+import org.antlr.xjlib.appkit.swing.XJRollOverButton;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 
@@ -181,7 +182,7 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private JButton createPrevErrorButton() {
-        JButton button = new JButton(IconManager.shared().getIconBackward());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconBackward());
         button.setFocusable(false);
         button.setToolTipText("Show Previous Error");
         button.addActionListener(new ActionListener() {
@@ -197,7 +198,7 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private JButton createNextErrorButton() {
-        JButton button = new JButton(IconManager.shared().getIconForward());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconForward());
         button.setFocusable(false);
         button.setToolTipText("Show Next Error");
         button.addActionListener(new ActionListener() {
@@ -278,7 +279,7 @@ public class GPanel implements XJNotificationObserver {
     }
 
     private JButton createShowCrossLinksButton() {
-        JButton button = new JButton(IconManager.shared().getIconShowLinks());
+        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconShowLinks());
         button.setFocusable(false);
         button.setToolTipText("Show links between rules");
         button.addActionListener(new ActionListener() {
