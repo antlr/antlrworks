@@ -3,6 +3,7 @@ package org.antlr.works.debugger.input;
 import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreePanel;
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.debugger.tree.DBTreeNode;
 import org.antlr.works.debugger.tree.DBTreeToken;
 import org.antlr.works.prefs.AWPrefs;
@@ -57,7 +58,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     public Map<Integer,NodeInfo> nodeInfoForToken = new HashMap<Integer, NodeInfo>();
 
     /** Last position in the grammar received from the parser */
-    public int line, pos;
+    public DBEventLocation location;
 
     /** Node colors */
     public Color nonConsumedColor;
@@ -191,9 +192,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     }
 
     public InputTreeNode createNode(Token token) {
-        InputTreeNode node = new InputTreeNode((DBTreeToken)token);
-        node.setPosition(line, pos);
-        return node;
+        return new InputTreeNode((DBTreeToken)token, location);
     }
 
     public NodeInfo getNode(Token token) {
@@ -205,9 +204,8 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
         return info;
     }
 
-    public void setLocation(int line, int pos) {
-        this.line = line;
-        this.pos = pos;
+    public void setLocation(DBEventLocation event) {
+        this.location = event;
     }
 
     public int getCurrentTokenIndex() {
@@ -254,8 +252,8 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
         public boolean breakpoint = false;
 
-        public InputTreeNode(DBTreeToken token) {
-            super(token);
+        public InputTreeNode(DBTreeToken token, DBEventLocation location) {
+            super(token, location);
         }
 
         public void toggleBreakpoint() {

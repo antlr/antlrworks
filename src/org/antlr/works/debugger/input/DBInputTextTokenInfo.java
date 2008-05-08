@@ -1,6 +1,7 @@
 package org.antlr.works.debugger.input;
 
 import org.antlr.runtime.Token;
+import org.antlr.works.debugger.events.DBEventLocation;
 /*
 
 [The "BSD licence"]
@@ -39,13 +40,11 @@ public class DBInputTextTokenInfo {
     public int start;
     public int end;
 
-    public int line;
-    public int charInLine;
+    public DBEventLocation location;
 
-    public DBInputTextTokenInfo(Token token, int line, int charInLine) {
+    public DBInputTextTokenInfo(Token token, DBEventLocation location) {
         this.token = token;
-        this.line = line;
-        this.charInLine = charInLine;
+        this.location = location;
     }
 
     public void setStart(int start) {
@@ -53,6 +52,10 @@ public class DBInputTextTokenInfo {
         this.end = start+getText().length();
     }
 
+    public DBEventLocation getLocation() {
+        return location;
+    }
+    
     /**
      * Returns the raw text.
      * 

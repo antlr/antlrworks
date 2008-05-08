@@ -4,6 +4,7 @@ import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreeModel;
 import org.antlr.works.awtree.AWTreeNode;
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
@@ -53,7 +54,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
     public Color lookaheadTokenColor;
     public TreeNode lastNode;
-    public int line, pos;
+    public DBEventLocation location;
 
     public Debugger debugger;
 
@@ -84,7 +85,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
     public void initRules() {
         rules.clear();
-        rules.push(new ParseTreeNode("root"));
+        rules.push(new ParseTreeNode("root", null));
     }
 
     public void initColors() {
@@ -100,7 +101,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
         setLastNode(null);
         fireDataChanged();
 
-        line = pos = 0;
+        location = null;
     }
 
     public void setLastNode(TreeNode node) {
@@ -111,16 +112,14 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
         return lastNode;
     }
 
-    public void setLocation(int line, int pos) {
-        this.line = line;
-        this.pos = pos;
+    public void setLocation(DBEventLocation location) {
+        this.location = location;
     }
 
     public void pushRule(String name) {
         ParseTreeNode parentRuleNode = rules.peek();
 
-        ParseTreeNode ruleNode = new ParseTreeNode(name);
-        ruleNode.setPosition(line, pos);
+        ParseTreeNode ruleNode = new ParseTreeNode(name, location);
         rules.push(ruleNode);
 
         addNode(parentRuleNode, ruleNode);
@@ -146,8 +145,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
     public void addToken(Token token) {
         ParseTreeNode ruleNode = rules.peek();
-        ParseTreeNode elementNode = new ParseTreeNode(token);
-        elementNode.setPosition(line, pos);
+        ParseTreeNode elementNode = new ParseTreeNode(token, location);
         addNode(ruleNode, elementNode);
         addNodeToCurrentBacktrack(elementNode);
         setLastNode(elementNode);
@@ -155,8 +153,7 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
 
     public void addException(Exception e) {
         ParseTreeNode ruleNode = rules.peek();
-        ParseTreeNode errorNode = new ParseTreeNode(e);
-        errorNode.setPosition(line, pos);
+        ParseTreeNode errorNode = new ParseTreeNode(e, location);
         addNode(ruleNode, errorNode);
         addNodeToCurrentBacktrack(errorNode);
         setLastNode(errorNode);
@@ -191,16 +188,18 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
         protected String s;
         protected Exception e;
 
-        public ParseTreeNode(String s) {
+        public ParseTreeNode(String s, DBEventLocation location) {
             this.s = s;
+            this.location = location;
         }
 
-        public ParseTreeNode(Exception e) {
+        public ParseTreeNode(Exception e, DBEventLocation location) {
             this.e = e;
+            this.location = location;
         }
 
-        public ParseTreeNode(Token token) {
-            super(token);
+        public ParseTreeNode(Token token, DBEventLocation location) {
+            super(token, location);
         }
 
         public String toString() {

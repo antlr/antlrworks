@@ -74,6 +74,7 @@ public class DBEvent {
     public static final int ERROR_NODE = 27;
 
     private int eventType;
+    private String grammarName;
 
     public DBEvent(int eventType) {
         this.eventType = eventType;
@@ -132,6 +133,14 @@ public class DBEvent {
 
     public void setEventType(int eventType) {
         this.eventType = eventType;
+    }
+
+    public String getGrammarName() {
+        return grammarName;
+    }
+
+    public void setGrammarName(String grammarName) {
+        this.grammarName = grammarName;
     }
 
     public String toString() {

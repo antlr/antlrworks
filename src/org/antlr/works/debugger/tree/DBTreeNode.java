@@ -2,6 +2,7 @@ package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
 import org.antlr.works.awtree.AWTreeNode;
+import org.antlr.works.debugger.events.DBEventLocation;
 
 import java.awt.*;
 import java.util.Enumeration;
@@ -40,8 +41,7 @@ public class DBTreeNode extends AWTreeNode {
 
     protected Token token;
 
-    protected int line;
-    protected int pos;
+    protected DBEventLocation location;
 
     protected Color color = Color.black;
 
@@ -49,21 +49,13 @@ public class DBTreeNode extends AWTreeNode {
 
     }
     
-    public DBTreeNode(Token token) {
+    public DBTreeNode(Token token, DBEventLocation location) {
         this.token = token;
+        this.location = location;
     }
 
-    public void setPosition(int line, int pos) {
-        this.line = line;
-        this.pos = pos;
-    }
-
-    public int getLine() {
-        return line;
-    }
-
-    public int getPosition() {
-        return pos;
+    public DBEventLocation getLocation() {
+        return location;
     }
 
     public void setColor(Color color) {

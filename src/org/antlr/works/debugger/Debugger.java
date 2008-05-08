@@ -38,6 +38,7 @@ import org.antlr.works.debugger.api.DebuggerDelegate;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.events.DBEventEnterRule;
 import org.antlr.works.debugger.events.DBEventExitRule;
+import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
 import org.antlr.works.debugger.local.DBLocal;
 import org.antlr.works.debugger.panels.*;
@@ -61,7 +62,6 @@ import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 
 import javax.swing.*;
@@ -106,7 +106,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     protected CustomSplitPanel splitPanel;
     protected Map<Component,CustomToggleButton> components2toggle;
 
-    protected Set<Integer> breakpoints;
+    protected Map<Integer, Set<String>> breakpoints;
 
     protected DBLocal local;
     protected DBRecorder recorder;
@@ -119,6 +119,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     private String startRule;
 
     private DebuggerDelegate delegate;
+    private String rootGrammarName;
 
     public Debugger(DebuggerDelegate delegate) {
         this.delegate = delegate;
@@ -363,15 +364,21 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         this.breakpoints = delegate.getBreakpoints();
     }
 
-    public boolean isBreakpointAtLine(int line) {
-        return breakpoints != null && breakpoints.contains(line);
+    public boolean isBreakpointAtLine(int line, String name) {
+        if(breakpoints == null) return false;
+
+        Set<String> names = breakpoints.get(line);
+        if(names == null) return false;
+
+        // return true if the current grammar matches
+        return names.contains(name);
     }
 
     public boolean isBreakpointAtToken(Token token) {
         return inputPanel.isBreakpointAtToken(token);
     }
 
-    public void selectToken(Token token, int line, int pos) {
+    public void selectToken(Token token, DBEventLocation location) {
         if(token != null) {
             /** If token is not null, ask the input text object the
              * line and character number.
@@ -379,12 +386,12 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
             DBInputTextTokenInfo info = inputPanel.getTokenInfoForToken(token);
             if(info == null)
-                selectGrammarText(line, pos);
+                selectGrammarText(location);
             else
-                selectGrammarText(info.line, info.charInLine);
+                selectGrammarText(info.getLocation());
         } else {
             /** If token is null, the line and pos will be provided as parameters */
-            selectGrammarText(line, pos);
+            selectGrammarText(location);
         }
 
         inputPanel.selectToken(token);
@@ -392,25 +399,18 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         astPanel.selectToken(token);
     }
 
-    private String getCurrentGrammarName() {
-        DBEventEnterRule rule = stackPanel.peekRule();
-        if(rule == null) {
-            return null;
-        } else {
-            return XJUtils.getPathByDeletingPathExtension(XJUtils.getLastPathComponent(rule.grammarFileName));
+    public void selectGrammarText(DBEventLocation location) {
+        delegate.debuggerSelectText(location.getGrammarName(), location.line, location.pos);
+    }
+
+    public void setGrammarLocation(DBEventLocation location) {
+        if(location != null) {
+            delegate.debuggerSetLocation(location.getGrammarName(), location.line, location.pos);            
         }
     }
 
-    public void selectGrammarText(int line, int pos) {
-        delegate.debuggerSelectText(getCurrentGrammarName(), line, pos);
-    }
-
-    public void setGrammarLocation(int line, int pos) {
-        delegate.debuggerSetLocation(getCurrentGrammarName(), line, pos);
-    }
-
     public void resetGrammarLocation() {
-        delegate.debuggerSetLocation(getCurrentGrammarName(), -1, -1);
+        delegate.debuggerSetLocation(rootGrammarName, -1, -1);
     }
 
     public List<ElementRule> getRules() {
@@ -501,7 +501,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         }
 
         queryGrammarBreakpoints();
-
+        rootGrammarName = delegate.getGrammarName();
         inputPanel.prepareForGrammar(delegate.getGrammarEngine());
         player.setInputBuffer(inputPanel.getInputBuffer());
 
@@ -569,8 +569,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         breaksOnEvent();
     }
 
-    public void playerSetLocation(int line, int pos) {
-        parseTreeModel.setLocation(line, pos);
+    public void playerSetLocation(DBEventLocation location) {
+        parseTreeModel.setLocation(location);
     }
 
     public void playerPushRule(DBEventEnterRule rule) {

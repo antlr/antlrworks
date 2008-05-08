@@ -33,6 +33,7 @@ package org.antlr.works.debugger.input;
 
 import org.antlr.runtime.Token;
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.utils.TextPane;
@@ -75,7 +76,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     protected int currentTokenIndexInText;
 
     /** Last location event received by the debugger */
-    protected int locationLine;
+    protected DBEventLocation locationEvent;
     protected int locationCharInLine;
 
     /** Input breakpoints */
@@ -124,9 +125,8 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
         return currentTokenIndex;
     }
 
-    public void setLocation(int line, int charInLine) {
-        this.locationLine = line;
-        this.locationCharInLine = charInLine;
+    public void setLocation(DBEventLocation event) {
+        this.locationEvent = event;
     }
 
     public void consumeToken(Token token, int flavor) {
@@ -245,7 +245,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
          * may have changed
          */
 
-        indexToTokenInfoMap.put((Integer)index, new DBInputTextTokenInfo(token, locationLine, locationCharInLine));
+        indexToTokenInfoMap.put(index, new DBInputTextTokenInfo(token, locationEvent));
     }
 
     public Token getCurrentToken() {
@@ -443,7 +443,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
 
             boolean shiftKey = (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) == MouseEvent.SHIFT_DOWN_MASK;
             if(e.getButton() == MouseEvent.BUTTON1 && !shiftKey) {
-                debugger.selectToken(info.token, info.line, info.charInLine);
+                debugger.selectToken(info.token, info.getLocation());
             } else {
                 Integer index = info.token.getTokenIndex();
                 if(inputBreakpointIndexes.contains(index))

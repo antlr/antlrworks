@@ -297,24 +297,22 @@ public class DBPlayer {
         processor.consumeToken(token, hidden?DBInputProcessor.TOKEN_HIDDEN:DBInputProcessor.TOKEN_NORMAL);
     }
 
-    protected int lastLocationLine;
-    protected int lastLocationPos;
+    protected DBEventLocation lastLocationEvent;
 
     public void playLocation(DBEventLocation event) {
         // Remember the last position in order to display
         // it when the events are all consumed. This allows
         // to remove the fast backward/forward movement of the cursor
         // in the grammar (not needed)
-        lastLocationLine = event.line;
-        lastLocationPos = event.pos;
+        lastLocationEvent = event;
 
-        debugger.playerSetLocation(lastLocationLine, lastLocationPos);
-        processor.setLocation(lastLocationLine, lastLocationPos);
+        debugger.playerSetLocation(lastLocationEvent);
+        processor.setLocation(lastLocationEvent);
     }
 
     public void playLocation() {
         debugger.resetGrammarLocation();
-        debugger.setGrammarLocation(lastLocationLine, lastLocationPos);
+        debugger.setGrammarLocation(lastLocationEvent);
     }
 
     public void playMark(DBEventMark event) {

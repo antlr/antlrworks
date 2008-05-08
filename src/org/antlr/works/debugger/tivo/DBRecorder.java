@@ -45,10 +45,7 @@ import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
@@ -94,6 +91,11 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
      */
     protected boolean remoteParserStateWarned = false;
 
+    /**
+     * Current grammar the recorder is in
+     */
+    protected Stack<String> grammarNamesStack = new Stack<String>();
+    
     public DBRecorder(Debugger debugger) {
         this.debugger = debugger;
         reset();
@@ -145,7 +147,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         return events.get(events.size()-1);
     }
 
-    public synchronized List getCurrentEvents() {
+    public synchronized List<DBEvent> getCurrentEvents() {
         if(events.size() == 0)
             return events;
 
@@ -236,8 +238,9 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
         // Stop on debugger breakpoints
         if(event.getEventType() == DBEvent.LOCATION && !ignoreBreakpoints())
-            if(debugger.isBreakpointAtLine(((DBEventLocation)event).line-1))
+            if(debugger.isBreakpointAtLine(((DBEventLocation)event).line-1, event.getGrammarName())) {
                 return event.getEventType();
+            }
 
         // Stop on input text breakpoint
         if(event.getEventType() == DBEvent.CONSUME_TOKEN && !ignoreBreakpoints())
@@ -310,6 +313,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         queryGrammarBreakpoints();
         setStatus(STATUS_RUNNING);
     }
+
 
     /** This method returns false if no more event is available */
     public synchronized boolean stepMove(int direction) {
@@ -520,11 +524,26 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         }
     }
 
+    public void handleGrammarName(DBEvent event) {
+        if(event instanceof DBEventEnterRule) {
+            grammarNamesStack.push(event.getGrammarName());
+        }
+        if(event instanceof DBEventExitRule) {
+            grammarNamesStack.pop();
+        }
+        if(grammarNamesStack.isEmpty()) {
+            event.setGrammarName(null);
+        } else {
+            event.setGrammarName(grammarNamesStack.peek());
+        }
+    }
+
     /** This method is called by DBRecorderEventListener for each event received from
      * the remote parser. It is running on another thread than the event thread.
      */
     public synchronized void listenerEvent(DBEvent event) {
         events.add(event);
+        handleGrammarName(event);
         recordIndexes(event);
         setPositionToEnd();
 

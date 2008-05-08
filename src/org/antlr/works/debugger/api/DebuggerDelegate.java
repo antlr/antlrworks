@@ -10,6 +10,7 @@ import org.antlr.xjlib.appkit.document.XJDocument;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;/*
 
 [The "BSD licence"]
@@ -44,6 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public interface DebuggerDelegate {
 
     GrammarEngine getGrammarEngine();
+    String getGrammarName();
 
     void debuggerStarted();
     void debuggerStopped();
@@ -59,8 +61,7 @@ public interface DebuggerDelegate {
 
     List<ElementBlock> getBlocks();
 
-    // todo ask per grammar
-    Set<Integer> getBreakpoints();
+    Map<Integer,Set<String>> getBreakpoints();
 
     XJDocument getDocument();
 

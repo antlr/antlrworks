@@ -248,11 +248,19 @@ public class ComponentContainerGrammar extends XJWindow
         return true;
     }
 
-    public ComponentEditorGrammar selectGrammar(String name) {
+    public ComponentContainer getContainerForName(String name) {
         for(ComponentContainer c : containers) {
             if(XJUtils.getPathByDeletingPathExtension(c.getDocument().getDocumentName()).equals(name)) {
-                return selectGrammar(c);
+                return c;
             }
+        }
+        return null;
+    }
+
+    public ComponentEditorGrammar selectGrammar(String name) {
+        ComponentContainer c = getContainerForName(name);
+        if(c != null) {
+            return selectGrammar(c);
         }
         return null;
     }
@@ -577,6 +585,10 @@ public class ComponentContainerGrammar extends XJWindow
             return getSelectedEditor().getGrammarEngine();
         }
 
+        public String getGrammarName() {
+            return XJUtils.getPathByDeletingPathExtension(getSelectedEditor().getGrammarFileName());
+        }
+
         public void debuggerStarted() {
             selectTab(debuggerPanel);
 
@@ -647,8 +659,20 @@ public class ComponentContainerGrammar extends XJWindow
             return getSelectedEditor().getGrammarEngine().getBlocks();
         }
 
-        public Set<Integer> getBreakpoints() {            
-            return getSelectedEditor().getBreakpoints();
+        public Map<Integer, Set<String>> getBreakpoints() {
+            Map<Integer,Set<String>> breakpoints = new HashMap<Integer, Set<String>>();
+            for(ComponentContainer c : containers) {
+                ComponentEditorGrammar g = (ComponentEditorGrammar) c.getEditor();
+                for(Integer line : g.getBreakpoints()) {
+                    Set<String> names = breakpoints.get(line);
+                    if(names == null) {
+                        names = new HashSet<String>();
+                        breakpoints.put(line, names);
+                    }
+                    names.add(XJUtils.getPathByDeletingPathExtension(g.getGrammarFileName()));
+                }
+            }
+            return breakpoints;
         }
 
         public ContextualMenuFactory createContextualMenuFactory() {

@@ -140,10 +140,6 @@ public class ATEGutter extends JComponent {
         }
     }
 
-    public void resetGutterItems() {
-        // todo cache each items in each manager and reset here?
-    }
-
     public void changeUpdate(int offset, int length, boolean insert) {
         // To avoid the gutter items to move around when typing character,
         // adapt their index in real-time by incrementing or decrementing

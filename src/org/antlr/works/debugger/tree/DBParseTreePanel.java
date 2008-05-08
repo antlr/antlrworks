@@ -110,7 +110,7 @@ public class DBParseTreePanel extends DetachablePanel implements DBParseTreeMode
 
     public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey) {
         DBTreeNode n = (DBTreeNode) node;
-        debugger.selectToken(n.token, n.line, n.pos);
+        debugger.selectToken(n.token, n.getLocation());
     }
 
     public JPopupMenu awTreeGetContextualMenu() {

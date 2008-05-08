@@ -214,7 +214,7 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
 
     public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey) {
         DBASTModel.ASTNode n = (DBASTModel.ASTNode)node;
-		debugger.selectToken(n.token, n.token.getLine(), n.token.getCharPositionInLine());
+        debugger.selectToken(n.token, n.getLocation());
     }
 
     public JPopupMenu awTreeGetContextualMenu() {

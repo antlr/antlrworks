@@ -1,5 +1,7 @@
 package org.antlr.works.debugger.events;
 
+import org.antlr.xjlib.foundation.XJUtils;
+
 /*
 
 [The "BSD licence"]
@@ -35,14 +37,22 @@ public class DBEventEnterRule extends DBEvent {
 
 	public String grammarFileName;
     public String name;
+    private String grammarName;
 
-	public DBEventEnterRule(String grammarFileName, String name) {
+    public DBEventEnterRule(String grammarFileName, String name) {
         super(ENTER_RULE);
 		this.grammarFileName = grammarFileName;
 		this.name = name;
+        this.grammarName = XJUtils.getPathByDeletingPathExtension(XJUtils.getLastPathComponent(grammarFileName));
+    }
+
+    @Override
+    public String getGrammarName() {
+        return grammarName;
     }
 
     public String toString() {
         return "Enter rule "+grammarFileName+":"+name;
     }
+
 }

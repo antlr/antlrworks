@@ -105,7 +105,7 @@ public class DBInputTreePanel implements DBInputConcretePanel, AWTreePanelDelega
         if(shiftKey)
             n.toggleBreakpoint();
 
-        debugger.selectToken(n.getToken(), n.getLine(), n.getPosition());
+        debugger.selectToken(n.getToken(), n.getLocation());
     }
 
     public JPopupMenu awTreeGetContextualMenu() {

@@ -1,6 +1,7 @@
 package org.antlr.works.debugger.input;
 
 import org.antlr.runtime.Token;
+import org.antlr.works.debugger.events.DBEventLocation;
 /*
 
 [The "BSD licence"]
@@ -46,7 +47,7 @@ public interface DBInputProcessor {
 
     public void LT(Token token);
     public void consumeToken(Token token, int flavor);
-    public void setLocation(int line, int pos);
+    public void setLocation(DBEventLocation event);
 
     public int getCurrentTokenIndex();
     public DBInputTextTokenInfo getTokenInfoAtTokenIndex(int index);
