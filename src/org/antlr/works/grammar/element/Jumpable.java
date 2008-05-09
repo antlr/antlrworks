@@ -1,10 +1,9 @@
 package org.antlr.works.grammar.element;
 
-import org.antlr.works.ate.syntax.misc.ATEToken;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-08 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -31,35 +30,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+public interface Jumpable {
 
-public class ElementImport implements Comparable, Jumpable {
+    String getName();
 
-    public ElementGrammarName name;
-    public ATEToken token;
-
-    public ElementImport(ElementGrammarName name, ATEToken token) {
-        this.name = name;
-        this.token = token;
-    }
-
-    public String getName() {
-        return token.getAttribute();
-    }
-
-    public int getStartIndex() {
-        return token.start;
-    }
-
-    public int getEndIndex() {
-        return token.end;
-    }
-
-    public int compareTo(Object o) {
-        ElementReference otherRef = (ElementReference)o;
-        return token.compareTo(otherRef.token);
-    }
-
-    public boolean containsIndex(int index) {
-        return index >= token.getStartIndex() && index <= token.getEndIndex();
-    }
+    int getStartIndex();
+    int getEndIndex();
 }

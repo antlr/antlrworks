@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ElementReference implements Comparable {
+public class ElementReference implements Comparable, Jumpable {
 
     public ElementRule rule;
     public ATEToken token;
@@ -44,6 +44,14 @@ public class ElementReference implements Comparable {
 
     public String getName() {
         return token.getAttribute();
+    }
+
+    public int getStartIndex() {
+        return token.start;
+    }
+
+    public int getEndIndex() {
+        return token.end;
     }
     
     public int compareTo(Object o) {

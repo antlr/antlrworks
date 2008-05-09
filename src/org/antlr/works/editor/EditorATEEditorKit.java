@@ -1,11 +1,15 @@
 package org.antlr.works.editor;
 
+import org.antlr.works.ate.swing.ATERenderingToken;
 import org.antlr.works.ate.swing.ATERenderingView;
+import org.antlr.works.ate.swing.ATERenderingViewDelegate;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.grammar.element.Jumpable;
 
 import javax.swing.text.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -37,10 +41,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory {
+public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory, ATERenderingViewDelegate {
 
-    protected ComponentEditorGrammar editor;
-    protected Set<ATERenderingView> views = new HashSet<ATERenderingView>();
+    private ComponentEditorGrammar editor;
+    private Set<ATERenderingView> views = new HashSet<ATERenderingView>();
 
     public EditorATEEditorKit(ComponentEditorGrammar editor) {
         this.editor = editor;
@@ -65,9 +69,50 @@ public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory {
     }
 
     public View create(Element elem) {
-        ATERenderingView v = new EditorATERenderingView(elem, editor);
+        ATERenderingView v = new ATERenderingView(elem, editor.getTextEditor());
+        v.setDelegate(this);
         views.add(v);
         return v;
     }
 
+    public ATERenderingToken[] getTokens() {
+        // todo cache that
+        List<ATERenderingToken> indexes = new ArrayList<ATERenderingToken>();
+        Jumpable ref = editor.getHighlightedReference();
+        if(ref != null) {
+            indexes.add(ATERenderingToken.createWithIndex(ref.getStartIndex()));
+            indexes.add(ATERenderingToken.createWithIndex(ref.getEndIndex()));
+        }
+        if(editor.getDebuggerLocation() != -1) {
+            indexes.add(ATERenderingToken.createWithIndex(editor.getDebuggerLocation()));
+        }
+        if(!indexes.isEmpty()) {
+            Collections.sort(indexes);            
+        }
+
+        return indexes.toArray(new ATERenderingToken[indexes.size()]);
+    }
+
+    // remember first position x of ElementReference
+    // todo use a class for this rendering
+    private int beginX;
+
+    public void drawToken(ATERenderingToken t, Graphics g, FontMetrics metrics, int x, int y, char c) {
+        if(t.index == editor.getDebuggerLocation()) {
+            g.setColor(Color.red);
+            g.fillRect(x, y- metrics.getHeight()+metrics.getDescent(),
+                    metrics.charWidth(c), metrics.getHeight());
+        }
+        Jumpable ref = editor.getHighlightedReference();
+        if(ref != null) {
+            if(t.index == ref.getStartIndex()) {
+                beginX = x;
+            }
+            if(t.index == ref.getEndIndex()) {
+                g.setColor(Color.blue);
+                g.drawLine(beginX, y+2, x, y+2);
+                g.drawLine(beginX, y+1, x, y+1);
+            }
+        }
+    }
 }

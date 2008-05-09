@@ -1,10 +1,9 @@
-package org.antlr.works.grammar.element;
+package org.antlr.works.ate.swing;
 
-import org.antlr.works.ate.syntax.misc.ATEToken;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2008 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,34 +31,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ElementImport implements Comparable, Jumpable {
+public class ATERenderingToken implements Comparable {
+    public int index;
 
-    public ElementGrammarName name;
-    public ATEToken token;
-
-    public ElementImport(ElementGrammarName name, ATEToken token) {
-        this.name = name;
-        this.token = token;
-    }
-
-    public String getName() {
-        return token.getAttribute();
-    }
-
-    public int getStartIndex() {
-        return token.start;
-    }
-
-    public int getEndIndex() {
-        return token.end;
+    public static ATERenderingToken createWithIndex(int i) {
+        ATERenderingToken token = new ATERenderingToken();
+        token.index = i;
+        return token;
     }
 
     public int compareTo(Object o) {
-        ElementReference otherRef = (ElementReference)o;
-        return token.compareTo(otherRef.token);
-    }
-
-    public boolean containsIndex(int index) {
-        return index >= token.getStartIndex() && index <= token.getEndIndex();
+        if(!(o instanceof ATERenderingToken)) return 0;
+        ATERenderingToken other = (ATERenderingToken) o;
+        if(index > other.index) return 1;
+        if(index < other.index) return -1;
+        return 0;
     }
 }

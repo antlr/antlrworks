@@ -17,10 +17,7 @@ import org.antlr.works.editor.navigation.GoToRule;
 import org.antlr.works.find.FindAndReplace;
 import org.antlr.works.grammar.GrammarAutoIndent;
 import org.antlr.works.grammar.decisiondfa.DecisionDFAEngine;
-import org.antlr.works.grammar.element.ElementAction;
-import org.antlr.works.grammar.element.ElementImport;
-import org.antlr.works.grammar.element.ElementReference;
-import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.engine.GrammarEngineDelegate;
 import org.antlr.works.grammar.engine.GrammarEngineImpl;
@@ -39,6 +36,7 @@ import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.appkit.utils.XJDialogProgress;
 import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
+import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
@@ -48,7 +46,6 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.print.PrinterException;
 import java.io.File;
@@ -1014,6 +1011,22 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         consoleStatus.clearMessage();
     }
 
+    //todo use a class for that
+    private Jumpable highlightedReference;
+
+    public void setHighlightedReference(Jumpable highlightedReference) {
+        if(highlightedReference != this.highlightedReference) {
+            textEditor.repaint();
+        }
+        this.highlightedReference = highlightedReference;
+    }
+
+    public Jumpable getHighlightedReference() {
+//        editorKit.clearCache();
+        return highlightedReference;
+    }
+
+
     @Override
     public void notificationPrefsChanged() {
         applyPrefs();
@@ -1169,6 +1182,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         if(textEditor.getTextPane().isWritable()) {
             editorIdeas.display(point);
         }
+        if(highlightedReference != null) {
+            container.getActionGoTo().goToDeclaration(highlightedReference);
+        }
     }
 
     public void ateMouseExited() {
@@ -1180,24 +1196,21 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void ateMouseMoved(MouseEvent event) {
+        Point pt = event.getPoint();
         if(getTextPane().hasFocus()) {
-            Point pt = event.getPoint();
             Point absolutePoint = SwingUtilities.convertPoint(getTextPane(), pt, getJavaContainer());
             editorTips.display(pt, absolutePoint);
 
-            if((event.getModifiers() & KeyEvent.CTRL_DOWN_MASK) > 0) {
-                int index = textEditor.getTextIndexAtPosition(pt.x, pt.y);
-                ElementReference ref = getReferenceAtPosition(index);
-                System.out.println(ref);
-                if(ref != null) {
-                    
-                }
-/*                container.getActionGoTo().goToDeclaration(ref);
-                for(ATEToken t : engine.getTokens()) {
-                    if(index >= t.start && index < t.end) {
-                    }
-                }*/
+        }
+
+        setHighlightedReference(null);
+        if(event.isMetaDown() && XJSystem.isMacOS() || event.isControlDown()) {
+            int index = textEditor.getTextIndexAtPosition(pt.x, pt.y);
+            Jumpable ref = getReferenceAtPosition(index);
+            if(ref == null) {
+                ref = getImportAtPosition(index);
             }
+            setHighlightedReference(ref);
         }
     }
 

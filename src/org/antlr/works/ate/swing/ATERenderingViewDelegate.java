@@ -1,10 +1,11 @@
-package org.antlr.works.grammar.element;
+package org.antlr.works.ate.swing;
 
-import org.antlr.works.ate.syntax.misc.ATEToken;
+import java.awt.*;
+
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-08 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -31,35 +32,24 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+public interface ATERenderingViewDelegate {
 
-public class ElementImport implements Comparable, Jumpable {
+    /**
+     * Returns an array of tokens in ascending order. This method must be efficient
+     * because it will be invoked very often.
+     * @return The array of tokens
+     */
+    ATERenderingToken[] getTokens();
 
-    public ElementGrammarName name;
-    public ATEToken token;
 
-    public ElementImport(ElementGrammarName name, ATEToken token) {
-        this.name = name;
-        this.token = token;
-    }
-
-    public String getName() {
-        return token.getAttribute();
-    }
-
-    public int getStartIndex() {
-        return token.start;
-    }
-
-    public int getEndIndex() {
-        return token.end;
-    }
-
-    public int compareTo(Object o) {
-        ElementReference otherRef = (ElementReference)o;
-        return token.compareTo(otherRef.token);
-    }
-
-    public boolean containsIndex(int index) {
-        return index >= token.getStartIndex() && index <= token.getEndIndex();
-    }
+    /**
+     * Draws the specified token at the specified location.
+     * @param t The token to draw
+     * @param g The graphics environment
+     * @param metrics The font metrics
+     * @param x The x-coordinate
+     * @param y The y-coordinate
+     * @param c The character to draw
+     */
+    void drawToken(ATERenderingToken t, Graphics g, FontMetrics metrics, int x, int y, char c);
 }

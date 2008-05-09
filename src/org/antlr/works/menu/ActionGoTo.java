@@ -34,7 +34,7 @@ package org.antlr.works.menu;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.grammar.element.ElementImport;
-import org.antlr.works.grammar.element.ElementReference;
+import org.antlr.works.grammar.element.Jumpable;
 import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.stats.StatisticsAW;
 
@@ -54,13 +54,19 @@ public class ActionGoTo extends ActionAbstract {
     }
 
     public void goToDeclaration() {
-        goToDeclaration(getSelectedEditor().getCurrentReference());
+        Jumpable ref = getSelectedEditor().getCurrentReference();
+        if(ref == null) {
+            ref = getSelectedEditor().getImportAtPosition(getSelectedEditor().getCaretPosition());
+        }
+        goToDeclaration(ref);
     }
 
-    public void goToDeclaration(final ElementReference ref) {
+    public void goToDeclaration(final Jumpable ref) {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_DECLARATION);
         getSelectedEditor().goToHistoryRememberCurrentPosition();
-        if(ref != null) {
+        if(ref instanceof ElementImport) {
+            getSelectedEditor().getContainer().selectGrammar(ref.getName());            
+        } else if(ref != null) {
             GrammarEngine engine = getSelectedEditor().getGrammarEngine();
             int index = engine.getFirstDeclarationPosition(ref.getName());
             if(index == -1) {
@@ -84,12 +90,6 @@ public class ActionGoTo extends ActionAbstract {
             } else {
                 setCaretPosition(index);
             }
-            return;
-        }
-
-        ElementImport imp = getSelectedEditor().getImportAtPosition(getSelectedEditor().getCaretPosition());
-        if(imp != null) {
-            getSelectedEditor().getContainer().selectGrammar(imp.getName());
         }
     }
 

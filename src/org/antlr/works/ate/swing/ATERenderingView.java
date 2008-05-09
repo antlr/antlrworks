@@ -51,21 +51,29 @@ public class ATERenderingView extends PlainView {
     public static final Color BACKGROUND_HIGHLIGHT_COLOR = new Color(1.0f, 1.0f, 0.5f, 0.3f);
     public static Font DEFAULT_FONT;
 
-    protected ATEPanel textEditor;
-    protected ATETextPane textPane;
-    protected List<ATEToken> tokens;
+    private ATERenderingViewDelegate delegate;
+    private ATEPanel textEditor;
+    private ATETextPane textPane;
+    private List<ATEToken> tokens;
 
-    protected DisplayOperation displayOp = new DisplayOperation();
-    protected ModelToViewOperation modelToViewOp = new ModelToViewOperation();
-    protected ViewToModel viewToModelOp = new ViewToModel();
+    private DisplayOperation displayOp = new DisplayOperation();
+    private ModelToViewOperation modelToViewOp = new ModelToViewOperation();
+    private ViewToModel viewToModelOp = new ViewToModel();
 
-    protected Graphics currentGraphics;
-    protected Color savedColor;
+    private Graphics currentGraphics;
+    private Color savedColor;
 
     public ATERenderingView(Element elem, ATEPanel textEditor) {
         super(elem);
         this.textEditor = textEditor;
         this.textPane = textEditor.getTextPane();
+    }
+
+    public void setDelegate(ATERenderingViewDelegate delegate) {
+        this.delegate = delegate;
+        if(delegate != null) {
+            displayOp = new DisplayDelegateOperation();
+        }
     }
 
     public void close() {
@@ -379,6 +387,43 @@ public class ATERenderingView extends PlainView {
 
             x = Utilities.drawTabbedText(text, x, y, g, ATERenderingView.this, start);
             restore(g);
+            return x;
+        }
+    }
+
+    public class DisplayDelegateOperation extends DisplayOperation {
+
+        public int renderTextPortion(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute) throws BadLocationException {
+            ATERenderingToken[] tokens = delegate.getTokens();
+            if(tokens == null || tokens.length == 0) {
+                return super.renderTextPortion(g, x, y, start, end, max, doc, attribute);
+            }
+
+            // adjust length
+            int length = end - start;
+            if(start + length > max)
+                length = max - start;
+
+            final Segment text = getLineBuffer();
+            int cursor = start;
+            for(ATERenderingToken t : tokens) {
+                if(t.index >= start && t.index < start+length) {
+                    // draw up to token
+                    if(t.index > cursor) {
+                        x = super.renderTextPortion(g, x, y, cursor, t.index, max, doc, attribute);
+                        cursor = t.index;
+                    }
+                    doc.getText(t.index, 1, text);
+                    final char c = text.first();
+                    save(g);
+                    delegate.drawToken(t, g, metrics, x, y, c);
+                    restore(g);
+                }
+            }
+            // draw remaining
+            if(end > cursor) {
+                x = super.renderTextPortion(g, x, y, cursor, end, max, doc, attribute);
+            }
             return x;
         }
     }

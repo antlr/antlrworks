@@ -222,6 +222,7 @@ public class ComponentContainerGrammar extends XJWindow
 
     public boolean loadGrammar(String name) {
         if(grammars.contains(name)) return true;
+        grammars.add(name);
 
         String currentFolder = XJUtils.getPathByDeletingLastComponent(getDocument().getDocumentPath());
         String file = XJUtils.concatPath(currentFolder, name);
@@ -243,8 +244,6 @@ public class ComponentContainerGrammar extends XJWindow
 
         addDocument(doc);
         addGrammar(container);
-
-        grammars.add(name);
 
         return true;
     }
