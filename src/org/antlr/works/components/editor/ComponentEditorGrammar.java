@@ -48,6 +48,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.print.PrinterException;
 import java.io.File;
@@ -1178,10 +1179,25 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         }
     }
 
-    public void ateMouseMoved(Point relativePoint) {
+    public void ateMouseMoved(MouseEvent event) {
         if(getTextPane().hasFocus()) {
-            Point absolutePoint = SwingUtilities.convertPoint(getTextPane(), relativePoint, getJavaContainer());
-            editorTips.display(relativePoint, absolutePoint);
+            Point pt = event.getPoint();
+            Point absolutePoint = SwingUtilities.convertPoint(getTextPane(), pt, getJavaContainer());
+            editorTips.display(pt, absolutePoint);
+
+            if((event.getModifiers() & KeyEvent.CTRL_DOWN_MASK) > 0) {
+                int index = textEditor.getTextIndexAtPosition(pt.x, pt.y);
+                ElementReference ref = getReferenceAtPosition(index);
+                System.out.println(ref);
+                if(ref != null) {
+                    
+                }
+/*                container.getActionGoTo().goToDeclaration(ref);
+                for(ATEToken t : engine.getTokens()) {
+                    if(index >= t.start && index < t.end) {
+                    }
+                }*/
+            }
         }
     }
 

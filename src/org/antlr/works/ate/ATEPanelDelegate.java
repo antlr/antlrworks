@@ -1,6 +1,7 @@
 package org.antlr.works.ate;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 /*
 
 [The "BSD licence"]
@@ -38,7 +39,7 @@ public interface ATEPanelDelegate {
     public void ateAutoIndent(int offset, int length);
     public void ateMousePressed(Point point);
     public void ateMouseExited();
-    public void ateMouseMoved(Point relativePoint);
+    public void ateMouseMoved(MouseEvent event);
     public void ateInvokePopUp(Component component, int x, int y);
     public void ateEngineWillParse();
     public void ateEngineDidParse();

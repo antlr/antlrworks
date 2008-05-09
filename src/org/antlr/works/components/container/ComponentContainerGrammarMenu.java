@@ -814,4 +814,8 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public ActionDebugger getActionDebugger() {
         return actionDebugger;
     }
+
+    public ActionGoTo getActionGoTo() {
+        return actionGoTo;
+    }
 }

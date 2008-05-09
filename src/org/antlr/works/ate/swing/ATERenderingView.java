@@ -96,7 +96,7 @@ public class ATERenderingView extends PlainView {
 
             final int cursorPosition = textPane.getCaretPosition()+1;
             if(cursorPosition > p0 && cursorPosition <= p1) {
-                saveColor(g);
+                save(g);
                 g.setColor(BACKGROUND_HIGHLIGHT_COLOR);
                 final int fontHeight = metrics.getHeight();
                 g.fillRect(0, y-fontHeight+metrics.getDescent(), textPane.getWidth(), fontHeight);
@@ -348,18 +348,10 @@ public class ATERenderingView extends PlainView {
         return f;
     }
 
-    /** Save the current graphics color
-     *
-     * @param g The graphics
-     */
-    protected void saveColor(Graphics g) {
+    protected void save(Graphics g) {
         savedColor = g.getColor();
     }
 
-    /** Restore the previously saved graphics color
-     *
-     * @param g The graphics
-     */
     protected void restore(Graphics g) {
         g.setColor(savedColor);
     }
@@ -380,7 +372,7 @@ public class ATERenderingView extends PlainView {
             if(start + length > max)
                 length = max - start;
 
-            saveColor(g);
+            save(g);
             applyAttribute(g, attribute);
             Segment text = getLineBuffer();
             doc.getText(start, length, text);
@@ -403,7 +395,7 @@ public class ATERenderingView extends PlainView {
             if(start + length > max)
                 length = max - start;
 
-            saveColor(g);
+            save(g);
             applyAttribute(g, attribute);
             Segment text = getLineBuffer();
             doc.getText(start, length, text);
@@ -434,7 +426,7 @@ public class ATERenderingView extends PlainView {
             if(start + length > max)
                 length = max - start;
 
-            saveColor(g);
+            save(g);
             applyAttribute(g, attribute);
             Segment text = getLineBuffer();
             doc.getText(start, length, text);

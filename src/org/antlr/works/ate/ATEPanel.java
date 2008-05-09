@@ -670,7 +670,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected class TextPaneMouseMotionAdapter extends MouseMotionAdapter {
         public void mouseMoved(MouseEvent e) {
             if(delegate != null)
-                delegate.ateMouseMoved(e.getPoint());
+                delegate.ateMouseMoved(e);
         }
     }
 

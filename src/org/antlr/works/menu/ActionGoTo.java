@@ -54,10 +54,12 @@ public class ActionGoTo extends ActionAbstract {
     }
 
     public void goToDeclaration() {
+        goToDeclaration(getSelectedEditor().getCurrentReference());
+    }
+
+    public void goToDeclaration(final ElementReference ref) {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_DECLARATION);
         getSelectedEditor().goToHistoryRememberCurrentPosition();
-
-        final ElementReference ref = getSelectedEditor().getCurrentReference();
         if(ref != null) {
             GrammarEngine engine = getSelectedEditor().getGrammarEngine();
             int index = engine.getFirstDeclarationPosition(ref.getName());

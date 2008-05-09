@@ -6,6 +6,7 @@ import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ActionDebugger;
+import org.antlr.works.menu.ActionGoTo;
 import org.antlr.works.menu.ActionRefactor;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
@@ -85,4 +86,5 @@ public interface ComponentContainer {
     
     ActionDebugger getActionDebugger();
     ActionRefactor getActionRefactor();
+    ActionGoTo getActionGoTo();
 }

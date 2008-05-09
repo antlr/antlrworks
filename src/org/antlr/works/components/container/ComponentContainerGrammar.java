@@ -49,6 +49,7 @@ import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.engine.GrammarProperties;
 import org.antlr.works.menu.ActionDebugger;
+import org.antlr.works.menu.ActionGoTo;
 import org.antlr.works.menu.ActionRefactor;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
@@ -195,7 +196,7 @@ public class ComponentContainerGrammar extends XJWindow
     @Override
     public String autosaveName() {
         if(AWPrefs.getRestoreWindows())
-            return getDocument().getDocumentPath();
+            return getDocument().getDocumentName();
         else
             return null;
     }
@@ -329,6 +330,10 @@ public class ComponentContainerGrammar extends XJWindow
 
     public ActionRefactor getActionRefactor() {
         return componentContainerGrammarMenu.getActionRefactor();
+    }
+
+    public ActionGoTo getActionGoTo() {
+        return componentContainerGrammarMenu.getActionGoTo();
     }
 
     public boolean close() {

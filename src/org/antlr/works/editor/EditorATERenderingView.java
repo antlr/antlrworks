@@ -86,10 +86,10 @@ public class EditorATERenderingView extends ATERenderingView {
         }
 
         private void drawDebuggerCursor(Graphics g, int x, int y, char c) {
-            saveColor(g);
+            save(g);
             g.setColor(Color.red);
-            final int fontHeight = metrics.getHeight();
-            g.fillRect(x, y-fontHeight+metrics.getDescent(), metrics.charWidth(c), fontHeight);
+            g.fillRect(x, y- metrics.getHeight()+metrics.getDescent(),
+                    metrics.charWidth(c), metrics.getHeight());
             restore(g);
         }
 
