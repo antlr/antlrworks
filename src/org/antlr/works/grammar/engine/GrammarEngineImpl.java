@@ -10,7 +10,9 @@ import org.antlr.works.grammar.antlr.GrammarResult;
 import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /*
 
@@ -47,6 +49,9 @@ public class GrammarEngineImpl implements GrammarEngine {
 
     private GrammarEngineDelegate delegate;
 
+    private GrammarEngine parent;
+    private final List<GrammarEngine> importedEngines = new ArrayList<GrammarEngine>();
+
     private final GrammarProperties properties = new GrammarPropertiesImpl();
     private final ANTLRGrammarEngine antlrEngine = new ANTLRGrammarEngineImpl();
     private final GrammarSyntaxEngine syntaxEngine = new GrammarSyntaxEngine();
@@ -58,6 +63,10 @@ public class GrammarEngineImpl implements GrammarEngine {
         properties.setSyntaxEngine(syntaxEngine);
         properties.setAntlrEngine(antlrEngine);
         antlrEngine.setGrammarEngine(this);
+    }
+
+    public void setParent(GrammarEngine parent) {
+        this.parent = parent;
     }
 
     public void close() {
@@ -219,16 +228,57 @@ public class GrammarEngineImpl implements GrammarEngine {
         return properties.getFirstDeclarationPosition(name);
     }
 
+    /**
+     * Returns the list of grammars that overrides the rule specified
+     * in parameter. Overrides has the same meaning than in Java: the rule
+     * of a parent grammar is declared again in one or more child grammar.
+     */
     public List<String> getGrammarsOverriddenByRule(String name) {
-        return properties.getGrammarsOverriddenByRule(name);
+        List<String> grammars = new ArrayList<String>();
+        for(GrammarEngine child : importedEngines) {
+            for(ATEToken decl : child.getDecls()) {
+                if(decl.getAttribute().equals(name)) {
+                    grammars.add(child.getGrammarName());
+                    break;
+                }
+            }
+            grammars.addAll(child.getGrammarsOverriddenByRule(name));
+        }
+        return grammars;
     }
 
+    /**
+     * Returns the list of grammars that this rule overrides.
+     */
     public List<String> getGrammarsOverridingRule(String name) {
-        return properties.getGrammarsOverridingRule(name);
+        List<String> grammars = new ArrayList<String>();
+        if(parent != null) {
+            for(ATEToken decl : parent.getDecls()) {
+                if(decl.getAttribute().equals(name)) {
+                    grammars.add(parent.getGrammarName());
+                    break;
+                }
+            }
+            grammars.addAll(parent.getGrammarsOverridingRule(name));
+        }
+        return grammars;
     }
 
     public List<ATEToken> getTokens() {
         return syntaxEngine.getTokens();
+    }
+
+    public void updateHierarchy(Map<String, GrammarEngine> engines) {
+        importedEngines.clear();
+        for(ElementImport element : properties.getImports()) {
+            GrammarEngine d = engines.get(element.getName()+".g");
+            if(d != null) {
+                d.setParent(this);
+                importedEngines.add(d);
+                d.updateHierarchy(engines);
+            }
+        }
+        resetRules();
     }
 
     public GrammarResult analyze() throws Exception {
@@ -249,6 +299,9 @@ public class GrammarEngineImpl implements GrammarEngine {
 
     public void markDirty() {
         antlrEngine.markDirty();
+        if(parent != null) {
+            parent.markDirty();
+        }
     }
 
     public void reset() {
@@ -308,4 +361,11 @@ public class GrammarEngineImpl implements GrammarEngine {
     public void gotoToRule(String grammar, String name) {
         delegate.gotoToRule(grammar, name);
     }
+
+    private void resetRules() {
+        for(ElementRule r : properties.getRules()) {
+            r.resetHierarchy();
+        }
+    }
+
 }

@@ -177,6 +177,8 @@ public class ActionGrammar extends ActionAbstract implements CheckGrammarDelegat
         checkGrammar = new CheckGrammar(getSelectedEditor(), this);
         checkGrammar.check();
 
+        getContainer().saveAll();
+
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CHECK_GRAMMAR);
     }
 

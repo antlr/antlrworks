@@ -95,6 +95,10 @@ public class ComponentContainerInternal implements ComponentContainer {
         return true;
     }
 
+    public void saveAll() {
+        mainContainer.saveAll();
+    }
+
     public void setDirty() {
         mainContainer.setDirty();
     }
@@ -136,6 +140,7 @@ public class ComponentContainerInternal implements ComponentContainer {
     }
 
     public void documentLoaded(ComponentDocument document) {
+        // todo debug only
         System.out.println("Document "+document.getDocumentName()+" loaded");
     }
 

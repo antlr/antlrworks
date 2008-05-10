@@ -6,7 +6,6 @@ import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 
 import java.util.List;
-import java.util.Map;
 /*
 
 [The "BSD licence"]
@@ -40,8 +39,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public interface GrammarProperties {
 
-    void setParent(GrammarProperties properties);
-
     void setGrammarEngine(GrammarEngine engine);
     void setSyntaxEngine(GrammarSyntaxEngine syntaxEngine);
     void setAntlrEngine(ANTLRGrammarEngine antlrEngine);
@@ -72,10 +69,6 @@ public interface GrammarProperties {
     int getNumberOfErrors();
 
     int getFirstDeclarationPosition(String name);
-
-    List<String> getGrammarsOverriddenByRule(String name);
-    List<String> getGrammarsOverridingRule(String name);
-    void updateHierarchy(Map<String, GrammarProperties> entities);
 
     int getType();
 

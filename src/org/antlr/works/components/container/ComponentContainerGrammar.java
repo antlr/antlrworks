@@ -47,7 +47,6 @@ import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.engine.GrammarEngine;
-import org.antlr.works.grammar.engine.GrammarProperties;
 import org.antlr.works.menu.ActionDebugger;
 import org.antlr.works.menu.ActionGoTo;
 import org.antlr.works.menu.ActionRefactor;
@@ -76,9 +75,9 @@ import java.util.List;
 public class ComponentContainerGrammar extends XJWindow
         implements ComponentContainer {
 
-    private List<ComponentContainer> containers = new ArrayList<ComponentContainer>();
-    private Map<Component, ComponentContainer> componentToContainer = new HashMap<Component, ComponentContainer>();
-    private Map<Integer, EditorTab> indexToEditorTab = new HashMap<Integer, EditorTab>();
+    private final List<ComponentContainer> containers = new ArrayList<ComponentContainer>();
+    private final Map<Component, ComponentContainer> componentToContainer = new HashMap<Component, ComponentContainer>();
+    private final Map<Integer, EditorTab> indexToEditorTab = new HashMap<Integer, EditorTab>();
 
     private ComponentEditor editor;
     private ComponentContainer selectedContainer;
@@ -102,13 +101,14 @@ public class ComponentContainerGrammar extends XJWindow
     private JSplitPane verticalSplit;
     private JSplitPane horizontalSplit;
 
-    private List<EditorTab> tabs = new ArrayList<EditorTab>();
+    private final List<EditorTab> tabs = new ArrayList<EditorTab>();
 
     private EditorsTabChangeListener etc;
     private MouseListener ml;
     private ChangeListener cl;
 
-    private Set<String> grammars = new HashSet<String>();
+    private final Set<String> grammars = new HashSet<String>();
+    private final Map<String, GrammarEngine> engines = new HashMap<String, GrammarEngine>();
 
     public ComponentContainerGrammar() {
         selectedContainer = this;
@@ -338,6 +338,12 @@ public class ComponentContainerGrammar extends XJWindow
         return close(false);
     }
 
+    public void saveAll() {
+        for(ComponentContainer container : containers) {
+            container.getDocument().save(false);
+        }
+    }
+
     @Override
     public boolean close(boolean force) {
         if(!super.close(force)) {
@@ -491,17 +497,15 @@ public class ComponentContainerGrammar extends XJWindow
 
     }
 
-    private Map<String, GrammarProperties> properties = new HashMap<String, GrammarProperties>();
-
     public void editorParsed(ComponentEditor editor) {
         ComponentEditorGrammar eg = (ComponentEditorGrammar) editor;
-        GrammarProperties properties = eg.getGrammarEngine().getGrammarProperties();
+        GrammarEngine engine = eg.getGrammarEngine();
 
         String name = editor.getDocument().getDocumentName();
-        this.properties.put(name, properties);
+        engines.put(name, engine);
 
         // make sure all the imported grammars are loaded
-        for(ElementImport element : properties.getImports()) {
+        for(ElementImport element : engine.getImports()) {
             loadGrammar(element.getName()+".g");
         }
 
@@ -512,8 +516,8 @@ public class ComponentContainerGrammar extends XJWindow
     private void updateHierarchy() {
         // always start with the root grammar
         String name = getDocument().getDocumentName();
-        GrammarProperties properties = this.properties.get(name);
-        properties.updateHierarchy(this.properties);
+        GrammarEngine engine = engines.get(name);
+        engine.updateHierarchy(engines);
     }
 
     public int getSimilarTab(EditorTab tab) {

@@ -46,9 +46,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class GrammarPropertiesImpl implements GrammarProperties {
 
-    private GrammarProperties parentProperties;
-    private final List<GrammarProperties> importedProperties = new ArrayList<GrammarProperties>();
-
     private ElementGrammarName name;
 
     private final List<ElementRule> rules = new ArrayList<ElementRule>();
@@ -350,7 +347,7 @@ public class GrammarPropertiesImpl implements GrammarProperties {
 
         for (ElementReference ref : references) {
             if (existingReferences.contains(ref.token.getAttribute())) continue;
-            if (!getGrammarsOverriddenByRule(ref.token.getAttribute()).isEmpty()) continue;
+            if (!engine.getGrammarsOverriddenByRule(ref.token.getAttribute()).isEmpty()) continue;
             undefinedReferences.add(ref);
         }
     }
@@ -414,59 +411,6 @@ public class GrammarPropertiesImpl implements GrammarProperties {
         return names;
     }
 
-    public void updateHierarchy(Map<String, GrammarProperties> entities) {
-        importedProperties.clear();
-        for(ElementImport element : imports) {
-            GrammarProperties d = entities.get(element.getName()+".g");
-            if(d != null) {
-                d.setParent(this);
-                importedProperties.add(d);
-                d.updateHierarchy(entities);
-            }
-        }
-        resetRules();
-    }
-
-    public void setParent(GrammarProperties parent) {
-        this.parentProperties = parent;
-    }
-
-    /**
-     * Returns the list of grammars that overrides the rule specified
-     * in parameter. Overrides has the same meaning than in Java: the rule
-     * of a parent grammar is declared again in one or more child grammar.
-     */
-    public List<String> getGrammarsOverriddenByRule(String name) {
-        List<String> grammars = new ArrayList<String>();
-        for(GrammarProperties child : importedProperties) {
-            for(ATEToken decl : child.getDecls()) {
-                if(decl.getAttribute().equals(name)) {
-                    grammars.add(child.getName());
-                    break;
-                }
-            }
-            grammars.addAll(child.getGrammarsOverriddenByRule(name));
-        }
-        return grammars;
-    }
-
-    /**
-     * Returns the list of grammars that this rule overrides.
-     */
-    public List<String> getGrammarsOverridingRule(String name) {
-        List<String> grammars = new ArrayList<String>();
-        if(parentProperties != null) {
-            for(ATEToken decl : parentProperties.getDecls()) {
-                if(decl.getAttribute().equals(name)) {
-                    grammars.add(parentProperties.getName());
-                    break;
-                }
-            }
-            grammars.addAll(parentProperties.getGrammarsOverridingRule(name));
-        }
-        return grammars;
-    }
-
     public int getFirstDeclarationPosition(String name) {
         ATEToken token = getFirstDeclaration(name);
         if(token != null) {
@@ -485,9 +429,4 @@ public class GrammarPropertiesImpl implements GrammarProperties {
         return null;
     }
 
-    private void resetRules() {
-        for(ElementRule r : rules) {
-            r.resetHierarchy();
-        }
-    }
 }

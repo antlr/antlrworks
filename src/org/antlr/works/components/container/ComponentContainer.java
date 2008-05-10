@@ -61,6 +61,7 @@ public interface ComponentContainer {
 
     public void setDirty();
     public boolean close();
+    void saveAll();
 
     public ContextualMenuFactory createContextualMenuFactory();
     public JPopupMenu getContextualMenu(int textIndex);
@@ -87,4 +88,5 @@ public interface ComponentContainer {
     ActionDebugger getActionDebugger();
     ActionRefactor getActionRefactor();
     ActionGoTo getActionGoTo();
+
 }

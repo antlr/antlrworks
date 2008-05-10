@@ -7,7 +7,8 @@ import org.antlr.works.grammar.antlr.GrammarResult;
 import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 
-import java.util.List;/*
+import java.util.List;
+import java.util.Map;/*
 
 [The "BSD licence"]
 Copyright (c) 2005-07 Jean Bovet
@@ -40,6 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public interface GrammarEngine {
 
+    void setParent(GrammarEngine parent);
     void close();
 
     GrammarProperties getGrammarProperties();
@@ -80,6 +82,8 @@ public interface GrammarEngine {
     List<String> getGrammarsOverridingRule(String name);
 
     List<ATEToken> getTokens();
+
+    void updateHierarchy(Map<String, GrammarEngine> engines);
 
     GrammarResult analyze() throws Exception;
     void cancelAnalyze();
