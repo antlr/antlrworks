@@ -168,10 +168,13 @@ public class CodeGenerate implements Runnable {
         if(generateError != null)
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the grammar because:\n"+generateError);
         else {
-            if(delegate == null || delegate.codeGenerateDisplaySuccess())
-                XJAlert.display(editor.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+getOutputPath());
-            else
+            if(delegate == null || delegate.codeGenerateDisplaySuccess()) {
+                if(AWPrefs.isAlertGenerateCodeSuccess()) {
+                    XJAlert.display(editor.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+getOutputPath());                                    
+                }
+            } else {
                 delegate.codeGenerateDidComplete();
+            }
         }
     }
 

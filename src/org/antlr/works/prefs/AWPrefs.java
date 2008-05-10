@@ -226,6 +226,11 @@ public class AWPrefs {
     public static final String PREF_DEBUGGER_ASK_GEN = "PREF_DEBUGGER_ASK_GEN";
     public static final boolean DEFAULT_DEBUGGER_ASK_GEN = false;
 
+    // Alerts
+
+    public static final String PREF_ALERT_CHECK_GRAMMAR_SUCCESS = "PREF_ALERT_CHECK_GRAMMAR_SUCCESS";
+    public static final String PREF_ALERT_GENERATE_CODE_SUCCESS = "PREF_ALERT_GENERATE_CODE_SUCCESS";
+
     // Other
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
     public static final String PREF_SERVER_ID = "PREF_SERVER_ID";
@@ -561,5 +566,13 @@ public class AWPrefs {
 
     public static String getDebuggerInputFile() {
         return getPreferences().getString(PREF_DEBUGGER_INPUT_FILE, "");         
+    }
+
+    public static boolean isAlertGenerateCodeSuccess() {
+        return getPreferences().getBoolean(PREF_ALERT_GENERATE_CODE_SUCCESS, true);
+    }
+
+    public static boolean isAlertCheckGrammarSuccess() {
+        return getPreferences().getBoolean(PREF_ALERT_CHECK_GRAMMAR_SUCCESS, true);
     }
 }

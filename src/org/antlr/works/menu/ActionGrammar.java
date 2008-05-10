@@ -43,6 +43,7 @@ import org.antlr.works.grammar.decisiondfa.DecisionDFA;
 import org.antlr.works.grammar.element.ElementGroup;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.appkit.utils.XJDialogProgressDelegate;
@@ -190,7 +191,9 @@ public class ActionGrammar extends ActionAbstract implements CheckGrammarDelegat
         checkingGrammar = false;
         getSelectedEditor().hideProgress();
         if(result.isSuccess()) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Success", "Check Grammar succeeded.");
+            if(AWPrefs.isAlertCheckGrammarSuccess()) {
+                XJAlert.display(getSelectedEditor().getWindowContainer(), "Success", "Check Grammar succeeded.");                
+            }
         } else {
             if(result.getErrorCount() > 0) {
                 XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
