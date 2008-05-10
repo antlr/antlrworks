@@ -1,5 +1,8 @@
 package org.antlr.works.debugger.events;
 
+import org.antlr.runtime.RecognitionException;
+import org.antlr.works.debugger.input.DBInputTextTokenInfo;
+
 /*
 
 [The "BSD licence"]
@@ -33,12 +36,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DBEventRecognitionException extends DBEvent {
 
-    public Exception e;
+    public RecognitionException e;
 
-    public DBEventRecognitionException(Exception e) {
+    public DBEventRecognitionException(RecognitionException e) {
         super(RECOGNITION_EXCEPTION);
         this.e = e;
-    }
+	}
 
     public String toString() {
         return "Recognition exception "+e;

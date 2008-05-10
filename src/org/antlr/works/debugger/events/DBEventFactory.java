@@ -1,6 +1,7 @@
 package org.antlr.works.debugger.events;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.RecognitionException;
 /*
 
 [The "BSD licence"]
@@ -98,7 +99,7 @@ public class DBEventFactory {
         return new DBEventEndBacktrack(level, successful);
     }
 
-    public static DBEvent createRecognitionException(Exception e) {
+    public static DBEvent createRecognitionException(RecognitionException e) {
         return new DBEventRecognitionException(e);
     }
 

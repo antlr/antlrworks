@@ -345,7 +345,12 @@ public class DBPlayer {
     }
 
     public void playRecognitionException(DBEventRecognitionException event) {
-        debugger.playerRecognitionException(event.e);
+		// make sure that the recognition exception as its token set
+		DBInputTextTokenInfo info = processor.getTokenInfoAtTokenIndex(event.e.index);
+		if ( info!=null ) {
+			event.e.token = info.token;
+		}
+		debugger.playerRecognitionException(event.e);
     }
 
     public void playBeginResync() {
