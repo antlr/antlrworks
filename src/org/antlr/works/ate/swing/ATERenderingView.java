@@ -416,7 +416,8 @@ public class ATERenderingView extends PlainView {
                     doc.getText(t.index, 1, text);
                     final char c = text.first();
                     save(g);
-                    delegate.drawToken(t, g, metrics, x, y, c);
+                    t.drawToken(ATERenderingView.this, t, g, metrics, 
+                            x, y, c, doc, attribute, text);
                     restore(g);
                 }
             }

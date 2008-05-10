@@ -1,5 +1,11 @@
 package org.antlr.works.ate.swing;
 
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Segment;
+import java.awt.*;
+
 /*
 
 [The "BSD licence"]
@@ -31,15 +37,21 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ATERenderingToken implements Comparable {
-    public int index;
+public abstract class ATERenderingToken implements Comparable {
 
-    public static ATERenderingToken createWithIndex(int i) {
-        ATERenderingToken token = new ATERenderingToken();
-        token.index = i;
-        return token;
+    protected int index;
+
+    public int getIndex() {
+        return index;
     }
 
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public abstract void drawToken(ATERenderingView view, ATERenderingToken t, Graphics g, FontMetrics metrics,
+                          int x, int y, char c, Document doc, AttributeSet attribute, Segment text) throws BadLocationException;
+    
     public int compareTo(Object o) {
         if(!(o instanceof ATERenderingToken)) return 0;
         ATERenderingToken other = (ATERenderingToken) o;

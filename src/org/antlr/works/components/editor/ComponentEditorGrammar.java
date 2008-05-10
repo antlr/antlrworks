@@ -1184,6 +1184,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         }
         if(highlightedReference != null) {
             container.getActionGoTo().goToDeclaration(highlightedReference);
+            highlightedReference = null;
         }
     }
 

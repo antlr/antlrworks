@@ -41,7 +41,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory, ATERenderingViewDelegate {
+public class EditorATEEditorKit extends StyledEditorKit
+        implements ViewFactory, ATERenderingViewDelegate {
 
     private ComponentEditorGrammar editor;
     private Set<ATERenderingView> views = new HashSet<ATERenderingView>();
@@ -75,44 +76,90 @@ public class EditorATEEditorKit extends StyledEditorKit implements ViewFactory, 
         return v;
     }
 
+    private ATERenderingToken debuggerCursorToken = new DebuggerCursorToken();
+    private HighlightedReferenceStartToken highlightedReferenceStartToken = new HighlightedReferenceStartToken();
+    private HighlightedReferenceToken highlightedReferenceToken = new HighlightedReferenceToken();
+
     public ATERenderingToken[] getTokens() {
         // todo cache that
         List<ATERenderingToken> indexes = new ArrayList<ATERenderingToken>();
         Jumpable ref = editor.getHighlightedReference();
         if(ref != null) {
-            indexes.add(ATERenderingToken.createWithIndex(ref.getStartIndex()));
-            indexes.add(ATERenderingToken.createWithIndex(ref.getEndIndex()));
+            highlightedReferenceStartToken.setIndex(ref.getStartIndex());
+            highlightedReferenceToken.setIndex(ref.getEndIndex());
+            highlightedReferenceToken.setStartToken(highlightedReferenceStartToken);
+            indexes.add(highlightedReferenceStartToken);
+            indexes.add(highlightedReferenceToken);
         }
         if(editor.getDebuggerLocation() != -1) {
-            indexes.add(ATERenderingToken.createWithIndex(editor.getDebuggerLocation()));
+            debuggerCursorToken.setIndex(editor.getDebuggerLocation());
+            indexes.add(debuggerCursorToken);
         }
         if(!indexes.isEmpty()) {
-            Collections.sort(indexes);            
+            Collections.sort(indexes);
         }
 
         return indexes.toArray(new ATERenderingToken[indexes.size()]);
     }
 
-    // remember first position x of ElementReference
-    // todo use a class for this rendering
-    private int beginX;
+    private static class DebuggerCursorToken extends ATERenderingToken {
 
-    public void drawToken(ATERenderingToken t, Graphics g, FontMetrics metrics, int x, int y, char c) {
-        if(t.index == editor.getDebuggerLocation()) {
+        public void drawToken(ATERenderingView view, ATERenderingToken t,
+                              Graphics g, FontMetrics metrics,
+                              int x, int y, char c, Document doc,
+                              AttributeSet attribute, Segment text)
+        {
             g.setColor(Color.red);
             g.fillRect(x, y- metrics.getHeight()+metrics.getDescent(),
                     metrics.charWidth(c), metrics.getHeight());
         }
-        Jumpable ref = editor.getHighlightedReference();
-        if(ref != null) {
-            if(t.index == ref.getStartIndex()) {
-                beginX = x;
-            }
-            if(t.index == ref.getEndIndex()) {
-                g.setColor(Color.blue);
-                g.drawLine(beginX, y+2, x, y+2);
-                g.drawLine(beginX, y+1, x, y+1);
-            }
+    }
+
+    private static class HighlightedReferenceStartToken extends ATERenderingToken {
+
+        private int startX;
+        private int startIndex;
+
+        public void drawToken(ATERenderingView view, ATERenderingToken t,
+                              Graphics g, FontMetrics metrics,
+                              int x, int y, char c, Document doc,
+                              AttributeSet attribute, Segment text)
+        {
+            startX = x;
+            startIndex = t.getIndex();
+        }
+
+        public int getStartX() {
+            return startX;
+        }
+
+        public int getStartIndex() {
+            return startIndex;
         }
     }
+
+    private static class HighlightedReferenceToken extends ATERenderingToken {
+
+        private HighlightedReferenceStartToken startToken;
+
+        public void setStartToken(HighlightedReferenceStartToken startToken) {
+            this.startToken = startToken;
+        }
+
+        public void drawToken(ATERenderingView view, ATERenderingToken t,
+                              Graphics g, FontMetrics metrics,
+                              int x, int y, char c, Document doc,
+                              AttributeSet attribute, Segment text)
+                throws BadLocationException
+        {
+            g.setColor(Color.blue);
+            //g.drawLine(beginX, y+2, x, y+2);
+            g.drawLine(startToken.getStartX(), y+1, x, y+1);
+
+            // draw the text
+            doc.getText(startToken.getStartIndex(), t.getIndex()-startToken.getStartIndex(), text);
+            Utilities.drawTabbedText(text, startToken.getStartX(), y, g, view, startToken.getStartIndex());
+        }
+    }
+
 }

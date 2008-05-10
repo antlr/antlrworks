@@ -1,7 +1,5 @@
 package org.antlr.works.ate.swing;
 
-import java.awt.*;
-
 /*
 
 [The "BSD licence"]
@@ -41,15 +39,4 @@ public interface ATERenderingViewDelegate {
      */
     ATERenderingToken[] getTokens();
 
-
-    /**
-     * Draws the specified token at the specified location.
-     * @param t The token to draw
-     * @param g The graphics environment
-     * @param metrics The font metrics
-     * @param x The x-coordinate
-     * @param y The y-coordinate
-     * @param c The character to draw
-     */
-    void drawToken(ATERenderingToken t, Graphics g, FontMetrics metrics, int x, int y, char c);
 }
