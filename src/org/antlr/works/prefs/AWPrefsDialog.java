@@ -67,7 +67,7 @@ public class AWPrefsDialog extends XJPanel {
         prepareSyntaxTab();
         prepareCompilerTab();
         prepareDebuggerTab();
-        prepareAlertsTab();
+        prepareAdvancedTab();
         prepareUpdateTab();
 
         applyButton.addActionListener(new ActionListener() {
@@ -258,9 +258,11 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(askGenButton, AWPrefs.PREF_DEBUGGER_ASK_GEN, AWPrefs.DEFAULT_DEBUGGER_ASK_GEN);
     }
 
-    public void prepareAlertsTab() {
+    public void prepareAdvancedTab() {
         getPreferences().bindToPreferences(checkGrammarSuccessButton, AWPrefs.PREF_ALERT_CHECK_GRAMMAR_SUCCESS, true);
         getPreferences().bindToPreferences(generateCodeSuccessButton, AWPrefs.PREF_ALERT_GENERATE_CODE_SUCCESS, true);
+
+        getPreferences().bindToPreferences(clearConsoleBeforeCheckButton, AWPrefs.PREF_CLEAR_CONSOLE_BEFORE_CHECK, false);
     }
 
     public void prepareUpdateTab() {
@@ -448,8 +450,11 @@ public class AWPrefsDialog extends XJPanel {
         detachablePanelChildrenButton = new JCheckBox();
         askGenButton = new JCheckBox();
         panel1 = new JPanel();
+        label8 = new JLabel();
         checkGrammarSuccessButton = new JCheckBox();
         generateCodeSuccessButton = new JCheckBox();
+        label6 = new JLabel();
+        clearConsoleBeforeCheckButton = new JCheckBox();
         tabUpdates = new JPanel();
         label7 = new JLabel();
         updateTypeCombo = new JComboBox();
@@ -1178,6 +1183,8 @@ public class AWPrefsDialog extends XJPanel {
         					new ColumnSpec[] {
         						new ColumnSpec(Sizes.dluX(10)),
         						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        						FormFactory.DEFAULT_COLSPEC,
+        						FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
         						FormFactory.DEFAULT_COLSPEC
         					},
         					new RowSpec[] {
@@ -1185,18 +1192,32 @@ public class AWPrefsDialog extends XJPanel {
         						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC,
         						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC
         					}));
 
+        				//---- label8 ----
+        				label8.setText("Display alerts on:");
+        				panel1.add(label8, cc.xywh(3, 3, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+
         				//---- checkGrammarSuccessButton ----
         				checkGrammarSuccessButton.setText("Successfull check grammar");
-        				panel1.add(checkGrammarSuccessButton, cc.xy(3, 3));
+        				panel1.add(checkGrammarSuccessButton, cc.xy(5, 3));
 
         				//---- generateCodeSuccessButton ----
         				generateCodeSuccessButton.setText("Successfull code generation");
-        				panel1.add(generateCodeSuccessButton, cc.xy(3, 5));
+        				panel1.add(generateCodeSuccessButton, cc.xy(5, 5));
+
+        				//---- label6 ----
+        				label6.setText("Console:");
+        				panel1.add(label6, cc.xywh(3, 7, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+
+        				//---- clearConsoleBeforeCheckButton ----
+        				clearConsoleBeforeCheckButton.setText("Clear before checking grammar");
+        				panel1.add(clearConsoleBeforeCheckButton, cc.xy(5, 7));
         			}
-        			tabbedPane1.addTab("Alerts", panel1);
+        			tabbedPane1.addTab("Advanced", panel1);
 
 
         			//======== tabUpdates ========
@@ -1391,8 +1412,11 @@ public class AWPrefsDialog extends XJPanel {
     private JCheckBox detachablePanelChildrenButton;
     private JCheckBox askGenButton;
     private JPanel panel1;
+    private JLabel label8;
     private JCheckBox checkGrammarSuccessButton;
     private JCheckBox generateCodeSuccessButton;
+    private JLabel label6;
+    private JCheckBox clearConsoleBeforeCheckButton;
     private JPanel tabUpdates;
     private JLabel label7;
     private JComboBox updateTypeCombo;

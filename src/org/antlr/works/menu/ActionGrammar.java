@@ -171,13 +171,17 @@ public class ActionGrammar extends ActionAbstract implements CheckGrammarDelegat
     public void checkGrammar() {
         getSelectedEditor().showProgress("Checking Grammar...", this);
 
+        if(AWPrefs.isClearConsoleBeforeCheckGrammar()) {
+            getSelectedEditor().console.clear();            
+        }
+
+        getContainer().saveAll();
+
         getSelectedEditor().console.makeCurrent();
         getSelectedEditor().console.println("Checking Grammar...");
 
         checkGrammar = new CheckGrammar(getSelectedEditor(), this);
         checkGrammar.check();
-
-        getContainer().saveAll();
 
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CHECK_GRAMMAR);
     }

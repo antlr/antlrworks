@@ -226,10 +226,12 @@ public class AWPrefs {
     public static final String PREF_DEBUGGER_ASK_GEN = "PREF_DEBUGGER_ASK_GEN";
     public static final boolean DEFAULT_DEBUGGER_ASK_GEN = false;
 
-    // Alerts
+    // Avanced
 
     public static final String PREF_ALERT_CHECK_GRAMMAR_SUCCESS = "PREF_ALERT_CHECK_GRAMMAR_SUCCESS";
     public static final String PREF_ALERT_GENERATE_CODE_SUCCESS = "PREF_ALERT_GENERATE_CODE_SUCCESS";
+
+    public static final String PREF_CLEAR_CONSOLE_BEFORE_CHECK = "PREF_CLEAR_CONSOLE_BEFORE_CHECK";
 
     // Other
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
@@ -533,7 +535,7 @@ public class AWPrefs {
 
     public static String getLastSavedDocument() {
         return getPreferences().getString(PREF_LAST_SAVED_DOCUMENT, null);
-    }
+    }       
 
     public static void setAllOpenedDocuments(List<String> documents) {
         if(documents != null)
@@ -574,5 +576,9 @@ public class AWPrefs {
 
     public static boolean isAlertCheckGrammarSuccess() {
         return getPreferences().getBoolean(PREF_ALERT_CHECK_GRAMMAR_SUCCESS, true);
+    }
+
+    public static boolean isClearConsoleBeforeCheckGrammar() {
+        return getPreferences().getBoolean(PREF_CLEAR_CONSOLE_BEFORE_CHECK, false);
     }
 }
