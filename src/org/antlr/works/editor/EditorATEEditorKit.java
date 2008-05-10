@@ -45,7 +45,16 @@ public class EditorATEEditorKit extends StyledEditorKit
         implements ViewFactory, ATERenderingViewDelegate {
 
     private ComponentEditorGrammar editor;
-    private Set<ATERenderingView> views = new HashSet<ATERenderingView>();
+    private final Set<ATERenderingView> views = new HashSet<ATERenderingView>();
+
+    private final List<ATERenderingToken> indexes = new ArrayList<ATERenderingToken>();
+
+    private ATERenderingToken[] cachedTokens;
+    private boolean indexesModified = true;
+
+    private final ATERenderingToken debuggerCursorToken = new DebuggerCursorToken();
+    private final HighlightedReferenceStartToken highlightedReferenceStartToken = new HighlightedReferenceStartToken();
+    private final HighlightedReferenceToken highlightedReferenceToken = new HighlightedReferenceToken();
 
     public EditorATEEditorKit(ComponentEditorGrammar editor) {
         this.editor = editor;
@@ -76,30 +85,45 @@ public class EditorATEEditorKit extends StyledEditorKit
         return v;
     }
 
-    private ATERenderingToken debuggerCursorToken = new DebuggerCursorToken();
-    private HighlightedReferenceStartToken highlightedReferenceStartToken = new HighlightedReferenceStartToken();
-    private HighlightedReferenceToken highlightedReferenceToken = new HighlightedReferenceToken();
+    private void addToken(ATERenderingToken token) {
+        if(!indexes.contains(token)) {
+            indexes.add(token);
+            indexesModified = true;
+        }
+    }
+
+    private void removeToken(ATERenderingToken token) {
+        if(indexes.contains(token)) {
+            indexes.remove(token);
+            indexesModified = true;
+        }
+    }
 
     public ATERenderingToken[] getTokens() {
-        // todo cache that
-        List<ATERenderingToken> indexes = new ArrayList<ATERenderingToken>();
+        indexesModified = false;
         Jumpable ref = editor.getHighlightedReference();
         if(ref != null) {
             highlightedReferenceStartToken.setIndex(ref.getStartIndex());
             highlightedReferenceToken.setIndex(ref.getEndIndex());
             highlightedReferenceToken.setStartToken(highlightedReferenceStartToken);
-            indexes.add(highlightedReferenceStartToken);
-            indexes.add(highlightedReferenceToken);
+            addToken(highlightedReferenceStartToken);
+            addToken(highlightedReferenceToken);
+        } else {
+            removeToken(highlightedReferenceStartToken);
+            removeToken(highlightedReferenceToken);
         }
         if(editor.getDebuggerLocation() != -1) {
+            addToken(debuggerCursorToken);
             debuggerCursorToken.setIndex(editor.getDebuggerLocation());
-            indexes.add(debuggerCursorToken);
-        }
-        if(!indexes.isEmpty()) {
-            Collections.sort(indexes);
+        } else {
+            removeToken(debuggerCursorToken);
         }
 
-        return indexes.toArray(new ATERenderingToken[indexes.size()]);
+        if(indexesModified || cachedTokens == null) {
+            Collections.sort(indexes);
+            cachedTokens = indexes.toArray(new ATERenderingToken[indexes.size()]);
+        }
+        return cachedTokens;
     }
 
     private static class DebuggerCursorToken extends ATERenderingToken {
