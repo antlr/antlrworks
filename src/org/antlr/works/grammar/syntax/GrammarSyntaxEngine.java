@@ -53,15 +53,14 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
     private SimpleAttributeSet lexerRefAttr;
     private SimpleAttributeSet labelAttr;
     private SimpleAttributeSet actionRefAttr;
-    // todo prefs for that
-    private SimpleAttributeSet blockLabelAttr;
+    private SimpleAttributeSet blockAttr;
 
     public GrammarSyntaxEngine() {
         parserRefAttr = new SimpleAttributeSet();
         lexerRefAttr = new SimpleAttributeSet();
         labelAttr = new SimpleAttributeSet();
         actionRefAttr = new SimpleAttributeSet();
-        blockLabelAttr = new SimpleAttributeSet();
+        blockAttr = new SimpleAttributeSet();
     }
 
     @Override
@@ -108,8 +107,9 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
         applyAttribute(lexerRefAttr, AWPrefs.PREF_SYNTAX_LEXER);
         applyAttribute(labelAttr, AWPrefs.PREF_SYNTAX_LABEL);
         applyAttribute(actionRefAttr, AWPrefs.PREF_SYNTAX_REFS);
+        applyAttribute(blockAttr, AWPrefs.PREF_SYNTAX_BLOCK);
 
-        StyleConstants.setBold(blockLabelAttr, true);
+        StyleConstants.setBold(blockAttr, true);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
 
             case GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT:
             case GrammarSyntaxLexer.TOKEN_BLOCK_LABEL:
-                attr = blockLabelAttr;
+                attr = blockAttr;
                 break;
 
             case GrammarSyntaxLexer.TOKEN_INTERNAL_REF:

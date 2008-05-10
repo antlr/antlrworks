@@ -101,6 +101,7 @@ public class AWPrefs {
     public static final String PREF_SYNTAX_LEXER = "PREF_SYNTAX_LEXER";
     public static final String PREF_SYNTAX_LABEL = "PREF_SYNTAX_LABEL";
     public static final String PREF_SYNTAX_REFS = "PREF_SYNTAX_REFS";
+    public static final String PREF_SYNTAX_BLOCK = "PREF_SYNTAX_BLOCK";
     public static final String PREF_SYNTAX_COMMENT = "PREF_SYNTAX_COMMENT";
     public static final String PREF_SYNTAX_STRING = "PREF_SYNTAX_STRING";
     public static final String PREF_SYNTAX_KEYWORD = "PREF_SYNTAX_KEYWORD";
@@ -109,10 +110,10 @@ public class AWPrefs {
     public static Map<String,Boolean> bold = new HashMap<String, Boolean>();
     public static Map<String,Boolean> italic = new HashMap<String, Boolean>();
 
-    public static void addSyntax(String key, Color c, boolean b, boolean i) {
+    public static void addSyntax(String key, Color c, boolean bold, boolean italic) {
         color.put(key, c);
-        bold.put(key, b);
-        italic.put(key, i);
+        AWPrefs.bold.put(key, bold);
+        AWPrefs.italic.put(key, italic);
     }
 
     static {
@@ -120,6 +121,7 @@ public class AWPrefs {
         addSyntax(PREF_SYNTAX_LEXER, new Color(0, 0, 0.5f), true, false);
         addSyntax(PREF_SYNTAX_LABEL, Color.black, false, true);
         addSyntax(PREF_SYNTAX_REFS, new Color(0, 153, 153), true, false);
+        addSyntax(PREF_SYNTAX_BLOCK, Color.black, true, false);
         addSyntax(PREF_SYNTAX_COMMENT, Color.lightGray, false, true);
         addSyntax(PREF_SYNTAX_STRING, new Color(0, 0.5f, 0), true, false);
         addSyntax(PREF_SYNTAX_KEYWORD, new Color(0, 0, 0.5f), true, false);
@@ -228,7 +230,6 @@ public class AWPrefs {
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
     public static final String PREF_SERVER_ID = "PREF_SERVER_ID";
 
-    public static final String PREF_OUTPUT_PATH_SAME = "PREF_OUTPUT_PATH_SAME";
     public static final String PREF_OUTPUT_PATH_CUSTOM = "PREF_OUTPUT_PATH_CUSTOM";
     public static final String PREF_OUTPUT_PATH = "PREF_OUTPUT_PATH";
     public static final String PREF_DEBUGGER_INPUT_TEXT = "PREF_DEBUGGER_INPUT_TEXT";
@@ -245,28 +246,24 @@ public class AWPrefs {
     public static final String PREF_PERSONAL_INFO = "PREF_OUTPUT_DEV_DATE";
     public static final String PREF_PRIVATE_MENU = "PREF_PRIVATE_MENU";
 
-    public static final String DEFAULT_OUTPUT_PATH;
+    public static final String DEFAULT_OUTPUT_PATH = "output";
 
     static {
         DEFAULT_EDITOR_FONT = "Courier New";
 
         if(XJSystem.isMacOS()) {
-            DEFAULT_OUTPUT_PATH = "/tmp/antlrworks/";
             DEFAULT_DOT_TOOL_PATH = "/Applications/Graphviz.app/Contents/MacOS/dot";
             if(Font.getFont("Monospaced") != null)
                 DEFAULT_EDITOR_FONT = "Monospaced";
         } else if(XJSystem.isWindows()) {
-            DEFAULT_OUTPUT_PATH = "\\tmp\\antlrworks\\";
             DEFAULT_DOT_TOOL_PATH = "";
             if(Font.getFont("Tahoma") != null)
                 DEFAULT_EDITOR_FONT = "Tahoma";
         } else if(XJSystem.isLinux()) {
-            DEFAULT_OUTPUT_PATH = "/tmp/antlrworks/";
             DEFAULT_DOT_TOOL_PATH = "/usr/bin/dot";
             if(Font.getFont("Monospaced") != null)
                 DEFAULT_EDITOR_FONT = "Monospaced";
         } else {
-            DEFAULT_OUTPUT_PATH = "/tmp/antlrworks/";
             DEFAULT_DOT_TOOL_PATH = "/usr/bin/dot";
             if(Font.getFont("Courier") != null)
                 DEFAULT_EDITOR_FONT = "Courier";
@@ -293,10 +290,6 @@ public class AWPrefs {
 
     public static void setOutputPath(String path) {
         getPreferences().setString(PREF_OUTPUT_PATH, path);
-    }
-
-    public static boolean getOutputPathSameAsDocument() {
-        return getPreferences().getBoolean(PREF_OUTPUT_PATH_SAME, false);
     }
 
     public static String getOutputPath() {

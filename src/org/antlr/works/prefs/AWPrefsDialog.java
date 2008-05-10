@@ -102,25 +102,10 @@ public class AWPrefsDialog extends XJPanel {
         }
         lafCombo.setEnabled(!IDE.isPlugin());
 
-        outputPathSameRadio.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                outputPathField.setEnabled(outputPathCustomRadio.isSelected());
-                browseOutputPathButton.setEnabled(outputPathCustomRadio.isSelected());
-            }
-        });
-        outputPathCustomRadio.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                outputPathField.setEnabled(outputPathCustomRadio.isSelected());
-                browseOutputPathButton.setEnabled(outputPathCustomRadio.isSelected());
-            }
-        });
-
         getPreferences().bindToPreferences(startupActionCombo, AWPrefs.PREF_STARTUP_ACTION, AWPrefs.STARTUP_OPEN_LAST_OPENED_DOC);
         getPreferences().bindToPreferences(restoreWindowsBoundButton, AWPrefs.PREF_RESTORE_WINDOWS, AWPrefs.DEFAULT_RESTORE_WINDOWS);
         getPreferences().bindToPreferences(lafCombo, AWPrefs.PREF_LOOK_AND_FEEL, XJLookAndFeel.getDefaultLookAndFeelName());
         getPreferences().bindToPreferences(desktopModeButton, AWPrefs.PREF_DESKTOP_MODE, AWPrefs.DEFAULT_DESKTOP_MODE);
-        getPreferences().bindToPreferences(outputPathSameRadio, AWPrefs.PREF_OUTPUT_PATH_SAME, false);
-        getPreferences().bindToPreferences(outputPathCustomRadio, AWPrefs.PREF_OUTPUT_PATH_CUSTOM, true);
         getPreferences().bindToPreferences(outputPathField, AWPrefs.PREF_OUTPUT_PATH, AWPrefs.DEFAULT_OUTPUT_PATH);
         getPreferences().bindToPreferences(dotToolPathField, AWPrefs.PREF_DOT_TOOL_PATH, AWPrefs.DEFAULT_DOT_TOOL_PATH);
         getPreferences().bindToPreferences(antlr3OptionsField, AWPrefs.PREF_ANTLR3_OPTIONS, AWPrefs.DEFAULT_ANTLR3_OPTIONS);
@@ -180,6 +165,7 @@ public class AWPrefsDialog extends XJPanel {
                 defaultSyntax(AWPrefs.PREF_SYNTAX_LEXER, lexerColorPanel, lexerBoldButton, lexerItalicButton);
                 defaultSyntax(AWPrefs.PREF_SYNTAX_LABEL, labelColorPanel, labelsBoldButton, labelsItalicButton);
                 defaultSyntax(AWPrefs.PREF_SYNTAX_REFS, refsActionColorPanel, refsActionBoldButton, refsActionItalicButton);
+                defaultSyntax(AWPrefs.PREF_SYNTAX_BLOCK, blockLabelsColorPanel, blockLabelsBoldButton, blockLabelsItalicButton);
                 defaultSyntax(AWPrefs.PREF_SYNTAX_COMMENT, commentsColorPanel, commentsBoldButton, commentsItalicButton);
                 defaultSyntax(AWPrefs.PREF_SYNTAX_STRING, stringsColorPanel, stringsBoldButton, stringsItalicButton);
                 defaultSyntax(AWPrefs.PREF_SYNTAX_KEYWORD, keywordsColorPanel, keywordsBoldButton, keywordsItalicButton);
@@ -190,6 +176,7 @@ public class AWPrefsDialog extends XJPanel {
         bindSyntax(AWPrefs.PREF_SYNTAX_LEXER, lexerColorPanel, lexerBoldButton, lexerItalicButton);
         bindSyntax(AWPrefs.PREF_SYNTAX_LABEL, labelColorPanel, labelsBoldButton, labelsItalicButton);
         bindSyntax(AWPrefs.PREF_SYNTAX_REFS, refsActionColorPanel, refsActionBoldButton, refsActionItalicButton);
+        bindSyntax(AWPrefs.PREF_SYNTAX_BLOCK, blockLabelsColorPanel, blockLabelsBoldButton, blockLabelsItalicButton);
         bindSyntax(AWPrefs.PREF_SYNTAX_COMMENT, commentsColorPanel, commentsBoldButton, commentsItalicButton);
         bindSyntax(AWPrefs.PREF_SYNTAX_STRING, stringsColorPanel, stringsBoldButton, stringsItalicButton);
         bindSyntax(AWPrefs.PREF_SYNTAX_KEYWORD, keywordsColorPanel, keywordsBoldButton, keywordsItalicButton);
@@ -297,8 +284,6 @@ public class AWPrefsDialog extends XJPanel {
         browseJavacPath.setEnabled(javacCustomPathButton.isSelected());
         customClasspathField.setEnabled(classpathCustomButton.isSelected());
         browseCustomClassPathButton.setEnabled(classpathCustomButton.isSelected());
-        outputPathField.setEnabled(outputPathCustomRadio.isSelected());
-        browseOutputPathButton.setEnabled(outputPathCustomRadio.isSelected());
         // not implemented
         //actionsFoldingAnchorsButton.setEnabled(foldingButton.isSelected());
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_PREFERENCES);
@@ -363,8 +348,6 @@ public class AWPrefsDialog extends XJPanel {
         restoreWindowsBoundButton = new JCheckBox();
         desktopModeButton = new JCheckBox();
         label25 = new JLabel();
-        outputPathSameRadio = new JRadioButton();
-        outputPathCustomRadio = new JRadioButton();
         outputPathField = new JTextField();
         browseOutputPathButton = new JButton();
         label24 = new JLabel();
@@ -407,6 +390,10 @@ public class AWPrefsDialog extends XJPanel {
         refsActionColorPanel = new JPanel();
         refsActionBoldButton = new JCheckBox();
         refsActionItalicButton = new JCheckBox();
+        label38 = new JLabel();
+        blockLabelsColorPanel = new JPanel();
+        blockLabelsBoldButton = new JCheckBox();
+        blockLabelsItalicButton = new JCheckBox();
         label30 = new JLabel();
         commentsColorPanel = new JPanel();
         commentsBoldButton = new JCheckBox();
@@ -418,8 +405,8 @@ public class AWPrefsDialog extends XJPanel {
         label32 = new JLabel();
         keywordsColorPanel = new JPanel();
         keywordsBoldButton = new JCheckBox();
-        syntaxDefaultButton = new JButton();
         keywordsItalicButton = new JCheckBox();
+        syntaxDefaultButton = new JButton();
         tabCompiler = new JPanel();
         jikesRadio = new JRadioButton();
         integratedRadio = new JRadioButton();
@@ -518,8 +505,6 @@ public class AWPrefsDialog extends XJPanel {
         						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC,
         						FormFactory.LINE_GAP_ROWSPEC,
-        						FormFactory.DEFAULT_ROWSPEC,
-        						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC
         					}));
 
@@ -554,38 +539,30 @@ public class AWPrefsDialog extends XJPanel {
         				label25.setText("Output path:");
         				tabGeneral.add(label25, cc.xy(3, 11));
 
-        				//---- outputPathSameRadio ----
-        				outputPathSameRadio.setText("Same as grammar");
-        				tabGeneral.add(outputPathSameRadio, cc.xy(5, 11));
-
-        				//---- outputPathCustomRadio ----
-        				outputPathCustomRadio.setText("Custom:");
-        				tabGeneral.add(outputPathCustomRadio, cc.xy(7, 11));
-
         				//---- outputPathField ----
-        				outputPathField.setToolTipText("Absolute path to the DOT command-line tool");
-        				tabGeneral.add(outputPathField, cc.xywh(5, 13, 3, 1));
+        				outputPathField.setToolTipText("Relative path will be generated in the same directory as the grammar itself");
+        				tabGeneral.add(outputPathField, cc.xywh(5, 11, 3, 1));
 
         				//---- browseOutputPathButton ----
         				browseOutputPathButton.setText("Browse...");
-        				tabGeneral.add(browseOutputPathButton, cc.xy(9, 13));
+        				tabGeneral.add(browseOutputPathButton, cc.xy(9, 11));
 
         				//---- label24 ----
         				label24.setText("DOT path:");
-        				tabGeneral.add(label24, cc.xy(3, 15));
+        				tabGeneral.add(label24, cc.xy(3, 13));
 
         				//---- dotToolPathField ----
         				dotToolPathField.setToolTipText("Absolute path to the DOT command-line tool");
-        				tabGeneral.add(dotToolPathField, cc.xywh(5, 15, 3, 1));
+        				tabGeneral.add(dotToolPathField, cc.xywh(5, 13, 3, 1));
 
         				//---- browseDotToolPathButton ----
         				browseDotToolPathButton.setText("Browse...");
-        				tabGeneral.add(browseDotToolPathButton, cc.xy(9, 15));
+        				tabGeneral.add(browseDotToolPathButton, cc.xy(9, 13));
 
         				//---- label37 ----
         				label37.setText("ANTLR options:");
-        				tabGeneral.add(label37, cc.xy(3, 17));
-        				tabGeneral.add(antlr3OptionsField, cc.xywh(5, 17, 3, 1));
+        				tabGeneral.add(label37, cc.xy(3, 15));
+        				tabGeneral.add(antlr3OptionsField, cc.xywh(5, 15, 3, 1));
         			}
         			tabbedPane1.addTab("General", tabGeneral);
 
@@ -741,6 +718,8 @@ public class AWPrefsDialog extends XJPanel {
         						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC,
         						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC
         					}));
 
@@ -840,9 +819,33 @@ public class AWPrefsDialog extends XJPanel {
         				refsActionItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
         				tabSyntax.add(refsActionItalicButton, cc.xy(9, 9));
 
+        				//---- label38 ----
+        				label38.setText("Blocks:");
+        				tabSyntax.add(label38, cc.xy(3, 11));
+
+        				//======== blockLabelsColorPanel ========
+        				{
+        					blockLabelsColorPanel.setForeground(Color.black);
+        					blockLabelsColorPanel.setPreferredSize(new Dimension(70, 20));
+        					blockLabelsColorPanel.setBackground(new Color(255, 255, 51));
+        					blockLabelsColorPanel.setBorder(LineBorder.createBlackLineBorder());
+        					blockLabelsColorPanel.setLayout(new FlowLayout());
+        				}
+        				tabSyntax.add(blockLabelsColorPanel, cc.xy(5, 11));
+
+        				//---- blockLabelsBoldButton ----
+        				blockLabelsBoldButton.setText("Bold");
+        				blockLabelsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+        				tabSyntax.add(blockLabelsBoldButton, cc.xy(7, 11));
+
+        				//---- blockLabelsItalicButton ----
+        				blockLabelsItalicButton.setText("Italic");
+        				blockLabelsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+        				tabSyntax.add(blockLabelsItalicButton, cc.xy(9, 11));
+
         				//---- label30 ----
         				label30.setText("Comments:");
-        				tabSyntax.add(label30, cc.xy(3, 11));
+        				tabSyntax.add(label30, cc.xy(3, 13));
 
         				//======== commentsColorPanel ========
         				{
@@ -852,21 +855,21 @@ public class AWPrefsDialog extends XJPanel {
         					commentsColorPanel.setBorder(LineBorder.createBlackLineBorder());
         					commentsColorPanel.setLayout(new FlowLayout());
         				}
-        				tabSyntax.add(commentsColorPanel, cc.xy(5, 11));
+        				tabSyntax.add(commentsColorPanel, cc.xy(5, 13));
 
         				//---- commentsBoldButton ----
         				commentsBoldButton.setText("Bold");
         				commentsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-        				tabSyntax.add(commentsBoldButton, cc.xy(7, 11));
+        				tabSyntax.add(commentsBoldButton, cc.xy(7, 13));
 
         				//---- commentsItalicButton ----
         				commentsItalicButton.setText("Italic");
         				commentsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-        				tabSyntax.add(commentsItalicButton, cc.xy(9, 11));
+        				tabSyntax.add(commentsItalicButton, cc.xy(9, 13));
 
         				//---- label31 ----
         				label31.setText("Strings:");
-        				tabSyntax.add(label31, cc.xy(3, 13));
+        				tabSyntax.add(label31, cc.xy(3, 15));
 
         				//======== stringsColorPanel ========
         				{
@@ -876,21 +879,21 @@ public class AWPrefsDialog extends XJPanel {
         					stringsColorPanel.setBorder(LineBorder.createBlackLineBorder());
         					stringsColorPanel.setLayout(new FlowLayout());
         				}
-        				tabSyntax.add(stringsColorPanel, cc.xy(5, 13));
+        				tabSyntax.add(stringsColorPanel, cc.xy(5, 15));
 
         				//---- stringsBoldButton ----
         				stringsBoldButton.setText("Bold");
         				stringsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-        				tabSyntax.add(stringsBoldButton, cc.xy(7, 13));
+        				tabSyntax.add(stringsBoldButton, cc.xy(7, 15));
 
         				//---- stringsItalicButton ----
         				stringsItalicButton.setText("Italic");
         				stringsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-        				tabSyntax.add(stringsItalicButton, cc.xy(9, 13));
+        				tabSyntax.add(stringsItalicButton, cc.xy(9, 15));
 
         				//---- label32 ----
         				label32.setText("Keywords:");
-        				tabSyntax.add(label32, cc.xy(3, 15));
+        				tabSyntax.add(label32, cc.xy(3, 17));
 
         				//======== keywordsColorPanel ========
         				{
@@ -900,21 +903,21 @@ public class AWPrefsDialog extends XJPanel {
         					keywordsColorPanel.setBorder(LineBorder.createBlackLineBorder());
         					keywordsColorPanel.setLayout(new FlowLayout());
         				}
-        				tabSyntax.add(keywordsColorPanel, cc.xy(5, 15));
+        				tabSyntax.add(keywordsColorPanel, cc.xy(5, 17));
 
         				//---- keywordsBoldButton ----
         				keywordsBoldButton.setText("Bold");
         				keywordsBoldButton.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-        				tabSyntax.add(keywordsBoldButton, cc.xy(7, 15));
-
-        				//---- syntaxDefaultButton ----
-        				syntaxDefaultButton.setText("Default");
-        				tabSyntax.add(syntaxDefaultButton, cc.xy(13, 15));
+        				tabSyntax.add(keywordsBoldButton, cc.xy(7, 17));
 
         				//---- keywordsItalicButton ----
         				keywordsItalicButton.setText("Italic");
         				keywordsItalicButton.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-        				tabSyntax.add(keywordsItalicButton, cc.xy(9, 15));
+        				tabSyntax.add(keywordsItalicButton, cc.xy(9, 17));
+
+        				//---- syntaxDefaultButton ----
+        				syntaxDefaultButton.setText("Default");
+        				tabSyntax.add(syntaxDefaultButton, cc.xy(13, 19));
         			}
         			tabbedPane1.addTab("Syntax", tabSyntax);
 
@@ -1242,11 +1245,6 @@ public class AWPrefsDialog extends XJPanel {
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
         pack();
-
-        //---- buttonGroup1 ----
-        ButtonGroup buttonGroup1 = new ButtonGroup();
-        buttonGroup1.add(outputPathSameRadio);
-        buttonGroup1.add(outputPathCustomRadio);
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
@@ -1263,8 +1261,6 @@ public class AWPrefsDialog extends XJPanel {
     private JCheckBox restoreWindowsBoundButton;
     private JCheckBox desktopModeButton;
     private JLabel label25;
-    private JRadioButton outputPathSameRadio;
-    private JRadioButton outputPathCustomRadio;
     private JTextField outputPathField;
     private JButton browseOutputPathButton;
     private JLabel label24;
@@ -1307,6 +1303,10 @@ public class AWPrefsDialog extends XJPanel {
     private JPanel refsActionColorPanel;
     private JCheckBox refsActionBoldButton;
     private JCheckBox refsActionItalicButton;
+    private JLabel label38;
+    private JPanel blockLabelsColorPanel;
+    private JCheckBox blockLabelsBoldButton;
+    private JCheckBox blockLabelsItalicButton;
     private JLabel label30;
     private JPanel commentsColorPanel;
     private JCheckBox commentsBoldButton;
@@ -1318,8 +1318,8 @@ public class AWPrefsDialog extends XJPanel {
     private JLabel label32;
     private JPanel keywordsColorPanel;
     private JCheckBox keywordsBoldButton;
-    private JButton syntaxDefaultButton;
     private JCheckBox keywordsItalicButton;
+    private JButton syntaxDefaultButton;
     private JPanel tabCompiler;
     private JRadioButton jikesRadio;
     private JRadioButton integratedRadio;

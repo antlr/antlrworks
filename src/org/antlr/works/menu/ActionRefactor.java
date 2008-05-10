@@ -34,7 +34,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 public interface ActionRefactor {
 
-    // todo see which methods are used and which ones should be private
     void rename();
 
     boolean canReplaceLiteralWithTokenLabel();

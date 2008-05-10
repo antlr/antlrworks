@@ -136,7 +136,8 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     /* Other */
 
     private int debuggerLocation = -1;
-
+    private Jumpable highlightedReference;
+                          
     private boolean windowFirstDisplay = true;
     private String lastSelectedRule;
     private ComponentEditorGrammarDelegate delegate;
@@ -746,11 +747,12 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public String getOutputPath() {
-        if(AWPrefs.getOutputPathSameAsDocument()) {
-            return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(getFilePath()), "output");
-        } else {
-            return AWPrefs.getOutputPath();
+        String path = AWPrefs.getOutputPath();
+        if(path.startsWith("/") || path.startsWith("\\")) {
+            // absolute path
+            return path;
         }
+        return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(getFilePath()), path);
     }
 
     public Container getWindowContainer() {
@@ -1011,9 +1013,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         consoleStatus.clearMessage();
     }
 
-    //todo use a class for that
-    private Jumpable highlightedReference;
-
     public void setHighlightedReference(Jumpable highlightedReference) {
         if(highlightedReference != this.highlightedReference) {
             textEditor.repaint();
@@ -1022,7 +1021,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public Jumpable getHighlightedReference() {
-//        editorKit.clearCache();
         return highlightedReference;
     }
 

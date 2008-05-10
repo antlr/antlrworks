@@ -31,30 +31,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.utils;
 
+import org.antlr.xjlib.appkit.swing.XJIconManager;
+
 import javax.swing.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class IconManager {
 
     private static final String path = "org/antlr/works/icons/";
 
     private static IconManager shared = new IconManager();
-    private static Map<String,ImageIcon> cache = new HashMap<String, ImageIcon>();
 
     public static IconManager shared() {
         return shared;
     }
 
     public ImageIcon createImageIcon(String path) {
-        ImageIcon image = cache.get(path);
-        if(image == null) {
-            java.net.URL imgURL = this.getClass().getClassLoader().getResource(path);
-            image = imgURL != null ? new ImageIcon(imgURL) : null;
-            if(image != null)
-                cache.put(path, image);
-        }
-        return image;
+        return XJIconManager.shared().createImageIcon(path);
     }
 
     public ImageIcon getIconApplication() {

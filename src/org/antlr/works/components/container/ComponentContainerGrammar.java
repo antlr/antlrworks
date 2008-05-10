@@ -322,7 +322,6 @@ public class ComponentContainerGrammar extends XJWindow
         return debugger;
     }
 
-    // todo extract same interface for other actions
     public ActionDebugger getActionDebugger() {
         return componentContainerGrammarMenu.getActionDebugger();
     }

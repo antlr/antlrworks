@@ -389,7 +389,6 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         if(lexer == null) {
             // The lexer name can be null if the grammar is a treeparser or a parser
             // Try to lookup the name used by tokenVocab and use it as the lexer name
-            // todo if the tokenVocab token is not present (or invalid - the file does not exist), ask the user
             lexer = debugger.getDelegate().getTokenVocab();
         }
         return lexer;
