@@ -1,7 +1,7 @@
 package org.antlr.works.debugger.tree;
 
-import org.antlr.runtime.Token;
 import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.Token;
 import org.antlr.works.debugger.Debugger;
 
 import java.util.*;
@@ -284,8 +284,9 @@ public class DBASTModel {
                 return "nil";
             else if(token == null)
                 return String.valueOf(id);
-            else
-                return token.getText();
+            else {
+                return getTokenDisplayString(token);
+            }
         }
     }
 }

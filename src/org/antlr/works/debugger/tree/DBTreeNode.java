@@ -113,10 +113,29 @@ public class DBTreeNode extends AWTreeNode {
     }
 
     public String toString() {
-        if(token != null)
-            return token.getText();
-        else
-            return "?";
+        if(token != null) {
+            return getTokenDisplayString(token);
+        } else {
+            return "?";            
+        }
+    }
+
+    protected String getTokenDisplayString(Token token) {
+        if(token.getType() == -1) {
+            return "EOF";
+        } else {
+            String t = token.getText();
+            if(t.equals("\n")) {
+                return "\\n";
+            }
+            if(t.equals("\r")) {
+                return "\\r";
+            }
+            if(t.equals("\t")) {
+                return "\\t";
+            }
+            return t;
+        }
     }
 
     public String getInfoString() {
