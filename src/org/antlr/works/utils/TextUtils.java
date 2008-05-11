@@ -65,5 +65,11 @@ public class TextUtils {
         // Set by default the end of line property in order to always use the Unix style
         textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
     }
-    
+
+    public static void setEnableWritableActions(JTextComponent textComponent, boolean writable) {
+        ActionMap am = textComponent.getActionMap();
+        am.get("paste").setEnabled(writable);
+        am.get("paste-from-clipboard").setEnabled(writable);
+    }
+        
 }

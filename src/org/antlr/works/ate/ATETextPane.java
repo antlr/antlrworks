@@ -34,6 +34,7 @@ package org.antlr.works.ate;
 import org.antlr.works.ate.swing.ATEEditorKit;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.swing.ATERenderingView;
+import org.antlr.works.utils.TextUtils;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 
 import javax.swing.*;
@@ -79,9 +80,7 @@ public class ATETextPane extends JTextPane
 
     public void setWritable(boolean flag) {
         this.writable = flag;
-        if(keyBindings != null) {
-            keyBindings.setEnableWritableActions(flag);
-        }
+        TextUtils.setEnableWritableActions(this, writable);
     }
 
     public boolean isWritable() {

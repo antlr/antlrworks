@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.ate.swing;
 
 import org.antlr.works.ate.ATETextPane;
+import org.antlr.works.utils.TextUtils;
 import org.antlr.xjlib.foundation.XJSystem;
 
 import javax.swing.*;
@@ -46,7 +47,7 @@ import java.awt.event.KeyEvent;
 
 public class ATEKeyBindings {
 
-    private ATETextPane textComponent = null;
+    private ATETextPane textComponent;
 
     public ATEKeyBindings(ATETextPane textComponent) {
         this.textComponent = textComponent;
@@ -58,19 +59,13 @@ public class ATEKeyBindings {
 
         addStandardKeyBindings();
         
-        setEnableWritableActions(false);
+        TextUtils.setEnableWritableActions(textComponent, false);
     }
 
     public void close() {
         textComponent.getActionMap().clear();
         textComponent.getInputMap().clear();
         textComponent = null;
-    }
-
-    public void setEnableWritableActions(boolean writable) {
-        ActionMap am = textComponent.getActionMap();
-        am.get("paste").setEnabled(writable);
-        am.get("paste-from-clipboard").setEnabled(writable);
     }
 
     public void addStandardKeyBindings() {

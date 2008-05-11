@@ -111,6 +111,14 @@ public class DebuggerInputDialog extends XJDialog {
         });
     }
 
+    public void dialogActivated() {
+        // make sure that this text area is writable even if the main grammar is not (read-only for example).
+        // the problem is that the ActionMap is shared across all text components, so when the grammar
+        // is read-only all the other text component cannot be edited. This is something to investigate to have
+        // a better (nicer) solution.
+        TextUtils.setEnableWritableActions(inputTextArea, true);
+    }
+
     public void dialogWillCloseOK() {
         String text = getRawInputText();
         if(text.length() > Preferences.MAX_VALUE_LENGTH) {
