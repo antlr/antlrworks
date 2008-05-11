@@ -608,6 +608,7 @@ public class ComponentContainerGrammar extends XJWindow
         }
 
         public void debuggerStopped() {
+            getSelectedEditor().setDebuggerLocation(-1);
             for(ComponentContainer c : containers) {
                 c.getEditor().setEditable(true);
             }

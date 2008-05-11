@@ -681,7 +681,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void setDebuggerLocation(int index) {
         this.debuggerLocation = index;
-        textEditor.getTextPane().setCaretPosition(index);
+        if(index != -1) {
+            textEditor.getTextPane().setCaretPosition(index);            
+        }
     }
 
     public int getDebuggerLocation() {
