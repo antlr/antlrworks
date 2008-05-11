@@ -99,6 +99,8 @@ public class CodeGenerate implements Runnable {
         else
             params = new String[] { "-o", getOutputPath(), "-lib", editor.getFileFolder(), editor.getFilePath() };
 
+        new File(getOutputPath()).mkdirs();
+        
         Tool antlr = new Tool(Utils.concat(params, AWPrefs.getANTLR3Options()));
         antlr.process();
 

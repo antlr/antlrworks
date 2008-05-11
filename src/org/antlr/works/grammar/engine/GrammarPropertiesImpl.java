@@ -396,9 +396,11 @@ public class GrammarPropertiesImpl implements GrammarProperties {
     public List<String> getAllGeneratedNames() throws Exception {
         List<String> names = new ArrayList<String>();
         Grammar g = antlrEngine.getDefaultGrammar();
-        names.add(g.getRecognizerName());
-        for(Grammar gd : g.getDelegates()) {
-            names.add(gd.getRecognizerName());
+        if(g != null) {
+            names.add(g.getRecognizerName());
+            for(Grammar gd : g.getDelegates()) {
+                names.add(gd.getRecognizerName());
+            }
         }
 
         Grammar lexer = antlrEngine.getLexerGrammar();
