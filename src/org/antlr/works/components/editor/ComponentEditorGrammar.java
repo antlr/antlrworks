@@ -651,6 +651,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         updateInformation();
     }
 
+    public void createFile(String name) {
+        container.createFile(name);
+    }
+
     public void createRuleAtIndex(boolean lexer, String name, String content) {
         container.getActionRefactor().createRuleAtIndex(lexer, name, content);
     }
@@ -970,7 +974,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     private void afterParseOperations() {
-        engine.parserCompleted();
         container.editorParsed(this);
 
         persistence.restore();
@@ -1080,6 +1083,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public void componentActivated() {
         console.makeCurrent();
         engine.reset();
+        engine.updateAll();
         textEditor.getTextPane().setWritable(isFileWritable());
         textEditor.refresh();
         updateInformation();

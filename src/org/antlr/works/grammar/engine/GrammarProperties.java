@@ -78,6 +78,7 @@ public interface GrammarProperties {
     boolean isTreeParserGrammar();
 
     void reset();
+    void updateAll();
     void parserCompleted();
 
 }

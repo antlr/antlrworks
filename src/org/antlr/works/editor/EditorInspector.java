@@ -5,10 +5,7 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.idea.IdeaAction;
 import org.antlr.works.grammar.RefactorEngine;
 import org.antlr.works.grammar.decisiondfa.DecisionDFAEngine;
-import org.antlr.works.grammar.element.ElementGrammarName;
-import org.antlr.works.grammar.element.ElementReference;
-import org.antlr.works.grammar.element.ElementRule;
-import org.antlr.works.grammar.element.ElementToken;
+import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.xjlib.foundation.XJUtils;
 
@@ -70,6 +67,7 @@ public class EditorInspector {
         discoverInvalidGrammarName(errors);
         discoverInvalidCharLiteralTokens(errors);
         discoverUndefinedReferences(errors);
+        discoverUndefinedImports(errors);
         discoverDuplicateRules(errors);
         return errors;
     }
@@ -161,6 +159,20 @@ public class EditorInspector {
         }
     }
 
+    protected void discoverUndefinedImports(List<EditorInspectorItem> items) {
+        List<ElementImport> imports = engine.getUndefinedImports();
+        if(imports == null)
+            return;
+
+        for (ElementImport ref : imports) {
+            EditorInspectorItem item = new ItemUndefinedImport();
+            item.setAttributes(ref.token, ref.token.getStartIndex(), ref.token.getEndIndex(),
+                    ref.token.startLineNumber, Color.red,
+                    "Undefined import \"" + ref.token.getAttribute() + "\"");
+            items.add(item);
+        }
+    }
+
     protected void discoverDuplicateRules(List<EditorInspectorItem> items) {
         List<ElementRule> rules = engine.getDuplicateRules();
         if(rules == null)
@@ -226,6 +238,24 @@ public class EditorInspector {
             switch(actionID) {
                 case IDEA_CREATE_RULE:
                     delegate.createRuleAtIndex(((ElementToken)action.token).lexer, action.token.getAttribute(), null);
+                    break;
+            }
+        }
+
+    }
+
+    public class ItemUndefinedImport extends EditorInspectorItem {
+
+        public List<IdeaAction> getIdeaActions() {
+            List<IdeaAction> actions = new ArrayList<IdeaAction>();
+            actions.add(new IdeaAction("Create file '"+token.getAttribute()+"'", this, IDEA_CREATE_FILE, token));
+            return actions;
+        }
+
+        public void ideaActionFire(IdeaAction action, int actionID) {
+            switch(actionID) {
+                case IDEA_CREATE_FILE:
+                    delegate.createFile(action.token.getAttribute());
                     break;
             }
         }

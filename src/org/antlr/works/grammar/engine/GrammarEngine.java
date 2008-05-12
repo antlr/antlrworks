@@ -8,7 +8,8 @@ import org.antlr.works.grammar.element.*;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 
 import java.util.List;
-import java.util.Map;/*
+import java.util.Map;
+import java.util.Set;/*
 
 [The "BSD licence"]
 Copyright (c) 2005-07 Jean Bovet
@@ -64,6 +65,8 @@ public interface GrammarEngine {
     List<ElementReference> getUndefinedReferences();
 
     List<ElementImport> getImports();
+    List<ElementImport> getUndefinedImports();
+
     List<ElementAction> getActions();
     List<ElementGroup> getGroups();
     List<ElementBlock> getBlocks();
@@ -83,7 +86,7 @@ public interface GrammarEngine {
 
     List<ATEToken> getTokens();
 
-    void updateHierarchy(Map<String, GrammarEngine> engines);
+    void updateHierarchy(Map<String, GrammarEngine> engines, Set<GrammarEngine> alreadyVisitedEngines);
 
     GrammarResult analyze() throws Exception;
     void cancelAnalyze();
@@ -91,6 +94,8 @@ public interface GrammarEngine {
     void computeRuleErrors(ElementRule rule);
 
     void parserCompleted();
+    void updateAll();
+
     void markDirty();
     void reset();
 

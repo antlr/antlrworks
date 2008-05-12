@@ -47,6 +47,7 @@ public class EditorInspectorItem implements IdeaActionDelegate {
     public static final int IDEA_CONVERT_TO_SINGLE_QUOTE = 3;
     public static final int IDEA_FIX_GRAMMAR_NAME = 4;
     public static final int IDEA_DECISION_DFA = 5;
+    public static final int IDEA_CREATE_FILE = 6;
 
     public ATEToken token;
     public int startIndex;

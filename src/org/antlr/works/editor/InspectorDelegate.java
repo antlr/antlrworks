@@ -32,8 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public interface InspectorDelegate {
 
-    void createRuleAtIndex(boolean lexer, String name, String content);
+    void createFile(String name);
 
+    void createRuleAtIndex(boolean lexer, String name, String content);
     void deleteRuleAtCurrentPosition();
 
     void removeLeftRecursion();
@@ -43,4 +44,5 @@ public interface InspectorDelegate {
     void replaceText(int start, int end, String grammarNameFromFile);
 
     String getFileName();
+
 }

@@ -58,6 +58,10 @@ public class ComponentContainerInternal implements ComponentContainer {
         return mainContainer;
     }
 
+    public void createFile(String name) {
+        mainContainer.createFile(name);
+    }
+
     public void setEditor(ComponentEditor editor) {
         this.editor = editor;
     }

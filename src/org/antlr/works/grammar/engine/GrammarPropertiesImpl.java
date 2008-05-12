@@ -230,7 +230,6 @@ public class GrammarPropertiesImpl implements GrammarProperties {
 
     public void reset() {
         resetTokenVocab();
-        rebuildAll();
     }
 
     private void resetTokenVocab() {
@@ -352,7 +351,7 @@ public class GrammarPropertiesImpl implements GrammarProperties {
         }
     }
 
-    private void rebuildAll() {
+    public void updateAll() {
         rebuildDuplicateRulesList();
         rebuildUndefinedReferencesList();
         rebuildHasLeftRecursionRulesList();
@@ -361,7 +360,6 @@ public class GrammarPropertiesImpl implements GrammarProperties {
     public void parserCompleted() {
         update((GrammarSyntaxParser) syntaxEngine.getParser());
         resetTokenVocab();
-        rebuildAll();
     }
 
     private void update(GrammarSyntaxParser parser) {

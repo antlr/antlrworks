@@ -33,6 +33,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public class MockInspectorDelegate implements InspectorDelegate {
+    
+    public void createFile(String name) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public void createRuleAtIndex(boolean lexer, String name, String content) {
         //To change body of implemented methods use File | Settings | File Templates.
     }

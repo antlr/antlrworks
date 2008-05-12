@@ -13,6 +13,7 @@ import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /*
 
@@ -146,6 +147,24 @@ public class GrammarEngineImpl implements GrammarEngine {
         return properties.getImports();
     }
 
+    public List<ElementImport> getUndefinedImports() {
+        List<ElementImport> undefinedImports = new ArrayList<ElementImport>();
+        for(ElementImport i : getImports()) {
+            if(!isEngineExisting(i.getName())) {
+                undefinedImports.add(i);
+            }
+        }
+        return undefinedImports;
+    }
+
+    private boolean isEngineExisting(String grammarName) {
+        for(GrammarEngine e : importedEngines) {
+            if(e.getGrammarName() == null) continue;
+            if(e.getGrammarName().equals(grammarName)) return true;
+        }
+        return false;
+    }
+
     public List<ElementAction> getActions() {
         return properties.getActions();
     }
@@ -268,15 +287,25 @@ public class GrammarEngineImpl implements GrammarEngine {
         return syntaxEngine.getTokens();
     }
 
-    public void updateHierarchy(Map<String, GrammarEngine> engines) {
+    public void updateHierarchy(Map<String, GrammarEngine> engines,
+                                Set<GrammarEngine> alreadyVisitedEngines) {
         importedEngines.clear();
+        // traverse all the imports for this grammar
         for(ElementImport element : properties.getImports()) {
-            GrammarEngine d = engines.get(element.getName()+".g");
-            if(d != null) {
-                d.setParent(this);
-                importedEngines.add(d);
-                d.updateHierarchy(engines);
+            GrammarEngine d = engines.get(element.getName());
+            if(d == null) continue;
+            if(alreadyVisitedEngines.contains(d)) continue;
+
+            // add the engine that is visited
+            alreadyVisitedEngines.add(d);
+            if(parent != d) {
+                d.setParent(this);                
             }
+            importedEngines.add(d);
+            d.updateHierarchy(engines, alreadyVisitedEngines);
+            // remove the engine that was visited - so each branch
+            // of the tree is checked separately
+            alreadyVisitedEngines.remove(d);
         }
         resetRules();
     }
@@ -295,6 +324,10 @@ public class GrammarEngineImpl implements GrammarEngine {
 
     public void parserCompleted() {
         properties.parserCompleted();
+    }
+
+    public void updateAll() {
+        properties.updateAll();
     }
 
     public void markDirty() {

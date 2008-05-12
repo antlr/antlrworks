@@ -47,6 +47,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public interface ComponentContainer {
 
+    void createFile(String name);
+
     public void setEditor(ComponentEditor editor);
     public ComponentEditor getEditor();
     public void setDocument(ComponentDocument document);
