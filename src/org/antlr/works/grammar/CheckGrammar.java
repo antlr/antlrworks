@@ -60,7 +60,7 @@ public class CheckGrammar implements Runnable {
 
     public void run() {
         editor.getConsole().setMode(Console.MODE_VERBOSE);
-        delegate.checkGrammarDidBegin();
+        delegate.checkGrammarDidBegin(this);
         GrammarResult result;
         try {
             result = editor.getGrammarEngine().analyze();
@@ -69,7 +69,7 @@ public class CheckGrammar implements Runnable {
             // Result cannot be null, so report the exception
             result = new GrammarResult(e);
         }
-        delegate.checkGrammarDidEnd(result);
+        delegate.checkGrammarDidEnd(this, result);
     }
 
 }

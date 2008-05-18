@@ -186,11 +186,11 @@ public class ActionGrammar extends ActionAbstract implements CheckGrammarDelegat
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_CHECK_GRAMMAR);
     }
 
-    public void checkGrammarDidBegin() {
+    public void checkGrammarDidBegin(CheckGrammar source) {
         checkingGrammar = true;
     }
 
-    public void checkGrammarDidEnd(GrammarResult result) {
+    public void checkGrammarDidEnd(CheckGrammar source, GrammarResult result) {
         checkGrammar.close();
         checkGrammar = null;
 

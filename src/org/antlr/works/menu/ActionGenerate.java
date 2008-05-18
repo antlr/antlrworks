@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.menu;
 
 import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.generate.CodeDisplay;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
@@ -42,30 +43,32 @@ import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.foundation.XJUtils;
+
+import java.io.File;
 
 public class ActionGenerate extends ActionAbstract implements CodeGenerateDelegate, CheckGrammarDelegate {
-
-    private CodeGenerate generateCode;
-    private CheckGrammar checkGrammar;
 
     private String actionShowCodeRule;
     private int actionShowCodeType;
     private boolean actionShowCodeAfterGeneration = false;
+
+    private CodeGenerate codeGenerate;
+    private ComponentEditorGrammar rootGrammar;
 
     public ActionGenerate(ComponentContainer editor) {
         super(editor);
     }
 
     public void awake() {
-        generateCode = new CodeGenerate(getSelectedEditor(), this);
-        checkGrammar = new CheckGrammar(getSelectedEditor(), this);
+        rootGrammar = getSelectedEditor();
+        codeGenerate = new CodeGenerate(rootGrammar, this);
     }
 
     @Override
     public void close() {
         super.close();
-        generateCode.close();
-        checkGrammar.close();
+        codeGenerate.close();
     }
 
     public void generateCode() {
@@ -73,50 +76,8 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         generateCodeProcess();
     }
 
-    protected void generateCodeProcess() {
-        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GENERATE_CODE);
-
-        if(!getSelectedEditor().ensureDocumentSaved())
-            return;
-
-        checkGrammar.check();
-    }
-
-    protected void generateCodeProcessContinued() {
-        if(!getSelectedEditor().getDocument().autoSave())
-            return;
-
-        generateCode.setDebug(false);
-        generateCode.generateInThread(getSelectedEditor().getJavaContainer());
-    }
-
-    public boolean checkLanguage() {
-        if(!isKnownLanguage()) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Can only show generated grammar for Java language");
-            return false;
-        } else
-            return true;
-    }
-
-    public boolean isKnownLanguage() {
-        String language = generateCode.getGrammarLanguage();
-        return language != null && language.equals("Java");
-    }
-
     public void showGeneratedCode(int type) {
         StatisticsAW.shared().recordEvent(type==ElementGrammarName.LEXER?StatisticsAW.EVENT_SHOW_LEXER_GENERATED_CODE:StatisticsAW.EVENT_SHOW_PARSER_GENERATED_CODE);
-
-        if(type == ElementGrammarName.LEXER) {
-            if(!generateCode.supportsLexer()) {
-                XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot generate the lexer because there is no lexer in this grammar.");
-                return;
-            }
-        } else {
-            if(!generateCode.supportsParser()) {
-                XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot generate the parser because there is no parser in this grammar.");
-                return;
-            }
-        }
 
         checkAndShowGeneratedCode(null, type);
     }
@@ -132,12 +93,32 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         }
     }
 
-    public void checkAndShowGeneratedCode(String rule, int type) {
-        if(!checkLanguage())
+    private void generateCodeProcess() {
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GENERATE_CODE);
+
+        if(!getSelectedEditor().ensureDocumentSaved())
             return;
 
-        if(!generateCode.isGeneratedTextFileExisting(type)
-                || generateCode.isFileModifiedSinceLastGeneration()
+        CheckGrammar checkGrammar = new CheckGrammar(getSelectedEditor(), this);
+        checkGrammar.check();
+    }
+
+    private void generateCodeProcessContinued() {
+        if(!getSelectedEditor().getDocument().autoSave())
+            return;
+
+        codeGenerate.setDebug(false);
+        codeGenerate.generateInThread(getSelectedEditor().getJavaContainer());
+    }
+
+    private void checkAndShowGeneratedCode(String rule, int type) {
+        if(!isKnownLanguage()) {
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Can only show generated grammar for Java language");
+            return;
+        }
+
+        if(!codeGenerate.isGeneratedTextFileExisting(type)
+                || codeGenerate.isFileModifiedSinceLastGeneration()
                 || getSelectedEditor().getDocument().isDirty()) {
             // Generate automatically the code and call again
             // this method (using actionShowCodeRule as flag)
@@ -151,24 +132,43 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         showGeneratedCode(rule, type);
     }
 
+    private boolean isKnownLanguage() {
+        String language = codeGenerate.getGrammarLanguage();
+        return language != null && language.equals("Java");
+    }
+
     private void showGeneratedCode(String rule, int type) {
-        CodeDisplay dc = new CodeDisplay(getSelectedEditor().getXJFrame());
-        String title;
+        ComponentEditorGrammar editor = getSelectedEditor();
+
+        String grammarName;
         try {
-            title = getSelectedEditor().getGrammarEngine().getGeneratedClassName(type)+".java";
+            grammarName = editor.getGrammarEngine().getGeneratedClassName(type);
         } catch (Exception e) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot cannot get the name of the generated file:\n"+e.toString());
+            XJAlert.display(editor.getWindowContainer(), "Error", "Unable to get the generated class name:\n"+e.toString());
+            return;
+        }
+        if(editor != rootGrammar) {
+            // if the current grammar is not a root grammar, concat its name with the root grammar
+            grammarName = rootGrammar.getGrammarEngine().getGrammarName()+"_"+grammarName;
+        }
+
+        String grammarFileName = grammarName+".java";
+        String grammarFile = XJUtils.concatPath(codeGenerate.getOutputPath(), grammarFileName);
+        if(!new File(grammarFile).exists()) {
+            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error",
+                    "The generated code does not exist. It is probably not supported by the grammar.");
             return;
         }
 
         String text;
         try {
-            text = generateCode.getGeneratedText(type);
+            text = XJUtils.getStringFromFile(grammarFile);
         } catch (Exception e) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Exception while reading the generated file:\n"+e.toString());
+            XJAlert.display(editor.getWindowContainer(), "Error", "Exception while reading the generated file:\n"+e.toString());
             return;
         }
 
+        String title = grammarFileName;
         if(rule != null) {
             int startIndex = text.indexOf("$ANTLR start "+rule);
             startIndex = text.indexOf("\n", startIndex)+1;
@@ -178,17 +178,19 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
 
             if(startIndex >= 0 && stopIndex >= 0) {
                 text = text.substring(startIndex, stopIndex);
-                title = rule;
+                title = rule + " [" + title + "]";
             } else {
-                XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Cannot find markers for rule \""+rule+"\"");
+                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot find markers for rule \""+rule+"\"");
                 return;
             }
         }
-        dc.setText(text);
-        dc.setTitle(title);
 
-        getSelectedEditor().addTab(dc);
-        getSelectedEditor().makeBottomComponentVisible();
+        CodeDisplay cd = new CodeDisplay(editor.getXJFrame());
+        cd.setText(text);
+        cd.setTitle(title);
+
+        editor.addTab(cd);
+        editor.makeBottomComponentVisible();
     }
 
     public boolean codeGenerateDisplaySuccess() {
@@ -202,15 +204,16 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         }
     }
 
-    public void checkGrammarDidBegin() {
+    public void checkGrammarDidBegin(CheckGrammar source) {
         // do nothing
     }
 
-    public void checkGrammarDidEnd(GrammarResult result) {
+    public void checkGrammarDidEnd(CheckGrammar source, GrammarResult result) {
         if(result.getErrorCount() == 0) {
             generateCodeProcessContinued();
         } else {
             XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
         }
+        source.close();
     }
 }

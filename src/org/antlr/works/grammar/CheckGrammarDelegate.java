@@ -34,6 +34,6 @@ package org.antlr.works.grammar;
 import org.antlr.works.grammar.antlr.GrammarResult;
 
 public interface CheckGrammarDelegate {
-    public void checkGrammarDidBegin();
-    public void checkGrammarDidEnd(GrammarResult errorMsg);
+    public void checkGrammarDidBegin(CheckGrammar source);
+    public void checkGrammarDidEnd(CheckGrammar source, GrammarResult errorMsg);
 }

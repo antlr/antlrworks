@@ -34,7 +34,6 @@ package org.antlr.works.generate;
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
@@ -139,20 +138,6 @@ public class CodeGenerate implements Runnable {
 
     public boolean isFileModifiedSinceLastGeneration() {
         return dateOfModificationOnDisk != editor.getDocument().getDateOfModificationOnDisk();
-    }
-
-    public boolean supportsLexer() {
-        int type = editor.getGrammarEngine().getType();
-        return type == ElementGrammarName.COMBINED || type == ElementGrammarName.LEXER;
-    }
-
-    public boolean supportsParser() {
-        int type = editor.getGrammarEngine().getType();
-        return type == ElementGrammarName.COMBINED || type == ElementGrammarName.PARSER || type == ElementGrammarName.TREEPARSER;
-    }
-
-    public String getGeneratedText(int type) throws Exception {
-        return XJUtils.getStringFromFile(getGeneratedFileName(type));
     }
 
     public void generateInThread(Container parent) {
