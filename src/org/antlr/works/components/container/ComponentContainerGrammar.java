@@ -755,7 +755,6 @@ public class ComponentContainerGrammar extends XJWindow
                     if(bottomTab.getSelectedIndex() < CLOSING_INDEX_LIMIT)
                         return;
 
-                    tabs.remove(bottomTab.getSelectedIndex());
                     bottomTab.removeTabAt(bottomTab.getSelectedIndex());
                 }
             });
