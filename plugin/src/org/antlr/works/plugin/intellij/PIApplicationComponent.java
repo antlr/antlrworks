@@ -62,7 +62,7 @@ public class PIApplicationComponent implements ApplicationComponent, Configurabl
         XJApplication.setPropertiesPath(IDE.PROPERTIES_PATH);
         XJApplication.setShared(new PCXJApplicationInterface(null));
 
-        FileTypeManager.getInstance().registerFileType(new PIFileType(), new String[] { "g" });
+        FileTypeManager.getInstance().registerFileType(new PIFileType(), "g");
 
         PIActionNewFile action = new PIActionNewFile();
         ActionManager.getInstance().registerAction("NewGrammarFile", action);

@@ -39,28 +39,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PCMenuHelpDelegate implements XJMenuItemDelegate {
 
-    private PluginContainer container;
+    private PluginWindow window;
 
-    public PCMenuHelpDelegate(PluginContainer pluginContainer) {
-        this.container = pluginContainer;
+    public PCMenuHelpDelegate(PluginWindow pluginWindow) {
+        this.window = pluginWindow;
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
         switch(item.getTag()) {
             case XJMainMenuBar.MI_ABOUT:
-                PluginContainer.showAbout();
+                PluginWindow.showAbout();
                 break;
             case XJMainMenuBar.MI_HELP:
-                IDE.showHelp(container.getParent());
+                IDE.showHelp(window.getParent());
                 break;
             case ComponentContainerGrammarMenu.MI_SUBMIT_STATS:
-                IDE.submitStats(container.getParent());
+                IDE.submitStats(window.getParent());
                 break;
             case ComponentContainerGrammarMenu.MI_SEND_FEEDBACK:
-                IDE.submitFeedback(container.getParent());
+                IDE.submitFeedback(window.getParent());
                 break;
             case ComponentContainerGrammarMenu.MI_CHECK_UPDATES:
-                IDE.checkUpdates(container.getParent());
+                IDE.checkUpdates(window.getParent());
                 break;
         }
     }

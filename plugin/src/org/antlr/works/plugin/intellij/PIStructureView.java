@@ -3,7 +3,7 @@ package org.antlr.works.plugin.intellij;
 import com.intellij.ide.structureView.StructureView;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
-import org.antlr.works.plugin.container.PluginContainer;
+import org.antlr.works.plugin.container.PluginWindow;
 
 import javax.swing.*;
 /*
@@ -40,11 +40,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class PIStructureView implements StructureView {
 
     public FileEditor fileEditor;
-    public PluginContainer container;
+    public PluginWindow window;
 
-    public PIStructureView(FileEditor fileEditor, Project project, PluginContainer container) {
+    public PIStructureView(FileEditor fileEditor, Project project, PluginWindow window) {
         this.fileEditor = fileEditor;
-        this.container = container;
+        this.window = window;
     }
 
     public FileEditor getFileEditor() {
@@ -56,7 +56,7 @@ public class PIStructureView implements StructureView {
     }
 
     public JComponent getComponent() {
-        return container.getRulesComponent();
+        return window.getRulesComponent();
     }
 
     public void dispose() {

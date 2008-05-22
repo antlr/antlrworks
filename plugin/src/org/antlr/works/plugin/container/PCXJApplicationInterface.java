@@ -41,12 +41,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PCXJApplicationInterface implements XJApplicationInterface {
 
-    private PluginContainer container;
+    private PluginWindow window;
     private List<XJWindow> emptyList = new ArrayList<XJWindow>();
-    private XJPreferences defaultPrefs = new XJPreferences(PluginContainer.class);
+    private XJPreferences defaultPrefs = new XJPreferences(PluginWindow.class);
 
-    public PCXJApplicationInterface(PluginContainer container) {
-        this.container = container;
+    public PCXJApplicationInterface(PluginWindow window) {
+        this.window = window;
     }
 
     public String getApplicationName() {
@@ -54,10 +54,10 @@ public class PCXJApplicationInterface implements XJApplicationInterface {
     }
 
     public XJPreferences getPreferences() {
-        if(container == null) {
+        if(window == null) {
             return defaultPrefs;
         } else {
-            return container.getPreferences();
+            return window.getPreferences();
         }
     }
 
@@ -66,10 +66,10 @@ public class PCXJApplicationInterface implements XJApplicationInterface {
     }
 
     public XJDocument getActiveDocument() {
-        if(container == null) {
+        if(window == null) {
             return null;
         } else {
-            return container.getDocument();
+            return window.getDocument();
         }
     }
 
@@ -117,7 +117,7 @@ public class PCXJApplicationInterface implements XJApplicationInterface {
     }
 
     public void displayAbout() {
-        PluginContainer.showAbout();
+        PluginWindow.showAbout();
     }
 
     public boolean useDesktopMode() {
@@ -125,7 +125,7 @@ public class PCXJApplicationInterface implements XJApplicationInterface {
     }
 
     public void displayHelp() {
-        IDE.showHelp(container==null?null:container.getParent());
+        IDE.showHelp(window ==null?null: window.getParent());
     }
 
     public boolean openDocuments(List<String> files) {
@@ -154,8 +154,8 @@ public class PCXJApplicationInterface implements XJApplicationInterface {
 
     public List<XJDocument> getDocuments() {
         List<XJDocument> l = new ArrayList<XJDocument>();
-        if(container != null) {
-            l.add(container.getDocument());
+        if(window != null) {
+            l.add(window.getDocument());
         }
         return l;
     }

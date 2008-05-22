@@ -33,9 +33,9 @@ package org.antlr.works.components.container;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.ComponentToolbar;
+import org.antlr.works.components.ComponentWindow;
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.document.ComponentDocumentFactory;
-import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.debugger.Debugger;
@@ -51,12 +51,9 @@ import org.antlr.works.menu.ActionDebugger;
 import org.antlr.works.menu.ActionGoTo;
 import org.antlr.works.menu.ActionRefactor;
 import org.antlr.works.menu.ContextualMenuFactory;
-import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
-import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
-import org.antlr.xjlib.appkit.frame.XJWindow;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
@@ -74,8 +71,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public class ComponentContainerGrammar extends XJWindow
-        implements ComponentContainer {
+public class ComponentContainerGrammar implements ComponentContainer {
 
     private final List<ComponentContainer> containers = new ArrayList<ComponentContainer>();
     private final Map<Component, ComponentContainer> componentToContainer = new HashMap<Component, ComponentContainer>();
@@ -103,16 +99,20 @@ public class ComponentContainerGrammar extends XJWindow
     private JSplitPane verticalSplit;
     private JSplitPane horizontalSplit;
 
-    private final List<EditorTab> tabs = new ArrayList<EditorTab>();
-
     private EditorsTabChangeListener etc;
     private MouseListener ml;
     private ChangeListener cl;
+    
+    private final List<EditorTab> tabs = new ArrayList<EditorTab>();
 
     private final Set<String> loadedGrammarFileNames = new HashSet<String>();
     private final Map<String, GrammarEngine> engines = new HashMap<String, GrammarEngine>();
 
-    public ComponentContainerGrammar() {
+    private final ComponentWindow window;
+
+    public ComponentContainerGrammar(ComponentWindow window) {
+        this.window = window;
+
         selectedContainer = this;
         containers.add(this);
 
@@ -121,10 +121,7 @@ public class ComponentContainerGrammar extends XJWindow
         toolbar = new ComponentToolbar(this);
     }
 
-    @Override
     public void awake() {
-        super.awake();
-
         componentContainerGrammarMenu.awake();
 
         debugger.awake();
@@ -185,35 +182,13 @@ public class ComponentContainerGrammar extends XJWindow
         panel.add(toolbarPanel, BorderLayout.NORTH);
         panel.add(horizontalSplit, BorderLayout.CENTER);
 
-        getContentPane().add(panel);
-        pack();
+        window.setContentPanel(panel);
     }
 
     public void refreshMainMenuBar() {
         if(getXJFrame().getMainMenuBar() != null) {
             getXJFrame().getMainMenuBar().refreshState();
         }
-    }
-
-    @Override
-    public String autosaveName() {
-        if(AWPrefs.getRestoreWindows())
-            return getDocument().getDocumentName();
-        else
-            return null;
-    }
-
-    @Override
-    public void setDefaultSize() {
-        if(XJApplication.shared().useDesktopMode()) {
-            super.setDefaultSize();
-            return;
-        }
-
-        Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        r.width *= 0.8;
-        r.height *= 0.8;
-        getRootPane().setPreferredSize(r.getSize());
     }
 
     public void addGrammar(ComponentContainer container) {
@@ -245,7 +220,7 @@ public class ComponentContainerGrammar extends XJWindow
             return false;
         }
 
-        addDocument(doc);
+        window.addDocument(doc);
         addGrammar(container);
 
         return true;
@@ -282,7 +257,6 @@ public class ComponentContainerGrammar extends XJWindow
         return getSelectedEditor();
     }
 
-    @Override
     public void dirtyChanged() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -313,6 +287,10 @@ public class ComponentContainerGrammar extends XJWindow
         }
     }
 
+    public ComponentToolbar getToolbar() {
+        return toolbar;
+    }
+
     public ComponentEditorGrammar getSelectedEditor() {
         return (ComponentEditorGrammar) getSelectedContainer().getEditor();
     }
@@ -337,22 +315,17 @@ public class ComponentContainerGrammar extends XJWindow
         return componentContainerGrammarMenu.getActionGoTo();
     }
 
-    public boolean close() {
-        return close(false);
-    }
-
     public void saveAll() {
         for(ComponentContainer container : containers) {
             container.getDocument().save(false);
         }
     }
 
-    @Override
-    public boolean close(boolean force) {
-        if(!super.close(force)) {
-            return false;
-        }
+    public ComponentContainerGrammarMenu getComponentContainerGrammarMenu() {
+        return componentContainerGrammarMenu;
+    }
 
+    public boolean close() {
         for(ComponentContainer container : containers) {
             if(container == this) continue;
             container.close();
@@ -375,14 +348,17 @@ public class ComponentContainerGrammar extends XJWindow
     }
 
     public void setDocument(ComponentDocument document) {
-        super.setDocument(document);
+        window.setDocument(document);
     }
 
     public ComponentDocument getDocument() {
-        return (ComponentDocument) super.getDocument();
+        return (ComponentDocument) window.getDocument();
     }
 
-    @Override
+    public Dimension getSize() {
+        return window.getSize();        
+    }
+
     public void becomingVisibleForTheFirstTime() {
         addGrammar(this);
         selectGrammar(this);
@@ -402,6 +378,10 @@ public class ComponentContainerGrammar extends XJWindow
         }
     }
 
+    public void setDirty() {
+        window.setDirty();
+    }
+
     public void createFile(String name) {
         String path = getEditor().getDocument().getDocumentFolder();
         String file = XJUtils.concatPath(path, name+".g");
@@ -409,7 +389,7 @@ public class ComponentContainerGrammar extends XJWindow
         try {
             XJUtils.writeStringToFile(content, file);
         } catch (IOException e) {
-            XJAlert.display(getJavaContainer(), "Create File Error",
+            XJAlert.display(window.getJavaContainer(), "Create File Error",
                     "Cannot create file '"+name+"' because:\n"+e.toString());
             return;
         }
@@ -426,43 +406,33 @@ public class ComponentContainerGrammar extends XJWindow
     }
 
     public XJFrameInterface getXJFrame() {
-        return this;
+        return window;
     }
 
-    @Override
+    public XJMainMenuBar getMainMenuBar() {
+        return window.getMainMenuBar();
+    }
+
     public void customizeFileMenu(XJMenu menu) {
         componentContainerGrammarMenu.customizeFileMenu(menu);
     }
 
-    @Override
     public void customizeMenuBar(XJMainMenuBar menubar) {
         componentContainerGrammarMenu.customizeMenuBar(menubar);
     }
 
-    @Override
     public void menuItemState(XJMenuItem item) {
         componentContainerGrammarMenu.menuItemState(item);
     }
 
-    @Override
     public void handleMenuSelected(XJMenu menu) {
         componentContainerGrammarMenu.handleMenuSelected(menu);
     }
 
-    @Override
     public void windowActivated() {
-        super.windowActivated();
-
         for(ComponentContainer container : containers) {
             container.getEditor().componentActivated();
         }
-    }
-
-    @Override
-    public void windowDocumentPathDidChange(XJDocument doc) {
-        // Called when the document associated file has changed on the disk
-        ComponentDocumentGrammar g = (ComponentDocumentGrammar) doc;
-        g.getEditor().componentDocumentContentChanged();
     }
 
     public ContextualMenuFactory createContextualMenuFactory() {
@@ -601,7 +571,7 @@ public class ComponentContainerGrammar extends XJWindow
 
         editor.refreshMainMenuBar();
 
-        setTitle(selectedContainer.getDocument().getDocumentPath());
+        window.setTitle(selectedContainer.getDocument().getDocumentPath());
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

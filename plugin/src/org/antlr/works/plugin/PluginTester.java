@@ -1,13 +1,11 @@
 package org.antlr.works.plugin;
 
 import org.antlr.works.IDE;
-import org.antlr.works.components.editor.ComponentEditorGrammarDefaultDelegate;
 import org.antlr.works.plugin.container.PCXJApplicationDelegate;
-import org.antlr.works.plugin.container.PluginContainer;
+import org.antlr.works.plugin.container.PluginWindow;
 import org.antlr.xjlib.appkit.app.XJApplication;
 
 import javax.swing.*;
-import java.awt.*;
 /*
 
 [The "BSD licence"]
@@ -41,16 +39,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PluginTester {
 
-    public PluginContainer container;
-    protected JSplitPane vertical;
+    private PluginWindow window;
+    private JSplitPane vertical;
 
     private void createAndShowGUI() {
         XJApplication.setDelegate(new PCXJApplicationDelegate());
         XJApplication.setPropertiesPath(IDE.PROPERTIES_PATH);
         
-        container = new PluginContainer();
-        container.load("/Users/bovet/Grammars/syntax.g");
-        assemble();
+        window = new PluginWindow();
+        window.load("/Users/bovet/Grammars/syntax.g");
 
         JFrame.setDefaultLookAndFeelDecorated(true);
 
@@ -58,41 +55,16 @@ public class PluginTester {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(900, 600);
 
-        frame.add(container.getRootPane());
+        frame.add(window.getRootPane());
 
         frame.pack();
         frame.setVisible(true);
-        container.becomingVisibleForTheFirstTime();
-        vertical.setDividerLocation((int)(container.getContentPane().getHeight()*0.5));
+        window.becomingVisibleForTheFirstTime();
+        vertical.setDividerLocation((int)(window.getContentPane().getHeight()*0.5));
     }
 
     public void assemble() {
-        JSplitPane horizontal = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        horizontal.setLeftComponent(container.getRulesComponent());
-        horizontal.setRightComponent(container.getEditorComponent());
-        horizontal.setBorder(null);
-        horizontal.setContinuousLayout(true);
-        horizontal.setOneTouchExpandable(true);
-
-        vertical = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        vertical.setTopComponent(horizontal);
-        vertical.setBottomComponent(container.getTabbedComponent());
-        vertical.setBorder(null);
-        vertical.setContinuousLayout(true);
-        vertical.setOneTouchExpandable(true);
-
-        JPanel upperPanel = new JPanel(new BorderLayout());
-        upperPanel.add(container.getMenubarComponent(), BorderLayout.NORTH);
-        upperPanel.add(container.getToolbarComponent(), BorderLayout.CENTER);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(upperPanel, BorderLayout.NORTH);
-        panel.add(vertical, BorderLayout.CENTER);
-        panel.add(container.getStatusComponent(), BorderLayout.SOUTH);
-
-        container.setEditorGrammarDelegate(new ComponentEditorGrammarDefaultDelegate(vertical));
-
-        container.getContentPane().add(panel);
+//        window.getContentPane().add(panel);
     }
 
     public static void main(String[] args) {

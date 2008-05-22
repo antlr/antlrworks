@@ -36,19 +36,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PCMenuBarDelegate implements XJMenuBarDelegate {
 
-    private PluginContainer container;
+    private PluginWindow window;
 
-    public PCMenuBarDelegate(PluginContainer container) {
-        this.container = container;
+    public PCMenuBarDelegate(PluginWindow window) {
+        this.window = window;
     }
 
     public void menuItemState(XJMenuItem item) {
         // todo
-        //container.getEditor().menuItemState(item);
+        //window.getEditor().menuItemState(item);
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
-        container.getXJFrame().handleMenuEvent(menu, item);
+        window.getXJFrame().handleMenuEvent(menu, item);
     }
 
     public void handleMenuSelected(XJMenu menu) {

@@ -11,6 +11,8 @@ import org.antlr.works.menu.ActionRefactor;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
 
 import javax.swing.*;
 import java.awt.*;/*
@@ -56,6 +58,14 @@ public class ComponentContainerInternal implements ComponentContainer {
 
     public ComponentContainer getMainContainer() {
         return mainContainer;
+    }
+
+    public void awake() {
+        mainContainer.awake();
+    }
+
+    public void dirtyChanged() {
+        mainContainer.dirtyChanged();
     }
 
     public void createFile(String name) {
@@ -144,8 +154,7 @@ public class ComponentContainerInternal implements ComponentContainer {
     }
 
     public void documentLoaded(ComponentDocument document) {
-        // todo debug only
-        System.out.println("Document "+document.getDocumentName()+" loaded");
+        mainContainer.documentLoaded(document);
     }
 
     public void editorParsed(ComponentEditor editor) {
@@ -174,5 +183,25 @@ public class ComponentContainerInternal implements ComponentContainer {
 
     public ActionGoTo getActionGoTo() {
         return mainContainer.getActionGoTo();
+    }
+
+    public void windowActivated() {
+        mainContainer.windowActivated();
+    }
+
+    public void customizeFileMenu(XJMenu menu) {
+        mainContainer.customizeFileMenu(menu);
+    }
+
+    public void customizeMenuBar(XJMainMenuBar menubar) {
+        mainContainer.customizeMenuBar(menubar);
+    }
+
+    public void menuItemState(XJMenuItem item) {
+        mainContainer.menuItemState(item);
+    }
+
+    public void handleMenuSelected(XJMenu menu) {
+        mainContainer.handleMenuSelected(menu);
     }
 }

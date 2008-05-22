@@ -11,6 +11,8 @@ import org.antlr.works.menu.ActionRefactor;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,6 +49,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public interface ComponentContainer {
 
+    void awake();
+    void dirtyChanged();
+    
     void createFile(String name);
 
     public void setEditor(ComponentEditor editor);
@@ -91,4 +96,11 @@ public interface ComponentContainer {
     ActionRefactor getActionRefactor();
     ActionGoTo getActionGoTo();
 
+    void windowActivated();
+
+    void customizeFileMenu(XJMenu menu);
+    void customizeMenuBar(XJMainMenuBar menubar);
+
+    void menuItemState(XJMenuItem item);
+    void handleMenuSelected(XJMenu menu);
 }

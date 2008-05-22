@@ -45,11 +45,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PCXJFrameInterface implements XJFrameInterface {
 
-    private PluginContainer container;
+    private PluginWindow window;
     private XJUndoEngine undoEngine;
 
-    public PCXJFrameInterface(PluginContainer container) {
-        this.container = container;
+    public PCXJFrameInterface(PluginWindow window) {
+        this.window = window;
         undoEngine = new XJUndoEngine();
     }
 
@@ -70,19 +70,19 @@ public class PCXJFrameInterface implements XJFrameInterface {
     }
 
     public XJMainMenuBar getMainMenuBar() {
-        return container.getMainMenuBar();
+        return window.getMainMenuBar();
     }
 
     public Container getJavaContainer() {
-        return container.getContentPane();
+        return window.getContentPane();
     }
 
     public JLayeredPane getLayeredPane() {
-        return container.getLayeredPane();
+        return window.getLayeredPane();
     }
 
     public JRootPane getRootPane() {
-        return container.getRootPane();
+        return window.getRootPane();
     }
 
     private void performUndo() {

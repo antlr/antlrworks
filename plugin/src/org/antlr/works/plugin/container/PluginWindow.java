@@ -1,29 +1,22 @@
 package org.antlr.works.plugin.container;
 
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CustomShortcutSet;
+import org.antlr.works.components.ComponentWindow;
 import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.document.ComponentDocumentGrammar;
-import org.antlr.works.components.editor.ComponentEditor;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.components.editor.ComponentEditorGrammarDefaultDelegate;
-import org.antlr.works.components.toolbar.ComponentToolbar;
-import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.DialogAbout;
-import org.antlr.works.editor.EditorTab;
-import org.antlr.works.menu.ActionDebugger;
-import org.antlr.works.menu.ActionRefactor;
-import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJPreferences;
+import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
 import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
+import org.antlr.xjlib.appkit.undo.XJUndo;
+import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,14 +51,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class PluginContainer implements ComponentContainer {
+public class PluginWindow implements ComponentWindow {
     
     private JRootPane rootPane;
-    private ComponentEditorGrammar editor;
+    private ComponentContainerGrammar container;
 
     private XJPreferences prefs;
     private ComponentDocumentGrammar document;
-    private ComponentToolbar toolbar;
     private XJMainMenuBar mainMenuBar;
 
     private PCXJFrameInterface frameInterface;
@@ -73,7 +65,9 @@ public class PluginContainer implements ComponentContainer {
     private PCXJApplicationInterface appInterface = new PCXJApplicationInterface(this);
     private PluginContainerDelegate delegate;
 
-    public PluginContainer() {
+    private ComponentContainer componentContainer;
+
+    public PluginWindow() {
         XJApplication.setShared(appInterface);
         
         frameInterface = new PCXJFrameInterface(this);
@@ -82,13 +76,6 @@ public class PluginContainer implements ComponentContainer {
         rootPane = new JRootPane();
 
         prefs = new XJPreferences(getClass());
-
-        document = new ComponentDocumentFactory().createInternalDocument(this);
-
-        editor = (ComponentEditorGrammar) document.getEditor();
-        editor.awake();
-
-        toolbar = new ComponentToolbar(this);
 
         mainMenuBar = new XJMainMenuBar();
         mainMenuBar.setDelegate(new PCMenuBarDelegate(this));
@@ -112,7 +99,7 @@ public class PluginContainer implements ComponentContainer {
         }   */
     }
 
-    public void registerKeyBinding(KeyStroke ks, final String action) {
+    /*public void registerKeyBinding(KeyStroke ks, final String action) {
         AnAction a = new AnAction() {
             public void actionPerformed(AnActionEvent event) {
                 editor.getTextPane().getActionMap().get(action).actionPerformed(null);
@@ -123,15 +110,16 @@ public class PluginContainer implements ComponentContainer {
         ActionManager.getInstance().registerAction(uniqueAction, a);
         a.registerCustomShortcutSet(new CustomShortcutSet(ks),
                 editor.getTextPane());
-    }
+    } */
 
     public void setDelegate(PluginContainerDelegate delegate) {
         this.delegate = delegate;
     }
 
-    public void setEditorGrammarDelegate(ComponentEditorGrammarDefaultDelegate delegate) {
+    // todo find out if the delegate class is needed
+/*    public void setEditorGrammarDelegate(ComponentEditorGrammarDefaultDelegate delegate) {
         editor.setDelegate(delegate);
-    }
+    }*/
 
     public XJMenuItemDelegate getMenuHelpDelegate() {
         return menuHelpDelegate;
@@ -147,31 +135,6 @@ public class PluginContainer implements ComponentContainer {
 
     public JRootPane getRootPane() {
         return rootPane;
-    }
-
-    public JComponent getEditorComponent() {
-        return editor.getTextEditor();
-    }
-
-    public JComponent getRulesComponent() {
-        return editor.getRulesComponent();
-    }
-
-    public JComponent getTabbedComponent() {
-        return null;
-        //return editor.getTabbedComponent();
-    }
-
-    public JComponent getMenubarComponent() {
-        return mainMenuBar.getJMenuBar();
-    }
-
-    public JComponent getToolbarComponent() {
-        return toolbar.getToolbar();
-    }
-
-    public JComponent getStatusComponent() {
-        return editor.getStatusComponent();
     }
 
     public void load(String file) {
@@ -192,8 +155,7 @@ public class PluginContainer implements ComponentContainer {
     }
 
     public void becomingVisibleForTheFirstTime() {
-        editor.componentDidAwake();
-        editor.componentShouldLayout(rootPane.getSize());
+        container.becomingVisibleForTheFirstTime();
     }
 
     public static void showAbout() {
@@ -208,119 +170,85 @@ public class PluginContainer implements ComponentContainer {
 
     }
 
-    // ******** ComponentContainer **********
-
     public boolean close() {
-        editor.close();
-        return true;
+        return container.close();
     }
 
-    public ComponentEditor getEditor() {
-        return editor;
-    }
+    // ComponentWindow
 
     public void setDirty() {
         if(delegate != null)
             delegate.pluginDocumentDidChange();
     }
 
+    public void setTitle(String title) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setComponentContainer(ComponentContainer componentContainer) {
+        this.componentContainer = componentContainer;
+    }
+
+    public ComponentContainer getComponentContainer() {
+        return componentContainer;
+    }
+
+    public void setContentPanel(JPanel panel) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void addDocument(XJDocument doc) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setDocument(XJDocument document) {
+        this.document = (ComponentDocumentGrammar) document;
+    }
+
     public ComponentDocument getDocument() {
         return document;
-    }
-
-    public XJFrameInterface getXJFrame() {
-        return frameInterface;
-    }
-
-    public XJMainMenuBar getMainMenuBar() {
-        return mainMenuBar;
-    }
-
-    public void setEditor(ComponentEditor editor) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void setDocument(ComponentDocument document) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public Dimension getSize() {
         return rootPane.getSize();
     }
 
-    public ContextualMenuFactory createContextualMenuFactory() {
-
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public XJFrameInterface getXJFrame() {
+        return frameInterface;
     }
 
-    public JPopupMenu getContextualMenu(int textIndex) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    // XJFrameInterface
+
+    public void registerUndo(XJUndoDelegate delegate, JTextPane textPane) {
+        frameInterface.registerUndo(delegate, textPane);
     }
 
-    public EditorTab getSelectedTab() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public void unregisterUndo(XJUndoDelegate delegate) {
+        frameInterface.unregisterUndo(delegate);
     }
 
-    public void selectTab(Component c) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public XJUndo getUndo(JTextPane textPane) {
+        return frameInterface.getUndo(textPane);
     }
 
-    public void addTab(EditorTab tab) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public XJUndo getCurrentUndo() {
+        return frameInterface.getCurrentUndo();
     }
 
-    public void documentLoaded(ComponentDocument document) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public XJMainMenuBar getMainMenuBar() {
+        return mainMenuBar;
     }
 
-    public void editorParsed(ComponentEditor editor) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
+        frameInterface.handleMenuEvent(menu, item);
     }
 
-    public void selectConsoleTab(ComponentEditor editor) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public Container getJavaContainer() {
+        return frameInterface.getJavaContainer();
     }
 
-    public void selectInterpreterTab(ComponentEditor editor) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void selectSyntaxDiagramTab(ComponentEditor editor) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public ComponentEditorGrammar selectGrammar(String name) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void editorContentChanged() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    // ----- ComponentToolbarDelegate
-
-    public Debugger getDebugger() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public ActionDebugger getActionDebugger() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public ActionRefactor getActionRefactor() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public ComponentEditorGrammar getSelectedEditor() {
-        return editor;
-    }
-
-    public void debug() {
-
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void debugAgain() {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public JComponent getRulesComponent() {
+        // todo 
+        return null;
     }
 }

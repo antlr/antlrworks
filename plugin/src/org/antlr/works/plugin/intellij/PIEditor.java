@@ -9,13 +9,11 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.ReadonlyStatusHandler;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.antlr.works.components.editor.ComponentEditorGrammarDefaultDelegate;
-import org.antlr.works.plugin.container.PluginContainer;
 import org.antlr.works.plugin.container.PluginContainerDelegate;
+import org.antlr.works.plugin.container.PluginWindow;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
@@ -56,7 +54,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PIEditor implements FileEditor, PluginContainerDelegate {
 
-    protected PluginContainer container;
+    protected PluginWindow window;
     protected Project project;
     protected VirtualFile virtualFile;
     protected Document document;
@@ -75,9 +73,9 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
         this.virtualFile = file;
         this.document = FileDocumentManager.getInstance().getDocument(this.virtualFile);
 
-        container = new PluginContainer();
-        container.load(VfsUtil.virtualToIoFile(virtualFile).getPath());
-        container.setDelegate(this);
+        window = new PluginWindow();
+        window.load(VfsUtil.virtualToIoFile(virtualFile).getPath());
+        window.setDelegate(this);
 
         assemble();
         register();
@@ -97,28 +95,11 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     }
 
     public void assemble() {
-        vertical = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        vertical.setTopComponent(container.getEditorComponent());
-        vertical.setBottomComponent(container.getTabbedComponent());
-        vertical.setBorder(null);
-        vertical.setContinuousLayout(true);
-        vertical.setOneTouchExpandable(true);
-
-        JPanel upperPanel = new JPanel(new BorderLayout());
-        upperPanel.add(container.getMenubarComponent(), BorderLayout.NORTH);
-        upperPanel.add(container.getToolbarComponent(), BorderLayout.CENTER);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(upperPanel, BorderLayout.NORTH);
-        panel.add(vertical, BorderLayout.CENTER);
-        panel.add(container.getStatusComponent(), BorderLayout.SOUTH);
-
-        container.setEditorGrammarDelegate(new ComponentEditorGrammarDefaultDelegate(vertical));
-        container.getContentPane().add(panel);
+        window.getContentPane().add(window.getContentPane());
     }
 
     public void register() {
-        container.getContentPane().addComponentListener(new ComponentAdapter() {
+        window.getContentPane().addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 layout();
@@ -140,11 +121,11 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     }
 
     public void load(String file) {
-        container.load(file);
+        window.load(file);
     }
 
     public void save() {
-        container.getDocument().autoSave();
+        window.getDocument().autoSave();
         notifyFileModified();
     }
 
@@ -153,8 +134,8 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
      */
     public void layout() {
         if(!layout) {
-            vertical.setDividerLocation((int)(container.getContentPane().getHeight()*0.5));
-            container.becomingVisibleForTheFirstTime();
+            vertical.setDividerLocation((int)(window.getContentPane().getHeight()*0.5));
+            window.becomingVisibleForTheFirstTime();
             layout = true;
         }
     }
@@ -195,11 +176,11 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
 
     @NotNull
     public JComponent getComponent() {
-        return container.getRootPane();
+        return window.getRootPane();
     }
 
     public JComponent getPreferredFocusedComponent() {
-        return container.getEditorComponent();
+        return window.getComponentContainer().getSelectedEditor().getTextEditor();
     }
 
     @NotNull
@@ -220,7 +201,7 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     }
 
     public boolean isModified() {
-        return container.getDocument().isDirty();
+        return window.getDocument().isDirty();
     }
 
     public boolean isValid() {
@@ -228,11 +209,11 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     }
 
     public void selectNotify() {
-        container.activate();
+        window.activate();
     }
 
     public void deselectNotify() {
-        container.deactivate();
+        window.deactivate();
         save();
     }
 
@@ -253,7 +234,7 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     }
 
     public StructureViewBuilder getStructureViewBuilder() {
-        return new PIStructureViewBuilder(container);
+        return new PIStructureViewBuilder(window);
     }
 
     public <T> T getUserData(Key<T> tKey) {

@@ -39,10 +39,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PCMenuCustomizer implements XJMenuBarCustomizer {
 
-    private PluginContainer container;
+    private PluginWindow window;
 
-    public PCMenuCustomizer(PluginContainer pluginContainer) {
-        this.container = pluginContainer;
+    public PCMenuCustomizer(PluginWindow pluginWindow) {
+        this.window = pluginWindow;
     }
 
     public void customizeFileMenu(XJMenu menu) {
@@ -57,17 +57,17 @@ public class PCMenuCustomizer implements XJMenuBarCustomizer {
     public void customizeHelpMenu(XJMenu menu) {
         if(XJSystem.isMacOS()) {
             // XJMainMenuBar adds the About item for non-MacOS system
-            menu.insertItemAfter(new XJMenuItem("About", XJMainMenuBar.MI_ABOUT, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
+            menu.insertItemAfter(new XJMenuItem("About", XJMainMenuBar.MI_ABOUT, window.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
             menu.insertSeparatorAfter(XJMainMenuBar.MI_HELP);
         }
-        menu.insertItemAfter(new XJMenuItem("Check for Updates", ComponentContainerGrammarMenu.MI_CHECK_UPDATES, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
-        menu.insertItemAfter(new XJMenuItem("Send Feedback", ComponentContainerGrammarMenu.MI_SEND_FEEDBACK, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
-        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", ComponentContainerGrammarMenu.MI_SUBMIT_STATS, container.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Check for Updates", ComponentContainerGrammarMenu.MI_CHECK_UPDATES, window.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Send Feedback", ComponentContainerGrammarMenu.MI_SEND_FEEDBACK, window.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", ComponentContainerGrammarMenu.MI_SUBMIT_STATS, window.getMenuHelpDelegate()), XJMainMenuBar.MI_HELP);
         menu.insertSeparatorAfter(XJMainMenuBar.MI_HELP);
     }
 
     public void customizeMenuBar(XJMainMenuBar menubar) {
         // todo
-        //container.getEditor().customizeMenuBar(menubar);
+        //window.getEditor().customizeMenuBar(menubar);
     }
 }

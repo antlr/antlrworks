@@ -1,7 +1,7 @@
 package org.antlr.works.components.document;
 
+import org.antlr.works.components.ComponentWindowImpl;
 import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.components.container.ComponentContainerInternal;
 import org.antlr.works.components.container.ComponentDocumentInternal;
 import org.antlr.works.components.editor.ComponentEditor;
@@ -44,7 +44,7 @@ public class ComponentDocumentFactory extends XJDocumentFactory {
 
     public ComponentDocumentFactory() {
         super(ComponentDocumentGrammar.class,
-                ComponentContainerGrammar.class,
+                ComponentWindowImpl.class,
                 XJDataPlainText.class,
                 "g",
                 Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));

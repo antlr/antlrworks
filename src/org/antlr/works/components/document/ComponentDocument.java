@@ -1,5 +1,6 @@
 package org.antlr.works.components.document;
 
+import org.antlr.works.components.ComponentWindow;
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
@@ -55,7 +56,7 @@ public abstract class ComponentDocument extends XJDocument {
         if(container != null) {
             return container;
         } else {
-            return (ComponentContainer) getWindow();
+            return ((ComponentWindow) getWindow()).getComponentContainer();
         }
     }
 

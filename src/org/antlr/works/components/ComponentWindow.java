@@ -1,14 +1,16 @@
-package org.antlr.works.plugin.intellij;
+package org.antlr.works.components;
 
-import com.intellij.ide.structureView.StructureView;
-import com.intellij.ide.structureView.StructureViewBuilder;
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.project.Project;
-import org.antlr.works.plugin.container.PluginWindow;
+import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+
+import javax.swing.*;
+import java.awt.*;
+
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005-08 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -35,17 +37,21 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+public interface ComponentWindow extends XJFrameInterface {
 
-public class PIStructureViewBuilder implements StructureViewBuilder {
+    void setTitle(String title);
+    
+    void setComponentContainer(ComponentContainer componentContainer);
+    ComponentContainer getComponentContainer();
 
-    public PluginWindow window;
+    void setContentPanel(JPanel panel);
 
-    public PIStructureViewBuilder(PluginWindow window) {
-        this.window = window;
-    }
+    void addDocument(XJDocument doc);
+    void setDocument(XJDocument document);
+    XJDocument getDocument();
 
-    public StructureView createStructureView(FileEditor fileEditor, Project project) {
-        return new PIStructureView(fileEditor, project, window);
-    }
+    void setDirty();
+
+    Dimension getSize();
 
 }
