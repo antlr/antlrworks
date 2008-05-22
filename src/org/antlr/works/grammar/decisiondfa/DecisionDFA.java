@@ -76,7 +76,7 @@ public class DecisionDFA extends GrammarDOTTab {
             throw new Exception("No decision in the current line");
 
         CodeGenerator generator = new CodeGenerator(new Tool(), g,
-                (String) engine.getDiscoveredParserGrammar().getOption("language"));
+                (String) g.getOption("language"));
 
         DFA dfa = g.getLookaheadDFAFromPositionInFile(line, adjustedColumn);
         decisionNumber = dfa.getDecisionNumber();
@@ -88,6 +88,8 @@ public class DecisionDFA extends GrammarDOTTab {
     }
 
     public int getDecisionColumn(Grammar g) {
+        if(g == null) return -1;
+        
         List columns = g.getLookaheadDFAColumnsForLineInFile(line);
         // sort the columns as they appears to be not always in ascending order
         Collections.sort(columns);
