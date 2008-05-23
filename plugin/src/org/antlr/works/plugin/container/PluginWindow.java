@@ -65,8 +65,6 @@ public class PluginWindow implements ComponentWindow {
     private PCXJApplicationInterface appInterface = new PCXJApplicationInterface(this);
     private PluginContainerDelegate delegate;
 
-    private ComponentContainer componentContainer;
-
     public PluginWindow() {
         XJApplication.setShared(appInterface);
         
@@ -80,9 +78,8 @@ public class PluginWindow implements ComponentWindow {
         mainMenuBar = new XJMainMenuBar();
         mainMenuBar.setDelegate(new PCMenuBarDelegate(this));
         mainMenuBar.setCustomizer(new PCMenuCustomizer(this));
-        mainMenuBar.createMenuBar(XJMainMenuBar.IGNORE_FILEMENU 
-                | XJMainMenuBar.IGNORE_WINDOWMENU);
 
+        container = new ComponentContainerGrammar(this);
 
         // Must register custom action in order to override the default mechanism in IntelliJ 7
         // todo add back (don't use with plugin tester)
@@ -112,11 +109,52 @@ public class PluginWindow implements ComponentWindow {
                 editor.getTextPane());
     } */
 
+    public void awake() {
+        container.awake();
+        container.assemble(true);
+
+        mainMenuBar.createMenuBar(XJMainMenuBar.IGNORE_FILEMENU
+                | XJMainMenuBar.IGNORE_WINDOWMENU);
+        
+        rootPane.setContentPane(container.getEditorComponent());
+        rootPane.setMenuBar(mainMenuBar.getJMenuBar());        
+    }
+
+    public void show() {
+        // todo?
+    }
+
+    public void bringToFront() {
+        // todo?
+    }
+
+    public boolean isMaximized() {
+        return true;
+    }
+
+    public void offsetPosition(int x, int y) {
+        // ignore
+    }
+
+    public boolean isCompletelyOnScreen() {
+        return true;
+    }
+
+    public boolean performClose(boolean force) {
+        // todo?
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public void setDelegate(PluginContainerDelegate delegate) {
         this.delegate = delegate;
     }
 
-    // todo find out if the delegate class is needed
+    // todo probably not used?
+    public void setContainer(ComponentContainerGrammar container) {
+        this.container = container;
+    }
+    
+// todo find out if the delegate class is needed
 /*    public void setEditorGrammarDelegate(ComponentEditorGrammarDefaultDelegate delegate) {
         editor.setDelegate(delegate);
     }*/
@@ -181,24 +219,29 @@ public class PluginWindow implements ComponentWindow {
             delegate.pluginDocumentDidChange();
     }
 
-    public void setTitle(String title) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void resetDirty() {
+        // todo?
     }
 
+    public void setTitle(String title) {
+        // todo?
+    }
+
+    // @todo used?
     public void setComponentContainer(ComponentContainer componentContainer) {
-        this.componentContainer = componentContainer;
+        this.container = (ComponentContainerGrammar) componentContainer;
     }
 
     public ComponentContainer getComponentContainer() {
-        return componentContainer;
+        return container;
     }
 
     public void setContentPanel(JPanel panel) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        getContentPane().add(panel);
     }
 
     public void addDocument(XJDocument doc) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.document = (ComponentDocumentGrammar) doc;
     }
 
     public void setDocument(XJDocument document) {
@@ -247,8 +290,4 @@ public class PluginWindow implements ComponentWindow {
         return frameInterface.getJavaContainer();
     }
 
-    public JComponent getRulesComponent() {
-        // todo 
-        return null;
-    }
 }

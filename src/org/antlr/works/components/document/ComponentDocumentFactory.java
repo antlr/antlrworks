@@ -1,6 +1,5 @@
 package org.antlr.works.components.document;
 
-import org.antlr.works.components.ComponentWindowImpl;
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.components.container.ComponentContainerInternal;
 import org.antlr.works.components.container.ComponentDocumentInternal;
@@ -42,9 +41,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ComponentDocumentFactory extends XJDocumentFactory {
 
-    public ComponentDocumentFactory() {
+    // todo provide factory?
+    public ComponentDocumentFactory(Class windowClass) {
         super(ComponentDocumentGrammar.class,
-                ComponentWindowImpl.class,
+                windowClass,
                 XJDataPlainText.class,
                 "g",
                 Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));

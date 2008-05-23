@@ -50,6 +50,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public interface ComponentContainer {
 
     void awake();
+    void assemble(boolean separateRules);
     void dirtyChanged();
     
     void createFile(String name);
@@ -103,4 +104,7 @@ public interface ComponentContainer {
 
     void menuItemState(XJMenuItem item);
     void handleMenuSelected(XJMenu menu);
+
+    JComponent getRulesComponent();
+    JComponent getEditorComponent();
 }

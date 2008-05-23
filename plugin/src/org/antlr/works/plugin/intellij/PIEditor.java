@@ -9,7 +9,9 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.ReadonlyStatusHandler;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.plugin.container.PluginContainerDelegate;
+import org.antlr.works.plugin.container.PluginFactory;
 import org.antlr.works.plugin.container.PluginWindow;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,11 +75,26 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
         this.virtualFile = file;
         this.document = FileDocumentManager.getInstance().getDocument(this.virtualFile);
 
-        window = new PluginWindow();
-        window.load(VfsUtil.virtualToIoFile(virtualFile).getPath());
+        ComponentDocument document;
+        try {
+            document = PluginFactory.getInstance().createDocument();
+        } catch (Exception e) {
+            System.err.println("Cannot create the document:");
+            e.printStackTrace();
+            return;
+        }
+        document.awake();
+        try {
+            document.load(VfsUtil.virtualToIoFile(virtualFile).getPath());
+        } catch (Exception e) {
+            System.err.println("Cannot load the document:");
+            e.printStackTrace();
+        }
+
+        window = (PluginWindow) document.getWindow();
+        // todo used?
         window.setDelegate(this);
 
-        assemble();
         register();
     }
 
@@ -92,10 +109,6 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
                 e.save();
             }
         }
-    }
-
-    public void assemble() {
-        window.getContentPane().add(window.getContentPane());
     }
 
     public void register() {
@@ -125,16 +138,18 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     }
 
     public void save() {
+        // todo does it save all the internal documents too?
         window.getDocument().autoSave();
         notifyFileModified();
     }
 
-    /** Perform the layout only once, when the component resize for the first time.
+    /**
+     * Perform the layout only once, when the component resizes for the first time.
      *
      */
     public void layout() {
         if(!layout) {
-            vertical.setDividerLocation((int)(window.getContentPane().getHeight()*0.5));
+            //vertical.setDividerLocation((int)(window.getContentPane().getHeight()*0.5));
             window.becomingVisibleForTheFirstTime();
             layout = true;
         }

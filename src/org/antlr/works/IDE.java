@@ -33,6 +33,7 @@ package org.antlr.works;
 
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
+import org.antlr.works.components.ComponentWindowImpl;
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.document.ComponentDocumentGrammar;
@@ -115,7 +116,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     public void appDidLaunch(String[] args, List<String> documentsToOpenAtStartup) {
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
 
-        XJApplication.addDocumentFactory(new ComponentDocumentFactory());
+        XJApplication.addDocumentFactory(new ComponentDocumentFactory(ComponentWindowImpl.class));
         XJApplication.addScheduledTimer(new HelpManager(), 1, true);
 
         AWPrefsDialog.applyCommonPrefs();

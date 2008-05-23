@@ -10,7 +10,6 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import org.antlr.works.IDE;
 import org.antlr.works.plugin.container.PCXJApplicationDelegate;
-import org.antlr.works.plugin.container.PCXJApplicationInterface;
 import org.antlr.works.prefs.AWPrefsDialog;
 import org.antlr.works.utils.IconManager;
 import org.antlr.xjlib.appkit.app.XJApplication;
@@ -60,7 +59,6 @@ public class PIApplicationComponent implements ApplicationComponent, Configurabl
     public void initComponent() {
         XJApplication.setDelegate(new PCXJApplicationDelegate());
         XJApplication.setPropertiesPath(IDE.PROPERTIES_PATH);
-        XJApplication.setShared(new PCXJApplicationInterface(null));
 
         FileTypeManager.getInstance().registerFileType(new PIFileType(), "g");
 

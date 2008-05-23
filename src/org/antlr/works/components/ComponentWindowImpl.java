@@ -56,6 +56,7 @@ public class ComponentWindowImpl extends XJWindow implements ComponentWindow {
     public void awake() {
         super.awake();
         componentContainer.awake();
+        componentContainer.assemble(false);
     }
 
     public void setComponentContainer(ComponentContainer componentContainer) {

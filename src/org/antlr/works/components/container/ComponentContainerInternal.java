@@ -61,7 +61,12 @@ public class ComponentContainerInternal implements ComponentContainer {
     }
 
     public void awake() {
+        // todo is it invoked? from where?
         mainContainer.awake();
+    }
+
+    public void assemble(boolean separateRules) {
+        // do nothing
     }
 
     public void dirtyChanged() {
@@ -203,5 +208,13 @@ public class ComponentContainerInternal implements ComponentContainer {
 
     public void handleMenuSelected(XJMenu menu) {
         mainContainer.handleMenuSelected(menu);
+    }
+
+    public JComponent getRulesComponent() {
+        return mainContainer.getRulesComponent();
+    }
+
+    public JComponent getEditorComponent() {
+        return mainContainer.getEditorComponent();
     }
 }

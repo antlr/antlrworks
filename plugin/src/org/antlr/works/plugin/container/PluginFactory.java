@@ -1,11 +1,7 @@
-package org.antlr.works.components;
+package org.antlr.works.plugin.container;
 
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.appkit.frame.XJWindowInterface;
-
-import javax.swing.*;
-import java.awt.*;
+import org.antlr.works.components.document.ComponentDocument;
+import org.antlr.works.components.document.ComponentDocumentFactory;
 
 /*
 
@@ -37,16 +33,17 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-public interface ComponentWindow extends XJWindowInterface {
+public class PluginFactory {
 
-    void setComponentContainer(ComponentContainer componentContainer);
-    ComponentContainer getComponentContainer();
+    private static final PluginFactory instance = new PluginFactory();
 
-    void setContentPanel(JPanel panel);
+    public static PluginFactory getInstance() {
+        return instance;
+    }
 
-    void setDocument(XJDocument document);
-    XJDocument getDocument();
-
-    Dimension getSize();
-
+    public ComponentDocument createDocument() throws Exception {
+        ComponentDocumentFactory factory = new ComponentDocumentFactory(PluginWindow.class);
+        ComponentDocument document = (ComponentDocument) factory.createDocument();
+        return document;
+    }
 }

@@ -34,6 +34,7 @@ package org.antlr.works.components.container;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.ComponentToolbar;
 import org.antlr.works.components.ComponentWindow;
+import org.antlr.works.components.ComponentWindowImpl;
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.editor.ComponentEditor;
@@ -98,6 +99,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
 
     private JSplitPane verticalSplit;
     private JSplitPane horizontalSplit;
+    private JPanel mainPanel;
 
     private EditorsTabChangeListener etc;
     private MouseListener ml;
@@ -160,29 +162,40 @@ public class ComponentContainerGrammar implements ComponentContainer {
         editorsTab.addChangeListener(etc = new EditorsTabChangeListener());
         bottomTab.addMouseListener(ml = new TabbedPaneMouseListener());
         bottomTab.addChangeListener(cl = new TabbedPaneChangeListener());
+    }
 
-        verticalSplit = new JSplitPane();
-        verticalSplit.setBorder(null);
-        verticalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        verticalSplit.setLeftComponent(rulesPanel);
-        verticalSplit.setRightComponent(editorsTab);
-        verticalSplit.setContinuousLayout(true);
-        verticalSplit.setOneTouchExpandable(true);
+    public void assemble(boolean separateRules) {
+        if(separateRules) {
+            horizontalSplit = new JSplitPane();
+            horizontalSplit.setBorder(null);
+            horizontalSplit.setOrientation(JSplitPane.VERTICAL_SPLIT);
+            horizontalSplit.setTopComponent(editorsTab);
+            horizontalSplit.setBottomComponent(bottomPanel);
+            horizontalSplit.setContinuousLayout(true);
+            horizontalSplit.setOneTouchExpandable(true);
+        } else {
+            verticalSplit = new JSplitPane();
+            verticalSplit.setBorder(null);
+            verticalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+            verticalSplit.setLeftComponent(rulesPanel);
+            verticalSplit.setRightComponent(editorsTab);
+            verticalSplit.setContinuousLayout(true);
+            verticalSplit.setOneTouchExpandable(true);
 
-        horizontalSplit = new JSplitPane();
-        horizontalSplit.setBorder(null);
-        horizontalSplit.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        horizontalSplit.setTopComponent(verticalSplit);
-        horizontalSplit.setBottomComponent(bottomPanel);
-        horizontalSplit.setContinuousLayout(true);
-        horizontalSplit.setOneTouchExpandable(true);
+            horizontalSplit = new JSplitPane();
+            horizontalSplit.setBorder(null);
+            horizontalSplit.setOrientation(JSplitPane.VERTICAL_SPLIT);
+            horizontalSplit.setTopComponent(verticalSplit);
+            horizontalSplit.setBottomComponent(bottomPanel);
+            horizontalSplit.setContinuousLayout(true);
+            horizontalSplit.setOneTouchExpandable(true);
+        }
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBorder(null);
+        mainPanel.add(toolbarPanel, BorderLayout.NORTH);
+        mainPanel.add(horizontalSplit, BorderLayout.CENTER);
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(null);
-        panel.add(toolbarPanel, BorderLayout.NORTH);
-        panel.add(horizontalSplit, BorderLayout.CENTER);
-
-        window.setContentPanel(panel);
+        window.setContentPanel(mainPanel);
     }
 
     public void refreshMainMenuBar() {
@@ -208,7 +221,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
         if(loadedGrammarFileNames.contains(fileName)) return true;
         loadedGrammarFileNames.add(fileName);
         
-        ComponentDocumentFactory factory = new ComponentDocumentFactory();
+        ComponentDocumentFactory factory = new ComponentDocumentFactory(ComponentWindowImpl.class);
         ComponentDocumentInternal doc = factory.createInternalDocument(this);
         ComponentContainerInternal container = (ComponentContainerInternal) doc.getContainer();
 
@@ -427,6 +440,14 @@ public class ComponentContainerGrammar implements ComponentContainer {
 
     public void handleMenuSelected(XJMenu menu) {
         componentContainerGrammarMenu.handleMenuSelected(menu);
+    }
+
+    public JComponent getRulesComponent() {
+        return rulesPanel;
+    }
+
+    public JComponent getEditorComponent() {
+        return mainPanel;
     }
 
     public void windowActivated() {

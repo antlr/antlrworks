@@ -56,7 +56,7 @@ public class PIStructureView implements StructureView {
     }
 
     public JComponent getComponent() {
-        return window.getRulesComponent();
+        return window.getComponentContainer().getRulesComponent();
     }
 
     public void dispose() {

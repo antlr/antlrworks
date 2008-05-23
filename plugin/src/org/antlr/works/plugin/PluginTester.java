@@ -1,9 +1,12 @@
 package org.antlr.works.plugin;
 
 import org.antlr.works.IDE;
+import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.plugin.container.PCXJApplicationDelegate;
-import org.antlr.works.plugin.container.PluginWindow;
+import org.antlr.works.plugin.container.PluginFactory;
 import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.frame.XJWindowInterface;
 
 import javax.swing.*;
 /*
@@ -39,38 +42,44 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PluginTester {
 
-    private PluginWindow window;
-    private JSplitPane vertical;
-
-    private void createAndShowGUI() {
+    private void createAndShowGUI() throws Exception {
         XJApplication.setDelegate(new PCXJApplicationDelegate());
         XJApplication.setPropertiesPath(IDE.PROPERTIES_PATH);
-        
-        window = new PluginWindow();
-        window.load("/Users/bovet/Grammars/syntax.g");
+
+        ComponentDocument document = PluginFactory.getInstance().createDocument();
+        document.awake();
+        document.load("/Users/bovet/Grammars/split_parser_lexer/ExprPars.g");
+
+        XJWindowInterface window = document.getWindow();
+
+        ComponentContainer container = document.getContainer();
+
+        JSplitPane vertical = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        vertical.setLeftComponent(container.getRulesComponent());
+        vertical.setRightComponent(window.getRootPane());
+        vertical.setBorder(null);
+        vertical.setContinuousLayout(true);
+        vertical.setOneTouchExpandable(true);
 
         JFrame.setDefaultLookAndFeelDecorated(true);
-
         JFrame frame = new JFrame("Plugin Tester");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(900, 600);
-
-        frame.add(window.getRootPane());
-
-        frame.pack();
+        frame.setSize(1200, 600);
+        frame.add(vertical);
         frame.setVisible(true);
-        window.becomingVisibleForTheFirstTime();
-        vertical.setDividerLocation((int)(window.getContentPane().getHeight()*0.5));
-    }
 
-    public void assemble() {
-//        window.getContentPane().add(panel);
+        window.becomingVisibleForTheFirstTime();
     }
 
     public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new PluginTester().createAndShowGUI();
+                try {
+                    new PluginTester().createAndShowGUI();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
             }
         });
     }
