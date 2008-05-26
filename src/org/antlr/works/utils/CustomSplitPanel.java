@@ -66,6 +66,7 @@ public class CustomSplitPanel extends JPanel {
         pane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         pane.setContinuousLayout(true);
         pane.setOneTouchExpandable(true);
+        pane.setResizeWeight(0.5);
         return pane;
     }
 

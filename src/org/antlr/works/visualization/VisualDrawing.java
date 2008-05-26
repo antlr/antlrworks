@@ -146,10 +146,11 @@ public class VisualDrawing extends ATEThread {
             } catch (Exception e) {
                 // ignore
             }
-            if(startState == null)
-                error = "Cannot display rule \"" + threadRule + "\" because start state not found";
+            if(startState == null) {
+                error = "Cannot display rule \"" + threadRule + "\" because start state not found";                
+            }
         } else {
-            error = "Cannot display rule \""+threadRule+"\" because grammar cannot be generated";
+            error = "Cannot display rule \""+threadRule+"\" because grammar could not be generated";
         }
 
         if(error != null) {

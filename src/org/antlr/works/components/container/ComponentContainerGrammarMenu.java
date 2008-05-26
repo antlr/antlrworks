@@ -525,15 +525,15 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_EXPORT_AS_IMAGE:
-                item.setEnabled(tab.canExportToBitmap());
+                item.setEnabled(tab != null && tab.canExportToBitmap());
                 break;
 
             case MI_EXPORT_AS_EPS:
-                item.setEnabled(tab.canExportToEPS());
+                item.setEnabled(tab != null && tab.canExportToEPS());
                 break;
 
             case MI_EXPORT_AS_DOT:
-                item.setEnabled(tab.canExportToDOT());
+                item.setEnabled(tab != null && tab.canExportToDOT());
                 break;
 
             case MI_DEBUG_SHOW_INPUT_TOKENS:

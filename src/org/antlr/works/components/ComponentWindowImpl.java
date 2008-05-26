@@ -86,7 +86,7 @@ public class ComponentWindowImpl extends XJWindow implements ComponentWindow {
         Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         r.width *= 0.8;
         r.height *= 0.8;
-        getRootPane().setPreferredSize(r.getSize());
+        setPreferredSize(r.getSize());
     }
 
     @Override

@@ -179,11 +179,11 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         g.setFileName(engine.getGrammarFileName());
         g.setGrammarContent(engine.getGrammarText());
         g.composite.createNFAs();
-		// don't want errors from a previous grammar to interfere with this new grammar.
-		// must reset error state otherwise analysis will not proceed if
-		// there were previous errors.
-		ErrorManager.resetErrorState();
-		return g;
+        // don't want errors from a previous grammar to interfere with this new grammar.
+        // must reset error state otherwise analysis will not proceed if
+        // there were previous errors.
+        ErrorManager.resetErrorState();
+        return g;
     }
 
     private void createCombinedGrammar() throws Exception {

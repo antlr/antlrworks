@@ -461,27 +461,34 @@ public class ComponentContainerGrammar implements ComponentContainer {
         return componentContainerGrammarMenu.getContextualMenu(textIndex);
     }
 
+    private static final int CLOSING_INDEX_LIMIT = 4;
+
     public void addTab(EditorTab tab) {
         /** Replace any existing tab with this one if the title matches. Don't
          * replace the first three tabs because they are always visible.
          */
         int index = getSimilarTab(tab);
-        if(index > 3) {
-            tabs.remove(index);
-            tabs.add(index, tab);
-            bottomTab.removeTabAt(index);
-            bottomTab.insertTab(tab.getTabName(), null, tab.getTabComponent(), null, index);
-        } else {
+        if(index == -1) {
             tabs.add(tab);
             bottomTab.add(tab.getTabName(), tab.getTabComponent());
-        }
-
-        if(index == -1) {
             index = bottomTab.getTabCount()-1;
+        } else {
+            tabs.remove(index);
+            tabs.add(index, tab);
+            bottomTab.removeTabAt(index+CLOSING_INDEX_LIMIT);
+            bottomTab.insertTab(tab.getTabName(), null, tab.getTabComponent(), null, index+CLOSING_INDEX_LIMIT);
         }
-        indexToEditorTab.put(index, tab);
 
+        indexToEditorTab.put(index, tab);
         selectTab(tab.getTabComponent());
+    }
+
+    private void closeTab(int index) {
+        if(index < CLOSING_INDEX_LIMIT)
+            return;
+
+        tabs.remove(index-CLOSING_INDEX_LIMIT);
+        bottomTab.removeTabAt(index);
     }
 
     public void selectConsoleTab(ComponentEditor editor) {
@@ -727,8 +734,6 @@ public class ComponentContainerGrammar implements ComponentContainer {
 
     public class TabbedPaneMouseListener extends MouseAdapter {
 
-        protected static final int CLOSING_INDEX_LIMIT = 4;
-
         public void displayPopUp(MouseEvent event) {
             if(bottomTab.getSelectedIndex() < CLOSING_INDEX_LIMIT)
                 return;
@@ -740,10 +745,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
             JMenuItem item = new JMenuItem("Close");
             item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
-                    if(bottomTab.getSelectedIndex() < CLOSING_INDEX_LIMIT)
-                        return;
-
-                    bottomTab.removeTabAt(bottomTab.getSelectedIndex());
+                    closeTab(bottomTab.getSelectedIndex());
                 }
             });
             popup.add(item);

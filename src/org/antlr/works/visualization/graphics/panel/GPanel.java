@@ -55,6 +55,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class GPanel implements XJNotificationObserver {
@@ -126,20 +127,36 @@ public class GPanel implements XJNotificationObserver {
         if(rule == null)
             return;
 
+        // Execute the panel creation only on the main thread
+        if(!SwingUtilities.isEventDispatchThread()) {
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        createPanel();
+                    }
+                });
+                return;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        
         if(rule.hasErrors())
             createErrorPanel();
         else
             createNormalPanel();
     }
 
-    public void createNormalPanel() {
+    private void createNormalPanel() {
         container.removeAll();
         container.add(createVisualizationPane(), BorderLayout.CENTER);
         container.add(createControlPane(), BorderLayout.SOUTH);
         container.validate();
     }
 
-    public void createErrorPanel() {
+    private void createErrorPanel() {
         container.removeAll();
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(createErrorPane(), BorderLayout.NORTH);
