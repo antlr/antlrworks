@@ -170,9 +170,9 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
 
         String title = grammarFileName;
         if(rule != null) {
-            int startIndex = text.indexOf("$ANTLR start "+rule);
+            int startIndex = text.indexOf("$ANTLR start \""+rule+"\"");
             startIndex = text.indexOf("\n", startIndex)+1;
-            int stopIndex = text.indexOf("$ANTLR end "+rule);
+            int stopIndex = text.indexOf("$ANTLR end \""+rule+"\"");
             while(stopIndex>0 && text.charAt(stopIndex) != '\n')
                 stopIndex--;
 

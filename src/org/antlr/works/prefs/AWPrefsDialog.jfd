@@ -2944,7 +2944,7 @@
                </void> 
                <void method="setProperty"> 
                 <string>$rowSpecs</string> 
-                <string>10dlu, linegap, default, linegap, default, linegap, default</string> 
+                <string>10dlu, linegap, default, linegap, default, linegap, default, linegap, default</string> 
                </void> 
               </object> 
               <void property="name"> 
@@ -3025,6 +3025,29 @@
               </void> 
               <void method="add"> 
                <object class="com.jformdesigner.model.FormComponent"> 
+                <string>javax.swing.JCheckBox</string> 
+                <void method="setProperty"> 
+                 <string>text</string> 
+                 <string>File modified on disk</string> 
+                </void> 
+                <void property="name"> 
+                 <string>fileModifiedOnDiskButton</string> 
+                </void> 
+               </object> 
+               <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+                <class>com.jgoodies.forms.layout.CellConstraints</class> 
+                <void method="setProperty"> 
+                 <string>gridX</string> 
+                 <int>5</int> 
+                </void> 
+                <void method="setProperty"> 
+                 <string>gridY</string> 
+                 <int>7</int> 
+                </void> 
+               </object> 
+              </void> 
+              <void method="add"> 
+               <object class="com.jformdesigner.model.FormComponent"> 
                 <string>javax.swing.JLabel</string> 
                 <void method="setProperty"> 
                  <string>text</string> 
@@ -3042,7 +3065,7 @@
                 </void> 
                 <void method="setProperty"> 
                  <string>gridY</string> 
-                 <int>7</int> 
+                 <int>9</int> 
                 </void> 
                 <void method="setProperty"> 
                  <string>hAlign</string> 
@@ -3065,7 +3088,7 @@
                 <class>com.jgoodies.forms.layout.CellConstraints</class> 
                 <void method="setProperty"> 
                  <string>gridY</string> 
-                 <int>7</int> 
+                 <int>9</int> 
                 </void> 
                 <void method="setProperty"> 
                  <string>gridX</string> 

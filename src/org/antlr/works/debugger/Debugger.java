@@ -446,7 +446,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
         if(needsToGenerateGrammar()) {
             if(AWPrefs.getDebuggerAskGen()) {
-                int result = XJAlert.displayCustomAlert(getWindowContainer(), "Generate and compile",
+                int result = XJAlert.createInstance().displayCustomAlert(getWindowContainer(), "Generate and compile",
                         "The grammar has been modified and needs to be generated and compiled again. You can choose " +
                                 "to cancel the operation, to continue without generating and compiling the grammar or " +
                                 "to generate and compile the grammar.",

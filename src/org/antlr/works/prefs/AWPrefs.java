@@ -230,6 +230,7 @@ public class AWPrefs {
 
     public static final String PREF_ALERT_CHECK_GRAMMAR_SUCCESS = "PREF_ALERT_CHECK_GRAMMAR_SUCCESS";
     public static final String PREF_ALERT_GENERATE_CODE_SUCCESS = "PREF_ALERT_GENERATE_CODE_SUCCESS";
+    public static final String PREF_ALERT_FILE_CHANGES_DETECTED = "PREF_ALERT_FILE_CHANGES_DETECTED";
 
     public static final String PREF_CLEAR_CONSOLE_BEFORE_CHECK = "PREF_CLEAR_CONSOLE_BEFORE_CHECK";
 
@@ -570,12 +571,28 @@ public class AWPrefs {
         return getPreferences().getString(PREF_DEBUGGER_INPUT_FILE, "");         
     }
 
+    public static void setAlertGenerateCodeSuccess(boolean flag) {
+        getPreferences().setBoolean(PREF_ALERT_GENERATE_CODE_SUCCESS, flag);
+    }
+
     public static boolean isAlertGenerateCodeSuccess() {
         return getPreferences().getBoolean(PREF_ALERT_GENERATE_CODE_SUCCESS, true);
     }
 
+    public static void setAlertCheckGrammarSuccess(boolean flag) {
+        getPreferences().setBoolean(PREF_ALERT_CHECK_GRAMMAR_SUCCESS, flag);
+    }
+
     public static boolean isAlertCheckGrammarSuccess() {
         return getPreferences().getBoolean(PREF_ALERT_CHECK_GRAMMAR_SUCCESS, true);
+    }
+
+    public static void setAlertFileChangesDetected(boolean flag) {
+        getPreferences().setBoolean(PREF_ALERT_FILE_CHANGES_DETECTED, flag);
+    }
+
+    public static boolean isAlertFileChangesDetected() {
+        return getPreferences().getBoolean(PREF_ALERT_FILE_CHANGES_DETECTED, true);
     }
 
     public static boolean isClearConsoleBeforeCheckGrammar() {

@@ -157,7 +157,10 @@ public class CodeGenerate implements Runnable {
         else {
             if(delegate == null || delegate.codeGenerateDisplaySuccess()) {
                 if(AWPrefs.isAlertGenerateCodeSuccess()) {
-                    XJAlert.display(editor.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+getOutputPath());                                    
+                    XJAlert alert = XJAlert.createInstance();
+                    alert.setDisplayDoNotShowAgainButton(true);
+                    alert.showSimple(editor.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+getOutputPath());
+                    AWPrefs.setAlertGenerateCodeSuccess(!alert.isDoNotShowAgain());
                 }
             } else {
                 delegate.codeGenerateDidComplete();

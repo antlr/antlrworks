@@ -197,7 +197,10 @@ public class ActionGrammar extends ActionAbstract implements CheckGrammarDelegat
         getSelectedEditor().hideProgress();
         if(result.isSuccess()) {
             if(AWPrefs.isAlertCheckGrammarSuccess()) {
-                XJAlert.display(getSelectedEditor().getWindowContainer(), "Success", "Check Grammar succeeded.");                
+                XJAlert alert = XJAlert.createInstance();
+                alert.setDisplayDoNotShowAgainButton(true);
+                alert.showSimple(getSelectedEditor().getWindowContainer(), "Success", "Check Grammar succeeded.");
+                AWPrefs.setAlertCheckGrammarSuccess(!alert.isDoNotShowAgain());
             }
         } else {
             if(result.getErrorCount() > 0) {

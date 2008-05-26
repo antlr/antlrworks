@@ -1073,6 +1073,18 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void componentDocumentContentChanged() {
         // Called when the document associated file has changed on the disk
+        if(AWPrefs.isAlertFileChangesDetected()) {
+            XJAlert alert = XJAlert.createInstance();
+            alert.setDisplayDoNotShowAgainButton(true);
+            int result = alert.showCustom(getWindowContainer(), "File Changes",
+                    "The file \""+getFileName()+"\" changed on the disk. Do you want to reload it?",
+                    "Cancel", "Reload", 1, 0);
+            AWPrefs.setAlertFileChangesDetected(!alert.isDoNotShowAgain());
+            if(result == 0) {
+                return;
+            }
+        }
+
         int oldCursorPosition = getCaretPosition();
         try {
             getDocument().reload();
