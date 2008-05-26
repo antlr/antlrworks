@@ -117,15 +117,11 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         splitPane.setRightComponent(awTreePanel);
         splitPane.setContinuousLayout(true);
         splitPane.setOneTouchExpandable(true);
-
+        
         panel.add(createControlPanel(), BorderLayout.NORTH);
         panel.add(splitPane, BorderLayout.CENTER);
 
         editor.getXJFrame().registerUndo(null, textPane);
-    }
-
-    public void componentShouldLayout() {
-        splitPane.setDividerLocation(0.2);
     }
 
     public Box createControlPanel() {

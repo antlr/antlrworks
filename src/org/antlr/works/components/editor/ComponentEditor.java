@@ -151,7 +151,6 @@ public abstract class ComponentEditor implements XJNotificationObserver {
 
     public void becomingVisibleForTheFirstTime() {
         componentDidAwake();
-        componentShouldLayout(getContainer().getSize());
     }
 
     /** For subclass only
@@ -178,10 +177,6 @@ public abstract class ComponentEditor implements XJNotificationObserver {
 
     public boolean componentDocumentWillSave() {
         return true;
-    }
-
-    public void componentShouldLayout(Dimension size) {
-
     }
 
     public void componentDidAwake() {

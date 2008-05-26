@@ -87,36 +87,37 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
         treePanel.setRootVisible(true);
         treePanel.setDelegate(this);
 
-        tablesSplitPane = createSplitPane();
-        tableTreeSplitPane = createSplitPane();
+        tablesSplitPane = new JSplitPane();
+        tablesSplitPane.setBorder(null);
+        tablesSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        tablesSplitPane.setContinuousLayout(true);
+        tablesSplitPane.setOneTouchExpandable(true);
+        tablesSplitPane.setResizeWeight(0.5);
+
+        //rulesTableView.setMinimumSize(new Dimension(150, 0));
+        //rootsTableView.setMinimumSize(new Dimension(150, 0));
 
         tablesSplitPane.setLeftComponent(rulesTableView);
         tablesSplitPane.setRightComponent(rootsTableView);
 
+        tableTreeSplitPane = new JSplitPane();
+        tableTreeSplitPane.setBorder(null);
+        tableTreeSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        tableTreeSplitPane.setContinuousLayout(true);
+        tableTreeSplitPane.setOneTouchExpandable(true);
+        tableTreeSplitPane.setResizeWeight(0.5);
+        
         tableTreeSplitPane.setLeftComponent(tablesSplitPane);
         tableTreeSplitPane.setRightComponent(treePanel);
 
         mainPanel.add(tableTreeSplitPane, BorderLayout.CENTER);
     }
 
+    @Override
     public void close() {
         super.close();
         treePanel.setDelegate(null);
         debugger = null;
-    }
-
-    public JSplitPane createSplitPane() {
-        JSplitPane sp = new JSplitPane();
-        sp.setBorder(null);
-        sp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        sp.setContinuousLayout(true);
-        sp.setOneTouchExpandable(true);
-        return sp;
-    }
-
-    public void componentShouldLayout(Dimension size) {
-        tableTreeSplitPane.setDividerLocation((int)(size.width*0.5));
-        tablesSplitPane.setDividerLocation((int)(size.width*0.3));
     }
 
     public void clear() {

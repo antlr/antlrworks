@@ -194,7 +194,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void componentShouldLayout(Dimension size) {
         assemblePanelsIntoSplitPane(size.width);
-        astPanel.componentShouldLayout(new Dimension((int) (size.width*PERCENT_WIDTH_MIDDLE), size.height));
     }
 
     public static final int TOGGLE_INPUT = 0;

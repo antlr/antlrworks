@@ -74,7 +74,7 @@ import java.util.List;
 
 public class ComponentContainerGrammar implements ComponentContainer {
 
-    private final List<ComponentContainer> containers = new ArrayList<ComponentContainer>();
+    private final Set<ComponentContainer> containers = new LinkedHashSet<ComponentContainer>();
     private final Map<Component, ComponentContainer> componentToContainer = new HashMap<Component, ComponentContainer>();
     private final Map<Integer, EditorTab> indexToEditorTab = new HashMap<Integer, EditorTab>();
 
@@ -97,8 +97,6 @@ public class ComponentContainerGrammar implements ComponentContainer {
     private JPanel consolePanel;
     private JPanel debuggerPanel;
 
-    private JSplitPane verticalSplit;
-    private JSplitPane horizontalSplit;
     private JPanel mainPanel;
 
     private EditorsTabChangeListener etc;
@@ -165,6 +163,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
     }
 
     public void assemble(boolean separateRules) {
+        JSplitPane horizontalSplit;
         if(separateRules) {
             horizontalSplit = new JSplitPane();
             horizontalSplit.setBorder(null);
@@ -173,14 +172,16 @@ public class ComponentContainerGrammar implements ComponentContainer {
             horizontalSplit.setBottomComponent(bottomPanel);
             horizontalSplit.setContinuousLayout(true);
             horizontalSplit.setOneTouchExpandable(true);
+            horizontalSplit.setResizeWeight(0.6);
         } else {
-            verticalSplit = new JSplitPane();
+            JSplitPane verticalSplit = new JSplitPane();
             verticalSplit.setBorder(null);
             verticalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
             verticalSplit.setLeftComponent(rulesPanel);
             verticalSplit.setRightComponent(editorsTab);
             verticalSplit.setContinuousLayout(true);
             verticalSplit.setOneTouchExpandable(true);
+            verticalSplit.setResizeWeight(0.2);
 
             horizontalSplit = new JSplitPane();
             horizontalSplit.setBorder(null);
@@ -189,6 +190,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
             horizontalSplit.setBottomComponent(bottomPanel);
             horizontalSplit.setContinuousLayout(true);
             horizontalSplit.setOneTouchExpandable(true);
+            horizontalSplit.setResizeWeight(0.7);
         }
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(null);
@@ -375,11 +377,6 @@ public class ComponentContainerGrammar implements ComponentContainer {
     public void becomingVisibleForTheFirstTime() {
         addGrammar(this);
         selectGrammar(this);
-
-        if(verticalSplit != null)
-            verticalSplit.setDividerLocation((int)(getSize().width*0.2));
-        if(horizontalSplit != null)
-            horizontalSplit.setDividerLocation((int)(getSize().height*0.5));
 
         getSelectedEditor().becomingVisibleForTheFirstTime();
 

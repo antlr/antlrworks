@@ -2,6 +2,10 @@ package org.antlr.works.plugin.intellij;
 
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.structureView.StructureViewBuilder;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CustomShortcutSet;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.project.Project;
@@ -10,14 +14,18 @@ import com.intellij.openapi.vfs.ReadonlyStatusHandler;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.antlr.works.components.document.ComponentDocument;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.plugin.container.PluginContainerDelegate;
 import org.antlr.works.plugin.container.PluginFactory;
 import org.antlr.works.plugin.container.PluginWindow;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -56,17 +64,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PIEditor implements FileEditor, PluginContainerDelegate {
 
-    protected PluginWindow window;
-    protected Project project;
-    protected VirtualFile virtualFile;
+    private PluginWindow window;
+    private Project project;
+    private VirtualFile virtualFile;
     protected Document document;
+    private ComponentDocument componentDocument;
 
-    protected JSplitPane vertical;
-    protected boolean layout = false;
-    protected boolean synchronizedDoc = false;
+    private boolean layout = false;
 
-    protected MyFileDocumentManagerAdapter fileDocumentAdapter;
-    protected java.util.List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
+    private MyFileDocumentManagerAdapter fileDocumentAdapter;
+    private final java.util.List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
 
     protected static final List<PIEditor> editors = new ArrayList<PIEditor>();
 
@@ -75,27 +82,55 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
         this.virtualFile = file;
         this.document = FileDocumentManager.getInstance().getDocument(this.virtualFile);
 
-        ComponentDocument document;
         try {
-            document = PluginFactory.getInstance().createDocument();
+            componentDocument = PluginFactory.getInstance().createDocument();
         } catch (Exception e) {
             System.err.println("Cannot create the document:");
             e.printStackTrace();
             return;
         }
-        document.awake();
+        componentDocument.awake();
         try {
-            document.load(VfsUtil.virtualToIoFile(virtualFile).getPath());
+            componentDocument.load(VfsUtil.virtualToIoFile(virtualFile).getPath());
         } catch (Exception e) {
             System.err.println("Cannot load the document:");
             e.printStackTrace();
         }
 
-        window = (PluginWindow) document.getWindow();
+        window = (PluginWindow) componentDocument.getWindow();
         // todo used?
         window.setDelegate(this);
+        registerKeybindings();
 
         register();
+    }
+
+    private void registerKeybindings() {
+        // Must register custom action in order to override the default mechanism in IntelliJ 7
+        if(PIUtils.isRunningWithIntelliJ7OrAbove()) {
+            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
+                    DefaultEditorKit.beginLineAction);
+            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, Event.SHIFT_MASK),
+                    DefaultEditorKit.selectionBeginLineAction);
+
+            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
+                    DefaultEditorKit.endLineAction);
+            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_END, Event.SHIFT_MASK),
+                    DefaultEditorKit.selectionEndLineAction);
+        }
+    }
+
+    private void registerKeyBinding(KeyStroke ks, final String action) {
+        AnAction a = new AnAction() {
+            public void actionPerformed(AnActionEvent event) {
+                ((ComponentEditorGrammar)componentDocument.getEditor()).getTextPane().getActionMap().get(action).actionPerformed(null);
+            }
+        };
+
+        final String uniqueAction = action+this;
+        ActionManager.getInstance().registerAction(uniqueAction, a);
+        a.registerCustomShortcutSet(new CustomShortcutSet(ks),
+                ((ComponentEditorGrammar)componentDocument.getEditor()).getTextPane());
     }
 
     public void close() {
@@ -134,7 +169,12 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     }
 
     public void load(String file) {
-        window.load(file);
+        try {
+            componentDocument.load(file);
+        } catch (Exception e) {
+            // todo alert?
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     public void save() {
@@ -149,7 +189,6 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
      */
     public void layout() {
         if(!layout) {
-            //vertical.setDividerLocation((int)(window.getContentPane().getHeight()*0.5));
             window.becomingVisibleForTheFirstTime();
             layout = true;
         }

@@ -79,8 +79,6 @@ public class ActionFind extends ActionAbstract {
                     usage.addMatch(matchedRule, ateToken);
             }
         }
-
-        getSelectedEditor().makeBottomComponentVisible();
     }
 
 }

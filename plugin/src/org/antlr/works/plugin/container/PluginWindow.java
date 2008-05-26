@@ -4,7 +4,6 @@ import org.antlr.works.components.ComponentWindow;
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.components.container.ComponentContainerGrammar;
 import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJPreferences;
@@ -20,6 +19,8 @@ import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -53,16 +54,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class PluginWindow implements ComponentWindow {
     
-    private JRootPane rootPane;
-    private ComponentContainerGrammar container;
+    private final JRootPane rootPane;
+    private final ComponentContainerGrammar container;
 
-    private XJPreferences prefs;
-    private ComponentDocumentGrammar document;
-    private XJMainMenuBar mainMenuBar;
+    private final XJPreferences prefs;
+    private final XJMainMenuBar mainMenuBar;
+    private final List<XJDocument> documents = new ArrayList<XJDocument>();
 
-    private PCXJFrameInterface frameInterface;
-    private PCMenuHelpDelegate menuHelpDelegate;
-    private PCXJApplicationInterface appInterface = new PCXJApplicationInterface(this);
+    private final PCXJFrameInterface frameInterface;
+    private final PCMenuHelpDelegate menuHelpDelegate;
+    private final PCXJApplicationInterface appInterface = new PCXJApplicationInterface(this);
     private PluginContainerDelegate delegate;
 
     public PluginWindow() {
@@ -81,33 +82,7 @@ public class PluginWindow implements ComponentWindow {
 
         container = new ComponentContainerGrammar(this);
 
-        // Must register custom action in order to override the default mechanism in IntelliJ 7
-        // todo add back (don't use with plugin tester)
-/*        if(PIUtils.isRunningWithIntelliJ7OrAbove()) {
-            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
-                    DefaultEditorKit.beginLineAction);
-            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, Event.SHIFT_MASK),
-                    DefaultEditorKit.selectionBeginLineAction);
-
-            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
-                    DefaultEditorKit.endLineAction);
-            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_END, Event.SHIFT_MASK),
-                    DefaultEditorKit.selectionEndLineAction);
-        }   */
     }
-
-    /*public void registerKeyBinding(KeyStroke ks, final String action) {
-        AnAction a = new AnAction() {
-            public void actionPerformed(AnActionEvent event) {
-                editor.getTextPane().getActionMap().get(action).actionPerformed(null);
-            }
-        };
-
-        final String uniqueAction = action+this;
-        ActionManager.getInstance().registerAction(uniqueAction, a);
-        a.registerCustomShortcutSet(new CustomShortcutSet(ks),
-                editor.getTextPane());
-    } */
 
     public void awake() {
         container.awake();
@@ -117,15 +92,15 @@ public class PluginWindow implements ComponentWindow {
                 | XJMainMenuBar.IGNORE_WINDOWMENU);
         
         rootPane.setContentPane(container.getEditorComponent());
-        rootPane.setMenuBar(mainMenuBar.getJMenuBar());        
+        rootPane.setJMenuBar(mainMenuBar.getJMenuBar());
     }
 
     public void show() {
-        // todo?
+        // do nothing
     }
 
     public void bringToFront() {
-        // todo?
+        // do nothing
     }
 
     public boolean isMaximized() {
@@ -133,7 +108,7 @@ public class PluginWindow implements ComponentWindow {
     }
 
     public void offsetPosition(int x, int y) {
-        // ignore
+        // do nothing
     }
 
     public boolean isCompletelyOnScreen() {
@@ -149,16 +124,6 @@ public class PluginWindow implements ComponentWindow {
         this.delegate = delegate;
     }
 
-    // todo probably not used?
-    public void setContainer(ComponentContainerGrammar container) {
-        this.container = container;
-    }
-    
-// todo find out if the delegate class is needed
-/*    public void setEditorGrammarDelegate(ComponentEditorGrammarDefaultDelegate delegate) {
-        editor.setDelegate(delegate);
-    }*/
-
     public XJMenuItemDelegate getMenuHelpDelegate() {
         return menuHelpDelegate;
     }
@@ -173,15 +138,6 @@ public class PluginWindow implements ComponentWindow {
 
     public JRootPane getRootPane() {
         return rootPane;
-    }
-
-    public void load(String file) {
-        try {
-            document.load(file);
-        } catch (Exception e) {
-            // todo alert?
-            e.printStackTrace();
-        }
     }
 
     public Container getContentPane() {
@@ -227,11 +183,6 @@ public class PluginWindow implements ComponentWindow {
         // todo?
     }
 
-    // @todo used?
-    public void setComponentContainer(ComponentContainer componentContainer) {
-        this.container = (ComponentContainerGrammar) componentContainer;
-    }
-
     public ComponentContainer getComponentContainer() {
         return container;
     }
@@ -241,15 +192,22 @@ public class PluginWindow implements ComponentWindow {
     }
 
     public void addDocument(XJDocument doc) {
-        this.document = (ComponentDocumentGrammar) doc;
+        if(!documents.contains(doc)) {
+            documents.add(doc);
+        }
     }
 
     public void setDocument(XJDocument document) {
-        this.document = (ComponentDocumentGrammar) document;
+        documents.clear();
+        documents.add(document);
     }
 
     public ComponentDocument getDocument() {
-        return document;
+        if(documents.isEmpty()) {
+            return null;
+        } else {
+            return (ComponentDocument) documents.get(0);
+        }
     }
 
     public Dimension getSize() {

@@ -64,7 +64,7 @@ public class PluginTester {
         JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame frame = new JFrame("Plugin Tester");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200, 600);
+        frame.setSize(1200, 800);
         frame.add(vertical);
         frame.setVisible(true);
 

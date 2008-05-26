@@ -39,7 +39,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 public interface ComponentWindow extends XJWindowInterface {
 
-    void setComponentContainer(ComponentContainer componentContainer);
     ComponentContainer getComponentContainer();
 
     void setContentPanel(JPanel panel);

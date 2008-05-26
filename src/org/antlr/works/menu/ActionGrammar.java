@@ -63,7 +63,6 @@ public class ActionGrammar extends ActionAbstract implements CheckGrammarDelegat
     public void showTokensSD() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_TOKENS_SD);
         getSelectedEditor().visual.setRule(new ElementRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);
-        getSelectedEditor().makeBottomComponentVisible();
     }
 
     public void showTokensDFA() {

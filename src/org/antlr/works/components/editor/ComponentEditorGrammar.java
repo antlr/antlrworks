@@ -140,7 +140,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
                           
     private boolean windowFirstDisplay = true;
     private String lastSelectedRule;
-    private ComponentEditorGrammarDelegate delegate;
 
     private AfterParseOperations afterParserOp;
 
@@ -149,10 +148,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public ComponentEditorGrammar() {
 
-    }
-
-    public void setDelegate(ComponentEditorGrammarDelegate delegate) {
-        this.delegate = delegate;
     }
 
     public void create() {
@@ -172,9 +167,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public void assemble() {
-        // todo still used?
-        //delegate = new ComponentEditorGrammarDefaultDelegate(upDownSplitPane);
-
         mainPanel.add(textEditor, BorderLayout.CENTER);
     }
 
@@ -390,17 +382,14 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void selectVisualizationTab() {
         container.selectSyntaxDiagramTab(this);
-        makeBottomComponentVisible();
     }
 
     public void selectInterpreterTab() {
         container.selectInterpreterTab(this);
-        makeBottomComponentVisible();
     }
 
     public void selectConsoleTab() {
         container.selectConsoleTab(this);
-        makeBottomComponentVisible();
     }
 
     public EditorTab getSelectedTab() {
@@ -409,21 +398,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void selectTab(Component c) {
         container.selectTab(c);
-    }
-
-    public void makeBottomComponentVisible() {
-        if(!isBottomComponentVisible()) {
-            setBottomComponentVisible(true);
-        }
-    }
-
-    public void setBottomComponentVisible(boolean visible) {
-        if(delegate != null)
-            delegate.setBottomComponentVisible(visible);
-    }
-
-    public boolean isBottomComponentVisible() {
-        return delegate != null && delegate.isBottomComponentVisible();
     }
 
     public EditorConsole getConsole() {
@@ -1057,11 +1031,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         } else {
             getTextPane().getCaret().setVisible(flag);
         }
-    }
-
-    @Override
-    public void componentShouldLayout(Dimension size) {
-        interpreter.componentShouldLayout();
     }
 
     @Override

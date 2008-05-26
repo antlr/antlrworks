@@ -190,7 +190,6 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         cd.setTitle(title);
 
         editor.addTab(cd);
-        editor.makeBottomComponentVisible();
     }
 
     public boolean codeGenerateDisplaySuccess() {

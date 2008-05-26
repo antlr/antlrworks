@@ -46,7 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 public class ComponentWindowImpl extends XJWindow implements ComponentWindow {
 
-    private ComponentContainer componentContainer;
+    private final ComponentContainer componentContainer;
 
     public ComponentWindowImpl() {
         this.componentContainer = new ComponentContainerGrammar(this);
@@ -57,10 +57,6 @@ public class ComponentWindowImpl extends XJWindow implements ComponentWindow {
         super.awake();
         componentContainer.awake();
         componentContainer.assemble(false);
-    }
-
-    public void setComponentContainer(ComponentContainer componentContainer) {
-        this.componentContainer = componentContainer;
     }
 
     public ComponentContainer getComponentContainer() {
