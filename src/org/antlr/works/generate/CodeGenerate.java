@@ -109,6 +109,7 @@ public class CodeGenerate implements Runnable {
         }
         lastError = el.getFirstErrorMessage();
         el.clear();
+        ErrorManager.removeErrorListener();
         return success;
     }
 

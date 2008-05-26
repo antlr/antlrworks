@@ -170,6 +170,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
             createGrammarResult.setWarnings(el.warnings);
 
             el.clear();
+            ErrorManager.removeErrorListener();
         }
     }
 
@@ -312,6 +313,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
 
             // clear the error listener
             el.clear();
+            ErrorManager.removeErrorListener();
         }
 
         return getCompleteResult();

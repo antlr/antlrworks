@@ -223,6 +223,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         el.clear();
         System.setErr(os);
         ps.close();
+        ErrorManager.removeErrorListener();
     }
 
     private class CheckStream extends ByteArrayOutputStream {
