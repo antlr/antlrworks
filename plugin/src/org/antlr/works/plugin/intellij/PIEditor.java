@@ -67,7 +67,7 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     private PluginWindow window;
     private Project project;
     private VirtualFile virtualFile;
-    protected Document document;
+    private Document document;
     private ComponentDocument componentDocument;
 
     private boolean layout = false;
@@ -75,7 +75,7 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     private MyFileDocumentManagerAdapter fileDocumentAdapter;
     private final java.util.List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
 
-    protected static final List<PIEditor> editors = new ArrayList<PIEditor>();
+    private static final List<PIEditor> editors = new ArrayList<PIEditor>();
 
     public PIEditor(Project project, VirtualFile file) {
         this.project = project;
@@ -98,7 +98,6 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
         }
 
         window = (PluginWindow) componentDocument.getWindow();
-        // todo used?
         window.setDelegate(this);
         registerKeybindings();
 
@@ -178,8 +177,8 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
     }
 
     public void save() {
-        // todo does it save all the internal documents too?
-        window.getDocument().autoSave();
+        window.resetDirty();
+        window.saveAll();
         notifyFileModified();
     }
 

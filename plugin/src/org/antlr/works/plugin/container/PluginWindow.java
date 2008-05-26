@@ -115,9 +115,15 @@ public class PluginWindow implements ComponentWindow {
         return true;
     }
 
+    public void saveAll() {
+        for(XJDocument doc : documents) {
+            doc.autoSave();
+        }
+    }
+
     public boolean performClose(boolean force) {
-        // todo?
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        // do nothing (not invoked for the plugin)
+        return false;
     }
 
     public void setDelegate(PluginContainerDelegate delegate) {
@@ -171,16 +177,17 @@ public class PluginWindow implements ComponentWindow {
     // ComponentWindow
 
     public void setDirty() {
+        container.dirtyChanged();
         if(delegate != null)
             delegate.pluginDocumentDidChange();
     }
 
     public void resetDirty() {
-        // todo?
+        container.dirtyChanged();
     }
 
     public void setTitle(String title) {
-        // todo?
+        // do nothing
     }
 
     public ComponentContainer getComponentContainer() {
