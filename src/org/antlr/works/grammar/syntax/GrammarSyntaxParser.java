@@ -608,12 +608,13 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         if(!nextToken()) return false;
 
-        // Match any comment between the -> and the template
-        matchComplexComment(0);
+        // Match any comments between the -> and the template
+        while(matchComplexComment(0) || matchSingleComment(0)) {
+            // match all of them...
+        }
 
         // Check first for any semantic predicate:
         // e.g: -> {...}?
-
         if(matchAction()) {
             // If it is not a semantic predicate, it's an action
             // like -> {...}
