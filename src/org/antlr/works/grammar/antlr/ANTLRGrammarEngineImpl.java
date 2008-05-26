@@ -146,6 +146,8 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         parserGrammar = null;
         lexerGrammar = null;
 
+        createGrammarResult.clear();
+
         try {
             switch(engine.getType()) {
                 case ElementGrammarName.COMBINED:
@@ -300,6 +302,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
             needsToAnalyzeGrammar = false;
 
             // store the analyze result
+            analyzeResult.clear();
             analyzeResult.setErrors(el.errors);
             analyzeResult.setWarnings(el.warnings);
 
@@ -319,9 +322,6 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         result.warnings.clear();
         result.warnings.addAll(createGrammarResult.warnings);
         result.warnings.addAll(analyzeResult.warnings);
-
-        createGrammarResult.errors.clear();
-        analyzeResult.errors.clear();
 
         return result;
     }
