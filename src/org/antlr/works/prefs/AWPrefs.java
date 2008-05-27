@@ -231,6 +231,7 @@ public class AWPrefs {
     public static final String PREF_ALERT_CHECK_GRAMMAR_SUCCESS = "PREF_ALERT_CHECK_GRAMMAR_SUCCESS";
     public static final String PREF_ALERT_GENERATE_CODE_SUCCESS = "PREF_ALERT_GENERATE_CODE_SUCCESS";
     public static final String PREF_ALERT_FILE_CHANGES_DETECTED = "PREF_ALERT_FILE_CHANGES_DETECTED";
+    public static final String PREF_ALERT_INTERPRETER_LIMITATION = "PREF_ALERT_INTERPRETER_LIMITATION";
 
     public static final String PREF_CLEAR_CONSOLE_BEFORE_CHECK = "PREF_CLEAR_CONSOLE_BEFORE_CHECK";
 
@@ -593,6 +594,14 @@ public class AWPrefs {
 
     public static boolean isAlertFileChangesDetected() {
         return getPreferences().getBoolean(PREF_ALERT_FILE_CHANGES_DETECTED, true);
+    }
+
+    public static void setAlertInterpreterLimitation(boolean flag) {
+        getPreferences().setBoolean(PREF_ALERT_INTERPRETER_LIMITATION, flag);
+    }
+
+    public static boolean isAlertInterpreterLimitation() {
+        return getPreferences().getBoolean(PREF_ALERT_INTERPRETER_LIMITATION, true);
     }
 
     public static boolean isClearConsoleBeforeCheckGrammar() {

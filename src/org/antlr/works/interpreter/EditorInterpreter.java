@@ -31,9 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.interpreter;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.*;
 import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
@@ -54,6 +52,7 @@ import org.antlr.works.utils.Toolbar;
 import org.antlr.works.utils.Utils;
 import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.xjlib.appkit.swing.XJRollOverButton;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.appkit.utils.XJDialogProgress;
 
 import javax.swing.*;
@@ -141,6 +140,13 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         button.setToolTipText("Run");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
+                if(AWPrefs.isAlertInterpreterLimitation()) {
+                    XJAlert alert = XJAlert.createInstance();
+                    alert.setDisplayDoNotShowAgainButton(true);
+                    alert.showSimple(getContainer(), "Warning", "The interpreter does not run actions nor evaluate syntactic predicates." +
+                            "\nUse the debugger if you want to use these ANTLR features.");
+                    AWPrefs.setAlertInterpreterLimitation(!alert.isDoNotShowAgain());
+                }
                 StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INTERPRETER_BUTTON);
                 interpret();
             }
@@ -288,7 +294,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
             throw new RuntimeException("Lexer is null. Check the grammar before running the interpreter.");
         }
 
-        Interpreter lexEngine = new Interpreter(lexer, input);
+        Interpreter lexEngine = new CustomInterpreter(lexer, input);
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
 
         StringTokenizer tk = new StringTokenizer(tokensToIgnoreLabel.getText(), " ");
@@ -297,7 +303,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
             tokens.setTokenTypeChannel(lexer.getTokenType(tokenName), 99);
         }
 
-        Interpreter parseEngine = new Interpreter(parser, tokens);
+        Interpreter parseEngine = new CustomInterpreter(parser, tokens);
 
         ParseTree t = null;
         try {
@@ -312,6 +318,20 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
         if(parser != null && t != null) {
             SwingUtilities.invokeLater(new Refresh(parser, t));
+        }
+    }
+
+    public class CustomInterpreter extends Interpreter {
+
+        public CustomInterpreter(Grammar grammar, IntStream input) {
+            super(grammar, input);
+        }
+
+        @Override
+        public void reportScanError(RecognitionException re) {
+            CharStream cs = (CharStream)input;
+            editor.console.println("problem matching token at "+
+                cs.getLine()+":"+cs.getCharPositionInLine()+" "+re);
         }
     }
 

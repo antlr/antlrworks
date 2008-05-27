@@ -262,6 +262,7 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(checkGrammarSuccessButton, AWPrefs.PREF_ALERT_CHECK_GRAMMAR_SUCCESS, true);
         getPreferences().bindToPreferences(generateCodeSuccessButton, AWPrefs.PREF_ALERT_GENERATE_CODE_SUCCESS, true);
         getPreferences().bindToPreferences(fileModifiedOnDiskButton, AWPrefs.PREF_ALERT_FILE_CHANGES_DETECTED, true);
+        getPreferences().bindToPreferences(interpreterLimitationButton, AWPrefs.PREF_ALERT_INTERPRETER_LIMITATION, true);
 
         getPreferences().bindToPreferences(clearConsoleBeforeCheckButton, AWPrefs.PREF_CLEAR_CONSOLE_BEFORE_CHECK, false);
     }
@@ -455,6 +456,7 @@ public class AWPrefsDialog extends XJPanel {
         checkGrammarSuccessButton = new JCheckBox();
         generateCodeSuccessButton = new JCheckBox();
         fileModifiedOnDiskButton = new JCheckBox();
+        interpreterLimitationButton = new JCheckBox();
         label6 = new JLabel();
         clearConsoleBeforeCheckButton = new JCheckBox();
         tabUpdates = new JPanel();
@@ -1198,11 +1200,13 @@ public class AWPrefsDialog extends XJPanel {
         						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC,
         						FormFactory.LINE_GAP_ROWSPEC,
+        						FormFactory.DEFAULT_ROWSPEC,
+        						FormFactory.LINE_GAP_ROWSPEC,
         						FormFactory.DEFAULT_ROWSPEC
         					}));
 
         				//---- label8 ----
-        				label8.setText("Display alerts on:");
+        				label8.setText("Display alerts:");
         				panel1.add(label8, cc.xywh(3, 3, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 
         				//---- checkGrammarSuccessButton ----
@@ -1217,13 +1221,17 @@ public class AWPrefsDialog extends XJPanel {
         				fileModifiedOnDiskButton.setText("File modified on disk");
         				panel1.add(fileModifiedOnDiskButton, cc.xy(5, 7));
 
+        				//---- interpreterLimitationButton ----
+        				interpreterLimitationButton.setText("Interpreter limitations");
+        				panel1.add(interpreterLimitationButton, cc.xy(5, 9));
+
         				//---- label6 ----
         				label6.setText("Console:");
-        				panel1.add(label6, cc.xywh(3, 9, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+        				panel1.add(label6, cc.xywh(3, 11, 1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 
         				//---- clearConsoleBeforeCheckButton ----
         				clearConsoleBeforeCheckButton.setText("Clear before checking grammar");
-        				panel1.add(clearConsoleBeforeCheckButton, cc.xy(5, 9));
+        				panel1.add(clearConsoleBeforeCheckButton, cc.xy(5, 11));
         			}
         			tabbedPane1.addTab("Advanced", panel1);
 
@@ -1424,6 +1432,7 @@ public class AWPrefsDialog extends XJPanel {
     private JCheckBox checkGrammarSuccessButton;
     private JCheckBox generateCodeSuccessButton;
     private JCheckBox fileModifiedOnDiskButton;
+    private JCheckBox interpreterLimitationButton;
     private JLabel label6;
     private JCheckBox clearConsoleBeforeCheckButton;
     private JPanel tabUpdates;
