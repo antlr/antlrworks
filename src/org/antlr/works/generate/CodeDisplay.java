@@ -35,14 +35,19 @@ import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.xjlib.appkit.document.XJFileMonitor;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import java.awt.*;
 
 public class CodeDisplay extends EditorTab {
 
-    protected ATEPanel textEditor;
-    protected String title;
+    private ATEPanel textEditor;
+    private String rule;
+    private String file;
+    private final XJFileMonitor monitor = new XJFileMonitor();
 
     public CodeDisplay(XJFrameInterface parentFrame) {
         textEditor = new ATEPanel(parentFrame);
@@ -61,23 +66,59 @@ public class CodeDisplay extends EditorTab {
         textEditor.getTextPane().setTabSize(AWPrefs.getEditorTabSize());
     }
 
-    public void setText(String text) {
+    public void setRule(String rule) {
+        this.rule = rule;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
+    }
+
+    @Override
+    public void editorActivated() {
+        if(monitor.isModifiedOnDisk(file)) {
+            load();
+        }
+    }
+
+    public void load() {
+        String text;
+        try {
+            text = XJUtils.getStringFromFile(file);
+        } catch (Exception e) {
+            XJAlert.display(null, "Error", "Exception while reading the generated file:\n"+e.toString());
+            return;
+        }
+
+        if(rule != null) {
+            int startIndex = text.indexOf("$ANTLR start \""+rule+"\"");
+            startIndex = text.indexOf("\n", startIndex)+1;
+            int stopIndex = text.indexOf("$ANTLR end \""+rule+"\"");
+            while(stopIndex>0 && text.charAt(stopIndex) != '\n')
+                stopIndex--;
+
+            if(startIndex >= 0 && stopIndex >= 0) {
+                text = text.substring(startIndex, stopIndex);
+            } else {
+                XJAlert.display(null, "Error", "Cannot find markers for rule \""+rule+"\"");
+                return;
+            }
+        }
+
+        monitor.synchronizeLastModifiedDate(file);
         textEditor.loadText(text);
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Container getContainer() {
-        return textEditor;
-    }
-
     public String getTabName() {
-        return title;
+        String name = XJUtils.getLastPathComponent(file);
+        if(rule != null) {
+            return rule + " [" + name + "]";
+        } else {
+            return name;
+        }
     }
 
     public Component getTabComponent() {
-        return getContainer();
+        return textEditor;
     }
 }

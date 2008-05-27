@@ -42,4 +42,5 @@ public abstract class EditorTab {
     public GView getExportableGView() { return null; }
     public abstract String getTabName();
     public abstract Component getTabComponent();
+    public void editorActivated() { }
 }

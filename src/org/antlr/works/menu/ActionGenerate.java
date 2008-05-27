@@ -160,35 +160,11 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
             return;
         }
 
-        String text;
-        try {
-            text = XJUtils.getStringFromFile(grammarFile);
-        } catch (Exception e) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Exception while reading the generated file:\n"+e.toString());
-            return;
-        }
-
-        String title = grammarFileName;
-        if(rule != null) {
-            int startIndex = text.indexOf("$ANTLR start \""+rule+"\"");
-            startIndex = text.indexOf("\n", startIndex)+1;
-            int stopIndex = text.indexOf("$ANTLR end \""+rule+"\"");
-            while(stopIndex>0 && text.charAt(stopIndex) != '\n')
-                stopIndex--;
-
-            if(startIndex >= 0 && stopIndex >= 0) {
-                text = text.substring(startIndex, stopIndex);
-                title = rule + " [" + title + "]";
-            } else {
-                XJAlert.display(editor.getWindowContainer(), "Error", "Cannot find markers for rule \""+rule+"\"");
-                return;
-            }
-        }
-
         CodeDisplay cd = new CodeDisplay(editor.getXJFrame());
-        cd.setText(text);
-        cd.setTitle(title);
-
+        cd.setFile(grammarFile);
+        cd.setRule(rule);
+        cd.load();
+        
         editor.addTab(cd);
     }
 

@@ -451,6 +451,9 @@ public class ComponentContainerGrammar implements ComponentContainer {
         for(ComponentContainer container : containers) {
             container.getEditor().componentActivated();
         }
+        for(EditorTab et : tabs) {
+            et.editorActivated();
+        }
     }
 
     public ContextualMenuFactory createContextualMenuFactory() {
