@@ -228,12 +228,13 @@ public class ATETextPane extends JTextPane
                 // remove/add tab only at the beginning of lines
                 beginLine = false;
 
+                boolean ignoreChars = c == '\t' || c == ' ';
                 // we are not at the beginning of a line if another character is encountered
-                if(c != ' ' && c != '\t') {
+                if(!ignoreChars) {
                     beginLine = false;
                 }
 
-                if(c == '\t' && direction == -1) {
+                if(ignoreChars && direction == -1) {
                     if(firstLine && i <= start) {
                         // we are before the beginning of the selection
                         selectionStart--;
