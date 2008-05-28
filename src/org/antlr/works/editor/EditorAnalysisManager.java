@@ -89,7 +89,7 @@ public class EditorAnalysisManager extends ATEAnalysisManager {
     }
 
     public String getAnalysisDescription() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if(numberOfErrors == 0)
             sb.append("No error");
         else {

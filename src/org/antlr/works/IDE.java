@@ -176,7 +176,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public void checkLibraries() {
-        StringBuffer missing = new StringBuffer();
+        StringBuilder missing = new StringBuilder();
 
         try {
             Class.forName("org.antlr.Tool");
@@ -229,7 +229,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     private class CheckStream extends ByteArrayOutputStream {
 
         private PrintStream errorStream;
-        private StringBuffer sb = new StringBuffer();
+        private StringBuilder sb = new StringBuilder();
 
         public CheckStream(PrintStream errorStream) {
             this.errorStream = errorStream;
@@ -306,7 +306,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
                 p = p.substring(1);
 
             // Change all '/' to '\'
-            StringBuffer sb = new StringBuffer(p);
+            StringBuilder sb = new StringBuilder(p);
             for(int i=0; i<sb.length(); i++) {
                 if(sb.charAt(i) == '/')
                     sb.replace(i, i+1, "\\");

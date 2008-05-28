@@ -113,7 +113,7 @@ public class EditorInterpreterTreeModel extends DefaultTreeModel {
         }
 
         public String getInfoString() {
-            StringBuffer info = new StringBuffer();
+            StringBuilder info = new StringBuilder();
             Object payload = getPayload();
             if(payload instanceof CommonToken) {
                 CommonToken t = (CommonToken)payload;

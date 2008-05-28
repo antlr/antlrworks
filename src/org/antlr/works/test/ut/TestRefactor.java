@@ -79,7 +79,7 @@ public class TestRefactor extends AbstractTest {
     }
 
     private class TestRefactorMutator implements RefactorMutator {
-        public StringBuffer mutableText;
+        public StringBuilder mutableText;
 
         public TestRefactorMutator() {
         }
@@ -101,7 +101,7 @@ public class TestRefactor extends AbstractTest {
         }
 
         public void setText(String text) {
-            mutableText = new StringBuffer(text);
+            mutableText = new StringBuilder(text);
         }
 
         public String getText() {

@@ -65,7 +65,7 @@ public class Console {
     }
 
     private static void printUsage() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("Usage: java -cp antlrworks.jar org.antlr.works.Console [args]\n");
         sb.append(" -f grammarFile : ").append("specify the input grammar file (*.g)\n");
         sb.append(" -sd format : ").append("specify the format of the syntax diagram output file. For EPS, use 'eps'. For bitmap, use either 'png' or any available extensions\n");

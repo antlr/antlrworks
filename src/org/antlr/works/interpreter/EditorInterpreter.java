@@ -221,7 +221,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     }
 
     public void updateIgnoreTokens(List<ElementRule> rules) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if(rules != null) {
             for (ElementRule r : rules) {
                 if (r.ignored) {

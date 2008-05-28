@@ -218,7 +218,7 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
     }
 
     private void printLeftRecursionToConsole(List rules) {
-        StringBuffer info = new StringBuffer();
+        StringBuilder info = new StringBuilder();
         info.append("Aborting because the following rules are mutually left-recursive:");
         for (Object rule : rules) {
             Set rulesSet = (Set) rule;

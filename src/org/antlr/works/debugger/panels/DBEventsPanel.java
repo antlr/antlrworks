@@ -102,7 +102,7 @@ public class DBEventsPanel extends DetachablePanel {
     }
 
     public String getEventsAsString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(eventTableDataModel.getHeadersAsString());
         sb.append("\n");
 
@@ -224,7 +224,7 @@ public class DBEventsPanel extends DetachablePanel {
             }
 
             public String toString() {
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append(event.toString());
                 sb.append("\t");
                 sb.append(getTextForExport(subrule));

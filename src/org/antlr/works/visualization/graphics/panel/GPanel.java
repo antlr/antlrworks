@@ -241,7 +241,7 @@ public class GPanel implements XJNotificationObserver {
         if(rule == null || !rule.hasErrors())
             return;
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int count = view.getGraphs().size();
         int index = view.getCurrentGraphIndex();
         if(count>1) {

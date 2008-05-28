@@ -31,10 +31,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.stats;
 
-import org.antlr.xjlib.appkit.app.XJApplication;
-import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.works.dialog.DialogPersonalInfo;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -73,7 +73,7 @@ public class StatisticsReporter {
             info = new HashMap();
         }
 
-        StringBuffer s = new StringBuffer(URL_REGISTER);
+        StringBuilder s = new StringBuilder(URL_REGISTER);
         s.append("who=");
         s.append(info.get(DialogPersonalInfo.INFO_WHO));
         s.append("&sector=");
@@ -155,7 +155,7 @@ public class StatisticsReporter {
             return false;
         }
 
-        StringBuffer param = new StringBuffer();
+        StringBuilder param = new StringBuilder();
         param.append(URL_SEND_STATS);
         param.append("ID=");
         param.append(id);

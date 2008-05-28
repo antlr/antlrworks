@@ -175,7 +175,7 @@ public class ATEAnalysisColumn extends JPanel {
             if(manager == null)
                 return;
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             if(analysisBox.r.contains(e.getPoint())) {
                 sb.append(manager.getAnalysisDescription());
             } else {
@@ -194,7 +194,7 @@ public class ATEAnalysisColumn extends JPanel {
         }
 
         protected String getItemDescriptionsAtPoint(Point point) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             ATEAnalysisManager manager = getAnalysisManager();
             if(manager != null) {
                 int[] types = manager.getAvailableTypes();

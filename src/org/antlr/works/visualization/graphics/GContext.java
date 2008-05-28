@@ -198,7 +198,7 @@ public class GContext {
     }
 
     public static String getStringWidth(String label) {
-        StringBuffer w = new StringBuffer();
+        StringBuilder w = new StringBuilder();
         for(int i=0; i<label.length(); i++) {
             w.append(CHAR_WIDTH);
         }
@@ -206,7 +206,7 @@ public class GContext {
     }
 
     public static String getBoxWidth(String label) {
-        StringBuffer w = new StringBuffer();
+        StringBuilder w = new StringBuilder();
         for(int i=0; i<label.length()+2; i++) {
             w.append(CHAR_WIDTH);
         }

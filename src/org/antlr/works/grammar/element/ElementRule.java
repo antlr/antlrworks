@@ -264,8 +264,8 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public String getTextRuleAfterRemovingLeftRecursion() {
-        StringBuffer head = new StringBuffer();
-        StringBuffer star = new StringBuffer();
+        StringBuilder head = new StringBuilder();
+        StringBuilder star = new StringBuilder();
 
         for (List<ATEToken> alts : getAlternatives()) {
             ATEToken firstTokenInAlt = alts.get(0);
@@ -286,7 +286,7 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
             }
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("(");
         sb.append(head);
         sb.append(")");
@@ -317,7 +317,7 @@ public class ElementRule extends ElementScopable implements Comparable, EditorPe
     }
 
     public String getErrorMessageHTML() {
-        StringBuffer message = new StringBuffer();
+        StringBuilder message = new StringBuilder();
         message.append("<html>");
         for (Iterator<GrammarError> iterator = errors.iterator(); iterator.hasNext();) {
             GrammarError error = iterator.next();

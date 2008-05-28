@@ -113,7 +113,7 @@ public class FAAnalysis {
     }
     
     public String toString() {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         Iterator iterator = stateIncomingTransitionCount.keySet().iterator();
         while(iterator.hasNext()) {
             NFAState key = (NFAState)iterator.next();

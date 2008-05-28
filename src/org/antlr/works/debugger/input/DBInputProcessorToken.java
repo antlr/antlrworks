@@ -258,7 +258,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
 
     public String renderTokensText() {
         currentTokenIndexInText = 0;
-        StringBuffer text = new StringBuffer();
+        StringBuilder text = new StringBuilder();
         for (Integer idx : inputTokenIndexes) {
             DBInputTextTokenInfo info = indexToTokenInfoMap.get(idx);
             info.setStart(text.length());

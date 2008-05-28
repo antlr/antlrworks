@@ -43,7 +43,7 @@ public class RulesDependency extends GrammarDOTTab {
 
     protected List<String> visitedRules = new ArrayList<String>();
     protected List<String> visitedRefs = new ArrayList<String>();
-    protected StringBuffer dependency;
+    protected StringBuilder dependency;
 
     protected boolean includeLexerRefs;
 
@@ -79,7 +79,7 @@ public class RulesDependency extends GrammarDOTTab {
         visitedRules.clear();
         visitedRefs.clear();
 
-        dependency = new StringBuffer();
+        dependency = new StringBuilder();
         dependency.append("digraph {\n");
         buildGraph(rule);
         dependency.append("}");

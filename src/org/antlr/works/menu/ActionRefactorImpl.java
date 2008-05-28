@@ -211,7 +211,7 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
         // "hello\'world" -> 'hello\'world'
         // "hello\"world" -> 'hello"world'
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for(int i=0; i<s.length(); i++) {
             char c = s.charAt(i);
             if(c == '\\') {
@@ -407,7 +407,7 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
     }
 
     public String createRule(String name, String content) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("\n");
         sb.append(name);
@@ -451,10 +451,10 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
 
     public class EditorTextMutator implements RefactorMutator {
 
-        public StringBuffer mutableText;
+        public StringBuilder mutableText;
 
         public EditorTextMutator() {
-            mutableText = new StringBuffer(getSelectedEditor().getText());
+            mutableText = new StringBuilder(getSelectedEditor().getText());
         }
 
         public void replace(int start, int end, String s) {

@@ -295,7 +295,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         } catch(Exception e) {
             debugger.getConsole().println(e);
             String msg = ErrorListener.getThreadInstance().getFirstErrorMessage();
-            StringBuffer sb = new StringBuffer("Error while preparing the grammar:\n");
+            StringBuilder sb = new StringBuilder("Error while preparing the grammar:\n");
             if(msg != null) {
                 sb.append(msg);
                 sb.append("\n");
@@ -437,7 +437,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             for(int j = 0; j < tokens.size(); j++) {
                 ATEToken token = tokens.get(j);
                 if (token.type == ATESyntaxLexer.TOKEN_ID && token.getAttribute().equals("package")) {
-                    StringBuffer sb = new StringBuffer();
+                    StringBuilder sb = new StringBuilder();
                     j++;
                     while (j < tokens.size()) {
                         ATEToken t = tokens.get(j);
@@ -456,7 +456,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             return "";
         }
 
-        StringBuffer importLines = new StringBuffer();
+        StringBuilder importLines = new StringBuilder();
         for (String importName : imports) {
             importLines.append("import ");
             importLines.append(importName);

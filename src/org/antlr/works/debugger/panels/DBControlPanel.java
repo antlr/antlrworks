@@ -251,7 +251,7 @@ public class DBControlPanel extends JPanel {
     }
 
     public void updateStatusInfo() {
-        StringBuffer info = new StringBuffer();
+        StringBuilder info = new StringBuilder();
 
         String status = "-";
         switch(debugger.getRecorder().getStatus()) {

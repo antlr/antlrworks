@@ -271,7 +271,7 @@ public class StatisticsAW {
     }
 
     public String getRawString() {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append(XJApplication.getAppVersionShort());
         s.append('\t');
         for (Iterator<Integer> iterator = eventList.iterator(); iterator.hasNext();) {
@@ -284,7 +284,7 @@ public class StatisticsAW {
     }
 
     public String getReadableString() {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("Version: ");
         s.append(XJApplication.getAppVersionShort());
         s.append('\n');

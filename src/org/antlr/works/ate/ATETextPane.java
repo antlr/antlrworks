@@ -266,7 +266,7 @@ public class ATETextPane extends JTextPane
         if(!modified) return;
 
         // create the new text
-        final StringBuffer modifiedText = new StringBuffer(text);
+        final StringBuilder modifiedText = new StringBuilder(text);
         modifiedText.replace(begin, end, modifiedPortion.toString());
 
         // replace the text with the modified idented text

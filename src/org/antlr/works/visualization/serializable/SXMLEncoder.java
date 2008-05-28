@@ -148,7 +148,7 @@ public class SXMLEncoder implements SEncoder {
 
     public static class XMLWriter {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         Stack<String> elements = new Stack<String>();
 
         public void open(String name) {

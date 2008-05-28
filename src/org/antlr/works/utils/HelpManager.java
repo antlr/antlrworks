@@ -31,6 +31,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.utils;
 
+import org.antlr.Tool;
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.works.dialog.DialogReports;
+import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.update.XJUpdateManager;
 import org.antlr.xjlib.appkit.utils.BrowserLauncher;
@@ -38,10 +42,6 @@ import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.xjlib.foundation.XJUtils;
 import org.antlr.xjlib.foundation.timer.XJScheduledTimerDelegate;
-import org.antlr.Tool;
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.works.dialog.DialogReports;
-import org.antlr.works.prefs.AWPrefs;
 
 import java.awt.*;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class HelpManager implements XJScheduledTimerDelegate {
     }
 
     public static void sendFeedback(Container parent) {
-        StringBuffer url = new StringBuffer(Localizable.getLocalizedString(Localizable.FEEDBACK_URL));
+        StringBuilder url = new StringBuilder(Localizable.getLocalizedString(Localizable.FEEDBACK_URL));
         url.append("?ANTLRVersion=");
         url.append(XJUtils.encodeToURL(Tool.VERSION));
         url.append("&StringTemplateVersion=");
