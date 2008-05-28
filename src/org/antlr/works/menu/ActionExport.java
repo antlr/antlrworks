@@ -70,9 +70,6 @@ public class ActionExport extends ActionAbstract {
         if(file == null)
             return;
 
-
-
-
         try {
             FileWriter writer = new FileWriter(file);
             writer.write(getContainer().getActionDebugger().getEventsAsString());

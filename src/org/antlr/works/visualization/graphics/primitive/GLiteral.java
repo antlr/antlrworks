@@ -98,7 +98,7 @@ public class GLiteral {
             do {
                 Float v = values.get(c());
                 if(v != null) {
-                    _value += v.floatValue();
+                    _value += v;
                 } else {
                     if(c().equals(OP_SUB))
                         _value -= evaluate_sub();

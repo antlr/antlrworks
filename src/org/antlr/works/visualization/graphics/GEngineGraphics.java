@@ -145,6 +145,10 @@ public class GEngineGraphics extends GEngine {
                 tx = (float)(x-layout.getBounds().getWidth());
                 ty = (float)(y+layout.getBounds().getHeight()*0.5);
                 break;
+            case GContext.ALIGN_LEFT:
+                tx = x;
+                ty = (float)(y+layout.getBounds().getHeight()*0.5);
+                break;
         }
         layout.draw(getG2D(), tx, ty-1);
     }

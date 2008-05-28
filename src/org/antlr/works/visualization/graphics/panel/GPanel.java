@@ -326,7 +326,9 @@ public class GPanel implements XJNotificationObserver {
 
         //box.add(createDrawNodeButton());
         //box.add(createDrawDimensionButton());
+        box.addElement(new JLabel("Show:"));
         box.addElement(createShowNFAButton());
+        box.addElement(createShowRuleNameButton());
         //box.add(createUseCacheButton());
 
         //box.setPreferredSize(new Dimension(160, 0));
@@ -417,7 +419,7 @@ public class GPanel implements XJNotificationObserver {
     }      */
 
     private JCheckBox createShowNFAButton() {
-        JCheckBox button = new JCheckBox("Show NFA");
+        JCheckBox button = new JCheckBox("NFA");
         button.setFocusable(false);
         button.setSelected(context.skin instanceof NFASkin);
         button.addActionListener(new ActionListener() {
@@ -430,6 +432,19 @@ public class GPanel implements XJNotificationObserver {
                 else
                     context.setSkin(new SDSkin());
 
+                view.refresh();
+            }
+        });
+        return button;
+    }
+
+    private JCheckBox createShowRuleNameButton() {
+        final JCheckBox button = new JCheckBox("Rule Name");
+        button.setFocusable(false);
+        button.setSelected(context.isShowRuleName());
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                context.setShowRuleName(button.isSelected());
                 view.refresh();
             }
         });

@@ -87,15 +87,29 @@ public class GGraph extends GGraphAbstract implements SSerializable {
         return Math.max(getDimension().getPixelHeight(context), context.getPixelArrowHeight());
     }
 
+    private float titleOffset = 0;
+
+    private void ensureTitleOffset() {
+        if(context.isShowRuleName()) {
+            if(titleOffset == 0) {
+                titleOffset = context.getPixelValue(GContext.getStringWidth(name));
+            }
+        } else {
+            titleOffset = 0;
+        }
+    }
+
     public float getWidth() {
-        return getDimension().getPixelWidth(context);
+        ensureTitleOffset();
+        return getDimension().getPixelWidth(context)+titleOffset;
     }
 
     public void render(float ox, float oy) {
+        ensureTitleOffset();
         oy += getDimension().getPixelUp(context);
 
         for (GNode node : nodes) {
-            node.render(ox, oy);
+            node.render(ox+titleOffset, oy);
         }
 
         offsetX = ox;
@@ -104,11 +118,18 @@ public class GGraph extends GGraphAbstract implements SSerializable {
         setRendered(true);
     }
 
+    public static final int TITLE_OFFSET = 100;
+
     public void draw() {
         context.nodeColor = Color.black;
         context.linkColor = Color.black;
         context.setLineWidth(1);
-        
+
+        context.setColor(Color.black);
+        if(context.isShowRuleName()) {
+            context.drawString(context.getRuleFont(), name, offsetX, offsetY, GContext.ALIGN_LEFT);            
+        }
+
         for (GNode node : nodes) {
             node.drawNodeAndLink();
         }

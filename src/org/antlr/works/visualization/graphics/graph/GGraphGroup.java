@@ -49,8 +49,6 @@ import java.util.Map;
 
 public class GGraphGroup extends GGraphAbstract {
 
-    public static final int TITLE_OFFSET = 100;
-
     public GDimension dimension = new GDimension();
     public List<GGraph> graphs = new ArrayList<GGraph>();
     public GPathGroup pathGroup = new GPathGroup();
@@ -91,7 +89,7 @@ public class GGraphGroup extends GGraphAbstract {
     }
 
     public float getWidth() {
-        return getDimension().getPixelWidth(context)+TITLE_OFFSET;
+        return getDimension().getPixelWidth(context);
     }
 
     protected int pathIndex;
@@ -362,7 +360,6 @@ public class GGraphGroup extends GGraphAbstract {
     }
 
     public void render(float ox, float oy) {
-        ox += TITLE_OFFSET;
         for (int i = 0; i<graphs.size(); i++) {
             GGraph graph = graphs.get(i);
             graph.render(ox, oy);
@@ -380,8 +377,6 @@ public class GGraphGroup extends GGraphAbstract {
 
         for (GGraph graph : graphs) {
             graph.draw();
-            context.setColor(Color.black);
-            context.drawString(context.getRuleFont(), graph.name, TITLE_OFFSET - 5, graph.offsetY, GContext.ALIGN_RIGHT);
         }
 
         pathGroup.draw();

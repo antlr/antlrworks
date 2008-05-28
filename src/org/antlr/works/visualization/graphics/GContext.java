@@ -59,6 +59,7 @@ public class GContext {
     public static final int ALIGN_CENTER = 0;
     public static final int ALIGN_CENTER_UP = 1;
     public static final int ALIGN_RIGHT = 2;
+    public static final int ALIGN_LEFT = 3;
 
     public Container container;
     public GContextProvider provider;
@@ -73,7 +74,9 @@ public class GContext {
     public boolean drawnode = false;
     public boolean drawdimension = false;
 
-    public Stack<Color> colorStack = new Stack<Color>();
+    private boolean showRuleName = true;
+
+    public final Stack<Color> colorStack = new Stack<Color>();
 
     public Color nodeColor = Color.black;
     public Color linkColor = Color.black;
@@ -134,6 +137,14 @@ public class GContext {
         return value_factor;
     }
 
+    public boolean isShowRuleName() {
+        return showRuleName;
+    }
+
+    public void setShowRuleName(boolean showRuleName) {
+        this.showRuleName = showRuleName;
+    }
+
     public float getPixelEpsilonUp() {
         return getPixelValue(EPSILON_UP);
     }
@@ -184,6 +195,14 @@ public class GContext {
         if(titleFont == null)
             titleFont = new Font("Monospaced", Font.BOLD, (int)(4*value_factor));
         return titleFont;
+    }
+
+    public static String getStringWidth(String label) {
+        StringBuffer w = new StringBuffer();
+        for(int i=0; i<label.length(); i++) {
+            w.append(CHAR_WIDTH);
+        }
+        return GLiteral.max(w.toString(), GContext.BOX_WIDTH);
     }
 
     public static String getBoxWidth(String label) {
