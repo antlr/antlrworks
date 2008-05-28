@@ -44,10 +44,11 @@ import java.util.List;
 
 public class GGraph extends GGraphAbstract implements SSerializable {
 
-    public GDimension dimension;
+    private GDimension dimension;
     public List<GNode> nodes;
 
     public String name;
+    public String nameWidth;
 
     public float offsetX = 0;
     public float offsetY = 0;
@@ -65,6 +66,7 @@ public class GGraph extends GGraphAbstract implements SSerializable {
 
     public void setName(String name) {
         this.name = name;
+        nameWidth = GContext.getStringWidth(name);
     }
 
     public void setDimension(GDimension dimension) {
@@ -76,7 +78,9 @@ public class GGraph extends GGraphAbstract implements SSerializable {
     }
 
     public GDimension getDimension() {
-        return dimension;
+        GDimension d = new GDimension(dimension);
+        d.addWidth(nameWidth);
+        return d;
     }
 
     public float getHeight() {
@@ -87,27 +91,14 @@ public class GGraph extends GGraphAbstract implements SSerializable {
         return Math.max(getDimension().getPixelHeight(context), context.getPixelArrowHeight());
     }
 
-    private float titleOffset = 0;
-
-    private void ensureTitleOffset() {
-        if(context.isShowRuleName()) {
-            if(titleOffset == 0) {
-                titleOffset = context.getPixelValue(GContext.getStringWidth(name));
-            }
-        } else {
-            titleOffset = 0;
-        }
-    }
-
     public float getWidth() {
-        ensureTitleOffset();
-        return getDimension().getPixelWidth(context)+titleOffset;
+        return getDimension().getPixelWidth(context);
     }
 
     public void render(float ox, float oy) {
-        ensureTitleOffset();
         oy += getDimension().getPixelUp(context);
 
+        float titleOffset = context.getPixelValue(nameWidth);
         for (GNode node : nodes) {
             node.render(ox+titleOffset, oy);
         }

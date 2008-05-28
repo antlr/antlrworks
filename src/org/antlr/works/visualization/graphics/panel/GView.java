@@ -196,7 +196,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
     }
 
     public GPathGroup getCurrentPathGroup() {
-        return getCurrentGraphGroup().pathGroup;
+        return getCurrentGraphGroup().getPathGroup();
     }
 
     public GPath getCurrentPath() {

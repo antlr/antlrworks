@@ -263,7 +263,7 @@ public class GPanel implements XJNotificationObserver {
             return;
 
         GGraphGroup gg = (GGraphGroup)view.getCurrentGraph();
-        int count = gg.pathGroup.getNumberOfPaths();
+        int count = gg.getPathGroup().getNumberOfPaths();
         if(count <= 1)
             pathButtonSelectionBox.add(new JLabel("Alternative:"));
         else
@@ -282,15 +282,15 @@ public class GPanel implements XJNotificationObserver {
             public void actionPerformed(ActionEvent event) {
                 JCheckBox button = (JCheckBox)event.getSource();
                 GGraphGroup gg = (GGraphGroup)view.getCurrentGraph();
-                gg.pathGroup.setPathVisible(Integer.parseInt(button.getName()), button.isSelected());
-                gg.pathGroup.makeSureCurrentPathIsVisible();
+                gg.getPathGroup().setPathVisible(Integer.parseInt(button.getName()), button.isSelected());
+                gg.getPathGroup().makeSureCurrentPathIsVisible();
                 view.cacheRerender();
                 view.repaint();
             }
         });
 
         GGraphGroup gg = (GGraphGroup)view.getCurrentGraph();
-        button.setSelected(gg.pathGroup.isPathVisible(pathIndex));
+        button.setSelected(gg.getPathGroup().isPathVisible(pathIndex));
 
         return button;
     }
@@ -303,7 +303,7 @@ public class GPanel implements XJNotificationObserver {
             public void actionPerformed(ActionEvent event) {
                 for (Object o : view.getGraphs()) {
                     GGraphGroup gg = (GGraphGroup) o;
-                    gg.pathGroup.toggleShowRuleLinks();
+                    gg.getPathGroup().toggleShowRuleLinks();
                 }
                 view.cacheRerender();
                 view.repaint();

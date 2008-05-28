@@ -123,7 +123,7 @@ public class GFactory {
 
         // Attach all error paths to the GGraphGroup
         for(int i=0; i<error.paths.size(); i++) {
-            List states = (List) error.paths.get(i);
+            List states = error.paths.get(i);
             Boolean disabled = error.pathsDisabled.get(i);
             try {
                 gg.addPath(states, disabled, factory.getSkippedStatesMap());
@@ -141,7 +141,7 @@ public class GFactory {
         }
 
         if(error.paths.size() > 0)
-            gg.pathGroup.setPathVisible(0, true);
+            gg.getPathGroup().setPathVisible(0, true);
 
         return gg;
     }

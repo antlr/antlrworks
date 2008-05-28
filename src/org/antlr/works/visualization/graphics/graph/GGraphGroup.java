@@ -40,7 +40,6 @@ import org.antlr.works.visualization.graphics.path.GPathElement;
 import org.antlr.works.visualization.graphics.path.GPathGroup;
 import org.antlr.works.visualization.graphics.primitive.GDimension;
 import org.antlr.works.visualization.graphics.shape.GNode;
-import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -49,17 +48,12 @@ import java.util.Map;
 
 public class GGraphGroup extends GGraphAbstract {
 
-    public GDimension dimension = new GDimension();
-    public List<GGraph> graphs = new ArrayList<GGraph>();
-    public GPathGroup pathGroup = new GPathGroup();
-
-    protected GContext defaultContext;
+    private final GDimension dimension = new GDimension();
+    private final List<GGraph> graphs = new ArrayList<GGraph>();
+    private final GPathGroup pathGroup = new GPathGroup();
+    private int pathIndex;
 
     public GGraphGroup() {
-        // The default context is used to evaluate the position of certain objects in addPath()
-        // because position requires a context to be evaluated ;-)
-        defaultContext = new GContext();
-        defaultContext.setSkin(new SDSkin());
     }
 
     public void setEnable(boolean flag) {
@@ -69,19 +63,20 @@ public class GGraphGroup extends GGraphAbstract {
     @Override
     public void setContext(GContext context) {
         super.setContext(context);
-        for (GGraph graph : graphs) {
+        for (GGraph graph : getGraphs()) {
             graph.setContext(context);
         }
-        pathGroup.setContext(context);
+        getPathGroup().setContext(context);
     }
 
     public void add(GGraph graph) {
-        dimension.maxWidth(graph.dimension.width);
-        dimension.addUp(graph.dimension.up);
-        dimension.addDown(graph.dimension.down);
-        if(graphs.size()>0)
-            dimension.addDown(GContext.LINE_SPACE);
-        graphs.add(graph);
+        getDimension().maxWidth(graph.getDimension().width);
+        getDimension().addUp(graph.getDimension().up);
+        getDimension().addDown(graph.getDimension().down);
+        if(getGraphs().size()>0) {
+            getDimension().addDown(GContext.LINE_SPACE);            
+        }
+        getGraphs().add(graph);
     }
 
     public float getHeight() {
@@ -91,8 +86,6 @@ public class GGraphGroup extends GGraphAbstract {
     public float getWidth() {
         return getDimension().getPixelWidth(context);
     }
-
-    protected int pathIndex;
 
     public List<FATransition> getTransitionsMatchingSkippedStates(List<FATransition> candidates, List states) {
         /** First convert the list of NFAStates to a list of Integer containing
@@ -120,11 +113,11 @@ public class GGraphGroup extends GGraphAbstract {
 
         List<FATransition> candidateTransitions = new ArrayList<FATransition>(node.state.transitions);
         FATransition candidate = null;
-        int start = pathIndex;
+        int start = getPathIndex();
 
         loop:
-        for(; pathIndex < path.size(); pathIndex++) {
-            candidateTransitions = getTransitionsMatchingSkippedStates(candidateTransitions, path.subList(start, pathIndex+1));
+        for(; getPathIndex() < path.size(); pathIndex = getPathIndex() + 1) {
+            candidateTransitions = getTransitionsMatchingSkippedStates(candidateTransitions, path.subList(start, getPathIndex() +1));
             switch(candidateTransitions.size()) {
                 case 0: // No more transitions. Exit and use the candidate transition.
                     break loop;
@@ -140,11 +133,11 @@ public class GGraphGroup extends GGraphAbstract {
                     // transitions's target state correspond to the next path state to avoid
                     // missing a transition: this can happen if a transition is a subset of
                     // the others (the next state of the path can return no transition at all)
-                    if(pathIndex+1 < path.size()) {
-                        NFAState nextPathState = (NFAState) path.get(pathIndex+1);
+                    if(getPathIndex() +1 < path.size()) {
+                        NFAState nextPathState = (NFAState) path.get(getPathIndex() +1);
                         for (FATransition t : candidateTransitions) {
                             if (t.target.stateNumber == nextPathState.stateNumber) {
-                                pathIndex++;    // always points to the next element after the transition
+                                pathIndex = getPathIndex() + 1;    // always points to the next element after the transition
                                 return t;
                             }
                         }
@@ -228,9 +221,9 @@ public class GGraphGroup extends GGraphAbstract {
         GNode node;
         NFAState nextState = null;
         GNode nextNode = null;
-        for(pathIndex = 0; pathIndex < path.size(); pathIndex++) {
-            if(pathIndex == 0) {
-                nextState = (NFAState)path.get(pathIndex);
+        for(pathIndex = 0; getPathIndex() < path.size(); pathIndex = getPathIndex() + 1) {
+            if(getPathIndex() == 0) {
+                nextState = (NFAState)path.get(getPathIndex());
                 nextNode = findNodeForStateNumber(nextState.stateNumber);
                 if(nextNode == null) {
                     // A path can start from anywhere in the graph. It might happen
@@ -251,7 +244,7 @@ public class GGraphGroup extends GGraphAbstract {
                 node = nextNode;
             }
 
-            nextState = (NFAState)path.get(pathIndex);
+            nextState = (NFAState)path.get(getPathIndex());
             nextNode = findNodeForStateNumber(nextState.stateNumber);
 
             GNode externalNode = null;
@@ -276,10 +269,10 @@ public class GGraphGroup extends GGraphAbstract {
                 } else {
                     // pathIndex can be out of range because getNodeTransitionToNextNonSkippedState()
                     // is incrementing it
-                    if(pathIndex >= path.size()) {
+                    if(getPathIndex() >= path.size()) {
                         nextNode = findNodeForStateNumber(t.target.stateNumber);
                     } else {
-                        nextState = (NFAState)path.get(pathIndex);
+                        nextState = (NFAState)path.get(getPathIndex());
 
                         if(t.target.stateNumber == nextState.stateNumber) {
                             nextNode = findNodeForStateNumber(t.target.stateNumber);
@@ -314,7 +307,7 @@ public class GGraphGroup extends GGraphAbstract {
         if(nextNode != null)
             elements.add(GPathElement.createElement(nextNode));
 
-        pathGroup.addPath(new GPath(elements, disabled));
+        getPathGroup().addPath(new GPath(elements, disabled));
     }
 
     public void addUnreachableAlt(NFAState state, Integer alt) {
@@ -342,11 +335,11 @@ public class GGraphGroup extends GGraphAbstract {
         GPath path = new GPath(elements, true);
         path.setVisible(true);
         path.setSelectable(false);
-        pathGroup.addPath(path);
+        getPathGroup().addPath(path);
     }
 
     public GNode findNodeForStateNumber(int stateNumber) {
-        for (GGraph graph : graphs) {
+        for (GGraph graph : getGraphs()) {
             GNode node = graph.findNodeForStateNumber(stateNumber);
             if (node != null) {
                 return node;
@@ -360,10 +353,10 @@ public class GGraphGroup extends GGraphAbstract {
     }
 
     public void render(float ox, float oy) {
-        for (int i = 0; i<graphs.size(); i++) {
-            GGraph graph = graphs.get(i);
+        for (int i = 0; i< getGraphs().size(); i++) {
+            GGraph graph = getGraphs().get(i);
             graph.render(ox, oy);
-            if(i<graphs.size()-1)
+            if(i< getGraphs().size()-1)
                 oy += graph.getHeight()+context.getPixelLineSpace();
         }
 
@@ -375,11 +368,11 @@ public class GGraphGroup extends GGraphAbstract {
         context.linkColor = Color.black;
         context.setLineWidth(1);
 
-        for (GGraph graph : graphs) {
+        for (GGraph graph : getGraphs()) {
             graph.draw();
         }
 
-        pathGroup.draw();
+        getPathGroup().draw();
 
         if(context.drawdimension) {
             context.setLineWidth(1);
@@ -392,4 +385,15 @@ public class GGraphGroup extends GGraphAbstract {
         }
     }
 
+    public List<GGraph> getGraphs() {
+        return graphs;
+    }
+
+    public GPathGroup getPathGroup() {
+        return pathGroup;
+    }
+
+    public int getPathIndex() {
+        return pathIndex;
+    }
 }
