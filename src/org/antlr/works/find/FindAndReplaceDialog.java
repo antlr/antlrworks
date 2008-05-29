@@ -53,14 +53,22 @@ public class FindAndReplaceDialog extends XJPanel {
 
         initComponents();
 
-        setSize(580, 180);
+        Dimension ps = getContentPane().getPreferredSize();
+        // This is really hugly... but I don't have time to investigate
+        // why in desktop mode this internal frame cannot take its correct
+        // preferred size.
+        ps.width += 40;
+        ps.height += 40;
+        setPreferredSize(ps);
+        pack();
+
         setTitle("Find");
         awake();
         center();
 
         getRootPane().setDefaultButton(nextButton);
         addEscapeHandling();
-        
+
         createActions();
 
         // Default values
@@ -190,38 +198,38 @@ public class FindAndReplaceDialog extends XJPanel {
         //======== this ========
         Container contentPane = getContentPane();
         contentPane.setLayout(new FormLayout(
-        	new ColumnSpec[] {
-        		new ColumnSpec(Sizes.DLUX5),
-        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        		new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
-        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        		FormFactory.DEFAULT_COLSPEC,
-        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        		FormFactory.DEFAULT_COLSPEC,
-        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        		new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        		FormFactory.DEFAULT_COLSPEC,
-        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        		FormFactory.DEFAULT_COLSPEC,
-        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        		new ColumnSpec(Sizes.DLUX5)
-        	},
-        	new RowSpec[] {
-        		new RowSpec(Sizes.DLUY5),
-        		FormFactory.LINE_GAP_ROWSPEC,
-        		FormFactory.DEFAULT_ROWSPEC,
-        		FormFactory.LINE_GAP_ROWSPEC,
-        		FormFactory.DEFAULT_ROWSPEC,
-        		FormFactory.LINE_GAP_ROWSPEC,
-        		FormFactory.DEFAULT_ROWSPEC,
-        		FormFactory.LINE_GAP_ROWSPEC,
-        		new RowSpec(RowSpec.CENTER, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-        		FormFactory.LINE_GAP_ROWSPEC,
-        		FormFactory.DEFAULT_ROWSPEC,
-        		FormFactory.LINE_GAP_ROWSPEC,
-        		new RowSpec(Sizes.DLUY5)
-        	}));
+                new ColumnSpec[] {
+                        new ColumnSpec(Sizes.DLUX5),
+                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                        new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
+                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                        FormFactory.DEFAULT_COLSPEC,
+                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                        FormFactory.DEFAULT_COLSPEC,
+                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                        FormFactory.DEFAULT_COLSPEC,
+                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                        FormFactory.DEFAULT_COLSPEC,
+                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                        new ColumnSpec(Sizes.DLUX5)
+                },
+                new RowSpec[] {
+                        new RowSpec(Sizes.DLUY5),
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        new RowSpec(RowSpec.CENTER, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.LINE_GAP_ROWSPEC,
+                        new RowSpec(Sizes.DLUY5)
+                }));
 
         //---- label1 ----
         label1.setText("Find:");
@@ -243,10 +251,10 @@ public class FindAndReplaceDialog extends XJPanel {
 
         //---- optionsCombo ----
         optionsCombo.setModel(new DefaultComboBoxModel(new String[] {
-        	"Contains",
-        	"Starts with",
-        	"Whole words",
-        	"Ends with"
+                "Contains",
+                "Starts with",
+                "Whole words",
+                "Ends with"
         }));
         contentPane.add(optionsCombo, cc.xywh(11, 7, 3, 1));
 
