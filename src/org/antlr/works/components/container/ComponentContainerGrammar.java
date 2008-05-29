@@ -518,8 +518,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
     }
 
     private void reloadEditor(ComponentEditor editor) {
-        ComponentEditorGrammar eg = (ComponentEditorGrammar) editor;
-        GrammarEngine engine = eg.getGrammarEngine();
+        GrammarEngine engine = ((ComponentEditorGrammar) editor).getGrammarEngine();
 
         engines.put(editor.getDocument().getDocumentNameWithoutExtension(), engine);
 
@@ -537,8 +536,15 @@ public class ComponentContainerGrammar implements ComponentContainer {
         // update the engine
         engine.updateAll();
 
-        // damage the text editor to update all underlyings
-        eg.getTextEditor().damage();
+        // damage all the text editors in order to update all underlyings,
+        // gutter and related components. We need to update all of them
+        // because changes in one grammar can have effects in others (for example,
+        // the rule overriding indicator in the gutter might changes in another
+        // children grammar).
+        for(ComponentContainer c : containers) {
+            ComponentEditorGrammar eg = (ComponentEditorGrammar) c.getEditor();
+            eg.getTextEditor().damage();
+        }
     }
 
     private void updateHierarchy() {

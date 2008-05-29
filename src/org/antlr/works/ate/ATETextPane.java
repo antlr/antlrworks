@@ -235,7 +235,7 @@ public class ATETextPane extends JTextPane
                 }
 
                 if(ignoreChars && direction == -1) {
-                    if(firstLine && i <= start) {
+                    if(firstLine && i < start) {
                         // we are before the beginning of the selection
                         selectionStart--;
                     }
