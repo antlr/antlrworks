@@ -39,6 +39,7 @@ import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
 import org.antlr.works.visualization.graphics.GFactory;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,15 +93,28 @@ public class VisualDrawing extends ATEThread {
      * Tries to refresh the current graph in cache. If the graphs are not in cache, return false.
      */
     public synchronized boolean refresh() {
-        List graphs = cacheGraphs.get(threadLastProcessedRule);
+        final List graphs = cacheGraphs.get(threadLastProcessedRule);
         if(graphs == null || graphs.isEmpty()) {
             return false;
         } else {
-            visual.panel.setRule(threadLastProcessedRule);
-            visual.panel.setGraphs(graphs);
-            visual.panel.update();
+            // Execute the panel creation only on the main thread
+            if(!SwingUtilities.isEventDispatchThread()) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        refreshVisualPanel(graphs);
+                    }
+                });
+            } else {
+                refreshVisualPanel(graphs);
+            }
             return true;
         }
+    }
+
+    private void refreshVisualPanel(List graphs) {
+        visual.panel.setRule(threadLastProcessedRule);
+        visual.panel.setGraphs(graphs);
+        visual.panel.update();
     }
 
     public synchronized boolean threadShouldProcess() {

@@ -57,7 +57,7 @@ public class EditorUnderlyingManager extends ATEUnderlyingManager {
         renderItems(g, editor.editorInspector.getDecisionDFAs());
     }
 
-    protected void renderItems(Graphics g, List<EditorInspectorItem> items) {
+    private void renderItems(Graphics g, List<EditorInspectorItem> items) {
         if(items == null)
             return;
 
