@@ -47,11 +47,11 @@ import java.util.Map;
 
 public class GRenderer {
 
-    protected List<GNode> graphicNodes = new ArrayList<GNode>();
+    private final List<GNode> graphicNodes = new ArrayList<GNode>();
 
-    protected FAAnalysis analysis = new FAAnalysis();
-    protected Map<FAState,GNode> nodes = new HashMap<FAState, GNode>();
-    protected Map<FAState, EOAInfo> endOfAlternativeInfoMap = new HashMap<FAState, EOAInfo>();
+    private final FAAnalysis analysis = new FAAnalysis();
+    private final Map<FAState,GNode> nodes = new HashMap<FAState, GNode>();
+    private final Map<FAState, EOAInfo> endOfAlternativeInfoMap = new HashMap<FAState, EOAInfo>();
 
     public GRenderer() {
     }
@@ -61,7 +61,7 @@ public class GRenderer {
      * displaying the syntax diagram.
      *
      */
-
+    @SuppressWarnings("unchecked")
     public synchronized GGraph render(FAState state) {
         GGraph graph = new GGraph();
         graph.setDimension(renderSize(state));
@@ -91,10 +91,10 @@ public class GRenderer {
 
             node.setPosition(basePoint);
 
-            if(state.isAlternative()) {
+            if(state != null && state.isAlternative()) {
                 state = recursiveRenderPositionAlternative(state, basePoint);
                 basePoint.addX(node.nodeDimension.width+node.linkDimension.width);
-            } else if(state.isSingle()) {
+            } else if(state != null && state.isSingle()) {
                 basePoint.addX(node.nodeDimension.width+node.linkDimension.width);
                 state = state.getNextFirstState();
             } else {
@@ -261,8 +261,9 @@ public class GRenderer {
                     dimension.maxUp(firstTransitionDimension.up+transitionDimension.up+transitionDimension.down);
                 } else {
                     link.setBranchDimension(transitionDimension);
-                    if(t == 0)
-                        firstTransitionDimension = transitionDimension;
+                    if(t == 0) {
+                        firstTransitionDimension = transitionDimension;                        
+                    }
                     dimension.addDown(transitionDimension.up);
                     dimension.addDown(transitionDimension.down);
                 }
