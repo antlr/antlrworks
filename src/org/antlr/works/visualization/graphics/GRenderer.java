@@ -168,7 +168,7 @@ public class GRenderer {
         dimension.addUp(GContext.NODE_UP);
         dimension.addDown(GContext.NODE_DOWN);
 
-        while(state != endState) {
+        while(state != endState && state != null) {
             if(state.isAlternative()) {
                 GDimension altDim = recursiveRenderSizeAlternative(state);
                 dimension.addWidth(GContext.NODE_WIDTH+altDim.width);
