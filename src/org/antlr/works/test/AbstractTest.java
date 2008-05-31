@@ -61,6 +61,7 @@ public class AbstractTest extends TestCase {
         engine.getSyntaxEngine().setDelegate(new MySyntaxEngineDelegate());
         engine.getSyntaxEngine().processSyntax();
         engine.parserCompleted();
+        engine.updateAll();
     }
 
     public String getResourceFile(String fileName) {

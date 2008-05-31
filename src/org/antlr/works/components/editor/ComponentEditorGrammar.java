@@ -938,7 +938,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     updateVisualization(true);
-                    executeFirstOpeningOperations();
                     findTokensToIgnore(true);
                 }
             });
@@ -1232,18 +1231,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         if(lastSelectedRule == null || !lastSelectedRule.equals(rule.name)) {
             lastSelectedRule = rule.name;
             updateVisualization(false);
-        }
-    }
-
-    public void executeFirstOpeningOperations() {
-        // Called after parser has completed
-        checkGrammarVersion();
-    }
-
-    public void checkGrammarVersion() {
-        if(engine.isVersion2()) {
-            XJAlert.display(getWindowContainer(), "Incompatible Grammar Version", "This grammar does not appear to be an ANTLR 3.x grammar." +
-                    "\nANTLRWorks includes ANTLR 3.x and therefore only ANTLR 3.x grammars are recognized.");
         }
     }
 

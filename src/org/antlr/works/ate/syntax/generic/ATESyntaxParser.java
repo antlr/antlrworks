@@ -151,6 +151,15 @@ public abstract class ATESyntaxParser {
         }
     }
 
+    public boolean matchSingleQuoteString(int index) {
+        if(isTokenType(index, ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING)) {
+            nextToken();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public boolean isChar(int index, String c) {
         return isTokenType(index, ATESyntaxLexer.TOKEN_CHAR) && T(index).getAttribute().equals(c);
     }

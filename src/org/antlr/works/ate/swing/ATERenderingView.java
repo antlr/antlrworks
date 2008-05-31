@@ -57,8 +57,8 @@ public class ATERenderingView extends PlainView {
     private List<ATEToken> tokens;
 
     private DisplayOperation displayOp = new DisplayOperation();
-    private ModelToViewOperation modelToViewOp = new ModelToViewOperation();
-    private ViewToModel viewToModelOp = new ViewToModel();
+    private final ModelToViewOperation modelToViewOp = new ModelToViewOperation();
+    private final ViewToModel viewToModelOp = new ViewToModel();
 
     private Graphics currentGraphics;
     private Color savedColor;

@@ -384,7 +384,7 @@ public class GrammarPropertiesImpl implements GrammarProperties {
         decls.clear();
         decls.addAll(parser.decls);
 
-        this.name = parser.name;
+        this.name = parser.getName();
 
         for(ElementRule r : rules) {
             r.setEngine(engine);

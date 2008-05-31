@@ -368,7 +368,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     /** This method is used when loading the text (mostly for the first time):
      * it loads the text and parse it in the current thread in order to speed-up
-     * the display time (see ATEColorizing.processColorize(true)).
+     * the display time.
      */
 
     public void loadText(String text) {

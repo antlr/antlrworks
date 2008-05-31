@@ -65,21 +65,20 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     public static final List<String> keywords;
     public static final List<String> predefinedReferences;
 
-    public List<ElementRule> rules = new ArrayList<ElementRule>();
-    public List<ElementGroup> groups = new ArrayList<ElementGroup>();
-    public List<ElementBlock> blocks = new ArrayList<ElementBlock>();         // tokens {}, options {}
-    public List<ElementAction> actions = new ArrayList<ElementAction>();        // { action } in rules
-    public List<ElementReference> references = new ArrayList<ElementReference>();
-    public List<ElementImport> imports = new ArrayList<ElementImport>();
-    public List<ATEToken> decls = new ArrayList<ATEToken>();
+    public final List<ElementRule> rules = new ArrayList<ElementRule>();
+    public final List<ElementGroup> groups = new ArrayList<ElementGroup>();
+    public final List<ElementBlock> blocks = new ArrayList<ElementBlock>();         // tokens {}, options {}
+    public final List<ElementAction> actions = new ArrayList<ElementAction>();        // { action } in rules
+    public final List<ElementReference> references = new ArrayList<ElementReference>();
+    public final List<ElementImport> imports = new ArrayList<ElementImport>();
+    public final List<ATEToken> decls = new ArrayList<ATEToken>();
 
-    public ElementGrammarName name;
+    private final LabelTable labels = new LabelTable();
+    private final List<ATEToken> unresolvedReferences = new ArrayList<ATEToken>();
+    private final Set<String> declaredReferenceNames = new HashSet<String>();
+    private final Map<ATEToken,ElementRule> refsToRules = new HashMap<ATEToken,ElementRule>();
 
-    private LabelTable labels = new LabelTable();
-    private List<ATEToken> unresolvedReferences = new ArrayList<ATEToken>();
-    private Set<String> declaredReferenceNames = new HashSet<String>();
-    private Map<ATEToken,ElementRule> refsToRules = new HashMap<ATEToken,ElementRule>();
-
+    private ElementGrammarName name;
     private ElementRule currentRule;
 
     static {
@@ -109,6 +108,10 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
     public GrammarSyntaxParser() {
         
+    }
+
+    public ElementGrammarName getName() {
+        return name;
     }
 
     @Override
@@ -333,7 +336,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     private boolean matchImport() {
         mark();
 
-        // Must begin with the keyword 'scope'
+        // Must begin with the keyword 'import'
         if(!matchID(0, "import")) return false;
 
         while(!matchSEMI(0)) {
@@ -412,7 +415,6 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
             if(isCOLON(0)) {
                 // When a colon is matched, we are at the beginning of the content of the rule
-                // refactor inside matchColon
                 nextToken();
                 break;
             } else {
@@ -446,6 +448,9 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
             // Match any action
             if(matchAction()) continue;
+
+            // Match node token
+            if(matchSingleQuoteString(0) && matchOptionalNodeToken()) continue;
 
             // Nothing matched, go to the next token
             if(!nextToken()) return false;
@@ -486,10 +491,14 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     private boolean matchInternalRefInRule() {
+        // Probably a reference inside the rule.
+        ATEToken refToken = T(0);
+
         if(!matchID(0)) return false;
 
-        // Probably a reference inside the rule.
-        ATEToken refToken = T(-1);
+        // Try to match the node token
+        if(!matchOptionalNodeToken()) return false;
+        
         // Match any field access, for example:
         // foo.bar.boo
         while(isChar(0, ".") && isID(1)) {
@@ -891,6 +900,35 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Matches a node token. For example
+     * <a=b; c=d> or <a>
+     */
+    private boolean matchOptionalNodeToken() {
+        mark();
+        if(matchChar(0, "<")) {
+            while(matchID(0)) {
+                if(isChar(0, ">")) break;
+                
+                if(!matchChar(0, "=")) {
+                    rewind();
+                    return false;
+                }
+                if(!matchSEMI(0)) {
+                    rewind();
+                    return false;
+                }
+            }
+            if(!matchChar(0, ">")) {
+                rewind();
+                return false;
+            }
+            return true;
+        } else {
+            return true;
         }
     }
 

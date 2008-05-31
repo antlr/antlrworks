@@ -2,7 +2,6 @@ package org.antlr.works.grammar.engine;
 
 import org.antlr.Tool;
 import org.antlr.tool.Grammar;
-import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngineImpl;
@@ -339,24 +338,6 @@ public class GrammarEngineImpl implements GrammarEngine {
 
     public void reset() {
         properties.reset();
-    }
-
-    public boolean isVersion2() {
-        // Check to see if "class" and "extends" are in the grammar text which
-        // means that the grammar is probably an ANTLR version 2 grammar.
-        List<ATEToken> tokens = getTokens();
-        for(int index=0; index<tokens.size(); index++) {
-            ATEToken t = tokens.get(index);
-            if(t.type == ATESyntaxLexer.TOKEN_ID && t.getAttribute().equals("class")) {
-                if(index+2<tokens.size()) {
-                    ATEToken t2 = tokens.get(index+2);
-                    if(t2.type == ATESyntaxLexer.TOKEN_ID && t2.getAttribute().equals("extends")) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     public boolean isCombinedGrammar() {

@@ -132,6 +132,7 @@ public class TestParser extends AbstractTest {
 
         // update the engine
         getEngine().parserCompleted();
+        getEngine().updateAll();
 
         assertParserProperties(40, 18, 7, 40, 199+4); // verified by hand
 
@@ -148,6 +149,7 @@ public class TestParser extends AbstractTest {
 
         // update the engine
         getEngine().parserCompleted();
+        getEngine().updateAll();
 
         assertParserProperties(36, 14, 7, 36, 170); // verified by hand
         assertInspector(0);
@@ -163,7 +165,8 @@ public class TestParser extends AbstractTest {
 
         // update the engine
         getEngine().parserCompleted();
-        
+        getEngine().updateAll();
+
         assertParserProperties(36, 37, 23, 36, 177); // verified by hand
         assertInspector(0);
     }

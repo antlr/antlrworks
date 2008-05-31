@@ -127,7 +127,6 @@ public abstract class ATEUnderlyingManager {
         }
     }
 
-
     public static class UnderlyingShape {
 
         public Map<Color,GeneralPath> shapes = new HashMap<Color, GeneralPath>();

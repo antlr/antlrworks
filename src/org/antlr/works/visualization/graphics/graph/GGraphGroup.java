@@ -70,20 +70,35 @@ public class GGraphGroup extends GGraphAbstract {
     }
 
     public void add(GGraph graph) {
-        getDimension().maxWidth(graph.getDimension().width);
-        getDimension().addUp(graph.getDimension().up);
-        getDimension().addDown(graph.getDimension().down);
-        if(getGraphs().size()>0) {
-            getDimension().addDown(GContext.LINE_SPACE);            
-        }
         getGraphs().add(graph);
     }
 
+    private boolean dimensionComputed = false;
+
+    private void ensureDimension() {
+        if(dimensionComputed) return;
+
+        GDimension d = getDimension();
+        for (int i = 0; i < graphs.size(); i++) {
+            GGraph graph = graphs.get(i);
+            d.maxWidth(graph.getDimension().width);
+            d.addUp(graph.getDimension().up);
+            d.addDown(graph.getDimension().down);
+            if (i > 0) {
+                d.addDown(GContext.LINE_SPACE);
+            }
+        }
+
+        dimensionComputed = true;
+    }
+
     public float getHeight() {
+        ensureDimension();
         return getDimension().getPixelHeight(context);
     }
 
     public float getWidth() {
+        ensureDimension();
         return getDimension().getPixelWidth(context);
     }
 

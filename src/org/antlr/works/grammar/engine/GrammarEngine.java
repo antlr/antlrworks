@@ -99,7 +99,6 @@ public interface GrammarEngine {
     void markDirty();
     void reset();
 
-    boolean isVersion2();
     boolean isCombinedGrammar();
     boolean isTreeParserGrammar();
 

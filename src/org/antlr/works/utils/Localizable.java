@@ -38,7 +38,6 @@ public class Localizable {
     public static final String PROPERTIES_FILE = "strings";
 
     public static final String DOCUMENT_TYPE = "GrammarDocumentType";
-    public static final String PROJECT_TYPE = "ProjectDocumentType";
 
     public static final String APP_NAME = "AppName";
     public static final String APP_VERSION_SHORT = "AppVersionShort";

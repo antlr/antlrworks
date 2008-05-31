@@ -79,7 +79,9 @@ public class GGraph extends GGraphAbstract implements SSerializable {
 
     public GDimension getDimension() {
         GDimension d = new GDimension(dimension);
-        d.addWidth(nameWidth);
+        if(context.isShowRuleName()) {
+            d.addWidth(nameWidth);            
+        }
         return d;
     }
 
@@ -98,7 +100,7 @@ public class GGraph extends GGraphAbstract implements SSerializable {
     public void render(float ox, float oy) {
         oy += getDimension().getPixelUp(context);
 
-        float titleOffset = context.getPixelValue(nameWidth);
+        float titleOffset = context.isShowRuleName()?context.getPixelValue(nameWidth):0;
         for (GNode node : nodes) {
             node.render(ox+titleOffset, oy);
         }
