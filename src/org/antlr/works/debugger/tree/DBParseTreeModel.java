@@ -1,12 +1,12 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.awtree.AWTreeModel;
-import org.antlr.works.awtree.AWTreeNode;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.events.DBEventLocation;
+import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.prefs.AWPrefsDialog;
+import org.antlr.works.utils.awtree.AWTreeModel;
+import org.antlr.works.utils.awtree.AWTreeNode;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 

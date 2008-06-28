@@ -1,11 +1,11 @@
-package org.antlr.works.awtree;
+package org.antlr.works.utils.awtree;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.*;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -33,32 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AWTreeModel {
-
-    public List<AWTreeNode[]> newNodes = new ArrayList<AWTreeNode[]>();
-
-    public void addNode(AWTreeNode parent, AWTreeNode node) {
-        parent.add(node);
-        newNodes.add(new AWTreeNode[] { parent, node });
-    }
-
-    public int getNewNodesCount() {
-        return newNodes.size();
-    }
-
-    public AWTreeNode getNewNodeParentAtIndex(int n) {
-        return (newNodes.get(n))[0];
-    }
-
-    public AWTreeNode getNewNodeAtIndex(int n) {
-        return (newNodes.get(n))[1];
-    }
-
-    public void clearNewNodes() {
-        newNodes.clear();
-    }
-
-    public void clear() {
-        clearNewNodes();
-    }
+public abstract class AWTreeNode extends DefaultMutableTreeNode {
+    public abstract String getInfoString();
+    public abstract Color getColor();
 }

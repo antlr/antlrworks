@@ -30,11 +30,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-package org.antlr.works.find;
+package org.antlr.works.dialog;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import org.antlr.works.IDE;
+import org.antlr.works.find.FindAndReplace;
 import org.antlr.xjlib.appkit.frame.XJPanel;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 

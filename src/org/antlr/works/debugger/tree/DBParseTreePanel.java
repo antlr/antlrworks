@@ -1,10 +1,10 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.awtree.AWTreePanel;
-import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.utils.DetachablePanel;
+import org.antlr.works.utils.awtree.AWTreePanel;
+import org.antlr.works.utils.awtree.AWTreePanelDelegate;
 import org.antlr.xjlib.appkit.gview.GView;
 
 import javax.swing.*;

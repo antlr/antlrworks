@@ -36,7 +36,7 @@ import org.antlr.runtime.NoViableAltException;
 import org.antlr.runtime.tree.ParseTree;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.tool.Grammar;
-import org.antlr.works.awtree.AWTreeNode;
+import org.antlr.works.utils.awtree.AWTreeNode;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;

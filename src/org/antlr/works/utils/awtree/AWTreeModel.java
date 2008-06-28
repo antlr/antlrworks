@@ -1,7 +1,7 @@
-package org.antlr.works.awtree;
+package org.antlr.works.utils.awtree;
 
-import javax.swing.*;
-import javax.swing.tree.TreeNode;
+import java.util.ArrayList;
+import java.util.List;
 /*
 
 [The "BSD licence"]
@@ -33,7 +33,32 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface AWTreePanelDelegate {
-    public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey);
-    public JPopupMenu awTreeGetContextualMenu();
+public class AWTreeModel {
+
+    public List<AWTreeNode[]> newNodes = new ArrayList<AWTreeNode[]>();
+
+    public void addNode(AWTreeNode parent, AWTreeNode node) {
+        parent.add(node);
+        newNodes.add(new AWTreeNode[] { parent, node });
+    }
+
+    public int getNewNodesCount() {
+        return newNodes.size();
+    }
+
+    public AWTreeNode getNewNodeParentAtIndex(int n) {
+        return (newNodes.get(n))[0];
+    }
+
+    public AWTreeNode getNewNodeAtIndex(int n) {
+        return (newNodes.get(n))[1];
+    }
+
+    public void clearNewNodes() {
+        newNodes.clear();
+    }
+
+    public void clear() {
+        clearNewNodes();
+    }
 }

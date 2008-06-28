@@ -1,4 +1,4 @@
-package org.antlr.works.awtree;
+package org.antlr.works.utils.awtree;
 
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.Toolbar;

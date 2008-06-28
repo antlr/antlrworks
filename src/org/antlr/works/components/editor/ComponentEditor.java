@@ -4,7 +4,7 @@ import org.antlr.works.components.ComponentStatusBar;
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.debugger.Debugger;
-import org.antlr.works.prefs.AWPrefsDialog;
+import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.undo.XJUndo;

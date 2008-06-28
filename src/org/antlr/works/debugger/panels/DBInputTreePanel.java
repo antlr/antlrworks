@@ -1,12 +1,12 @@
 package org.antlr.works.debugger.panels;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.awtree.AWTreePanel;
-import org.antlr.works.awtree.AWTreePanelDelegate;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.input.DBInputProcessor;
 import org.antlr.works.debugger.input.DBInputProcessorTree;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
+import org.antlr.works.utils.awtree.AWTreePanel;
+import org.antlr.works.utils.awtree.AWTreePanelDelegate;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;

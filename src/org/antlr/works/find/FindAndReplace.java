@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.find;
 
 import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.dialog.FindAndReplaceDialog;
 import org.antlr.xjlib.appkit.frame.XJFrame;
 import org.antlr.xjlib.appkit.frame.XJFrameDelegate;
 import org.antlr.xjlib.appkit.utils.XJAlert;

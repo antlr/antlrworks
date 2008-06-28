@@ -109,6 +109,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
     private final Map<String, GrammarEngine> engines = new HashMap<String, GrammarEngine>();
 
     private final ComponentWindow window;
+    private JSplitPane horizontalSplit;
 
     public ComponentContainerGrammar(ComponentWindow window) {
         this.window = window;
@@ -163,7 +164,6 @@ public class ComponentContainerGrammar implements ComponentContainer {
     }
 
     public void assemble(boolean separateRules) {
-        JSplitPane horizontalSplit;
         if(separateRules) {
             horizontalSplit = new JSplitPane();
             horizontalSplit.setBorder(null);
@@ -583,6 +583,13 @@ public class ComponentContainerGrammar implements ComponentContainer {
         if(bottomTab.getSelectedComponent() != c) {
             bottomTab.setSelectedComponent(c);
             getSelectedEditor().refreshMainMenuBar();
+        }
+        makeBottomTabVisible();
+    }
+
+    private void makeBottomTabVisible() {
+        if(horizontalSplit.getBottomComponent().getHeight() == 0) {
+            horizontalSplit.setDividerLocation(horizontalSplit.getLastDividerLocation());
         }
     }
 

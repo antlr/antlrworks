@@ -1,8 +1,8 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.awtree.AWTreeNode;
 import org.antlr.works.debugger.events.DBEventLocation;
+import org.antlr.works.utils.awtree.AWTreeNode;
 
 import java.awt.*;
 import java.util.Enumeration;
