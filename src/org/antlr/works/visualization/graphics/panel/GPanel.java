@@ -45,6 +45,7 @@ import org.antlr.works.visualization.graphics.path.GPathGroup;
 import org.antlr.works.visualization.skin.nfa.NFASkin;
 import org.antlr.works.visualization.skin.syntaxdiagram.SDSkin;
 import org.antlr.xjlib.appkit.swing.XJRollOverButton;
+import org.antlr.xjlib.appkit.swing.XJRollOverButtonToggle;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 
@@ -278,8 +279,9 @@ public class GPanel implements XJNotificationObserver {
         return button;
     }
 
-    private JButton createShowCrossLinksButton() {
-        JButton button = XJRollOverButton.createMediumButton(IconManager.shared().getIconShowLinks());
+    private JToggleButton createShowCrossLinksButton() {
+        XJRollOverButtonToggle button = XJRollOverButtonToggle.createMediumButton(IconManager.shared().getIconShowLinks());
+        button.setSelected(true);
         button.setFocusable(false);
         button.setToolTipText("Show links between rules");
         button.addActionListener(new ActionListener() {

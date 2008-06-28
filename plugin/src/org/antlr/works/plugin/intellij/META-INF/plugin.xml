@@ -10,10 +10,9 @@
     <idea-version since-build="6197"/>
 
     <change-notes><![CDATA[
-Version 1.1.7 - 01/31/2008<br>
-<br>
-Bug fix:<br>
-    [AW-151] - Test rig generates the wrong constructor<br>
+Version 1.2b4 - 06/04/2008<br>
+<br>Includes ANTLR 3.1b2<br>
+First beta version for IntelliJ
 ]]>
     </change-notes>
 
