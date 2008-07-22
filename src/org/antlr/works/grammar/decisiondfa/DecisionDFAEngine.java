@@ -174,10 +174,12 @@ public class DecisionDFAEngine {
                 info += dfa.getNumberOfStates()+" states";
 
                 Point p = editor.textEditor.getLineTextPositionsAtLineIndex(lineIndex-1);
-                DecisionDFAItem item = new DecisionDFAItem(editor);
-                item.setAttributes(null, p.x+columnIndex-1, p.x+columnIndex, lineIndex-1, c, title+" ("+info+")");
-                item.shape = ATEUnderlyingManager.SHAPE_RECT;
-                items.add(item);
+                if(p != null) {
+                    DecisionDFAItem item = new DecisionDFAItem(editor);
+                    item.setAttributes(null, p.x+columnIndex-1, p.x+columnIndex, lineIndex-1, c, title+" ("+info+")");
+                    item.shape = ATEUnderlyingManager.SHAPE_RECT;
+                    items.add(item);                    
+                }
             }
         }
         return items;
