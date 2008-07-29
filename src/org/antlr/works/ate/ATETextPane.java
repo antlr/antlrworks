@@ -34,7 +34,6 @@ package org.antlr.works.ate;
 import org.antlr.works.ate.swing.ATEEditorKit;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.swing.ATERenderingView;
-import org.antlr.works.utils.TextUtils;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 
 import javax.swing.*;
@@ -79,8 +78,8 @@ public class ATETextPane extends JTextPane
     }
 
     public void setWritable(boolean flag) {
+        setEditable(flag);
         this.writable = flag;
-        TextUtils.setEnableWritableActions(this, writable);
     }
 
     public boolean isWritable() {
@@ -191,15 +190,7 @@ public class ATETextPane extends JTextPane
                 super.processKeyEvent(keyEvent);
             }
         } else {
-            if(keyEvent.isActionKey()) {
-                super.processKeyEvent(keyEvent);
-            } else if((keyEvent.getModifiers() & KeyEvent.META_MASK) > 0) {
-                super.processKeyEvent(keyEvent);
-            } else if((keyEvent.getModifiers() & KeyEvent.CTRL_MASK) > 0) {
-                super.processKeyEvent(keyEvent);
-            } else {
-                Toolkit.getDefaultToolkit().beep();
-            }
+            super.processKeyEvent(keyEvent);
         }
     }
 

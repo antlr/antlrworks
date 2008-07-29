@@ -32,7 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.ate.swing;
 
 import org.antlr.works.ate.ATETextPane;
-import org.antlr.works.utils.TextUtils;
 import org.antlr.xjlib.foundation.XJSystem;
 
 import javax.swing.*;
@@ -57,9 +56,7 @@ public class ATEKeyBindings {
             addEmacsKeyBindings();
         }
 
-        addStandardKeyBindings();
-        
-        TextUtils.setEnableWritableActions(textComponent, false);
+        addStandardKeyBindings();        
     }
 
     public void close() {
