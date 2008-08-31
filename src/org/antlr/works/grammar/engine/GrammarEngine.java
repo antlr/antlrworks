@@ -43,6 +43,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public interface GrammarEngine {
 
     void setParent(GrammarEngine parent);
+    GrammarEngine getParent();
+    GrammarEngine getRootEngine();
+
     void close();
 
     GrammarProperties getGrammarProperties();

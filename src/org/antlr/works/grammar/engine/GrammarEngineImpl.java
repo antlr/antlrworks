@@ -66,7 +66,19 @@ public class GrammarEngineImpl implements GrammarEngine {
     }
 
     public void setParent(GrammarEngine parent) {
+        //System.out.println(getGrammarName()+" is child of "+parent.getGrammarName());
         this.parent = parent;
+    }
+
+    public GrammarEngine getParent() {
+        return parent;
+    }
+
+    public GrammarEngine getRootEngine() {
+        if(parent == null) {
+            return this;
+        }
+        return parent.getRootEngine();
     }
 
     public void close() {

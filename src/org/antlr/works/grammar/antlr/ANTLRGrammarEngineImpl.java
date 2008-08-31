@@ -71,6 +71,10 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         this.engine = engine;
     }
 
+    public GrammarEngine getGrammarEngine() {
+        return engine;
+    }
+
     public void close() {
         errors = null;
     }

@@ -37,6 +37,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public interface ANTLRGrammarEngine {
 
     void setGrammarEngine(GrammarEngine engine);
+    GrammarEngine getGrammarEngine();
 
     void close();
     void markDirty();

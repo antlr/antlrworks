@@ -540,7 +540,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
         // gutter and related components. We need to update all of them
         // because changes in one grammar can have effects in others (for example,
         // the rule overriding indicator in the gutter might changes in another
-        // children grammar).
+        // child grammar).
         for(ComponentContainer c : containers) {
             ComponentEditorGrammar eg = (ComponentEditorGrammar) c.getEditor();
             eg.getTextEditor().damage();
