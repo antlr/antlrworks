@@ -11,8 +11,27 @@
 
     <change-notes><![CDATA[
 Version 1.2 - 08/31/2008<br>
-<br>Includes ANTLR 3.1b2<br>
-First beta version for IntelliJ
+<br>
+Bug fix:<br>
+    [AW-164] - Cannot paste text on the debugging input panel if grammar is read-only<br>
+    [AW-177] - Cannot paste text into interpreter when file is read-only<br>
+    [AW-121] - Remove ErrorListener from current thread<br>
+    [AW-153] - Console of the current editor is not set when the frame is activated<br>
+    [AW-155] - Remove prefs for last used symbol in debugger<br>
+    [AW-162] - Quote a path with white space only on Windows when executing a shell command<br>
+<br>
+Improvement:<br>
+    [AW-92] - Breakpoint per line and not only per rule as it is the case now<br>
+    [AW-66] - Generate the code by default next to the grammar (see preferences)<br>
+    [AW-141] - Ability to not display certain alert box<br>
+    [AW-149] - Ability to disable the "Check Grammar" success dialog<br>
+    [AW-154] - Full support for split grammar debug<br>
+    [AW-156] - Support for custom file type in IntelliJ<br>
+    [AW-158] - Rule name when exporting syntax diagrams<br>
+    [AW-159] - Generated-code panel should synchronize when generated code changes on the disk<br>
+    [AW-161] - Changed debugger port from 49153 (0xC001) to 49100<br>
+    [AW-167] - Display optional alert if file is modified on the disk before reloading it<br>
+    [AW-169] - Display alert when file content changed on the disk<br>
 ]]>
     </change-notes>
 

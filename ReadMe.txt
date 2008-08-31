@@ -29,7 +29,9 @@ http://www.antlr.org:8888/browse/AW
     - antlrworks-1.2.zip
     - antlrworks-1.2-src.zip
     - antlrworks-1.2.jar
-- update the plugin on http://plugins.intellij.net/
+- publish the plugin:
+    - make the plugin using IntelliJ feature Build > Prepare Plugin...
+    - update the plugin on http://plugins.intellij.net/
 - update JIRA:
     - close fixed issues
     - perform the release
