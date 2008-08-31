@@ -398,6 +398,13 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         // Match any optional argument
         matchArguments();
 
+        // Match any comments
+        while(true) {
+            if(matchSingleComment(0)) continue;
+            if(matchComplexComment(0)) continue;
+            break;
+        }
+        
         // Match any returns
         if(matchID(0, "returns")) {
             matchArguments();
