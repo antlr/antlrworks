@@ -1,5 +1,52 @@
-Version 1.1.6 - 
 
+Version 1.2 - 08/31/2008
+
+Bug fix:
+    [AW-164] - Cannot paste text on the debugging input panel if grammar is read-only
+    [AW-177] - Cannot paste text into interpreter when file is read-only
+    [AW-121] - Remove ErrorListener from current thread
+    [AW-153] - Console of the current editor is not set when the frame is activated
+    [AW-155] - Remove prefs for last used symbol in debugger
+    [AW-162] - Quote a path with white space only on Windows when executing a shell command
+
+Improvement:
+    [AW-92] - Breakpoint per line and not only per rule as it is the case now
+    [AW-66] - Generate the code by default next to the grammar (see preferences)
+    [AW-141] - Ability to not display certain alert box
+    [AW-149] - Ability to disable the "Check Grammar" success dialog
+    [AW-154] - Full support for split grammar debug
+    [AW-156] - Support for custom file type in IntelliJ
+    [AW-158] - Rule name when exporting syntax diagrams
+    [AW-159] - Generated-code panel should synchronize when generated code changes on the disk
+    [AW-161] - Changed debugger port from 49153 (0xC001) to 49100
+    [AW-167] - Display optional alert if file is modified on the disk before reloading it
+    [AW-169] - Display alert when file content changed on the disk
+
+Version 1.1.7 - 01/31/2008
+
+Bug fix:
+    [AW-151] - Test rig generates the wrong constructor
+
+Version 1.1.6 - 01/27/2008
+
+Bug fix:
+    [AW-127] - java.lang.IndexOutOfBoundsException when opening certain files on Linux
+    [AW-129] - Extract rule doesn't respect properly ID boundaries
+    [AW-131] - ANTLR Tool usage is displayed when a grammar file has not been saved
+    [AW-132] - Most keyboard mapping doesn't work for the plugin version inside IntelliJ 7
+    [AW-134] - Check grammar fails to report an alert to the user when there is an exception during analysis
+    [AW-135] - Check grammar does not report errors and warnings in the early stage of analysis
+    [AW-136] - Disable escape key when closing document because default behavior will close the alert by returning the
+               code NO instead of CANCEL
+    [AW-138] - Console output in debugger does not print out all the lines
+    [AW-143] - Cannot export SD in bitmap format on Windows XP
+    [AW-150] - Syntax diagram are not displayed properly for certain rules
+
+Improvement:
+    [AW-130] - Use Metal LAF by default on Linux
+    [AW-133] - DOT path value by default could be "/usr/bin/dot"
+    [AW-139] - Syntax diagram showing warnings/errors consume too much CPU
+    [AW-140] - Number of warnings reported in editor does not reflect the actual number of warnings
 
 Version 1.1.5 - 12/01/07
 
@@ -294,7 +341,7 @@ Version 1.0ea9 - 06/02/06
 - syntax: added exception clause of rule
 - stats can be sent without launching AW (-stats to submit and -stats -erase to erase stats)
 
-- fixed a bug in the DOT antlr that could prevent a DOT graph to be correctly displayed
+- fixed a bug in the DOT engine that could prevent a DOT graph to be correctly displayed
 - fixed a bug where ANTLRWorks would freeze when replacing literals with token label
 - fixed a bug where stats about programming and language implementation experience were inverted
 
@@ -337,7 +384,7 @@ Version 1.0ea8 - 03/11/06
 - fixed a bug when reading the tokenVocab file (was missing the first character)
 - fixed a bug where ANTLR would not be able to read the tokenVocab file (missing path)
 - fixed a bug in the code generation (problem with grammar name)
-- fixed a bug in the syntax diagram antlr where a link from a rule to another rule would start at the wrong state
+- fixed a bug in the syntax diagram engine where a link from a rule to another rule would start at the wrong state
 - fixed a bug in the syntax diagram path drawing where some paths were not correctly rendered
 
 Version 1.0ea7 - 12/15/05
