@@ -70,7 +70,9 @@ public class ActionGoTo extends ActionAbstract {
             GrammarEngine engine = getSelectedEditor().getGrammarEngine();
             int index = engine.getFirstDeclarationPosition(ref.getName());
             if(index == -1) {
-                // this grammar does not contain the declaration. Search in the other children
+                // This grammar does not contain the declaration. Search in the other children
+                // starting from the root engine
+                engine = engine.getRootEngine();
                 List<String> grammars = engine.getGrammarsOverriddenByRule(ref.getName());
                 if(!grammars.isEmpty()) {
                     getSelectedEditor().getContainer().selectGrammar(grammars.get(0));

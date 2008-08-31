@@ -347,6 +347,8 @@ public class GrammarPropertiesImpl implements GrammarProperties {
         for (ElementReference ref : references) {
             if (existingReferences.contains(ref.token.getAttribute())) continue;
             if (!engine.getGrammarsOverriddenByRule(ref.token.getAttribute()).isEmpty()) continue;
+            // also check from the root grammar
+            if (!engine.getRootEngine().getGrammarsOverriddenByRule(ref.token.getAttribute()).isEmpty()) continue;
             undefinedReferences.add(ref);
         }
     }

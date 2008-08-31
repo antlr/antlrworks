@@ -159,8 +159,9 @@ public class ComponentContainerGrammar implements ComponentContainer {
         bottomTab.addTab("Debugger", debuggerPanel);
 
         editorsTab.addChangeListener(etc = new EditorsTabChangeListener());
-        bottomTab.addMouseListener(ml = new TabbedPaneMouseListener());
-        bottomTab.addChangeListener(cl = new TabbedPaneChangeListener());
+
+        bottomTab.addMouseListener(ml = new BottomTabbedPaneMouseListener());
+        bottomTab.addChangeListener(cl = new BottomTabbedPaneChangeListener());
     }
 
     public void assemble(boolean separateRules) {
@@ -748,7 +749,19 @@ public class ComponentContainerGrammar implements ComponentContainer {
 
     }
 
-    public class TabbedPaneMouseListener extends MouseAdapter {
+    private class EditorsTabChangeListener implements ChangeListener {
+
+        public void stateChanged(ChangeEvent event) {
+            Component c = editorsTab.getSelectedComponent();
+            selectedContainer = componentToContainer.get(c);
+            ComponentEditorGrammar editor = (ComponentEditorGrammar) selectedContainer.getEditor();
+
+            switchToEditor(editor);
+        }
+
+    }
+
+    public class BottomTabbedPaneMouseListener extends MouseAdapter {
 
         public void displayPopUp(MouseEvent event) {
             if(bottomTab.getSelectedIndex() < CLOSING_INDEX_LIMIT)
@@ -779,21 +792,10 @@ public class ComponentContainerGrammar implements ComponentContainer {
         }
     }
 
-    public class TabbedPaneChangeListener implements ChangeListener {
+    public class BottomTabbedPaneChangeListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             getSelectedEditor().refreshMainMenuBar();
         }
     }
 
-    private class EditorsTabChangeListener implements ChangeListener {
-
-        public void stateChanged(ChangeEvent event) {
-            Component c = editorsTab.getSelectedComponent();
-            selectedContainer = componentToContainer.get(c);
-            ComponentEditorGrammar editor = (ComponentEditorGrammar) selectedContainer.getEditor();
-
-            switchToEditor(editor);
-        }
-
-    }
 }
