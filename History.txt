@@ -1,3 +1,9 @@
+Version 1.2.1 - 10/1/2008
+
+Incorporates ANTLR v3.1.1.
+
+Bug fix:
+    [AW-178] Invalid tree rewrite syntax
 
 Version 1.2 - 08/31/2008
 
