@@ -1,6 +1,7 @@
 package org.antlr.works.plugin.intellij;
 
 import com.intellij.ide.structureView.StructureView;
+import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
 import org.antlr.works.plugin.container.PluginWindow;
@@ -69,5 +70,10 @@ public class PIStructureView implements StructureView {
     }
 
     public void storeState() {
+    }
+
+    // needed for IntelliJ 8.x
+    public StructureViewModel getTreeModel() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

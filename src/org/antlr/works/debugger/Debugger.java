@@ -397,7 +397,9 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public void selectGrammarText(DBEventLocation location) {
-        delegate.debuggerSelectText(location.getGrammarName(), location.line, location.pos);
+        if(location != null) {
+            delegate.debuggerSelectText(location.getGrammarName(), location.line, location.pos);            
+        }
     }
 
     public void setGrammarLocation(DBEventLocation location) {
