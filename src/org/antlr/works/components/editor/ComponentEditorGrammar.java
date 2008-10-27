@@ -599,8 +599,12 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public Tool getANTLRTool() {
         String[] params = AWPrefs.getANTLR3Options();
-        if(getFileFolder() != null) {
-            params = Utils.concat(params, new String[] { "-lib", getOutputPath() });
+        if(getOutputPath() != null) {
+            File output = new File(getOutputPath());
+            if(!output.exists()) {
+                output.mkdirs();
+            }
+            params = Utils.concat(params, new String[] { "-lib", output.getAbsolutePath() });
         }
         if(params.length > 0) {
             return new Tool(params);

@@ -101,11 +101,14 @@ public class Console {
             System.err.println("File not specified (-f)");
             return;
         }
+        file = new File(file).getAbsolutePath();
+
         outputDirectory = getArgumentValue(args, "-o");
         if(outputDirectory == null && hasArgument(args, "-sd")) {
             System.err.println("Output directory not specified (-o)");
             return;
         }
+
         outputFile = getArgumentValue(args, "-serialize");
         if(outputFile == null && hasArgument(args, "-serialize")) {
             System.err.println("Output file not specified (-serialize)");
@@ -259,6 +262,15 @@ public class Console {
             // ignored
         }
 
+        public String getOutputPath() {
+            String path = AWPrefs.getOutputPath();
+            if(path.startsWith("/") || path.startsWith("\\")) {
+                // absolute path
+                return path;
+            }
+            return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(file), path);
+        }
+
         public Tool getANTLRTool() {
             String[] params = AWPrefs.getANTLR3Options();
             Tool t;
@@ -267,12 +279,12 @@ public class Console {
             } else {
                 t = new Tool();
             }
-            t.setOutputDirectory("output");
+            t.setOutputDirectory(getOutputPath());
             return t;
         }
 
         public String getGrammarFileName() {
-            return "<nofile>";
+            return XJUtils.getLastPathComponent(file);
         }
 
         public String getGrammarText() {
