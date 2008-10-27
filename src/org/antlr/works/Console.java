@@ -6,6 +6,8 @@ import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.engine.GrammarEngineDelegate;
 import org.antlr.works.grammar.engine.GrammarEngineImpl;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.utils.ConsoleHelper;
 import org.antlr.works.visualization.SDGenerator;
 import org.antlr.works.visualization.serializable.SEncoder;
 import org.antlr.works.visualization.serializable.SXMLEncoder;
@@ -76,6 +78,7 @@ public class Console {
     }
 
     public Console() {
+        ConsoleHelper.setCurrent(new ConsoleConsole());
     }
 
     private void process(String args[]) throws Exception {
@@ -242,20 +245,30 @@ public class Console {
         }
 
         public void ateEngineWillParse() {
+            // ignored
         }
 
         public void ateEngineDidParse() {
+            // ignored
         }
     }
 
     private class EngineDelegate implements GrammarEngineDelegate {
         
         public void engineAnalyzeCompleted() {
-
+            // ignored
         }
 
         public Tool getANTLRTool() {
-            return null;
+            String[] params = AWPrefs.getANTLR3Options();
+            Tool t;
+            if(params.length > 0) {
+                t = new Tool(params);
+            } else {
+                t = new Tool();
+            }
+            t.setOutputDirectory("output");
+            return t;
         }
 
         public String getGrammarFileName() {
@@ -271,15 +284,50 @@ public class Console {
         }
 
         public void gotoToRule(String grammar, String name) {
-
+            // ignored
         }
 
         public void reportError(Exception e) {
-
+            e.printStackTrace();
         }
 
         public void reportError(String error) {
+            System.err.println(error);
+        }
+    }
 
+    private class ConsoleConsole implements org.antlr.works.utils.Console {
+
+        public void setMode(int mode) {
+            // ignore
+        }
+
+        public void println(String s) {
+            if(verbose) System.out.println(s);
+        }
+
+        public void println(String s, int level) {
+            if(level != org.antlr.works.utils.Console.LEVEL_NORMAL) {
+                System.err.println(s);
+            } else if(verbose) {
+                println(s);
+            }
+        }
+
+        public void println(Throwable e) {
+            e.printStackTrace();
+        }
+
+        public void print(String string, int level) {
+            if(level != org.antlr.works.utils.Console.LEVEL_NORMAL) {
+                System.err.print(string);
+            } else if(verbose) {
+                System.out.print(string);
+            }
+        }
+
+        public void print(Throwable e) {
+            e.printStackTrace();
         }
     }
 }
