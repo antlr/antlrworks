@@ -912,13 +912,15 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
     /**
      * Matches a node token. For example
-     * <a=b; c=d> or <a>
+     * FOO<a=b; c=d> or FOO<a> or FOO<a.b.c>
      */
     private boolean matchOptionalNodeToken() {
         mark();
         if(matchChar(0, "<")) {
             while(matchID(0)) {
                 if(isChar(0, ">")) break;
+
+                if(matchChar(0, ".")) continue;
                 
                 if(!matchChar(0, "=")) {
                     rewind();
