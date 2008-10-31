@@ -7,6 +7,7 @@ import org.antlr.works.ate.ATETextPane;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEThread;
 import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.components.ComponentMemoryStatus;
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.editor.*;
 import org.antlr.works.editor.completion.AutoCompletionMenu;
@@ -132,6 +133,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     private JLabel cursorLabel;
     private JLabel writableLabel;
     private ConsoleStatus consoleStatus;
+    private ComponentMemoryStatus memoryStatus;
 
     /* Other */
 
@@ -287,6 +289,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         cursorLabel = new JLabel();
         writableLabel = new JLabel();
         consoleStatus = new ConsoleStatus();
+        memoryStatus = new ComponentMemoryStatus();
 
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(infoLabel);
@@ -305,6 +308,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(createSeparator());
         statusBar.add(Box.createHorizontalGlue());
+        statusBar.add(memoryStatus);
     }
 
     protected void createInterface() {
@@ -370,6 +374,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         editorKit.close();
 
         consoleStatus = null;
+        memoryStatus.close();
+        memoryStatus = null;
+        
         rulesTree.close();
         rulesTree = null;
 

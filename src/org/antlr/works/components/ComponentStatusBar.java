@@ -49,5 +49,8 @@ public class ComponentStatusBar extends Box {
 
         g.setColor(Color.lightGray);
         g.drawLine(0, 1, r.width, 1);
+
+        //g.setColor(Color.red);
+        //g.drawRect(0, 0, r.width, r.height);
     }
 }
