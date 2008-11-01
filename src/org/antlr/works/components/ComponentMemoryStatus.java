@@ -48,6 +48,7 @@ public class ComponentMemoryStatus extends JPanel {
         setOpaque(false);
 
         Box b = Box.createHorizontalBox();
+        b.setBorder(BorderFactory.createEmptyBorder(2, 0, 1, 0));
         b.add(Box.createHorizontalGlue());
         b.add(gcButton);
 

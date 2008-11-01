@@ -6,7 +6,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.antlr.works.utils.IconManager;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 /*
@@ -66,10 +66,17 @@ public class PIFileType implements FileType {
         return false;
     }
 
+    // version 8 method
+    public String getCharset(@NotNull VirtualFile virtualFile, byte[] bytes) {
+        return null;
+    }
+
+    // version 7 method
     public String getCharset(VirtualFile file) {
         return null;
     }
 
+    // version 7 method
     public SyntaxHighlighter getHighlighter(Project project, VirtualFile virtualFile) {
         return null;
     }
@@ -78,6 +85,7 @@ public class PIFileType implements FileType {
         return null;
     }
 
+    // version 7 method
     public StructureViewBuilder getStructureViewBuilder(VirtualFile file, Project project) {
         return null;
     }
