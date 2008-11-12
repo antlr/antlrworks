@@ -400,7 +400,7 @@ public class AWPrefs {
     public static String[] getANTLR3Options() {
         String options = getPreferences().getString(PREF_ANTLR3_OPTIONS, DEFAULT_ANTLR3_OPTIONS);
         if(options != null && options.trim().length() > 0) {
-            return options.split(" ");
+            return options.trim().split(" ");
         } else {
             return new String[0];
         }
