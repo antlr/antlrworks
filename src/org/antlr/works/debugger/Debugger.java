@@ -52,7 +52,6 @@ import org.antlr.works.debugger.tree.DBParseTreeModel;
 import org.antlr.works.debugger.tree.DBParseTreePanel;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.element.ElementBlock;
-import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.prefs.AWPrefs;
@@ -398,13 +397,13 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public void selectGrammarText(DBEventLocation location) {
         if(location != null) {
-            delegate.debuggerSelectText(location.getGrammarName(), location.line, location.pos);            
-        }
+        delegate.debuggerSelectText(location.getGrammarName(), location.line, location.pos);
+    }
     }
 
     public void setGrammarLocation(DBEventLocation location) {
         if(location != null) {
-            delegate.debuggerSetLocation(location.getGrammarName(), location.line, location.pos);            
+            delegate.debuggerSetLocation(location.getGrammarName(), location.line, location.pos);
         }
     }
 
@@ -440,12 +439,6 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     }
 
     public void launchLocalDebugger(int options) {
-        if(delegate.getGrammarEngine().getType() == ElementGrammarName.TREEPARSER) {
-            XJAlert.display(getWindowContainer(), "Unsupported Grammar Type",
-                    "ANTLRWorks supports tree grammar debugging only if you \"debug remote\".");
-            return;
-        }
-
         if(needsToGenerateGrammar()) {
             if(AWPrefs.getDebuggerAskGen()) {
                 int result = XJAlert.createInstance().displayCustomAlert(getWindowContainer(), "Generate and compile",

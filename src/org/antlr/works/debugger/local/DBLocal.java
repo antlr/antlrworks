@@ -68,6 +68,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     public static final String remoteParserClassName = "__Test__";
     public static final String parserGlueCodeTemplatePath = "org/antlr/works/debugger/local/";
     public static final String parserGlueCodeTemplateName = "DBParserGlueCode";
+    public static final String treeParserGlueCodeTemplateName = "DBTreeParserGlueCode";
 
     public static final String ST_ATTR_IMPORT = "import";
     public static final String ST_ATTR_CLASSNAME = "class_name";
@@ -75,6 +76,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     public static final String ST_ATTR_JAVA_PARSER = "java_parser";
     public static final String ST_ATTR_JAVA_LEXER = "java_lexer";
     public static final String ST_ATTR_START_SYMBOL = "start_symbol";
+    public static final String ST_ATTR_GRAMMAR_NAME = "grammar_name";
     public static final String ST_ATTR_DEBUG_PORT = "port";
 
     protected String outputFileDir;
@@ -119,7 +121,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         codeGenerator = null;
         debugger = null;
     }
-    
+
     public boolean canDebugAgain() {
         if(inputMode == 0) {
             return inputText != null;
@@ -396,8 +398,13 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected void generateGlueCode() {
         try {
+            boolean isTreeGrammar = debugger.getDelegate().getGrammarEngine().getType() == ElementGrammarName.TREEPARSER;
+            String templateName = isTreeGrammar ? treeParserGlueCodeTemplateName : parserGlueCodeTemplateName;
+            String lexerName = isTreeGrammar ? (getLexerName()+"Lexer") : getLexerName();
+            String parserName = isTreeGrammar ? (debugger.getDelegate().getTokenVocab()+"Parser") :
+                    (debugger.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.PARSER));
             StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup", DefaultTemplateLexer.class);
-            StringTemplate glueCode = group.getInstanceOf(parserGlueCodeTemplatePath +parserGlueCodeTemplateName);
+            StringTemplate glueCode = group.getInstanceOf(parserGlueCodeTemplatePath +templateName);
             glueCode.setAttribute(ST_ATTR_IMPORT, getCustomImports());
             glueCode.setAttribute(ST_ATTR_CLASSNAME, remoteParserClassName);
             if(inputMode == 0) {
@@ -405,10 +412,11 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             } else {
                 glueCode.setAttribute(ST_ATTR_INPUT_FILE, XJUtils.escapeString(inputFile));
             }
-            glueCode.setAttribute(ST_ATTR_JAVA_PARSER, debugger.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.PARSER));
-            glueCode.setAttribute(ST_ATTR_JAVA_LEXER, getLexerName());
+            glueCode.setAttribute(ST_ATTR_JAVA_PARSER, parserName);
+            glueCode.setAttribute(ST_ATTR_JAVA_LEXER, lexerName);
             glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
             glueCode.setAttribute(ST_ATTR_DEBUG_PORT, AWPrefs.getDebugDefaultLocalPort());
+            glueCode.setAttribute(ST_ATTR_GRAMMAR_NAME, debugger.getDelegate().getGrammarName());
 
             XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
         } catch(Exception e) {
@@ -466,7 +474,18 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     protected void compileGlueCode() {
-        compileFiles(new String[] { fileRemoteParser });
+        try {
+            boolean isTreeGrammar = debugger.getDelegate().getGrammarEngine().getType() == ElementGrammarName.TREEPARSER;
+            String lexerName = XJUtils.concatPath(codeGenerator.getOutputPath(), (isTreeGrammar ? (getLexerName()+"Lexer.java") : (getLexerName()+".java")));
+            String parserName = XJUtils.concatPath(codeGenerator.getOutputPath(), (isTreeGrammar ? (debugger.getDelegate().getTokenVocab()+"Parser.java") :
+                    (debugger.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.PARSER)+".java")));
+            compileFiles(new String[] { lexerName});
+            compileFiles(new String[] { parserName});
+            compileFiles(new String[] { fileRemoteParser});
+        } catch (Exception e) {
+            debugger.getConsole().println(e);
+            reportError("Error :\n"+e.toString());
+        }
     }
 
     protected void compileFiles(String[] files) {
