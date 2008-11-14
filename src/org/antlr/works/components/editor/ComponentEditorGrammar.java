@@ -705,6 +705,16 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         }
     }
 
+    public synchronized boolean isFileExists() {
+        String path = getFilePath();
+        if(path == null) {
+            return false;
+        } else {
+            File f = new File(path);
+            return f.exists();
+        }
+    }
+
     public synchronized String getFileFolder() {
         return XJUtils.getPathByDeletingLastComponent(getFilePath());
     }
@@ -1087,6 +1097,11 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void componentDocumentContentChanged() {
         // Called when the document associated file has changed on the disk
+        if(!isFileExists()) {
+            XJAlert.display(getWindowContainer(), "Warning", "The document cannot be found on the disk anymore.");
+            return;
+        }
+
         if(AWPrefs.isAlertFileChangesDetected()) {
             XJAlert alert = XJAlert.createInstance();
             alert.setDisplayDoNotShowAgainButton(true);
