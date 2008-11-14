@@ -163,8 +163,10 @@ public class CodeGenerate implements Runnable {
                     alert.showSimple(editor.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+getOutputPath());
                     AWPrefs.setAlertGenerateCodeSuccess(!alert.isDoNotShowAgain());
                 }
-            } else {
-                delegate.codeGenerateDidComplete();
+            }
+
+            if(delegate != null) {
+                delegate.codeGenerateDidComplete();                
             }
         }
     }

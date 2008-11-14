@@ -56,6 +56,8 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
     private CodeGenerate codeGenerate;
     private ComponentEditorGrammar rootGrammar;
 
+    private boolean generating = false;
+
     public ActionGenerate(ComponentContainer editor) {
         super(editor);
     }
@@ -93,7 +95,10 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         }
     }
 
-    private void generateCodeProcess() {
+    private synchronized void generateCodeProcess() {
+        if(generating) return;
+        generating = true;
+        
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GENERATE_CODE);
 
         if(!getSelectedEditor().ensureDocumentSaved())
@@ -104,8 +109,10 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
     }
 
     private void generateCodeProcessContinued() {
-        if(!getSelectedEditor().getDocument().autoSave())
+        if(!getSelectedEditor().getDocument().autoSave()) {
+            generating = false;
             return;
+        }
 
         codeGenerate.setDebug(false);
         codeGenerate.generateInThread(getSelectedEditor().getJavaContainer());
@@ -177,6 +184,7 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
             actionShowCodeAfterGeneration = false;
             showGeneratedCode(actionShowCodeRule, actionShowCodeType);
         }
+        generating = false;
     }
 
     public void checkGrammarDidBegin(CheckGrammar source) {
@@ -187,6 +195,7 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         if(result.getErrorCount() == 0) {
             generateCodeProcessContinued();
         } else {
+            generating = false;
             XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
         }
         source.close();
