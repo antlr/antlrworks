@@ -315,6 +315,13 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
             analyzeResult.setErrors(el.errors);
             analyzeResult.setWarnings(el.warnings);
 
+            if(el.hasErrors() || el.hasWarnings()) {
+                // in order to get the same error and warnings messages in the console
+                // next time the grammar is checked (if it is not touched), we need to
+                // turn this flag on again (see AW-182).
+                needsToAnalyzeGrammar = true;
+            }
+
             // clear the error listener
             el.clear();
             ErrorManager.removeErrorListener();
