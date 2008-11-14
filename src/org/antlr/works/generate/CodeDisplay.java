@@ -41,6 +41,7 @@ import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import java.awt.*;
+import java.io.File;
 
 public class CodeDisplay extends EditorTab {
 
@@ -76,7 +77,7 @@ public class CodeDisplay extends EditorTab {
 
     @Override
     public void editorActivated() {
-        if(monitor.isModifiedOnDisk(file)) {
+        if(file != null && monitor.isModifiedOnDisk(file) && new File(file).exists()) {
             load();
         }
     }
