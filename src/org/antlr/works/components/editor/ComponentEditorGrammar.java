@@ -458,7 +458,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public void toggleRulesSorting() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_RULE_SORT);
         rules.toggleSorting();
-        interpreter.setRules(getRules());
+        interpreter.setRules(getNaturalRules());
     }
 
     public boolean isRulesSorted() {
@@ -754,6 +754,10 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         return engine;
     }
 
+    public List<ElementRule> getNaturalRules() {
+        return rules.isSorted()?rules.getSortedRules():rules.getRules();
+    }
+
     public List<ElementRule> getRules() {
         return rules.getRules();
     }
@@ -962,7 +966,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
         persistence.restore();
 
-        interpreter.setRules(getRules());
+        interpreter.setRules(getNaturalRules());
         rules.parserDidParse();
         decisionDFAEngine.reset();
         decisionDFAEngine.refreshMenu();
@@ -1247,7 +1251,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void findTokensToIgnore(boolean reset) {
         rules.findTokensToIgnore(reset);
-        interpreter.setRules(getRules());
+        interpreter.setRules(getNaturalRules());
     }
 
     @Override
