@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  ANTLRWorks project definition for building via Maven.
+
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <!--
+
+        Standard elements for a maven project defines the way that antlrworks
+        can be pulled in via projects that depend on it (though this isn't
+        likely to happen).
+
+        So, here we have antlrworks being the artifact id and org.antlr
+        being the group, to live alongside antlr, antlr-runtime and so on.
+
+      -->
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.antlr</groupId>
     <artifactId>antlrworks</artifactId>
     <packaging>jar</packaging>
     <version>1.2.3-SNAPSHOT</version>
+
+    <!--
+
+        Name of the porject as seen by IDEs and so on.
+      -->
     <name>ANTLRWorks</name>
+
+    <!--
+        Home URL of the project.
+      -->
     <url>http://antlr.org</url>
 
+    <!--
+        Where you can view the license that this project is issued under.
+      -->
     <licenses>
         <license>
             <name>BSD licence</name>
@@ -15,17 +44,25 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <!--
+
+        Where to go to browse the source code for this project.
+      -->
     <scm>
         <url>http://fisheye2.cenqua.com/browse/antlrworks</url>
         <connection>http://fisheye2.cenqua.com/browse/antlrworks</connection>
     </scm>
 
  <!--
+
     Definition of the ANTLR repositories. Note that you can only deploy
     to the repositories via scp, and so the server must already know about
-    your public key. ONly ANTLR developers are allowed to deploy to the
+    your public key. Only ANTLR developers are allowed to deploy to the
     release and snapshot repositories, which are synced with the Maven central
-    repository.
+    repository in the case of the release repository and made available
+    to developers as a daily snapshot at http://antlr.org/antlr-snapshot
+
   -->
     <distributionManagement>
 
@@ -83,6 +120,56 @@
                                 </excludes>
                             </configuration>
                         </plugin>
+
+                        <!--
+
+                            Define how we build our uber-jar with all the dependencies when
+                            this is a build that isn't targetted at mac. In that case we can use
+                            the standard assembly target, which basically unpacks the depedent
+                            jars and puts them all back together, including the classes we build
+                            here, then makes a single jar, which is just what we want.
+                          -->
+
+                        <plugin>
+                            <artifactId>maven-assembly-plugin</artifactId>
+                            <configuration>
+                                <descriptorRefs>
+                                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                                </descriptorRefs>
+                                <!--
+
+                                    Specify that we want the resulting jar to be executable
+                                    via java -jar, which we do by modifying the manifest
+                                    of course.
+                                  -->
+                                    <archive>
+                                        
+                                        <manifest>
+                                            <mainClass>org.antlr.works.IDE</mainClass>
+                                        </manifest>
+                                    </archive>
+                                    
+                            </configuration>
+
+                            <!--
+
+                                We don't want the standard jar at all and we don't want to
+                                have to specifically ask for the uber jar, so we attach the
+                                running of this plgin to the execution of the package life-cycle
+                                phase.
+                              -->
+                            <executions>
+                                <execution>
+                                    <id>make-assembly</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>attached</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+
+                        </plugin>
+                        
                     </plugins>
                 </build>
 
@@ -92,7 +179,10 @@
 
                 What to do if this IS a mac build, in which case we do not exlcude any
                 of the source code.
-                
+
+
+                Somewhere in here, we need to add the CLASSPATH that gives us the MAC specifc
+                Java jars.
               -->
             <profile>
                 <id>mac</id>
@@ -109,8 +199,61 @@
                             <configuration>
                                 <source>1.5</source>
                                 <target>1.5</target>
+                                <excludes>
+                                    <exclude>**/MacOS/*</exclude>
+                                </excludes>
                             </configuration>
                         </plugin>
+
+                        <!--
+
+                            Define how we build our uber-jar with all the dependencies when
+                            this is a build that isn't targetted at mac. In that case we can use
+                            the standard assembly target, which basically unpacks the depedent
+                            jars and puts them all back together, including the classes we build
+                            here, then makes a single jar, which is just what we want.
+                          -->
+
+                        <plugin>
+                            <artifactId>maven-assembly-plugin</artifactId>
+                            <configuration>
+                                <descriptorRefs>
+                                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                                </descriptorRefs>
+                                <!--
+
+                                    Specify that we want the resulting jar to be executable
+                                    via java -jar, which we do by modifying the manifest
+                                    of course.
+                                  -->
+                                    <archive>
+
+                                        <manifest>
+                                            <mainClass>org.antlr.works.IDE</mainClass>
+                                        </manifest>
+                                    </archive>
+
+                            </configuration>
+
+                            <!--
+
+                                We don't want the standard jar at all and we don't want to
+                                have to specifically ask for the uber jar, so we attach the
+                                running of this plgin to the execution of the package life-cycle
+                                phase.
+                              -->
+                            <executions>
+                                <execution>
+                                    <id>make-assembly</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>attached</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+
+                        </plugin>
+
                     </plugins>
                 </build>
 
@@ -131,10 +274,26 @@
         <defaultGoal>install</defaultGoal>
 
         <!--
+
             The root of the source code for StringTemplate
         -->
         <sourceDirectory>src</sourceDirectory>
         
+        <!--
+        
+            The resources that we need to include in the runtime jar.
+          -->
+        <resources>
+            <resource>
+                <directory>src</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.st</include>
+                    <include>**/*.png</include>
+               </includes>
+           </resource>
+        </resources>
+
     </build>
 
     <dependencies>
