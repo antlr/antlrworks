@@ -1,4 +1,19 @@
-Version 1.2.2 - 10/24/2008
+Version 1.2.2 - 11/16/2008
+
+Bug fix:
+    [AW-165] - Position history may fail if previous position does not exist anymore in the document
+    [AW-178] - Invalid tree rewrite syntax
+    [AW-182] - Console is not displaying twice the error message from ANTLR
+    [AW-184] - Can't generate syntax diagrams
+    [AW-185] - Plugin doesn't work with IntelliJ 8
+    [AW-186] - Duplicate classes found in resulting jar file
+    [AW-189] - Index out of bound when specifying ANTLR options starting with a white space
+    [AW-191] - Recursive error dialog if generated file is removed while displayed in the editor
+    [AW-173] - Don't generate the code again if it is already generating it
+    [AW-192] - Interpreter rules pop-up should reflect sorting of the rule tree in the main editor
+
+Improvement:
+    [AW-27] - Add support to debug tree grammar from within ANTLRWorks
 
 
 Version 1.2.1 - 10/1/2008
