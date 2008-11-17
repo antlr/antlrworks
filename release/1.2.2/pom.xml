@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.antlr</groupId>
+    <artifactId>antlrworks</artifactId>
+    <packaging>jar</packaging>
+    <version>1.2.3-SNAPSHOT</version>
+    <name>ANTLRWorks</name>
+    <url>http://antlr.org</url>
+
+    <licenses>
+        <license>
+            <name>BSD licence</name>
+            <url>http://antlr.org/license.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <url>http://fisheye2.cenqua.com/browse/antlrworks</url>
+        <connection>http://fisheye2.cenqua.com/browse/antlrworks</connection>
+    </scm>
+
+ <!--
+    Definition of the ANTLR repositories. Note that you can only deploy
+    to the repositories via scp, and so the server must already know about
+    your public key. ONly ANTLR developers are allowed to deploy to the
+    release and snapshot repositories, which are synced with the Maven central
+    repository.
+  -->
+    <distributionManagement>
+
+        <repository>
+            <id>antlr-repo</id>
+            <name>ANTLR Testing repository</name>
+            <url>scpexe://antlr.org/home/mavensync/antlr-repo</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>antlr-snapshot</id>
+            <name>ANTLR Testing Snapshot Repository</name>
+            <url>scpexe://antlr.org/home/mavensync/antlr-snapshot</url>
+        </snapshotRepository>
+
+    </distributionManagement>
+
+        <!--
+
+            We select either a MAC or non-mac profile because Apple really wants you to
+            use the Aqua llok and feel, but of course that jar isn't available outside
+            Apple MACS which basically breaks the portability of Java.
+
+          -->
+        <profiles>
+
+            <!--
+
+                What to do if this is NOT a macbuild, in which case we don't want to include
+                the MAC specific source code.
+
+                Perhaps there is a simpler way than using profiles and duplicating the
+                build section in the profile, but I could not spot how to do this obviously in Maven.
+                The only thing we change is the exclude stuff however, so it isn't particularly
+                complicated.
+
+             -->
+            <profile>
+                <id>notmac</id>
+                <activation>
+                    <os>
+                        <family>!mac</family>
+                    </os>
+                </activation>
+
+                <build>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <configuration>
+                                <source>1.5</source>
+                                <target>1.5</target>
+                                <excludes>
+                                    <exclude>**/MacOS/*</exclude>
+                                </excludes>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </build>
+
+            </profile>
+
+            <!--
+
+                What to do if this IS a mac build, in which case we do not exlcude any
+                of the source code.
+                
+              -->
+            <profile>
+                <id>mac</id>
+                <activation>
+                    <os>
+                        <family>mac</family>
+                    </os>
+                </activation>
+
+                <build>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <configuration>
+                                <source>1.5</source>
+                                <target>1.5</target>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </build>
+
+            </profile>
+
+        </profiles>
+
+    <build>
+
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+        </extensions>
+
+        <defaultGoal>install</defaultGoal>
+
+        <!--
+            The root of the source code for StringTemplate
+        -->
+        <sourceDirectory>src</sourceDirectory>
+        
+    </build>
+
+    <dependencies>
+        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr-runtime</artifactId>
+            <version>3.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>3.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>xjlib</artifactId>
+            <version>2.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>forms</artifactId>
+            <version>1.2.1</version>
+            <scope>compile</scope>
+        </dependency>
+
+
+    </dependencies>
+</project>

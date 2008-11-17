@@ -1,0 +1,41 @@
+<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
+<idea-plugin>
+    <name>ANTLRWorks</name>
+    <id>ANTLRWorks</id>
+    <version>1.2.2</version>
+    <description>ANTLRWorks is a grammar development environment for ANTLR v3 grammars. It combines an excellent grammar-aware editor with an interpreter for rapid prototyping and a language-agnostic debugger for isolating grammar errors. ANTLRWorks helps eliminate grammar nondeterminisms, one of the most difficult problems for beginners and experts alike, by highlighting nondeterministic paths in the syntax diagram associated with a grammar. ANTLRWorks' goal is to make grammars more accessible to the average programmer, improve maintainability and readability of grammars by providing excellent grammar navigation and refactoring tools, and address the most common questions and problems encountered by grammar developers</description>
+
+    <vendor url="http://www.antlr.org/works">ANTLR Project</vendor>
+
+    <idea-version since-build="6197"/>
+
+    <change-notes><![CDATA[
+Version 1.2.2 - 11/16/2008<br>
+<br>
+Bug fix:<br>
+    [AW-165] - Position history may fail if previous position does not exist anymore in the document<br>
+    [AW-178] - Invalid tree rewrite syntax<br>
+    [AW-182] - Console is not displaying twice the error message from ANTLR<br>
+    [AW-184] - Can't generate syntax diagrams<br>
+    [AW-185] - Plugin doesn't work with IntelliJ 8<br>
+    [AW-186] - Duplicate classes found in resulting jar file<br>
+    [AW-189] - Index out of bound when specifying ANTLR options starting with a white space<br>
+    [AW-191] - Recursive error dialog if generated file is removed while displayed in the editor<br>
+    [AW-173] - Don't generate the code again if it is already generating it<br>
+    [AW-192] - Interpreter rules pop-up should reflect sorting of the rule tree in the main editor<br>
+<br>
+Improvement:<br>
+    [AW-27] - Add support to debug tree grammar from within ANTLRWorks<br>
+<br>
+]]>
+    </change-notes>
+
+    <application-components>
+        <component>
+            <implementation-class>org.antlr.works.plugin.intellij.PIApplicationComponent</implementation-class>
+        </component>
+        <component>
+            <implementation-class>org.antlr.works.plugin.intellij.PIEditorProvider</implementation-class>
+        </component>
+    </application-components>
+</idea-plugin>
