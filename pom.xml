@@ -80,7 +80,31 @@
 
     </distributionManagement>
 
-        <!--
+  <!--
+
+    Inform Maven of the ANTLR snapshot repository, which it will
+    need to consult to get the latest snapshot build of the runtime
+    and tool directories if it was not built and installed locally.
+    -->
+  <repositories>
+
+      <!--
+        This is the ANTLR repository.
+        -->
+      <repository>
+          <id>antlr-snapshot</id>
+          <name>ANTLR Testing Snapshot Repository</name>
+          <url>http://www.antlr.org/antlr-snapshot</url>
+          <snapshots>
+              <enabled>true</enabled>
+              <updatePolicy>always</updatePolicy>
+          </snapshots>
+      </repository>
+
+  </repositories>
+
+        <!-- =============================================================================
+             =============================================================================
 
             We select either a MAC or non-mac profile because Apple really wants you to
             use the Aqua llok and feel, but of course that jar isn't available outside
@@ -293,6 +317,16 @@
                </includes>
            </resource>
         </resources>
+        
+        <!--
+            The root of the test source code for StringTemplate.
+        -->
+        <testSourceDirectory>test</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>test</directory>
+            </testResource>
+        </testResources>
 
     </build>
 
