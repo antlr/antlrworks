@@ -54,16 +54,16 @@
         <connection>http://fisheye2.cenqua.com/browse/antlrworks</connection>
     </scm>
 
- <!--
+    <!--
+  
+      Definition of the ANTLR repositories. Note that you can only deploy
+      to the repositories via scp, and so the server must already know about
+      your public key. Only ANTLR developers are allowed to deploy to the
+      release and snapshot repositories, which are synced with the Maven central
+      repository in the case of the release repository and made available
+      to developers as a daily snapshot at http://antlr.org/antlr-snapshot
 
-    Definition of the ANTLR repositories. Note that you can only deploy
-    to the repositories via scp, and so the server must already know about
-    your public key. Only ANTLR developers are allowed to deploy to the
-    release and snapshot repositories, which are synced with the Maven central
-    repository in the case of the release repository and made available
-    to developers as a daily snapshot at http://antlr.org/antlr-snapshot
-
-  -->
+    -->
     <distributionManagement>
 
         <repository>
@@ -80,210 +80,207 @@
 
     </distributionManagement>
 
-  <!--
+    <!--
 
     Inform Maven of the ANTLR snapshot repository, which it will
     need to consult to get the latest snapshot build of the runtime
     and tool directories if it was not built and installed locally.
     -->
-  <repositories>
+    <repositories>
 
-      <!--
+        <!--
         This is the ANTLR repository.
         -->
-      <repository>
-          <id>antlr-snapshot</id>
-          <name>ANTLR Testing Snapshot Repository</name>
-          <url>http://www.antlr.org/antlr-snapshot</url>
-          <snapshots>
-              <enabled>true</enabled>
-              <updatePolicy>always</updatePolicy>
-          </snapshots>
-      </repository>
+        <repository>
+            <id>antlr-snapshot</id>
+            <name>ANTLR Testing Snapshot Repository</name>
+            <url>http://www.antlr.org/antlr-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
 
-  </repositories>
+    </repositories>
 
-        <!-- =============================================================================
-             =============================================================================
+    <!-- =============================================================================
+       =============================================================================
 
-            We select either a MAC or non-mac profile because Apple really wants you to
-            use the Aqua llok and feel, but of course that jar isn't available outside
-            Apple MACS which basically breaks the portability of Java.
+      We select either a MAC or non-mac profile because Apple really wants you to
+      use the Aqua llok and feel, but of course that jar isn't available outside
+      Apple MACS which basically breaks the portability of Java.
 
-          -->
-        <profiles>
+    -->
+    <profiles>
 
-            <!--
+        <!--
 
-                What to do if this is NOT a macbuild, in which case we don't want to include
-                the MAC specific source code.
+           What to do if this is NOT a macbuild, in which case we don't want to include
+           the MAC specific source code.
 
-                Perhaps there is a simpler way than using profiles and duplicating the
-                build section in the profile, but I could not spot how to do this obviously in Maven.
-                The only thing we change is the exclude stuff however, so it isn't particularly
-                complicated.
+           Perhaps there is a simpler way than using profiles and duplicating the
+           build section in the profile, but I could not spot how to do this obviously in Maven.
+           The only thing we change is the exclude stuff however, so it isn't particularly
+           complicated.
 
-             -->
-            <profile>
-                <id>notmac</id>
-                <activation>
-                    <os>
-                        <family>!mac</family>
-                    </os>
-                </activation>
+        -->
+        <profile>
+            <id>notmac</id>
+            <activation>
+                <os>
+                    <family>!mac</family>
+                </os>
+            </activation>
 
-                <build>
-                    <plugins>
-                        <plugin>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <configuration>
-                                <source>1.5</source>
-                                <target>1.5</target>
-                                <excludes>
-                                    <exclude>**/MacOS/*</exclude>
-                                </excludes>
-                            </configuration>
-                        </plugin>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.5</source>
+                            <target>1.5</target>
+                            <excludes>
+                                <exclude>**/MacOS/*</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+
+                    <!--
+
+                      Define how we build our uber-jar with all the dependencies when
+                      this is a build that isn't targetted at mac. In that case we can use
+                      the standard assembly target, which basically unpacks the depedent
+                      jars and puts them all back together, including the classes we build
+                      here, then makes a single jar, which is just what we want.
+                    -->
+
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <!--
+
+                              Specify that we want the resulting jar to be executable
+                              via java -jar, which we do by modifying the manifest
+                              of course.
+                            -->
+                            <archive>
+
+                                <manifest>
+                                    <mainClass>org.antlr.works.IDE</mainClass>
+                                </manifest>
+                            </archive>
+
+                        </configuration>
 
                         <!--
 
-                            Define how we build our uber-jar with all the dependencies when
-                            this is a build that isn't targetted at mac. In that case we can use
-                            the standard assembly target, which basically unpacks the depedent
-                            jars and puts them all back together, including the classes we build
-                            here, then makes a single jar, which is just what we want.
-                          -->
+                          We don't want the standard jar at all and we don't want to
+                          have to specifically ask for the uber jar, so we attach the
+                          running of this plgin to the execution of the package life-cycle
+                          phase.
+                        -->
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attached</goal>
+                                </goals>
+                            </execution>
+                        </executions>
 
-                        <plugin>
-                            <artifactId>maven-assembly-plugin</artifactId>
-                            <configuration>
-                                <descriptorRefs>
-                                    <descriptorRef>jar-with-dependencies</descriptorRef>
-                                </descriptorRefs>
-                                <!--
+                    </plugin>
 
-                                    Specify that we want the resulting jar to be executable
-                                    via java -jar, which we do by modifying the manifest
-                                    of course.
-                                  -->
-                                    <archive>
-                                        
-                                        <manifest>
-                                            <mainClass>org.antlr.works.IDE</mainClass>
-                                        </manifest>
-                                    </archive>
-                                    
-                            </configuration>
+                </plugins>
+            </build>
 
+        </profile>
+
+        <!--
+
+          What to do if this IS a mac build, in which case we do not exclude any
+          of the source code.
+
+
+          Somewhere in here, we need to add the CLASSPATH that gives us the MAC specifc
+          Java jars.
+        -->
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.5</source>
+                            <target>1.5</target>
+                        </configuration>
+                    </plugin>
+
+                    <!--
+
+                      Define how we build our uber-jar with all the dependencies when
+                      this is a build that isn't targetted at mac. In that case we can use
+                      the standard assembly target, which basically unpacks the depedent
+                      jars and puts them all back together, including the classes we build
+                      here, then makes a single jar, which is just what we want.
+                    -->
+
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
                             <!--
 
-                                We don't want the standard jar at all and we don't want to
-                                have to specifically ask for the uber jar, so we attach the
-                                running of this plgin to the execution of the package life-cycle
-                                phase.
-                              -->
-                            <executions>
-                                <execution>
-                                    <id>make-assembly</id>
-                                    <phase>package</phase>
-                                    <goals>
-                                        <goal>attached</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
+                              Specify that we want the resulting jar to be executable
+                              via java -jar, which we do by modifying the manifest
+                              of course.
+                            -->
+                            <archive>
 
-                        </plugin>
-                        
-                    </plugins>
-                </build>
+                                <manifest>
+                                    <mainClass>org.antlr.works.IDE</mainClass>
+                                </manifest>
+                            </archive>
 
-            </profile>
-
-            <!--
-
-                What to do if this IS a mac build, in which case we do not exlcude any
-                of the source code.
-
-
-                Somewhere in here, we need to add the CLASSPATH that gives us the MAC specifc
-                Java jars.
-              -->
-            <profile>
-                <id>mac</id>
-                <activation>
-                    <os>
-                        <family>mac</family>
-                    </os>
-                </activation>
-
-                <build>
-                    <plugins>
-                        <plugin>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <configuration>
-                                <source>1.5</source>
-                                <target>1.5</target>
-                                <excludes>
-                                    <exclude>**/MacOS/*</exclude>
-                                </excludes>
-                            </configuration>
-                        </plugin>
+                        </configuration>
 
                         <!--
 
-                            Define how we build our uber-jar with all the dependencies when
-                            this is a build that isn't targetted at mac. In that case we can use
-                            the standard assembly target, which basically unpacks the depedent
-                            jars and puts them all back together, including the classes we build
-                            here, then makes a single jar, which is just what we want.
-                          -->
+                          We don't want the standard jar at all and we don't want to
+                          have to specifically ask for the uber jar, so we attach the
+                          running of this plgin to the execution of the package life-cycle
+                          phase.
+                        -->
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attached</goal>
+                                </goals>
+                            </execution>
+                        </executions>
 
-                        <plugin>
-                            <artifactId>maven-assembly-plugin</artifactId>
-                            <configuration>
-                                <descriptorRefs>
-                                    <descriptorRef>jar-with-dependencies</descriptorRef>
-                                </descriptorRefs>
-                                <!--
+                    </plugin>
 
-                                    Specify that we want the resulting jar to be executable
-                                    via java -jar, which we do by modifying the manifest
-                                    of course.
-                                  -->
-                                    <archive>
+                </plugins>
+            </build>
 
-                                        <manifest>
-                                            <mainClass>org.antlr.works.IDE</mainClass>
-                                        </manifest>
-                                    </archive>
+        </profile>
 
-                            </configuration>
-
-                            <!--
-
-                                We don't want the standard jar at all and we don't want to
-                                have to specifically ask for the uber jar, so we attach the
-                                running of this plgin to the execution of the package life-cycle
-                                phase.
-                              -->
-                            <executions>
-                                <execution>
-                                    <id>make-assembly</id>
-                                    <phase>package</phase>
-                                    <goals>
-                                        <goal>attached</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-
-                        </plugin>
-
-                    </plugins>
-                </build>
-
-            </profile>
-
-        </profiles>
+    </profiles>
 
     <build>
 
@@ -302,11 +299,11 @@
             The root of the source code for StringTemplate
         -->
         <sourceDirectory>src</sourceDirectory>
-        
+
         <!--
-        
-            The resources that we need to include in the runtime jar.
-          -->
+
+          The resources that we need to include in the runtime jar.
+        -->
         <resources>
             <resource>
                 <directory>src</directory>
@@ -314,10 +311,10 @@
                     <include>**/*.properties</include>
                     <include>**/*.st</include>
                     <include>**/*.png</include>
-               </includes>
-           </resource>
+                </includes>
+            </resource>
         </resources>
-        
+
         <!--
             The root of the test source code for StringTemplate.
         -->
@@ -331,7 +328,7 @@
     </build>
 
     <dependencies>
-        
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

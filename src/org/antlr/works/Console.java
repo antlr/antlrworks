@@ -6,7 +6,6 @@ import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.engine.GrammarEngineDelegate;
 import org.antlr.works.grammar.engine.GrammarEngineImpl;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
-import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.ConsoleHelper;
 import org.antlr.works.visualization.SDGenerator;
 import org.antlr.works.visualization.serializable.SEncoder;
@@ -263,22 +262,11 @@ public class Console {
         }
 
         public String getOutputPath() {
-            String path = AWPrefs.getOutputPath();
-            if(path.startsWith("/") || path.startsWith("\\")) {
-                // absolute path
-                return path;
-            }
-            return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(file), path);
+            return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(file), "output");
         }
 
         public Tool getANTLRTool() {
-            String[] params = AWPrefs.getANTLR3Options();
-            Tool t;
-            if(params.length > 0) {
-                t = new Tool(params);
-            } else {
-                t = new Tool();
-            }
+            Tool t = new Tool();
             t.setOutputDirectory(getOutputPath());
             return t;
         }

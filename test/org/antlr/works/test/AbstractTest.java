@@ -45,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class AbstractTest extends TestCase {
+public abstract class AbstractTest extends TestCase {
 
     private GrammarEngine engine = new GrammarEngineImpl(new MyGrammarEngineDelegate());
     private String text;
