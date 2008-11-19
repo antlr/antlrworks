@@ -313,7 +313,7 @@
                     <include>**/*.png</include>
                 </includes>
                 <excludes>
-                    <exclude>**/%*.*</exclude>
+                    <exclude>**/\%*.*</exclude>
                 </excludes>
             </resource>
         </resources>
