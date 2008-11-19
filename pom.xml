@@ -312,6 +312,9 @@
                     <include>**/*.st</include>
                     <include>**/*.png</include>
                 </includes>
+                <excludes>
+                    <exclude>**/%*.*</exclude>
+                </excludes>
             </resource>
         </resources>
 
