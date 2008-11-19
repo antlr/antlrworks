@@ -94,7 +94,7 @@
         <repository>
             <id>antlr-snapshot</id>
             <name>ANTLR Testing Snapshot Repository</name>
-            <url>http://www.antlr.org/antlr-snapshot</url>
+            <url>http://antlr.org/antlr-snapshot</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
