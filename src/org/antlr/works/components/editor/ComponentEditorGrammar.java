@@ -753,6 +753,9 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
             // absolute path
             return path;
         }
+        if(getFilePath() == null) {
+            return null;
+        }
         return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(getFilePath()), path);
     }
 
