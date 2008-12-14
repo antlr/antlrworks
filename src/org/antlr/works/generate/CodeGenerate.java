@@ -99,7 +99,7 @@ public class CodeGenerate implements Runnable {
             params = new String[] { "-o", getOutputPath(), "-lib", editor.getFileFolder(), editor.getFilePath() };
 
         new File(getOutputPath()).mkdirs();
-        
+
         Tool antlr = new Tool(Utils.concat(params, AWPrefs.getANTLR3Options()));
         antlr.process();
 
@@ -153,9 +153,12 @@ public class CodeGenerate implements Runnable {
 
     public void generateInThreadDidTerminate() {
         progress.close();
-        if(generateError != null)
+        if(generateError != null) {
             XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the grammar because:\n"+generateError);
-        else {
+            if(delegate != null) {
+                delegate.codeGenerateDidCompleteWithError(generateError);
+            }
+        } else {
             if(delegate == null || delegate.codeGenerateDisplaySuccess()) {
                 if(AWPrefs.isAlertGenerateCodeSuccess()) {
                     XJAlert alert = XJAlert.createInstance();
@@ -164,9 +167,8 @@ public class CodeGenerate implements Runnable {
                     AWPrefs.setAlertGenerateCodeSuccess(!alert.isDoNotShowAgain());
                 }
             }
-
             if(delegate != null) {
-                delegate.codeGenerateDidComplete();                
+                delegate.codeGenerateDidComplete();
             }
         }
     }

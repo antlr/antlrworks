@@ -187,6 +187,10 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         generating = false;
     }
 
+    public void codeGenerateDidCompleteWithError(String error) {
+        generating = false;
+    }
+
     public void checkGrammarDidBegin(CheckGrammar source) {
         // do nothing
     }

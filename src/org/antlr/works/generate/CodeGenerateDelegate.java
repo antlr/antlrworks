@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 public interface CodeGenerateDelegate {
-    public void codeGenerateDidComplete();
-    public boolean codeGenerateDisplaySuccess();
+    void codeGenerateDidComplete();
+    void codeGenerateDidCompleteWithError(String error);
+
+    boolean codeGenerateDisplaySuccess();
 }
