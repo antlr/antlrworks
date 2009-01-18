@@ -142,7 +142,13 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
     }
 
     public void createGrammars() throws Exception {
-        if(!needsToCreateGrammar) return;
+        if(!needsToCreateGrammar) {
+            if(createGrammarResult.isSuccess()) {
+                return;
+            } else {
+                needsToCreateGrammar = true;
+            }
+        }
 
         ErrorListener el = ErrorListener.getThreadInstance();
         ErrorManager.setErrorListener(el);
@@ -249,7 +255,12 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
     public GrammarResult analyze() throws Exception {
         // if there is no need to analyze the grammar, return the previous result
         if(!needsToAnalyzeGrammar) {
-            return analyzeCompleted(null);
+            GrammarResult r = analyzeCompleted(null);
+            if(r.isSuccess()) {
+                return r;
+            } else {
+                needsToAnalyzeGrammar = true;
+            }
         }
 
         // Set the error listener

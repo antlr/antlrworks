@@ -748,15 +748,14 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     }
 
     public String getOutputPath() {
-        String path = AWPrefs.getOutputPath();
-        if(path.startsWith("/") || path.startsWith("\\")) {
-            // absolute path
-            return path;
+        File outputPath = new File(AWPrefs.getOutputPath());
+        if(outputPath.isAbsolute()) {
+            return outputPath.getAbsolutePath();
         }
         if(getFilePath() == null) {
             return null;
         }
-        return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(getFilePath()), path);
+        return XJUtils.concatPath(XJUtils.getPathByDeletingLastComponent(getFilePath()), outputPath.getPath());
     }
 
     public Container getWindowContainer() {
