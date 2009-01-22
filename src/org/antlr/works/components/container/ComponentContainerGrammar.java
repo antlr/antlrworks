@@ -216,7 +216,12 @@ public class ComponentContainerGrammar implements ComponentContainer {
     public boolean loadGrammar(String name) {
         String fileName = name+".g";
 
-        String file = XJUtils.concatPath(getDocument().getDocumentFolder(), fileName);
+        String folder = getDocument().getDocumentFolder();
+        if(folder == null) {
+            return false;
+        }
+        
+        String file = XJUtils.concatPath(folder, fileName);
         if(!new File(file).exists()) {
             return false;
         }
