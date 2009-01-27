@@ -14,7 +14,7 @@ public class $class_name$ {
 
         $java_parser$ parser = new $java_parser$(tokens);
         $java_parser$.$start_symbol$_return r = parser.$start_symbol$(); 
-        CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.tree);
+        CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
         
         $grammar_name$ walker = new $grammar_name$(nodes);
         try {
