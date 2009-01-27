@@ -107,7 +107,7 @@
        =============================================================================
 
       We select either a MAC or non-mac profile because Apple really wants you to
-      use the Aqua llok and feel, but of course that jar isn't available outside
+      use the Aqua look and feel, but of course that jar isn't available outside
       Apple MACS which basically breaks the portability of Java.
 
     -->
@@ -296,7 +296,7 @@
 
         <!--
 
-            The root of the source code for StringTemplate
+            The root of the source code
         -->
         <sourceDirectory>src</sourceDirectory>
 
@@ -348,12 +348,6 @@
             <groupId>org.antlr</groupId>
             <artifactId>antlr</artifactId>
             <version>3.1.2-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>xjlib</artifactId>
-            <version>2.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

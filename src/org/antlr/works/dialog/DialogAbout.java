@@ -39,7 +39,6 @@ import org.antlr.works.IDE;
 import org.antlr.works.utils.IconManager;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.frame.XJPanel;
-import org.antlr.xjlib.foundation.XJLib;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -68,13 +67,11 @@ public class DialogAbout extends XJPanel {
         }
         tableModel.addInfo("ANTLR", Tool.VERSION);
         tableModel.addInfo("StringTemplate", StringTemplate.VERSION);
-        tableModel.addInfo("XJLibrary", XJLib.stringVersion());
         tableModel.addInfo("Java", System.getProperty("java.version")+" ("+System.getProperty("java.vendor")+")");
         tableModel.fireTableDataChanged();
 
         resetAcknowledge();
         addAcknowledge("ANTLR and StringTemplate are (c) 1989-2009 Terence Parr");
-        addAcknowledge("XJLibrary is (c) 2004-2009 Jean Bovet");
         addAcknowledge("Application & Mac OS X document icons are (c) Simon Bovet");
         addAcknowledge("Portion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch");
         addAcknowledge("Portion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber");

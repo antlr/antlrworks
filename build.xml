@@ -43,7 +43,6 @@
                 excludes="org/antlr/works/test/**">
             <classpath refid="classpath"/>
             <src path="${aw.source}"/>
-            <src path="${xj.source}"/>
         </javac>
     </target>
 
@@ -56,7 +55,6 @@
                 excludes="org/antlr/works/test/**, **/XJApplicationMacOS.java">
             <classpath refid="classpath"/>
             <src path="${aw.source}"/>
-            <src path="${xj.source}"/>
         </javac>
     </target>
 
@@ -65,7 +63,6 @@
 
         <jar jarfile="${jar.file}">
             <fileset dir="${aw.source}" includes="**/*.stg, **/*.st, **/*.txt, **/*.properties, **/*.png"/>
-            <fileset dir="${xj.source}" includes="**/*.stg, **/*.st, **/*.txt, **/*.properties, **/*.png"/>
             <fileset dir="${build.dir}" includes="**/*.class"/>
 
             <zipfileset src="${aw.lib}/${antlr2.jar}" excludes="**/*.txt"/>
@@ -131,10 +128,6 @@
 
         <copy todir="${src.dist.dir}/src/aw">
             <fileset dir="${aw.source}"/>
-        </copy>
-
-        <copy todir="${src.dist.dir}/src/xj">
-            <fileset dir="${xj.source}"/>
         </copy>
 
         <copy todir="${src.dist.dir}/src/plugin">
