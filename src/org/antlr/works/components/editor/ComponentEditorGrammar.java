@@ -611,7 +611,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
             if(!output.exists()) {
                 output.mkdirs();
             }
-            params = Utils.concat(params, new String[] { "-lib", output.getAbsolutePath() });
+            params = Utils.concat(params, new String[] { "-o", output.getAbsolutePath(), "-lib", getFileFolder() });
         }
         if(params.length > 0) {
             return new Tool(params);

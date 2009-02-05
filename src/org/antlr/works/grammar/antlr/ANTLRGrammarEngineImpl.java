@@ -43,6 +43,7 @@ import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.utils.ErrorListener;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,12 +185,13 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         }
     }
 
-    private Grammar createNewGrammar() throws TokenStreamException, RecognitionException {
+    private Grammar createNewGrammar() throws TokenStreamException, RecognitionException, IOException {
         Grammar g = new Grammar();
         g.setTool(engine.getANTLRTool());
         g.setFileName(engine.getGrammarFileName());
         g.setGrammarContent(engine.getGrammarText());
         g.composite.createNFAs();
+
         // don't want errors from a previous grammar to interfere with this new grammar.
         // must reset error state otherwise analysis will not proceed if
         // there were previous errors.
@@ -219,11 +221,11 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
         return lexerGrammar;
     }
 
-    private void createParserGrammar() throws TokenStreamException, RecognitionException {
+    private void createParserGrammar() throws TokenStreamException, RecognitionException, IOException {
         parserGrammar = createNewGrammar();
     }
 
-    private void createLexerGrammar() throws TokenStreamException, RecognitionException {
+    private void createLexerGrammar() throws TokenStreamException, RecognitionException, IOException {
         lexerGrammar = createNewGrammar();
     }
 

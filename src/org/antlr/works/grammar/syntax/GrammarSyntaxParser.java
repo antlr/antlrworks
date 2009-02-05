@@ -107,7 +107,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     public GrammarSyntaxParser() {
-        
+
     }
 
     public ElementGrammarName getName() {
@@ -207,7 +207,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             return true;
         } else {
             rewind();
-            return false;            
+            return false;
         }
     }
 
@@ -233,9 +233,9 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     }
 
     /**
-     * Matches a scope:
+     * Matches a scope declaration:
      *
-     * scope [name] ( BLOCK | ';' )
+     * scope [name] BLOCK
      *
      * where
      *  BLOCK = { ... }
@@ -263,7 +263,40 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 start.type = GrammarSyntaxLexer.TOKEN_BLOCK_LABEL;
                 return true;
             }
-        } else {
+        }
+
+        rewind();
+        return false;
+    }
+
+    /**
+     * Matches a scope reference in a rule definition:
+     *
+     * scope name (',' name)* ';'
+     *
+     * @return true if a scope is matched
+     */
+    private boolean matchScopeUse() {
+        if(!isID(0, "scope")) return false;
+
+        mark();
+
+        // Must begin with the keyword 'scope'
+        ATEToken start = T(0);
+        if(!matchID(0, "scope")) return false;
+
+        // Match the first name
+        if (matchID(0)) {
+
+            // Loop over additional scopes
+            while(matchChar(0, ",")) {
+                // match an ID
+                if(!matchID(0)) {
+                    rewind();
+                    return false;
+                }
+            }
+
             if(matchSEMI(0)) return true;
         }
 
@@ -404,7 +437,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             if(matchComplexComment(0)) continue;
             break;
         }
-        
+
         // Match any returns
         if(matchID(0, "returns")) {
             matchArguments();
@@ -415,7 +448,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         // Match any comments, scopes and blocks
         while(true) {
-            if(matchScope()) continue;
+            if(matchScopeUse()) continue;
             if(matchBlock()) continue;
             if(matchSingleComment(0)) continue;
             if(matchComplexComment(0)) continue;
@@ -505,7 +538,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         // Try to match the node token
         if(!matchOptionalNodeToken()) return false;
-        
+
         // Match any field access, for example:
         // foo.bar.boo
         while(isChar(0, ".") && isID(1)) {
@@ -756,17 +789,17 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
      *
      *
      exceptionGroup
-         :	( exceptionHandler )+ ( finallyClause )?
-         |	finallyClause
-         ;
+     :	( exceptionHandler )+ ( finallyClause )?
+     |	finallyClause
+     ;
 
      exceptionHandler
-         :    "catch"^ ARG_ACTION ACTION
-         ;
+     :    "catch"^ ARG_ACTION ACTION
+     ;
 
      finallyClause
-         :    "finally"^ ACTION
-         ;
+     :    "finally"^ ACTION
+     ;
 
      */
     private void matchRuleExceptionGroup() {
@@ -775,7 +808,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
             matchAction();
         }
         if(matchID(0, "finally")) {
-            matchAction();            
+            matchAction();
         }
     }
 
@@ -921,7 +954,7 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
                 if(isChar(0, ">")) break;
 
                 if(matchChar(0, ".")) continue;
-                
+
                 if(!matchChar(0, "=")) {
                     rewind();
                     return false;
