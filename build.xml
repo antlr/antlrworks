@@ -141,9 +141,6 @@
         <copy todir="${src.dist.dir}/osx">
             <fileset dir="${osx.dir}"/>
         </copy>
-
-        <copy file="${basedir}/ant-for-source/build.xml" tofile="${src.dist.dir}/build.xml"/>
-        <copy file="${basedir}/ant-for-source/build.properties" tofile="${src.dist.dir}/build.properties"/>
         
         <zip destfile="${dist.dir}/antlrworks-${version}-src.zip"
              basedir="${src.dist.dir}"
