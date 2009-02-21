@@ -273,58 +273,51 @@ public class XJUtils {
         return encoded;
     }
 
-    /** Returns a text where all line separator are \n
+    /**
+     * Returns a text where all line separators are \n
      *
      * @return the normalized text
      */
 
     public static String getNormalizedText(String text) {
-        StringBuilder normalizedText = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new StringReader(text));
-        try {
-            String line;
-            while((line = reader.readLine()) != null) {
-                normalizedText.append(line);
-                normalizedText.append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return normalizedText.toString();
+        return getTextByReplacingEOL(text, "\n");
     }
 
-    /** Returns a text where all line separator are taken from the system property
+    /**
+     * Returns a text where all line separators are taken from the system property
      *
      * @return the localized text
      */
 
     public static String getLocalizedText(String text) {
-        StringBuilder localizedText = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new StringReader(text));
-        String lineSeparator = XJSystem.getLineSeparator();
-        try {
-            String line;
-            while((line = reader.readLine()) != null) {
-                localizedText.append(line);
-                localizedText.append(lineSeparator);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return localizedText.toString();
+        return getTextByReplacingEOL(text, XJSystem.getLineSeparator());
     }
 
-    /** Returns a string containing the representation of the stack trace
+    public static String getTextByReplacingEOL(final String text, final String eol) {
+        final StringBuilder sb = new StringBuilder();
+        final char CR = '\r';
+        final char LF = '\n';
+        for(int i=0; i<text.length(); i++) {
+            final char c = text.charAt(i);
+            if(c == LF) {
+                sb.append(eol);
+            } else if(c == CR) {
+                if(i+1 < text.length() && text.charAt(i+1) == LF) {
+                    // crlf
+                    i++;
+                } else {
+                    // cr only
+                }
+                sb.append(eol);
+            } else {
+                sb.append(c);                
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Returns a string containing the representation of the stack trace
      * of the exception
      *
      */

@@ -332,6 +332,13 @@ public class XJApplication extends XJObject implements XJApplicationInterface, X
         documentFactories.add(factory);
     }
 
+    public static boolean handlesDocument(XJDocument doc) {
+        for(XJDocumentFactory factory : documentFactories) {
+            if(factory.handlesPath(doc.getDocumentPath())) return true;
+        }
+        return false;
+    }
+
     public XJDocumentFactory getDocumentTypeForPath(String path) {
         for (XJDocumentFactory factory : documentFactories) {
             if(factory.handlesPath(path)) {

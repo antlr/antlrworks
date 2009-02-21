@@ -206,10 +206,14 @@ public class ATEGutter extends JComponent {
 
     }
 
-    public void updateSize() {
+    public boolean updateSize() {
+        boolean resize = false;
+
         if(lineNumberMetrics == null) {
             lineNumberMetrics = textEditor.textPane.getFontMetrics(LINE_NUMBER_FONT);
         }
+
+        final int oldOffset = offsetForLineNumber;
 
         offsetForLineNumber = 0;
         if(lineNumberEnabled) {
@@ -219,10 +223,18 @@ public class ATEGutter extends JComponent {
             }
         }
 
+        resize = resize || oldOffset != offsetForLineNumber;
+        
+        final int oldWidth = gutterItemWidth;
+
         gutterItemWidth = 0;
         if(textEditor.gutterColumnsManager != null) {
             gutterItemWidth = textEditor.gutterColumnsManager.getWidth();
         }
+
+        resize = resize || oldWidth != gutterItemWidth;
+
+        return resize;
     }
 
     public ItemInfo getItemInfoAtPoint(Point p) {
@@ -250,7 +262,9 @@ public class ATEGutter extends JComponent {
         Rectangle r = getVisibleRect();
 
         updateInfo(r);
-        updateSize();
+        if(updateSize()) {
+            revalidate();
+        }
 
         paintGutter(g, r);
         paintFolding((Graphics2D)g, r);
