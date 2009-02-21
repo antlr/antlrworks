@@ -256,11 +256,13 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
 
         // Match either the block or the semi
         if(isOpenBLOCK(0)) {
+            ElementBlock block = new ElementBlock(start.getAttribute().toLowerCase(), start);
             ATEToken beginBlock = T(0);
             if(matchBalancedToken(ATESyntaxLexer.TOKEN_LCURLY, ATESyntaxLexer.TOKEN_RCURLY, null, true)) {
                 beginBlock.type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
                 T(-1).type = GrammarSyntaxLexer.TOKEN_BLOCK_LIMIT;
                 start.type = GrammarSyntaxLexer.TOKEN_BLOCK_LABEL;
+                blocks.add(block);
                 return true;
             }
         }

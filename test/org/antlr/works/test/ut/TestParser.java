@@ -116,8 +116,7 @@ public class TestParser extends AbstractTest {
         parseFile(TestConstants.MANTRA);
         assertInspector(0);
 
-        // todo check the number of blocks
-//        assertParserProperties(65, 32, 28, 115, 274); // verified by hand
+        assertParserProperties(65, 32, 30, 115, 274); // verified by hand
     }
 
     public void testCodeGenPhase() throws Exception {
