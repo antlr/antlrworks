@@ -264,6 +264,15 @@ public class ComponentContainerGrammar implements ComponentContainer {
         return null;
     }
 
+    public void selectGrammar(XJDocument doc) {
+        for(ComponentContainer c : containers) {
+            if(c.getDocument() == doc) {
+                selectGrammar(c);
+                break;
+            }
+        }
+    }
+
     private ComponentEditorGrammar selectGrammar(ComponentContainer c) {
         Component panel = c.getEditor().getPanel();
         if(!editorsTab.hasComponent(panel)) {

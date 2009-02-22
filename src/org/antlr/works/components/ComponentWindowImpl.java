@@ -2,6 +2,7 @@ package org.antlr.works.components;
 
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.components.container.ComponentContainerInternal;
 import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.app.XJApplication;
@@ -105,6 +106,19 @@ public class ComponentWindowImpl extends XJWindow implements ComponentWindow {
         // Called when the document associated file has changed on the disk
         ComponentDocumentGrammar g = (ComponentDocumentGrammar) doc;
         g.getEditor().componentDocumentContentChanged();
+    }
+
+    @Override
+    public void selectDocument(XJDocument doc) {
+        // called when antlrworks wants to open an existing document.
+        // make sure this document has an open and selected tab
+        ComponentDocumentGrammar g = (ComponentDocumentGrammar) doc;
+        ComponentContainer container = g.getContainer();
+        if(container instanceof ComponentContainerInternal) {
+            ComponentContainerInternal cci = (ComponentContainerInternal) container;
+            ComponentContainerGrammar ccg = (ComponentContainerGrammar) cci.getMainContainer();
+            ccg.selectGrammar(doc);
+        }
     }
 
     @Override

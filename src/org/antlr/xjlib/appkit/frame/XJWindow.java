@@ -207,4 +207,7 @@ public class XJWindow extends XJFrame implements XJWindowInterface {
         // associated file has changed (based on the file modification date)
     }
 
+    public void selectDocument(XJDocument doc) {
+        // can be used by subclasses to select the document visually.
+    }
 }

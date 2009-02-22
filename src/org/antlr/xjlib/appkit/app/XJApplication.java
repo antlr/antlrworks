@@ -452,6 +452,7 @@ public class XJApplication extends XJObject implements XJApplicationInterface, X
 
         XJWindow window = getWindowContainingDocumentForPath(file);
         if(window != null) {
+            window.selectDocument(window.getDocumentForPath(file));
             window.bringToFront();
             return true;
         } else {
