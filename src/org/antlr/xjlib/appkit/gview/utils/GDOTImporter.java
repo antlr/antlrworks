@@ -76,6 +76,8 @@ public abstract class GDOTImporter {
                     }
                 } else if(c != '\r') {
                     line.append((char)c);
+                } else if(c == '\r') {
+                    continue;
                 }
                 pc = c;
             }
