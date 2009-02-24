@@ -72,6 +72,7 @@ public class DialogAbout extends XJPanel {
 
         resetAcknowledge();
         addAcknowledge("ANTLR and StringTemplate are (c) 1989-2009 Terence Parr");
+        addAcknowledge("gUnit is (c) 2008-2009 Leon Jen-Yuan Su");
         addAcknowledge("Application & Mac OS X document icons are (c) Simon Bovet");
         addAcknowledge("Portion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch");
         addAcknowledge("Portion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber");
