@@ -197,6 +197,15 @@ public class XJPreferences {
         component.addActionListener(action);
     }
 
+    public void bindToPreferences(JTextPane component, String key, String defaultValue) {
+        component.setText(getString(key, defaultValue));
+        setString(key, component.getText());
+
+        JTextPaneBindingAction action = new JTextPaneBindingAction(component, key);
+        bindings.put(key, action);
+        component.addKeyListener(action);
+    }
+
     public void defaultPreference(JCheckBox component, String key, boolean defaultValue) {
         component.setSelected(defaultValue);
         setBoolean(key, component.isSelected());
@@ -327,6 +336,23 @@ public class XJPreferences {
         public void actionPerformed(ActionEvent e) {
             setString(key, component.getText());
         }
+    }
+
+    protected class JTextPaneBindingAction implements KeyListener {
+
+        JTextPane component = null;
+        String key = null;
+
+        public JTextPaneBindingAction(JTextPane component, String key) {
+            this.component = component;
+            this.key = key;
+        }
+
+        public void keyTyped(KeyEvent e) {
+            setString(key, component.getText());
+        }
+        public void keyPressed(KeyEvent e) {/*do nothing*/}
+        public void keyReleased(KeyEvent e) {/*do nothing*/}
     }
 
     protected class JCheckBoxBindingAction implements ActionListener {

@@ -235,6 +235,17 @@ public class AWPrefs {
 
     public static final String PREF_CLEAR_CONSOLE_BEFORE_CHECK = "PREF_CLEAR_CONSOLE_BEFORE_CHECK";
 
+    // Test Rig
+    public static final String PREF_TEST_RIG_TEXT = "PREF_TEST_RIG_TEXT";
+    public static final String PREF_TEST_RIG_CLASS = "PREF_TEST_RIG_CLASS";
+    public static final String PREF_TEST_RIG_MODE = "PREF_TEST_RIG_MODE";
+
+    public static final String TEST_RIG_MODE_DEFAULT = "default";
+    public static final String TEST_RIG_MODE_TEXT = "text";
+    public static final String TEST_RIG_MODE_CLASS = "class";
+    public static final String DEFAULT_TEST_RIG_MODE = TEST_RIG_MODE_TEXT;
+    public static final String DEFAULT_TEST_RIG_MODE_BY_LANGUAGE = TEST_RIG_MODE_DEFAULT;
+
     // Other
     public static final String PREF_USER_REGISTERED = "PREF_USER_REGISTERED";
     public static final String PREF_SERVER_ID = "PREF_SERVER_ID";
@@ -570,6 +581,38 @@ public class AWPrefs {
 
     public static String getDebuggerInputFile() {
         return getPreferences().getString(PREF_DEBUGGER_INPUT_FILE, "");         
+    }
+
+    public static void setTestRigTemplateTextByLanguage(String language, String text) {
+        getPreferences().setString(PREF_TEST_RIG_TEXT + "_FOR_" + language.toUpperCase(), text);
+    }
+
+    public static String getTestRigTemplateTextByLanguage(String language) {
+        return getPreferences().getString(PREF_TEST_RIG_TEXT + "_FOR_" + language.toUpperCase(), "");
+    }
+
+    public static void setTestRigTemplateMode(String identifier, String testRigMode) {
+        getPreferences().setString(PREF_TEST_RIG_MODE + "_" + identifier, testRigMode);
+    }
+
+    public static String getTestRigTemplateMode(String identifier) {
+        return getPreferences().getString(PREF_TEST_RIG_MODE + "_" + identifier, DEFAULT_TEST_RIG_MODE);
+    }
+
+    public static void setTestRigTemplateModeByLanguage(String language, String testRigMode) {
+        getPreferences().setString(PREF_TEST_RIG_MODE + "_FOR_" + language.toUpperCase(), testRigMode);
+    }
+
+    public static String getTestRigTemplateModeByLanguage(String langauge) {
+        return getPreferences().getString(PREF_TEST_RIG_MODE + "_FOR_" + langauge.toUpperCase(), DEFAULT_TEST_RIG_MODE_BY_LANGUAGE);
+    }
+
+    public static void setTestRigTemplateClass(String identifier, String className) {
+        getPreferences().setString(PREF_TEST_RIG_CLASS + "_" + identifier, className);
+    }
+
+    public static String getTestRigTemplateClass(String identifier) {
+        return getPreferences().getString(PREF_TEST_RIG_CLASS + "_" + identifier, "");
     }
 
     public static void setAlertGenerateCodeSuccess(boolean flag) {

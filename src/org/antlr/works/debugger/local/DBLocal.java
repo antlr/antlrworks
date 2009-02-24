@@ -40,15 +40,13 @@ import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.DebuggerEngine;
 import org.antlr.works.dialog.DebuggerInputDialog;
+import org.antlr.works.dialog.DialogTestTemplate;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.grammar.syntax.GrammarSyntaxParser;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.utils.Console;
-import org.antlr.works.utils.ErrorListener;
-import org.antlr.works.utils.StreamWatcher;
-import org.antlr.works.utils.StreamWatcherDelegate;
+import org.antlr.works.utils.*;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.appkit.utils.XJDialogProgress;
@@ -69,6 +67,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     public static final String parserGlueCodeTemplatePath = "org/antlr/works/debugger/local/";
     public static final String parserGlueCodeTemplateName = "DBParserGlueCode";
     public static final String treeParserGlueCodeTemplateName = "DBTreeParserGlueCode";
+    public static final String testRigTemplateSuffix = "__testrigtemplate__";
 
     public static final String ST_ATTR_IMPORT = "import";
     public static final String ST_ATTR_CLASSNAME = "class_name";
@@ -84,6 +83,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected List<String> grammarGeneratedFiles;
     protected String fileRemoteParser;
     protected String fileRemoteParserInputTextFile;
+    protected String fileRemoteParserTemplateTextFile;
 
     protected String startRule;
     protected String lastStartRule;
@@ -98,8 +98,14 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected int inputMode;
     protected int lastInputMode;
+    protected String testTemplateMode;
+    protected String lastTestTemplateMode;
+    protected String testTemplateClass;
+    protected String lastTestTemplateClass;
     protected String inputFile;
     protected String lastInputFile;
+    protected String testTemplateText;
+    protected String lastTestTemplateText;
     protected String inputText;
     protected String rawInputText;
 
@@ -171,6 +177,24 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         return (options & Debugger.OPTION_AGAIN) > 0;
     }
 
+    private boolean optionRun() {
+        return (options & Debugger.OPTION_RUN) > 0;
+    }
+
+    public void showEditTestRig() {
+        DialogTestTemplate dialog = new DialogTestTemplate(debugger, debugger.getContainer());
+//        dialog.set
+//        dialog.setInputText(rawInputText);
+        if(dialog.runModal() == XJDialog.BUTTON_OK) {
+//            rawInputText = dialog.getRawInputText();
+//            inputText = dialog.getInputText();
+//            inputFile = dialog.getInputFile();
+//            inputMode = dialog.getInputMode();
+//            startRule = dialog.getRule();
+//            showProgress();
+        }
+    }
+
     public void prepareAndLaunch(int options) {
         this.options = options;
         cancelled = false;
@@ -205,7 +229,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         if(prepare()) {
             if(optionBuild()) generateAndCompileGrammar();
             if(!cancelled() && !optionAgain()) askUserForInputText();
-            if(!cancelled()) generateAndCompileGlueCode(optionBuild());
+            if(!cancelled() && !AWPrefs.TEST_RIG_MODE_CLASS.equals(testTemplateMode)) generateAndCompileGlueCode(optionBuild());
             if(!cancelled()) generateInputText();
             if(!cancelled()) launchRemoteParser();
         }
@@ -285,12 +309,23 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     protected boolean prepare() {
+        String testRigFullPath = "";
+        String grammarIdentifier = "";
+        String qualifiedFileName = debugger.getDelegate().getDocument().getDocumentPath();
+        if (qualifiedFileName != null) {
+            testRigFullPath = XJUtils.getPathByDeletingPathExtension(qualifiedFileName) + testRigTemplateSuffix + ".st";
+            grammarIdentifier = qualifiedFileName.toUpperCase();
+        }
         try {
+            testTemplateMode = AWPrefs.getTestRigTemplateMode(grammarIdentifier);
+            testTemplateText = getTestRigTemplateFromFile(testRigFullPath);
+            testTemplateClass = AWPrefs.getTestRigTemplateClass(grammarIdentifier);
             codeGenerator = debugger.getDelegate().getCodeGenerate();
             grammarGeneratedFiles = codeGenerator.getGeneratedFileNames();
 
             fileRemoteParser = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+".java");
             fileRemoteParserInputTextFile = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_input.txt");
+            fileRemoteParserTemplateTextFile = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+"_template.st");
 
             outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
             new File(outputFileDir).mkdirs();
@@ -371,10 +406,15 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         progress.setIndeterminate(true);
 
         if(!build && lastStartRule != null && startRule.equals(lastStartRule) &&
-                inputFile.equals(lastInputFile) && lastInputMode == inputMode)
+                inputFile.equals(lastInputFile) && lastInputMode == inputMode &&
+                testTemplateClass.equals(lastTestTemplateClass) && lastTestTemplateMode.equals(testTemplateMode) &&
+                testTemplateText.equals(lastTestTemplateText))
             return;
 
         lastStartRule = startRule;
+        lastTestTemplateMode = testTemplateMode;
+        lastTestTemplateClass = testTemplateClass;
+        lastTestTemplateText = testTemplateText;
         lastInputMode = inputMode;
         lastInputFile = inputFile;
 
@@ -403,8 +443,20 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             String lexerName = isTreeGrammar ? (getLexerName()+"Lexer") : getLexerName();
             String parserName = isTreeGrammar ? (debugger.getDelegate().getTokenVocab()+"Parser") :
                     (debugger.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.PARSER));
-            StringTemplateGroup group = new StringTemplateGroup("DebuggerLocalGroup", DefaultTemplateLexer.class);
-            StringTemplate glueCode = group.getInstanceOf(parserGlueCodeTemplatePath +templateName);
+            StringTemplateGroup group;
+            StringTemplate glueCode;
+            if (AWPrefs.TEST_RIG_MODE_TEXT.equals(testTemplateMode)) {
+                if ("".equals(testTemplateText)) {
+                    group = new StringTemplateGroup("DebuggerLocalGroup", DefaultTemplateLexer.class);
+                    glueCode = group.getInstanceOf(parserGlueCodeTemplatePath +templateName);
+                } else {
+                    generateTestTemplateTextFile();
+                    group = new StringTemplateGroup("DebuggerLocalGroup", codeGenerator.getOutputPath());
+                    glueCode = group.getInstanceOf(remoteParserClassName + "_template");
+                }
+            } else {
+                return;
+            }
             glueCode.setAttribute(ST_ATTR_IMPORT, getCustomImports());
             glueCode.setAttribute(ST_ATTR_CLASSNAME, remoteParserClassName);
             if(inputMode == 0) {
@@ -503,6 +555,24 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         }
     }
 
+    protected void generateTestTemplateTextFile() {
+        try {
+            XJUtils.writeStringToFile(testTemplateText, fileRemoteParserTemplateTextFile);
+        } catch (IOException e) {
+            debugger.getConsole().println(e);
+            reportError("Error while generating the test template text file:\n"+e.toString());
+        }
+    }
+
+    private String getTestRigTemplateFromFile(String testRigFullPath) {
+        try {
+            return Utils.stringFromFile(testRigFullPath);
+        } catch (IOException ioe) {
+            this.debugger.getConsole().println(ioe);
+        }
+        return "";
+    }
+
     public boolean isRequiredFilesExisting() {
         if(!prepare()) return false;
 
@@ -538,10 +608,18 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         IDE.debugVerbose(debugger.getConsole(), getClass(), "Launch with path: "+classPath);
 
         try {
-            remoteParserProcess = Runtime.getRuntime().exec(new String[] { "java", "-classpath", classPath, remoteParserClassName});
+            String classNameToRun = remoteParserClassName;
+            if (AWPrefs.TEST_RIG_MODE_CLASS.equals(testTemplateMode)) {
+                Class.forName(testTemplateClass);
+                classNameToRun = testTemplateClass;
+            }
+            remoteParserProcess = Runtime.getRuntime().exec(new String[] { "java", "-classpath", classPath, classNameToRun});
             new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher", debugger.getOutputPanel()).start();
             new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher", debugger.getOutputPanel()).start();
         } catch (IOException e) {
+            reportError("Cannot launch the remote parser:\n"+e.toString()+"\nIt is possible that some errors prevented the parser from launching. Check the output panel of the debugger and any other output console in your system to see if an error has been reported from the parser and try again.");
+            return false;
+        } catch (ClassNotFoundException e) {
             reportError("Cannot launch the remote parser:\n"+e.toString()+"\nIt is possible that some errors prevented the parser from launching. Check the output panel of the debugger and any other output console in your system to see if an error has been reported from the parser and try again.");
             return false;
         }
@@ -552,7 +630,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            // We don't care here if the sleep has been interrupted
+            // We don't care here if the sleep has been interrupted 
         }
 
         return true;

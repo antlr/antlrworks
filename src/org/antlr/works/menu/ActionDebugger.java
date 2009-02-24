@@ -34,11 +34,15 @@ public interface ActionDebugger {
 
     void runInterpreter();
 
+    void run();
+
     void debug();
     void debugAgain();
     void debugRemote();
 
     void toggleInputTokens();
+
+    void showEditTestRig();
 
     boolean isInputTokenVisible();
     boolean isRunning();

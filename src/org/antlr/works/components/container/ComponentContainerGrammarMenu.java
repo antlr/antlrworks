@@ -38,6 +38,8 @@ import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.menu.*;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.frame.XJWindowInterface;
 
 import javax.swing.*;
 import java.awt.*;
@@ -104,12 +106,14 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public static final int MI_SHOW_GENERATED_LEXER_CODE = 72;
     public static final int MI_SHOW_RULE_GENCODE = 73;
 
-    // Debugger
+    // Run
     public static final int MI_RUN_INTERPRETER = 80;
-    public static final int MI_DEBUG = 81;
-    public static final int MI_DEBUG_AGAIN = 82;
-    public static final int MI_DEBUG_REMOTE = 83;
+    public static final int MI_RUN = 81;
+    public static final int MI_DEBUG = 82;
+    public static final int MI_DEBUG_AGAIN = 83;
+    public static final int MI_DEBUG_REMOTE = 84;
     public static final int MI_DEBUG_SHOW_INPUT_TOKENS = 86;
+    public static final int MI_EDIT_TEST_RIG = 87;
 
     // Help
     public static final int MI_SUBMIT_STATS = 100;
@@ -228,16 +232,58 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     }
 
     private void createRunMenu(XJMainMenuBar menubar) {
-        XJMenu menu;
-        menu = new XJMenu();
-        menu.setTitle(resourceBundle.getString("menu.title.debugger"));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debug"), KeyEvent.VK_D, MI_DEBUG, this));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugAgain"), KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_DEBUG_AGAIN, this));
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugRemote"), MI_DEBUG_REMOTE, this));
-        menu.addSeparator();
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showInputTokens"), MI_DEBUG_SHOW_INPUT_TOKENS, this));
+        XJMenu runMenu = new XJMenu();
+        runMenu.setTitle(resourceBundle.getString("menu.title.run"));
 
-        menubar.addCustomMenu(menu);
+//        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.run"), KeyEvent.VK_R, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_RUN, this));
+        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debug"), KeyEvent.VK_D, MI_DEBUG, this));
+        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugAgain"), KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_DEBUG_AGAIN, this));
+        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugRemote"), MI_DEBUG_REMOTE, this));
+        runMenu.addSeparator();
+        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showInputTokens"), MI_DEBUG_SHOW_INPUT_TOKENS, this));
+        runMenu.addSeparator();
+        runMenu.addItem(new XJMenuItem(getEditTestRigTitle(), MI_EDIT_TEST_RIG, this));
+
+        menubar.addCustomMenu(runMenu);
+    }
+
+    private void buildRunMenu() {
+//        int itemCount = runMenu.getItemCount();
+//        for (int i = itemCount-1; i >= 0 ; i--) {
+//            runMenu.removeItem(i);
+//        }
+//
+////        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.run"), KeyEvent.VK_R, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_RUN, this));
+//        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debug"), KeyEvent.VK_D, MI_DEBUG, this));
+//        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugAgain"), KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_DEBUG_AGAIN, this));
+//        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugRemote"), MI_DEBUG_REMOTE, this));
+//        runMenu.addSeparator();
+//        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showInputTokens"), MI_DEBUG_SHOW_INPUT_TOKENS, this));
+//        runMenu.addSeparator();
+//        runMenu.addItem(new XJMenuItem(getEditTestRigTitle(), MI_EDIT_TEST_RIG, this));
+    }
+
+    private String getEditTestRigTitle() {
+        String grammarName = "";
+        String language = null;
+        String menuItemName;
+
+        if (container.getDebugger() != null) {
+            if (container.getDebugger().getDelegate().getDocument() != null)
+                grammarName = container.getDebugger().getDelegate().getDocument().getDocumentName();
+            if (container.getDebugger().getDelegate().getGrammarEngine() != null)
+                language = container.getDebugger().getDelegate().getGrammarEngine().getGrammarLanguage();
+        }
+
+        if (grammarName != null && !"".equals(grammarName))
+            menuItemName = "Edit " + grammarName + " Test Rig";
+        else
+            menuItemName = "Edit Test Rig";
+
+        if (language != null) {
+            menuItemName.concat(" for " + language);
+        }
+        return menuItemName;
     }
 
     private void createGenerateMenu(XJMainMenuBar menubar) {
@@ -512,6 +558,15 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
                 item.setEnabled(!isDebuggerRunning() && actionDebugger.canDebugAgain());
                 break;
 
+            case MI_EDIT_TEST_RIG:
+                item.setTitle(getEditTestRigTitle());
+                boolean enabled = (XJApplication.shared().getActiveWindow() != null) &&
+                        (XJApplication.shared().getActiveWindow().getDocument() != null) &&
+                        XJApplication.shared().getActiveWindow().getDocument().getDocumentName() != null;
+                item.setEnabled(!isDebuggerRunning() && enabled);
+                break;
+
+            case MI_RUN:
             case MI_DEBUG:
             case MI_DEBUG_REMOTE:
                 item.setEnabled(!isDebuggerRunning());
@@ -749,6 +804,10 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
                 actionDebugger.runInterpreter();
                 break;
 
+            case MI_RUN:
+                actionDebugger.run();
+                break;
+
             case MI_DEBUG:
                 actionDebugger.debug();
                 break;
@@ -764,6 +823,10 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
             case MI_DEBUG_SHOW_INPUT_TOKENS:
                 actionDebugger.toggleInputTokens();
                 getEditor().refreshMainMenuBar();
+                break;
+
+            case MI_EDIT_TEST_RIG:
+                actionDebugger.showEditTestRig();
                 break;
         }
     }

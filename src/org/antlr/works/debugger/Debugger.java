@@ -83,6 +83,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     public static final int OPTION_NONE = 0;
     public static final int OPTION_AGAIN = 1;
     public static final int OPTION_BUILD = 2;
+    public static final int OPTION_RUN = 4;
 
     public static final float PERCENT_WIDTH_LEFT = 0.2f;
     public static final float PERCENT_WIDTH_MIDDLE = 0.5f;
@@ -498,6 +499,10 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         player.setInputBuffer(inputPanel.getInputBuffer());
 
         recorder.connect(address, port);
+    }
+
+    public void showEditTestRig() {
+        local.showEditTestRig();
     }
 
     public void connectionSuccess() {

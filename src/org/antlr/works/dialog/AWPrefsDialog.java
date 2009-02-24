@@ -35,9 +35,12 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import org.antlr.works.IDE;
+import org.antlr.works.debugger.local.DBLocal;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.HelpManager;
+import org.antlr.works.utils.TextUtils;
+import org.antlr.works.utils.Utils;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJPreferences;
 import org.antlr.xjlib.appkit.frame.XJPanel;
@@ -50,12 +53,15 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.File;
 
 public class AWPrefsDialog extends XJPanel {
 
     public static final String NOTIF_PREFS_APPLIED = "NOTIF_PREFS_APPLIED";
 
     protected ButtonGroup compilerRadioButtonGroup;
+    protected ButtonGroup testRigRadioButtonGroup;
     protected int lafIndex = 0;
 
     public AWPrefsDialog() {
@@ -70,6 +76,7 @@ public class AWPrefsDialog extends XJPanel {
         prepareDebuggerTab();
         prepareAdvancedTab();
         prepareUpdateTab();
+        prepareTestRigTab();
 
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -288,6 +295,85 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().bindToPreferences(downloadPathField, AWPrefs.PREF_DOWNLOAD_PATH, AWPrefs.DEFAULT_DOWNLOAD_PATH);
     }
 
+    public void prepareTestRigTab() {
+        testRigRadioButtonGroup = new ButtonGroup();
+        testRigRadioButtonGroup.add(testRigDefaultRadio);
+        testRigRadioButtonGroup.add(testRigTextRadio);
+
+        TextUtils.createTabs(testTextArea);
+        TextUtils.setDefaultTextPaneProperties(testTextArea);
+
+        testTextArea.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
+        testTextArea.setFocusable(true);
+        testTextArea.requestFocusInWindow();
+
+        testRigLanguageComboBox.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                prepareTestRigTabValues();
+            }
+        });
+
+        testRigDefaultRadio.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                if (testRigDefaultRadio.isSelected()) {
+                    testTextArea.setEnabled(false);
+                } else {
+                    testTextArea.setEnabled(true);
+                }
+            }
+        });
+
+        testRigTextRadio.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                if (testRigDefaultRadio.isSelected()) {
+                    testTextArea.setEnabled(false);
+                } else {
+                    testTextArea.setEnabled(true);
+                }
+            }
+        });
+
+        prepareTestRigTabValues();
+    }
+
+    private void prepareTestRigTabValues() {
+        String grammarLanguage = testRigLanguageComboBox.getSelectedItem().toString();
+        testTextArea.setText(AWPrefs.getTestRigTemplateTextByLanguage(grammarLanguage));
+        if ("".equals(testTextArea.getText())) {
+            try {
+                if ("JAVA".equalsIgnoreCase(grammarLanguage)) {
+                    testTextArea.setText(Utils.stringFromFile(IDE.getApplicationPath() + File.separatorChar + 
+                            DBLocal.parserGlueCodeTemplatePath + DBLocal.parserGlueCodeTemplateName + ".st"));
+                } else if ("PYTHON".equalsIgnoreCase(grammarLanguage)) {
+                    testTextArea.setText(Utils.stringFromFile(IDE.getApplicationPath() + File.separatorChar +
+                            DBLocal.parserGlueCodeTemplatePath + DBLocal.parserGlueCodeTemplateName + "_python.st"));
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (AWPrefs.TEST_RIG_MODE_DEFAULT.equals(AWPrefs.getTestRigTemplateModeByLanguage(grammarLanguage))) {
+            testRigDefaultRadio.setSelected(true);
+            testTextArea.setEnabled(false);
+        } else {
+            testRigTextRadio.setSelected(true);
+            testTextArea.setEnabled(true);
+        }
+    }
+
+    private void applyTestRigPrefs() {
+        String grammarLanguage = testRigLanguageComboBox.getSelectedItem().toString();
+        AWPrefs.setTestRigTemplateModeByLanguage(grammarLanguage, testRigDefaultRadio.isSelected() ?
+                AWPrefs.TEST_RIG_MODE_DEFAULT : AWPrefs.TEST_RIG_MODE_TEXT);
+        AWPrefs.setTestRigTemplateTextByLanguage(grammarLanguage, testTextArea.getText());
+    }
+
+    public void displayTestRigTab() {
+        tabbedPane1.setSelectedComponent(tabTestRig);
+    }
+
     @Override
     public void becomingVisibleForTheFirstTime() {
         lafIndex = lafCombo.getSelectedIndex();
@@ -330,6 +416,7 @@ public class AWPrefsDialog extends XJPanel {
                 changeLookAndFeel();
         }
         applyCommonPrefs();
+        applyTestRigPrefs();
         XJNotificationCenter.defaultCenter().postNotification(this, NOTIF_PREFS_APPLIED);
     }
 
@@ -467,6 +554,13 @@ public class AWPrefsDialog extends XJPanel {
         label10 = new JLabel();
         downloadPathField = new JTextField();
         browseUpdateDownloadPathButton = new JButton();
+        tabTestRig = new JPanel();
+        label17 = new JLabel();
+        testRigLanguageComboBox = new JComboBox();
+        testRigDefaultRadio = new JRadioButton();
+        testRigTextRadio = new JRadioButton();
+        scrollPane1 = new JScrollPane();
+        testTextArea = new JTextPane();
         buttonBar = new JPanel();
         applyButton = new JButton();
         CellConstraints cc = new CellConstraints();
@@ -1296,26 +1390,82 @@ public class AWPrefsDialog extends XJPanel {
         			}
         			tabbedPane1.addTab("Updates", tabUpdates);
 
-        		}
-        		contentPane.add(tabbedPane1, cc.xywh(1, 1, 2, 1));
-        	}
-        	dialogPane.add(contentPane, BorderLayout.CENTER);
+                    //======== tabTestRig ========
+                    {
+                        tabTestRig.setLayout(new FormLayout(
+                                new ColumnSpec[] {
+                                    new ColumnSpec(Sizes.dluX(10)),
+                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                    FormFactory.DEFAULT_COLSPEC,
+                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                    FormFactory.DEFAULT_COLSPEC,
+                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                    FormFactory.DEFAULT_COLSPEC,
+                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                    new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                                    FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+                                    new ColumnSpec(Sizes.dluX(10))
+                                },
+                                new RowSpec[] {
+                                    new RowSpec(Sizes.dluY(10)),
+                                    FormFactory.LINE_GAP_ROWSPEC,
+                                    FormFactory.DEFAULT_ROWSPEC,
+                                    FormFactory.UNRELATED_GAP_ROWSPEC,
+                                    FormFactory.DEFAULT_ROWSPEC,
+                                    FormFactory.LINE_GAP_ROWSPEC,
+                                    new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+                                    FormFactory.LINE_GAP_ROWSPEC,
+                                    new RowSpec(Sizes.dluY(10))
+                                }));
 
-        	//======== buttonBar ========
-        	{
-        		buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
-        		buttonBar.setLayout(new FormLayout(
-        			new ColumnSpec[] {
-        				FormFactory.GLUE_COLSPEC,
-        				FormFactory.BUTTON_COLSPEC
-        			},
-        			RowSpec.decodeSpecs("pref")));
+                        //---- label17 ----
+                        label17.setText("Test Rig for:");
+                        tabTestRig.add(label17, cc.xywh(3, 3, 3, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 
-        		//---- applyButton ----
-        		applyButton.setText("Apply");
-        		buttonBar.add(applyButton, cc.xy(2, 1));
-        	}
-        	dialogPane.add(buttonBar, BorderLayout.SOUTH);
+                        //---- testRigLanguageComboBox ----
+                        testRigLanguageComboBox.setModel(new DefaultComboBoxModel(new String[] {
+                            "Java",
+                            "Python"
+                        }));
+                        tabTestRig.add(testRigLanguageComboBox, cc.xy(7, 3));
+
+                        //---- testRigDefaultRadio ----
+                        testRigDefaultRadio.setText("Use default Test Rig Template");
+                        testRigDefaultRadio.setSelected(true);
+                        tabTestRig.add(testRigDefaultRadio, cc.xywh(5, 5, 5, 1));
+
+                        //---- testRigTextRadio ----
+                        testRigTextRadio.setText("Text:");
+                        tabTestRig.add(testRigTextRadio, cc.xywh(5, 7, 1, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
+
+                        //======== scrollPane1 ========
+                        {
+                            scrollPane1.setViewportView(testTextArea);
+                        }
+                        tabTestRig.add(scrollPane1, cc.xywh(7, 7, 3, 1));
+                    }
+                    tabbedPane1.addTab("Test Rig", tabTestRig);
+
+                }
+                contentPane.add(tabbedPane1, cc.xywh(1, 1, 2, 1));
+            }
+            dialogPane.add(contentPane, BorderLayout.CENTER);
+
+            //======== buttonBar ========
+            {
+                buttonBar.setBorder(Borders.BUTTON_BAR_GAP_BORDER);
+                buttonBar.setLayout(new FormLayout(
+                    new ColumnSpec[] {
+                        FormFactory.GLUE_COLSPEC,
+                        FormFactory.BUTTON_COLSPEC
+                    },
+                    RowSpec.decodeSpecs("pref")));
+
+                //---- applyButton ----
+                applyButton.setText("Apply");
+                buttonBar.add(applyButton, cc.xy(2, 1));
+            }
+            dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
         contentPane2.add(dialogPane, BorderLayout.CENTER);
         pack();
@@ -1443,6 +1593,13 @@ public class AWPrefsDialog extends XJPanel {
     private JLabel label10;
     private JTextField downloadPathField;
     private JButton browseUpdateDownloadPathButton;
+    private JPanel tabTestRig;
+    private JLabel label17;
+    private JComboBox testRigLanguageComboBox;
+    private JRadioButton testRigDefaultRadio;
+    private JRadioButton testRigTextRadio;
+    private JScrollPane scrollPane1;
+    private JTextPane testTextArea;
     private JPanel buttonBar;
     private JButton applyButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables

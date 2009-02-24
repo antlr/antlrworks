@@ -51,6 +51,10 @@ public class ActionDebuggerImpl extends ActionAbstract implements ActionDebugger
         }
     }
 
+    public void run() {
+        getContainer().getDebugger().launchLocalDebugger(Debugger.OPTION_RUN);
+    }
+
     public void debug() {
         getContainer().getDebugger().launchLocalDebugger(Debugger.OPTION_NONE);
     }
@@ -66,6 +70,10 @@ public class ActionDebuggerImpl extends ActionAbstract implements ActionDebugger
     public void toggleInputTokens() {
         getContainer().getDebugger().toggleInputTokensBox();
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
+    }
+
+    public void showEditTestRig() {
+        getContainer().getDebugger().showEditTestRig();
     }
 
     public boolean isInputTokenVisible() {
