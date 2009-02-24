@@ -39,7 +39,6 @@ import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.menu.*;
 import org.antlr.xjlib.appkit.app.XJApplication;
-import org.antlr.xjlib.appkit.frame.XJWindowInterface;
 
 import javax.swing.*;
 import java.awt.*;
@@ -247,22 +246,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
         menubar.addCustomMenu(runMenu);
     }
 
-    private void buildRunMenu() {
-//        int itemCount = runMenu.getItemCount();
-//        for (int i = itemCount-1; i >= 0 ; i--) {
-//            runMenu.removeItem(i);
-//        }
-//
-////        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.run"), KeyEvent.VK_R, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_RUN, this));
-//        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debug"), KeyEvent.VK_D, MI_DEBUG, this));
-//        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugAgain"), KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_DEBUG_AGAIN, this));
-//        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugRemote"), MI_DEBUG_REMOTE, this));
-//        runMenu.addSeparator();
-//        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showInputTokens"), MI_DEBUG_SHOW_INPUT_TOKENS, this));
-//        runMenu.addSeparator();
-//        runMenu.addItem(new XJMenuItem(getEditTestRigTitle(), MI_EDIT_TEST_RIG, this));
-    }
-
     private String getEditTestRigTitle() {
         String grammarName = "";
         String language = null;
@@ -281,7 +264,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
             menuItemName = "Edit Test Rig";
 
         if (language != null) {
-            menuItemName.concat(" for " + language);
+            menuItemName = menuItemName.concat(" for " + language);
         }
         return menuItemName;
     }

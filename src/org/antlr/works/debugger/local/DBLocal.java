@@ -67,7 +67,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     public static final String parserGlueCodeTemplatePath = "org/antlr/works/debugger/local/";
     public static final String parserGlueCodeTemplateName = "DBParserGlueCode";
     public static final String treeParserGlueCodeTemplateName = "DBTreeParserGlueCode";
-    public static final String testRigTemplateSuffix = "__testrigtemplate__";
+    public static final String testRigTemplateSuffix = "__testrig";
 
     public static final String ST_ATTR_IMPORT = "import";
     public static final String ST_ATTR_CLASSNAME = "class_name";
@@ -183,16 +183,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     public void showEditTestRig() {
         DialogTestTemplate dialog = new DialogTestTemplate(debugger, debugger.getContainer());
-//        dialog.set
-//        dialog.setInputText(rawInputText);
-        if(dialog.runModal() == XJDialog.BUTTON_OK) {
-//            rawInputText = dialog.getRawInputText();
-//            inputText = dialog.getInputText();
-//            inputFile = dialog.getInputFile();
-//            inputMode = dialog.getInputMode();
-//            startRule = dialog.getRule();
-//            showProgress();
-        }
+        dialog.runModal();
     }
 
     public void prepareAndLaunch(int options) {

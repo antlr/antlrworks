@@ -96,7 +96,6 @@ public class DialogTestTemplate extends XJDialog {
         testTextArea.setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
         testTextArea.setFocusable(true);
         testTextArea.requestFocusInWindow();
-//        testTextArea.setText(AWPrefs.getTestRigTemplateText(grammarIdentifier));
         testTextArea.setText(getTestRigTemplateFromFile(testRigFullPath));
 
         if ("".equals(testTextArea.getText())) {
@@ -156,7 +155,6 @@ public class DialogTestTemplate extends XJDialog {
             XJAlert.display(getJavaComponent(), "Error", "The test template text is too large: "+text.length()+" bytes but preferences can only hold "+Preferences.MAX_VALUE_LENGTH+" bytes. It will be truncated.");
             text = text.substring(0, Preferences.MAX_VALUE_LENGTH-1);
         }
-//        AWPrefs.setTestRigTemplateText(grammarIdentifier, text);
         setTestRigTemplateToFile(testRigFullPath, text);
         AWPrefs.setTestRigTemplateMode(grammarIdentifier, getTestRigMode());
         AWPrefs.setTestRigTemplateClass(grammarIdentifier, getTestRigClass());
