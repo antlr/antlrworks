@@ -3,15 +3,17 @@
 http://www.antlr.org:8888/browse/AW
 
 ***** Release check-list
+- make sure all the bugs are resolved in http://www.antlr.org:8888/browse/AW
 - make sure ANTLRWorks is compiled against the correct version of ANTLR and ST sources
 - update the ANTLR and ST jar files in main/lib
 - change version number (and date when it applies) into these files:
     - main/build.properties
-    - main/ant-for-source/build.properties
     - main/src/org/antlr/works/properties/strings.properties
     - main/plugin/src/org/antlr/works/plugin/properties/strings.properties
     - main/plugin/src/org/antlr/works/plugin/intellij/META-INF/plugin.xml
-- update history file in main/History
+- update history in:
+    - main/History
+    - main/plugin/src/org/antlr/works/plugin/intellij/META-INF/plugin.xml
 - update online files (ask Terence for the path):
     - doc/readme.txt
     - doc/release.txt
@@ -26,15 +28,13 @@ http://www.antlr.org:8888/browse/AW
     - jar file is running fine
     - OS X application is launching fine
 - upload files online:
-    - antlrworks-1.2.zip
-    - antlrworks-1.2-src.zip
-    - antlrworks-1.2.jar
+    - antlrworks-1.x.zip
+    - antlrworks-1.x-src.zip
+    - antlrworks-1.x.jar
 - publish the plugin:
-    - make the plugin using IntelliJ feature Build > Prepare Plugin...
+    - the plugin is located in dist
     - update the plugin on http://plugins.intellij.net/
-- update JIRA:
-    - close fixed issues
-    - perform the release
+- branch the release in p4 (main -> release/1.x)    
 
 ***** Tools
 http://pmd.sourceforge.net/
