@@ -53,7 +53,7 @@ public class XJDocumentFactory {
     }
 
     public boolean handlesPath(String path) {
-        return path.endsWith("."+ext);
+        return path != null && path.endsWith("."+ext);
     }
 
     public List<String> getExtensions() {
