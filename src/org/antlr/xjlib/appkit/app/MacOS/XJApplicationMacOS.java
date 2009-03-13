@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.xjlib.appkit.app.MacOS;
 
-//import com.apple.eawt.Application;
-//import com.apple.eawt.ApplicationEvent;
+import com.apple.eawt.Application;
+import com.apple.eawt.ApplicationEvent;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
@@ -52,30 +52,30 @@ public class XJApplicationMacOS extends XJApplication implements XJMenuBarDelega
 
         System.setProperty("apple.laf.useScreenMenuBar","true");
 
-//        Application.getApplication().addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
-//            public void handleAbout(ApplicationEvent e) {
-//                displayAbout();
-//                e.setHandled(true);
-//            }
-//
-//            public void handleOpenApplication(ApplicationEvent e) {
-//            }
-//
-//            public void handleOpenFile(ApplicationEvent e) {
-//                openDocument(e.getFilename());
-//            }
-//
-//            public void handlePreferences(ApplicationEvent e) {
-//                performPreferences();
-//            }
-//
-//            public void handlePrintFile(ApplicationEvent e) {
-//            }
-//
-//            public void handleQuit(ApplicationEvent e) {
-//                performQuit();
-//            }
-//        });
+        Application.getApplication().addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
+            public void handleAbout(ApplicationEvent e) {
+                displayAbout();
+                e.setHandled(true);
+            }
+
+            public void handleOpenApplication(ApplicationEvent e) {
+            }
+
+            public void handleOpenFile(ApplicationEvent e) {
+                openDocument(e.getFilename());
+            }
+
+            public void handlePreferences(ApplicationEvent e) {
+                performPreferences();
+            }
+
+            public void handlePrintFile(ApplicationEvent e) {
+            }
+
+            public void handleQuit(ApplicationEvent e) {
+                performQuit();
+            }
+        }); 
     }
 
     @Override
@@ -87,12 +87,12 @@ public class XJApplicationMacOS extends XJApplication implements XJMenuBarDelega
     }
 
     protected void addPreferencesMenuItem() {
-//        Application.getApplication().addPreferencesMenuItem();
-//        Application.getApplication().setEnabledPreferencesMenu(true);
+        Application.getApplication().addPreferencesMenuItem();
+        Application.getApplication().setEnabledPreferencesMenu(true);
     }
 
     protected void removePreferencesMenuItem() {
-//        Application.getApplication().removePreferencesMenuItem();
+        Application.getApplication().removePreferencesMenuItem();
     }
 
     private void createFramelessMenuBar() {
