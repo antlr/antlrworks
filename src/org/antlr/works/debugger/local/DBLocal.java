@@ -39,6 +39,7 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.DebuggerEngine;
+import org.antlr.works.debugger.tivo.DBRecorder;
 import org.antlr.works.dialog.DebuggerInputDialog;
 import org.antlr.works.dialog.DialogTestTemplate;
 import org.antlr.works.generate.CodeGenerate;
@@ -293,10 +294,33 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                if(!cancelled())
-                    debugger.debuggerLocalDidRun(optionBuild());
+                boolean didRun = false;
+                if(!cancelled()) {
+                    didRun = debugger.debuggerLocalDidRun(optionBuild());
+                    if (optionRun() && didRun) {
+                        runThroughRecorder();
+                    }
+                }
             }
         });
+    }
+
+    private void runThroughRecorder() {
+        long t = System.currentTimeMillis();
+        long timeout = AWPrefs.getDebugLaunchTimeout()*1000;
+
+        // wait for debugger to be alive, but make sure to have a timeout.
+        while (!debugger.getRecorder().isAlive()) {
+            if (System.currentTimeMillis()-t > timeout) return;
+        }
+
+        debugger.getRecorder().goToEnd();
+
+        // wait for the recorder to go to the end. Make sure it wasn't stopped
+        while (!debugger.getRecorder().isAtEnd() && debugger.getRecorder().getStatus() != DBRecorder.STATUS_STOPPED);
+
+        debugger.getRecorder().requestStop();
+        debugger.selectConsoleTab();
     }
 
     protected boolean prepare() {
@@ -559,7 +583,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         try {
             return Utils.stringFromFile(testRigFullPath);
         } catch (IOException ioe) {
-            this.debugger.getConsole().println(ioe);
+            // do nothing. no template file found.
         }
         return "";
     }

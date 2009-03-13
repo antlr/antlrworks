@@ -470,12 +470,12 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         }
     }
 
-    public void debuggerLocalDidRun(boolean build) {
+    public boolean debuggerLocalDidRun(boolean build) {
         if(build)
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_LOCAL_DEBUGGER_BUILD);
         else
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_LOCAL_DEBUGGER);
-        debuggerLaunch(DEFAULT_LOCAL_ADDRESS, AWPrefs.getDebugDefaultLocalPort(), false);
+        return debuggerLaunch(DEFAULT_LOCAL_ADDRESS, AWPrefs.getDebugDefaultLocalPort(), false);
     }
 
     public void launchRemoteDebugger() {
@@ -486,11 +486,11 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         }
     }
 
-    public void debuggerLaunch(String address, int port, boolean remote) {
+    public boolean debuggerLaunch(String address, int port, boolean remote) {
         if(remote && !debuggerLaunchGrammar()) {
             XJAlert.display(getWindowContainer(), "Error",
                     "Cannot launch the debugger.\nException while parsing grammar.");
-            return;
+            return false;
         }
 
         queryGrammarBreakpoints();
@@ -499,6 +499,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
         player.setInputBuffer(inputPanel.getInputBuffer());
 
         recorder.connect(address, port);
+        return true;
     }
 
     public void showEditTestRig() {

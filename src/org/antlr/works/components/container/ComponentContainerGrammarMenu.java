@@ -39,6 +39,7 @@ import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.menu.*;
 import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.frame.XJWindowInterface;
 
 import javax.swing.*;
 import java.awt.*;
@@ -231,19 +232,19 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     }
 
     private void createRunMenu(XJMainMenuBar menubar) {
-        XJMenu runMenu = new XJMenu();
-        runMenu.setTitle(resourceBundle.getString("menu.title.run"));
+        XJMenu menu = new XJMenu();
+        menu.setTitle(resourceBundle.getString("menu.title.run"));
 
-//        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.run"), KeyEvent.VK_R, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_RUN, this));
-        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debug"), KeyEvent.VK_D, MI_DEBUG, this));
-        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugAgain"), KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_DEBUG_AGAIN, this));
-        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugRemote"), MI_DEBUG_REMOTE, this));
-        runMenu.addSeparator();
-        runMenu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showInputTokens"), MI_DEBUG_SHOW_INPUT_TOKENS, this));
-        runMenu.addSeparator();
-        runMenu.addItem(new XJMenuItem(getEditTestRigTitle(), MI_EDIT_TEST_RIG, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.run"), KeyEvent.VK_R, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_RUN, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debug"), KeyEvent.VK_D, MI_DEBUG, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugAgain"), KeyEvent.VK_D, XJMenuItem.getKeyModifier() | Event.SHIFT_MASK, MI_DEBUG_AGAIN, this));
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.debugRemote"), MI_DEBUG_REMOTE, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showInputTokens"), MI_DEBUG_SHOW_INPUT_TOKENS, this));
+        menu.addSeparator();
+        menu.addItem(new XJMenuItem(getEditTestRigTitle(), MI_EDIT_TEST_RIG, this));
 
-        menubar.addCustomMenu(runMenu);
+        menubar.addCustomMenu(menu);
     }
 
     private String getEditTestRigTitle() {

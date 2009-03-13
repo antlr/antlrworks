@@ -425,7 +425,13 @@ public class XJApplication extends XJObject implements XJApplicationInterface, X
     }
 
     public XJDocument newDocument() {
-        return newDocument(true, null);
+        XJDocument document = newDocument(true, null);
+
+        if (document != null) {
+            delegate.displayNewDocumentWizard(document);
+        }
+
+        return document;
     }
 
     public boolean openDocuments(List<String> files) {

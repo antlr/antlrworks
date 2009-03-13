@@ -241,13 +241,11 @@ public class DialogTestTemplate extends XJDialog {
             {
                 contentPanel.setLayout(new FormLayout(
                     new ColumnSpec[] {
-                        new ColumnSpec(ColumnSpec.RIGHT, Sizes.dluX(30), FormSpec.NO_GROW),
+                        new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
                         FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
                         FormFactory.DEFAULT_COLSPEC,
                         FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-                        FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                        FormFactory.DEFAULT_COLSPEC
+                        new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
                     },
                     new RowSpec[] {
                         FormFactory.DEFAULT_ROWSPEC,
@@ -256,7 +254,7 @@ public class DialogTestTemplate extends XJDialog {
                         FormFactory.LINE_GAP_ROWSPEC,
                         new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
                         FormFactory.LINE_GAP_ROWSPEC,
-                        FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC
                     }));
 
                 //---- textTestRadio ----
@@ -265,14 +263,14 @@ public class DialogTestTemplate extends XJDialog {
 
                 //======== scrollPane1 ========
                 {
-                    scrollPane1.setPreferredSize(new Dimension(500, 250));
+                    scrollPane1.setPreferredSize(new Dimension(300, 200));
                     scrollPane1.setViewportView(testTextArea);
                 }
                 contentPanel.add(scrollPane1, cc.xywh(3, 1, 3, 5));
 
                 //---- classTestRadio ----
                 classTestRadio.setText("Class:");
-                contentPanel.add(classTestRadio, new CellConstraints(1, 7, 1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT, new Insets( 0, 0, 0, 5)));
+                contentPanel.add(classTestRadio, cc.xy(1, 7));
 
                 //---- testClassField ----
                 testClassField.addFocusListener(new FocusAdapter() {
@@ -292,7 +290,7 @@ public class DialogTestTemplate extends XJDialog {
                         }
                     }
                 });
-                contentPanel.add(testClassField, cc.xywh(3, 7, 5, 1));
+                contentPanel.add(testClassField, cc.xywh(3, 7, 3, 1));
             }
             dialogPane.add(contentPanel, BorderLayout.CENTER);
 
@@ -318,8 +316,8 @@ public class DialogTestTemplate extends XJDialog {
             }
             dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }
-        contentPane.add(dialogPane, BorderLayout.WEST);
-        pack();
+        contentPane.add(dialogPane, BorderLayout.CENTER);
+        setSize(625, 395);
 
         //---- buttonGroup1 ----
         ButtonGroup buttonGroup1 = new ButtonGroup();

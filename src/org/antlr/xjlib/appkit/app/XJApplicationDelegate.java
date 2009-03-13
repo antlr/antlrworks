@@ -32,7 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.xjlib.appkit.app;
 
 import org.antlr.xjlib.appkit.frame.XJPanel;
+import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.document.XJDocument;
 
 import java.util.List;
 
@@ -50,6 +52,7 @@ public abstract class XJApplicationDelegate {
     public Class appPreferencesClass() { return null; }
     public boolean supportsPersistence() { return true; }
     public boolean useDesktopMode() { return false; }
+    public boolean displayNewDocumentWizard(XJDocument document) { return false; }
 
     public void customizeFileMenu(XJMenu menu) { }
 

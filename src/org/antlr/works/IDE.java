@@ -36,9 +36,11 @@ import org.antlr.tool.ErrorManager;
 import org.antlr.works.components.ComponentWindowImpl;
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.components.document.ComponentDocumentFactory;
+import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
+import org.antlr.works.dialog.NewWizardDialog;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.stats.StatisticsAW;
@@ -53,6 +55,7 @@ import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.document.XJDocumentFactory;
 import org.antlr.xjlib.appkit.frame.XJPanel;
 import org.antlr.xjlib.appkit.frame.XJWindow;
+import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
@@ -62,6 +65,7 @@ import org.antlr.xjlib.appkit.utils.BrowserLauncher;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.appkit.utils.XJLocalizable;
 import org.antlr.xjlib.foundation.XJSystem;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -426,6 +430,19 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
     public String appVersionLong() {
         return Localizable.getLocalizedString(Localizable.APP_VERSION_LONG);
+    }
+
+    public boolean displayNewDocumentWizard(XJDocument document) {
+        // only display for grammar (*.g) files
+        if (document != null && document instanceof ComponentDocument) {
+            NewWizardDialog dialog = new NewWizardDialog(document.getWindow().getJavaContainer());
+
+            if(dialog != null && dialog.runModal() == XJDialog.BUTTON_OK) {
+                ((ComponentDocument)document).getEditor().loadText(dialog.getGeneratedText());
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean restoreAllOpenedDocuments() {
