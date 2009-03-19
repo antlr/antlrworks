@@ -65,7 +65,8 @@ public class NewWizardDialog extends XJDialog {
     public static final String ST_ATTR_LEX_TAB = "lex_tab";
     public static final String ST_ATTR_LEX_CARRIAGE_RETURN = "lex_cr";
     public static final String ST_ATTR_LEX_LINEFEED = "lex_lf";
-    public static final String ST_ATTR_LEX_STRING = "lex_string";
+    public static final String ST_ATTR_LEX_STRING_SINGLE = "lex_string_single";
+    public static final String ST_ATTR_LEX_STRING_DOUBLE = "lex_string_double";
     public static final String ST_ATTR_LEX_CHAR = "lex_char";
     public static final String ST_ATTR_LEX_HAS_STRING_OR_CHAR = "has_string_char_literal";
 
@@ -110,7 +111,8 @@ public class NewWizardDialog extends XJDialog {
             glueCode.setAttribute(ST_ATTR_LEX_COMMENT, cbComments.isSelected());
             glueCode.setAttribute(ST_ATTR_LEX_COMMENT_SINGLE, cbComments.isSelected() && cbSingleLine.isSelected());
             glueCode.setAttribute(ST_ATTR_LEX_COMMENT_MULTI, cbComments.isSelected() && cbMultiLine.isSelected());
-            glueCode.setAttribute(ST_ATTR_LEX_STRING, cbString.isSelected());
+            glueCode.setAttribute(ST_ATTR_LEX_STRING_SINGLE, cbString.isSelected() && singleQuoteRadio.isSelected());
+            glueCode.setAttribute(ST_ATTR_LEX_STRING_DOUBLE, cbString.isSelected() && doubleQuoteRadio.isSelected());
             glueCode.setAttribute(ST_ATTR_LEX_CHAR, cbCharacters.isSelected());
             glueCode.setAttribute(ST_ATTR_LEX_WHITESPACE, cbWhiteSpace.isSelected());
             glueCode.setAttribute(ST_ATTR_LEX_TAB, cbWhiteSpace.isSelected() && cbTabChar.isSelected());
@@ -122,7 +124,7 @@ public class NewWizardDialog extends XJDialog {
         return glueCode.toString();
     }
 
-    public String getGrammarType() {
+    private String getGrammarType() {
         switch (grammarTypeComboBox.getSelectedIndex()) {
             case GRAMMAR_TYPE_PARSER:
                 return "parser grammar";
@@ -157,6 +159,9 @@ public class NewWizardDialog extends XJDialog {
         cbMultiLine = new JCheckBox();
         lexRightPanel = new JPanel();
         cbString = new JCheckBox();
+        stringPanel = new JPanel();
+        singleQuoteRadio = new JRadioButton();
+        doubleQuoteRadio = new JRadioButton();
         cbCharacters = new JCheckBox();
         cbWhiteSpace = new JCheckBox();
         wsPanel = new JPanel();
@@ -391,6 +396,8 @@ public class NewWizardDialog extends XJDialog {
                                         FormFactory.LINE_GAP_ROWSPEC,
                                         FormFactory.DEFAULT_ROWSPEC,
                                         FormFactory.LINE_GAP_ROWSPEC,
+                                        FormFactory.DEFAULT_ROWSPEC,
+                                        FormFactory.LINE_GAP_ROWSPEC,
                                         FormFactory.DEFAULT_ROWSPEC
                                 }
                         ));
@@ -398,31 +405,56 @@ public class NewWizardDialog extends XJDialog {
                         //---- cbString ----
                         cbString.setText("String");
                         lexRightPanel.add(cbString, cc.xywh(1, 1, 2, 1));
-
-                        //---- cbCharacters ----
-                        cbCharacters.setText("Character");
-                        lexRightPanel.add(cbCharacters, cc.xywh(1, 3, 2, 1));
-
-                        //---- cbWhiteSpace ----
-                        cbWhiteSpace.setText("White Space");
-                        lexRightPanel.add(cbWhiteSpace, cc.xywh(1, 5, 2, 1));
-                        cbWhiteSpace.addActionListener(new ActionListener(){
+                        cbString.addActionListener(new ActionListener(){
                             public void actionPerformed(ActionEvent event) {
-                                if (cbWhiteSpace.isSelected()) {
-                                    cbTabChar.setEnabled(true);
-                                    cbNewlineChar.setEnabled(true);
-                                    cbCarriageReturnChar.setEnabled(true);
+                                if (cbString.isSelected()) {
+                                    singleQuoteRadio.setEnabled(true);
+                                    doubleQuoteRadio.setEnabled(true);
                                 } else {
-                                    cbTabChar.setEnabled(false);
-                                    cbNewlineChar.setEnabled(false);
-                                    cbCarriageReturnChar.setEnabled(false);
+                                    singleQuoteRadio.setEnabled(false);
+                                    doubleQuoteRadio.setEnabled(false);
                                 }
                             }
                         });
 
+                        //======== stringPanel ========
+                        {
+                            stringPanel.setBorder(new EtchedBorder());
+                            stringPanel.setLayout(new FormLayout(
+                                    new ColumnSpec[] {
+                                            FormFactory.DEFAULT_COLSPEC
+                                    },
+                                    new RowSpec[] {
+                                            FormFactory.DEFAULT_ROWSPEC,
+                                            FormFactory.LINE_GAP_ROWSPEC,
+                                            FormFactory.DEFAULT_ROWSPEC
+                                    }
+                            ));
+
+                            //---- singleQuoteRadio ----
+                            singleQuoteRadio.setText("Single quotes ( 'sample string' )");
+                            singleQuoteRadio.setEnabled(false);
+                            stringPanel.add(singleQuoteRadio, cc.xy(1, 1));
+
+                            //---- doubleQuoteRadio ----
+                            doubleQuoteRadio.setText("Double quotes ( \"sample string\" )");
+                            doubleQuoteRadio.setEnabled(false);
+                            doubleQuoteRadio.setSelected(true);
+                            stringPanel.add(doubleQuoteRadio, cc.xy(1, 3));
+                        }
+                        lexRightPanel.add(stringPanel, cc.xy(2, 3));
+
+                        //---- cbCharacters ----
+                        cbCharacters.setText("Character");
+                        lexRightPanel.add(cbCharacters, cc.xywh(1, 5, 2, 1));
+
+                        //---- cbWhiteSpace ----
+                        cbWhiteSpace.setText("White Space");
+                        lexRightPanel.add(cbWhiteSpace, cc.xywh(1, 7, 3, 1));
+
                         //======== wsPanel ========
                         {
-                            wsPanel.setBorder(new TitledBorder(null, null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION));
+                            wsPanel.setBorder(new EtchedBorder());
                             wsPanel.setLayout(new FormLayout(
                                     new ColumnSpec[] {
                                             FormFactory.DEFAULT_COLSPEC
@@ -454,7 +486,7 @@ public class NewWizardDialog extends XJDialog {
                             cbCarriageReturnChar.setSelected(true);
                             wsPanel.add(cbCarriageReturnChar, cc.xy(1, 5));
                         }
-                        lexRightPanel.add(wsPanel, cc.xy(2, 7));
+                        lexRightPanel.add(wsPanel, cc.xy(2, 9));
                     }
                     lexicalItemPanel.add(lexRightPanel, cc.xy(3, 1));
                 }
@@ -486,6 +518,11 @@ public class NewWizardDialog extends XJDialog {
         }
         contentPane.add(dialogPane, BorderLayout.CENTER);
         pack();
+
+        //---- buttonGroup1 ----
+        ButtonGroup buttonGroup1 = new ButtonGroup();
+        buttonGroup1.add(singleQuoteRadio);
+        buttonGroup1.add(doubleQuoteRadio);
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
@@ -508,6 +545,9 @@ public class NewWizardDialog extends XJDialog {
     private JCheckBox cbMultiLine;
     private JPanel lexRightPanel;
     private JCheckBox cbString;
+    private JPanel stringPanel;
+    private JRadioButton singleQuoteRadio;
+    private JRadioButton doubleQuoteRadio;
     private JCheckBox cbCharacters;
     private JCheckBox cbWhiteSpace;
     private JPanel wsPanel;

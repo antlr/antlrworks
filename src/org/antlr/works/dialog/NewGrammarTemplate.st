@@ -57,7 +57,14 @@ $endif$
 
 $endif$
 
-$if(lex_string)$
+$if(lex_string_single)$
+STRING
+    :  '\'' ( ESC_SEQ | ~('\\\\'|'\'') )* '\''
+    ;
+
+$endif$
+
+$if(lex_string_double)$
 STRING
     :  '"' ( ESC_SEQ | ~('\\\\'|'"') )* '"'
     ;
