@@ -502,6 +502,11 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
     private boolean matchEndOfRule(ElementToken tokenName, int oldRefsSize, int oldBlocksSize, int oldActionsSize) {
         if(!matchSEMI(0)) return false;
 
+        // Match any comments between the end of the rule (;) and the catch
+        while(matchComplexComment(0) || matchSingleComment(0)) {
+            // match all of them...
+        }
+
         // End of the rule.
         matchRuleExceptionGroup();
 

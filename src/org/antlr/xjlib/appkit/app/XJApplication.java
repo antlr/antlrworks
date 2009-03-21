@@ -333,6 +333,8 @@ public class XJApplication extends XJObject implements XJApplicationInterface, X
     }
 
     public static boolean handlesDocument(XJDocument doc) {
+        if(doc == null) return false;
+        
         for(XJDocumentFactory factory : documentFactories) {
             if(factory.handlesPath(doc.getDocumentPath())) return true;
         }
