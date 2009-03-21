@@ -65,7 +65,7 @@ public class DialogAbout extends XJPanel {
         if(IDE.isPlugin()) {
             tableModel.addInfo("ANTLRWorks Plugin", IDE.getPluginVersionShort());
         }
-        tableModel.addInfo("ANTLR", Tool.VERSION);
+        tableModel.addInfo("ANTLR", new Tool().VERSION);
         tableModel.addInfo("StringTemplate", StringTemplate.VERSION);
         tableModel.addInfo("Java", System.getProperty("java.version")+" ("+System.getProperty("java.vendor")+")");
         tableModel.fireTableDataChanged();

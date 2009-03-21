@@ -60,7 +60,7 @@ public class HelpManager implements XJScheduledTimerDelegate {
     public static void sendFeedback(Container parent) {
         StringBuilder url = new StringBuilder(Localizable.getLocalizedString(Localizable.FEEDBACK_URL));
         url.append("?ANTLRVersion=");
-        url.append(XJUtils.encodeToURL(Tool.VERSION));
+        url.append(XJUtils.encodeToURL(new Tool().VERSION));
         url.append("&StringTemplateVersion=");
         url.append(XJUtils.encodeToURL(StringTemplate.VERSION));
         url.append("&ANTLRWorksVersion=");
