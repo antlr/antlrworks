@@ -37,17 +37,11 @@ import java.util.Map;
 
 public class XJIconManager {
 
-    private String path = "org/antlr/xjlib/appkit/icons/";
-
     private static final XJIconManager shared = new XJIconManager();
     private static final Map<String,ImageIcon> cache = new HashMap<String, ImageIcon>();
 
     public static XJIconManager shared() {
         return shared;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
     }
 
     public ImageIcon createImageIcon(String path) {
@@ -59,10 +53,6 @@ public class XJIconManager {
                 cache.put(path, image);
         }
         return image;
-    }
-
-    public ImageIcon getIconClose() {
-        return createImageIcon(path+"close.png");
     }
 
 

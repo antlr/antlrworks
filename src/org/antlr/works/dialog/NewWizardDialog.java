@@ -31,19 +31,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.dialog;
 
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.*;
-import javax.swing.border.*;
-import com.jgoodies.forms.factories.*;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.StringTemplateGroup;
+import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.foundation.XJSystem;
-import org.antlr.stringtemplate.StringTemplateGroup;
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.language.DefaultTemplateLexer;
+
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class NewWizardDialog extends XJDialog {
 
@@ -51,7 +54,7 @@ public class NewWizardDialog extends XJDialog {
     public static final int GRAMMAR_TYPE_LEXER = 1;
     public static final int GRAMMAR_TYPE_TREE_GRAMMAR = 2;
     public static final int GRAMMAR_TYPE_COMBINED_GRAMMAR = 3;
-    public static final String ST_TEMPLATE_PATHNAME = "org/antlr/works/dialog/NewGrammarTemplate";
+    public static final String ST_TEMPLATE_PATHNAME = "templates/NewGrammarTemplate";
 
     public static final String ST_ATTR_GRAMMAR_NAME = "grammar_name";
     public static final String ST_ATTR_GRAMMAR_TYPE = "grammar_type";

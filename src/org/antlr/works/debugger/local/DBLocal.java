@@ -65,7 +65,7 @@ import java.util.Set;
 public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatcherDelegate {
 
     public static final String remoteParserClassName = "__Test__";
-    public static final String parserGlueCodeTemplatePath = "org/antlr/works/debugger/local/";
+    public static final String parserGlueCodeTemplatePath = "templates/";
     public static final String parserGlueCodeTemplateName = "DBParserGlueCode";
     public static final String treeParserGlueCodeTemplateName = "DBTreeParserGlueCode";
     public static final String testRigTemplateSuffix = "__testrig";

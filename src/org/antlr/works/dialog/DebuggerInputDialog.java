@@ -114,7 +114,8 @@ public class DebuggerInputDialog extends XJDialog {
     public void dialogWillCloseOK() {
         String text = getRawInputText();
         if(text.length() > Preferences.MAX_VALUE_LENGTH) {
-            XJAlert.display(getJavaComponent(), "Error", "The input text is too large: "+text.length()+" bytes but preferences can only hold "+Preferences.MAX_VALUE_LENGTH+" bytes. It will be truncated.");
+            XJAlert.display(getJavaComponent(), "Error", "The input text is too large to be stored in the preferences." +
+                    " The text is "+text.length()+" bytes but the preferences can only hold "+Preferences.MAX_VALUE_LENGTH+" bytes. It will be truncated.");
             text = text.substring(0, Preferences.MAX_VALUE_LENGTH-1);
         }
         debugger.setStartRule(getRule());

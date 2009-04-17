@@ -37,7 +37,7 @@ import javax.swing.*;
 
 public class IconManager {
 
-    private static final String path = "org/antlr/works/icons/";
+    private static final String path = "icons/";
 
     private static IconManager shared = new IconManager();
 

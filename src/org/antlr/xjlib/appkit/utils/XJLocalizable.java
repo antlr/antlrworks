@@ -40,7 +40,7 @@ import java.util.ResourceBundle;
 public class XJLocalizable {
 
     public static String getXJString(String key) {
-        return ResourceBundle.getBundle("org/antlr/xjlib/properties/strings").getString(key);
+        return ResourceBundle.getBundle("properties/xjlib").getString(key);
     }
 
     public static String getStringFromPath(String path, String key) {

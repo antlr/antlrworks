@@ -306,15 +306,7 @@
         -->
         <resources>
             <resource>
-                <directory>src</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                    <include>**/*.st</include>
-                    <include>**/*.png</include>
-                </includes>
-                <excludes>
-                    <exclude>**/\%*.*</exclude>
-                </excludes>
+                <directory>resources</directory>
             </resource>
         </resources>
 

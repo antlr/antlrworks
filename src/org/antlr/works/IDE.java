@@ -35,8 +35,8 @@ import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
 import org.antlr.works.components.ComponentWindowImpl;
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
-import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.document.ComponentDocument;
+import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
@@ -53,9 +53,9 @@ import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.document.XJDocumentFactory;
+import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.frame.XJPanel;
 import org.antlr.xjlib.appkit.frame.XJWindow;
-import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
@@ -65,7 +65,6 @@ import org.antlr.xjlib.appkit.utils.BrowserLauncher;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.appkit.utils.XJLocalizable;
 import org.antlr.xjlib.foundation.XJSystem;
-import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,7 +79,7 @@ import java.util.ResourceBundle;
 
 public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
-    public static final String PROPERTIES_PATH = "org/antlr/works/properties/";
+    public static final String PROPERTIES_PATH = "properties/";
 
     public static SplashScreen sc;
 
@@ -470,7 +469,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     /** Localized resource bundle */
-    protected static ResourceBundle resourceMenusBundle = ResourceBundle.getBundle("org.antlr.works.properties.menus");
+    protected static ResourceBundle resourceMenusBundle = ResourceBundle.getBundle("properties.menus");
 
     public static ResourceBundle getMenusResourceBundle() {
         return resourceMenusBundle;
