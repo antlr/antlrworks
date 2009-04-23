@@ -62,7 +62,7 @@
         <mkdir dir="${dist.dir}"/>
 
         <jar jarfile="${jar.file}">
-            <fileset dir="${aw.source}" includes="**/*.stg, **/*.st, **/*.txt, **/*.properties, **/*.png"/>
+            <fileset dir="${aw.resources}"/>
             <fileset dir="${build.dir}" includes="**/*.class"/>
 
             <zipfileset src="${aw.lib}/${antlr2.jar}" excludes="**/*.txt"/>
