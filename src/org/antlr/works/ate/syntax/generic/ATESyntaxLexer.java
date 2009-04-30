@@ -187,7 +187,7 @@ public class ATESyntaxLexer {
         int sp = position;
         while(nextCharacter()) {
             if(matchNewLine()) {
-                return createNewToken(TOKEN_SINGLE_COMMENT, sp);
+                return createNewToken(TOKEN_SINGLE_COMMENT, sp, position);
             }
         }
         return createNewToken(TOKEN_SINGLE_COMMENT, sp, position);
