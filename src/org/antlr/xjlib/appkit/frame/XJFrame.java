@@ -258,8 +258,9 @@ public class XJFrame extends XJControl implements XJFrameInterface, XJMenuBarCus
         if(mainMenuBar == null)
             return;
 
-        XJMainMenuBar.refreshAllMenuBars();
-        mainMenuBar.refreshState();
+  //      XJMainMenuBar.refreshAllMenuBars();
+        mainMenuBar.refresh();
+//        mainMenuBar.refreshState();
     }
 
     private String title;

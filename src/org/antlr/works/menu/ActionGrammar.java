@@ -177,7 +177,7 @@ public class ActionGrammar extends ActionAbstract implements CheckGrammarDelegat
         getContainer().saveAll();
 
         getSelectedEditor().console.makeCurrent();
-        getSelectedEditor().console.println("Checking Grammar...");
+        getSelectedEditor().console.println("Checking Grammar "+getSelectedEditor().getGrammarFileName()+"...");
 
         checkGrammar = new CheckGrammar(getSelectedEditor(), this);
         checkGrammar.check();

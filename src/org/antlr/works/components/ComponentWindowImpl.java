@@ -97,8 +97,10 @@ public class ComponentWindowImpl extends XJWindow implements ComponentWindow {
 
     @Override
     public void windowActivated() {
-        super.windowActivated();
+        // first activate the container so the current console is set
         componentContainer.windowActivated();
+        // before activating the window itself
+        super.windowActivated();
     }
 
     @Override

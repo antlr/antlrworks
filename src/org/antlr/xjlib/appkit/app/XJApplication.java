@@ -318,10 +318,6 @@ public class XJApplication extends XJObject implements XJApplicationInterface, X
     protected void removePreferencesMenuItem() {
     }
 
-    public void refreshMainMenuBar() {
-        XJMainMenuBar.refreshAllMenuBars();
-    }
-
     // *** XJDocument
 
     public static void addDocumentFactory(Class documentClass, Class windowClass, Class dataClass, String ext, String description) {
@@ -565,7 +561,7 @@ public class XJApplication extends XJObject implements XJApplicationInterface, X
 
     public void removeWindow(XJWindow window) {
         windows.remove(window);
-        refreshMainMenuBar();
+        //refreshMainMenuBar();
         if(getNumberOfNonAuxiliaryWindows() == 0 && !startingUp) {
             if((!XJSystem.isMacOS() && !useDesktopMode()) || shouldQuitAfterLastWindowClosed()) {
                 // Invoke the application quit method later in time to allow

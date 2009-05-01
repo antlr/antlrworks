@@ -6,7 +6,6 @@ import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
-import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
@@ -77,8 +76,13 @@ public abstract class ComponentEditor implements XJNotificationObserver {
                 pcl = new PropertyChangeListener() {
                     public void propertyChange(PropertyChangeEvent e) {
                         String prop = e.getPropertyName();
-                        if(prop.equals("permanentFocusOwner"))
-                            XJMainMenuBar.refreshAllMenuBars();
+                        if(prop.equals("permanentFocusOwner")) {
+                            // Do not refresh all the menu bars...
+                            // actually this is wrong because the keyboard focus manager will
+                            // invoke this listener even for all the windows, even the inactive ones.
+                            // todo - to review this
+                            //XJMainMenuBar.refreshAllMenuBars();
+                        }
                     }
                 }
         );
