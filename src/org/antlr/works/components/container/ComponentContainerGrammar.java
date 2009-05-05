@@ -256,7 +256,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
         return null;
     }
 
-    public ComponentEditorGrammar selectGrammar(String name) {
+    public ComponentEditorGrammar selectEditor(String name) {
         ComponentContainer c = getContainerForName(name);
         if(c != null) {
             return selectGrammar(c);
@@ -322,7 +322,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
     }
 
     public ComponentEditorGrammar getSelectedEditor() {
-        return (ComponentEditorGrammar) getSelectedContainer().getEditor();
+        return (ComponentEditorGrammar)getSelectedContainer().getEditor();
     }
 
     public ComponentContainer getSelectedContainer() {
@@ -419,7 +419,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
             return;
         }
         reloadEditor(getSelectedEditor());
-        selectGrammar(name);
+        selectEditor(name);
     }
 
     public void setEditor(ComponentEditor editor) {
@@ -677,7 +677,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
         }
 
         public void debuggerSetLocation(String grammar, int line, int column) {
-            selectGrammar(grammar);
+            selectEditor(grammar);
             int grammarIndex = computeAbsoluteGrammarIndex(line, column);
             if(grammarIndex >= 0) {
                 getSelectedEditor().setDebuggerLocation(grammarIndex);
@@ -685,7 +685,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
         }
 
         public void debuggerSelectText(String grammar, int line, int column) {
-            selectGrammar(grammar);
+            selectEditor(grammar);
             int grammarIndex = computeAbsoluteGrammarIndex(line, column);
             if(grammarIndex >= 0) {
                 getSelectedEditor().selectTextRange(grammarIndex, grammarIndex+1);

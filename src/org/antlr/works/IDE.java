@@ -37,6 +37,7 @@ import org.antlr.works.components.ComponentWindowImpl;
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.document.ComponentDocumentFactory;
+import org.antlr.works.components.document.ComponentDocumentGrammar;
 import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
@@ -44,15 +45,13 @@ import org.antlr.works.dialog.NewWizardDialog;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.stringtemplate.STDocument;
 import org.antlr.works.stringtemplate.STWindow;
+import org.antlr.works.stringtemplate.STDocumentFactory;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.*;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.app.XJApplicationDelegate;
-import org.antlr.xjlib.appkit.document.XJDataPlainText;
 import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.appkit.document.XJDocumentFactory;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.frame.XJPanel;
 import org.antlr.xjlib.appkit.frame.XJWindow;
@@ -123,7 +122,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
 
         XJApplication.addDocumentFactory(new ComponentDocumentFactory(ComponentWindowImpl.class));
-        XJApplication.addDocumentFactory(new XJDocumentFactory(STDocument.class, STWindow.class, XJDataPlainText.class, "st", "StringTemplate"));
+        XJApplication.addDocumentFactory(new STDocumentFactory(STWindow.class));
 
         XJApplication.addScheduledTimer(new HelpManager(), 1, true);
 
@@ -433,7 +432,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
     public boolean displayNewDocumentWizard(XJDocument document) {
         // only display for grammar (*.g) files
-        if (document != null && document instanceof ComponentDocument) {
+        if (document != null && document instanceof ComponentDocumentGrammar) {
             NewWizardDialog dialog = new NewWizardDialog(document.getWindow().getJavaContainer());
 
             if(dialog != null && dialog.runModal() == XJDialog.BUTTON_OK) {

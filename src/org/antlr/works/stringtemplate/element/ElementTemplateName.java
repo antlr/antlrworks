@@ -1,15 +1,13 @@
-package org.antlr.works.stringtemplate;
+package org.antlr.works.stringtemplate.element;
 
-import org.antlr.xjlib.appkit.document.XJDataPlainText;
-import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.foundation.XJUtils;
-import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.ate.syntax.misc.ATEToken;
 
-import java.io.File;/*
+import java.util.ArrayList;
+import java.util.List;
+/*
 
 [The "BSD licence"]
-Copyright (c) 2009 Jean Bovet
+Copyright (c) 2009
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,22 +35,26 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class STDocument extends ComponentDocument {
+public class ElementTemplateName {
 
-    @Override
-    public boolean save(boolean saveAs) {
-        // Make sure the document can be saved before calling the super class method to do
-        // the actual job
-        if(getEditor().componentDocumentWillSave()) {
-            if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
-                // Create the backup file if needed
-                File backup = new File(documentPath+"~");
-                if(backup.exists()) backup.delete();
-                new File(documentPath).renameTo(backup);
-            }
-            return super.save(saveAs);
-        } else {
-            return false;
-        }
+    public ATEToken name;
+    public ATEToken start;
+    public ATEToken end;
+
+    public ElementTemplateName(ATEToken name, ATEToken start, ATEToken end) {
+        this.name = name;
+        this.start = start;
+        this.end = end;
     }
+
+    public void close() {
+        name = null;
+        start = null;
+        end = null;
+    }
+
+    public String getName() {
+        return name.getAttribute();
+    }
+
 }

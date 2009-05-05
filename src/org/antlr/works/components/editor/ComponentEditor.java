@@ -5,6 +5,14 @@ import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.dialog.AWPrefsDialog;
+import org.antlr.works.ate.ATETextPane;
+import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.ate.syntax.misc.ATELine;
+import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.find.FindAndReplace;
+import org.antlr.works.editor.navigation.GoToRule;
+import org.antlr.works.editor.EditorRules;
+import org.antlr.works.grammar.element.Jumpable;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
@@ -17,6 +25,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.*;
+import java.util.List;
 
 /*
 
@@ -167,6 +177,42 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     public abstract void loadText(String text);
 
     public abstract String getText();
+    public abstract ATEPanel getTextEditor();
+    public abstract void setCaretPosition(int pos);
+
+    public abstract void goToHistoryRememberCurrentPosition();
+    public abstract void goToBackward();
+    public abstract void goToForward();
+    public abstract List<ATELine> getLines();
+    public abstract void find();
+    public abstract FindAndReplace getFindAndReplace();
+    public abstract GoToRule getGoToRule();
+    public abstract ATEToken getCurrentToken();
+    public abstract boolean goToRule(String ruleName);
+    public abstract void goToDeclaration();
+    public abstract void goToDeclaration(final Jumpable ref);
+    public abstract List<String> getRulesStartingWith(String match);
+
+    public abstract void beginGroupChange(String name);
+    public abstract void endGroupChange();
+    public abstract void disableTextPaneUndo();
+    public abstract void enableTextPaneUndo();
+
+    public List<ATEToken> getTokens() {
+        return getTextEditor().getTokens();
+    }
+
+    public ATETextPane getTextPane() {
+        return getTextEditor().getTextPane();
+    }
+
+    public void setText(String s) {
+        getTextEditor().setText(s);
+    }
+
+    public int getCaretPosition() {
+        return getTextEditor().getCaretPosition();
+    }
 
     public void close() {
         KeyboardFocusManager.getCurrentKeyboardFocusManager().removePropertyChangeListener(pcl);

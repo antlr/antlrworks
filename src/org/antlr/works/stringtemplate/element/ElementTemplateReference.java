@@ -1,15 +1,10 @@
-package org.antlr.works.stringtemplate;
-
-import org.antlr.xjlib.appkit.document.XJDataPlainText;
-import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.foundation.XJUtils;
-import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.prefs.AWPrefs;
-
-import java.io.File;/*
+package org.antlr.works.stringtemplate.element;
+import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.grammar.element.Jumpable;
+/*
 
 [The "BSD licence"]
-Copyright (c) 2009 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,22 +32,34 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class STDocument extends ComponentDocument {
+public class ElementTemplateReference implements Comparable, Jumpable {
 
-    @Override
-    public boolean save(boolean saveAs) {
-        // Make sure the document can be saved before calling the super class method to do
-        // the actual job
-        if(getEditor().componentDocumentWillSave()) {
-            if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
-                // Create the backup file if needed
-                File backup = new File(documentPath+"~");
-                if(backup.exists()) backup.delete();
-                new File(documentPath).renameTo(backup);
-            }
-            return super.save(saveAs);
-        } else {
-            return false;
-        }
+    public ElementTemplateRule rule;
+    public ATEToken token;
+
+    public ElementTemplateReference(ElementTemplateRule rule, ATEToken token) {
+        this.rule = rule;
+        this.token = token;
+    }
+
+    public String getName() {
+        return token.getAttribute();
+    }
+
+    public int getStartIndex() {
+        return token.start;
+    }
+
+    public int getEndIndex() {
+        return token.end;
+    }
+
+    public int compareTo(Object o) {
+        ElementTemplateReference otherRef = (ElementTemplateReference)o;
+        return token.compareTo(otherRef.token);
+    }
+
+    public boolean containsIndex(int index) {
+        return index >= token.getStartIndex() && index <= token.getEndIndex();
     }
 }

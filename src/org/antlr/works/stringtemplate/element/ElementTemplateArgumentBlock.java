@@ -1,15 +1,11 @@
-package org.antlr.works.stringtemplate;
+package org.antlr.works.stringtemplate.element;
 
-import org.antlr.xjlib.appkit.document.XJDataPlainText;
-import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.foundation.XJUtils;
-import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.grammar.element.ElementScopable;
 
-import java.io.File;/*
+/*
 
 [The "BSD licence"]
-Copyright (c) 2009 Jean Bovet
+Copyright (c) 2009
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,23 +32,5 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-
-public class STDocument extends ComponentDocument {
-
-    @Override
-    public boolean save(boolean saveAs) {
-        // Make sure the document can be saved before calling the super class method to do
-        // the actual job
-        if(getEditor().componentDocumentWillSave()) {
-            if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
-                // Create the backup file if needed
-                File backup = new File(documentPath+"~");
-                if(backup.exists()) backup.delete();
-                new File(documentPath).renameTo(backup);
-            }
-            return super.save(saveAs);
-        } else {
-            return false;
-        }
-    }
+public class ElementTemplateArgumentBlock extends ElementScopable {
 }

@@ -1,6 +1,8 @@
 package org.antlr.works.stringtemplate;
 
 import org.antlr.xjlib.appkit.swing.XJTableView;
+import org.antlr.works.stringtemplate.element.ElementTemplateRule;
+import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxParser;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -39,19 +41,31 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class STRulePanel extends JPanel {
 
-    private final STRuleModel model = new STRuleModel();
+    protected ComponentEditorStringTemplate editor;
+
+    private STRuleModel model;
     private final XJTableView tableView = new XJTableView();
 
-    public STRulePanel() {
+    public STRulePanel(ComponentEditorStringTemplate editor) {
+        this.editor = editor;
 
         tableView.setAlternateBackground(true);
-        tableView.getTable().setModel(model);
 
-        model.addRule("foo");
-        model.addRule("bar");
+        refreshRules();
 
         setLayout(new BorderLayout());
+        tableView.autoresizeColumns();
         add(tableView, BorderLayout.CENTER);
+    }
+
+    public void refreshRules() {
+        model = new STRuleModel();
+        List<ElementTemplateRule> rules = ((ATEStringTemplateSyntaxParser)editor.getTextEditor().getParserEngine().getParser()).templateRules;
+        for (ElementTemplateRule rule : rules) {
+            model.addRule(rule.name);
+        }
+        tableView.getTable().setModel(model);
+        tableView.autoresizeColumns();
     }
 
     private static class STRuleModel extends AbstractTableModel {

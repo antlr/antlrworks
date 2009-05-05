@@ -174,7 +174,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     }
 
     public ComponentEditorGrammar getEditor() {
-        return container.getSelectedEditor();
+        return (ComponentEditorGrammar)container.getSelectedEditor();
     }
 
     public boolean isDebuggerRunning() {

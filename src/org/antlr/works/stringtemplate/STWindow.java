@@ -1,16 +1,25 @@
 package org.antlr.works.stringtemplate;
 
-import org.antlr.works.ate.ATEPanel;
-import org.antlr.works.ate.ATEPanelAdapter;
-import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
+import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.container.ComponentContainerGrammar;
+import org.antlr.works.components.container.ComponentContainerInternal;
+import org.antlr.works.components.document.ComponentDocumentGrammar;
+import org.antlr.works.components.ComponentWindow;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJWindow;
+import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
+import org.antlr.xjlib.appkit.menu.XJMenu;
+import org.antlr.xjlib.appkit.menu.XJMenuItem;
 
 import javax.swing.*;
-import java.awt.*;/*
+import java.awt.*;
+
+/*
 
 [The "BSD licence"]
-Copyright (c) 2009 Jean Bovet
+Copyright (c) 2005-08 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,56 +46,77 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+public class STWindow extends XJWindow implements ComponentWindow {
 
-public class STWindow extends XJWindow {
+    private final ComponentContainer componentContainer;
 
-    private final STRulePanel rulePanel = new STRulePanel();
-    private final ATEPanel textPanel = new ATEPanel(this);
+    public STWindow() {
+        this.componentContainer = new ComponentContainerStringTemplate(this);
+    }
 
     @Override
     public void awake() {
         super.awake();
+        componentContainer.awake();
+        componentContainer.assemble(false);
+    }
 
-        prepareTextPanel();
-        
-        final JPanel contentPanel = new JPanel(new BorderLayout());
-        contentPanel.add(rulePanel, BorderLayout.WEST);
-        contentPanel.add(textPanel, BorderLayout.CENTER);
-        getContentPane().add(contentPanel);
+    public ComponentContainer getComponentContainer() {
+        return componentContainer;
+    }
+
+    public void setContentPanel(JPanel panel) {
+        getContentPane().add(panel);
         pack();
     }
 
-    private void prepareTextPanel() {
-        textPanel.setSyntaxColoring(true);
-        textPanel.setParserEngine(new ATEJavaSyntaxEngine());
-        textPanel.setSyntaxColoring(true);
-        textPanel.setAnalysisColumnVisible(false);
-        textPanel.setFoldingEnabled(AWPrefs.getFoldingEnabled());
-        textPanel.setLineNumberEnabled(AWPrefs.getLineNumberEnabled());
-        textPanel.setHighlightCursorLine(AWPrefs.getHighlightCursorEnabled());
-        textPanel.getTextPane().setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
-        textPanel.getTextPane().setTabSize(AWPrefs.getEditorTabSize());
-
-        textPanel.setDelegate(new TextPanelDelegate());
+    @Override
+    public void dirtyChanged() {
+        componentContainer.dirtyChanged();
     }
 
-    public String getText() {
-        return textPanel.getText();
+    @Override
+    public void windowActivated() {
+        super.windowActivated();
+        componentContainer.windowActivated();
     }
 
-    public void loadText(String text) {
-        textPanel.loadText(text);
+    @Override
+    public void windowDocumentPathDidChange(XJDocument doc) {
+        // Called when the document associated file has changed on the disk
+        STDocument st = (STDocument) doc;
+        st.getEditor().componentDocumentContentChanged();
     }
 
-    private class TextPanelDelegate extends ATEPanelAdapter {
-
-        @Override
-        public void ateChangeUpdate(int offset, int length, boolean insert) {
-            // Indicate to the document that a change has been done. This will
-            // automatically trigger an alert when the window is closed to ask
-            // the user if he wants to save the document
-            getDocument().changeDone();
-        }
-
+    @Override
+    public void becomingVisibleForTheFirstTime() {
+        componentContainer.becomingVisibleForTheFirstTime();
     }
+
+    @Override
+    public void customizeFileMenu(XJMenu menu) {
+        componentContainer.customizeFileMenu(menu);
+    }
+
+    @Override
+    public void customizeMenuBar(XJMainMenuBar menubar) {
+        componentContainer.customizeMenuBar(menubar);
+    }
+
+    @Override
+    public void menuItemState(XJMenuItem item) {
+        componentContainer.menuItemState(item);
+    }
+
+    @Override
+    public void handleMenuSelected(XJMenu menu) {
+        componentContainer.handleMenuSelected(menu);
+    }
+
+    @Override
+    public boolean close(boolean force) {
+        return super.close(force) && componentContainer.close();
+    }
+
+
 }

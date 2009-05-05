@@ -422,7 +422,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public void gotoToRule(String grammar, final String name) {
         if(!grammar.equals(engine.getGrammarName())) {
             // rule is in another editor
-            final ComponentEditorGrammar editor = getContainer().selectGrammar(grammar);
+            final ComponentEditorGrammar editor = (ComponentEditorGrammar)getContainer().selectEditor(grammar);
             // set the caret position
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -917,6 +917,68 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
 
     public void updateCursorInfo() {
         cursorLabel.setText(textEditor.getCurrentLinePosition()+":"+textEditor.getCurrentColumnPosition());
+    }
+
+    public FindAndReplace getFindAndReplace() {
+        return findAndReplace;
+    }
+
+    public GoToRule getGoToRule() {
+        return goToRule;
+    }
+
+    public boolean goToRule(String ruleName) {
+        ElementRule rule = rules.selectRuleNameInTree(ruleName);
+        if(rule != null) {
+            goToHistoryRememberCurrentPosition();
+            rules.goToRule(rule);
+            return true;
+        }
+        return false;
+    }
+
+    public void goToDeclaration() {
+        Jumpable ref = getCurrentReference();
+        if(ref == null) {
+            ref = getImportAtPosition(getCaretPosition());
+        }
+        container.getActionGoTo().goToDeclaration(ref);
+    }
+
+    public void goToDeclaration(final Jumpable ref) {
+        goToHistoryRememberCurrentPosition();
+        if(ref instanceof ElementImport) {
+            getContainer().selectEditor(ref.getName());
+        } else if(ref != null) {
+            GrammarEngine engine = getGrammarEngine();
+            int index = engine.getFirstDeclarationPosition(ref.getName());
+            if(index == -1) {
+                // This grammar does not contain the declaration. Search in the other children
+                // starting from the root engine
+                engine = engine.getRootEngine();
+                List<String> grammars = engine.getGrammarsOverriddenByRule(ref.getName());
+                if(!grammars.isEmpty()) {
+                    getContainer().selectEditor(grammars.get(0));
+
+                    // set the caret position
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            GrammarEngine engine = getGrammarEngine();
+                            int index = engine.getFirstDeclarationPosition(ref.getName());
+                            if(index != -1) {
+                                setCaretPosition(index);
+                            }
+                        }
+                    });
+                }
+            } else {
+                setCaretPosition(index);
+            }
+        }
+    }
+
+    public List<String> getRulesStartingWith(String match) {
+        return rules.getRulesStartingWith(match);
     }
 
     /** Rules delegate methods

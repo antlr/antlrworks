@@ -34,6 +34,7 @@ package org.antlr.works.menu;
 import org.antlr.tool.Grammar;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.grammar.CheckGrammar;
 import org.antlr.works.grammar.CheckGrammarDelegate;
 import org.antlr.works.grammar.RulesDependency;
@@ -58,6 +59,10 @@ public class ActionGrammar extends ActionAbstract implements CheckGrammarDelegat
 
     public ActionGrammar(ComponentContainer editor) {
         super(editor);
+    }
+
+    public ComponentEditorGrammar getSelectedEditor() {
+        return (ComponentEditorGrammar)super.getSelectedEditor();
     }
 
     public void showTokensSD() {

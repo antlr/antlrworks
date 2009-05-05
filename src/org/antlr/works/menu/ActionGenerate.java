@@ -78,6 +78,10 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         generateCodeProcess();
     }
 
+    public ComponentEditorGrammar getSelectedEditor() {
+        return (ComponentEditorGrammar)super.getSelectedEditor();
+    }
+
     public void showGeneratedCode(int type) {
         StatisticsAW.shared().recordEvent(type==ElementGrammarName.LEXER?StatisticsAW.EVENT_SHOW_LEXER_GENERATED_CODE:StatisticsAW.EVENT_SHOW_PARSER_GENERATED_CODE);
 
