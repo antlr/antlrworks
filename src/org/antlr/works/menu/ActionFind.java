@@ -2,6 +2,7 @@ package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.find.Usages;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
@@ -48,18 +49,18 @@ public class ActionFind extends ActionAbstract {
 
     public void findNext() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_NEXT);
-        getSelectedEditor().findAndReplace.next();
+        getSelectedEditor().getFindAndReplace().next();
     }
 
     public void findPrev() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_PREVIOUS);
-        getSelectedEditor().findAndReplace.prev();
+        getSelectedEditor().getFindAndReplace().prev();
     }
 
     public void findSelection() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_TEXT_AT_CARET);
-        getSelectedEditor().findAndReplace.setFindString(getSelectedEditor().getTextPane().getSelectedText());
-        getSelectedEditor().findAndReplace.next();
+        getSelectedEditor().getFindAndReplace().setFindString(getSelectedEditor().getTextPane().getSelectedText());
+        getSelectedEditor().getFindAndReplace().next();
     }
 
     public void findUsage() {
@@ -69,12 +70,12 @@ public class ActionFind extends ActionAbstract {
         if(token == null)
             return;
 
-        Usages usage = new Usages(getSelectedEditor(), token);
-        getSelectedEditor().addTab(usage);
+        Usages usage = new Usages((ComponentEditorGrammar)getSelectedEditor(), token);
+        ((ComponentEditorGrammar)getSelectedEditor()).addTab(usage);
 
         for (ATEToken ateToken : getSelectedEditor().getTokens()) {
             if (ateToken.getAttribute().equals(token.getAttribute())) {
-                ElementRule matchedRule = getSelectedEditor().rules.getEnclosingRuleAtPosition(ateToken.getStartIndex());
+                ElementRule matchedRule = ((ComponentEditorGrammar)getSelectedEditor()).rules.getEnclosingRuleAtPosition(ateToken.getStartIndex());
                 if (matchedRule != null)
                     usage.addMatch(matchedRule, ateToken);
             }

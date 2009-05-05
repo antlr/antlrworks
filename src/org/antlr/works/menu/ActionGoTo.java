@@ -33,6 +33,8 @@ package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.grammar.element.ElementImport;
 import org.antlr.works.grammar.element.Jumpable;
 import org.antlr.works.grammar.engine.GrammarEngine;
@@ -48,51 +50,22 @@ public class ActionGoTo extends ActionAbstract {
         super(editor);
     }
 
+    public ComponentEditor getSelectedEditor() {
+        return super.getSelectedEditor();
+    }
+
     public void goToRule() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_RULE);
-        getSelectedEditor().goToRule.display();
+        getSelectedEditor().getGoToRule().display();
     }
 
     public void goToDeclaration() {
-        Jumpable ref = getSelectedEditor().getCurrentReference();
-        if(ref == null) {
-            ref = getSelectedEditor().getImportAtPosition(getSelectedEditor().getCaretPosition());
-        }
-        goToDeclaration(ref);
+        getSelectedEditor().goToDeclaration();
     }
 
     public void goToDeclaration(final Jumpable ref) {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_DECLARATION);
-        getSelectedEditor().goToHistoryRememberCurrentPosition();
-        if(ref instanceof ElementImport) {
-            getSelectedEditor().getContainer().selectGrammar(ref.getName());            
-        } else if(ref != null) {
-            GrammarEngine engine = getSelectedEditor().getGrammarEngine();
-            int index = engine.getFirstDeclarationPosition(ref.getName());
-            if(index == -1) {
-                // This grammar does not contain the declaration. Search in the other children
-                // starting from the root engine
-                engine = engine.getRootEngine();
-                List<String> grammars = engine.getGrammarsOverriddenByRule(ref.getName());
-                if(!grammars.isEmpty()) {
-                    getSelectedEditor().getContainer().selectGrammar(grammars.get(0));
-
-                    // set the caret position
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            GrammarEngine engine = getSelectedEditor().getGrammarEngine();
-                            int index = engine.getFirstDeclarationPosition(ref.getName());
-                            if(index != -1) {
-                                setCaretPosition(index);
-                            }
-                        }
-                    });
-
-                }
-            } else {
-                setCaretPosition(index);
-            }
-        }
+        getSelectedEditor().goToDeclaration(ref);
     }
 
     public void goToBreakpoint(int direction) {
@@ -101,13 +74,13 @@ public class ActionGoTo extends ActionAbstract {
         else
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_NEXT_BRKPT);
 
-        Set<Integer> breakpoints = getSelectedEditor().getBreakpoints();
+        Set<Integer> breakpoints = ((ComponentEditorGrammar)getSelectedEditor()).getBreakpoints();
         int line = getSelectedEditor().getTextEditor().getLineIndexAtTextPosition(getCaretPosition());
         if(line == -1) return;
 
         while(true) {
             line += direction;
-            if(line < 0 || line > getSelectedEditor().getGrammarEngine().getNumberOfLines()-1)
+            if(line < 0 || line > ((ComponentEditorGrammar)getSelectedEditor()).getGrammarEngine().getNumberOfLines()-1)
                 break;
 
             if(breakpoints.contains(Integer.valueOf(line))) {

@@ -2,7 +2,6 @@ package org.antlr.works.components.container;
 
 import org.antlr.works.components.document.ComponentDocument;
 import org.antlr.works.components.editor.ComponentEditor;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ActionDebugger;
@@ -86,8 +85,8 @@ public interface ComponentContainer {
     void selectInterpreterTab(ComponentEditor editor);
     void selectSyntaxDiagramTab(ComponentEditor editor);
 
-    ComponentEditorGrammar selectGrammar(String name);
-    ComponentEditorGrammar getSelectedEditor();
+    ComponentEditor selectEditor(String name);
+    ComponentEditor getSelectedEditor();
 
     void editorContentChanged();
 

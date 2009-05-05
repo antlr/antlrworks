@@ -1,6 +1,7 @@
 package org.antlr.works.components;
 
 import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
@@ -116,10 +117,10 @@ public class ComponentToolbar implements XJNotificationObserver {
     }
 
     public void updateStates() {
-        sort.setSelected(container.getSelectedEditor().isRulesSorted());
-        sd.setSelected(container.getSelectedEditor().isSyntaxDiagramDisplayed());
-        coloring.setSelected(container.getSelectedEditor().isSyntaxColored());
-        ideas.setSelected(container.getSelectedEditor().isIdeasEnabled());
+        sort.setSelected(getSelectedEditor().isRulesSorted());
+        sd.setSelected(getSelectedEditor().isSyntaxDiagramDisplayed());
+        coloring.setSelected(getSelectedEditor().isSyntaxColored());
+        ideas.setSelected(getSelectedEditor().isIdeasEnabled());
     }
 
     public void awake() {
@@ -128,46 +129,50 @@ public class ComponentToolbar implements XJNotificationObserver {
         ideas.setSelected(true);
     }
 
+    public ComponentEditorGrammar getSelectedEditor() {
+        return (ComponentEditorGrammar)container.getSelectedEditor();
+    }
+
     public void addActions() {
         backward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.getSelectedEditor().goToBackward();
+                getSelectedEditor().goToBackward();
             }
         });
 
         forward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.getSelectedEditor().goToForward();
+                getSelectedEditor().goToForward();
             }
         });
 
         sort.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.getSelectedEditor().toggleRulesSorting();
+                getSelectedEditor().toggleRulesSorting();
             }
         });
 
         sd.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.getSelectedEditor().toggleSyntaxDiagram();
+                getSelectedEditor().toggleSyntaxDiagram();
             }
         });
 
         coloring.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.getSelectedEditor().toggleSyntaxColoring();
+                getSelectedEditor().toggleSyntaxColoring();
             }
         });
 
         ideas.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.getSelectedEditor().toggleIdeas();
+                getSelectedEditor().toggleIdeas();
             }
         });
 
         find.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.getSelectedEditor().find();
+                getSelectedEditor().find();
             }
         });
 

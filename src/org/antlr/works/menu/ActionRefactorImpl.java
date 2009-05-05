@@ -3,6 +3,7 @@ package org.antlr.works.menu;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.editor.ComponentEditorGrammar;
 import org.antlr.works.grammar.RefactorEngine;
 import org.antlr.works.grammar.RefactorMutator;
 import org.antlr.works.grammar.element.ElementReference;
@@ -56,6 +57,10 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
     public ActionRefactorImpl(ComponentContainer container) {
         super(container);
         engine = new RefactorEngine();
+    }
+
+    public ComponentEditorGrammar getSelectedEditor() {
+        return (ComponentEditorGrammar)super.getSelectedEditor();
     }
 
     public void rename() {

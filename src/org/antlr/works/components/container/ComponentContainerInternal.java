@@ -154,8 +154,8 @@ public class ComponentContainerInternal implements ComponentContainer {
         mainContainer.selectSyntaxDiagramTab(editor);
     }
 
-    public ComponentEditorGrammar selectGrammar(String name) {
-        return mainContainer.selectGrammar(name);
+    public ComponentEditorGrammar selectEditor(String name) {
+        return (ComponentEditorGrammar)mainContainer.selectEditor(name);
     }
 
     public void documentLoaded(ComponentDocument document) {
@@ -174,7 +174,7 @@ public class ComponentContainerInternal implements ComponentContainer {
         return mainContainer.getDebugger();
     }
 
-    public ComponentEditorGrammar getSelectedEditor() {
+    public ComponentEditor getSelectedEditor() {
         return mainContainer.getSelectedEditor();
     }
 

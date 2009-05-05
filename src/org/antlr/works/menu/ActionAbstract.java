@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.menu;
 
 import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.ComponentEditor;
 
 import javax.swing.*;
 
@@ -52,7 +52,7 @@ public abstract class ActionAbstract {
         return container;
     }
 
-    public ComponentEditorGrammar getSelectedEditor() {
+    public ComponentEditor getSelectedEditor() {
         return container.getSelectedEditor();
     }
 
@@ -65,6 +65,6 @@ public abstract class ActionAbstract {
     }
 
     public int getCaretPosition() {
-        return getSelectedEditor().getCaretPosition();
+        return getSelectedEditor().getTextEditor().getCaretPosition();
     }
 }

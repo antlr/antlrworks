@@ -32,8 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.navigation;
 
-import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.utils.OverlayObject;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 
@@ -54,11 +53,11 @@ public class GoToRule extends OverlayObject {
     public JList matchingRuleList;
     public DefaultListModel matchingRuleListModel;
     public JScrollPane matchingRuleScrollPane;
-    public ComponentEditorGrammar editor;
+    public ComponentEditor editor;
 
     public static final int VISIBLE_MATCHING_RULES = 15;
 
-    public GoToRule(ComponentEditorGrammar editor, XJFrameInterface parentFrame, JComponent parentComponent) {
+    public GoToRule(ComponentEditor editor, XJFrameInterface parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
         this.editor = editor;
     }
@@ -140,7 +139,7 @@ public class GoToRule extends OverlayObject {
     public void updateAutoCompletionList() {
         matchingRuleListModel.removeAllElements();
 
-        List<String> rules = editor.rules.getRulesStartingWith(ruleNameField.getText().toLowerCase());
+        List<String> rules = editor.getRulesStartingWith(ruleNameField.getText().toLowerCase());
         if(rules.isEmpty()) {
             matchingRuleScrollPane.setVisible(false);
             ruleNameField.setForeground(Color.red);
@@ -173,11 +172,7 @@ public class GoToRule extends OverlayObject {
 
         int index = matchingRuleList.getSelectedIndex();
         if(index >= 0) {
-            ElementRule rule = editor.rules.selectRuleNameInTree((String)matchingRuleListModel.get(index));
-            if(rule != null) {
-                editor.goToHistoryRememberCurrentPosition();
-                editor.rules.goToRule(rule);
-            }
+            editor.goToRule((String)matchingRuleListModel.get(index));
         }
     }
 
