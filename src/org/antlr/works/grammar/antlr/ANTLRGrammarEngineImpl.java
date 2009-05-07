@@ -242,11 +242,11 @@ public class ANTLRGrammarEngineImpl implements ANTLRGrammarEngine {
 
     private void markLeftRecursiveRules(List rules) {
         // 'rules' is a list of set of rules given by ANTLR
-        for (Object rule : rules) {
-            Set rulesSet = (Set) rule;
-            for (Object aRulesSet : rulesSet) {
-                String name = (String) aRulesSet;
-                ElementRule r = engine.getRuleWithName(name);
+        for (Object ruleSet : rules) {
+            final Set rulesSet = (Set) ruleSet;
+            for (Object rule : rulesSet) {
+                final Rule aRule = (Rule) rule;
+                final ElementRule r = engine.getRuleWithName(aRule.name);
                 if (r == null)
                     continue;
                 r.setLeftRecursiveRulesSet(rulesSet);
