@@ -45,6 +45,7 @@ import org.antlr.works.menu.ActionRefactor;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.menu.ActionDebugger;
 import org.antlr.works.debugger.Debugger;
+import org.antlr.works.stringtemplate.menu.ContextualStringTemplateMenuFactory;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJFrameInterface;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
@@ -274,6 +275,10 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
 
     public ContextualMenuFactory createContextualMenuFactory() {
         return null;
+    }
+
+    public ContextualStringTemplateMenuFactory createContextualStringTemplateMenuFactory() {
+        return new ContextualStringTemplateMenuFactory(componentContainerStringTemplateMenu);
     }
 
     public JPopupMenu getContextualMenu(int textIndex) {

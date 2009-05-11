@@ -173,12 +173,12 @@ public class ATEStringTemplateSyntaxLexer extends ATESyntaxLexer {
         } else {
             while (nextCharacter()) {
                 if(isWhitespace()) {
-                    return createNewToken(TOKEN_OTHER, sp);
+                    return createNewToken(TOKEN_OTHER, sp, Math.min(position+1, text.length()));
                 }
             }
         }
 
-        return createNewToken(TOKEN_OTHER, sp);
+        return createNewToken(TOKEN_OTHER, sp, Math.min(position+1, text.length()));
     }
 
     @Override

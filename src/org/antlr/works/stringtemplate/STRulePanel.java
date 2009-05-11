@@ -7,8 +7,14 @@ import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxParser;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.List;/*
+import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
+
+/*
 
 [The "BSD licence"]
 Copyright (c) 2009 Jean Bovet
@@ -48,6 +54,7 @@ public class STRulePanel extends JPanel {
 
     public STRulePanel(ComponentEditorStringTemplate editor) {
         this.editor = editor;
+        model = new STRuleModel();
 
         tableView.setAlternateBackground(true);
 
@@ -55,27 +62,89 @@ public class STRulePanel extends JPanel {
 
         setLayout(new BorderLayout());
         tableView.autoresizeColumns();
+        tableView.getTable().addMouseListener(new RuleTableMouseListener());
         add(tableView, BorderLayout.CENTER);
     }
 
+    public boolean isRulesSorted() {
+        return model.isRulesSorted();
+    }
+
+    public void sortRules() {
+        model.toggleSort();
+    }
+
     public void refreshRules() {
-        model = new STRuleModel();
+        model.clear();
         List<ElementTemplateRule> rules = ((ATEStringTemplateSyntaxParser)editor.getTextEditor().getParserEngine().getParser()).templateRules;
         for (ElementTemplateRule rule : rules) {
-            model.addRule(rule.name);
+            model.addRule(rule);
         }
+        model.fireSort();
         tableView.getTable().setModel(model);
         tableView.autoresizeColumns();
+    }
+
+    public class RuleTableMouseListener extends MouseAdapter {
+        public void mousePressed(MouseEvent e) {
+            int selectedRow = tableView.getTable().getSelectedRow();
+            String selectedRuleName = null;
+
+            if (selectedRow > -1) {
+                selectedRuleName = tableView.getTable().getModel().getValueAt(selectedRow, 0).toString();
+                editor.goToRule(selectedRuleName);
+            }
+
+            tableView.requestFocusInWindow();
+
+            checkForPopupTrigger(e);
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            checkForPopupTrigger(e);
+        }
+
+        public void checkForPopupTrigger(MouseEvent e) {
+            if(e.isPopupTrigger()) {
+                JPopupMenu menu = editor.rulesGetContextualMenu();
+                if(menu != null)
+                    menu.show(e.getComponent(), e.getX(), e.getY());
+            }
+        }
     }
 
     private static class STRuleModel extends AbstractTableModel {
 
         private final List<String> rules = new ArrayList<String>();
+        private final List<String> sortedRules = new ArrayList<String>();
+        private boolean sorted = false;
 
-        public void addRule(String rule) {
-            rules.add(rule);
+        public STRuleModel() {
+        }
+
+        public void addRule(ElementTemplateRule rule) {
+            rules.add(rule.name);
+            sortedRules.add(rule.name);
             final int index = rules.size()-1;
             fireTableRowsInserted(index, index);
+        }
+
+        public boolean isRulesSorted() {
+            return sorted;
+        }
+
+        public boolean toggleSort() {
+            sorted = !sorted;
+            return sorted;
+        }
+
+        public void fireSort() {
+            Collections.sort(sortedRules);
+        }
+
+        public void clear() {
+            rules.clear();
+            sortedRules.clear();
         }
 
         public int getRowCount() {
@@ -92,7 +161,11 @@ public class STRulePanel extends JPanel {
         }
 
         public Object getValueAt(int rowIndex, int columnIndex) {
-            return rules.get(rowIndex);
+            if (sorted) {
+                return sortedRules.get(rowIndex);
+            } else {
+                return rules.get(rowIndex);
+            }
         }
     }
 }

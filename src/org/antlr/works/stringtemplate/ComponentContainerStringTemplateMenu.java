@@ -32,12 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.stringtemplate;
 
 import org.antlr.works.IDE;
+import org.antlr.works.stringtemplate.menu.ContextualStringTemplateMenuFactory;
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.menu.*;
-import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
-import org.antlr.xjlib.appkit.menu.XJMenu;
-import org.antlr.xjlib.appkit.menu.XJMenuItem;
-import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
+import org.antlr.xjlib.appkit.menu.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,19 +62,15 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
 
     // Refactor
     public static final int MI_RENAME = 61;
-    public static final int MI_REPLACE_LITERAL_WITH_TOKEN_LABEL = 62;
-    public static final int MI_LITERAL_TO_SINGLEQUOTE = 63;
-    public static final int MI_LITERAL_TO_DOUBLEQUOTE = 64;
-    public static final int MI_LITERAL_TO_CSTYLEQUOTE = 65;
-    public static final int MI_REMOVE_LEFT_RECURSION = 66;
-    public static final int MI_REMOVE_ALL_LEFT_RECURSION = 67;
-    public static final int MI_EXTRACT_RULE = 68;
     public static final int MI_INLINE_RULE = 69;
 
     // Help
     public static final int MI_SUBMIT_STATS = 100;
     public static final int MI_SEND_FEEDBACK = 101;
     public static final int MI_CHECK_UPDATES = 102;
+
+    // Sort
+    public static final int MI_SORT_RULES = 110;
 
     private ActionFind actionFind;
     private ActionGoTo actionGoTo;
@@ -194,16 +188,12 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
                 item = new XJMenuItem(resourceBundle.getString("menu.item.rename"), KeyEvent.VK_F6, Event.SHIFT_MASK, MI_RENAME, this);
                 break;
 
-            case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
-                item = new XJMenuItem(resourceBundle.getString("menu.item.replaceLiteralsWithTokenLabel"), MI_REPLACE_LITERAL_WITH_TOKEN_LABEL, this);
-                break;
-
-            case MI_EXTRACT_RULE:
-                item = new XJMenuItem(resourceBundle.getString("menu.item.extractRule"), MI_EXTRACT_RULE, this);
-                break;
-
             case MI_INLINE_RULE:
                 item = new XJMenuItem(resourceBundle.getString("menu.item.inlineRule"), MI_INLINE_RULE, this);
+                break;
+
+            case MI_SORT_RULES:
+                item = new XJMenuItemCheck(resourceBundle.getString("menu.item.sortRules"), MI_SORT_RULES, this, false);
                 break;
 
         }
@@ -230,6 +220,7 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
         handleMenuFind(item.getTag());
         handleMenuRefactor(item.getTag());
         handleMenuGoTo(item.getTag());
+        handleSortRules(item.getTag());
     }
 
     public void handleMenuFile(int itemTag) {
@@ -266,34 +257,6 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
                 actionRefactor.rename();
                 break;
 
-            case MI_REPLACE_LITERAL_WITH_TOKEN_LABEL:
-                actionRefactor.replaceLiteralWithTokenLabel();
-                break;
-
-            case MI_LITERAL_TO_SINGLEQUOTE:
-                actionRefactor.convertLiteralsToSingleQuote();
-                break;
-
-            case MI_LITERAL_TO_DOUBLEQUOTE:
-                actionRefactor.convertLiteralsToDoubleQuote();
-                break;
-
-            case MI_LITERAL_TO_CSTYLEQUOTE:
-                actionRefactor.convertLiteralsToCStyleQuote();
-                break;
-
-            case MI_REMOVE_LEFT_RECURSION:
-                actionRefactor.removeLeftRecursion();
-                break;
-
-            case MI_REMOVE_ALL_LEFT_RECURSION:
-                actionRefactor.removeAllLeftRecursion();
-                break;
-
-            case MI_EXTRACT_RULE:
-                actionRefactor.extractRule();
-                break;
-
             case MI_INLINE_RULE:
                 actionRefactor.inlineRule();
                 break;
@@ -328,6 +291,14 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
         }
     }
 
+    public void handleSortRules(int itemTag) {
+        switch(itemTag) {
+            case MI_SORT_RULES:
+                getEditor().sortRules();
+                break;
+        }
+    }
+
     public ActionRefactor getActionRefactor() {
         return actionRefactor;
     }
@@ -341,7 +312,7 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
         boolean overToken = getEditor().getCurrentToken() != null;
         boolean overSelection = getEditor().getTextPane().getSelectionStart() != getEditor().getTextPane().getSelectionEnd();
 
-        ContextualMenuFactory factory = new ContextualMenuFactory(this);
+        ContextualStringTemplateMenuFactory factory = new ContextualStringTemplateMenuFactory(this);
         factory.addItem(MI_GOTO_RULE);
         if(overReference)
             factory.addItem(MI_GOTO_DECLARATION);
@@ -358,30 +329,5 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
         }
 
         return factory.menu;
-    }
-
-    public class ContextualMenuFactory {
-
-        public JPopupMenu menu = new JPopupMenu();
-        public boolean shouldInsertSeparator = false;
-        private ComponentContainerStringTemplateMenu componentContainerStringTemplateMenu;
-
-        public ContextualMenuFactory(ComponentContainerStringTemplateMenu componentContainerStringTemplateMenu) {
-            this.componentContainerStringTemplateMenu = componentContainerStringTemplateMenu;
-        }
-
-        public void addSeparator() {
-            shouldInsertSeparator = true;
-        }
-
-        public XJMenuItem addItem(int tag) {
-            if(shouldInsertSeparator) {
-                menu.addSeparator();
-                shouldInsertSeparator = false;
-            }
-            XJMenuItem item = componentContainerStringTemplateMenu.createMenuItem(tag, true);
-            menu.add(item.getSwingComponent());
-            return item;
-        }
     }
 }

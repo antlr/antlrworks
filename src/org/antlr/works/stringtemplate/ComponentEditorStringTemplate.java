@@ -15,11 +15,13 @@ import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxEngine;
 import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxParser;
 import org.antlr.works.stringtemplate.element.ElementTemplateRule;
 import org.antlr.works.stringtemplate.element.ElementTemplateReference;
+import org.antlr.works.stringtemplate.menu.ContextualStringTemplateMenuFactory;
 import org.antlr.works.grammar.element.Jumpable;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.xjlib.appkit.utils.XJAlert;
+import org.antlr.xjlib.appkit.menu.XJMenuItemCheck;
 
 import javax.swing.*;
 import java.awt.*;
@@ -100,6 +102,10 @@ public class ComponentEditorStringTemplate extends ComponentEditor implements Au
 
     public STRulePanel getComponentRules() {
         return rulesPanel;
+    }
+
+    public ComponentContainerStringTemplate getContainer() {
+        return (ComponentContainerStringTemplate)container;
     }
 
     protected void initComponents() {
@@ -307,6 +313,19 @@ public class ComponentEditorStringTemplate extends ComponentEditor implements Au
             }
         }
         return null;
+    }
+
+    public void sortRules() {
+        rulesPanel.sortRules();
+        getComponentRules().refreshRules();
+    }
+
+    public JPopupMenu rulesGetContextualMenu() {
+        ContextualStringTemplateMenuFactory factory = getContainer().createContextualStringTemplateMenuFactory();
+        XJMenuItemCheck item = (XJMenuItemCheck) factory.addItem(ComponentContainerStringTemplateMenu.MI_SORT_RULES);
+        item.setSelected(rulesPanel.isRulesSorted());
+
+        return factory.menu;
     }
 
     public void componentDocumentContentChanged() {
