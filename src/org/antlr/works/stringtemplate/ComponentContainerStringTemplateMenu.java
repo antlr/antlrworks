@@ -294,7 +294,7 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
     public void handleSortRules(int itemTag) {
         switch(itemTag) {
             case MI_SORT_RULES:
-                getEditor().sortRules();
+                getEditor().toggleRulesSorting();
                 break;
         }
     }

@@ -315,15 +315,21 @@ public class ComponentEditorStringTemplate extends ComponentEditor implements Au
         return null;
     }
 
-    public void sortRules() {
-        rulesPanel.sortRules();
+    public boolean isRulesSorted() {
+        return rulesPanel.isRulesSorted();
+    }
+
+    public void toggleRulesSorting() {
+        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_RULE_SORT);
+        rulesPanel.toggleSorting();
+        getContainer().getToolbar().updateStates();
         getComponentRules().refreshRules();
     }
 
     public JPopupMenu rulesGetContextualMenu() {
         ContextualStringTemplateMenuFactory factory = getContainer().createContextualStringTemplateMenuFactory();
         XJMenuItemCheck item = (XJMenuItemCheck) factory.addItem(ComponentContainerStringTemplateMenu.MI_SORT_RULES);
-        item.setSelected(rulesPanel.isRulesSorted());
+        item.setSelected(isRulesSorted());
 
         return factory.menu;
     }

@@ -70,7 +70,7 @@ public class STRulePanel extends JPanel {
         return model.isRulesSorted();
     }
 
-    public void sortRules() {
+    public void toggleSorting() {
         model.toggleSort();
     }
 

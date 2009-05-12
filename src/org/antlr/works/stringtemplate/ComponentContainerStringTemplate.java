@@ -31,13 +31,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.stringtemplate;
 
-import org.antlr.works.components.ComponentToolbar;
 import org.antlr.works.components.ComponentWindow;
 import org.antlr.works.components.container.ComponentContainer;
 import org.antlr.works.components.container.ComponentContainerInternal;
-import org.antlr.works.components.container.ComponentDocumentInternal;
 import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.components.document.ComponentDocumentFactory;
 import org.antlr.works.components.editor.ComponentEditor;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ActionGoTo;
@@ -73,6 +70,8 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
     private ComponentContainer selectedContainer;
     private ComponentContainerStringTemplateMenu componentContainerStringTemplateMenu;
 
+    private ComponentToolbarStringTemplate toolbar;
+
     private XJTabbedPane editorsTab;
 
     private JPanel toolbarPanel;
@@ -95,6 +94,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         containers.add(this);
 
         componentContainerStringTemplateMenu = new ComponentContainerStringTemplateMenu(this);
+        toolbar = new ComponentToolbarStringTemplate(this);
     }
 
     public void awake() {
@@ -121,7 +121,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(null);
-//        mainPanel.add(toolbarPanel, BorderLayout.NORTH);
+        mainPanel.add(toolbarPanel, BorderLayout.NORTH);
         mainPanel.add(verticalSplit, BorderLayout.CENTER);
 
         window.setContentPanel(mainPanel);
@@ -251,6 +251,10 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         }
     }
 
+    public ComponentToolbarStringTemplate getToolbar() {
+        return toolbar;
+    }
+
     public ComponentEditor getSelectedEditor() {
         return getSelectedContainer().getEditor();
     }
@@ -305,6 +309,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         componentContainerStringTemplateMenu.close();
 
         editor.close();
+        toolbar.close();
 
        return true;
     }
@@ -436,7 +441,10 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
     }
 
     private void switchToEditor(final ComponentEditorStringTemplate editor) {
+        setComponent(toolbarPanel, toolbar.getToolbar());
         setComponent(rulesPanel, editor.getComponentRules());
+
+        toolbar.updateStates();
 
         editor.refreshMainMenuBar();
 

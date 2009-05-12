@@ -59,6 +59,7 @@ public class AWPrefs {
     public static final String PREF_ANTLR3_OPTIONS = "PREF_ANTLR3_OPTIONS";
 
     public static final String PREF_TOOLBAR_SORT = "PREF_TOOLBAR_SORT";
+    public static final String PREF_TOOLBAR_ST_SORT = "PREF_TOOLBAR_ST_SORT";
 
     public static final int STARTUP_NEW_DOC = 0;
     public static final int STARTUP_OPEN_LAST_OPENED_DOC = 1;
