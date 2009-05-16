@@ -49,12 +49,20 @@ public class GoToHistory {
         // when adding a new position (forward
         // doesn't make sense anymore)
         int index = history.size()-1;
-        while(index >= currentIndex) {
+        while(index > currentIndex) {
             history.remove(index);
             index--;
         }
-        history.add(pos);
-        currentIndex = history.size();
+
+        if(history.isEmpty()) {
+            history.add(pos);
+        } else {
+            // add only if the last position is not the same
+            if(!history.get(history.size()-1).equals(pos)) {
+                history.add(pos);
+            }
+        }
+        currentIndex = history.size()-1;
     }
 
     public boolean canGoBack() {
@@ -66,11 +74,11 @@ public class GoToHistory {
     }
 
     public int getBackPosition(int currentPosition) {
-        if(currentIndex == history.size()) {
+        if(currentIndex == history.size()-1) {
             // Add the current position if the currentIndex
             // is at the end of the history (so Forward is able
             // to come back)
-            history.add(currentPosition);
+            addPosition(currentPosition);
         }
 
         currentIndex--;
@@ -81,7 +89,7 @@ public class GoToHistory {
 
     public int getForwardPosition() {
         currentIndex++;
-        if(currentIndex >= history.size())
+        if(currentIndex > history.size()-1)
             currentIndex = history.size()-1;
         return history.get(currentIndex);
     }
