@@ -37,8 +37,10 @@ import org.antlr.works.utils.Console;
 
 public class CheckGrammar implements Runnable {
 
-    protected CheckGrammarDelegate delegate;
-    protected ComponentEditorGrammar editor;
+    private volatile CheckGrammarDelegate delegate;
+    private volatile ComponentEditorGrammar editor;
+
+    private volatile boolean cancelled = false;
 
     public CheckGrammar(ComponentEditorGrammar editor, CheckGrammarDelegate delegate) {
         this.editor = editor;
@@ -46,6 +48,7 @@ public class CheckGrammar implements Runnable {
     }
 
     public void close() {
+        editor.hideProgress();                
         editor = null;
         delegate = null;
     }
@@ -55,6 +58,7 @@ public class CheckGrammar implements Runnable {
     }
 
     public void cancel() {
+        cancelled = true;
         editor.getGrammarEngine().cancelAnalyze();
     }
 
@@ -69,7 +73,9 @@ public class CheckGrammar implements Runnable {
             // Result cannot be null, so report the exception
             result = new GrammarResult(e);
         }
-        delegate.checkGrammarDidEnd(this, result);
+        if(!cancelled) {
+            delegate.checkGrammarDidEnd(this, result);            
+        }
     }
 
 }
