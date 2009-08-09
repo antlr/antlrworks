@@ -72,7 +72,6 @@ public class StatisticsAW {
     public static final int EVENT_SHOW_TOKENS_DFA = 41;
     public static final int EVENT_SHOW_DECISION_DFA = 42;
     public static final int EVENT_SHOW_RULE_DEPENDENCY = 44;
-    public static final int EVENT_INSERT_RULE_TEMPLATE = 45;
     public static final int EVENT_RULE_GROUP = 45;
     public static final int EVENT_RULE_UNGROUP = 46;
     public static final int EVENT_CHECK_GRAMMAR = 47;
@@ -161,7 +160,6 @@ public class StatisticsAW {
         register(EVENT_SHOW_TOKENS_DFA, "Show tokens DFA");
         register(EVENT_SHOW_DECISION_DFA, "Show decision DFA");
         register(EVENT_SHOW_RULE_DEPENDENCY, "Show rule dependency");
-        register(EVENT_INSERT_RULE_TEMPLATE, "Insert rule from template");
         register(EVENT_RULE_GROUP, "Group rule");
         register(EVENT_RULE_UNGROUP, "Ungroup rule");
         register(EVENT_CHECK_GRAMMAR, "Check grammar");

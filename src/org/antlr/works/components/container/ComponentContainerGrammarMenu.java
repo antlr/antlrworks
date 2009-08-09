@@ -37,9 +37,8 @@ import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.xjlib.appkit.menu.*;
 import org.antlr.xjlib.appkit.app.XJApplication;
-import org.antlr.xjlib.appkit.frame.XJWindowInterface;
+import org.antlr.xjlib.appkit.menu.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -83,7 +82,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public static final int MI_SHOW_DEPENDENCY = 52;
     public static final int MI_SHOW_TOKENS_SD = 53;
     public static final int MI_SHOW_TOKENS_DFA = 54;
-    public static final int MI_INSERT_TEMPLATE = 55;
     public static final int MI_GROUP_RULE = 56;
     public static final int MI_UNGROUP_RULE = 57;
     public static final int MI_IGNORE_RULE = 58;
@@ -339,7 +337,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensSyntaxDiagram"), MI_SHOW_TOKENS_SD, this));
         menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.showTokensDFA"), MI_SHOW_TOKENS_DFA, this));
         menu.addSeparator();
-        menu.addItem(new XJMenuItem(resourceBundle.getString("menu.item.insertRuleFromTemplate"), KeyEvent.VK_T, MI_INSERT_TEMPLATE, this));
 
         XJMenu rules = new XJMenu();
         rules.setTitle(resourceBundle.getString("menu.title.rules"));
@@ -527,7 +524,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
             case MI_REMOVE_ALL_LEFT_RECURSION:
             case MI_EXTRACT_RULE:
             case MI_INLINE_RULE:
-            case MI_INSERT_TEMPLATE:
             case MI_GROUP_RULE:
             case MI_UNGROUP_RULE:
             case MI_EXPAND_COLLAPSE_RULE:
@@ -659,10 +655,6 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
 
             case MI_SHOW_DEPENDENCY:
                 actionGrammar.showDependency();
-                break;
-
-            case MI_INSERT_TEMPLATE:
-                actionGrammar.insertRuleFromTemplate();
                 break;
 
             case MI_GROUP_RULE:

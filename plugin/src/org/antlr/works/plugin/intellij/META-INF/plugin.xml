@@ -2,7 +2,7 @@
 <idea-plugin>
     <name>ANTLRWorks</name>
     <id>ANTLRWorks</id>
-    <version>1.2.3</version>
+    <version>1.3b</version>
     <description>ANTLRWorks is a grammar development environment for ANTLR v3 grammars. It combines an excellent grammar-aware editor with an interpreter for rapid prototyping and a language-agnostic debugger for isolating grammar errors. ANTLRWorks helps eliminate grammar nondeterminisms, one of the most difficult problems for beginners and experts alike, by highlighting nondeterministic paths in the syntax diagram associated with a grammar. ANTLRWorks' goal is to make grammars more accessible to the average programmer, improve maintainability and readability of grammars by providing excellent grammar navigation and refactoring tools, and address the most common questions and problems encountered by grammar developers</description>
 
     <vendor url="http://www.antlr.org/works">ANTLR Project</vendor>
@@ -10,18 +10,10 @@
     <idea-version since-build="7941"/>
 
     <change-notes><![CDATA[
-Version 1.2.3 - 02/21/2009<br>
+Version 1.3b - 06/04/2009<br>
 <br>
-Bug fix:<br>
-    [AW-196] - "Show Decision DFA" gives NullPointerException<br>
-    [AW-197] - NPE when running the interpreter with a project with no associated file on the disk<br>
-    [AW-198] - Debug does not work when the parser is declared to be in a package<br>
-    [AW-202] - Generating the code doesn't work if an error is in the grammar but the generation thread already started<br>
-    [AW-204] - Cannot generate grammar on Windows when file starts with a volume name<br>
-    [AW-215] - Syntax diagrams don't work for composite grammar<br>
+Upcoming...
 <br>
-Improvement:<br>
-    [AW-218] - Select sub-grammar if it is already opened in some grammar window when trying to open it in a stand-alone window<br>
 <br>
 ]]>
     </change-notes>

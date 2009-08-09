@@ -12,7 +12,6 @@ import org.antlr.works.components.container.ComponentContainerGrammarMenu;
 import org.antlr.works.editor.*;
 import org.antlr.works.editor.completion.AutoCompletionMenu;
 import org.antlr.works.editor.completion.AutoCompletionMenuDelegate;
-import org.antlr.works.editor.completion.RuleTemplates;
 import org.antlr.works.editor.navigation.GoToHistory;
 import org.antlr.works.editor.navigation.GoToRule;
 import org.antlr.works.find.FindAndReplace;
@@ -89,7 +88,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     /* Completion */
 
     public AutoCompletionMenu autoCompletionMenu;
-    public RuleTemplates ruleTemplates;
 
     /* Tools */
 
@@ -208,11 +206,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
             autoCompletionMenu.close();
         }
         autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), getXJFrame());
-
-        if(ruleTemplates != null) {
-            ruleTemplates.close();
-        }
-        ruleTemplates = new RuleTemplates(this, getTextPane(), getXJFrame());
     }
 
     protected void initCore() {
@@ -343,7 +336,6 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
         findAndReplace.close();
 
         autoCompletionMenu.close();
-        ruleTemplates.close();
 
         decisionDFAEngine.close();
         interpreter.close();

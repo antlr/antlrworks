@@ -71,6 +71,7 @@ public class DialogAbout extends XJPanel {
         tableModel.fireTableDataChanged();
 
         resetAcknowledge();
+        addAcknowledge("Contributions by RP Talusan <rp_talusan@yahoo.com>");
         addAcknowledge("ANTLR and StringTemplate are (c) 1989-2009 Terence Parr");
         addAcknowledge("gUnit is (c) 2008-2009 Leon Jen-Yuan Su");
         addAcknowledge("Application & Mac OS X document icons are (c) Simon Bovet");
@@ -78,7 +79,6 @@ public class DialogAbout extends XJPanel {
         addAcknowledge("Portion of the GUI was created using JFormDesigner, (c) 2004-2005 Karl Tauber");
         addAcknowledge("B-spline algorithm is (c) Leen Ammeraal <http://home.wxs.nl/~ammeraal/grjava.html>");
         addAcknowledge("BrowserLauncher is (c) 2001 Eric Albert <ejalbert@cs.stanford.edu>");
-        addAcknowledge("Contributions by Matthew J. Diehl <good.mdiehl@comcast.net>");
 
         setResizable(false);
         setSize(800, 500);

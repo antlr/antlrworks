@@ -103,11 +103,6 @@ public class ActionGrammar extends ActionAbstract implements CheckGrammarDelegat
         dependency.launch();
     }
 
-    public void insertRuleFromTemplate() {
-        StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INSERT_RULE_TEMPLATE);
-        getSelectedEditor().ruleTemplates.display();
-    }
-
     public void group() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_RULE_GROUP);
 
