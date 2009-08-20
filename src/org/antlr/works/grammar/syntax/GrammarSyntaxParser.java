@@ -375,7 +375,9 @@ public class GrammarSyntaxParser extends ATESyntaxParser {
         if(!matchID(0, "import")) return false;
 
         while(!matchSEMI(0)) {
-            imports.add(new ElementImport(name, T(0)));
+            if(T(0) != null) {
+                imports.add(new ElementImport(name, T(0)));                
+            }
             if(!matchID(0)) {
                 rewind();
                 return false;
