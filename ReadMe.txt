@@ -1,14 +1,11 @@
 
-***** Bugs
-http://www.antlr.org:8888/browse/AW
-
 ***** Release check-list
-- make sure all the bugs are resolved in http://www.antlr.org:8888/browse/AW
+- make sure all the bugs are resolved in http://www.antlr.org/jira/browse/AW
 - make sure ANTLRWorks is compiled against the correct version of ANTLR and ST sources
 - update the ANTLR and ST jar files in main/lib
 - change version number (and date when it applies) into these files:
     - main/build.properties
-    - main/src/org/antlr/works/properties/strings.properties
+    - main/resources/properties/strings.properties
     - main/plugin/src/org/antlr/works/plugin/properties/strings.properties
     - main/plugin/src/org/antlr/works/plugin/intellij/META-INF/plugin.xml
 - update history in:

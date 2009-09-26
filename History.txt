@@ -1,3 +1,18 @@
+
+Version 1.3 - 09/26/2009
+
+New Features:
+    [AW-235] - New Grammar Wizard
+    [AW-236] - StringTemplate editor
+    [AW-237] - Custom test rig
+    [AW-238] - Run input on a grammar
+
+Bug fix:
+    [AW-223] - NullPointerException when closing ANTLRWorks
+    [AW-230] - cast exception with left recursive grammar
+    [AW-244] - syntax error causes AW to crash
+    [AW-228] - Generated classes are not placed into directories according to package declarations
+
 Version 1.2.3 - 02/23/2009
 
 Bug fix:
