@@ -8,7 +8,7 @@ $import$
 public class $class_name$ {
 
     public static void main(String args[]) throws Exception {
-        $java_lexer$ lex = new $java_lexer$(new ANTLRFileStream("$input_file$"));
+        $java_lexer$ lex = new $java_lexer$(new ANTLRFileStream("$input_file$", "UTF8"));
         CommonTokenStream tokens = new CommonTokenStream(lex);
 
         $java_parser$ g = new $java_parser$(tokens, $port$, null);
