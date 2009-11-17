@@ -195,8 +195,10 @@ public class XJWindow extends XJFrame implements XJWindowInterface {
 
     @Override
     public void windowActivated() {
-        getMainMenuBar().refresh();
-        //XJMainMenuBar.refreshAllMenuBars();
+        final XJMainMenuBar mmb = getMainMenuBar();
+        if(mmb != null) {
+            mmb.refresh();
+        }
 
         if(hasDocuments()) {
             reloadDocuments();

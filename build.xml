@@ -40,6 +40,7 @@
                 destdir="${build.dir}"
                 source="1.5"
                 target="1.5"
+                debug="true"
                 excludes="org/antlr/works/test/**">
             <classpath refid="classpath"/>
             <src path="${aw.source}"/>
@@ -52,6 +53,7 @@
                 destdir="${build.dir}"
                 source="1.5"
                 target="1.5"
+                debug="true"
                 excludes="org/antlr/works/test/**, **/XJApplicationMacOS.java">
             <classpath refid="classpath"/>
             <src path="${aw.source}"/>
@@ -65,10 +67,8 @@
             <fileset dir="${aw.resources}"/>
             <fileset dir="${build.dir}" includes="**/*.class"/>
 
-            <zipfileset src="${aw.lib}/${antlr2.jar}" excludes="**/*.txt"/>
             <zipfileset src="${aw.lib}/${antlr3.jar}" excludes="**/*.txt"/>
             <zipfileset src="${aw.lib}/${jgoodies.jar}"/>
-            <zipfileset src="${aw.lib}/${st.jar}" excludes="**/*.txt"/>
 
             <manifest>
                 <attribute name="Version" value="${version}"/>
@@ -84,7 +84,8 @@
         <javac
                 destdir="${plugin.build.dir}"
                 source="1.5"
-                target="1.5">
+                target="1.5"
+                debug="true">
             <classpath refid="classpath"/>
             <classpath>
                 <fileset dir="${intellij.lib}" includes="*.jar"/>

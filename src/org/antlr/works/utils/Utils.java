@@ -50,8 +50,9 @@ public class Utils {
                     c += fis.read(b, c, x-c);
                 }
                 return new String(b);
-            } else
-                return null;
+            } else {
+                return "";                
+            }
         } finally {
             fis.close();
         }

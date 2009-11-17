@@ -106,17 +106,15 @@ public class PIEditor implements FileEditor, PluginContainerDelegate {
 
     private void registerKeybindings() {
         // Must register custom action in order to override the default mechanism in IntelliJ 7
-        if(PIUtils.isRunningWithIntelliJ7OrAbove()) {
-            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
-                    DefaultEditorKit.beginLineAction);
-            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, Event.SHIFT_MASK),
-                    DefaultEditorKit.selectionBeginLineAction);
+        registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
+                DefaultEditorKit.beginLineAction);
+        registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, Event.SHIFT_MASK),
+                DefaultEditorKit.selectionBeginLineAction);
 
-            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
-                    DefaultEditorKit.endLineAction);
-            registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_END, Event.SHIFT_MASK),
-                    DefaultEditorKit.selectionEndLineAction);
-        }
+        registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
+                DefaultEditorKit.endLineAction);
+        registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_END, Event.SHIFT_MASK),
+                DefaultEditorKit.selectionEndLineAction);
     }
 
     private void registerKeyBinding(KeyStroke ks, final String action) {
