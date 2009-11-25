@@ -127,11 +127,22 @@
     <target name="zip-source">
         <mkdir dir="${src.dist.dir}"/>
 
+        <copy todir="${src.dist.dir}">
+            <fileset dir=".">
+                <include name="build.properties"/>
+                <include name="build.xml"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${src.dist.dir}/resources">
+            <fileset dir="${aw.resources}"/>
+        </copy>
+
         <copy todir="${src.dist.dir}/src/aw">
             <fileset dir="${aw.source}"/>
         </copy>
 
-        <copy todir="${src.dist.dir}/src/plugin">
+        <copy todir="${src.dist.dir}/plugin/src">
             <fileset dir="${plugin.source}"/>
         </copy>
 
