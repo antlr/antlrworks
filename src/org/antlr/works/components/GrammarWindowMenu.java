@@ -29,11 +29,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.components.container;
+package org.antlr.works.components;
 
 import org.antlr.works.IDE;
-import org.antlr.works.components.editor.GrammarEditor;
-import org.antlr.works.editor.EditorTab;
+import org.antlr.works.editor.GrammarWindowTab;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
@@ -45,7 +44,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ResourceBundle;
 
-public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
+public class GrammarWindowMenu implements XJMenuItemDelegate {
 
     public static final int MI_PRINT = 5;
 
@@ -129,54 +128,42 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public static final int MI_PRIVATE_UNREGISTER = 200;
     public static final int MI_SERIALIZE_SD = 201;
 
-    private ActionFind actionFind;
-    private ActionGrammar actionGrammar;
-    private ActionGoTo actionGoTo;
-    private ActionGenerate actionGenerate;
-    private ActionDebugger actionDebugger;
-    private ActionExport actionExport;
+    private FindMenu actionFind;
+    private org.antlr.works.menu.GrammarMenu actionGrammar;
+    private GoToMenu actionGoTo;
+    private GenerateMenu actionGenerate;
+    private DebugMenu debugMenu;
+    private ExportMenu actionExport;
     private ActionRefactor actionRefactor;
 
-    private DocumentContainer container;
+    private GrammarWindow window;
     private XJMenuItem ignoreRuleMenuItem;
 
     /** The resource bundle used to get localized strings */
     private static ResourceBundle resourceBundle = IDE.getMenusResourceBundle();
 
-    public ComponentContainerGrammarMenu(DocumentContainer container) {
-        this.container = container;
+    public GrammarWindowMenu(GrammarWindow window) {
+        this.window = window;
 
-        actionFind = new ActionFind(container);
-        actionGrammar = new ActionGrammar(container);
-        actionGoTo = new ActionGoTo(container);
-        actionGenerate = new ActionGenerate(container);
-        actionDebugger = new ActionDebuggerImpl(container);
-        actionExport = new ActionExport(container);
-        actionRefactor = new ActionRefactorImpl(container);
+        actionFind = new FindMenu(window);
+        actionGrammar = new org.antlr.works.menu.GrammarMenu(window);
+        actionGoTo = new GoToMenu(window);
+        actionGenerate = new GenerateMenu(window);
+        debugMenu = new DebugMenu(window);
+        actionExport = new ExportMenu(window);
+        actionRefactor = new GrammarRefactorMenu(window);
     }
 
     public void close() {
-        actionFind.close();
-        actionGrammar.close();
-        actionGoTo.close();
         actionGenerate.close();
-        actionDebugger.close();
-        actionExport.close();
-        actionRefactor.close();
-
-        container = null;
     }
 
     public void awake() {
         actionGenerate.awake();
     }
 
-    public GrammarEditor getEditor() {
-        return (GrammarEditor)container.getSelectedEditor();
-    }
-
     public boolean isDebuggerRunning() {
-        return actionDebugger.isRunning();
+        return debugMenu.isRunning();
     }
 
     public void customizeFileMenu(XJMenu menu) {
@@ -250,11 +237,11 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
         String language = null;
         String menuItemName;
 
-        if (container.getDebugger() != null) {
-            if (container.getDebugger().getDelegate().getDocument() != null)
-                grammarName = container.getDebugger().getDelegate().getDocument().getDocumentName();
-            if (container.getDebugger().getDelegate().getGrammarEngine() != null)
-                language = container.getDebugger().getDelegate().getGrammarEngine().getGrammarLanguage();
+        if (window.getDebugger() != null) {
+            if (window.getDebugger().getDelegate().getDocument() != null)
+                grammarName = window.getDebugger().getDelegate().getDocument().getDocumentName();
+            if (window.getDebugger().getDelegate().getGrammarEngine() != null)
+                language = window.getDebugger().getDelegate().getGrammarEngine().getGrammarLanguage();
         }
 
         if (grammarName != null && !"".equals(grammarName))
@@ -453,12 +440,12 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     }
 
     public JPopupMenu getContextualMenu(int textIndex) {
-        boolean overReference = getEditor().getCurrentReference() != null;
-        boolean overToken = getEditor().getCurrentToken() != null;
-        boolean overRule = getEditor().getCurrentRule() != null;
-        boolean overSelection = getEditor().getTextPane().getSelectionStart() != getEditor().getTextPane().getSelectionEnd();
-        boolean overDecisionDFA = getEditor().decisionDFAEngine.isDecisionPointAroundLocation(getEditor().getTextEditor().getLineIndexAtTextPosition(textIndex),
-                getEditor().getTextEditor().getColumnPositionAtIndex(textIndex));
+        boolean overReference = window.getCurrentReference() != null;
+        boolean overToken = window.getCurrentToken() != null;
+        boolean overRule = window.getCurrentRule() != null;
+        boolean overSelection = window.getTextPane().getSelectionStart() != window.getTextPane().getSelectionEnd();
+        boolean overDecisionDFA = window.decisionDFAEngine.isDecisionPointAroundLocation(window.getTextEditor().getLineIndexAtTextPosition(textIndex),
+                window.getTextEditor().getColumnPositionAtIndex(textIndex));
 
         ContextualMenuFactory factory = new ContextualMenuFactory(this);
         factory.addItem(MI_GOTO_RULE);
@@ -494,7 +481,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     }
 
     public void menuItemState(final XJMenuItem item) {
-        EditorTab tab = getEditor().getSelectedTab();
+        GrammarWindowTab tab = window.getSelectedTab();
 
         switch(item.getTag()) {
             case XJMainMenuBar.MI_UNDO:
@@ -512,7 +499,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
 
             case XJMainMenuBar.MI_CUT:
             case XJMainMenuBar.MI_PASTE:
-                item.setEnabled(getEditor().isFileWritable());
+                item.setEnabled(window.isFileWritable());
                 break;
 
             case MI_RENAME:
@@ -535,7 +522,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_DEBUG_AGAIN:
-                item.setEnabled(!isDebuggerRunning() && actionDebugger.canDebugAgain());
+                item.setEnabled(!isDebuggerRunning() && debugMenu.canDebugAgain());
                 break;
 
             case MI_EDIT_TEST_RIG:
@@ -553,10 +540,10 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_GOTO_BACK:
-                item.setEnabled(getEditor().goToHistory.canGoBack());
+                item.setEnabled(window.goToHistory.canGoBack());
                 break;
             case MI_GOTO_FORWARD:
-                item.setEnabled(getEditor().goToHistory.canGoForward());
+                item.setEnabled(window.goToHistory.canGoForward());
                 break;
 
             case MI_EXPORT_AS_IMAGE:
@@ -572,12 +559,12 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
                 break;
 
             case MI_DEBUG_SHOW_INPUT_TOKENS:
-                item.setTitle(actionDebugger.isInputTokenVisible()?
+                item.setTitle(debugMenu.isInputTokenVisible()?
                         resourceBundle.getString("menu.item.hideInputTokens") : resourceBundle.getString("menu.item.showInputTokens"));
                 break;
 
             case MI_HIGHLIGHT_DECISION_DFA:
-                if(getEditor().decisionDFAEngine.getDecisionDFACount() == 0) {
+                if(window.decisionDFAEngine.getDecisionDFACount() == 0) {
                     item.setSelected(false);
                 } else {
                     item.setSelected(true);
@@ -587,7 +574,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     }
 
     public void handleMenuSelected(XJMenu menu) {
-        boolean ignored = getEditor().rules.getFirstSelectedRuleIgnoredFlag();
+        boolean ignored = window.rules.getFirstSelectedRuleIgnoredFlag();
         ignoreRuleMenuItem.setSelected(ignored);
     }
 
@@ -606,7 +593,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public void handleMenuFile(int itemTag) {
         switch(itemTag) {
             case MI_PRINT:
-                getEditor().print();
+                window.print();
                 break;
         }
     }
@@ -777,32 +764,32 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     public void handleMenuRun(int itemTag) {
         switch(itemTag) {
             case MI_RUN_INTERPRETER:
-                actionDebugger.runInterpreter();
+                debugMenu.runInterpreter();
                 break;
 
             case MI_RUN:
-                actionDebugger.run();
+                debugMenu.run();
                 break;
 
             case MI_DEBUG:
-                actionDebugger.debug();
+                debugMenu.debug();
                 break;
 
             case MI_DEBUG_AGAIN:
-                actionDebugger.debugAgain();
+                debugMenu.debugAgain();
                 break;
 
             case MI_DEBUG_REMOTE:
-                actionDebugger.debugRemote();
+                debugMenu.debugRemote();
                 break;
 
             case MI_DEBUG_SHOW_INPUT_TOKENS:
-                actionDebugger.toggleInputTokens();
-                getEditor().refreshMainMenuBar();
+                debugMenu.toggleInputTokens();
+                window.refreshMainMenuBar();
                 break;
 
             case MI_EDIT_TEST_RIG:
-                actionDebugger.showEditTestRig();
+                debugMenu.showEditTestRig();
                 break;
         }
     }
@@ -813,7 +800,7 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
                 AWPrefs.removeUserRegistration();
                 break;
             case MI_SERIALIZE_SD:
-                getEditor().visual.serializeSyntaxDiagram();
+                window.visual.serializeSyntaxDiagram();
                 break;
         }
     }
@@ -850,11 +837,11 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
         return actionRefactor;
     }
 
-    public ActionDebugger getActionDebugger() {
-        return actionDebugger;
+    public DebugMenu getActionDebugger() {
+        return debugMenu;
     }
 
-    public ActionGoTo getActionGoTo() {
+    public GoToMenu getActionGoTo() {
         return actionGoTo;
     }
 }

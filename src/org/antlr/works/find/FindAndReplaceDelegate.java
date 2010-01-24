@@ -1,11 +1,10 @@
-package org.antlr.works.components;
+package org.antlr.works.find;
 
-import javax.swing.*;
-import java.awt.*;
-/*
+import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.ate.ATETextPane;/*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2009 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -33,24 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ComponentStatusBar extends Box {
+public interface FindAndReplaceDelegate {
+    String getText();
+    void setText(String text);
 
-    public ComponentStatusBar() {
-        super(BoxLayout.X_AXIS);
-    }
-
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        Rectangle r = getBounds();
-
-        g.setColor(Color.darkGray);
-        g.drawLine(0, 0, r.width, 0);
-
-        g.setColor(Color.lightGray);
-        g.drawLine(0, 1, r.width, 1);
-
-        //g.setColor(Color.red);
-        //g.drawRect(0, 0, r.width, r.height);
-    }
+    ATEPanel getTextEditor();
+    ATETextPane getTextPane();
 }

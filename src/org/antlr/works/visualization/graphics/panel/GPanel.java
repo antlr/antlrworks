@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics.panel;
 
-import org.antlr.works.components.container.ComponentContainerGrammarMenu;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
+import org.antlr.works.components.GrammarWindowMenu;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.stats.StatisticsAW;
@@ -70,9 +70,9 @@ public class GPanel implements XJNotificationObserver {
     protected JScrollPane viewScrollPane;
 
     protected ElementRule rule;
-    protected GrammarEditor editor;
+    protected GrammarWindow editor;
 
-    public GPanel(GrammarEditor editor, GContext context) {
+    public GPanel(GrammarWindow editor, GContext context) {
         this.editor = editor;
         this.context = context;
         this.container = new JPanel(new BorderLayout());
@@ -463,8 +463,8 @@ public class GPanel implements XJNotificationObserver {
 
         public JPopupMenu getContextualMenu() {
             ContextualMenuFactory factory = editor.createContextualMenuFactory();
-            factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_EPS);
-            factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_IMAGE);
+            factory.addItem(GrammarWindowMenu.MI_EXPORT_AS_EPS);
+            factory.addItem(GrammarWindowMenu.MI_EXPORT_AS_IMAGE);
             return factory.menu;
         }
 

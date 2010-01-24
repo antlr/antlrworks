@@ -37,7 +37,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.utils.XJFileChooser;
@@ -50,7 +50,7 @@ import java.awt.event.ActionListener;
 
 public class DialogGenerate extends XJDialog {
 
-    public DialogGenerate(Container parent, GrammarEditor editor) {
+    public DialogGenerate(Container parent, GrammarWindow window) {
         super(parent, true);
 
         initComponents();
@@ -70,7 +70,7 @@ public class DialogGenerate extends XJDialog {
         setOKButton(okButton);
         setCancelButton(cancelButton);
 
-        outputPathField.setText(editor.getOutputPath());
+        outputPathField.setText(window.getOutputPath());
 
         browseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {

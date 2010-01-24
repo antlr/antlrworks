@@ -1,7 +1,7 @@
 package org.antlr.works.editor;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.editor.tips.TipsManager;
 import org.antlr.works.editor.tips.TipsOverlay;
 import org.antlr.works.editor.tips.TipsProvider;
@@ -45,15 +45,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class EditorTips implements TipsProvider {
 
     public TipsManager tipsManager;
-    public GrammarEditor editor;
+    public GrammarWindow window;
 
-    public EditorTips(GrammarEditor editor) {
-        this.editor = editor;
+    public EditorTips(GrammarWindow window) {
+        this.window = window;
     }
 
     public void awake() {
         tipsManager = new TipsManager();
-        tipsManager.setOverlay(new TipsOverlay(editor.getXJFrame(), editor.getTextPane()));
+        tipsManager.setOverlay(new TipsOverlay(window, window.getTextPane()));
         tipsManager.addProvider(this);
     }
 
@@ -66,27 +66,27 @@ public class EditorTips implements TipsProvider {
     }
 
     public void close() {
-        editor = null;
+        window = null;
         tipsManager.close();
     }
 
     public void display(Point relativePoint, Point absolutePoint) {
-        if(editor.getTokens() == null)
+        if(window.getTokens() == null)
             return;
 
-        int position = editor.getTextPane().viewToModel(relativePoint);
+        int position = window.getTextPane().viewToModel(relativePoint);
 
         Point p = null;
         try {
-            ATEToken token = editor.getTokenAtPosition(position, false);
+            ATEToken token = window.getTokenAtPosition(position, false);
             if(token != null) {
                 // Make sure the mouse is over the token because
                 // Swing will return a valid position even if the mouse
                 // is on the remaining blank part of the line
-                Rectangle r1 = editor.getTextPane().modelToView(token.getStartIndex());
-                Rectangle r2 = editor.getTextPane().modelToView(token.getEndIndex());
+                Rectangle r1 = window.getTextPane().modelToView(token.getStartIndex());
+                Rectangle r2 = window.getTextPane().modelToView(token.getEndIndex());
                 if(r1.union(r2).contains(relativePoint)) {
-                    p = SwingUtilities.convertPoint(editor.getTextPane(), new Point(relativePoint.x+2, r2.y-5), editor.getXJFrame().getJavaContainer());
+                    p = SwingUtilities.convertPoint(window.getTextPane(), new Point(relativePoint.x+2, r2.y-5), window.getJavaContainer());
                 }
             }
         } catch (BadLocationException e) {
@@ -98,7 +98,7 @@ public class EditorTips implements TipsProvider {
     public List<String> tipsProviderGetTips(int position) {
         List<String> tips = new ArrayList<String>();
 
-        List<EditorInspectorItem> items = editor.editorInspector.getAllItemsAtIndex(position);
+        List<EditorInspectorItem> items = window.editorInspector.getAllItemsAtIndex(position);
         for (EditorInspectorItem item : items) {
             tips.add(item.description);
         }

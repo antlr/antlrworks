@@ -1,13 +1,11 @@
-package org.antlr.works.menu;
+package org.antlr.works.components;
 
-import org.antlr.works.components.GrammarWindowMenu;
-import org.antlr.xjlib.appkit.menu.XJMenuItem;
-
-import javax.swing.*;
-/*
+import org.antlr.works.utils.Localizable;
+import org.antlr.xjlib.appkit.document.XJDataPlainText;
+import org.antlr.xjlib.appkit.document.XJDocumentFactory;/*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005-07 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -35,27 +33,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ContextualMenuFactory {
+public class GrammarDocumentFactory extends XJDocumentFactory {
 
-    public JPopupMenu menu = new JPopupMenu();
-    public boolean shouldInsertSeparator = false;
-    private GrammarWindowMenu grammarWindowMenu;
-
-    public ContextualMenuFactory(GrammarWindowMenu grammarWindowMenu) {
-        this.grammarWindowMenu = grammarWindowMenu;
+    // todo provide factory?
+    public GrammarDocumentFactory(Class windowClass) {
+        super(GrammarDocument.class,
+                windowClass,
+                XJDataPlainText.class,
+                "g",
+                Localizable.getLocalizedString(Localizable.DOCUMENT_TYPE));
     }
 
-    public void addSeparator() {
-        shouldInsertSeparator = true;
-    }
-
-    public XJMenuItem addItem(int tag) {
-        if(shouldInsertSeparator) {
-            menu.addSeparator();
-            shouldInsertSeparator = false;
-        }
-        XJMenuItem item = grammarWindowMenu.createMenuItem(tag, true);
-        menu.add(item.getSwingComponent());
-        return item;
-    }
 }

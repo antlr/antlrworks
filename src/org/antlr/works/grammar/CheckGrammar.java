@@ -31,25 +31,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.grammar;
 
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.grammar.antlr.GrammarResult;
 import org.antlr.works.utils.Console;
 
 public class CheckGrammar implements Runnable {
 
     private volatile CheckGrammarDelegate delegate;
-    private volatile GrammarEditor editor;
+    private volatile GrammarWindow window;
 
     private volatile boolean cancelled = false;
 
-    public CheckGrammar(GrammarEditor editor, CheckGrammarDelegate delegate) {
-        this.editor = editor;
+    public CheckGrammar(GrammarWindow window, CheckGrammarDelegate delegate) {
+        this.window = window;
         this.delegate = delegate;
     }
 
     public void close() {
-        editor.hideProgress();                
-        editor = null;
+        window.hideProgress();
+        window = null;
         delegate = null;
     }
 
@@ -59,17 +59,17 @@ public class CheckGrammar implements Runnable {
 
     public void cancel() {
         cancelled = true;
-        editor.getGrammarEngine().cancelAnalyze();
+        window.getGrammarEngine().cancelAnalyze();
     }
 
     public void run() {
-        editor.getConsole().setMode(Console.MODE_VERBOSE);
+        window.getConsole().setMode(Console.MODE_VERBOSE);
         delegate.checkGrammarDidBegin(this);
         GrammarResult result;
         try {
-            result = editor.getGrammarEngine().analyze();
+            result = window.getGrammarEngine().analyze();
         } catch (Exception e) {
-            editor.getConsole().println(e);
+            window.getConsole().println(e);
             // Result cannot be null, so report the exception
             result = new GrammarResult(e);
         }

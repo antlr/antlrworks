@@ -33,7 +33,7 @@ package org.antlr.works.generate;
 
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
@@ -52,19 +52,19 @@ public class CodeGenerate implements Runnable {
 
     private boolean debug = true;
 
-    protected GrammarEditor editor;
+    protected GrammarWindow window;
     protected CodeGenerateDelegate delegate;
 
     protected long dateOfModificationOnDisk = 0;
     protected String lastError;
 
-    public CodeGenerate(GrammarEditor editor, CodeGenerateDelegate delegate) {
-        this.editor = editor;
+    public CodeGenerate(GrammarWindow window, CodeGenerateDelegate delegate) {
+        this.window = window;
         this.delegate = delegate;
     }
 
     public void close() {
-        editor = null;
+        window = null;
         delegate = null;
     }
 
@@ -73,15 +73,15 @@ public class CodeGenerate implements Runnable {
     }
 
     public String getOutputPath() {
-        return editor.getOutputPath();
+        return window.getOutputPath();
     }
 
     public String getGrammarLanguage() {
-        return editor.getGrammarEngine().getGrammarLanguage();
+        return window.getGrammarEngine().getGrammarLanguage();
     }
 
     public String getGrammarName() {
-        return editor.getGrammarEngine().getGrammarName();
+        return window.getGrammarEngine().getGrammarName();
     }
 
     public String getLastError() {
@@ -94,9 +94,9 @@ public class CodeGenerate implements Runnable {
 
         String[] params;
         if(debug)
-            params = new String[] { "-debug", "-o", getOutputPath(), "-lib", editor.getFileFolder(), editor.getFilePath() };
+            params = new String[] { "-debug", "-o", getOutputPath(), "-lib", window.getFileFolder(), window.getFilePath() };
         else
-            params = new String[] { "-o", getOutputPath(), "-lib", editor.getFileFolder(), editor.getFilePath() };
+            params = new String[] { "-o", getOutputPath(), "-lib", window.getFileFolder(), window.getFilePath() };
 
         new File(getOutputPath()).mkdirs();
 
@@ -105,7 +105,7 @@ public class CodeGenerate implements Runnable {
 
         boolean success = !el.hasErrors();
         if(success) {
-            dateOfModificationOnDisk = editor.getDocument().getDateOfModificationOnDisk();
+            dateOfModificationOnDisk = window.getDocument().getDateOfModificationOnDisk();
         }
         lastError = el.getFirstErrorMessage();
         el.clear();
@@ -115,14 +115,14 @@ public class CodeGenerate implements Runnable {
 
     public List<String> getGeneratedFileNames() throws Exception {
         List<String> files = new ArrayList<String>();
-        for(String name : editor.getGrammarEngine().getAllGeneratedNames()) {
+        for(String name : window.getGrammarEngine().getAllGeneratedNames()) {
             files.add(XJUtils.concatPath(getOutputPath(), name+".java"));
         }
         return files;
     }
 
     public String getGeneratedFileName(int type) throws Exception {
-        String className = editor.getGrammarEngine().getGeneratedClassName(type);
+        String className = window.getGrammarEngine().getGeneratedClassName(type);
         if(className == null) return null;
         return XJUtils.concatPath(getOutputPath(), className+".java");
     }
@@ -132,13 +132,13 @@ public class CodeGenerate implements Runnable {
             String file = getGeneratedFileName(type);
             return file == null || new File(file).exists();
         } catch (Exception e) {
-            editor.getConsole().println(e);
+            window.getConsole().println(e);
         }
         return false;
     }
 
     public boolean isFileModifiedSinceLastGeneration() {
-        return dateOfModificationOnDisk != editor.getDocument().getDateOfModificationOnDisk();
+        return dateOfModificationOnDisk != window.getDocument().getDateOfModificationOnDisk();
     }
 
     public void generateInThread(Container parent) {
@@ -154,7 +154,7 @@ public class CodeGenerate implements Runnable {
     public void generateInThreadDidTerminate() {
         progress.close();
         if(generateError != null) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the grammar because:\n"+generateError);
+            XJAlert.display(window.getJavaContainer(), "Error", "Cannot generate the grammar because:\n"+generateError);
             if(delegate != null) {
                 delegate.codeGenerateDidCompleteWithError(generateError);
             }
@@ -163,7 +163,7 @@ public class CodeGenerate implements Runnable {
                 if(AWPrefs.isAlertGenerateCodeSuccess()) {
                     XJAlert alert = XJAlert.createInstance();
                     alert.setDisplayDoNotShowAgainButton(true);
-                    alert.showSimple(editor.getWindowContainer(), "Success", "The grammar has been successfully generated in path:\n"+getOutputPath());
+                    alert.showSimple(window.getJavaContainer(), "Success", "The grammar has been successfully generated in path:\n"+getOutputPath());
                     AWPrefs.setAlertGenerateCodeSuccess(!alert.isDoNotShowAgain());
                 }
             }
@@ -179,7 +179,7 @@ public class CodeGenerate implements Runnable {
     public void run() {
         generateError = null;
 
-        editor.getConsole().setMode(Console.MODE_VERBOSE);
+        window.getConsole().setMode(Console.MODE_VERBOSE);
 
         try {
             if(!generate()) {
@@ -187,7 +187,7 @@ public class CodeGenerate implements Runnable {
             }
         } catch (Exception e) {
             generateError = e.toString();
-            editor.getConsole().println(e);
+            window.getConsole().println(e);
         }
 
         SwingUtilities.invokeLater(new Runnable() {

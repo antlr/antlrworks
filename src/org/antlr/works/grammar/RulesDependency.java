@@ -1,7 +1,7 @@
 package org.antlr.works.grammar;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.xjlib.appkit.utils.XJAlert;
@@ -47,8 +47,8 @@ public class RulesDependency extends GrammarDOTTab {
 
     protected boolean includeLexerRefs;
 
-    public RulesDependency(GrammarEditor editor) {
-        super(editor);
+    public RulesDependency(GrammarWindow window) {
+        super(window);
     }
 
     @Override
@@ -57,16 +57,16 @@ public class RulesDependency extends GrammarDOTTab {
         if(!checkForCurrentRule())
             return false;
 
-        ElementRule rule = editor.getCurrentRule();
-        List<ElementReference> refs = editor.rules.getReferencesInRule(rule);
+        ElementRule rule = window.getCurrentRule();
+        List<ElementReference> refs = window.rules.getReferencesInRule(rule);
         if(refs == null || refs.isEmpty()) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "The selected rule doesn't contain any references");
+            XJAlert.display(window.getJavaContainer(), "Error", "The selected rule doesn't contain any references");
             return false;
         }
 
         includeLexerRefs = true;
-        if(!rule.lexer && editor.getGrammarEngine().isCombinedGrammar()) {
-            includeLexerRefs = XJAlert.displayAlertYESNO(editor.getWindowContainer(), "Rule Dependency Graph", "Do you want to include lexer references ?") == XJAlert.YES;
+        if(!rule.lexer && window.getGrammarEngine().isCombinedGrammar()) {
+            includeLexerRefs = XJAlert.displayAlertYESNO(window.getJavaContainer(), "Rule Dependency Graph", "Do you want to include lexer references ?") == XJAlert.YES;
         }
 
         return true;
@@ -74,7 +74,7 @@ public class RulesDependency extends GrammarDOTTab {
 
     @Override
     public String getDOTString() throws Exception {
-        ElementRule rule = editor.getCurrentRule();
+        ElementRule rule = window.getCurrentRule();
 
         visitedRules.clear();
         visitedRefs.clear();
@@ -93,7 +93,7 @@ public class RulesDependency extends GrammarDOTTab {
 
         visitedRules.add(rule.name);
 
-        List<ElementReference> refs = editor.rules.getReferencesInRule(rule);
+        List<ElementReference> refs = window.rules.getReferencesInRule(rule);
         if(refs == null || refs.isEmpty())
             return;
 
@@ -113,7 +113,7 @@ public class RulesDependency extends GrammarDOTTab {
             dependency.append(";\n");
 
             if (!visitedRules.contains(refRuleName))
-                buildGraph(editor.getGrammarEngine().getRuleWithName(refRuleName));
+                buildGraph(window.getGrammarEngine().getRuleWithName(refRuleName));
         }
     }
 

@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ConsoleHelper;
 import org.antlr.works.utils.Toolbar;
@@ -46,9 +46,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EditorConsole extends EditorTab implements Console {
-
-    protected GrammarEditor editor;
+public class GrammarWindowConsole extends GrammarWindowTab implements Console {
 
     protected JPanel panel;
     protected JTextArea textArea;
@@ -56,8 +54,8 @@ public class EditorConsole extends EditorTab implements Console {
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     protected Map<Thread,Integer> modeByThread = new HashMap<Thread, Integer>();
 
-    public EditorConsole(GrammarEditor editor) {
-        this.editor = editor;
+    public GrammarWindowConsole(GrammarWindow window) {
+        super(window);
 
         panel = new JPanel(new BorderLayout());
         Toolbar box = Toolbar.createHorizontalToolbar();
@@ -80,7 +78,6 @@ public class EditorConsole extends EditorTab implements Console {
     }
 
     public void close() {
-        editor = null;
         if(ConsoleHelper.getCurrent() == this) {
             ConsoleHelper.setCurrent(null);
         }
@@ -111,7 +108,7 @@ public class EditorConsole extends EditorTab implements Console {
 
     public void clear() {
         textArea.setText("");
-        editor.clearConsoleStatus();
+        window.clearConsoleStatus();
     }
 
     public synchronized void println(String s) {
@@ -142,7 +139,7 @@ public class EditorConsole extends EditorTab implements Console {
         System.out.println(s);
 
         if(getMode() == Console.MODE_VERBOSE) {
-            editor.consolePrint(s, level);            
+            window.consolePrint(s, level);
         }
     }
 

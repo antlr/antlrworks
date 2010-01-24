@@ -1,6 +1,5 @@
 package org.antlr.works.stringtemplate;
 
-import org.antlr.works.components.container.DocumentContainer;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.Toolbar;
@@ -52,17 +51,17 @@ public class ComponentToolbarStringTemplate {
 
     public JButton find;
 
-    public DocumentContainer container;
+    public STWindow window;
 
-    public ComponentToolbarStringTemplate(DocumentContainer container) {
-        this.container = container;
+    public ComponentToolbarStringTemplate(STWindow window) {
+        this.window = window;
 
         createInterface();
         addActions();
     }
 
     public void close() {
-        container = null;
+        window = null;
         AWPrefs.getPreferences().unbindFromPreferences(sort, AWPrefs.PREF_TOOLBAR_ST_SORT);
     }
 
@@ -82,11 +81,11 @@ public class ComponentToolbarStringTemplate {
     }
 
     public void updateStates() {
-        sort.setSelected(getSelectedEditor().isRulesSorted());
+        sort.setSelected(window.isRulesSorted());
     }
 
-    public StringTemplateEditor getSelectedEditor() {
-        return (StringTemplateEditor)container.getSelectedEditor();
+    public STWindow getSelectedEditor() {
+        return window;
     }
 
     public void addActions() {

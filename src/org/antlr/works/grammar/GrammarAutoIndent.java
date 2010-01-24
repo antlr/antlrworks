@@ -1,7 +1,7 @@
 package org.antlr.works.grammar;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.prefs.AWPrefs;
 
 import javax.swing.text.BadLocationException;
@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class GrammarAutoIndent {
 
-    public static void autoIndentOnSpecificKeys(GrammarEditor editor, Document doc, int offset, int length) throws BadLocationException {
+    public static void autoIndentOnSpecificKeys(GrammarWindow window, Document doc, int offset, int length) throws BadLocationException {
         String s = doc.getText(offset-1, length+1);
         if(s.length() < 2)
             return;
@@ -57,7 +57,7 @@ public class GrammarAutoIndent {
         } else if(c2 == ':') {
             // Disable the auto-indent on ':' if we are in a block, action, etc.
             // This is indicated by the fact that the token has a scope.
-            ATEToken token = editor.getCurrentToken();
+            ATEToken token = window.getCurrentToken();
             if(token != null && token.scope != null)
                 return;
 

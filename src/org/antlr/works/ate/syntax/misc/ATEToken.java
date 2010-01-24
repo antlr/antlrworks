@@ -51,7 +51,7 @@ public class ATEToken implements Comparable {
     protected String attribute; // the portion of text covered by this token (subset of text)
 
     public int index;   // index inside the tokens list
-    public boolean modified;    // true if the token has been modified in the text editor
+    public boolean modified;    // true if the token has been modified in the text window
     public ATEScope scope;
 
     public ATEToken(int type, int start, int end,

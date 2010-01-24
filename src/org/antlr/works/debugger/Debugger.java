@@ -33,7 +33,7 @@ package org.antlr.works.debugger;
 
 import org.antlr.runtime.ClassicToken;
 import org.antlr.runtime.Token;
-import org.antlr.works.components.container.ComponentContainerGrammarMenu;
+import org.antlr.works.components.GrammarWindowMenu;
 import org.antlr.works.debugger.api.DebuggerDelegate;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.events.DBEventEnterRule;
@@ -50,7 +50,7 @@ import org.antlr.works.debugger.tree.DBASTModel;
 import org.antlr.works.debugger.tree.DBASTPanel;
 import org.antlr.works.debugger.tree.DBParseTreeModel;
 import org.antlr.works.debugger.tree.DBParseTreePanel;
-import org.antlr.works.editor.EditorTab;
+import org.antlr.works.editor.GrammarWindowTab;
 import org.antlr.works.grammar.element.ElementBlock;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.menu.ContextualMenuFactory;
@@ -73,7 +73,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Debugger extends EditorTab implements DetachablePanelDelegate {
+public class Debugger extends GrammarWindowTab implements DetachablePanelDelegate {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
 
@@ -123,6 +123,7 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
     private String rootGrammarName;
 
     public Debugger(DebuggerDelegate delegate) {
+        super(null);
         this.delegate = delegate;
     }
 
@@ -684,8 +685,8 @@ public class Debugger extends EditorTab implements DetachablePanelDelegate {
 
     public JPopupMenu treeGetContextualMenu() {
         ContextualMenuFactory factory = delegate.createContextualMenuFactory();
-        factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_EPS);
-        factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_IMAGE);
+        factory.addItem(GrammarWindowMenu.MI_EXPORT_AS_EPS);
+        factory.addItem(GrammarWindowMenu.MI_EXPORT_AS_IMAGE);
         return factory.menu;
     }
 

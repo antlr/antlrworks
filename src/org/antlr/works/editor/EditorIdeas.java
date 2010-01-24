@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.editor.idea.*;
 import org.antlr.works.grammar.element.ElementRule;
 
@@ -41,21 +41,21 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
 
     public IdeaManager ideaManager;
-    public GrammarEditor editor;
+    public GrammarWindow window;
 
-    public EditorIdeas(GrammarEditor editor) {
-        this.editor = editor;
+    public EditorIdeas(GrammarWindow window) {
+        this.window = window;
     }
 
     public void awake() {
         ideaManager = new IdeaManager();
-        ideaManager.setOverlay(new IdeaOverlay(editor, editor.getXJFrame(), editor.getTextPane()));
+        ideaManager.setOverlay(new IdeaOverlay(window, window.getTextPane()));
         ideaManager.addProvider(this);
         ideaManager.setDelegate(this);
     }
 
     public void close() {
-        editor = null;
+        window = null;
         ideaManager.close();
     }
 
@@ -73,7 +73,7 @@ public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
 
     public List<IdeaAction> ideaProviderGetActions(int position) {
         List<IdeaAction> actions = new ArrayList<IdeaAction>();
-        List<EditorInspectorItem> items = editor.editorInspector.getAllItemsAtIndex(position);
+        List<EditorInspectorItem> items = window.editorInspector.getAllItemsAtIndex(position);
         for (EditorInspectorItem item : items) {
             List<IdeaAction> itemActions = item.getIdeaActions();
             if (itemActions != null)
@@ -84,15 +84,15 @@ public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
 
 
     public boolean ideaManagerWillDisplayIdea() {
-        return !editor.autoCompletionMenu.isVisible() && editor.isFileWritable();
+        return !window.autoCompletionMenu.isVisible() && window.isFileWritable();
     }
 
     public void display(Point p) {
-        display(editor.getTextPane().viewToModel(p));
+        display(window.getTextPane().viewToModel(p));
     }
 
     public void display(int position) {
-        ElementRule enclosingRule = editor.rules.getEnclosingRuleAtPosition(position);
+        ElementRule enclosingRule = window.rules.getEnclosingRuleAtPosition(position);
         if(enclosingRule == null || enclosingRule.isExpanded())
             ideaManager.displayAnyIdeasAvailable(position);
     }

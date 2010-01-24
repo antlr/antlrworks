@@ -1,6 +1,6 @@
 package org.antlr.works.grammar.decisiondfa;
 
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.editor.EditorInspectorItem;
 import org.antlr.works.editor.idea.IdeaAction;
 
@@ -9,10 +9,10 @@ import java.util.List;
 
 public class DecisionDFAItem extends EditorInspectorItem {
 
-    private GrammarEditor editor;
+    private GrammarWindow window;
 
-    public DecisionDFAItem(GrammarEditor editor) {
-        this.editor = editor;
+    public DecisionDFAItem(GrammarWindow window) {
+        this.window = window;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class DecisionDFAItem extends EditorInspectorItem {
     public void ideaActionFire(IdeaAction action, int actionID) {
         switch(actionID) {
             case IDEA_DECISION_DFA:
-                DecisionDFA decision = new DecisionDFA(editor);
+                DecisionDFA decision = new DecisionDFA(window);
                 decision.launch();
                 break;
         }

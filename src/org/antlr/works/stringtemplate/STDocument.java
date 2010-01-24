@@ -1,7 +1,9 @@
 package org.antlr.works.stringtemplate;
 
-import org.antlr.works.components.document.AWDocument;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.xjlib.appkit.document.XJDataPlainText;
+import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.File;/*
 
@@ -34,13 +36,30 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class STDocument extends AWDocument {
+public class STDocument extends XJDocument {
+
+    @Override
+    public STWindow getWindow() {
+        return (STWindow) super.getWindow();
+    }
+
+    @Override
+    public void documentWillWriteData() {
+        XJDataPlainText data = (XJDataPlainText)getDocumentData();
+        data.setText(XJUtils.getLocalizedText(getWindow().getText()));
+    }
+
+    @Override
+    public void documentDidReadData() {
+        XJDataPlainText data = (XJDataPlainText)getDocumentData();
+        getWindow().loadText(XJUtils.getNormalizedText(data.getText()));
+    }
 
     @Override
     public boolean save(boolean saveAs) {
         // Make sure the document can be saved before calling the super class method to do
         // the actual job
-        if(getEditor().componentDocumentWillSave()) {
+        if(getWindow().componentDocumentWillSave()) {
             if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
                 // Create the backup file if needed
                 File backup = new File(documentPath+"~");

@@ -1,7 +1,15 @@
-/*
+package org.antlr.works.menu;
+
+import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.editor.EditorRules;
+import org.antlr.works.find.FindAndReplace;
+import org.antlr.works.find.Usages;
+
+import java.util.List;/*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2009 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,42 +37,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-package org.antlr.works.menu;
+public interface FindMenuDelegate {
+    void find();
 
-import org.antlr.works.components.container.DocumentContainer;
-import org.antlr.works.components.editor.DocumentEditor;
+    FindAndReplace getFindAndReplace();
 
-import javax.swing.*;
+    ATEPanel getTextEditor();
 
-public abstract class ActionAbstract {
+    ATEToken getCurrentToken();
 
-    private DocumentContainer container;
+    List<ATEToken> getTokens();
 
-    public ActionAbstract(DocumentContainer container) {
-        this.container = container;
-    }
+    //List<ElementTemplateRule> getRules();
 
-    public void close() {
-        container = null;
-    }
+    EditorRules getEditorRules();
 
-    public DocumentContainer getContainer() {
-        return container;
-    }
+    void addTab(Usages usage);
 
-    public DocumentEditor getSelectedEditor() {
-        return container.getSelectedEditor();
-    }
+    void selectTextRange(int startIndex, int endIndex);
 
-    public JTextPane getTextPane() {
-        return getSelectedEditor().getTextPane();
-    }
-
-    public void setCaretPosition(int position) {
-        getSelectedEditor().setCaretPosition(position);
-    }
-
-    public int getCaretPosition() {
-        return getSelectedEditor().getTextEditor().getCaretPosition();
-    }
 }

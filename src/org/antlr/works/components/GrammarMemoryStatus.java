@@ -37,13 +37,13 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-public class ComponentMemoryStatus extends JPanel {
+public class GrammarMemoryStatus extends JPanel {
 
     private final JButton gcButton = XJRollOverButton.createTextButton("");
 
     private Timer timer;
 
-    public ComponentMemoryStatus() {
+    public GrammarMemoryStatus() {
         super(new BorderLayout());
         setOpaque(false);
 

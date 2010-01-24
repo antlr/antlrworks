@@ -33,11 +33,10 @@ package org.antlr.works;
 
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
+import org.antlr.works.components.GrammarDocument;
+import org.antlr.works.components.GrammarDocumentFactory;
 import org.antlr.works.components.GrammarWindow;
-import org.antlr.works.components.container.ComponentContainerGrammarMenu;
-import org.antlr.works.components.document.AWDocument;
-import org.antlr.works.components.document.GrammarDocument;
-import org.antlr.works.components.document.GrammarDocumentFactory;
+import org.antlr.works.components.GrammarWindowMenu;
 import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
@@ -337,21 +336,21 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public void customizeHelpMenu(XJMenu menu) {
-        menu.insertItemAfter(new XJMenuItem("Check for Updates", ComponentContainerGrammarMenu.MI_CHECK_UPDATES, this), XJMainMenuBar.MI_HELP);
-        menu.insertItemAfter(new XJMenuItem("Send Feedback", ComponentContainerGrammarMenu.MI_SEND_FEEDBACK, this), XJMainMenuBar.MI_HELP);
-        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", ComponentContainerGrammarMenu.MI_SUBMIT_STATS, this), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Check for Updates", GrammarWindowMenu.MI_CHECK_UPDATES, this), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Send Feedback", GrammarWindowMenu.MI_SEND_FEEDBACK, this), XJMainMenuBar.MI_HELP);
+        menu.insertItemAfter(new XJMenuItem("Submit Statistics...", GrammarWindowMenu.MI_SUBMIT_STATS, this), XJMainMenuBar.MI_HELP);
         menu.insertSeparatorAfter(XJMainMenuBar.MI_HELP);
     }
 
     public void handleMenuEvent(XJMenu menu, XJMenuItem item) {
         switch(item.getTag()) {
-            case ComponentContainerGrammarMenu.MI_SUBMIT_STATS:
+            case GrammarWindowMenu.MI_SUBMIT_STATS:
                 submitStats(getDefaultParent());
                 break;
-            case ComponentContainerGrammarMenu.MI_SEND_FEEDBACK:
+            case GrammarWindowMenu.MI_SEND_FEEDBACK:
                 submitFeedback(getDefaultParent());
                 break;
-            case ComponentContainerGrammarMenu.MI_CHECK_UPDATES:
+            case GrammarWindowMenu.MI_CHECK_UPDATES:
                 checkUpdates(getDefaultParent());
                 break;
         }
@@ -434,8 +433,8 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
         if (document != null && document instanceof GrammarDocument) {
             NewWizardDialog dialog = new NewWizardDialog(document.getWindow().getJavaContainer());
 
-            if(dialog != null && dialog.runModal() == XJDialog.BUTTON_OK) {
-                ((AWDocument)document).getEditor().loadText(dialog.getGeneratedText());
+            if(dialog.runModal() == XJDialog.BUTTON_OK) {
+                ((GrammarWindow)document.getWindow()).loadText(dialog.getGeneratedText());
                 return true;
             }
         }

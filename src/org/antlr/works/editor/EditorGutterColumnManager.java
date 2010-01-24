@@ -2,7 +2,7 @@ package org.antlr.works.editor;
 
 import org.antlr.works.ate.gutter.ATEGutterColumnManager;
 import org.antlr.works.ate.gutter.ATEGutterItem;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.utils.IconManager;
 
@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorGutterColumnManager extends ATEGutterColumnManager {
 
-    private GrammarEditor editor;
+    private GrammarWindow window;
     private Map<Integer,ATEGutterItem> breakpoints = new HashMap<Integer,ATEGutterItem>();
 
     private static final String RULES = "rules";
@@ -51,9 +51,9 @@ public class EditorGutterColumnManager extends ATEGutterColumnManager {
 
     private static final int DEFAULT_NO_BREAKPOINTS_WIDTH = 5; // to have enough room to click with the mouse if no breakpoints
 
-    public EditorGutterColumnManager(GrammarEditor editor) {
-        super(editor.textEditor);
-        this.editor = editor;
+    public EditorGutterColumnManager(GrammarWindow window) {
+        super(window.textEditor);
+        this.window = window;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class EditorGutterColumnManager extends ATEGutterColumnManager {
     @Override
     public boolean handleClickInColumn(String column, int rowTextIndex) {
         if(column.equals(BREAKPOINTS)) {
-            int line = editor.getTextEditor().getLineIndexAtTextPosition(rowTextIndex);
+            int line = window.getTextEditor().getLineIndexAtTextPosition(rowTextIndex);
             if(!breakpoints.containsKey(line)) {
                 breakpoints.put(line, new BreakpointGutterItem(line));
                 return true;
@@ -88,7 +88,7 @@ public class EditorGutterColumnManager extends ATEGutterColumnManager {
     public List<ATEGutterItem> getGutterItems(String column) {
         if(column.equals(RULES)) {
             List<ATEGutterItem> items = new ArrayList<ATEGutterItem>();
-            List<ElementRule> rules = editor.getGrammarEngine().getRules();
+            List<ElementRule> rules = window.getGrammarEngine().getRules();
             if(rules != null) {
                 for(ElementRule r : rules) {
                     items.add(r);
@@ -109,7 +109,7 @@ public class EditorGutterColumnManager extends ATEGutterColumnManager {
     @Override
     public void close() {
         super.close();
-        editor = null;
+        window = null;
     }
 
     public Set<Integer> getBreakpoints() {
@@ -129,7 +129,7 @@ public class EditorGutterColumnManager extends ATEGutterColumnManager {
         }
 
         public int getItemIndex() {
-            Point index = editor.getTextEditor().getLineTextPositionsAtLineIndex(line);
+            Point index = window.getTextEditor().getLineTextPositionsAtLineIndex(line);
             return index.x;
         }
 

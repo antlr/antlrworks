@@ -3,7 +3,7 @@ package org.antlr.works.editor;
 import org.antlr.works.ate.swing.ATERenderingToken;
 import org.antlr.works.ate.swing.ATERenderingView;
 import org.antlr.works.ate.swing.ATERenderingViewDelegate;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.grammar.element.Jumpable;
 
 import javax.swing.text.*;
@@ -44,7 +44,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class EditorATEEditorKit extends StyledEditorKit
         implements ViewFactory, ATERenderingViewDelegate {
 
-    private GrammarEditor editor;
+    private GrammarWindow window;
     private final Set<ATERenderingView> views = new HashSet<ATERenderingView>();
 
     private final List<ATERenderingToken> indexes = new ArrayList<ATERenderingToken>();
@@ -56,8 +56,8 @@ public class EditorATEEditorKit extends StyledEditorKit
     private final HighlightedReferenceStartToken highlightedReferenceStartToken = new HighlightedReferenceStartToken();
     private final HighlightedReferenceToken highlightedReferenceToken = new HighlightedReferenceToken();
 
-    public EditorATEEditorKit(GrammarEditor editor) {
-        this.editor = editor;
+    public EditorATEEditorKit(GrammarWindow window) {
+        this.window = window;
     }
 
     public void close() {
@@ -65,7 +65,7 @@ public class EditorATEEditorKit extends StyledEditorKit
             v.close();
         }
         views.clear();
-        editor = null;
+        window = null;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class EditorATEEditorKit extends StyledEditorKit
     }
 
     public View create(Element elem) {
-        ATERenderingView v = new ATERenderingView(elem, editor.getTextEditor());
+        ATERenderingView v = new ATERenderingView(elem, window.getTextEditor());
         v.setDelegate(this);
         views.add(v);
         return v;
@@ -101,7 +101,7 @@ public class EditorATEEditorKit extends StyledEditorKit
 
     public ATERenderingToken[] getTokens() {
         indexesModified = false;
-        Jumpable ref = editor.getHighlightedReference();
+        Jumpable ref = window.getHighlightedReference();
         if(ref != null) {
             highlightedReferenceStartToken.setIndex(ref.getStartIndex());
             highlightedReferenceToken.setIndex(ref.getEndIndex());
@@ -112,9 +112,9 @@ public class EditorATEEditorKit extends StyledEditorKit
             removeToken(highlightedReferenceStartToken);
             removeToken(highlightedReferenceToken);
         }
-        if(editor.getDebuggerLocation() != -1) {
+        if(window.getDebuggerLocation() != -1) {
             addToken(debuggerCursorToken);
-            debuggerCursorToken.setIndex(editor.getDebuggerLocation());
+            debuggerCursorToken.setIndex(window.getDebuggerLocation());
         } else {
             removeToken(debuggerCursorToken);
         }

@@ -58,5 +58,4 @@ public interface ActionRefactor {
     int insertionIndexForRule(boolean lexer);
     String createRule(String name, String content);
 
-    void close();
 }

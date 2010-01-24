@@ -143,7 +143,7 @@ public class ATEGutter extends JComponent {
     public void changeUpdate(int offset, int length, boolean insert) {
         // To avoid the gutter items to move around when typing character,
         // adapt their index in real-time by incrementing or decrementing
-        // their position based on the changes done in the editor.
+        // their position based on the changes done in the window.
         // The position might not be 100% accurate but at least it avoids
         // some ugly ui shift between a keystroke and the actual analysis
         // of the items

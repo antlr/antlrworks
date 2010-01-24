@@ -1,7 +1,7 @@
 package org.antlr.works.editor;
 
 import org.antlr.works.ate.ATEUnderlyingManager;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 
 import java.awt.*;
 import java.util.List;
@@ -38,23 +38,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorUnderlyingManager extends ATEUnderlyingManager {
 
-    protected GrammarEditor editor;
+    protected GrammarWindow window;
 
-    public EditorUnderlyingManager(GrammarEditor editor) {
-        super(editor.textEditor);
-        this.editor = editor;
+    public EditorUnderlyingManager(GrammarWindow window) {
+        super(window.textEditor);
+        this.window = window;
     }
 
     @Override
     public void close() {
         super.close();
-        editor = null;
+        window = null;
     }
 
     public void render(Graphics g) {
-        renderItems(g, editor.editorInspector.getErrors());
-        renderItems(g, editor.editorInspector.getWarnings());
-        renderItems(g, editor.editorInspector.getDecisionDFAs());
+        renderItems(g, window.editorInspector.getErrors());
+        renderItems(g, window.editorInspector.getWarnings());
+        renderItems(g, window.editorInspector.getDecisionDFAs());
     }
 
     private void renderItems(Graphics g, List<EditorInspectorItem> items) {

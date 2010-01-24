@@ -1,9 +1,9 @@
-package org.antlr.works.menu;
+package org.antlr.works.editor.navigation;
 
-/*
+import java.util.List;/*
 
 [The "BSD licence"]
-Copyright (c) 2005-08 Jean Bovet
+Copyright (c) 2009 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -30,26 +30,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-public interface ActionDebugger {
 
-    void runInterpreter();
-
-    void run();
-
-    void debug();
-    void debugAgain();
-    void debugRemote();
-
-    void toggleInputTokens();
-
-    void showEditTestRig();
-
-    boolean isInputTokenVisible();
-    boolean isRunning();
-    boolean canDebugAgain();
-
-    String getEventsAsString();
-
-    void close();
-
+public interface GoToRuleDelegate {
+    List<String> getRulesStartingWith(String s);
+    boolean goToRule(String name);
 }

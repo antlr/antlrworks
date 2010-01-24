@@ -1,10 +1,9 @@
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.container.DocumentContainer;
 import org.antlr.works.grammar.RefactorMutator;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.stringtemplate.StringTemplateEditor;
+import org.antlr.works.stringtemplate.STWindow;
 import org.antlr.works.stringtemplate.element.ElementTemplateRule;
 import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxLexer;
 import org.antlr.xjlib.appkit.undo.XJUndo;
@@ -43,21 +42,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ActionSTRefactorImpl extends ActionAbstract implements ActionRefactor {
+public class STRefactorMenu implements ActionRefactor {
+    
+    private final STWindow window;
     private EditorTextMutator mutator;
 
-    public ActionSTRefactorImpl(DocumentContainer container) {
-        super(container);
+    public STRefactorMenu(STWindow window) {
+        this.window = window;
     }
 
     public void rename() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_RENAME);
 
-        ATEToken token = getSelectedEditor().getCurrentToken();
+        ATEToken token = window.getCurrentToken();
         if(token == null)
             return;
 
-        String s = (String) JOptionPane.showInputDialog(getSelectedEditor().getJavaContainer(), "Rename '"+token.getAttribute()+"' and its usages to:", "Rename",
+        String s = (String) JOptionPane.showInputDialog(window.getJavaContainer(), "Rename '"+token.getAttribute()+"' and its usages to:", "Rename",
                 JOptionPane.QUESTION_MESSAGE, null, null, token.getAttribute());
         if(s != null && !s.equals(token.getAttribute())) {
             beginRefactor("Rename");
@@ -68,7 +69,7 @@ public class ActionSTRefactorImpl extends ActionAbstract implements ActionRefact
 
     public boolean renameToken(ATEToken t, String name) {
         String attr = t.getAttribute();
-        List<ATEToken> tokens = getSelectedEditor().getTokens();
+        List<ATEToken> tokens = window.getTokens();
 
         boolean isArg = t.type == ATEStringTemplateSyntaxLexer.TOKEN_ARG_DECL ||
                 t.type == ATEStringTemplateSyntaxLexer.TOKEN_ARG_REFERENCE;
@@ -86,7 +87,7 @@ public class ActionSTRefactorImpl extends ActionAbstract implements ActionRefact
                 }
             }
         } else if (isArg) {
-            ElementTemplateRule rule = getRuleAtPosition(getCaretPosition());
+            ElementTemplateRule rule = getRuleAtPosition(window.getCaretPosition());
             for(int index = tokens.size()-1; index>0; index--) {
                 ATEToken token = tokens.get(index);
                 if(!token.getAttribute().equals(attr)) continue;
@@ -106,7 +107,7 @@ public class ActionSTRefactorImpl extends ActionAbstract implements ActionRefact
     }
 
     protected ElementTemplateRule getRuleAtPosition(int pos) {
-        List<ElementTemplateRule> rules = ((StringTemplateEditor)getSelectedEditor()).getRules();
+        List<ElementTemplateRule> rules = window.getRules();
         if(rules == null)
             return null;
 
@@ -118,14 +119,14 @@ public class ActionSTRefactorImpl extends ActionAbstract implements ActionRefact
     }
 
     protected void beginRefactor(String name) {
-        getSelectedEditor().beginGroupChange(name);
+        window.beginGroupChange(name);
         mutator = new EditorTextMutator();
     }
 
     protected void endRefactor() {
         mutator.apply();
         mutator = null;
-        getSelectedEditor().endGroupChange();
+        window.endGroupChange();
     }
 
     public boolean canReplaceLiteralWithTokenLabel(){return false;}
@@ -151,11 +152,11 @@ public class ActionSTRefactorImpl extends ActionAbstract implements ActionRefact
     public String createRule(String name, String content){return null;}
 
     protected void refactorReplaceEditorText(String text) {
-        int oldCaretPosition = getSelectedEditor().getCaretPosition();
-        getSelectedEditor().disableTextPaneUndo();
-        getSelectedEditor().setText(text);
-        getSelectedEditor().enableTextPaneUndo();
-        getSelectedEditor().getTextEditor().setCaretPosition(Math.min(oldCaretPosition, text.length()), false, false);
+        int oldCaretPosition = window.getCaretPosition();
+        window.disableTextPaneUndo();
+        window.setText(text);
+        window.enableTextPaneUndo();
+        window.getTextEditor().setCaretPosition(Math.min(oldCaretPosition, text.length()), false, false);
     }
 
     public class EditorTextMutator implements RefactorMutator {
@@ -163,7 +164,7 @@ public class ActionSTRefactorImpl extends ActionAbstract implements ActionRefact
         public StringBuilder mutableText;
 
         public EditorTextMutator() {
-            mutableText = new StringBuilder(getSelectedEditor().getText());
+            mutableText = new StringBuilder(window.getText());
         }
 
         public void replace(int start, int end, String s) {
@@ -192,11 +193,11 @@ public class ActionSTRefactorImpl extends ActionAbstract implements ActionRefact
 
         public void apply() {
             String text = mutableText.toString();
-            String oldContent = getSelectedEditor().getText();
+            String oldContent = window.getText();
 
             refactorReplaceEditorText(text);
 
-            XJUndo undo = getSelectedEditor().getXJFrame().getUndo(getSelectedEditor().getTextPane());
+            XJUndo undo = window.getUndo(window.getTextPane());
             undo.addEditEvent(new UndoableRefactoringEdit(oldContent, text));
         }
     }

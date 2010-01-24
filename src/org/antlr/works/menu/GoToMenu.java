@@ -32,37 +32,32 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
-import org.antlr.works.components.container.DocumentContainer;
-import org.antlr.works.components.editor.DocumentEditor;
-import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.grammar.element.Jumpable;
 import org.antlr.works.stats.StatisticsAW;
 
 import javax.swing.*;
 import java.util.Set;
 
-public class ActionGoTo extends ActionAbstract {
+public class GoToMenu {
 
-    public ActionGoTo(DocumentContainer editor) {
-        super(editor);
-    }
+    private final GoToMenuDelegate delegate;
 
-    public DocumentEditor getSelectedEditor() {
-        return super.getSelectedEditor();
+    public GoToMenu(GoToMenuDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public void goToRule() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_RULE);
-        getSelectedEditor().getGoToRule().display();
+        delegate.getGoToRule().display();
     }
 
     public void goToDeclaration() {
-        getSelectedEditor().goToDeclaration();
+        delegate.goToDeclaration();
     }
 
     public void goToDeclaration(final Jumpable ref) {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_DECLARATION);
-        getSelectedEditor().goToDeclaration(ref);
+        delegate.goToDeclaration(ref);
     }
 
     public void goToBreakpoint(int direction) {
@@ -71,13 +66,13 @@ public class ActionGoTo extends ActionAbstract {
         else
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_NEXT_BRKPT);
 
-        Set<Integer> breakpoints = ((GrammarEditor)getSelectedEditor()).getBreakpoints();
-        int line = getSelectedEditor().getTextEditor().getLineIndexAtTextPosition(getCaretPosition());
+        Set<Integer> breakpoints = delegate.getBreakpoints();
+        int line = delegate.getTextEditor().getLineIndexAtTextPosition(delegate.getCaretPosition());
         if(line == -1) return;
 
         while(true) {
             line += direction;
-            if(line < 0 || line > ((GrammarEditor)getSelectedEditor()).getGrammarEngine().getNumberOfLines()-1)
+            if(line < 0 || line > (delegate).getGrammarEngine().getNumberOfLines()-1)
                 break;
 
             if(breakpoints.contains(Integer.valueOf(line))) {
@@ -89,7 +84,7 @@ public class ActionGoTo extends ActionAbstract {
 
     public void goToLine() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_LINE);
-        String s = (String)JOptionPane.showInputDialog(getSelectedEditor().getJavaContainer(), "Line number:", "Go To Line",
+        String s = (String)JOptionPane.showInputDialog(delegate.getJavaContainer(), "Line number:", "Go To Line",
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if(s != null) {
             moveCursorToLine(Integer.parseInt(s)-1);
@@ -98,34 +93,34 @@ public class ActionGoTo extends ActionAbstract {
 
     public void goToCharacter() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_CHAR);
-        String s = (String)JOptionPane.showInputDialog(getSelectedEditor().getJavaContainer(), "Character number:", "Go To Character",
+        String s = (String)JOptionPane.showInputDialog(delegate.getJavaContainer(), "Character number:", "Go To Character",
                 JOptionPane.QUESTION_MESSAGE, null, null, null);
         if(s != null) {
             int character = Integer.parseInt(s);
-            if(character < 0 || character > getTextPane().getDocument().getLength()-1)
+            if(character < 0 || character > delegate.getTextPane().getDocument().getLength()-1)
                 return;
 
-            getSelectedEditor().goToHistoryRememberCurrentPosition();
+            delegate.goToHistoryRememberCurrentPosition();
 
-            setCaretPosition(character);
+            delegate.setCaretPosition(character);
         }
     }
 
     public void goToBackward() {
-        getSelectedEditor().goToBackward();
+        delegate.goToBackward();
     }
 
     public void goToForward() {
-        getSelectedEditor().goToForward();
+        delegate.goToForward();
     }
 
     public void moveCursorToLine(int lineIndex) {
-        if(lineIndex < 0 || lineIndex > getSelectedEditor().getLines().size()-1)
+        if(lineIndex < 0 || lineIndex > delegate.getLines().size()-1)
             return;
 
-        ATELine line = getSelectedEditor().getLines().get(lineIndex);
-        getSelectedEditor().goToHistoryRememberCurrentPosition();
-        setCaretPosition(line.position);
+        ATELine line = delegate.getLines().get(lineIndex);
+        delegate.goToHistoryRememberCurrentPosition();
+        delegate.setCaretPosition(line.position);
     }
 
 }

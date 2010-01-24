@@ -36,9 +36,9 @@ import org.antlr.runtime.tree.ParseTree;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.container.ComponentContainerGrammarMenu;
-import org.antlr.works.components.editor.GrammarEditor;
-import org.antlr.works.editor.EditorTab;
+import org.antlr.works.components.GrammarWindow;
+import org.antlr.works.components.GrammarWindowMenu;
+import org.antlr.works.editor.GrammarWindowTab;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.menu.ContextualMenuFactory;
@@ -63,7 +63,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class EditorInterpreter extends EditorTab implements Runnable, AWTreePanelDelegate {
+public class InterpreterTab extends GrammarWindowTab implements Runnable, AWTreePanelDelegate {
 
     protected JPanel panel;
     protected JSplitPane splitPane;
@@ -79,15 +79,12 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
     protected String startSymbol = null;
 
-    protected GrammarEditor editor;
-
-    public EditorInterpreter(GrammarEditor editor) {
-        this.editor = editor;
+    public InterpreterTab(GrammarWindow window) {
+        super(window);
     }
 
     public void close() {
         awTreePanel.setDelegate(null);
-        editor = null;
     }
 
     public void awake() {
@@ -120,7 +117,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         panel.add(createControlPanel(), BorderLayout.NORTH);
         panel.add(splitPane, BorderLayout.CENTER);
 
-        editor.getXJFrame().registerUndo(null, textPane);
+        window.registerUndo(null, textPane);
     }
 
     public Box createControlPanel() {
@@ -143,7 +140,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
                 if(AWPrefs.isAlertInterpreterLimitation()) {
                     XJAlert alert = XJAlert.createInstance();
                     alert.setDisplayDoNotShowAgainButton(true);
-                    alert.showSimple(getContainer(), "Warning", "The interpreter does not run actions nor evaluate syntactic predicates." +
+                    alert.showSimple(getContainer(), "Warning", "The interpreterTab does not run actions nor evaluate syntactic predicates." +
                             "\nUse the debugger if you want to use these ANTLR features.");
                     AWPrefs.setAlertInterpreterLimitation(!alert.isDoNotShowAgain());
                 }
@@ -188,7 +185,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         button.setToolTipText("Find the name of all rules containing an action with channel=99");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                editor.findTokensToIgnore(true);
+                window.findTokensToIgnore(true);
             }
         });
         box.add(Box.createHorizontalGlue());
@@ -238,15 +235,15 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     }
 
     public void interpret() {
-        editor.console.makeCurrent();
+        window.console.makeCurrent();
 
         if(progress == null)
-            progress = new XJDialogProgress(editor.getXJFrame());
+            progress = new XJDialogProgress(window);
 
         progress.setInfo("Interpreting...");
 
-        // AW-42: guess always before running the interpreter
-        editor.findTokensToIgnore(false);
+        // AW-42: guess always before running the interpreterTab
+        window.findTokensToIgnore(false);
 
         progress.setCancellable(false);
         progress.setIndeterminate(true);
@@ -257,10 +254,10 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
     public void run() {
         try {
-            editor.getGrammarEngine().analyze();
+            window.getGrammarEngine().analyze();
             process();
         } catch(Exception e) {
-            editor.console.println(e);
+            window.console.println(e);
         } finally {
             runEnded();
         }
@@ -276,22 +273,22 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
     protected void process() {
         progress.setInfo("Interpreting...");
-        editor.console.println("Interpreting...");
+        window.console.println("Interpreting...");
 
         CharStream input = new ANTLRStringStream(Utils.convertRawTextWithEOL(textPane.getText(), eolCombo));
 
-        ANTLRGrammarEngine eg = editor.getGrammarEngine().getANTLRGrammarEngine();
+        ANTLRGrammarEngine eg = window.getGrammarEngine().getANTLRGrammarEngine();
         try {
             eg.createGrammars();
         } catch (Exception e) {
-            editor.console.println(e);
+            window.console.println(e);
             return;
         }
 
         Grammar parser = eg.getParserGrammar();
         Grammar lexer = eg.getLexerGrammar();
         if(lexer == null) {
-            throw new RuntimeException("Lexer is null. Check the grammar before running the interpreter.");
+            throw new RuntimeException("Lexer is null. Check the grammar before running the interpreterTab.");
         }
 
         Interpreter lexEngine = new CustomInterpreter(lexer, input);
@@ -313,7 +310,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
                 t = parseEngine.parse(startSymbol);
             }
         } catch (Exception e) {
-            editor.console.println(e);
+            window.console.println(e);
         }
 
         if(parser != null && t != null) {
@@ -330,7 +327,7 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
         @Override
         public void reportScanError(RecognitionException re) {
             CharStream cs = (CharStream)input;
-            editor.console.println("problem matching token at "+
+            window.console.println("problem matching token at "+
                 cs.getLine()+":"+cs.getCharPositionInLine()+" "+re);
         }
     }
@@ -378,9 +375,9 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
     }
 
     public JPopupMenu awTreeGetContextualMenu() {
-        ContextualMenuFactory factory = editor.createContextualMenuFactory();
-        factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_EPS);
-        factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_IMAGE);
+        ContextualMenuFactory factory = window.createContextualMenuFactory();
+        factory.addItem(GrammarWindowMenu.MI_EXPORT_AS_EPS);
+        factory.addItem(GrammarWindowMenu.MI_EXPORT_AS_IMAGE);
         return factory.menu;
     }
 

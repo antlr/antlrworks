@@ -5,7 +5,7 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Rule;
 import org.antlr.works.ate.ATEUnderlyingManager;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 
 import java.awt.*;
@@ -45,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DecisionDFAEngine {
 
-    private GrammarEditor editor;
+    private GrammarWindow window;
 
     private Set<Integer> usesSemPreds = new HashSet<Integer>();
     private Set<Integer> usesSynPreds = new HashSet<Integer>();
@@ -55,12 +55,12 @@ public class DecisionDFAEngine {
     private Grammar discoveredLexerGrammar;
     private Grammar discoveredParserGrammar;
 
-    public DecisionDFAEngine(GrammarEditor editor) {
-        this.editor = editor;
+    public DecisionDFAEngine(GrammarWindow window) {
+        this.window = window;
     }
 
     public void close() {
-        editor = null;
+        window = null;
     }
 
     public void reset() {
@@ -80,16 +80,16 @@ public class DecisionDFAEngine {
     }
 
     public void discoverAllDecisions() throws Exception {
-        discover(0, editor.getTextEditor().getText().length());
+        discover(0, window.getTextEditor().getText().length());
     }
 
     private void discover(int start, int end) throws Exception {
         Set<Integer> lineIndexes = new HashSet<Integer>();
         for(int index = start; index < end; index++) {
-            lineIndexes.add(editor.getTextEditor().getLineIndexAtTextPosition(index));
+            lineIndexes.add(window.getTextEditor().getLineIndexAtTextPosition(index));
         }
 
-        ANTLRGrammarEngine antlrEngineGrammar = editor.getGrammarEngine().getANTLRGrammarEngine();
+        ANTLRGrammarEngine antlrEngineGrammar = window.getGrammarEngine().getANTLRGrammarEngine();
         antlrEngineGrammar.analyze();
         discoveredLexerGrammar = antlrEngineGrammar.getLexerGrammar();
         discoveredParserGrammar = antlrEngineGrammar.getParserGrammar();
@@ -173,9 +173,9 @@ public class DecisionDFAEngine {
                 if(info.length() > 0) info += ", ";
                 info += dfa.getNumberOfStates()+" states";
 
-                Point p = editor.textEditor.getLineTextPositionsAtLineIndex(lineIndex-1);
+                Point p = window.textEditor.getLineTextPositionsAtLineIndex(lineIndex-1);
                 if(p != null) {
-                    DecisionDFAItem item = new DecisionDFAItem(editor);
+                    DecisionDFAItem item = new DecisionDFAItem(window);
                     item.setAttributes(null, p.x+columnIndex-1, p.x+columnIndex, lineIndex-1, c, title+" ("+info+")");
                     item.shape = ATEUnderlyingManager.SHAPE_RECT;
                     items.add(item);                    
@@ -200,12 +200,12 @@ public class DecisionDFAEngine {
     }
 
     public void refreshMenu() {
-        editor.refreshMainMenuBar();
+        window.getMainMenuBar().refresh();
     }
 
     public void refresh() {
-        editor.textEditor.damage();
-        editor.textEditor.repaint();
+        window.textEditor.damage();
+        window.textEditor.repaint();
     }
 
 }

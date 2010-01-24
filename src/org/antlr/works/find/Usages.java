@@ -32,9 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.find;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.GrammarEditor;
-import org.antlr.works.editor.EditorTab;
+import org.antlr.works.editor.GrammarWindowTab;
 import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.menu.FindMenuDelegate;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -45,7 +45,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class Usages extends EditorTab {
+public class Usages extends GrammarWindowTab {
 
     protected JPanel panel;
     protected JScrollPane treeScrollPane;
@@ -56,11 +56,12 @@ public class Usages extends EditorTab {
     protected DefaultMutableTreeNode node;
     protected String lastRule;
 
-    protected GrammarEditor editor;
     protected ATEToken token;
+    private FindMenuDelegate delegate;
 
-    public Usages(GrammarEditor editor, ATEToken token) {
-        this.editor = editor;
+    public Usages(FindMenuDelegate delegate, ATEToken token) {
+        super(null);
+        this.delegate = delegate;
         this.token = token;
 
         panel = new JPanel(new BorderLayout());
@@ -125,7 +126,7 @@ public class Usages extends EditorTab {
     }
 
     public void selectMatch(UsageMatch match) {
-        editor.selectTextRange(match.token.getStartIndex(), match.token.getEndIndex());
+        delegate.selectTextRange(match.token.getStartIndex(), match.token.getEndIndex());
     }
 
     public String getTabName() {

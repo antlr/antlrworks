@@ -33,7 +33,7 @@ package org.antlr.works.generate;
 
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
-import org.antlr.works.editor.EditorTab;
+import org.antlr.works.editor.GrammarWindowTab;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.document.XJFileMonitor;
 import org.antlr.xjlib.appkit.frame.XJFrame;
@@ -43,7 +43,7 @@ import org.antlr.xjlib.foundation.XJUtils;
 import java.awt.*;
 import java.io.File;
 
-public class CodeDisplay extends EditorTab {
+public class CodeDisplay extends GrammarWindowTab {
 
     private ATEPanel textEditor;
     private String rule;
@@ -51,6 +51,7 @@ public class CodeDisplay extends EditorTab {
     private final XJFileMonitor monitor = new XJFileMonitor();
 
     public CodeDisplay(XJFrame parentFrame) {
+        super(null);
         textEditor = new ATEPanel(parentFrame);
         textEditor.setParserEngine(new ATEJavaSyntaxEngine());
         textEditor.setSyntaxColoring(true);

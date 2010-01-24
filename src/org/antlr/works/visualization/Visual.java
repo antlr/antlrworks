@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.GrammarEditor;
-import org.antlr.works.editor.EditorTab;
+import org.antlr.works.components.GrammarWindow;
+import org.antlr.works.editor.GrammarWindowTab;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.grammar.syntax.GrammarSyntaxEngine;
@@ -52,9 +52,7 @@ import org.antlr.xjlib.appkit.utils.XJFileChooser;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Visual extends EditorTab implements GContextProvider {
-
-    protected GrammarEditor editor;
+public class Visual extends GrammarWindowTab implements GContextProvider {
 
     protected VisualDrawing drawing;
 
@@ -65,8 +63,8 @@ public class Visual extends EditorTab implements GContextProvider {
 
     protected boolean enable = true;
 
-    public Visual(GrammarEditor editor) {
-        this.editor = editor;
+    public Visual(GrammarWindow editor) {
+        super(editor);
 
         skin = new SDSkin();
 
@@ -81,7 +79,7 @@ public class Visual extends EditorTab implements GContextProvider {
     }
 
     public Console getConsole() {
-        return editor.getConsole();
+        return window.getConsole();
     }
 
     public void close() {
@@ -95,7 +93,6 @@ public class Visual extends EditorTab implements GContextProvider {
                 // We don't care if sleep has been interrupted
             }
         }
-        editor = null;
         context.setProvider(null);
     }
 
@@ -155,7 +152,7 @@ public class Visual extends EditorTab implements GContextProvider {
     }
     
     public ANTLRGrammarEngine getEngineGrammar() {
-        return editor.getGrammarEngine().getRootEngine().getANTLRGrammarEngine();
+        return window.getGrammarEngine().getRootEngine().getANTLRGrammarEngine();
     }
 
     public Container getContainer() {
@@ -192,14 +189,14 @@ public class Visual extends EditorTab implements GContextProvider {
 
     public void serializeSyntaxDiagram() {
         XJFileChooser fc = XJFileChooser.shared();
-        if(fc.displaySaveDialog(editor.getJavaContainer(), "txt", "XML representation", false)) {
-            String[] args = new String[] { "-f", editor.getFilePath(),
+        if(fc.displaySaveDialog(window.getJavaContainer(), "txt", "XML representation", false)) {
+            String[] args = new String[] { "-f", window.getFilePath(),
                     "-serialize", fc.getSelectedFilePath(), "-verbose"};
             try {
                 org.antlr.works.Console.main(args);
             } catch (Exception e) {
                 e.printStackTrace();
-                XJAlert.display(editor.getJavaContainer(), "Serialize Syntax Diagram", e.toString());
+                XJAlert.display(window.getJavaContainer(), "Serialize Syntax Diagram", e.toString());
             }
         }
     }

@@ -46,13 +46,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class STRulePanel extends JPanel {
 
-    protected StringTemplateEditor editor;
+    protected STWindow window;
 
     private STRuleModel model;
     private final XJTableView tableView = new XJTableView();
 
-    public STRulePanel(StringTemplateEditor editor) {
-        this.editor = editor;
+    public STRulePanel(STWindow window) {
+        this.window = window;
         model = new STRuleModel();
 
         tableView.setAlternateBackground(true);
@@ -75,7 +75,7 @@ public class STRulePanel extends JPanel {
 
     public void refreshRules() {
         model.clear();
-        List<ElementTemplateRule> rules = ((ATEStringTemplateSyntaxParser)editor.getTextEditor().getParserEngine().getParser()).templateRules;
+        List<ElementTemplateRule> rules = ((ATEStringTemplateSyntaxParser) window.getTextEditor().getParserEngine().getParser()).templateRules;
         for (ElementTemplateRule rule : rules) {
             model.addRule(rule);
         }
@@ -91,7 +91,7 @@ public class STRulePanel extends JPanel {
 
             if (selectedRow > -1) {
                 selectedRuleName = tableView.getTable().getModel().getValueAt(selectedRow, 0).toString();
-                editor.goToRule(selectedRuleName);
+                window.goToRule(selectedRuleName);
             }
 
             tableView.requestFocusInWindow();
@@ -105,7 +105,7 @@ public class STRulePanel extends JPanel {
 
         public void checkForPopupTrigger(MouseEvent e) {
             if(e.isPopupTrigger()) {
-                JPopupMenu menu = editor.rulesGetContextualMenu();
+                JPopupMenu menu = window.rulesGetContextualMenu();
                 if(menu != null)
                     menu.show(e.getComponent(), e.getX(), e.getY());
             }

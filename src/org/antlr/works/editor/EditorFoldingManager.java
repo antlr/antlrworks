@@ -3,7 +3,7 @@ package org.antlr.works.editor;
 import org.antlr.works.ate.folding.ATEFoldingEntity;
 import org.antlr.works.ate.folding.ATEFoldingEntityProxy;
 import org.antlr.works.ate.folding.ATEFoldingManager;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.grammar.element.ElementAction;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.prefs.AWPrefs;
@@ -45,29 +45,29 @@ public class EditorFoldingManager extends ATEFoldingManager {
     protected static final int TAG_RULES = 0;
     protected static final int TAG_ACTIONS = 1;
 
-    protected GrammarEditor editor;
+    protected GrammarWindow window;
 
-    public EditorFoldingManager(GrammarEditor editor) {
-        super(editor.textEditor);
-        this.editor = editor;
+    public EditorFoldingManager(GrammarWindow window) {
+        super(window.textEditor);
+        this.window = window;
     }
 
     @Override
     public void close() {
         super.close();
-        editor = null;
+        window = null;
     }
 
     public void textPaneWillFold() {
         super.textPaneWillFold();
-        editor.disableTextPaneUndo();
+        window.disableTextPaneUndo();
     }
 
     public void textPaneDidFold() {
         super.textPaneDidFold();
-        editor.enableTextPaneUndo();
-        editor.editorIdeas.hide();
-        editor.editorTips.hide();
+        window.enableTextPaneUndo();
+        window.editorIdeas.hide();
+        window.editorTips.hide();
     }
 
     public ATEFoldingEntityProxy createEntityProxy(ATEFoldingEntity entity) {
@@ -83,7 +83,7 @@ public class EditorFoldingManager extends ATEFoldingManager {
     }
 
     public void provideFoldingEntities() {
-        List<ElementRule> rules = editor.getGrammarEngine().getRules();
+        List<ElementRule> rules = window.getGrammarEngine().getRules();
         if(rules != null) {
             for (ElementRule rule : rules) {
                 addEntity(rule);
@@ -92,12 +92,12 @@ public class EditorFoldingManager extends ATEFoldingManager {
 
         // Add only actions that are in expanded rules
         if(AWPrefs.getFoldingEnabled() && AWPrefs.getDisplayActionsAnchorsFolding()) {
-            List<ElementAction> actions = editor.getGrammarEngine().getActions();
+            List<ElementAction> actions = window.getGrammarEngine().getActions();
             if(actions != null) {
                 for (ElementAction action : actions) {
                     if (action.rule.isExpanded()) {
                         // since 1.2, don't display action folding icon to avoid visual clutter
-                        // maybe re-introduce it if the folding is supported one day in the editor
+                        // maybe re-introduce it if the folding is supported one day in the window
                         //addEntity(action);
                     }
                 }
@@ -119,9 +119,9 @@ public class EditorFoldingManager extends ATEFoldingManager {
 
     public ATEFoldingEntity getEntityForKey(Object key, int tag) {
         if(tag == TAG_ACTIONS)
-            return getEntityForIdentifier(editor.getGrammarEngine().getActions(), (String)key);
+            return getEntityForIdentifier(window.getGrammarEngine().getActions(), (String)key);
         else if(tag == TAG_RULES)
-            return getEntityForIdentifier(editor.getGrammarEngine().getRules(), (String)key);
+            return getEntityForIdentifier(window.getGrammarEngine().getRules(), (String)key);
         else
             return null;
     }

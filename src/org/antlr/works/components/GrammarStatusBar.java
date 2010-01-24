@@ -1,12 +1,11 @@
-package org.antlr.works.editor;
+package org.antlr.works.components;
 
-import org.antlr.xjlib.appkit.gview.GView;
-
+import javax.swing.*;
 import java.awt.*;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-2006 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,13 +33,24 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class EditorTab {
-    public boolean canExportToEPS() { return false; }
-    public boolean canExportToBitmap() { return false; }
-    public boolean canExportToDOT() { return false; }
-    public String getDOTString() throws Exception { return null; }
-    public GView getExportableGView() { return null; }
-    public abstract String getTabName();
-    public abstract Component getTabComponent();
-    public void editorActivated() { }
+public class GrammarStatusBar extends Box {
+
+    public GrammarStatusBar() {
+        super(BoxLayout.X_AXIS);
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        Rectangle r = getBounds();
+
+        g.setColor(Color.darkGray);
+        g.drawLine(0, 0, r.width, 0);
+
+        g.setColor(Color.lightGray);
+        g.drawLine(0, 1, r.width, 1);
+
+        //g.setColor(Color.red);
+        //g.drawRect(0, 0, r.width, r.height);
+    }
 }

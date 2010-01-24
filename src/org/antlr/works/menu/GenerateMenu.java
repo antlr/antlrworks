@@ -31,8 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.container.DocumentContainer;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.generate.CodeDisplay;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
@@ -47,39 +46,33 @@ import org.antlr.xjlib.foundation.XJUtils;
 
 import java.io.File;
 
-public class ActionGenerate extends ActionAbstract implements CodeGenerateDelegate, CheckGrammarDelegate {
+public class GenerateMenu implements CodeGenerateDelegate, CheckGrammarDelegate {
 
+    private final GrammarWindow window;
+    
     private String actionShowCodeRule;
     private int actionShowCodeType;
     private boolean actionShowCodeAfterGeneration = false;
 
     private CodeGenerate codeGenerate;
-    private GrammarEditor rootGrammar;
 
     private boolean generating = false;
 
-    public ActionGenerate(DocumentContainer editor) {
-        super(editor);
+    public GenerateMenu(GrammarWindow window) {
+        this.window = window;
     }
 
     public void awake() {
-        rootGrammar = getSelectedEditor();
-        codeGenerate = new CodeGenerate(rootGrammar, this);
+        codeGenerate = new CodeGenerate(window, this);
     }
 
-    @Override
     public void close() {
-        super.close();
         codeGenerate.close();
     }
 
     public void generateCode() {
         actionShowCodeRule = null;
         generateCodeProcess();
-    }
-
-    public GrammarEditor getSelectedEditor() {
-        return (GrammarEditor)super.getSelectedEditor();
     }
 
     public void showGeneratedCode(int type) {
@@ -91,10 +84,10 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
     public void showRuleGeneratedCode() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_RULE_GENERATED_CODE);
 
-        if(getSelectedEditor().getCurrentRule() == null) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "A rule must be selected first.");
+        if(window.getCurrentRule() == null) {
+            XJAlert.display(window.getJavaContainer(), "Error", "A rule must be selected first.");
         } else {
-            ElementRule r = getSelectedEditor().getCurrentRule();
+            ElementRule r = window.getCurrentRule();
             checkAndShowGeneratedCode(r.name, r.lexer?ElementGrammarName.LEXER:ElementGrammarName.PARSER);
         }
     }
@@ -105,32 +98,32 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GENERATE_CODE);
 
-        if(!getSelectedEditor().ensureDocumentSaved())
+        if(!window.ensureDocumentSaved())
             return;
 
-        CheckGrammar checkGrammar = new CheckGrammar(getSelectedEditor(), this);
+        CheckGrammar checkGrammar = new CheckGrammar(window, this);
         checkGrammar.check();
     }
 
     private void generateCodeProcessContinued() {
-        if(!getSelectedEditor().getDocument().autoSave()) {
+        if(!window.getDocument().autoSave()) {
             generating = false;
             return;
         }
 
         codeGenerate.setDebug(false);
-        codeGenerate.generateInThread(getSelectedEditor().getJavaContainer());
+        codeGenerate.generateInThread(window.getJavaContainer());
     }
 
     private void checkAndShowGeneratedCode(String rule, int type) {
         if(!isKnownLanguage()) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Can only show generated grammar for Java language");
+            XJAlert.display(window.getJavaContainer(), "Error", "Can only show generated grammar for Java language");
             return;
         }
 
         if(!codeGenerate.isGeneratedTextFileExisting(type)
                 || codeGenerate.isFileModifiedSinceLastGeneration()
-                || getSelectedEditor().getDocument().isDirty()) {
+                || window.getDocument().isDirty()) {
             // Generate automatically the code and call again
             // this method (using actionShowCodeRule as flag)
             actionShowCodeRule = rule;
@@ -149,34 +142,28 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
     }
 
     private void showGeneratedCode(String rule, int type) {
-        GrammarEditor editor = getSelectedEditor();
-
         String grammarName;
         try {
-            grammarName = editor.getGrammarEngine().getGeneratedClassName(type);
+            grammarName = window.getGrammarEngine().getGeneratedClassName(type);
         } catch (Exception e) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Unable to get the generated class name:\n"+e.toString());
+            XJAlert.display(window.getJavaContainer(), "Error", "Unable to get the generated class name:\n"+e.toString());
             return;
-        }
-        if(editor != rootGrammar) {
-            // if the current grammar is not a root grammar, concat its name with the root grammar
-            grammarName = rootGrammar.getGrammarEngine().getGrammarName()+"_"+grammarName;
         }
 
         String grammarFileName = grammarName+".java";
         String grammarFile = XJUtils.concatPath(codeGenerate.getOutputPath(), grammarFileName);
         if(!new File(grammarFile).exists()) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error",
+            XJAlert.display(window.getJavaContainer(), "Error",
                     "The generated code does not exist. It is probably not supported by the grammar.");
             return;
         }
 
-        CodeDisplay cd = new CodeDisplay(editor.getXJFrame());
+        CodeDisplay cd = new CodeDisplay(window);
         cd.setFile(grammarFile);
         cd.setRule(rule);
         cd.load();
         
-        editor.addTab(cd);
+        window.addTab(cd);
     }
 
     public boolean codeGenerateDisplaySuccess() {
@@ -204,7 +191,7 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
             generateCodeProcessContinued();
         } else {
             generating = false;
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
+            XJAlert.display(window.getJavaContainer(), "Error", "Check Grammar reported some errors:\n"+result.getFirstErrorMessage()+"\nConsult the console for more information.");
         }
         source.close();
     }

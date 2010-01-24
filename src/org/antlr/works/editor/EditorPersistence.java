@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,14 +43,14 @@ public class EditorPersistence {
 
     private Map<String,Map<Object,EditorPersistentObject>> persistence = new HashMap<String, Map<Object,EditorPersistentObject>>();
     private boolean stored = false;
-    private GrammarEditor editor;
+    private GrammarWindow window;
 
-    public EditorPersistence(GrammarEditor editor) {
-        this.editor = editor;
+    public EditorPersistence(GrammarWindow window) {
+        this.window = window;
     }
 
     public void close() {
-        editor = null;
+        window = null;
     }
 
     public void store() {
@@ -58,15 +58,15 @@ public class EditorPersistence {
             return;
         
         stored = true;
-        store(editor.getGrammarEngine().getRules(), KEY_RULES);
-        store(editor.getGrammarEngine().getActions(), KEY_ACTIONS);
+        store(window.getGrammarEngine().getRules(), KEY_RULES);
+        store(window.getGrammarEngine().getActions(), KEY_ACTIONS);
     }
 
     public void restore() {
         if(stored) {
             stored = false;
-            restore(editor.getGrammarEngine().getRules(), KEY_RULES);
-            restore(editor.getGrammarEngine().getActions(), KEY_ACTIONS);
+            restore(window.getGrammarEngine().getRules(), KEY_RULES);
+            restore(window.getGrammarEngine().getActions(), KEY_ACTIONS);
         }
     }
     

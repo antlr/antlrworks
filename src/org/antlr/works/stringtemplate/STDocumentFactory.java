@@ -1,9 +1,6 @@
 package org.antlr.works.stringtemplate;
 
-import org.antlr.works.components.container.DocumentContainer;
-import org.antlr.works.components.editor.DocumentEditor;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
-import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.document.XJDocumentFactory;/*
 
 [The "BSD licence"]
@@ -46,31 +43,4 @@ public class STDocumentFactory extends XJDocumentFactory {
                 "String Template Group (*.stg)");
     }
 
-    @Override
-    public XJDocument createDocument() throws IllegalAccessException, InstantiationException {
-        STDocument doc = (STDocument) super.createDocument();
-        createAndBindEditor(doc);
-        return doc;
-    }
-
-    public STDocument createDocument(DocumentContainer container) {
-        STDocument doc = new STDocument();
-        doc.setDocumentData(new XJDataPlainText());
-        doc.setDocumentFileType(getExtensions(), getDescriptionString());
-
-        createAndBindEditor(doc);
-
-        return doc;
-    }
-
-    private void createAndBindEditor(STDocument document) {
-        DocumentEditor editor = new StringTemplateEditor();
-
-        editor.setDocument(document);
-        document.setEditor(editor);
-
-        DocumentContainer container = document.getContainer();
-        editor.setContainer(container);
-        container.setEditor(editor);
-    }
 }

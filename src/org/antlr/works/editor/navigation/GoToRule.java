@@ -32,9 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.navigation;
 
-import org.antlr.works.components.editor.DocumentEditor;
 import org.antlr.works.utils.OverlayObject;
-import org.antlr.xjlib.appkit.frame.XJFrame;
+import org.antlr.xjlib.appkit.frame.XJWindow;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -53,18 +52,17 @@ public class GoToRule extends OverlayObject {
     public JList matchingRuleList;
     public DefaultListModel matchingRuleListModel;
     public JScrollPane matchingRuleScrollPane;
-    public DocumentEditor editor;
+    public GoToRuleDelegate delegate;
 
     public static final int VISIBLE_MATCHING_RULES = 15;
 
-    public GoToRule(DocumentEditor editor, XJFrame parentFrame, JComponent parentComponent) {
-        super(parentFrame, parentComponent);
-        this.editor = editor;
+    public GoToRule(GoToRuleDelegate delegate, XJWindow window, JComponent parentComponent) {
+        super(window, parentComponent);
+        this.delegate = delegate;
     }
 
     public void close() {
         super.close();
-        editor = null;
     }
 
     public JComponent overlayCreateInterface() {
@@ -139,7 +137,7 @@ public class GoToRule extends OverlayObject {
     public void updateAutoCompletionList() {
         matchingRuleListModel.removeAllElements();
 
-        List<String> rules = editor.getRulesStartingWith(ruleNameField.getText().toLowerCase());
+        List<String> rules = delegate.getRulesStartingWith(ruleNameField.getText().toLowerCase());
         if(rules.isEmpty()) {
             matchingRuleScrollPane.setVisible(false);
             ruleNameField.setForeground(Color.red);
@@ -172,7 +170,7 @@ public class GoToRule extends OverlayObject {
 
         int index = matchingRuleList.getSelectedIndex();
         if(index >= 0) {
-            editor.goToRule((String)matchingRuleListModel.get(index));
+            delegate.goToRule((String)matchingRuleListModel.get(index));
         }
     }
 

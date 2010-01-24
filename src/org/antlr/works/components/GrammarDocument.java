@@ -1,13 +1,3 @@
-package org.antlr.works.components.document;
-
-import org.antlr.works.components.GrammarWindow;
-import org.antlr.works.components.container.DocumentContainer;
-import org.antlr.works.components.editor.DocumentEditor;
-import org.antlr.works.stringtemplate.STWindow;
-import org.antlr.xjlib.appkit.document.XJDataPlainText;
-import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.appkit.frame.XJWindow;
-import org.antlr.xjlib.foundation.XJUtils;
 /*
 
 [The "BSD licence"]
@@ -39,53 +29,49 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class AWDocument extends XJDocument {
+package org.antlr.works.components;
 
-    private DocumentEditor editor;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.xjlib.appkit.document.XJDataPlainText;
+import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.xjlib.foundation.XJUtils;
 
-    public DocumentEditor getEditor() {
-        return editor;
-    }
+import java.io.File;
 
-    public void setEditor(DocumentEditor editor) {
-        this.editor = editor;
-    }
-
-    public DocumentContainer getContainer() {
-        XJWindow w = getWindow();
-        if(w instanceof GrammarWindow) {
-            return ((GrammarWindow)w).getContainer();
-        }
-        if(w instanceof STWindow) {
-            // todo
-            //return ((STWindow)w).getContainer();
-        }
-        return null;
-    }
+public class GrammarDocument extends XJDocument {
 
     @Override
-    public void awake() {
-        super.awake();
-        editor.awake();
-    }
-
-    @Override
-    public void changeDone() {
-        super.changeDone();
-        getContainer().setDirty();
+    public GrammarWindow getWindow() {
+        return (GrammarWindow) super.getWindow();
     }
 
     @Override
     public void documentWillWriteData() {
         XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        data.setText(XJUtils.getLocalizedText(editor.getText()));
+        data.setText(XJUtils.getLocalizedText(getWindow().getText()));
     }
 
     @Override
     public void documentDidReadData() {
         XJDataPlainText data = (XJDataPlainText)getDocumentData();
-        editor.loadText(XJUtils.getNormalizedText(data.getText()));
-        getContainer().documentLoaded(this);
+        getWindow().loadText(XJUtils.getNormalizedText(data.getText()));
+    }
+    
+    @Override
+    public boolean save(boolean saveAs) {
+        // Make sure the document can be saved before calling the super class method to do
+        // the actual job
+        if(getWindow().componentDocumentWillSave()) {
+            if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
+                // Create the backup file if needed
+                File backup = new File(documentPath+"~");
+                if(backup.exists()) backup.delete();
+                new File(documentPath).renameTo(backup);
+            }
+            return super.save(saveAs);
+        } else {
+            return false;
+        }
     }
 
 }

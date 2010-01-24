@@ -32,7 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.find;
 
-import org.antlr.works.components.editor.DocumentEditor;
 import org.antlr.works.dialog.FindAndReplaceDialog;
 import org.antlr.xjlib.appkit.frame.XJFrame;
 import org.antlr.xjlib.appkit.frame.XJFrameDelegate;
@@ -46,7 +45,7 @@ public class FindAndReplace implements XJFrameDelegate {
     public static final String BEGIN_QUOTE = "\\Q";
     public static final String END_QUOTE = "\\E";
 
-    public DocumentEditor editor;
+    public FindAndReplaceDelegate delegate;
     public String findString;
     public String replaceString;
     public int flags;
@@ -57,12 +56,8 @@ public class FindAndReplace implements XJFrameDelegate {
 
     public FindAndReplaceDialog dialog;
 
-    public FindAndReplace(DocumentEditor editor) {
-        this.editor = editor;
-    }
-
-    public void close() {
-        editor = null;
+    public FindAndReplace(FindAndReplaceDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public void find() {
@@ -84,13 +79,13 @@ public class FindAndReplace implements XJFrameDelegate {
     }
 
     public void setPositionToTop() {
-        editor.getTextPane().setSelectionStart(0);
-        editor.getTextPane().setSelectionEnd(0);
+        delegate.getTextPane().setSelectionStart(0);
+        delegate.getTextPane().setSelectionEnd(0);
     }
 
     public void setPositionToBottom() {
-        editor.getTextPane().setSelectionStart(editor.getText().length()-1);
-        editor.getTextPane().setSelectionEnd(editor.getText().length()-1);
+        delegate.getTextPane().setSelectionStart(delegate.getText().length()-1);
+        delegate.getTextPane().setSelectionEnd(delegate.getText().length()-1);
     }
 
     public boolean matching() {
@@ -98,10 +93,10 @@ public class FindAndReplace implements XJFrameDelegate {
         if(p == null)
             return false;
 
-        String text = editor.getText();
+        String text = delegate.getText();
         Matcher m = p.matcher(text);
         if(m.find(0)) {
-            editor.getTextEditor().selectTextRange(m.start(), m.end());
+            delegate.getTextEditor().selectTextRange(m.start(), m.end());
             return true;
         } else {
             return false;
@@ -112,8 +107,8 @@ public class FindAndReplace implements XJFrameDelegate {
         if(findString == null || findString.length() == 0)
             return false;
 
-        int position = editor.getTextPane().getSelectionEnd();
-        String text = editor.getText();
+        int position = delegate.getTextPane().getSelectionEnd();
+        String text = delegate.getText();
 
         Pattern p = getCompiledPattern();
         if(p == null)
@@ -121,7 +116,7 @@ public class FindAndReplace implements XJFrameDelegate {
 
         Matcher m = p.matcher(text);
         if(m.find(position)) {
-            editor.getTextEditor().selectTextRange(m.start(), m.end());
+            delegate.getTextEditor().selectTextRange(m.start(), m.end());
             return true;
         } else {
             return false;
@@ -132,8 +127,8 @@ public class FindAndReplace implements XJFrameDelegate {
         if(findString == null || findString.length() == 0)
             return false;
 
-        int position = editor.getTextPane().getSelectionStart();
-        String text = editor.getText();
+        int position = delegate.getTextPane().getSelectionStart();
+        String text = delegate.getText();
 
         Pattern p = getCompiledPattern();
         if(p == null)
@@ -149,7 +144,7 @@ public class FindAndReplace implements XJFrameDelegate {
             matched = true;
         }
         if(matched) {
-            editor.getTextEditor().selectTextRange(matchStart, matchEnd);
+            delegate.getTextEditor().selectTextRange(matchStart, matchEnd);
             return true;
         } else {
             return false;
@@ -157,9 +152,9 @@ public class FindAndReplace implements XJFrameDelegate {
     }
 
     public void replace() {
-        String t = editor.getTextEditor().getSelectedText();
+        String t = delegate.getTextEditor().getSelectedText();
         if(t != null && t.length() > 0) {
-            editor.getTextEditor().replaceSelectedText(replaceString);
+            delegate.getTextEditor().replaceSelectedText(replaceString);
         }
     }
 
@@ -168,12 +163,12 @@ public class FindAndReplace implements XJFrameDelegate {
         if(p == null)
             return;
 
-        Matcher m = p.matcher(editor.getText());
+        Matcher m = p.matcher(delegate.getText());
         String s = m.replaceAll(replaceString);
 
-        int oldCursorPosition = editor.getTextEditor().getCaretPosition();
-        editor.setText(s);
-        editor.getTextEditor().setCaretPosition(oldCursorPosition, false, false);
+        int oldCursorPosition = delegate.getTextEditor().getCaretPosition();
+        delegate.setText(s);
+        delegate.getTextEditor().setCaretPosition(oldCursorPosition, false, false);
     }
 
     public void display() {
@@ -181,7 +176,7 @@ public class FindAndReplace implements XJFrameDelegate {
             dialog = new FindAndReplaceDialog(this);
         }
         dialog.setDelegate(this);
-        dialog.setFindText(editor.getTextEditor().getSelectedText());
+        dialog.setFindText(delegate.getTextEditor().getSelectedText());
         dialog.show();
     }
 

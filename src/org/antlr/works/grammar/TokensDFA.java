@@ -5,7 +5,7 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Rule;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 /*
 
@@ -40,13 +40,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class TokensDFA extends GrammarDOTTab {
 
-    public TokensDFA(GrammarEditor editor) {
-        super(editor);
+    public TokensDFA(GrammarWindow window) {
+        super(window);
     }
 
     @Override
     public String getDOTString() throws Exception {
-        ANTLRGrammarEngine eg = editor.getGrammarEngine().getANTLRGrammarEngine();
+        ANTLRGrammarEngine eg = window.getGrammarEngine().getANTLRGrammarEngine();
         eg.analyze();
 
         Grammar g = eg.getLexerGrammar();

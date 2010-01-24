@@ -1,7 +1,7 @@
 package org.antlr.works.stringtemplate.menu;
 
+import org.antlr.works.stringtemplate.STWindowMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
-import org.antlr.works.stringtemplate.ComponentContainerStringTemplateMenu;
 
 import javax.swing.*;
 /*
@@ -39,10 +39,10 @@ public class ContextualStringTemplateMenuFactory {
 
     public JPopupMenu menu = new JPopupMenu();
     public boolean shouldInsertSeparator = false;
-    private ComponentContainerStringTemplateMenu componentContainerStringTemplateMenu;
+    private STWindowMenu stWindowMenu;
 
-    public ContextualStringTemplateMenuFactory(ComponentContainerStringTemplateMenu componentContainerStringTemplateMenu) {
-        this.componentContainerStringTemplateMenu = componentContainerStringTemplateMenu;
+    public ContextualStringTemplateMenuFactory(STWindowMenu stWindowMenu) {
+        this.stWindowMenu = stWindowMenu;
     }
 
     public void addSeparator() {
@@ -54,7 +54,7 @@ public class ContextualStringTemplateMenuFactory {
             menu.addSeparator();
             shouldInsertSeparator = false;
         }
-        XJMenuItem item = componentContainerStringTemplateMenu.createMenuItem(tag, true);
+        XJMenuItem item = stWindowMenu.createMenuItem(tag, true);
         menu.add(item.getSwingComponent());
         return item;
     }

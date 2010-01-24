@@ -1,8 +1,8 @@
 package org.antlr.works.grammar;
 
-import org.antlr.works.components.container.ComponentContainerGrammarMenu;
-import org.antlr.works.components.editor.GrammarEditor;
-import org.antlr.works.editor.EditorTab;
+import org.antlr.works.components.GrammarWindow;
+import org.antlr.works.components.GrammarWindowMenu;
+import org.antlr.works.editor.GrammarWindowTab;
 import org.antlr.works.grammar.decisiondfa.DecisionDFA;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.menu.ContextualMenuFactory;
@@ -50,9 +50,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class GrammarDOTTab extends EditorTab implements Runnable, GViewDelegate {
-
-    protected GrammarEditor editor;
+public abstract class GrammarDOTTab extends GrammarWindowTab implements Runnable, GViewDelegate {
 
     protected JPanel panel;
     protected GView view;
@@ -64,8 +62,8 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
 
     protected String error;
 
-    public GrammarDOTTab(GrammarEditor editor) {
-        this.editor = editor;
+    public GrammarDOTTab(GrammarWindow window) {
+        super(window);
     }
 
     public Container getContainer() {
@@ -76,17 +74,17 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
 
     public boolean launch() {
         if(AWPrefs.getDOTToolPath() == null) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the graph because the 'dot' tool path is not defined. The path can be set in the Preferences.\n"+dotInfo);
+            XJAlert.display(window.getJavaContainer(), "Error", "Cannot generate the graph because the 'dot' tool path is not defined. The path can be set in the Preferences.\n"+dotInfo);
             return false;
         }
         if(!new File(AWPrefs.getDOTToolPath()).exists()) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the graph because the 'dot' tool does not exist at the specified path. Check the tool path in the Preferences.\n"+dotInfo);
+            XJAlert.display(window.getJavaContainer(), "Error", "Cannot generate the graph because the 'dot' tool does not exist at the specified path. Check the tool path in the Preferences.\n"+dotInfo);
             return false;
         }
 
         if(willLaunch()) {
             new Thread(this).start();
-            editor.showProgress("Generating...", null);
+            window.showProgress("Generating...", null);
             return true;
         } else
             return false;
@@ -97,9 +95,9 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
     }
 
     protected boolean checkForCurrentRule() {
-        ElementRule rule = editor.getCurrentRule();
+        ElementRule rule = window.getCurrentRule();
         if(rule == null) {
-            XJAlert.display(editor.getWindowContainer(), "Error", "The cursor must be inside a rule");
+            XJAlert.display(window.getJavaContainer(), "Error", "The cursor must be inside a rule");
             return false;
         }
         return true;
@@ -180,7 +178,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
 
         willRun();
 
-        rule = editor.getCurrentRule();
+        rule = window.getCurrentRule();
         
         try {
             tempInputFile = File.createTempFile("GrammarDOTTab", ".in").getAbsolutePath();
@@ -194,16 +192,16 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                editor.hideProgress();
+                window.hideProgress();
                 if(error == null) {
-                    editor.addTab(GrammarDOTTab.this);
+                    window.addTab(GrammarDOTTab.this);
                 } else {
                     if(GrammarDOTTab.this instanceof TokensDFA)
-                        XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the tokens DFA:\n"+error);
+                        XJAlert.display(window.getJavaContainer(), "Error", "Cannot generate the tokens DFA:\n"+error);
                     if(GrammarDOTTab.this instanceof DecisionDFA)
-                        XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the DFA:\n"+error);
+                        XJAlert.display(window.getJavaContainer(), "Error", "Cannot generate the DFA:\n"+error);
                     if(GrammarDOTTab.this instanceof RulesDependency)
-                        XJAlert.display(editor.getWindowContainer(), "Error", "Cannot generate the rule dependency graph:\n"+error);
+                        XJAlert.display(window.getJavaContainer(), "Error", "Cannot generate the rule dependency graph:\n"+error);
                 }
             }
         });
@@ -254,10 +252,10 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
     protected class CustomGView extends GView {
 
         public JPopupMenu getContextualMenu(GElement element) {
-            ContextualMenuFactory factory = editor.createContextualMenuFactory();
-            factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_EPS);
-            factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_IMAGE);
-            factory.addItem(ComponentContainerGrammarMenu.MI_EXPORT_AS_DOT);
+            ContextualMenuFactory factory = window.createContextualMenuFactory();
+            factory.addItem(GrammarWindowMenu.MI_EXPORT_AS_EPS);
+            factory.addItem(GrammarWindowMenu.MI_EXPORT_AS_IMAGE);
+            factory.addItem(GrammarWindowMenu.MI_EXPORT_AS_DOT);
             return factory.menu;
         }
 
@@ -278,9 +276,9 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line;
                 while ( (line = br.readLine()) != null)
-                    editor.console.println(type + ":" + line);
+                    window.console.println(type + ":" + line);
             } catch (IOException e) {
-                editor.console.println(e);
+                window.console.println(e);
             }
         }
     }

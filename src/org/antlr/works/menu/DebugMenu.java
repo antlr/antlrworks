@@ -1,7 +1,13 @@
+package org.antlr.works.menu;
+
+import org.antlr.works.components.GrammarWindow;
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.stats.StatisticsAW;
+
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005 Jean Bovet
+Copyright (c) 2005-08 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,72 +34,62 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+public class DebugMenu {
 
-package org.antlr.works.menu;
+    private final GrammarWindow window;
 
-import org.antlr.works.components.container.DocumentContainer;
-import org.antlr.works.components.editor.GrammarEditor;
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.stats.StatisticsAW;
-
-public class ActionDebuggerImpl extends ActionAbstract implements ActionDebugger {
-
-    public ActionDebuggerImpl(DocumentContainer editor) {
-        super(editor);
-    }
-
-    public GrammarEditor getSelectedEditor() {
-        return (GrammarEditor)super.getSelectedEditor();
+    public DebugMenu(GrammarWindow window) {
+        this.window = window;
     }
 
     public void runInterpreter() {
         try {
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INTERPRETER_MENU);
-            getSelectedEditor().selectInterpreterTab();
-            getSelectedEditor().interpreter.interpret();
+            window.selectInterpreterTab();
+            window.interpreterTab.interpret();
         } catch (Exception e) {
-            getSelectedEditor().console.println(e);
+            window.console.println(e);
         }
     }
 
     public void run() {
-        getContainer().getDebugger().launchLocalDebugger(Debugger.OPTION_RUN);
+        window.getDebugger().launchLocalDebugger(Debugger.OPTION_RUN);
     }
 
     public void debug() {
-        getContainer().getDebugger().launchLocalDebugger(Debugger.OPTION_NONE);
+        window.getDebugger().launchLocalDebugger(Debugger.OPTION_NONE);
     }
 
     public void debugAgain() {
-        getContainer().getDebugger().launchLocalDebugger(Debugger.OPTION_AGAIN);
+        window.getDebugger().launchLocalDebugger(Debugger.OPTION_AGAIN);
     }
 
     public void debugRemote() {
-        getContainer().getDebugger().launchRemoteDebugger();
+        window.getDebugger().launchRemoteDebugger();
     }
 
     public void toggleInputTokens() {
-        getContainer().getDebugger().toggleInputTokensBox();
+        window.getDebugger().toggleInputTokensBox();
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
     }
 
     public void showEditTestRig() {
-        getContainer().getDebugger().showEditTestRig();
+        window.getDebugger().showEditTestRig();
     }
 
     public boolean isInputTokenVisible() {
-        return getContainer().getDebugger().isInputTokenVisible();
+        return window.getDebugger().isInputTokenVisible();
     }
 
     public boolean isRunning() {
-        return getContainer().getDebugger().isRunning();
+        return window.getDebugger().isRunning();
     }
 
     public boolean canDebugAgain() {
-        return getContainer().getDebugger().canDebugAgain();
+        return window.getDebugger().canDebugAgain();
     }
 
     public String getEventsAsString() {
-        return getContainer().getDebugger().getEventsAsString();
+        return window.getDebugger().getEventsAsString();
     }
 }

@@ -1,8 +1,6 @@
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.container.DocumentContainer;
-import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.find.Usages;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
@@ -37,45 +35,47 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ActionFind extends ActionAbstract {
+public class FindMenu {
 
-    public ActionFind(DocumentContainer editor) {
-        super(editor);
+    private final FindMenuDelegate delegate;
+
+    public FindMenu(FindMenuDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public void find() {
-        getSelectedEditor().find();
+        delegate.find();
     }
 
     public void findNext() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_NEXT);
-        getSelectedEditor().getFindAndReplace().next();
+        delegate.getFindAndReplace().next();
     }
 
     public void findPrev() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_PREVIOUS);
-        getSelectedEditor().getFindAndReplace().prev();
+        delegate.getFindAndReplace().prev();
     }
 
     public void findSelection() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_TEXT_AT_CARET);
-        getSelectedEditor().getFindAndReplace().setFindString(getSelectedEditor().getTextPane().getSelectedText());
-        getSelectedEditor().getFindAndReplace().next();
+        delegate.getFindAndReplace().setFindString(delegate.getTextEditor().getSelectedText());
+        delegate.getFindAndReplace().next();
     }
 
     public void findUsage() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_FIND_USAGES);
 
-        ATEToken token = getSelectedEditor().getCurrentToken();
+        ATEToken token = delegate.getCurrentToken();
         if(token == null)
             return;
 
-        Usages usage = new Usages((GrammarEditor)getSelectedEditor(), token);
-        ((GrammarEditor)getSelectedEditor()).addTab(usage);
+        Usages usage = new Usages(delegate, token);
+        delegate.addTab(usage);
 
-        for (ATEToken ateToken : getSelectedEditor().getTokens()) {
+        for (ATEToken ateToken : delegate.getTokens()) {
             if (ateToken.getAttribute().equals(token.getAttribute())) {
-                ElementRule matchedRule = ((GrammarEditor)getSelectedEditor()).rules.getEnclosingRuleAtPosition(ateToken.getStartIndex());
+                ElementRule matchedRule = delegate.getEditorRules().getEnclosingRuleAtPosition(ateToken.getStartIndex());
                 if (matchedRule != null)
                     usage.addMatch(matchedRule, ateToken);
             }

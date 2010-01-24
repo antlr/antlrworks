@@ -1,7 +1,5 @@
 package org.antlr.works.components;
 
-import org.antlr.works.components.container.DocumentContainer;
-import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
@@ -45,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ComponentToolbar implements XJNotificationObserver {
+public class GrammarWindowToolbar implements XJNotificationObserver {
 
     public Toolbar toolbar;
 
@@ -62,10 +60,10 @@ public class ComponentToolbar implements XJNotificationObserver {
 
     public JButton find;
 
-    public DocumentContainer container;
+    public GrammarWindow window;
 
-    public ComponentToolbar(DocumentContainer container) {
-        this.container = container;
+    public GrammarWindowToolbar(GrammarWindow window) {
+        this.window = window;
 
         createInterface();
         addActions();
@@ -77,7 +75,7 @@ public class ComponentToolbar implements XJNotificationObserver {
     }
 
     public void close() {
-        container = null;
+        window = null;
         AWPrefs.getPreferences().unbindFromPreferences(sort, AWPrefs.PREF_TOOLBAR_SORT);        
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
@@ -94,7 +92,7 @@ public class ComponentToolbar implements XJNotificationObserver {
         } else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED)) {
             find.setEnabled(true);
             debug.setEnabled(true);
-            debugAgain.setEnabled(container.getDebugger().canDebugAgain());
+            debugAgain.setEnabled(window.getDebugger().canDebugAgain());
         }
     }
 
@@ -117,10 +115,10 @@ public class ComponentToolbar implements XJNotificationObserver {
     }
 
     public void updateStates() {
-        sort.setSelected(getSelectedEditor().isRulesSorted());
-        sd.setSelected(getSelectedEditor().isSyntaxDiagramDisplayed());
-        coloring.setSelected(getSelectedEditor().isSyntaxColored());
-        ideas.setSelected(getSelectedEditor().isIdeasEnabled());
+        sort.setSelected(window.isRulesSorted());
+        sd.setSelected(window.isSyntaxDiagramDisplayed());
+        coloring.setSelected(window.isSyntaxColored());
+        ideas.setSelected(window.isIdeasEnabled());
     }
 
     public void awake() {
@@ -129,62 +127,58 @@ public class ComponentToolbar implements XJNotificationObserver {
         ideas.setSelected(true);
     }
 
-    public GrammarEditor getSelectedEditor() {
-        return (GrammarEditor)container.getSelectedEditor();
-    }
-
     public void addActions() {
         backward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getSelectedEditor().goToBackward();
+                window.goToBackward();
             }
         });
 
         forward.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getSelectedEditor().goToForward();
+                window.goToForward();
             }
         });
 
         sort.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getSelectedEditor().toggleRulesSorting();
+                window.toggleRulesSorting();
             }
         });
 
         sd.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getSelectedEditor().toggleSyntaxDiagram();
+                window.toggleSyntaxDiagram();
             }
         });
 
         coloring.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getSelectedEditor().toggleSyntaxColoring();
+                window.toggleSyntaxColoring();
             }
         });
 
         ideas.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getSelectedEditor().toggleIdeas();
+                window.toggleIdeas();
             }
         });
 
         find.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getSelectedEditor().find();
+                window.find();
             }
         });
 
         debug.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.getActionDebugger().debug();
+                window.getActionDebugger().debug();
             }
         });
 
         debugAgain.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                container.getActionDebugger().debugAgain();
+                window.getActionDebugger().debugAgain();
             }
         });
 

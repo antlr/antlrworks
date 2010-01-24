@@ -32,11 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.stringtemplate;
 
 import org.antlr.works.IDE;
-import org.antlr.works.components.container.DocumentContainer;
-import org.antlr.works.menu.ActionFind;
-import org.antlr.works.menu.ActionGoTo;
 import org.antlr.works.menu.ActionRefactor;
-import org.antlr.works.menu.ActionSTRefactorImpl;
+import org.antlr.works.menu.FindMenu;
+import org.antlr.works.menu.GoToMenu;
+import org.antlr.works.menu.STRefactorMenu;
 import org.antlr.works.stringtemplate.menu.ContextualStringTemplateMenuFactory;
 import org.antlr.xjlib.appkit.menu.*;
 
@@ -45,7 +44,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ResourceBundle;
 
-public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate {
+public class STWindowMenu implements XJMenuItemDelegate {
 
     public static final int MI_PRINT = 5;
 
@@ -75,33 +74,25 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
     // Sort
     public static final int MI_SORT_RULES = 110;
 
-    private ActionFind actionFind;
-    private ActionGoTo actionGoTo;
+    private FindMenu actionFind;
+    private GoToMenu actionGoTo;
     private ActionRefactor actionRefactor;
 
-    private DocumentContainer container;
+    private STWindow window;
 
     /** The resource bundle used to get localized strings */
     private static ResourceBundle resourceBundle = IDE.getMenusResourceBundle();
 
-    public ComponentContainerStringTemplateMenu(DocumentContainer container) {
-        this.container = container;
+    public STWindowMenu(STWindow window) {
+        this.window = window;
 
-        actionFind = new ActionFind(container);
-        actionGoTo = new ActionGoTo(container);
-        actionRefactor = new ActionSTRefactorImpl(container);
+        actionFind = new FindMenu(window);
+        actionGoTo = new GoToMenu(window);
+        actionRefactor = new STRefactorMenu(window);
     }
 
     public void close() {
-        actionFind.close();
-        actionGoTo.close();
-        actionRefactor.close();
-
-        container = null;
-    }
-
-    public StringTemplateEditor getEditor() {
-        return (StringTemplateEditor)container.getSelectedEditor();
+        window = null;
     }
 
     public void customizeFileMenu(XJMenu menu) {
@@ -207,13 +198,13 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
         switch(item.getTag()) {
             case XJMainMenuBar.MI_CUT:
             case XJMainMenuBar.MI_PASTE:
-                item.setEnabled(getEditor().isFileWritable());
+                item.setEnabled(window.isFileWritable());
                 break;
             case MI_GOTO_BACK:
-                item.setEnabled(getEditor().goToHistory.canGoBack());
+                item.setEnabled(window.goToHistory.canGoBack());
                 break;
             case MI_GOTO_FORWARD:
-                item.setEnabled(getEditor().goToHistory.canGoForward());
+                item.setEnabled(window.goToHistory.canGoForward());
                 break;
         }
     }
@@ -229,7 +220,7 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
     public void handleMenuFile(int itemTag) {
         switch(itemTag) {
             case MI_PRINT:
-                getEditor().print();
+                window.print();
                 break;
         }
     }
@@ -297,7 +288,7 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
     public void handleSortRules(int itemTag) {
         switch(itemTag) {
             case MI_SORT_RULES:
-                getEditor().toggleRulesSorting();
+                window.toggleRulesSorting();
                 break;
         }
     }
@@ -306,14 +297,14 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
         return actionRefactor;
     }
 
-    public ActionGoTo getActionGoTo() {
+    public GoToMenu getActionGoTo() {
         return actionGoTo;
     }
 
     public JPopupMenu getContextualMenu(int textIndex) {
-        boolean overReference = getEditor().getCurrentReference() != null;
-        boolean overToken = getEditor().getCurrentToken() != null;
-        boolean overSelection = getEditor().getTextPane().getSelectionStart() != getEditor().getTextPane().getSelectionEnd();
+        boolean overReference = window.getCurrentReference() != null;
+        boolean overToken = window.getCurrentToken() != null;
+        boolean overSelection = window.getTextPane().getSelectionStart() != window.getTextPane().getSelectionEnd();
 
         ContextualStringTemplateMenuFactory factory = new ContextualStringTemplateMenuFactory(this);
         factory.addItem(MI_GOTO_RULE);

@@ -2,8 +2,7 @@ package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.container.DocumentContainer;
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.grammar.RefactorEngine;
 import org.antlr.works.grammar.RefactorMutator;
 import org.antlr.works.grammar.element.ElementReference;
@@ -49,28 +48,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor {
+public class GrammarRefactorMenu implements ActionRefactor {
 
+    private final GrammarWindow window;
     private RefactorEngine engine;
     private EditorTextMutator mutator;
 
-    public ActionRefactorImpl(DocumentContainer container) {
-        super(container);
+    public GrammarRefactorMenu(GrammarWindow window) {
+        this.window = window;
         engine = new RefactorEngine();
-    }
-
-    public GrammarEditor getSelectedEditor() {
-        return (GrammarEditor)super.getSelectedEditor();
     }
 
     public void rename() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_RENAME);
 
-        ATEToken token = getSelectedEditor().getCurrentToken();
+        ATEToken token = window.getCurrentToken();
         if(token == null)
             return;
 
-        String s = (String) JOptionPane.showInputDialog(getSelectedEditor().getJavaContainer(), "Rename '"+token.getAttribute()+"' and its usages to:", "Rename",
+        String s = (String) JOptionPane.showInputDialog(window.getJavaContainer(), "Rename '"+token.getAttribute()+"' and its usages to:", "Rename",
                 JOptionPane.QUESTION_MESSAGE, null, null, token.getAttribute());
         if(s != null && !s.equals(token.getAttribute())) {
             beginRefactor("Rename");
@@ -80,24 +76,24 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
     }
 
     public boolean canReplaceLiteralWithTokenLabel() {
-        ATEToken token = getSelectedEditor().getCurrentToken();
+        ATEToken token = window.getCurrentToken();
         return token != null && (token.type == ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING || token.type == ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING);
     }
 
     public void replaceLiteralWithTokenLabel() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REPLACE_LITERALS);
 
-        ATEToken token = getSelectedEditor().getCurrentToken();
+        ATEToken token = window.getCurrentToken();
         if(token == null)
             return;
 
         if(token.type != ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING && token.type != ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING) {
-            XJAlert.display(getSelectedEditor().getJavaContainer(), "Cannot Replace Literal With Token Label", "The current token is not a literal.");
+            XJAlert.display(window.getJavaContainer(), "Cannot Replace Literal With Token Label", "The current token is not a literal.");
             return;
         }
 
-        getSelectedEditor().selectTextRange(token.getStartIndex(), token.getEndIndex());
-        String s = (String)JOptionPane.showInputDialog(getSelectedEditor().getJavaContainer(), "Replace Literal '"+token.getAttribute()+"' with token label:", "Replace Literal With Token Label",
+        window.selectTextRange(token.getStartIndex(), token.getEndIndex());
+        String s = (String)JOptionPane.showInputDialog(window.getJavaContainer(), "Replace Literal '"+token.getAttribute()+"' with token label:", "Replace Literal With Token Label",
                 JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(s != null && !s.equals(token.getAttribute())) {
             beginRefactor("Replace Literal With Token Label");
@@ -108,10 +104,10 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
 
     public void replaceLiteralTokenWithTokenLabel(ATEToken t, String name) {
         // First insert the rule at the end of the grammar
-        mutator.insert(getSelectedEditor().getText().length(), "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
+        mutator.insert(window.getText().length(), "\n\n"+name+"\n\t:\t"+t.getAttribute()+"\n\t;");
 
         // Then rename all strings token
-        List<ATEToken> tokens = getSelectedEditor().getTokens();
+        List<ATEToken> tokens = window.getTokens();
         String attr = t.getAttribute();
         for(int index = tokens.size()-1; index>0; index--) {
             ATEToken token = tokens.get(index);
@@ -146,7 +142,7 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
 
         beginRefactor("Convert Literals To C-style Quote Literals");
 
-        List<ATEToken> tokens = getSelectedEditor().getTokens();
+        List<ATEToken> tokens = window.getTokens();
         for(int index = tokens.size()-1; index>0; index--) {
             ATEToken token = tokens.get(index);
 
@@ -190,7 +186,7 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
     }
 
     protected void convertLiteralsToSpecifiedQuote(int tokenType, char quote, char unescapeQuote) {
-        List<ATEToken> tokens = getSelectedEditor().getTokens();
+        List<ATEToken> tokens = window.getTokens();
         for(int index = tokens.size()-1; index>0; index--) {
             ATEToken token = tokens.get(index);
             if(token.type != tokenType)
@@ -241,14 +237,14 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
     public void removeLeftRecursion() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOVE_LEFT_RECURSION);
 
-        ElementRule rule = getSelectedEditor().rules.getEnclosingRuleAtPosition(getSelectedEditor().getCaretPosition());
+        ElementRule rule = window.rules.getEnclosingRuleAtPosition(window.getCaretPosition());
         if(rule == null) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Remove Left Recursion", "There is no rule at cursor position.");
+            XJAlert.display(window.getJavaContainer(), "Remove Left Recursion", "There is no rule at cursor position.");
             return;
         }
 
         if(!rule.hasLeftRecursion()) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Remove Left Recursion", "The rule doesn't have a left recursion.");
+            XJAlert.display(window.getJavaContainer(), "Remove Left Recursion", "The rule doesn't have a left recursion.");
             return;
         }
 
@@ -262,7 +258,7 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOVE_ALL_LEFT_RECURSION);
 
         beginRefactor("Remove All Left Recursion");
-        List<ElementRule> rules = getSelectedEditor().rules.getRules();
+        List<ElementRule> rules = window.rules.getRules();
         for(int index = rules.size()-1; index >= 0; index--) {
             ElementRule rule = rules.get(index);
             if(rule.hasLeftRecursion()) {
@@ -274,8 +270,8 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
     }
 
     public boolean canExtractRule() {
-        int leftIndex = getSelectedEditor().getSelectionLeftIndexOnTokenBoundary();
-        int rightIndex = getSelectedEditor().getSelectionRightIndexOnTokenBoundary();
+        int leftIndex = window.getSelectionLeftIndexOnTokenBoundary();
+        int rightIndex = window.getSelectionRightIndexOnTokenBoundary();
         return leftIndex != -1 && rightIndex != -1;
     }
 
@@ -283,23 +279,23 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_EXTRACT_RULE);
 
         if(!canExtractRule()) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Extract Rule", "At least one token must be selected.");
+            XJAlert.display(window.getJavaContainer(), "Extract Rule", "At least one token must be selected.");
             return;
         }
 
-        int leftIndex = getSelectedEditor().getSelectionLeftIndexOnTokenBoundary();
-        int rightIndex = getSelectedEditor().getSelectionRightIndexOnTokenBoundary();
+        int leftIndex = window.getSelectionLeftIndexOnTokenBoundary();
+        int rightIndex = window.getSelectionRightIndexOnTokenBoundary();
 
-        getSelectedEditor().selectTextRange(leftIndex, rightIndex);
+        window.selectTextRange(leftIndex, rightIndex);
 
-        String ruleName = (String)JOptionPane.showInputDialog(getSelectedEditor().getJavaContainer(), "Rule name:", "Extract Rule",
+        String ruleName = (String)JOptionPane.showInputDialog(window.getJavaContainer(), "Rule name:", "Extract Rule",
                 JOptionPane.QUESTION_MESSAGE, null, null, "");
         if(ruleName != null && ruleName.length() > 0) {
             beginRefactor("Extract Rule");
             boolean lexer = ATEToken.isLexerName(ruleName);
             int index = insertionIndexForRule(lexer);
-            String ruleContent = getSelectedEditor().getText().substring(leftIndex, rightIndex);
-            if(index > getSelectedEditor().getCaretPosition()) {
+            String ruleContent = window.getText().substring(leftIndex, rightIndex);
+            if(index > window.getCaretPosition()) {
                 insertRuleAtIndex(createRule(ruleName, ruleContent), index);
                 mutator.replace(leftIndex, rightIndex, ruleName);
             } else {
@@ -311,15 +307,15 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
     }
 
     public boolean canInlineRule() {
-        return getSelectedEditor().rules.getEnclosingRuleAtPosition(getSelectedEditor().getCaretPosition()) != null;
+        return window.rules.getEnclosingRuleAtPosition(window.getCaretPosition()) != null;
     }
 
     public void inlineRule() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INLINE_RULE);
 
-        ElementRule rule = getSelectedEditor().rules.getEnclosingRuleAtPosition(getSelectedEditor().getCaretPosition());
+        ElementRule rule = window.rules.getEnclosingRuleAtPosition(window.getCaretPosition());
         if(rule == null) {
-            XJAlert.display(getSelectedEditor().getWindowContainer(), "Inline Rule", "There is no rule at cursor position.");
+            XJAlert.display(window.getJavaContainer(), "Inline Rule", "There is no rule at cursor position.");
             return;
         }
 
@@ -327,14 +323,14 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
     }
 
     protected void inlineRule(ElementRule rule) {
-        String oldContent = getSelectedEditor().getText();
+        String oldContent = window.getText();
 
         beginRefactor("Inline");
 
         String ruleName = rule.name;
         String ruleContent = Utils.trimString(oldContent.substring(rule.colon.getEndIndex(), rule.end.getStartIndex()));
 
-        List<ElementRule> rules = getSelectedEditor().rules.getRules();
+        List<ElementRule> rules = window.rules.getRules();
         if(rule.end.index - rule.colon.index > 2) {
             // More than one token, append ()
             ruleContent = "("+ruleContent+")";
@@ -365,22 +361,22 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
         beginRefactor("Create Rule");
         int index = insertionIndexForRule(lexer);
         insertRuleAtIndex(createRule(name, content), index);
-        getSelectedEditor().setCaretPosition(index);
+        window.setCaretPosition(index);
         endRefactor();
     }
 
     public void deleteRuleAtIndex(int index) {
-        ElementRule r = getSelectedEditor().rules.getEnclosingRuleAtPosition(index);
+        ElementRule r = window.rules.getEnclosingRuleAtPosition(index);
         if(r != null)
-            getSelectedEditor().replaceText(r.getStartIndex(), r.getEndIndex(), "");
+            window.replaceText(r.getStartIndex(), r.getEndIndex(), "");
     }
 
     public int insertionIndexForRule(boolean lexer) {
         // Add the rule in the next line by default
-        Point p = getSelectedEditor().getTextEditor().getLineTextPositionsAtTextPosition(getSelectedEditor().getCaretPosition());
+        Point p = window.getTextEditor().getLineTextPositionsAtTextPosition(window.getCaretPosition());
         int insertionIndex = p.y;
 
-        ElementRule rule = getSelectedEditor().rules.getEnclosingRuleAtPosition(getSelectedEditor().getCaretPosition());
+        ElementRule rule = window.rules.getEnclosingRuleAtPosition(window.getCaretPosition());
         if(rule != null) {
             if(rule.lexer) {
                 if(lexer) {
@@ -388,18 +384,18 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
                     insertionIndex = rule.getEndIndex();
                 } else {
                     // Add new rule after the last parser rule
-                    ElementRule last = getSelectedEditor().rules.getLastParserRule();
+                    ElementRule last = window.rules.getLastParserRule();
                     if(last != null) insertionIndex = last.getEndIndex();
                 }
             } else {
                 if(lexer) {
                     // Add new rule after the last lexer rule
-                    ElementRule last = getSelectedEditor().rules.getLastLexerRule();
+                    ElementRule last = window.rules.getLastLexerRule();
                     if(last != null) {
                         insertionIndex = last.getEndIndex();
                     } else {
                         // Add new rule after the last rule
-                        last = getSelectedEditor().rules.getLastRule();
+                        last = window.rules.getLastRule();
                         if(last != null) insertionIndex = last.getEndIndex();
                     }
                 } else {
@@ -434,24 +430,24 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
     }
 
     protected void beginRefactor(String name) {
-        getSelectedEditor().beginGroupChange(name);
+        window.beginGroupChange(name);
         mutator = new EditorTextMutator();
         engine.setMutator(mutator);
-        engine.setTokens(getSelectedEditor().getTokens());
+        engine.setTokens(window.getTokens());
     }
 
     protected void endRefactor() {
         mutator.apply();
         mutator = null;
-        getSelectedEditor().endGroupChange();
+        window.endGroupChange();
     }
 
     protected void refactorReplaceEditorText(String text) {
-        int oldCaretPosition = getSelectedEditor().getCaretPosition();
-        getSelectedEditor().disableTextPaneUndo();
-        getSelectedEditor().setText(text);
-        getSelectedEditor().enableTextPaneUndo();
-        getSelectedEditor().getTextEditor().setCaretPosition(Math.min(oldCaretPosition, text.length()), false, false);
+        int oldCaretPosition = window.getCaretPosition();
+        window.disableTextPaneUndo();
+        window.setText(text);
+        window.enableTextPaneUndo();
+        window.getTextEditor().setCaretPosition(Math.min(oldCaretPosition, text.length()), false, false);
     }
 
     public class EditorTextMutator implements RefactorMutator {
@@ -459,7 +455,7 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
         public StringBuilder mutableText;
 
         public EditorTextMutator() {
-            mutableText = new StringBuilder(getSelectedEditor().getText());
+            mutableText = new StringBuilder(window.getText());
         }
 
         public void replace(int start, int end, String s) {
@@ -488,11 +484,11 @@ public class ActionRefactorImpl extends ActionAbstract implements ActionRefactor
 
         public void apply() {
             String text = mutableText.toString();
-            String oldContent = getSelectedEditor().getText();
+            String oldContent = window.getText();
 
             refactorReplaceEditorText(text);
 
-            XJUndo undo = getSelectedEditor().getXJFrame().getUndo(getSelectedEditor().getTextPane());
+            XJUndo undo = window.getUndo(window.getTextPane());
             undo.addEditEvent(new UndoableRefactoringEdit(oldContent, text));
         }
 

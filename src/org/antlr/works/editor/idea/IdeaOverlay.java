@@ -1,9 +1,8 @@
 package org.antlr.works.editor.idea;
 
-import org.antlr.works.components.editor.GrammarEditor;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.OverlayObject;
-import org.antlr.xjlib.appkit.frame.XJFrame;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -47,7 +46,7 @@ public class IdeaOverlay extends OverlayObject {
 
     protected static final int VISIBLE_IDEAS = 10;
 
-    protected GrammarEditor editor;
+    protected GrammarWindow window;
     protected DefaultListModel ideasModel;
     protected JList ideasList;
     protected JScrollPane ideasScrollPane;
@@ -55,14 +54,14 @@ public class IdeaOverlay extends OverlayObject {
 
     protected List<IdeaAction> ideas;
 
-    public IdeaOverlay(GrammarEditor editor, XJFrame parentFrame, JComponent parentComponent) {
-        super(parentFrame, parentComponent);
-        this.editor = editor;
+    public IdeaOverlay(GrammarWindow window, JComponent parentComponent) {
+        super(window, parentComponent);
+        this.window = window;
     }
 
     public void close() {
         super.close();
-        editor = null;
+        window = null;
     }
 
     public void setIdeas(List<IdeaAction> ideas) {
@@ -130,13 +129,13 @@ public class IdeaOverlay extends OverlayObject {
     }
 
     public Point overlayCustomPosition() {
-        Point lp = editor.getTextEditor().getLineTextPositionsAtTextPosition(editor.getCaretPosition());
+        Point lp = window.getTextEditor().getLineTextPositionsAtTextPosition(window.getCaretPosition());
 
         int cx = 0;
         int y = 0;
         try {
-            y = editor.getTextPane().modelToView(lp.y).y;
-            cx = editor.getTextPane().modelToView(editor.getCaretPosition()).x;
+            y = window.getTextPane().modelToView(lp.y).y;
+            cx = window.getTextPane().modelToView(window.getCaretPosition()).x;
         } catch (Exception e) {
             // Ignore
         }
