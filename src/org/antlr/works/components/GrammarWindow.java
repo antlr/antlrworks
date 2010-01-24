@@ -1,9 +1,8 @@
 package org.antlr.works.components;
 
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.container.ComponentContainerGrammar;
-import org.antlr.works.components.container.ComponentContainerInternal;
-import org.antlr.works.components.document.ComponentDocumentGrammar;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.container.GrammarContainer;
+import org.antlr.works.components.document.GrammarDocument;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.document.XJDocument;
@@ -45,23 +44,23 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-public class ComponentWindowImpl extends XJWindow implements ComponentWindow {
+public class GrammarWindow extends XJWindow {
 
-    private final ComponentContainer componentContainer;
+    private final DocumentContainer documentContainer;
 
-    public ComponentWindowImpl() {
-        this.componentContainer = new ComponentContainerGrammar(this);
+    public GrammarWindow() {
+        this.documentContainer = new GrammarContainer(this);
     }
 
     @Override
     public void awake() {
         super.awake();
-        componentContainer.awake();
-        componentContainer.assemble(false);
+        documentContainer.awake();
+        documentContainer.assemble(false);
     }
 
-    public ComponentContainer getComponentContainer() {
-        return componentContainer;
+    public DocumentContainer getContainer() {
+        return documentContainer;
     }
 
     public void setContentPanel(JPanel panel) {
@@ -92,13 +91,13 @@ public class ComponentWindowImpl extends XJWindow implements ComponentWindow {
 
     @Override
     public void dirtyChanged() {
-        componentContainer.dirtyChanged();
+        documentContainer.dirtyChanged();
     }
 
     @Override
     public void windowActivated() {
         // first activate the container so the current console is set
-        componentContainer.windowActivated();
+        documentContainer.windowActivated();
         // before activating the window itself
         super.windowActivated();
     }
@@ -106,51 +105,52 @@ public class ComponentWindowImpl extends XJWindow implements ComponentWindow {
     @Override
     public void windowDocumentPathDidChange(XJDocument doc) {
         // Called when the document associated file has changed on the disk
-        ComponentDocumentGrammar g = (ComponentDocumentGrammar) doc;
+        GrammarDocument g = (GrammarDocument) doc;
         g.getEditor().componentDocumentContentChanged();
     }
 
     @Override
     public void selectDocument(XJDocument doc) {
+        // todo remove that?
         // called when antlrworks wants to open an existing document.
         // make sure this document has an open and selected tab
-        ComponentDocumentGrammar g = (ComponentDocumentGrammar) doc;
-        ComponentContainer container = g.getContainer();
-        if(container instanceof ComponentContainerInternal) {
-            ComponentContainerInternal cci = (ComponentContainerInternal) container;
-            ComponentContainerGrammar ccg = (ComponentContainerGrammar) cci.getMainContainer();
-            ccg.selectGrammar(doc);
-        }
+//        GrammarDocument g = (GrammarDocument) doc;
+//        DocumentContainer container = g.getContainer();
+//        if(container instanceof ComponentContainerInternal) {
+//            ComponentContainerInternal cci = (ComponentContainerInternal) container;
+//            GrammarContainer ccg = (GrammarContainer) cci.getMainContainer();
+//            ccg.selectGrammar(doc);
+//        }
     }
 
     @Override
     public void becomingVisibleForTheFirstTime() {
-        componentContainer.becomingVisibleForTheFirstTime();
+        documentContainer.becomingVisibleForTheFirstTime();
     }
 
     @Override
     public void customizeFileMenu(XJMenu menu) {
-        componentContainer.customizeFileMenu(menu);
+        documentContainer.customizeFileMenu(menu);
     }
 
     @Override
     public void customizeMenuBar(XJMainMenuBar menubar) {
-        componentContainer.customizeMenuBar(menubar);
+        documentContainer.customizeMenuBar(menubar);
     }
 
     @Override
     public void menuItemState(XJMenuItem item) {
-        componentContainer.menuItemState(item);
+        documentContainer.menuItemState(item);
     }
 
     @Override
     public void handleMenuSelected(XJMenu menu) {
-        componentContainer.handleMenuSelected(menu);
+        documentContainer.handleMenuSelected(menu);
     }
 
     @Override
     public boolean close(boolean force) {
-        return super.close(force) && componentContainer.close();
+        return super.close(force) && documentContainer.close();
     }
 
 

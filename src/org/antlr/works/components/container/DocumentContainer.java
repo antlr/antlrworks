@@ -1,14 +1,14 @@
 package org.antlr.works.components.container;
 
-import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.components.editor.ComponentEditor;
+import org.antlr.works.components.document.AWDocument;
+import org.antlr.works.components.editor.DocumentEditor;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.menu.ActionDebugger;
 import org.antlr.works.menu.ActionGoTo;
 import org.antlr.works.menu.ActionRefactor;
 import org.antlr.works.menu.ContextualMenuFactory;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
@@ -46,7 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public interface ComponentContainer {
+public interface DocumentContainer {
 
     void awake();
     void assemble(boolean separateRules);
@@ -54,14 +54,14 @@ public interface ComponentContainer {
     
     void createFile(String name);
 
-    public void setEditor(ComponentEditor editor);
-    public ComponentEditor getEditor();
-    public void setDocument(ComponentDocument document);
-    public ComponentDocument getDocument();
+    public void setEditor(DocumentEditor editor);
+    public DocumentEditor getEditor();
+    public void setDocument(AWDocument document);
+    public AWDocument getDocument();
 
     public Dimension getSize();
     
-    public XJFrameInterface getXJFrame();
+    public XJFrame getXJFrame();
     public XJMainMenuBar getMainMenuBar();
 
     public void becomingVisibleForTheFirstTime();
@@ -77,16 +77,16 @@ public interface ComponentContainer {
     void selectTab(Component c);
     void addTab(EditorTab tab);
 
-    void documentLoaded(ComponentDocument document);
+    void documentLoaded(AWDocument document);
 
-    void editorParsed(ComponentEditor editor);
+    void editorParsed(DocumentEditor editor);
     
-    void selectConsoleTab(ComponentEditor editor);
-    void selectInterpreterTab(ComponentEditor editor);
-    void selectSyntaxDiagramTab(ComponentEditor editor);
+    void selectConsoleTab(DocumentEditor editor);
+    void selectInterpreterTab(DocumentEditor editor);
+    void selectSyntaxDiagramTab(DocumentEditor editor);
 
-    ComponentEditor selectEditor(String name);
-    ComponentEditor getSelectedEditor();
+    DocumentEditor selectEditor(String name);
+    DocumentEditor getSelectedEditor();
 
     void editorContentChanged();
 

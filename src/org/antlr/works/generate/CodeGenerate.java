@@ -33,7 +33,7 @@ package org.antlr.works.generate;
 
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ErrorListener;
@@ -52,13 +52,13 @@ public class CodeGenerate implements Runnable {
 
     private boolean debug = true;
 
-    protected ComponentEditorGrammar editor;
+    protected GrammarEditor editor;
     protected CodeGenerateDelegate delegate;
 
     protected long dateOfModificationOnDisk = 0;
     protected String lastError;
 
-    public CodeGenerate(ComponentEditorGrammar editor, CodeGenerateDelegate delegate) {
+    public CodeGenerate(GrammarEditor editor, CodeGenerateDelegate delegate) {
         this.editor = editor;
         this.delegate = delegate;
     }

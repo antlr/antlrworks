@@ -33,11 +33,11 @@ package org.antlr.works;
 
 import org.antlr.Tool;
 import org.antlr.tool.ErrorManager;
-import org.antlr.works.components.ComponentWindowImpl;
+import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
-import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.components.document.ComponentDocumentFactory;
-import org.antlr.works.components.document.ComponentDocumentGrammar;
+import org.antlr.works.components.document.AWDocument;
+import org.antlr.works.components.document.GrammarDocument;
+import org.antlr.works.components.document.GrammarDocumentFactory;
 import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.works.dialog.DialogAbout;
 import org.antlr.works.dialog.DialogPersonalInfo;
@@ -45,8 +45,8 @@ import org.antlr.works.dialog.NewWizardDialog;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.Statistics;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.stringtemplate.STWindow;
 import org.antlr.works.stringtemplate.STDocumentFactory;
+import org.antlr.works.stringtemplate.STWindow;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.*;
 import org.antlr.xjlib.appkit.app.XJApplication;
@@ -62,7 +62,6 @@ import org.antlr.xjlib.appkit.menu.XJMenuItemDelegate;
 import org.antlr.xjlib.appkit.swing.XJLookAndFeel;
 import org.antlr.xjlib.appkit.utils.BrowserLauncher;
 import org.antlr.xjlib.appkit.utils.XJAlert;
-import org.antlr.xjlib.appkit.utils.XJLocalizable;
 import org.antlr.xjlib.foundation.XJSystem;
 
 import javax.swing.*;
@@ -121,7 +120,7 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     public void appDidLaunch(String[] args, List<String> documentsToOpenAtStartup) {
         AWPrefs.setLookAndFeel(XJLookAndFeel.applyLookAndFeel(AWPrefs.getLookAndFeel()));
 
-        XJApplication.addDocumentFactory(new ComponentDocumentFactory(ComponentWindowImpl.class));
+        XJApplication.addDocumentFactory(new GrammarDocumentFactory(GrammarWindow.class));
         XJApplication.addDocumentFactory(new STDocumentFactory(STWindow.class));
 
         XJApplication.addScheduledTimer(new HelpManager(), 1, true);
@@ -432,11 +431,11 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
     public boolean displayNewDocumentWizard(XJDocument document) {
         // only display for grammar (*.g) files
-        if (document != null && document instanceof ComponentDocumentGrammar) {
+        if (document != null && document instanceof GrammarDocument) {
             NewWizardDialog dialog = new NewWizardDialog(document.getWindow().getJavaContainer());
 
             if(dialog != null && dialog.runModal() == XJDialog.BUTTON_OK) {
-                ((ComponentDocument)document).getEditor().loadText(dialog.getGeneratedText());
+                ((AWDocument)document).getEditor().loadText(dialog.getGeneratedText());
                 return true;
             }
         }
@@ -472,19 +471,6 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
     public static ResourceBundle getMenusResourceBundle() {
         return resourceMenusBundle;
-    }
-
-    /** Returns true if AW is running as a plugin */
-
-    public static boolean _isPlugin = false;
-    public static final String PLUGIN_PROPERTIES_PATH = "org/antlr/works/plugin/properties/strings";
-
-    public static boolean isPlugin() {
-        return _isPlugin;
-    }
-
-    public static String getPluginVersionShort() {
-        return XJLocalizable.getStringFromPath(PLUGIN_PROPERTIES_PATH, "VERSION_SHORT");
     }
 
 }

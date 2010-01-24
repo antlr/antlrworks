@@ -10,7 +10,7 @@ import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.xjlib.appkit.utils.XJSmoothScrolling;
 
@@ -60,7 +60,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDelegate, ATESyntaxEngineDelegate {
 
-    protected XJFrameInterface parentFrame;
+    protected XJFrame parentFrame;
     protected XJSmoothScrolling smoothScrolling;
 
     protected ATEPanelDelegate delegate;
@@ -90,22 +90,22 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected static final String unixEndOfLine = "\n";
     protected static int ANALYSIS_COLUMN_WIDTH = 18;
 
-    public ATEPanel(XJFrameInterface parentFrame) {
+    public ATEPanel(XJFrame parentFrame) {
         this(parentFrame, null);
     }
 
-    public ATEPanel(XJFrameInterface parentFrame, StyledEditorKit editorKit) {
+    public ATEPanel(XJFrame parentFrame, StyledEditorKit editorKit) {
         super(new BorderLayout());
         setParentFrame(parentFrame);
         autoIndent = new ATEAutoIndentation(this);
         createTextPane(editorKit);
     }
 
-    public XJFrameInterface getParentFrame() {
+    public XJFrame getParentFrame() {
         return parentFrame;
     }
 
-    public void setParentFrame(XJFrameInterface parentFrame) {
+    public void setParentFrame(XJFrame parentFrame) {
         this.parentFrame = parentFrame;
     }
 

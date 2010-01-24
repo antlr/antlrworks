@@ -5,7 +5,7 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Rule;
 import org.antlr.works.ate.ATEUnderlyingManager;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 
 import java.awt.*;
@@ -45,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DecisionDFAEngine {
 
-    private ComponentEditorGrammar editor;
+    private GrammarEditor editor;
 
     private Set<Integer> usesSemPreds = new HashSet<Integer>();
     private Set<Integer> usesSynPreds = new HashSet<Integer>();
@@ -55,7 +55,7 @@ public class DecisionDFAEngine {
     private Grammar discoveredLexerGrammar;
     private Grammar discoveredParserGrammar;
 
-    public DecisionDFAEngine(ComponentEditorGrammar editor) {
+    public DecisionDFAEngine(GrammarEditor editor) {
         this.editor = editor;
     }
 

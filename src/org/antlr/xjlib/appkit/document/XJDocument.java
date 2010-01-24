@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.xjlib.appkit.document;
 
 import org.antlr.xjlib.appkit.app.XJApplication;
-import org.antlr.xjlib.appkit.frame.XJWindowInterface;
+import org.antlr.xjlib.appkit.frame.XJWindow;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.appkit.utils.XJFileChooser;
 import org.antlr.xjlib.appkit.utils.XJLocalizable;
@@ -43,10 +43,13 @@ import java.awt.*;
 import java.io.*;
 import java.util.List;
 
+/**
+ * A document always has data and a window to display the data.
+ */
 public class XJDocument extends XJObject {
 
     protected XJData documentData;
-    protected XJWindowInterface documentWindow;
+    protected XJWindow documentWindow;
 
     protected String documentTitle = XJLocalizable.getXJString("DocUntitled");
     protected String documentPath;
@@ -118,7 +121,7 @@ public class XJDocument extends XJObject {
             documentWindow.setTitle(documentTitle);
     }
 
-    public void setWindow(XJWindowInterface window) {
+    public void setWindow(XJWindow window) {
         documentWindow = window;
         if(documentWindow != null) {
             documentWindow.addDocument(this);
@@ -126,7 +129,7 @@ public class XJDocument extends XJObject {
         }
     }
 
-    public XJWindowInterface getWindow() {
+    public XJWindow getWindow() {
         return documentWindow;
     }
 
@@ -134,7 +137,10 @@ public class XJDocument extends XJObject {
         this.javaContainer = container;
     }
 
-    public Component getJavaContainer() {
+    /**
+     * Returns the original Swing container
+     */
+    public Component getSwingComponent() {
         if(javaContainer == null)
             return getWindow() == null ? null : getWindow().getJavaContainer();
         else
@@ -204,7 +210,7 @@ public class XJDocument extends XJObject {
 
     public boolean save(boolean saveAs) {
         if(documentPath == null || saveAs) {
-            if(!XJFileChooser.shared().displaySaveDialog(getJavaContainer(), documentFileExts, documentFileExtDescription, true))
+            if(!XJFileChooser.shared().displaySaveDialog(getSwingComponent(), documentFileExts, documentFileExtDescription, true))
                 return XJApplication.NO;
 
             documentPath = XJFileChooser.shared().getSelectedFilePath();
@@ -215,7 +221,7 @@ public class XJDocument extends XJObject {
             writeDocument(documentPath);
         } catch(Exception e) {
             e.printStackTrace();
-            XJAlert.display(getJavaContainer(), XJLocalizable.getXJString("DocError"), XJLocalizable.getXJString("DocSaveError")+" "+e.toString());
+            XJAlert.display(getSwingComponent(), XJLocalizable.getXJString("DocError"), XJLocalizable.getXJString("DocSaveError")+" "+e.toString());
             return XJApplication.NO;
         }
 
@@ -256,7 +262,7 @@ public class XJDocument extends XJObject {
 
         XJAlert.disableEscapeKey();
         try {
-            int r = XJAlert.displayAlertYESNOCANCEL(getJavaContainer(), XJLocalizable.getXJString("DocCloseTitle"), XJLocalizable.getStringFormat("DocCloseMessage", documentTitle));
+            int r = XJAlert.displayAlertYESNOCANCEL(getSwingComponent(), XJLocalizable.getXJString("DocCloseTitle"), XJLocalizable.getStringFormat("DocCloseMessage", documentTitle));
             switch(r) {
                 case XJAlert.YES:
                     return save(false);

@@ -1,8 +1,8 @@
 package org.antlr.works.stringtemplate;
 
-import org.antlr.xjlib.appkit.swing.XJTableView;
 import org.antlr.works.stringtemplate.element.ElementTemplateRule;
 import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxParser;
+import org.antlr.xjlib.appkit.swing.XJTableView;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -10,9 +10,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.List;
 
 /*
 
@@ -47,12 +46,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class STRulePanel extends JPanel {
 
-    protected ComponentEditorStringTemplate editor;
+    protected StringTemplateEditor editor;
 
     private STRuleModel model;
     private final XJTableView tableView = new XJTableView();
 
-    public STRulePanel(ComponentEditorStringTemplate editor) {
+    public STRulePanel(StringTemplateEditor editor) {
         this.editor = editor;
         model = new STRuleModel();
 

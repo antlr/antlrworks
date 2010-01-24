@@ -33,7 +33,10 @@ package org.antlr.xjlib.appkit.app;
 
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.document.XJDocumentFactory;
-import org.antlr.xjlib.appkit.frame.*;
+import org.antlr.xjlib.appkit.frame.XJFrame;
+import org.antlr.xjlib.appkit.frame.XJFrameDelegate;
+import org.antlr.xjlib.appkit.frame.XJPanel;
+import org.antlr.xjlib.appkit.frame.XJWindow;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.appkit.utils.XJAlertInput;
@@ -397,7 +400,7 @@ public class XJApplication extends XJObject implements XJApplicationInterface, X
             else
                 document.setTitle(documentAbsoluteCount > 0 ?appName+" "+documentAbsoluteCount:appName);
 
-            XJWindowInterface window = document.getWindow();
+            XJWindow window = document.getWindow();
             if(!window.isMaximized() && useDesktopMode()) {
                 documentAbsoluteCount++;
 
@@ -514,7 +517,7 @@ public class XJApplication extends XJObject implements XJApplicationInterface, X
         return false;
     }
 
-    public void closeFirstCreatedWindowIfNonDirty(XJWindowInterface excludeWindow) {
+    public void closeFirstCreatedWindowIfNonDirty(XJWindow excludeWindow) {
         for(XJWindow window : windows) {
             // close the window only if it has:
             // - no document associated with file

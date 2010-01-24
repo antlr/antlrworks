@@ -34,7 +34,6 @@ package org.antlr.works.dialog;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import org.antlr.works.IDE;
 import org.antlr.works.find.FindAndReplace;
 import org.antlr.xjlib.appkit.frame.XJPanel;
 import org.antlr.xjlib.appkit.utils.XJAlert;
@@ -173,10 +172,6 @@ public class FindAndReplaceDialog extends XJPanel {
             delegate.setPositionToBottom();
             actionListener.actionPerformed(null);
         }
-    }
-
-    public boolean shouldDisplayMainMenuBar() {
-        return super.shouldDisplayMainMenuBar() && !IDE.isPlugin();
     }
 
     private void initComponents() {

@@ -31,19 +31,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.stats.StatisticsAW;
 
 public class ActionDebuggerImpl extends ActionAbstract implements ActionDebugger {
 
-    public ActionDebuggerImpl(ComponentContainer editor) {
+    public ActionDebuggerImpl(DocumentContainer editor) {
         super(editor);
     }
 
-    public ComponentEditorGrammar getSelectedEditor() {
-        return (ComponentEditorGrammar)super.getSelectedEditor();
+    public GrammarEditor getSelectedEditor() {
+        return (GrammarEditor)super.getSelectedEditor();
     }
 
     public void runInterpreter() {

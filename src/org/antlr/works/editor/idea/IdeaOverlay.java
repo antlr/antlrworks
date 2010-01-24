@@ -1,9 +1,9 @@
 package org.antlr.works.editor.idea;
 
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.OverlayObject;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -47,7 +47,7 @@ public class IdeaOverlay extends OverlayObject {
 
     protected static final int VISIBLE_IDEAS = 10;
 
-    protected ComponentEditorGrammar editor;
+    protected GrammarEditor editor;
     protected DefaultListModel ideasModel;
     protected JList ideasList;
     protected JScrollPane ideasScrollPane;
@@ -55,7 +55,7 @@ public class IdeaOverlay extends OverlayObject {
 
     protected List<IdeaAction> ideas;
 
-    public IdeaOverlay(ComponentEditorGrammar editor, XJFrameInterface parentFrame, JComponent parentComponent) {
+    public IdeaOverlay(GrammarEditor editor, XJFrame parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
         this.editor = editor;
     }

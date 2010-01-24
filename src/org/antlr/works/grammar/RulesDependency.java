@@ -1,7 +1,7 @@
 package org.antlr.works.grammar;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.grammar.element.ElementReference;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.xjlib.appkit.utils.XJAlert;
@@ -47,7 +47,7 @@ public class RulesDependency extends GrammarDOTTab {
 
     protected boolean includeLexerRefs;
 
-    public RulesDependency(ComponentEditorGrammar editor) {
+    public RulesDependency(GrammarEditor editor) {
         super(editor);
     }
 

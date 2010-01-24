@@ -35,7 +35,6 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
 import org.antlr.Tool;
 import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.works.IDE;
 import org.antlr.works.utils.IconManager;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.frame.XJPanel;
@@ -62,9 +61,6 @@ public class DialogAbout extends XJPanel {
         infoTable.getParent().setBackground(Color.white);
         
         tableModel.addInfo("ANTLRWorks", XJApplication.getAppVersionShort());
-        if(IDE.isPlugin()) {
-            tableModel.addInfo("ANTLRWorks Plugin", IDE.getPluginVersionShort());
-        }
         tableModel.addInfo("ANTLR", new Tool().VERSION);
         tableModel.addInfo("StringTemplate", StringTemplate.VERSION);
         tableModel.addInfo("Java", System.getProperty("java.version")+" ("+System.getProperty("java.vendor")+")");

@@ -1,7 +1,7 @@
 package org.antlr.works.components;
 
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
@@ -62,9 +62,9 @@ public class ComponentToolbar implements XJNotificationObserver {
 
     public JButton find;
 
-    public ComponentContainer container;
+    public DocumentContainer container;
 
-    public ComponentToolbar(ComponentContainer container) {
+    public ComponentToolbar(DocumentContainer container) {
         this.container = container;
 
         createInterface();
@@ -129,8 +129,8 @@ public class ComponentToolbar implements XJNotificationObserver {
         ideas.setSelected(true);
     }
 
-    public ComponentEditorGrammar getSelectedEditor() {
-        return (ComponentEditorGrammar)container.getSelectedEditor();
+    public GrammarEditor getSelectedEditor() {
+        return (GrammarEditor)container.getSelectedEditor();
     }
 
     public void addActions() {

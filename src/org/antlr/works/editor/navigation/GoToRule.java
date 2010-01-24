@@ -32,9 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor.navigation;
 
-import org.antlr.works.components.editor.ComponentEditor;
+import org.antlr.works.components.editor.DocumentEditor;
 import org.antlr.works.utils.OverlayObject;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -53,11 +53,11 @@ public class GoToRule extends OverlayObject {
     public JList matchingRuleList;
     public DefaultListModel matchingRuleListModel;
     public JScrollPane matchingRuleScrollPane;
-    public ComponentEditor editor;
+    public DocumentEditor editor;
 
     public static final int VISIBLE_MATCHING_RULES = 15;
 
-    public GoToRule(ComponentEditor editor, XJFrameInterface parentFrame, JComponent parentComponent) {
+    public GoToRule(DocumentEditor editor, XJFrame parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
         this.editor = editor;
     }

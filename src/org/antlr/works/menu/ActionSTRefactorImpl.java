@@ -1,12 +1,12 @@
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.components.container.DocumentContainer;
 import org.antlr.works.grammar.RefactorMutator;
-import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxLexer;
+import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.stringtemplate.StringTemplateEditor;
 import org.antlr.works.stringtemplate.element.ElementTemplateRule;
-import org.antlr.works.stringtemplate.ComponentEditorStringTemplate;
+import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxLexer;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 
 import javax.swing.*;
@@ -46,7 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ActionSTRefactorImpl extends ActionAbstract implements ActionRefactor {
     private EditorTextMutator mutator;
 
-    public ActionSTRefactorImpl(ComponentContainer container) {
+    public ActionSTRefactorImpl(DocumentContainer container) {
         super(container);
     }
 
@@ -106,7 +106,7 @@ public class ActionSTRefactorImpl extends ActionAbstract implements ActionRefact
     }
 
     protected ElementTemplateRule getRuleAtPosition(int pos) {
-        List<ElementTemplateRule> rules = ((ComponentEditorStringTemplate)getSelectedEditor()).getRules();
+        List<ElementTemplateRule> rules = ((StringTemplateEditor)getSelectedEditor()).getRules();
         if(rules == null)
             return null;
 

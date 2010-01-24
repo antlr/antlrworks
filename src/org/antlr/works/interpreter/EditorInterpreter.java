@@ -37,7 +37,7 @@ import org.antlr.tool.Grammar;
 import org.antlr.tool.Interpreter;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 import org.antlr.works.grammar.element.ElementRule;
@@ -79,9 +79,9 @@ public class EditorInterpreter extends EditorTab implements Runnable, AWTreePane
 
     protected String startSymbol = null;
 
-    protected ComponentEditorGrammar editor;
+    protected GrammarEditor editor;
 
-    public EditorInterpreter(ComponentEditorGrammar editor) {
+    public EditorInterpreter(GrammarEditor editor) {
         this.editor = editor;
     }
 

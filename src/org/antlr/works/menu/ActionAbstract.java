@@ -31,16 +31,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.editor.ComponentEditor;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.editor.DocumentEditor;
 
 import javax.swing.*;
 
 public abstract class ActionAbstract {
 
-    private ComponentContainer container;
+    private DocumentContainer container;
 
-    public ActionAbstract(ComponentContainer container) {
+    public ActionAbstract(DocumentContainer container) {
         this.container = container;
     }
 
@@ -48,11 +48,11 @@ public abstract class ActionAbstract {
         container = null;
     }
 
-    public ComponentContainer getContainer() {
+    public DocumentContainer getContainer() {
         return container;
     }
 
-    public ComponentEditor getSelectedEditor() {
+    public DocumentEditor getSelectedEditor() {
         return container.getSelectedEditor();
     }
 

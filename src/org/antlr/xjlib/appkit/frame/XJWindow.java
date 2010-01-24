@@ -41,7 +41,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XJWindow extends XJFrame implements XJWindowInterface {
+public class XJWindow extends XJFrame {
 
     private final List<XJDocument> documents = new ArrayList<XJDocument>();
 

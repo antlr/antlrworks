@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.components.container;
 
 import org.antlr.works.IDE;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.element.ElementGrammarName;
 import org.antlr.works.menu.*;
@@ -137,13 +137,13 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
     private ActionExport actionExport;
     private ActionRefactor actionRefactor;
 
-    private ComponentContainer container;
+    private DocumentContainer container;
     private XJMenuItem ignoreRuleMenuItem;
 
     /** The resource bundle used to get localized strings */
     private static ResourceBundle resourceBundle = IDE.getMenusResourceBundle();
 
-    public ComponentContainerGrammarMenu(ComponentContainer container) {
+    public ComponentContainerGrammarMenu(DocumentContainer container) {
         this.container = container;
 
         actionFind = new ActionFind(container);
@@ -171,8 +171,8 @@ public class ComponentContainerGrammarMenu implements XJMenuItemDelegate {
         actionGenerate.awake();
     }
 
-    public ComponentEditorGrammar getEditor() {
-        return (ComponentEditorGrammar)container.getSelectedEditor();
+    public GrammarEditor getEditor() {
+        return (GrammarEditor)container.getSelectedEditor();
     }
 
     public boolean isDebuggerRunning() {

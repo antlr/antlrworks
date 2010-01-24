@@ -33,12 +33,10 @@ package org.antlr.works.components.container;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.components.ComponentToolbar;
-import org.antlr.works.components.ComponentWindow;
-import org.antlr.works.components.ComponentWindowImpl;
-import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.components.document.ComponentDocumentFactory;
-import org.antlr.works.components.editor.ComponentEditor;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.GrammarWindow;
+import org.antlr.works.components.document.AWDocument;
+import org.antlr.works.components.editor.DocumentEditor;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.api.DebuggerDelegate;
 import org.antlr.works.editor.EditorConsole;
@@ -54,7 +52,7 @@ import org.antlr.works.menu.ActionRefactor;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.utils.Console;
 import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
@@ -72,14 +70,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public class ComponentContainerGrammar implements ComponentContainer {
+public class GrammarContainer implements DocumentContainer {
 
-    private final Set<ComponentContainer> containers = new LinkedHashSet<ComponentContainer>();
-    private final Map<Component, ComponentContainer> componentToContainer = new HashMap<Component, ComponentContainer>();
+    private final Set<DocumentContainer> containers = new LinkedHashSet<DocumentContainer>();
+    private final Map<Component, DocumentContainer> componentToContainer = new HashMap<Component, DocumentContainer>();
     private final Map<Integer, EditorTab> indexToEditorTab = new HashMap<Integer, EditorTab>();
 
-    private ComponentEditor editor;
-    private ComponentContainer selectedContainer;
+    private DocumentEditor editor;
+    private DocumentContainer selectedContainer;
     private ComponentContainerGrammarMenu componentContainerGrammarMenu;
 
     private ComponentToolbar toolbar;
@@ -108,10 +106,10 @@ public class ComponentContainerGrammar implements ComponentContainer {
     private final Set<String> loadedGrammarFileNames = new HashSet<String>();
     private final Map<String, GrammarEngine> engines = new HashMap<String, GrammarEngine>();
 
-    private final ComponentWindow window;
+    private final GrammarWindow window;
     private JSplitPane horizontalSplit;
 
-    public ComponentContainerGrammar(ComponentWindow window) {
+    public GrammarContainer(GrammarWindow window) {
         this.window = window;
 
         selectedContainer = this;
@@ -207,7 +205,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
         }
     }
 
-    public void addGrammar(ComponentContainer container) {
+    public void addGrammar(DocumentContainer container) {
         Component c = container.getEditor().getPanel();
         componentToContainer.put(c, container);
         containers.add(container);
@@ -229,26 +227,26 @@ public class ComponentContainerGrammar implements ComponentContainer {
         if(loadedGrammarFileNames.contains(fileName)) return true;
         loadedGrammarFileNames.add(fileName);
         
-        ComponentDocumentFactory factory = new ComponentDocumentFactory(ComponentWindowImpl.class);
-        ComponentDocumentInternal doc = factory.createInternalDocument(this);
-        ComponentContainerInternal container = (ComponentContainerInternal) doc.getContainer();
-
-        doc.awake();
-        try {
-            doc.load(file);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        window.addDocument(doc);
-        addGrammar(container);
+////        GrammarDocumentFactory factory = new GrammarDocumentFactory(GrammarWindow.class);
+//        GrammarDocument doc = factory.createDocument(this);
+////        DocumentContainer container = doc.getContainer();
+//
+//        doc.awake();
+//        try {
+//            doc.load(file);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//
+//        window.addDocument(doc);
+//        addGrammar(container);
 
         return true;
     }
 
-    public ComponentContainer getContainerForName(String name) {
-        for(ComponentContainer c : containers) {
+    public DocumentContainer getContainerForName(String name) {
+        for(DocumentContainer c : containers) {
             if(XJUtils.getPathByDeletingPathExtension(c.getDocument().getDocumentName()).equals(name)) {
                 return c;
             }
@@ -256,8 +254,8 @@ public class ComponentContainerGrammar implements ComponentContainer {
         return null;
     }
 
-    public ComponentEditorGrammar selectEditor(String name) {
-        ComponentContainer c = getContainerForName(name);
+    public GrammarEditor selectEditor(String name) {
+        DocumentContainer c = getContainerForName(name);
         if(c != null) {
             return selectGrammar(c);
         }
@@ -265,7 +263,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
     }
 
     public void selectGrammar(XJDocument doc) {
-        for(ComponentContainer c : containers) {
+        for(DocumentContainer c : containers) {
             if(c.getDocument() == doc) {
                 selectGrammar(c);
                 break;
@@ -273,7 +271,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
         }
     }
 
-    private ComponentEditorGrammar selectGrammar(ComponentContainer c) {
+    private GrammarEditor selectGrammar(DocumentContainer c) {
         Component panel = c.getEditor().getPanel();
         if(!editorsTab.hasComponent(panel)) {
             editorsTab.addComponent(c.getDocument().getDocumentName(), panel);
@@ -300,7 +298,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
     }
 
     private void updateEditorDirtyFlag() {
-        for (ComponentContainer c : containers) {
+        for (DocumentContainer c : containers) {
             Component panel = c.getEditor().getPanel();
             int index = editorsTab.indexOfComponent(panel);
             if (index == -1) continue;
@@ -321,11 +319,11 @@ public class ComponentContainerGrammar implements ComponentContainer {
         return toolbar;
     }
 
-    public ComponentEditorGrammar getSelectedEditor() {
-        return (ComponentEditorGrammar)getSelectedContainer().getEditor();
+    public GrammarEditor getSelectedEditor() {
+        return (GrammarEditor)getSelectedContainer().getEditor();
     }
 
-    public ComponentContainer getSelectedContainer() {
+    public DocumentContainer getSelectedContainer() {
         return selectedContainer;
     }
 
@@ -346,7 +344,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
     }
 
     public void saveAll() {
-        for(ComponentContainer container : containers) {
+        for(DocumentContainer container : containers) {
             container.getDocument().save(false);
         }
     }
@@ -356,7 +354,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
     }
 
     public boolean close() {
-        for(ComponentContainer container : containers) {
+        for(DocumentContainer container : containers) {
             if(container == this) continue;
             container.close();
         }
@@ -377,12 +375,12 @@ public class ComponentContainerGrammar implements ComponentContainer {
         return true;
     }
 
-    public void setDocument(ComponentDocument document) {
+    public void setDocument(AWDocument document) {
         window.setDocument(document);
     }
 
-    public ComponentDocument getDocument() {
-        return (ComponentDocument) window.getDocument();
+    public AWDocument getDocument() {
+        return (AWDocument) window.getDocument();
     }
 
     public Dimension getSize() {
@@ -397,7 +395,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
 
         debugger.componentShouldLayout(getSize());
 
-        for(ComponentContainer container : containers) {
+        for(DocumentContainer container : containers) {
             if(container == this) continue;
             container.becomingVisibleForTheFirstTime();
         }
@@ -422,15 +420,15 @@ public class ComponentContainerGrammar implements ComponentContainer {
         selectEditor(name);
     }
 
-    public void setEditor(ComponentEditor editor) {
+    public void setEditor(DocumentEditor editor) {
         this.editor = editor;
     }
 
-    public ComponentEditor getEditor() {
+    public DocumentEditor getEditor() {
         return editor;
     }
 
-    public XJFrameInterface getXJFrame() {
+    public XJFrame getXJFrame() {
         return window;
     }
 
@@ -463,7 +461,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
     }
 
     public void windowActivated() {
-        for(ComponentContainer container : containers) {
+        for(DocumentContainer container : containers) {
             container.getEditor().componentActivated();
         }
         for(EditorTab et : tabs) {
@@ -509,31 +507,31 @@ public class ComponentContainerGrammar implements ComponentContainer {
         bottomTab.removeTabAt(index);
     }
 
-    public void selectConsoleTab(ComponentEditor editor) {
-        switchToEditor((ComponentEditorGrammar) editor);
+    public void selectConsoleTab(DocumentEditor editor) {
+        switchToEditor((GrammarEditor) editor);
         selectTab(consolePanel);
     }
 
-    public void selectInterpreterTab(ComponentEditor editor) {
-        switchToEditor((ComponentEditorGrammar) editor);
+    public void selectInterpreterTab(DocumentEditor editor) {
+        switchToEditor((GrammarEditor) editor);
         selectTab(interpreterPanel);
     }
 
-    public void selectSyntaxDiagramTab(ComponentEditor editor) {
-        switchToEditor((ComponentEditorGrammar) editor);
+    public void selectSyntaxDiagramTab(DocumentEditor editor) {
+        switchToEditor((GrammarEditor) editor);
         selectTab(sdPanel);
     }
 
-    public void documentLoaded(ComponentDocument document) {
+    public void documentLoaded(AWDocument document) {
 
     }
 
-    public void editorParsed(ComponentEditor editor) {
+    public void editorParsed(DocumentEditor editor) {
         reloadEditor(editor);
     }
 
-    private void reloadEditor(ComponentEditor editor) {
-        GrammarEngine engine = ((ComponentEditorGrammar) editor).getGrammarEngine();
+    private void reloadEditor(DocumentEditor editor) {
+        GrammarEngine engine = ((GrammarEditor) editor).getGrammarEngine();
 
         engines.put(editor.getDocument().getDocumentNameWithoutExtension(), engine);
 
@@ -556,8 +554,8 @@ public class ComponentContainerGrammar implements ComponentContainer {
         // because changes in one grammar can have effects in others (for example,
         // the rule overriding indicator in the gutter might changes in another
         // child grammar).
-        for(ComponentContainer c : containers) {
-            ComponentEditorGrammar eg = (ComponentEditorGrammar) c.getEditor();
+        for(DocumentContainer c : containers) {
+            GrammarEditor eg = (GrammarEditor) c.getEditor();
             eg.getTextEditor().damage();
         }
     }
@@ -608,7 +606,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
         }
     }
 
-    private void switchToEditor(final ComponentEditorGrammar editor) {
+    private void switchToEditor(final GrammarEditor editor) {
         setComponent(toolbarPanel, toolbar.getToolbar());
         setComponent(rulesPanel, editor.getComponentRules());
 
@@ -662,7 +660,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
 
             ((EditorConsole)getConsole()).makeCurrent();
 
-            for(ComponentContainer c : containers) {
+            for(DocumentContainer c : containers) {
                 c.getEditor().setEditable(false);
             }
             refreshMainMenuBar();
@@ -670,7 +668,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
 
         public void debuggerStopped() {
             getSelectedEditor().setDebuggerLocation(-1);
-            for(ComponentContainer c : containers) {
+            for(DocumentContainer c : containers) {
                 c.getEditor().setEditable(true);
             }
             refreshMainMenuBar();
@@ -730,8 +728,8 @@ public class ComponentContainerGrammar implements ComponentContainer {
 
         public Map<Integer, Set<String>> getBreakpoints() {
             Map<Integer,Set<String>> breakpoints = new HashMap<Integer, Set<String>>();
-            for(ComponentContainer c : containers) {
-                ComponentEditorGrammar g = (ComponentEditorGrammar) c.getEditor();
+            for(DocumentContainer c : containers) {
+                GrammarEditor g = (GrammarEditor) c.getEditor();
                 for(Integer line : g.getBreakpoints()) {
                     Set<String> names = breakpoints.get(line);
                     if(names == null) {
@@ -745,7 +743,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
         }
 
         public ContextualMenuFactory createContextualMenuFactory() {
-            return ComponentContainerGrammar.this.createContextualMenuFactory();
+            return GrammarContainer.this.createContextualMenuFactory();
         }
 
         public void selectConsoleTab() {
@@ -768,7 +766,7 @@ public class ComponentContainerGrammar implements ComponentContainer {
         public void stateChanged(ChangeEvent event) {
             Component c = editorsTab.getSelectedComponent();
             selectedContainer = componentToContainer.get(c);
-            ComponentEditorGrammar editor = (ComponentEditorGrammar) selectedContainer.getEditor();
+            GrammarEditor editor = (GrammarEditor) selectedContainer.getEditor();
 
             switchToEditor(editor);
         }

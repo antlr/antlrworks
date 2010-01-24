@@ -53,8 +53,8 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 
 public class AWPrefsDialog extends XJPanel {
 
@@ -109,7 +109,7 @@ public class AWPrefsDialog extends XJPanel {
         for (UIManager.LookAndFeelInfo anInfo : info) {
             lafCombo.addItem(anInfo.getName());
         }
-        lafCombo.setEnabled(!IDE.isPlugin());
+        lafCombo.setEnabled(true);
 
         getPreferences().bindToPreferences(startupActionCombo, AWPrefs.PREF_STARTUP_ACTION, AWPrefs.STARTUP_OPEN_LAST_OPENED_DOC);
         getPreferences().bindToPreferences(restoreWindowsBoundButton, AWPrefs.PREF_RESTORE_WINDOWS, AWPrefs.DEFAULT_RESTORE_WINDOWS);
@@ -412,8 +412,7 @@ public class AWPrefsDialog extends XJPanel {
         getPreferences().applyPreferences();
         if(lafIndex != lafCombo.getSelectedIndex()) {
             lafIndex = lafCombo.getSelectedIndex();
-            if(!IDE.isPlugin())
-                changeLookAndFeel();
+            changeLookAndFeel();
         }
         applyCommonPrefs();
         applyTestRigPrefs();
@@ -426,10 +425,6 @@ public class AWPrefsDialog extends XJPanel {
 
     private static XJPreferences getPreferences() {
         return XJApplication.shared().getPreferences();
-    }
-
-    public boolean shouldDisplayMainMenuBar() {
-        return super.shouldDisplayMainMenuBar() && !IDE.isPlugin();
     }
 
     private void initComponents() {

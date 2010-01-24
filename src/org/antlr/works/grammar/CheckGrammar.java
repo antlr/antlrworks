@@ -31,18 +31,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.grammar;
 
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.grammar.antlr.GrammarResult;
 import org.antlr.works.utils.Console;
 
 public class CheckGrammar implements Runnable {
 
     private volatile CheckGrammarDelegate delegate;
-    private volatile ComponentEditorGrammar editor;
+    private volatile GrammarEditor editor;
 
     private volatile boolean cancelled = false;
 
-    public CheckGrammar(ComponentEditorGrammar editor, CheckGrammarDelegate delegate) {
+    public CheckGrammar(GrammarEditor editor, CheckGrammarDelegate delegate) {
         this.editor = editor;
         this.delegate = delegate;
     }

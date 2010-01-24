@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.generate.CodeDisplay;
 import org.antlr.works.generate.CodeGenerate;
 import org.antlr.works.generate.CodeGenerateDelegate;
@@ -54,11 +54,11 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
     private boolean actionShowCodeAfterGeneration = false;
 
     private CodeGenerate codeGenerate;
-    private ComponentEditorGrammar rootGrammar;
+    private GrammarEditor rootGrammar;
 
     private boolean generating = false;
 
-    public ActionGenerate(ComponentContainer editor) {
+    public ActionGenerate(DocumentContainer editor) {
         super(editor);
     }
 
@@ -78,8 +78,8 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
         generateCodeProcess();
     }
 
-    public ComponentEditorGrammar getSelectedEditor() {
-        return (ComponentEditorGrammar)super.getSelectedEditor();
+    public GrammarEditor getSelectedEditor() {
+        return (GrammarEditor)super.getSelectedEditor();
     }
 
     public void showGeneratedCode(int type) {
@@ -149,7 +149,7 @@ public class ActionGenerate extends ActionAbstract implements CodeGenerateDelega
     }
 
     private void showGeneratedCode(String rule, int type) {
-        ComponentEditorGrammar editor = getSelectedEditor();
+        GrammarEditor editor = getSelectedEditor();
 
         String grammarName;
         try {

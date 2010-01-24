@@ -1,7 +1,7 @@
 package org.antlr.works.grammar;
 
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.decisiondfa.DecisionDFA;
 import org.antlr.works.grammar.element.ElementRule;
@@ -52,7 +52,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public abstract class GrammarDOTTab extends EditorTab implements Runnable, GViewDelegate {
 
-    protected ComponentEditorGrammar editor;
+    protected GrammarEditor editor;
 
     protected JPanel panel;
     protected GView view;
@@ -64,7 +64,7 @@ public abstract class GrammarDOTTab extends EditorTab implements Runnable, GView
 
     protected String error;
 
-    public GrammarDOTTab(ComponentEditorGrammar editor) {
+    public GrammarDOTTab(GrammarEditor editor) {
         this.editor = editor;
     }
 

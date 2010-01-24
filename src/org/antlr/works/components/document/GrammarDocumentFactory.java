@@ -1,10 +1,9 @@
 package org.antlr.works.components.document;
 
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.container.ComponentContainerInternal;
-import org.antlr.works.components.container.ComponentDocumentInternal;
-import org.antlr.works.components.editor.ComponentEditor;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.GrammarWindow;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.editor.DocumentEditor;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.utils.Localizable;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
 import org.antlr.xjlib.appkit.document.XJDocument;
@@ -39,11 +38,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ComponentDocumentFactory extends XJDocumentFactory {
+public class GrammarDocumentFactory extends XJDocumentFactory {
 
     // todo provide factory?
-    public ComponentDocumentFactory(Class windowClass) {
-        super(ComponentDocumentGrammar.class,
+    public GrammarDocumentFactory(Class windowClass) {
+        super(GrammarDocument.class,
                 windowClass,
                 XJDataPlainText.class,
                 "g",
@@ -52,34 +51,17 @@ public class ComponentDocumentFactory extends XJDocumentFactory {
 
     @Override
     public XJDocument createDocument() throws IllegalAccessException, InstantiationException {
-        ComponentDocument doc = (ComponentDocument) super.createDocument();
-        createAndBindEditor(doc);
-        return doc;
-    }
+        GrammarDocument document = (GrammarDocument) super.createDocument();
 
-    public ComponentDocumentInternal createInternalDocument(ComponentContainer mainContainer) {
-        ComponentDocumentInternal doc = new ComponentDocumentInternal();
-        doc.setDocumentData(new XJDataPlainText());
-        doc.setDocumentFileType(getExtensions(), getDescriptionString());
-
-        ComponentContainerInternal container = new ComponentContainerInternal(mainContainer);
-        container.setDocument(doc);
-        doc.setContainer(container);
-
-        createAndBindEditor(doc);
-
-        return doc;
-    }
-
-    private void createAndBindEditor(ComponentDocument document) {
-        ComponentEditor editor = new ComponentEditorGrammar();
-
+        DocumentEditor editor = new GrammarEditor();
         editor.setDocument(document);
         document.setEditor(editor);
 
-        ComponentContainer container = document.getContainer();
+        DocumentContainer container = ((GrammarWindow)document.getWindow()).getContainer(); //document.getContainer();
         editor.setContainer(container);
         container.setEditor(editor);
+
+        return document;
     }
 
 }

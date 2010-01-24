@@ -5,7 +5,7 @@ import org.antlr.analysis.NFAState;
 import org.antlr.tool.DOTGenerator;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Rule;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 /*
 
@@ -40,7 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class TokensDFA extends GrammarDOTTab {
 
-    public TokensDFA(ComponentEditorGrammar editor) {
+    public TokensDFA(GrammarEditor editor) {
         super(editor);
     }
 

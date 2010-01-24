@@ -1,9 +1,6 @@
 package org.antlr.works.stringtemplate;
 
-import org.antlr.xjlib.appkit.document.XJDataPlainText;
-import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.foundation.XJUtils;
-import org.antlr.works.components.document.ComponentDocument;
+import org.antlr.works.components.document.AWDocument;
 import org.antlr.works.prefs.AWPrefs;
 
 import java.io.File;/*
@@ -37,7 +34,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class STDocument extends ComponentDocument {
+public class STDocument extends AWDocument {
 
     @Override
     public boolean save(boolean saveAs) {

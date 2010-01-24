@@ -34,7 +34,7 @@ package org.antlr.works.editor.completion;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.utils.OverlayObject;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -67,7 +67,7 @@ public class AutoCompletionMenu extends OverlayObject {
 
     public static int visibleMatchingRules = 15;
 
-    public AutoCompletionMenu(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, XJFrameInterface frame) {
+    public AutoCompletionMenu(AutoCompletionMenuDelegate delegate, JTextComponent textComponent, XJFrame frame) {
         super(frame, textComponent);
         this.delegate = delegate;
     }

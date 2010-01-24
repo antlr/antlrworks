@@ -82,7 +82,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ComponentEditorGrammar extends ComponentEditor implements AutoCompletionMenuDelegate,
+public class GrammarEditor extends DocumentEditor implements AutoCompletionMenuDelegate,
         ATEPanelDelegate, XJUndoDelegate, InspectorDelegate, GrammarEngineDelegate {
 
     /* Completion */
@@ -146,7 +146,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     /* Progress */
     private XJDialogProgress progress;
 
-    public ComponentEditorGrammar() {
+    public GrammarEditor() {
 
     }
 
@@ -414,7 +414,7 @@ public class ComponentEditorGrammar extends ComponentEditor implements AutoCompl
     public void gotoToRule(String grammar, final String name) {
         if(!grammar.equals(engine.getGrammarName())) {
             // rule is in another editor
-            final ComponentEditorGrammar editor = (ComponentEditorGrammar)getContainer().selectEditor(grammar);
+            final GrammarEditor editor = (GrammarEditor)getContainer().selectEditor(grammar);
             // set the caret position
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {

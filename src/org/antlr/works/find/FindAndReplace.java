@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.find;
 
-import org.antlr.works.components.editor.ComponentEditor;
+import org.antlr.works.components.editor.DocumentEditor;
 import org.antlr.works.dialog.FindAndReplaceDialog;
 import org.antlr.xjlib.appkit.frame.XJFrame;
 import org.antlr.xjlib.appkit.frame.XJFrameDelegate;
@@ -46,7 +46,7 @@ public class FindAndReplace implements XJFrameDelegate {
     public static final String BEGIN_QUOTE = "\\Q";
     public static final String END_QUOTE = "\\E";
 
-    public ComponentEditor editor;
+    public DocumentEditor editor;
     public String findString;
     public String replaceString;
     public int flags;
@@ -57,7 +57,7 @@ public class FindAndReplace implements XJFrameDelegate {
 
     public FindAndReplaceDialog dialog;
 
-    public FindAndReplace(ComponentEditor editor) {
+    public FindAndReplace(DocumentEditor editor) {
         this.editor = editor;
     }
 

@@ -1,12 +1,6 @@
 package org.antlr.works.stringtemplate;
 
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.container.ComponentContainerGrammar;
-import org.antlr.works.components.container.ComponentContainerInternal;
-import org.antlr.works.components.document.ComponentDocumentGrammar;
-import org.antlr.works.components.ComponentWindow;
-import org.antlr.works.prefs.AWPrefs;
-import org.antlr.xjlib.appkit.app.XJApplication;
+import org.antlr.works.components.container.DocumentContainer;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.frame.XJWindow;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
@@ -14,7 +8,6 @@ import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
 
 import javax.swing.*;
-import java.awt.*;
 
 /*
 
@@ -46,23 +39,23 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-public class STWindow extends XJWindow implements ComponentWindow {
+public class STWindow extends XJWindow {
 
-    private final ComponentContainer componentContainer;
+    private final DocumentContainer documentContainer;
 
     public STWindow() {
-        this.componentContainer = new ComponentContainerStringTemplate(this);
+        this.documentContainer = new StringTemplateContainer(this);
     }
 
     @Override
     public void awake() {
         super.awake();
-        componentContainer.awake();
-        componentContainer.assemble(false);
+        documentContainer.awake();
+        documentContainer.assemble(false);
     }
 
-    public ComponentContainer getComponentContainer() {
-        return componentContainer;
+    public DocumentContainer getComponentContainer() {
+        return documentContainer;
     }
 
     public void setContentPanel(JPanel panel) {
@@ -72,13 +65,13 @@ public class STWindow extends XJWindow implements ComponentWindow {
 
     @Override
     public void dirtyChanged() {
-        componentContainer.dirtyChanged();
+        documentContainer.dirtyChanged();
     }
 
     @Override
     public void windowActivated() {
         super.windowActivated();
-        componentContainer.windowActivated();
+        documentContainer.windowActivated();
     }
 
     @Override
@@ -90,32 +83,32 @@ public class STWindow extends XJWindow implements ComponentWindow {
 
     @Override
     public void becomingVisibleForTheFirstTime() {
-        componentContainer.becomingVisibleForTheFirstTime();
+        documentContainer.becomingVisibleForTheFirstTime();
     }
 
     @Override
     public void customizeFileMenu(XJMenu menu) {
-        componentContainer.customizeFileMenu(menu);
+        documentContainer.customizeFileMenu(menu);
     }
 
     @Override
     public void customizeMenuBar(XJMainMenuBar menubar) {
-        componentContainer.customizeMenuBar(menubar);
+        documentContainer.customizeMenuBar(menubar);
     }
 
     @Override
     public void menuItemState(XJMenuItem item) {
-        componentContainer.menuItemState(item);
+        documentContainer.menuItemState(item);
     }
 
     @Override
     public void handleMenuSelected(XJMenu menu) {
-        componentContainer.handleMenuSelected(menu);
+        documentContainer.handleMenuSelected(menu);
     }
 
     @Override
     public boolean close(boolean force) {
-        return super.close(force) && componentContainer.close();
+        return super.close(force) && documentContainer.close();
     }
 
 

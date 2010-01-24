@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.visualization.graphics.panel;
 
 import org.antlr.works.components.container.ComponentContainerGrammarMenu;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.menu.ContextualMenuFactory;
 import org.antlr.works.stats.StatisticsAW;
@@ -70,9 +70,9 @@ public class GPanel implements XJNotificationObserver {
     protected JScrollPane viewScrollPane;
 
     protected ElementRule rule;
-    protected ComponentEditorGrammar editor;
+    protected GrammarEditor editor;
 
-    public GPanel(ComponentEditorGrammar editor, GContext context) {
+    public GPanel(GrammarEditor editor, GContext context) {
         this.editor = editor;
         this.context = context;
         this.container = new JPanel(new BorderLayout());

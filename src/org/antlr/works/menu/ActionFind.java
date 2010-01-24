@@ -1,8 +1,8 @@
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.find.Usages;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class ActionFind extends ActionAbstract {
 
-    public ActionFind(ComponentContainer editor) {
+    public ActionFind(DocumentContainer editor) {
         super(editor);
     }
 
@@ -70,12 +70,12 @@ public class ActionFind extends ActionAbstract {
         if(token == null)
             return;
 
-        Usages usage = new Usages((ComponentEditorGrammar)getSelectedEditor(), token);
-        ((ComponentEditorGrammar)getSelectedEditor()).addTab(usage);
+        Usages usage = new Usages((GrammarEditor)getSelectedEditor(), token);
+        ((GrammarEditor)getSelectedEditor()).addTab(usage);
 
         for (ATEToken ateToken : getSelectedEditor().getTokens()) {
             if (ateToken.getAttribute().equals(token.getAttribute())) {
-                ElementRule matchedRule = ((ComponentEditorGrammar)getSelectedEditor()).rules.getEnclosingRuleAtPosition(ateToken.getStartIndex());
+                ElementRule matchedRule = ((GrammarEditor)getSelectedEditor()).rules.getEnclosingRuleAtPosition(ateToken.getStartIndex());
                 if (matchedRule != null)
                     usage.addMatch(matchedRule, ateToken);
             }

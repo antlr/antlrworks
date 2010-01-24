@@ -3,7 +3,7 @@ package org.antlr.works.editor.tips;
 import org.antlr.works.utils.OverlayObject;
 import org.antlr.works.utils.ToolTipList;
 import org.antlr.works.utils.ToolTipListDelegate;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,7 +44,7 @@ public class TipsOverlay extends OverlayObject implements ToolTipListDelegate {
     protected ToolTipList toolTip;
     protected Point location;
 
-    public TipsOverlay(XJFrameInterface parentFrame, JComponent parentComponent) {
+    public TipsOverlay(XJFrame parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
     }
 

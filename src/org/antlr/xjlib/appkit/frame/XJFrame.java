@@ -52,7 +52,7 @@ import java.awt.event.WindowListener;
 import java.beans.PropertyVetoException;
 import java.io.File;
 
-public class XJFrame extends XJControl implements XJFrameInterface, XJMenuBarCustomizer, XJMenuBarDelegate {
+public class XJFrame extends XJControl implements XJMenuBarCustomizer, XJMenuBarDelegate {
 
     private static final String PROPERTY_WINDOW_MODIFIED = "windowModified";
     private static final String PREF_DESKTOP_BOUNDS = "xjdesktop_bounds";

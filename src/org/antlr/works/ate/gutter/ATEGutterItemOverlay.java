@@ -3,7 +3,7 @@ package org.antlr.works.ate.gutter;
 import org.antlr.works.utils.OverlayObject;
 import org.antlr.works.utils.ToolTipList;
 import org.antlr.works.utils.ToolTipListDelegate;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +47,7 @@ public class ATEGutterItemOverlay extends OverlayObject implements ToolTipListDe
     public ToolTipList toolTip;
     public Point location;
 
-    public ATEGutterItemOverlay(XJFrameInterface parentFrame, JComponent parentComponent) {
+    public ATEGutterItemOverlay(XJFrame parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
     }
 

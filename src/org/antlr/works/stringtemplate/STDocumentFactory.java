@@ -1,11 +1,7 @@
 package org.antlr.works.stringtemplate;
 
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.container.ComponentContainerInternal;
-import org.antlr.works.components.container.ComponentDocumentInternal;
-import org.antlr.works.components.editor.ComponentEditor;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.utils.Localizable;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.editor.DocumentEditor;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
 import org.antlr.xjlib.appkit.document.XJDocument;
 import org.antlr.xjlib.appkit.document.XJDocumentFactory;/*
@@ -57,14 +53,10 @@ public class STDocumentFactory extends XJDocumentFactory {
         return doc;
     }
 
-    public STDocumentInternal createInternalDocument(ComponentContainer mainContainer) {
-        STDocumentInternal doc = new STDocumentInternal();
+    public STDocument createDocument(DocumentContainer container) {
+        STDocument doc = new STDocument();
         doc.setDocumentData(new XJDataPlainText());
         doc.setDocumentFileType(getExtensions(), getDescriptionString());
-
-        ComponentContainerInternal container = new ComponentContainerInternal(mainContainer);
-        container.setDocument(doc);
-        doc.setContainer(container);
 
         createAndBindEditor(doc);
 
@@ -72,12 +64,12 @@ public class STDocumentFactory extends XJDocumentFactory {
     }
 
     private void createAndBindEditor(STDocument document) {
-        ComponentEditor editor = new ComponentEditorStringTemplate();
+        DocumentEditor editor = new StringTemplateEditor();
 
         editor.setDocument(document);
         document.setEditor(editor);
 
-        ComponentContainer container = document.getContainer();
+        DocumentContainer container = document.getContainer();
         editor.setContainer(container);
         container.setEditor(editor);
     }

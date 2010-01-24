@@ -4,30 +4,31 @@ import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATEPanelAdapter;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.ComponentEditor;
+import org.antlr.works.components.editor.DocumentEditor;
 import org.antlr.works.editor.completion.AutoCompletionMenu;
 import org.antlr.works.editor.completion.AutoCompletionMenuDelegate;
 import org.antlr.works.editor.navigation.GoToHistory;
 import org.antlr.works.editor.navigation.GoToRule;
 import org.antlr.works.find.FindAndReplace;
+import org.antlr.works.grammar.element.Jumpable;
 import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.stringtemplate.element.ElementTemplateReference;
+import org.antlr.works.stringtemplate.element.ElementTemplateRule;
+import org.antlr.works.stringtemplate.menu.ContextualStringTemplateMenuFactory;
 import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxEngine;
 import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxParser;
-import org.antlr.works.stringtemplate.element.ElementTemplateRule;
-import org.antlr.works.stringtemplate.element.ElementTemplateReference;
-import org.antlr.works.stringtemplate.menu.ContextualStringTemplateMenuFactory;
-import org.antlr.works.grammar.element.Jumpable;
-import org.antlr.works.stats.StatisticsAW;
-import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
-import org.antlr.xjlib.appkit.undo.XJUndo;
-import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.appkit.menu.XJMenuItemCheck;
+import org.antlr.xjlib.appkit.undo.XJUndo;
+import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
+import org.antlr.xjlib.appkit.utils.XJAlert;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.print.PrinterException;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -61,7 +62,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ComponentEditorStringTemplate extends ComponentEditor implements AutoCompletionMenuDelegate,
+public class StringTemplateEditor extends DocumentEditor implements AutoCompletionMenuDelegate,
     XJUndoDelegate {
 
     public AutoCompletionMenu autoCompletionMenu;
@@ -104,8 +105,8 @@ public class ComponentEditorStringTemplate extends ComponentEditor implements Au
         return rulesPanel;
     }
 
-    public ComponentContainerStringTemplate getContainer() {
-        return (ComponentContainerStringTemplate)container;
+    public StringTemplateContainer getContainer() {
+        return (StringTemplateContainer)container;
     }
 
     protected void initComponents() {

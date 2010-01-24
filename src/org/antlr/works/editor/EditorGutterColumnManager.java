@@ -2,7 +2,7 @@ package org.antlr.works.editor;
 
 import org.antlr.works.ate.gutter.ATEGutterColumnManager;
 import org.antlr.works.ate.gutter.ATEGutterItem;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.utils.IconManager;
 
@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorGutterColumnManager extends ATEGutterColumnManager {
 
-    private ComponentEditorGrammar editor;
+    private GrammarEditor editor;
     private Map<Integer,ATEGutterItem> breakpoints = new HashMap<Integer,ATEGutterItem>();
 
     private static final String RULES = "rules";
@@ -51,7 +51,7 @@ public class EditorGutterColumnManager extends ATEGutterColumnManager {
 
     private static final int DEFAULT_NO_BREAKPOINTS_WIDTH = 5; // to have enough room to click with the mouse if no breakpoints
 
-    public EditorGutterColumnManager(ComponentEditorGrammar editor) {
+    public EditorGutterColumnManager(GrammarEditor editor) {
         super(editor.textEditor);
         this.editor = editor;
     }

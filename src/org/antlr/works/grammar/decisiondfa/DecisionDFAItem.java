@@ -1,6 +1,6 @@
 package org.antlr.works.grammar.decisiondfa;
 
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.editor.EditorInspectorItem;
 import org.antlr.works.editor.idea.IdeaAction;
 
@@ -9,9 +9,9 @@ import java.util.List;
 
 public class DecisionDFAItem extends EditorInspectorItem {
 
-    private ComponentEditorGrammar editor;
+    private GrammarEditor editor;
 
-    public DecisionDFAItem(ComponentEditorGrammar editor) {
+    public DecisionDFAItem(GrammarEditor editor) {
         this.editor = editor;
     }
 

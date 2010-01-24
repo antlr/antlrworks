@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.editor.idea.*;
 import org.antlr.works.grammar.element.ElementRule;
 
@@ -41,9 +41,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
 
     public IdeaManager ideaManager;
-    public ComponentEditorGrammar editor;
+    public GrammarEditor editor;
 
-    public EditorIdeas(ComponentEditorGrammar editor) {
+    public EditorIdeas(GrammarEditor editor) {
         this.editor = editor;
     }
 

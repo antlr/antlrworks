@@ -3,7 +3,7 @@ package org.antlr.works.editor;
 import org.antlr.works.ate.swing.ATERenderingToken;
 import org.antlr.works.ate.swing.ATERenderingView;
 import org.antlr.works.ate.swing.ATERenderingViewDelegate;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.grammar.element.Jumpable;
 
 import javax.swing.text.*;
@@ -44,7 +44,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class EditorATEEditorKit extends StyledEditorKit
         implements ViewFactory, ATERenderingViewDelegate {
 
-    private ComponentEditorGrammar editor;
+    private GrammarEditor editor;
     private final Set<ATERenderingView> views = new HashSet<ATERenderingView>();
 
     private final List<ATERenderingToken> indexes = new ArrayList<ATERenderingToken>();
@@ -56,7 +56,7 @@ public class EditorATEEditorKit extends StyledEditorKit
     private final HighlightedReferenceStartToken highlightedReferenceStartToken = new HighlightedReferenceStartToken();
     private final HighlightedReferenceToken highlightedReferenceToken = new HighlightedReferenceToken();
 
-    public EditorATEEditorKit(ComponentEditorGrammar editor) {
+    public EditorATEEditorKit(GrammarEditor editor) {
         this.editor = editor;
     }
 

@@ -32,25 +32,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.menu;
 
 import org.antlr.works.ate.syntax.misc.ATELine;
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
-import org.antlr.works.components.editor.ComponentEditor;
-import org.antlr.works.grammar.element.ElementImport;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.editor.DocumentEditor;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.grammar.element.Jumpable;
-import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.stats.StatisticsAW;
 
 import javax.swing.*;
-import java.util.List;
 import java.util.Set;
 
 public class ActionGoTo extends ActionAbstract {
 
-    public ActionGoTo(ComponentContainer editor) {
+    public ActionGoTo(DocumentContainer editor) {
         super(editor);
     }
 
-    public ComponentEditor getSelectedEditor() {
+    public DocumentEditor getSelectedEditor() {
         return super.getSelectedEditor();
     }
 
@@ -74,13 +71,13 @@ public class ActionGoTo extends ActionAbstract {
         else
             StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_GOTO_NEXT_BRKPT);
 
-        Set<Integer> breakpoints = ((ComponentEditorGrammar)getSelectedEditor()).getBreakpoints();
+        Set<Integer> breakpoints = ((GrammarEditor)getSelectedEditor()).getBreakpoints();
         int line = getSelectedEditor().getTextEditor().getLineIndexAtTextPosition(getCaretPosition());
         if(line == -1) return;
 
         while(true) {
             line += direction;
-            if(line < 0 || line > ((ComponentEditorGrammar)getSelectedEditor()).getGrammarEngine().getNumberOfLines()-1)
+            if(line < 0 || line > ((GrammarEditor)getSelectedEditor()).getGrammarEngine().getNumberOfLines()-1)
                 break;
 
             if(breakpoints.contains(Integer.valueOf(line))) {

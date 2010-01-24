@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.editor;
 
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.utils.Console;
 import org.antlr.works.utils.ConsoleHelper;
 import org.antlr.works.utils.Toolbar;
@@ -48,7 +48,7 @@ import java.util.Map;
 
 public class EditorConsole extends EditorTab implements Console {
 
-    protected ComponentEditorGrammar editor;
+    protected GrammarEditor editor;
 
     protected JPanel panel;
     protected JTextArea textArea;
@@ -56,7 +56,7 @@ public class EditorConsole extends EditorTab implements Console {
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     protected Map<Thread,Integer> modeByThread = new HashMap<Thread, Integer>();
 
-    public EditorConsole(ComponentEditorGrammar editor) {
+    public EditorConsole(GrammarEditor editor) {
         this.editor = editor;
 
         panel = new JPanel(new BorderLayout());

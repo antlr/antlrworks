@@ -34,8 +34,8 @@ package org.antlr.works.editor;
 import org.antlr.works.ate.swing.ATEKeyBindings;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.ComponentEditor;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.DocumentEditor;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.grammar.element.ElementAction;
 import org.antlr.works.grammar.element.ElementGroup;
 import org.antlr.works.grammar.element.ElementReference;
@@ -68,7 +68,7 @@ import java.util.List;
 
 public class EditorRules implements XJTreeDelegate {
 
-    protected ComponentEditorGrammar editor;
+    protected GrammarEditor editor;
 
     protected boolean programmaticallySelectingRule = false;
     protected boolean selectNextRule = false;
@@ -84,7 +84,7 @@ public class EditorRules implements XJTreeDelegate {
     private TreeSelectionListener tsl;
     private MouseListener ml;
 
-    public EditorRules(ComponentEditorGrammar editor, XJTree rulesTree) {
+    public EditorRules(GrammarEditor editor, XJTree rulesTree) {
         this.editor = editor;
         this.rulesTree = rulesTree;
 
@@ -789,7 +789,7 @@ public class EditorRules implements XJTreeDelegate {
 
     public static class RuleTreeUserObject implements Transferable {
 
-        public ComponentEditor editor;
+        public DocumentEditor editor;
         public ElementRule rule;
         public ElementGroup group;
 
@@ -801,7 +801,7 @@ public class EditorRules implements XJTreeDelegate {
             this.group = group;
         }
 
-        public RuleTreeUserObject(ComponentEditor editor) {
+        public RuleTreeUserObject(DocumentEditor editor) {
             this.editor = editor;
         }
 

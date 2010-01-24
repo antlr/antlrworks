@@ -36,7 +36,7 @@ import org.antlr.works.ate.syntax.java.ATEJavaSyntaxEngine;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.document.XJFileMonitor;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.foundation.XJUtils;
 
@@ -50,7 +50,7 @@ public class CodeDisplay extends EditorTab {
     private String file;
     private final XJFileMonitor monitor = new XJFileMonitor();
 
-    public CodeDisplay(XJFrameInterface parentFrame) {
+    public CodeDisplay(XJFrame parentFrame) {
         textEditor = new ATEPanel(parentFrame);
         textEditor.setParserEngine(new ATEJavaSyntaxEngine());
         textEditor.setSyntaxColoring(true);

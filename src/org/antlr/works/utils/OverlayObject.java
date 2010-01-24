@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.utils;
 
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,14 +47,14 @@ public abstract class OverlayObject {
     public static final int ALIGN_CENTER = 1;
     public static final int ALIGN_CUSTOM = 2;
 
-    protected XJFrameInterface parentFrame;
+    protected XJFrame parentFrame;
     protected JComponent parentComponent;
     protected JComponent content;
     private ComponentAdapter pfcl;
     private ComponentAdapter pccl;
     private MouseAdapter pcml;
 
-    public OverlayObject(XJFrameInterface parentFrame, JComponent parentComponent) {
+    public OverlayObject(XJFrame parentFrame, JComponent parentComponent) {
         this.parentFrame = parentFrame;
         this.parentComponent = parentComponent;
 

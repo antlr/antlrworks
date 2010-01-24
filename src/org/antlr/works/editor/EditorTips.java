@@ -1,7 +1,7 @@
 package org.antlr.works.editor;
 
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.editor.tips.TipsManager;
 import org.antlr.works.editor.tips.TipsOverlay;
 import org.antlr.works.editor.tips.TipsProvider;
@@ -45,9 +45,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class EditorTips implements TipsProvider {
 
     public TipsManager tipsManager;
-    public ComponentEditorGrammar editor;
+    public GrammarEditor editor;
 
-    public EditorTips(ComponentEditorGrammar editor) {
+    public EditorTips(GrammarEditor editor) {
         this.editor = editor;
     }
 

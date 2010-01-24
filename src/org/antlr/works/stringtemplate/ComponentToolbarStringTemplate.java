@@ -1,13 +1,11 @@
 package org.antlr.works.stringtemplate;
 
-import org.antlr.works.components.container.ComponentContainer;
+import org.antlr.works.components.container.DocumentContainer;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.Toolbar;
 import org.antlr.xjlib.appkit.swing.XJRollOverButton;
 import org.antlr.xjlib.appkit.swing.XJRollOverButtonToggle;
-import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
-import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -54,9 +52,9 @@ public class ComponentToolbarStringTemplate {
 
     public JButton find;
 
-    public ComponentContainer container;
+    public DocumentContainer container;
 
-    public ComponentToolbarStringTemplate(ComponentContainer container) {
+    public ComponentToolbarStringTemplate(DocumentContainer container) {
         this.container = container;
 
         createInterface();
@@ -87,8 +85,8 @@ public class ComponentToolbarStringTemplate {
         sort.setSelected(getSelectedEditor().isRulesSorted());
     }
 
-    public ComponentEditorStringTemplate getSelectedEditor() {
-        return (ComponentEditorStringTemplate)container.getSelectedEditor();
+    public StringTemplateEditor getSelectedEditor() {
+        return (StringTemplateEditor)container.getSelectedEditor();
     }
 
     public void addActions() {

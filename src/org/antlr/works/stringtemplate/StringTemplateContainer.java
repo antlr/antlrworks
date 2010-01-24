@@ -31,20 +31,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.stringtemplate;
 
-import org.antlr.works.components.ComponentWindow;
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.container.ComponentContainerInternal;
-import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.components.editor.ComponentEditor;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.document.AWDocument;
+import org.antlr.works.components.editor.DocumentEditor;
+import org.antlr.works.debugger.Debugger;
 import org.antlr.works.editor.EditorTab;
+import org.antlr.works.menu.ActionDebugger;
 import org.antlr.works.menu.ActionGoTo;
 import org.antlr.works.menu.ActionRefactor;
 import org.antlr.works.menu.ContextualMenuFactory;
-import org.antlr.works.menu.ActionDebugger;
-import org.antlr.works.debugger.Debugger;
 import org.antlr.works.stringtemplate.menu.ContextualStringTemplateMenuFactory;
 import org.antlr.xjlib.appkit.document.XJDocument;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
@@ -53,21 +51,21 @@ import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.foundation.XJUtils;
 
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public class ComponentContainerStringTemplate implements ComponentContainer {
+public class StringTemplateContainer implements DocumentContainer {
 
-    private final Set<ComponentContainer> containers = new LinkedHashSet<ComponentContainer>();
-    private final Map<Component, ComponentContainer> componentToContainer = new HashMap<Component, ComponentContainer>();
+    private final Set<DocumentContainer> containers = new LinkedHashSet<DocumentContainer>();
+    private final Map<Component, DocumentContainer> componentToContainer = new HashMap<Component, DocumentContainer>();
 
-    private ComponentEditor editor;
-    private ComponentContainer selectedContainer;
+    private DocumentEditor editor;
+    private DocumentContainer selectedContainer;
     private ComponentContainerStringTemplateMenu componentContainerStringTemplateMenu;
 
     private ComponentToolbarStringTemplate toolbar;
@@ -85,9 +83,9 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
 
     private final Set<String> loadedStringTemplateFileNames = new HashSet<String>();
 
-    private final ComponentWindow window;
+    private final STWindow window;
 
-    public ComponentContainerStringTemplate(ComponentWindow window) {
+    public StringTemplateContainer(STWindow window) {
         this.window = window;
 
         selectedContainer = this;
@@ -133,7 +131,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         }
     }
 
-    public void addStringTemplate(ComponentContainer container) {
+    public void addStringTemplate(DocumentContainer container) {
         Component c = container.getEditor().getPanel();
         componentToContainer.put(c, container);
         containers.add(container);
@@ -156,8 +154,8 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         loadedStringTemplateFileNames.add(fileName);
 
         STDocumentFactory factory = new STDocumentFactory(STWindow.class);
-        STDocumentInternal doc = factory.createInternalDocument(this);
-        ComponentContainerInternal container = (ComponentContainerInternal) doc.getContainer();
+        STDocument doc = factory.createDocument(this);
+        DocumentContainer container = doc.getContainer();
 
         doc.awake();
         try {
@@ -173,8 +171,8 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         return true;
     }
 
-    public ComponentContainer getContainerForName(String name) {
-        for(ComponentContainer c : containers) {
+    public DocumentContainer getContainerForName(String name) {
+        for(DocumentContainer c : containers) {
             if(XJUtils.getPathByDeletingPathExtension(c.getDocument().getDocumentName()).equals(name)) {
                 return c;
             }
@@ -182,8 +180,8 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         return null;
     }
 
-    public ComponentEditor selectEditor(String name) {
-        ComponentContainer c = getContainerForName(name);
+    public DocumentEditor selectEditor(String name) {
+        DocumentContainer c = getContainerForName(name);
         if(c != null) {
             return selectEditor(c);
         }
@@ -191,7 +189,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
     }
 
     public void selectEditor(XJDocument doc) {
-        for(ComponentContainer c : containers) {
+        for(DocumentContainer c : containers) {
             if(c.getDocument() == doc) {
                 selectEditor(c);
                 break;
@@ -199,7 +197,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         }
     }
 
-    private ComponentEditor selectEditor(ComponentContainer c) {
+    private DocumentEditor selectEditor(DocumentContainer c) {
         Component panel = c.getEditor().getPanel();
         if(!editorsTab.hasComponent(panel)) {
             editorsTab.addComponent(c.getDocument().getDocumentName(), panel);
@@ -234,7 +232,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
     }
 
     private void updateEditorDirtyFlag() {
-        for (ComponentContainer c : containers) {
+        for (DocumentContainer c : containers) {
             Component panel = c.getEditor().getPanel();
             int index = editorsTab.indexOfComponent(panel);
             if (index == -1) continue;
@@ -255,11 +253,11 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         return toolbar;
     }
 
-    public ComponentEditor getSelectedEditor() {
+    public DocumentEditor getSelectedEditor() {
         return getSelectedContainer().getEditor();
     }
 
-    public ComponentContainer getSelectedContainer() {
+    public DocumentContainer getSelectedContainer() {
         return selectedContainer;
     }
 
@@ -272,7 +270,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
     }
 
     public void saveAll() {
-        for(ComponentContainer container : containers) {
+        for(DocumentContainer container : containers) {
             container.getDocument().save(false);
         }
     }
@@ -301,7 +299,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
     }
 
     public boolean close() {
-        for(ComponentContainer container : containers) {
+        for(DocumentContainer container : containers) {
             if(container == this) continue;
             container.close();
         }
@@ -314,12 +312,12 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
        return true;
     }
 
-    public void setDocument(ComponentDocument document) {
+    public void setDocument(AWDocument document) {
         window.setDocument(document);
     }
 
-    public ComponentDocument getDocument() {
-        return (ComponentDocument) window.getDocument();
+    public AWDocument getDocument() {
+        return (AWDocument) window.getDocument();
     }
 
     public Dimension getSize() {
@@ -332,7 +330,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
 
         getSelectedEditor().becomingVisibleForTheFirstTime();
 
-        for(ComponentContainer container : containers) {
+        for(DocumentContainer container : containers) {
             if(container == this) continue;
             container.becomingVisibleForTheFirstTime();
         }
@@ -356,15 +354,15 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         selectEditor(name);
     }
 
-    public void setEditor(ComponentEditor editor) {
+    public void setEditor(DocumentEditor editor) {
         this.editor = editor;
     }
 
-    public ComponentEditor getEditor() {
+    public DocumentEditor getEditor() {
         return editor;
     }
 
-    public XJFrameInterface getXJFrame() {
+    public XJFrame getXJFrame() {
         return window;
     }
 
@@ -396,7 +394,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
     }
 
     public void windowActivated() {
-        for(ComponentContainer container : containers) {
+        for(DocumentContainer container : containers) {
             container.getEditor().componentActivated();
         }
         for(EditorTab et : tabs) {
@@ -404,22 +402,22 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         }
     }
 
-    public void documentLoaded(ComponentDocument document) {
+    public void documentLoaded(AWDocument document) {
     }
 
-    public void editorParsed(ComponentEditor editor) {
+    public void editorParsed(DocumentEditor editor) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void selectConsoleTab(ComponentEditor editor) {
+    public void selectConsoleTab(DocumentEditor editor) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void selectInterpreterTab(ComponentEditor editor) {
+    public void selectInterpreterTab(DocumentEditor editor) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void selectSyntaxDiagramTab(ComponentEditor editor) {
+    public void selectSyntaxDiagramTab(DocumentEditor editor) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -440,7 +438,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         setComponent(panel, tab.getTabComponent());
     }
 
-    private void switchToEditor(final ComponentEditorStringTemplate editor) {
+    private void switchToEditor(final StringTemplateEditor editor) {
         setComponent(toolbarPanel, toolbar.getToolbar());
         setComponent(rulesPanel, editor.getComponentRules());
 
@@ -469,7 +467,7 @@ public class ComponentContainerStringTemplate implements ComponentContainer {
         public void stateChanged(ChangeEvent event) {
             Component c = editorsTab.getSelectedComponent();
             selectedContainer = componentToContainer.get(c);
-            ComponentEditorStringTemplate editor = (ComponentEditorStringTemplate) selectedContainer.getEditor();
+            StringTemplateEditor editor = (StringTemplateEditor) selectedContainer.getEditor();
 
             switchToEditor(editor);
         }

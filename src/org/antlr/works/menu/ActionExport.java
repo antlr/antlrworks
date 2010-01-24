@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.menu;
 
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.editor.ComponentEditorGrammar;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.editor.GrammarEditor;
 import org.antlr.works.editor.EditorTab;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
@@ -57,12 +57,12 @@ import java.util.List;
 
 public class ActionExport extends ActionAbstract {
 
-    public ActionExport(ComponentContainer editor) {
+    public ActionExport(DocumentContainer editor) {
         super(editor);
     }
 
-    public ComponentEditorGrammar getSelectedEditor() {
-        return (ComponentEditorGrammar)super.getSelectedEditor();
+    public GrammarEditor getSelectedEditor() {
+        return (GrammarEditor)super.getSelectedEditor();
     }
 
     public void exportEventsAsTextFile() {

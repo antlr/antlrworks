@@ -1,10 +1,12 @@
 package org.antlr.works.components.document;
 
-import org.antlr.works.components.ComponentWindow;
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.editor.ComponentEditor;
+import org.antlr.works.components.GrammarWindow;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.editor.DocumentEditor;
+import org.antlr.works.stringtemplate.STWindow;
 import org.antlr.xjlib.appkit.document.XJDataPlainText;
 import org.antlr.xjlib.appkit.document.XJDocument;
+import org.antlr.xjlib.appkit.frame.XJWindow;
 import org.antlr.xjlib.foundation.XJUtils;
 /*
 
@@ -37,31 +39,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class ComponentDocument extends XJDocument {
+public abstract class AWDocument extends XJDocument {
 
-    private ComponentContainer container;
-    private ComponentEditor editor;
+    private DocumentEditor editor;
 
-    public ComponentEditor getEditor() {
+    public DocumentEditor getEditor() {
         return editor;
     }
 
-    public void setEditor(ComponentEditor editor) {
+    public void setEditor(DocumentEditor editor) {
         this.editor = editor;
     }
 
-    public ComponentContainer getContainer() {
-        // The container is usually the window of the document. However, for internal container,
-        // the container is InternalContainer and does not extends from XJWindow.
-        if(container != null) {
-            return container;
-        } else {
-            return ((ComponentWindow) getWindow()).getComponentContainer();
+    public DocumentContainer getContainer() {
+        XJWindow w = getWindow();
+        if(w instanceof GrammarWindow) {
+            return ((GrammarWindow)w).getContainer();
         }
-    }
-
-    public void setContainer(ComponentContainer container) {
-        this.container = container;
+        if(w instanceof STWindow) {
+            // todo
+            //return ((STWindow)w).getContainer();
+        }
+        return null;
     }
 
     @Override

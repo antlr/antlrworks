@@ -1,14 +1,7 @@
-package org.antlr.works.plugin.intellij;
-
-import com.intellij.ide.structureView.StructureView;
-import com.intellij.ide.structureView.StructureViewBuilder;
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.project.Project;
-import org.antlr.works.plugin.container.PluginWindow;
 /*
 
 [The "BSD licence"]
-Copyright (c) 2005-2006 Jean Bovet
+Copyright (c) 2005 Jean Bovet
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,16 +29,29 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class PIStructureViewBuilder implements StructureViewBuilder {
+package org.antlr.works.components.document;
 
-    public PluginWindow window;
+import org.antlr.works.prefs.AWPrefs;
 
-    public PIStructureViewBuilder(PluginWindow window) {
-        this.window = window;
-    }
+import java.io.File;
 
-    public StructureView createStructureView(FileEditor fileEditor, Project project) {
-        return new PIStructureView(fileEditor, project, window);
+public class GrammarDocument extends AWDocument {
+
+    @Override
+    public boolean save(boolean saveAs) {
+        // Make sure the document can be saved before calling the super class method to do
+        // the actual job
+        if(getEditor().componentDocumentWillSave()) {
+            if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
+                // Create the backup file if needed
+                File backup = new File(documentPath+"~");
+                if(backup.exists()) backup.delete();
+                new File(documentPath).renameTo(backup);
+            }
+            return super.save(saveAs);
+        } else {
+            return false;
+        }
     }
 
 }

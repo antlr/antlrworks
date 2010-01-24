@@ -3,7 +3,7 @@ package org.antlr.works.ate.analysis;
 import org.antlr.works.utils.OverlayObject;
 import org.antlr.works.utils.ToolTipList;
 import org.antlr.works.utils.ToolTipListDelegate;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +47,7 @@ public class ATEAnalysisColumnOverlay extends OverlayObject implements ToolTipLi
     public ToolTipList toolTip;
     public Point location;
 
-    public ATEAnalysisColumnOverlay(XJFrameInterface parentFrame, JComponent parentComponent) {
+    public ATEAnalysisColumnOverlay(XJFrame parentFrame, JComponent parentComponent) {
         super(parentFrame, parentComponent);
     }
 

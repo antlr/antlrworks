@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.xjlib.appkit.utils;
 
 import org.antlr.xjlib.appkit.frame.XJDialog;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,12 +47,12 @@ public class XJDialogProgress extends XJDialog {
     protected JProgressBar progressBar;
     protected JButton cancelButton;
 
-    public XJDialogProgress(XJFrameInterface owner, boolean modal) {
+    public XJDialogProgress(XJFrame owner, boolean modal) {
         super(owner==null?null:owner.getJavaContainer(), modal);
         init();
     }
 
-    public XJDialogProgress(XJFrameInterface owner) {
+    public XJDialogProgress(XJFrame owner) {
         super(owner==null?null:owner.getJavaContainer(), false);
         init();
     }

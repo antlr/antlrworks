@@ -1,19 +1,18 @@
 package org.antlr.works.components.editor;
 
-import org.antlr.works.components.ComponentStatusBar;
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.components.document.ComponentDocument;
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.dialog.AWPrefsDialog;
-import org.antlr.works.ate.ATETextPane;
 import org.antlr.works.ate.ATEPanel;
+import org.antlr.works.ate.ATETextPane;
 import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.find.FindAndReplace;
+import org.antlr.works.components.ComponentStatusBar;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.components.document.AWDocument;
+import org.antlr.works.debugger.Debugger;
+import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.works.editor.navigation.GoToRule;
-import org.antlr.works.editor.EditorRules;
+import org.antlr.works.find.FindAndReplace;
 import org.antlr.works.grammar.element.Jumpable;
-import org.antlr.xjlib.appkit.frame.XJFrameInterface;
+import org.antlr.xjlib.appkit.frame.XJFrame;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.xjlib.foundation.notification.XJNotificationCenter;
 import org.antlr.xjlib.foundation.notification.XJNotificationObserver;
@@ -25,7 +24,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
 import java.util.List;
 
 /*
@@ -59,10 +57,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class ComponentEditor implements XJNotificationObserver {
+public abstract class DocumentEditor implements XJNotificationObserver {
 
-    protected ComponentContainer container;
-    protected ComponentDocument document;
+    protected DocumentContainer container;
+    protected AWDocument document;
 
     protected JPanel mainPanel;
     protected Box statusBar;
@@ -70,7 +68,7 @@ public abstract class ComponentEditor implements XJNotificationObserver {
     protected ComponentListener cl;
     protected PropertyChangeListener pcl;
 
-    public ComponentEditor() {
+    public DocumentEditor() {
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.addComponentListener(cl = new MainPanelComponentListener());
 
@@ -104,11 +102,11 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         assemble();
     }
 
-    public ComponentContainer getContainer() {
+    public DocumentContainer getContainer() {
         return container;
     }
 
-    public void setContainer(ComponentContainer container) {
+    public void setContainer(DocumentContainer container) {
         this.container = container;
     }
 
@@ -121,15 +119,15 @@ public abstract class ComponentEditor implements XJNotificationObserver {
         return statusBar;
     }
 
-    public void setDocument(ComponentDocument document) {
+    public void setDocument(AWDocument document) {
         this.document = document;
     }
 
-    public ComponentDocument getDocument() {
+    public AWDocument getDocument() {
         return document;
     }
 
-    public XJFrameInterface getXJFrame() {
+    public XJFrame getXJFrame() {
         return container.getXJFrame();
     }
 

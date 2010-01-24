@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.xjlib.appkit.document;
 
-import org.antlr.xjlib.appkit.frame.XJWindowInterface;
+import org.antlr.xjlib.appkit.frame.XJWindow;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +69,7 @@ public class XJDocumentFactory {
         document.setDocumentData((XJData)dataClass.newInstance());
         document.setDocumentFileType(getExtensions(), getDescriptionString());
 
-        XJWindowInterface window = (XJWindowInterface)windowClass.newInstance();
+        XJWindow window = (XJWindow)windowClass.newInstance();
         window.addDocument(document);
         document.setWindow(window);
 

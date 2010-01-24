@@ -32,9 +32,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.stringtemplate;
 
 import org.antlr.works.IDE;
+import org.antlr.works.components.container.DocumentContainer;
+import org.antlr.works.menu.ActionFind;
+import org.antlr.works.menu.ActionGoTo;
+import org.antlr.works.menu.ActionRefactor;
+import org.antlr.works.menu.ActionSTRefactorImpl;
 import org.antlr.works.stringtemplate.menu.ContextualStringTemplateMenuFactory;
-import org.antlr.works.components.container.ComponentContainer;
-import org.antlr.works.menu.*;
 import org.antlr.xjlib.appkit.menu.*;
 
 import javax.swing.*;
@@ -76,12 +79,12 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
     private ActionGoTo actionGoTo;
     private ActionRefactor actionRefactor;
 
-    private ComponentContainer container;
+    private DocumentContainer container;
 
     /** The resource bundle used to get localized strings */
     private static ResourceBundle resourceBundle = IDE.getMenusResourceBundle();
 
-    public ComponentContainerStringTemplateMenu(ComponentContainer container) {
+    public ComponentContainerStringTemplateMenu(DocumentContainer container) {
         this.container = container;
 
         actionFind = new ActionFind(container);
@@ -97,8 +100,8 @@ public class ComponentContainerStringTemplateMenu implements XJMenuItemDelegate 
         container = null;
     }
 
-    public ComponentEditorStringTemplate getEditor() {
-        return (ComponentEditorStringTemplate)container.getSelectedEditor();
+    public StringTemplateEditor getEditor() {
+        return (StringTemplateEditor)container.getSelectedEditor();
     }
 
     public void customizeFileMenu(XJMenu menu) {
