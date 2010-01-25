@@ -63,7 +63,7 @@ public class GrammarMenu implements CheckGrammarDelegate, XJDialogProgressDelega
 
     public void showTokensSD() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_SHOW_TOKENS_SD);
-        window.visual.setRule(new ElementRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);
+        window.syntaxDiagramTab.setRule(new ElementRule(Grammar.ARTIFICIAL_TOKENS_RULENAME), true);
     }
 
     public void showTokensDFA() {
@@ -105,7 +105,7 @@ public class GrammarMenu implements CheckGrammarDelegate, XJDialogProgressDelega
         String s = (String)JOptionPane.showInputDialog(window.getJavaContainer(), "Group Name:", "Group",
                 JOptionPane.QUESTION_MESSAGE, null, null, "Group");
         if(s != null && s.length() > 0) {
-            List<ElementRule> rules = window.rules.getSelectedRules();
+            List<ElementRule> rules = window.editorRules.getSelectedRules();
             if(!rules.isEmpty()) {
                 window.beginGroupChange("Group");
 
@@ -126,11 +126,11 @@ public class GrammarMenu implements CheckGrammarDelegate, XJDialogProgressDelega
     public void ungroup() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_RULE_UNGROUP);
 
-        ElementGroup openGroup = window.rules.getSelectedGroup();
+        ElementGroup openGroup = window.editorRules.getSelectedGroup();
         if(openGroup == null) {
             // No open group selected in the tree. Try to find the closest open group
             // by moving backward
-            openGroup = window.rules.findOpenGroupClosestToLocation(window.getTextPane().getSelectionStart());
+            openGroup = window.editorRules.findOpenGroupClosestToLocation(window.getTextPane().getSelectionStart());
             if(openGroup == null) {
                 // Still no open group ? Give up
                 XJAlert.display(window.getJavaContainer(), "Ungroup", "Cannot ungroup because no enclosing group has been found.");
@@ -138,7 +138,7 @@ public class GrammarMenu implements CheckGrammarDelegate, XJDialogProgressDelega
             }
         }
 
-        ElementGroup closingGroup = window.rules.findClosingGroupForGroup(openGroup);
+        ElementGroup closingGroup = window.editorRules.findClosingGroupForGroup(openGroup);
 
         window.beginGroupChange("Ungroup");
 
@@ -156,24 +156,24 @@ public class GrammarMenu implements CheckGrammarDelegate, XJDialogProgressDelega
     }
 
     public void ignore() {
-        window.rules.ignoreSelectedRules(true);
+        window.editorRules.ignoreSelectedRules(true);
     }
 
     public void consider() {
-        window.rules.ignoreSelectedRules(false);
+        window.editorRules.ignoreSelectedRules(false);
     }
 
     public void checkGrammar() {
         window.showProgress("Checking Grammar...", this);
 
         if(AWPrefs.isClearConsoleBeforeCheckGrammar()) {
-            window.console.clear();
+            window.consoleTab.clear();
         }
 
         window.saveAll();
 
-        window.console.makeCurrent();
-        window.console.println("Checking Grammar "+window.getGrammarFileName()+"...");
+        window.consoleTab.makeCurrent();
+        window.consoleTab.println("Checking Grammar "+window.getGrammarFileName()+"...");
 
         checkGrammar = new CheckGrammar(window, this);
         checkGrammar.check();

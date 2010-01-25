@@ -1,6 +1,6 @@
 package org.antlr.works.debugger.panels;
 
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.events.DBEventEnterRule;
 import org.antlr.works.utils.DetachablePanel;
 import org.antlr.xjlib.appkit.swing.XJTable;
@@ -51,8 +51,8 @@ public class DBStackPanel extends DetachablePanel {
     private DBStackPanel.RuleTableDataModel ruleTableDataModel;
     private Stack<DBEventEnterRule> rules = new Stack<DBEventEnterRule>();
 
-    public DBStackPanel(Debugger debugger) {
-        super("Stack", debugger);
+    public DBStackPanel(DebuggerTab debuggerTab) {
+        super("Stack", debuggerTab);
 
         ruleTableDataModel = new DBStackPanel.RuleTableDataModel();
 

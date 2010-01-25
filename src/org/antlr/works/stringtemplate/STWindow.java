@@ -82,7 +82,7 @@ public class STWindow extends XJWindow
 
     private STWindowMenu stringTemplateMenu;
 
-    private ComponentToolbarStringTemplate toolbar;
+    private STWindowToolbar toolbar;
 
     private JPanel toolbarPanel;
 
@@ -111,7 +111,7 @@ public class STWindow extends XJWindow
     @Override
     public void awake() {
         stringTemplateMenu = new STWindowMenu(this);
-        toolbar = new ComponentToolbarStringTemplate(this);
+        toolbar = new STWindowToolbar(this);
 
         toolbarPanel = new JPanel(new BorderLayout());
         toolbarPanel.setBorder(null);
@@ -186,7 +186,7 @@ public class STWindow extends XJWindow
         return true;
     }
 
-    public ComponentToolbarStringTemplate getToolbar() {
+    public STWindowToolbar getToolbar() {
         return toolbar;
     }
 

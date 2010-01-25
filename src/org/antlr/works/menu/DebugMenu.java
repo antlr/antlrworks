@@ -1,7 +1,7 @@
 package org.antlr.works.menu;
 
 import org.antlr.works.components.GrammarWindow;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.stats.StatisticsAW;
 
 /*
@@ -48,20 +48,20 @@ public class DebugMenu {
             window.selectInterpreterTab();
             window.interpreterTab.interpret();
         } catch (Exception e) {
-            window.console.println(e);
+            window.consoleTab.println(e);
         }
     }
 
     public void run() {
-        window.getDebugger().launchLocalDebugger(Debugger.OPTION_RUN);
+        window.getDebugger().launchLocalDebugger(DebuggerTab.OPTION_RUN);
     }
 
     public void debug() {
-        window.getDebugger().launchLocalDebugger(Debugger.OPTION_NONE);
+        window.getDebugger().launchLocalDebugger(DebuggerTab.OPTION_NONE);
     }
 
     public void debugAgain() {
-        window.getDebugger().launchLocalDebugger(Debugger.OPTION_AGAIN);
+        window.getDebugger().launchLocalDebugger(DebuggerTab.OPTION_AGAIN);
     }
 
     public void debugRemote() {

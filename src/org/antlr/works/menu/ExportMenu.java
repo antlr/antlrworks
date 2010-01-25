@@ -36,7 +36,7 @@ import org.antlr.works.editor.GrammarWindowTab;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.stats.StatisticsAW;
 import org.antlr.works.visualization.SDGenerator;
-import org.antlr.works.visualization.Visual;
+import org.antlr.works.visualization.SyntaxDiagramTab;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.GEngine;
 import org.antlr.works.visualization.graphics.GEnginePS;
@@ -88,7 +88,7 @@ public class ExportMenu {
         if(!tab.canExportToBitmap())
             return;
 
-        if(tab instanceof Visual)
+        if(tab instanceof SyntaxDiagramTab)
             exportRuleAsImage();
         else
             exportGViewAsImage(tab.getExportableGView());
@@ -129,12 +129,12 @@ public class ExportMenu {
     }
 
     public void exportRuleAsImage() {
-        if(!window.visual.canSaveImage()) {
+        if(!window.syntaxDiagramTab.canSaveImage()) {
             XJAlert.display(window.getJavaContainer(), "Export Rule to Bitmap Image", "There is no rule at cursor position.");
             return;
         }
 
-        saveImageToDisk(window.visual.getImage());
+        saveImageToDisk(window.syntaxDiagramTab.getImage());
     }
 
     public void exportGViewAsImage(GView view) {
@@ -170,19 +170,19 @@ public class ExportMenu {
         if(!tab.canExportToEPS())
             return;
 
-        if(tab instanceof Visual)
+        if(tab instanceof SyntaxDiagramTab)
             exportRuleAsEPS();
         else
             exportGViewAsEPS(tab.getExportableGView());
     }
 
     protected void exportRuleAsEPS() {
-        if(window.rules.getEnclosingRuleAtPosition(window.getCaretPosition()) == null) {
+        if(window.editorRules.getEnclosingRuleAtPosition(window.getCaretPosition()) == null) {
             XJAlert.display(window.getJavaContainer(), "Export Rule to EPS", "There is no rule at cursor position.");
             return;
         }
 
-        GGraphAbstract graph = window.visual.getCurrentGraph();
+        GGraphAbstract graph = window.syntaxDiagramTab.getCurrentGraph();
 
         if(graph == null) {
             XJAlert.display(window.getJavaContainer(), "Export Rule to EPS", "There is no graphical visualization.");
@@ -207,7 +207,7 @@ public class ExportMenu {
 
             XJUtils.writeStringToFile(engine.getPSText(), file);
         } catch (Exception e) {
-            window.console.println(e);
+            window.consoleTab.println(e);
             XJAlert.display(window.getJavaContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
         }
     }
@@ -223,7 +223,7 @@ public class ExportMenu {
         try {
             XJUtils.writeStringToFile(view.getEPS(), file);
         } catch (Exception e) {
-            window.console.println(e);
+            window.consoleTab.println(e);
             XJAlert.display(window.getJavaContainer(), "Error", "Cannot export to EPS file: "+file+"\nError: "+e);
         }
     }
@@ -245,7 +245,7 @@ public class ExportMenu {
         try {
             XJUtils.writeStringToFile(tab.getDOTString(), file);
         } catch (Exception e) {
-            window.console.println(e);
+            window.consoleTab.println(e);
             XJAlert.display(window.getJavaContainer(), "Error", "Cannot export to DOT file: "+file+"\nError: "+e);
         }
     }

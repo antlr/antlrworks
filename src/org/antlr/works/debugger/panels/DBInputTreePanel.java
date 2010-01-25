@@ -1,7 +1,7 @@
 package org.antlr.works.debugger.panels;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.input.DBInputProcessor;
 import org.antlr.works.debugger.input.DBInputProcessorTree;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
@@ -44,24 +44,24 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DBInputTreePanel implements DBInputConcretePanel, AWTreePanelDelegate {
 
-    public Debugger debugger;
+    public DebuggerTab debuggerTab;
 
     public AWTreePanel treePanel;
     public DBInputProcessorTree processorTree;
 
-    public DBInputTreePanel(Debugger debugger) {
-        this.debugger = debugger;
+    public DBInputTreePanel(DebuggerTab debuggerTab) {
+        this.debuggerTab = debuggerTab;
 
         treePanel = new AWTreePanel(new DefaultTreeModel(null));
         treePanel.setRootVisible(true);
         treePanel.setDelegate(this);
 
-        processorTree = new DBInputProcessorTree(treePanel, debugger);
+        processorTree = new DBInputProcessorTree(treePanel, debuggerTab);
     }
 
     public void close() {
         treePanel.setDelegate(null);
-        debugger = null;
+        debuggerTab = null;
         processorTree.close();
     }
 
@@ -105,11 +105,11 @@ public class DBInputTreePanel implements DBInputConcretePanel, AWTreePanelDelega
         if(shiftKey)
             n.toggleBreakpoint();
 
-        debugger.selectToken(n.getToken(), n.getLocation());
+        debuggerTab.selectToken(n.getToken(), n.getLocation());
     }
 
     public JPopupMenu awTreeGetContextualMenu() {
-        return debugger.treeGetContextualMenu();
+        return debuggerTab.treeGetContextualMenu();
     }
 
 }

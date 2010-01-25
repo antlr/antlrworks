@@ -46,7 +46,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GrammarWindowConsole extends GrammarWindowTab implements Console {
+public class ConsoleTab extends GrammarWindowTab implements Console {
 
     protected JPanel panel;
     protected JTextArea textArea;
@@ -54,7 +54,7 @@ public class GrammarWindowConsole extends GrammarWindowTab implements Console {
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     protected Map<Thread,Integer> modeByThread = new HashMap<Thread, Integer>();
 
-    public GrammarWindowConsole(GrammarWindow window) {
+    public ConsoleTab(GrammarWindow window) {
         super(window);
 
         panel = new JPanel(new BorderLayout());

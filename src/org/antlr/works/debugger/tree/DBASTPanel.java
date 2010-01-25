@@ -1,7 +1,7 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.utils.DetachablePanel;
 import org.antlr.works.utils.awtree.AWTreePanel;
 import org.antlr.works.utils.awtree.AWTreePanelDelegate;
@@ -49,7 +49,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DBASTPanel extends DetachablePanel implements DBASTModelListener, XJTableDelegate, AWTreePanelDelegate {
 
-    public Debugger debugger;
+    public DebuggerTab debuggerTab;
 
     public XJTableView rulesTableView;
     public XJTableView rootsTableView;
@@ -59,12 +59,12 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
     public JSplitPane tablesSplitPane;
     public JSplitPane tableTreeSplitPane;
 
-    public DBASTPanel(Debugger debugger) {
-        super("AST", debugger);
+    public DBASTPanel(DebuggerTab debuggerTab) {
+        super("AST", debuggerTab);
 
-        this.debugger = debugger;
+        this.debuggerTab = debuggerTab;
 
-        model = new DBASTModel(debugger);
+        model = new DBASTModel(debuggerTab);
         model.addListener(this);
 
         rulesTableView = new XJTableView();
@@ -117,7 +117,7 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
     public void close() {
         super.close();
         treePanel.setDelegate(null);
-        debugger = null;
+        debuggerTab = null;
     }
 
     public void clear() {
@@ -215,11 +215,11 @@ public class DBASTPanel extends DetachablePanel implements DBASTModelListener, X
 
     public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey) {
         DBASTModel.ASTNode n = (DBASTModel.ASTNode)node;
-        debugger.selectToken(n.token, n.getLocation());
+        debuggerTab.selectToken(n.token, n.getLocation());
     }
 
     public JPopupMenu awTreeGetContextualMenu() {
-        return debugger.treeGetContextualMenu();
+        return debuggerTab.treeGetContextualMenu();
     }
 
     public class RulesTableModel extends DefaultTableModel {

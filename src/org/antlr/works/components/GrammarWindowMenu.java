@@ -574,7 +574,7 @@ public class GrammarWindowMenu implements XJMenuItemDelegate {
     }
 
     public void handleMenuSelected(XJMenu menu) {
-        boolean ignored = window.rules.getFirstSelectedRuleIgnoredFlag();
+        boolean ignored = window.editorRules.getFirstSelectedRuleIgnoredFlag();
         ignoreRuleMenuItem.setSelected(ignored);
     }
 
@@ -800,7 +800,7 @@ public class GrammarWindowMenu implements XJMenuItemDelegate {
                 AWPrefs.removeUserRegistration();
                 break;
             case MI_SERIALIZE_SD:
-                window.visual.serializeSyntaxDiagram();
+                window.syntaxDiagramTab.serializeSyntaxDiagram();
                 break;
         }
     }

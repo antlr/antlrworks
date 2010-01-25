@@ -276,9 +276,9 @@ public abstract class GrammarDOTTab extends GrammarWindowTab implements Runnable
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line;
                 while ( (line = br.readLine()) != null)
-                    window.console.println(type + ":" + line);
+                    window.consoleTab.println(type + ":" + line);
             } catch (IOException e) {
-                window.console.println(e);
+                window.consoleTab.println(e);
             }
         }
     }

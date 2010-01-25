@@ -92,7 +92,7 @@ public class EditorIdeas implements IdeaManagerDelegate, IdeaProvider {
     }
 
     public void display(int position) {
-        ElementRule enclosingRule = window.rules.getEnclosingRuleAtPosition(position);
+        ElementRule enclosingRule = window.editorRules.getEnclosingRuleAtPosition(position);
         if(enclosingRule == null || enclosingRule.isExpanded())
             ideaManager.displayAnyIdeasAvailable(position);
     }

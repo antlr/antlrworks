@@ -1,6 +1,6 @@
 package org.antlr.works.components;
 
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.IconManager;
 import org.antlr.works.utils.Toolbar;
@@ -70,8 +70,8 @@ public class GrammarWindowToolbar implements XJNotificationObserver {
         
         debugAgain.setEnabled(false);
 
-        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STARTED);
-        XJNotificationCenter.defaultCenter().addObserver(this, Debugger.NOTIF_DEBUG_STOPPED);
+        XJNotificationCenter.defaultCenter().addObserver(this, DebuggerTab.NOTIF_DEBUG_STARTED);
+        XJNotificationCenter.defaultCenter().addObserver(this, DebuggerTab.NOTIF_DEBUG_STOPPED);
     }
 
     public void close() {
@@ -85,11 +85,11 @@ public class GrammarWindowToolbar implements XJNotificationObserver {
     }
 
     public void notificationFire(Object source, String name) {
-        if(name.equals(Debugger.NOTIF_DEBUG_STARTED)) {
+        if(name.equals(DebuggerTab.NOTIF_DEBUG_STARTED)) {
             find.setEnabled(false);
             debug.setEnabled(false);
             debugAgain.setEnabled(false);
-        } else if(name.equals(Debugger.NOTIF_DEBUG_STOPPED)) {
+        } else if(name.equals(DebuggerTab.NOTIF_DEBUG_STOPPED)) {
             find.setEnabled(true);
             debug.setEnabled(true);
             debugAgain.setEnabled(window.getDebugger().canDebugAgain());

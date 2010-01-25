@@ -1,7 +1,7 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.utils.DetachablePanel;
 import org.antlr.works.utils.awtree.AWTreePanel;
 import org.antlr.works.utils.awtree.AWTreePanelDelegate;
@@ -44,16 +44,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DBParseTreePanel extends DetachablePanel implements DBParseTreeModelListener, AWTreePanelDelegate {
 
-    protected Debugger debugger;
+    protected DebuggerTab debuggerTab;
     protected DBParseTreeModel model;
     protected AWTreePanel treePanel;
 
-    public DBParseTreePanel(Debugger debugger) {
-        super("Parse Tree", debugger);
+    public DBParseTreePanel(DebuggerTab debuggerTab) {
+        super("Parse Tree", debuggerTab);
 
-        this.debugger = debugger;
+        this.debuggerTab = debuggerTab;
 
-        model = new DBParseTreeModel(debugger);
+        model = new DBParseTreeModel(debuggerTab);
         model.addListener(this);
         
         treePanel = new AWTreePanel(new DefaultTreeModel(null));
@@ -67,7 +67,7 @@ public class DBParseTreePanel extends DetachablePanel implements DBParseTreeMode
         treePanel.setDelegate(null);
         model.close();
         model = null;
-        debugger = null;
+        debuggerTab = null;
     }
 
     public DBParseTreeModel getModel() {
@@ -110,11 +110,11 @@ public class DBParseTreePanel extends DetachablePanel implements DBParseTreeMode
 
     public void awTreeDidSelectTreeNode(TreeNode node, boolean shiftKey) {
         DBTreeNode n = (DBTreeNode) node;
-        debugger.selectToken(n.token, n.getLocation());
+        debuggerTab.selectToken(n.token, n.getLocation());
     }
 
     public JPopupMenu awTreeGetContextualMenu() {
-        return debugger.treeGetContextualMenu();
+        return debuggerTab.treeGetContextualMenu();
     }
 
 }

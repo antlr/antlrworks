@@ -33,7 +33,7 @@ package org.antlr.works.debugger.tivo;
 
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.events.*;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.Console;
@@ -57,7 +57,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
     public static final int MAX_RETRY = 12;
 
-    protected Debugger debugger;
+    protected DebuggerTab debuggerTab;
     protected int status = STATUS_STOPPED;
     protected boolean cancelled;
 
@@ -95,19 +95,19 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
      * Current grammar the recorder is in
      */
     protected Stack<String> grammarNamesStack = new Stack<String>();
-    
-    public DBRecorder(Debugger debugger) {
-        this.debugger = debugger;
+
+    public DBRecorder(DebuggerTab debuggerTab) {
+        this.debuggerTab = debuggerTab;
         reset();
     }
 
     public void close() {
-        debugger = null;
+        debuggerTab = null;
     }
 
     public void showProgress() {
         if(progress == null)
-            progress = new XJDialogProgress(debugger.getContainer());
+            progress = new XJDialogProgress(debuggerTab.getContainer());
         progress.setInfo("Connecting...");
         progress.setIndeterminate(true);
         progress.setDelegate(this);
@@ -201,7 +201,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         // Get the current breakpoints in the grammar text
         // because they can be set/unset during a debugging
         // session of course ;-)
-        debugger.queryGrammarBreakpoints();
+        debuggerTab.queryGrammarBreakpoints();
     }
 
     /** Return true if the debugger hitted a break event */
@@ -238,13 +238,13 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 
         // Stop on debugger breakpoints
         if(event.getEventType() == DBEvent.LOCATION && !ignoreBreakpoints())
-            if(debugger.isBreakpointAtLine(((DBEventLocation)event).line-1, event.getGrammarName())) {
+            if(debuggerTab.isBreakpointAtLine(((DBEventLocation)event).line-1, event.getGrammarName())) {
                 return event.getEventType();
             }
 
         // Stop on input text breakpoint
         if(event.getEventType() == DBEvent.CONSUME_TOKEN && !ignoreBreakpoints())
-            if(debugger.isBreakpointAtToken(((DBEventConsumeToken)event).token))
+            if(debuggerTab.isBreakpointAtToken(((DBEventConsumeToken)event).token))
                 return event.getEventType();
 
         if(event.getEventType() == DBEvent.CONSUME_TOKEN && breakEvents.contains(DBEvent.convertToInteger(DBEvent.CONSUME_TOKEN))) {
@@ -257,7 +257,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     public synchronized void setStatus(int status) {
         if(this.status != status) {
             this.status = status;
-            debugger.recorderStatusDidChange();
+            debuggerTab.recorderStatusDidChange();
         }
     }
 
@@ -426,7 +426,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     public void connectionSuccess() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                debugger.connectionSuccess();
+                debuggerTab.connectionSuccess();
             }
         });
     }
@@ -434,7 +434,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     public void connectionFailed() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                debugger.connectionFailed();
+                debuggerTab.connectionFailed();
             }
         });
     }
@@ -442,7 +442,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     public void connectionCancelled() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                debugger.connectionCancelled();
+                debuggerTab.connectionCancelled();
             }
         });
     }
@@ -458,10 +458,10 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     public void stop() {
         // if the window is closed, the debugger does not exist anymore
         // and this event can be ignored
-        if(debugger == null) return;
+        if(debuggerTab == null) return;
 
         setStatus(STATUS_STOPPED);
-        debugger.recorderDidStop();
+        debuggerTab.recorderDidStop();
     }
 
     /** This method checks that the remote parser's states are in sync with
@@ -472,16 +472,16 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         //Tool.VERSION
         //System.out.println(listener.version);
 
-        String grammarFileName = debugger.getDelegate().getGrammarEngine().getGrammarFileName();
+        String grammarFileName = debuggerTab.getDelegate().getGrammarEngine().getGrammarFileName();
         String remoteParserGrammarFileName = XJUtils.getLastPathComponent(listener.grammarFileName);
 
         if(!grammarFileName.equals(remoteParserGrammarFileName)) {
             String message = "Warning: the grammar used by the remote parser is not the same ("+remoteParserGrammarFileName+").";
-            XJAlert.display(debugger.getContainer(), "Grammar Mismatch", message);
+            XJAlert.display(debuggerTab.getContainer(), "Grammar Mismatch", message);
         }
     }
 
-    /** Check any error coming from the remote parser. Return true if the debugger needs
+    /** Check any error coming from the remote parser. Return true if the debuggerTab needs
      to be paused
      */
     public boolean checkRemoteParserState() {
@@ -494,7 +494,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     String message = "Invalid token indexes (current index is "+currentTokenIndex+" at event "+currentTokenIndexEventNumber+" while the same index was used at event "+lastTokenIndexEventNumber+"). Make sure that the remote parser implements the getTokenIndex() method of Token. The indexes must be unique for each consumed token.";
-                    XJAlert.display(debugger.getContainer(), "Invalid Token Indexes", message);
+                    XJAlert.display(debuggerTab.getContainer(), "Invalid Token Indexes", message);
                 }
             });
 
@@ -595,7 +595,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         try {
             wait();
         } catch (InterruptedException e) {
-            debugger.getConsole().println("recorderThreadBreaksOnEvent: interrupted", Console.LEVEL_WARNING);
+            debuggerTab.getConsole().println("recorderThreadBreaksOnEvent: interrupted", Console.LEVEL_WARNING);
         }
     }
 
@@ -611,7 +611,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         if(!SwingUtilities.isEventDispatchThread())
             SwingUtilities.invokeLater(new PlayEventRunnable(reset));
         else
-            debugger.playEvents(events, getCurrentEventPosition(), reset);
+            debuggerTab.playEvents(events, getCurrentEventPosition(), reset);
     }
 
     public void dialogDidCancel() {

@@ -1,7 +1,7 @@
 package org.antlr.works.debugger.panels;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.input.DBInputProcessor;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
 import org.antlr.works.grammar.engine.GrammarEngine;
@@ -41,20 +41,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class DBInputPanel extends DetachablePanel {
 
-    protected Debugger debugger;
+    protected DebuggerTab debuggerTab;
 
     protected DBInputTokenPanel inputTokenPanel;
     protected DBInputTreePanel inputTreePanel;
 
     protected DBInputConcretePanel currentPanel;
 
-    public DBInputPanel(Debugger debugger) {
-        super("Input", debugger);
+    public DBInputPanel(DebuggerTab debuggerTab) {
+        super("Input", debuggerTab);
 
-        this.debugger = debugger;
+        this.debuggerTab = debuggerTab;
 
-        inputTokenPanel = new DBInputTokenPanel(debugger);
-        inputTreePanel = new DBInputTreePanel(debugger);
+        inputTokenPanel = new DBInputTokenPanel(debuggerTab);
+        inputTreePanel = new DBInputTreePanel(debuggerTab);
 
         /** Set the input token panel by default */
         setCurrentPanel(inputTokenPanel);
@@ -81,7 +81,7 @@ public class DBInputPanel extends DetachablePanel {
         inputTokenPanel.close();
         inputTreePanel.close();
 
-        debugger = null;
+        debuggerTab = null;
         currentPanel.close();
     }
 

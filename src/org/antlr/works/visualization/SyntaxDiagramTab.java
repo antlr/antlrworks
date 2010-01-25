@@ -52,7 +52,7 @@ import org.antlr.xjlib.appkit.utils.XJFileChooser;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Visual extends GrammarWindowTab implements GContextProvider {
+public class SyntaxDiagramTab extends GrammarWindowTab implements GContextProvider {
 
     protected VisualDrawing drawing;
 
@@ -63,7 +63,7 @@ public class Visual extends GrammarWindowTab implements GContextProvider {
 
     protected boolean enable = true;
 
-    public Visual(GrammarWindow editor) {
+    public SyntaxDiagramTab(GrammarWindow editor) {
         super(editor);
 
         skin = new SDSkin();
@@ -79,7 +79,7 @@ public class Visual extends GrammarWindowTab implements GContextProvider {
     }
 
     public Console getConsole() {
-        return window.getConsole();
+        return window.getConsoleTab();
     }
 
     public void close() {

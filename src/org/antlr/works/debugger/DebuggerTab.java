@@ -73,7 +73,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Debugger extends GrammarWindowTab implements DetachablePanelDelegate {
+public class DebuggerTab extends GrammarWindowTab implements DetachablePanelDelegate {
 
     public static final String DEFAULT_LOCAL_ADDRESS = "localhost";
 
@@ -122,7 +122,7 @@ public class Debugger extends GrammarWindowTab implements DetachablePanelDelegat
     private DebuggerDelegate delegate;
     private String rootGrammarName;
 
-    public Debugger(DebuggerDelegate delegate) {
+    public DebuggerTab(DebuggerDelegate delegate) {
         super(null);
         this.delegate = delegate;
     }
@@ -490,7 +490,7 @@ public class Debugger extends GrammarWindowTab implements DetachablePanelDelegat
     public boolean debuggerLaunch(String address, int port, boolean remote) {
         if(remote && !debuggerLaunchGrammar()) {
             XJAlert.display(getWindowContainer(), "Error",
-                    "Cannot launch the debugger.\nException while parsing grammar.");
+                    "Cannot launch the debuggerTab.\nException while parsing grammar.");
             return false;
         }
 
@@ -522,7 +522,7 @@ public class Debugger extends GrammarWindowTab implements DetachablePanelDelegat
 
     public void connectionFailed() {
         XJAlert.display(getWindowContainer(), "Connection Error",
-                "Cannot launch the debugger.\nTime-out waiting to connect to the remote parser.");
+                "Cannot launch the debuggerTab.\nTime-out waiting to connect to the remote parser.");
     }
 
     public void connectionCancelled() {
@@ -540,7 +540,7 @@ public class Debugger extends GrammarWindowTab implements DetachablePanelDelegat
 
     public void debuggerStop(boolean force) {
         if(recorder.getStatus() == DBRecorder.STATUS_STOPPING) {
-            if(force || XJAlert.displayAlertYESNO(getWindowContainer(), "Stopping", "The debugger is currently stopping. Do you want to force stop it ?") == XJAlert.YES) {
+            if(force || XJAlert.displayAlertYESNO(getWindowContainer(), "Stopping", "The debuggerTab is currently stopping. Do you want to force stop it ?") == XJAlert.YES) {
                 local.forceStop();
                 recorder.stop();
             }
@@ -676,7 +676,7 @@ public class Debugger extends GrammarWindowTab implements DetachablePanelDelegat
     }
 
     public String getTabName() {
-        return "Debugger";
+        return "DebuggerTab";
     }
 
     public Component getTabComponent() {

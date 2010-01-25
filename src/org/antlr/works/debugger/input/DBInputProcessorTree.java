@@ -1,7 +1,7 @@
 package org.antlr.works.debugger.input;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.debugger.tree.DBTreeNode;
 import org.antlr.works.debugger.tree.DBTreeToken;
@@ -48,7 +48,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObserver {
 
     public AWTreePanel treePanel;
-    public Debugger debugger;
+    public DebuggerTab debuggerTab;
 
     public InputTreeNode rootNode;
     public InputTreeNode currentNode;
@@ -65,9 +65,9 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
     public Color consumedColor;
     public Color ltColor;
 
-    public DBInputProcessorTree(AWTreePanel treePanel, Debugger debugger) {
+    public DBInputProcessorTree(AWTreePanel treePanel, DebuggerTab debuggerTab) {
         this.treePanel = treePanel;
-        this.debugger = debugger;
+        this.debuggerTab = debuggerTab;
 
         createColors();
 
@@ -76,7 +76,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
     public void close() {
         treePanel = null;
-        debugger = null;
+        debuggerTab = null;
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
 
@@ -160,10 +160,10 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
             case Token.UP:
                 if(currentNode == rootNode) {
-                    debugger.warning(this, "UP token applied to the root node!");
+                    debuggerTab.warning(this, "UP token applied to the root node!");
                 }
                 if(currentNode == null) {
-                    debugger.warning(this, "CurrentNode is null, use rootNode instead.");
+                    debuggerTab.warning(this, "CurrentNode is null, use rootNode instead.");
                     setCurrentNode(rootNode);
                 } else {
                     setCurrentNode((InputTreeNode)currentNode.getParent());
@@ -173,7 +173,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
 
             default:
                 if(currentNode == null) {
-                    debugger.warning(this, "CurrentNode is null, use rootNode instead.");
+                    debuggerTab.warning(this, "CurrentNode is null, use rootNode instead.");
                     setCurrentNode(rootNode);
                 }
                 currentNode.add(info.node = createNode(token));
@@ -199,7 +199,7 @@ public class DBInputProcessorTree implements DBInputProcessor, XJNotificationObs
         DBTreeToken tt = (DBTreeToken)token;
         NodeInfo info = nodeInfoForToken.get(tt.ID);
         if(info != null && !info.token.toString().equals(token.toString())) {
-            debugger.warning(this, "Duplicate token ID "+tt.ID+" for "+info.token+" <-> "+token);
+            debuggerTab.warning(this, "Duplicate token ID "+tt.ID+" for "+info.token+" <-> "+token);
         }
         return info;
     }

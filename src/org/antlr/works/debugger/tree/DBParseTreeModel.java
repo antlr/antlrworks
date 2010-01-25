@@ -1,7 +1,7 @@
 package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.works.prefs.AWPrefs;
@@ -56,19 +56,19 @@ public class DBParseTreeModel extends AWTreeModel implements XJNotificationObser
     public TreeNode lastNode;
     public DBEventLocation location;
 
-    public Debugger debugger;
+    public DebuggerTab debuggerTab;
 
     public List<DBParseTreeModelListener> listeners = new ArrayList<DBParseTreeModelListener>();
 
-    public DBParseTreeModel(Debugger debugger) {
-        this.debugger = debugger;
+    public DBParseTreeModel(DebuggerTab debuggerTab) {
+        this.debuggerTab = debuggerTab;
         initRules();
         initColors();
         XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
     }
 
     public void close() {
-        debugger = null;
+        debuggerTab = null;
         listeners.clear();
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }

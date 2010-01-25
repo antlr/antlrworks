@@ -235,7 +235,7 @@ public class InterpreterTab extends GrammarWindowTab implements Runnable, AWTree
     }
 
     public void interpret() {
-        window.console.makeCurrent();
+        window.consoleTab.makeCurrent();
 
         if(progress == null)
             progress = new XJDialogProgress(window);
@@ -257,7 +257,7 @@ public class InterpreterTab extends GrammarWindowTab implements Runnable, AWTree
             window.getGrammarEngine().analyze();
             process();
         } catch(Exception e) {
-            window.console.println(e);
+            window.consoleTab.println(e);
         } finally {
             runEnded();
         }
@@ -273,7 +273,7 @@ public class InterpreterTab extends GrammarWindowTab implements Runnable, AWTree
 
     protected void process() {
         progress.setInfo("Interpreting...");
-        window.console.println("Interpreting...");
+        window.consoleTab.println("Interpreting...");
 
         CharStream input = new ANTLRStringStream(Utils.convertRawTextWithEOL(textPane.getText(), eolCombo));
 
@@ -281,7 +281,7 @@ public class InterpreterTab extends GrammarWindowTab implements Runnable, AWTree
         try {
             eg.createGrammars();
         } catch (Exception e) {
-            window.console.println(e);
+            window.consoleTab.println(e);
             return;
         }
 
@@ -310,7 +310,7 @@ public class InterpreterTab extends GrammarWindowTab implements Runnable, AWTree
                 t = parseEngine.parse(startSymbol);
             }
         } catch (Exception e) {
-            window.console.println(e);
+            window.consoleTab.println(e);
         }
 
         if(parser != null && t != null) {
@@ -327,7 +327,7 @@ public class InterpreterTab extends GrammarWindowTab implements Runnable, AWTree
         @Override
         public void reportScanError(RecognitionException re) {
             CharStream cs = (CharStream)input;
-            window.console.println("problem matching token at "+
+            window.consoleTab.println("problem matching token at "+
                 cs.getLine()+":"+cs.getCharPositionInLine()+" "+re);
         }
     }

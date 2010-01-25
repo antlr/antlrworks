@@ -1,6 +1,6 @@
 package org.antlr.works.debugger.panels;
 
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.DetachablePanel;
 import org.antlr.works.utils.StreamWatcherDelegate;
@@ -43,12 +43,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class DBOutputPanel extends DetachablePanel implements StreamWatcherDelegate {
 
     protected TextPane outputTextPane;
-    protected Debugger debugger;
+    protected DebuggerTab debuggerTab;
 
-    public DBOutputPanel(Debugger debugger) {
-        super("Output", debugger);
+    public DBOutputPanel(DebuggerTab debuggerTab) {
+        super("Output", debuggerTab);
 
-        this.debugger = debugger;
+        this.debuggerTab = debuggerTab;
 
         outputTextPane = new TextPane();
         outputTextPane.setBackground(Color.white);
@@ -67,7 +67,7 @@ public class DBOutputPanel extends DetachablePanel implements StreamWatcherDeleg
 
     public void close() {
         super.close();
-        debugger = null;
+        debuggerTab = null;
     }
 
     public synchronized void streamWatcherDidStarted() {
@@ -79,7 +79,7 @@ public class DBOutputPanel extends DetachablePanel implements StreamWatcherDeleg
     }
 
     public synchronized void streamWatcherException(Exception e) {
-        debugger.getConsole().println(e);
+        debuggerTab.getConsole().println(e);
     }
 
 }

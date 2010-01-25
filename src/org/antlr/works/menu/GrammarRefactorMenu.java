@@ -237,7 +237,7 @@ public class GrammarRefactorMenu implements ActionRefactor {
     public void removeLeftRecursion() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOVE_LEFT_RECURSION);
 
-        ElementRule rule = window.rules.getEnclosingRuleAtPosition(window.getCaretPosition());
+        ElementRule rule = window.editorRules.getEnclosingRuleAtPosition(window.getCaretPosition());
         if(rule == null) {
             XJAlert.display(window.getJavaContainer(), "Remove Left Recursion", "There is no rule at cursor position.");
             return;
@@ -258,7 +258,7 @@ public class GrammarRefactorMenu implements ActionRefactor {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_REMOVE_ALL_LEFT_RECURSION);
 
         beginRefactor("Remove All Left Recursion");
-        List<ElementRule> rules = window.rules.getRules();
+        List<ElementRule> rules = window.editorRules.getRules();
         for(int index = rules.size()-1; index >= 0; index--) {
             ElementRule rule = rules.get(index);
             if(rule.hasLeftRecursion()) {
@@ -307,13 +307,13 @@ public class GrammarRefactorMenu implements ActionRefactor {
     }
 
     public boolean canInlineRule() {
-        return window.rules.getEnclosingRuleAtPosition(window.getCaretPosition()) != null;
+        return window.editorRules.getEnclosingRuleAtPosition(window.getCaretPosition()) != null;
     }
 
     public void inlineRule() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_INLINE_RULE);
 
-        ElementRule rule = window.rules.getEnclosingRuleAtPosition(window.getCaretPosition());
+        ElementRule rule = window.editorRules.getEnclosingRuleAtPosition(window.getCaretPosition());
         if(rule == null) {
             XJAlert.display(window.getJavaContainer(), "Inline Rule", "There is no rule at cursor position.");
             return;
@@ -330,7 +330,7 @@ public class GrammarRefactorMenu implements ActionRefactor {
         String ruleName = rule.name;
         String ruleContent = Utils.trimString(oldContent.substring(rule.colon.getEndIndex(), rule.end.getStartIndex()));
 
-        List<ElementRule> rules = window.rules.getRules();
+        List<ElementRule> rules = window.editorRules.getRules();
         if(rule.end.index - rule.colon.index > 2) {
             // More than one token, append ()
             ruleContent = "("+ruleContent+")";
@@ -366,7 +366,7 @@ public class GrammarRefactorMenu implements ActionRefactor {
     }
 
     public void deleteRuleAtIndex(int index) {
-        ElementRule r = window.rules.getEnclosingRuleAtPosition(index);
+        ElementRule r = window.editorRules.getEnclosingRuleAtPosition(index);
         if(r != null)
             window.replaceText(r.getStartIndex(), r.getEndIndex(), "");
     }
@@ -376,7 +376,7 @@ public class GrammarRefactorMenu implements ActionRefactor {
         Point p = window.getTextEditor().getLineTextPositionsAtTextPosition(window.getCaretPosition());
         int insertionIndex = p.y;
 
-        ElementRule rule = window.rules.getEnclosingRuleAtPosition(window.getCaretPosition());
+        ElementRule rule = window.editorRules.getEnclosingRuleAtPosition(window.getCaretPosition());
         if(rule != null) {
             if(rule.lexer) {
                 if(lexer) {
@@ -384,18 +384,18 @@ public class GrammarRefactorMenu implements ActionRefactor {
                     insertionIndex = rule.getEndIndex();
                 } else {
                     // Add new rule after the last parser rule
-                    ElementRule last = window.rules.getLastParserRule();
+                    ElementRule last = window.editorRules.getLastParserRule();
                     if(last != null) insertionIndex = last.getEndIndex();
                 }
             } else {
                 if(lexer) {
                     // Add new rule after the last lexer rule
-                    ElementRule last = window.rules.getLastLexerRule();
+                    ElementRule last = window.editorRules.getLastLexerRule();
                     if(last != null) {
                         insertionIndex = last.getEndIndex();
                     } else {
                         // Add new rule after the last rule
-                        last = window.rules.getLastRule();
+                        last = window.editorRules.getLastRule();
                         if(last != null) insertionIndex = last.getEndIndex();
                     }
                 } else {

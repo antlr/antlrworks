@@ -40,7 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ComponentToolbarStringTemplate {
+public class STWindowToolbar {
 
     public Toolbar toolbar;
 
@@ -53,7 +53,7 @@ public class ComponentToolbarStringTemplate {
 
     public STWindow window;
 
-    public ComponentToolbarStringTemplate(STWindow window) {
+    public STWindowToolbar(STWindow window) {
         this.window = window;
 
         createInterface();

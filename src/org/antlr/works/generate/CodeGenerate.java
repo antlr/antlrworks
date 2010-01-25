@@ -132,7 +132,7 @@ public class CodeGenerate implements Runnable {
             String file = getGeneratedFileName(type);
             return file == null || new File(file).exists();
         } catch (Exception e) {
-            window.getConsole().println(e);
+            window.getConsoleTab().println(e);
         }
         return false;
     }
@@ -179,7 +179,7 @@ public class CodeGenerate implements Runnable {
     public void run() {
         generateError = null;
 
-        window.getConsole().setMode(Console.MODE_VERBOSE);
+        window.getConsoleTab().setMode(Console.MODE_VERBOSE);
 
         try {
             if(!generate()) {
@@ -187,7 +187,7 @@ public class CodeGenerate implements Runnable {
             }
         } catch (Exception e) {
             generateError = e.toString();
-            window.getConsole().println(e);
+            window.getConsoleTab().println(e);
         }
 
         SwingUtilities.invokeLater(new Runnable() {

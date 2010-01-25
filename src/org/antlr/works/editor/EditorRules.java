@@ -67,7 +67,7 @@ import java.util.List;
 
 public class EditorRules implements XJTreeDelegate {
 
-    protected GrammarWindow editor;
+    protected GrammarWindow window;
 
     protected boolean programmaticallySelectingRule = false;
     protected boolean selectNextRule = false;
@@ -83,14 +83,14 @@ public class EditorRules implements XJTreeDelegate {
     private TreeSelectionListener tsl;
     private MouseListener ml;
 
-    public EditorRules(GrammarWindow editor, XJTree rulesTree) {
-        this.editor = editor;
+    public EditorRules(GrammarWindow window, XJTree rulesTree) {
+        this.window = window;
         this.rulesTree = rulesTree;
 
         rulesTree.setDelegate(this);
         rulesTree.setEnableDragAndDrop();
 
-        rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeUserObject(editor));
+        rulesTreeRootNode = new DefaultMutableTreeNode(new RuleTreeUserObject(window));
         rulesTreeModel = new DefaultTreeModel(rulesTreeRootNode);
         rulesTreeExpandedNodes = new ArrayList<String>();
 
@@ -107,7 +107,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public void close() {
-        editor = null;
+        window = null;
         rulesTree.removeMouseListener(ml);
         rulesTree.removeTreeSelectionListener(tsl);
         rulesTree.setCellRenderer(null);
@@ -123,7 +123,7 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public GrammarEngine getGrammarEngine() {
-        return editor.getGrammarEngine();
+        return window.getGrammarEngine();
     }
 
     public boolean isSorted() {
@@ -144,7 +144,7 @@ public class EditorRules implements XJTreeDelegate {
             r.ignored = flag;
         }
         rulesTree.repaint();
-        editor.rulesDidChange();
+        window.rulesDidChange();
     }
 
     /**
@@ -209,7 +209,7 @@ public class EditorRules implements XJTreeDelegate {
 
     public class RuleMoveUpAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
-            ElementRule sourceRule = getEnclosingRuleAtPosition(editor.getCaretPosition());
+            ElementRule sourceRule = getEnclosingRuleAtPosition(window.getCaretPosition());
             int previousRuleIndex = getGrammarEngine().getRules().indexOf(sourceRule)-1;
             if(previousRuleIndex>=0) {
                 ElementRule targetRule = getGrammarEngine().getRuleAtIndex(previousRuleIndex);
@@ -220,7 +220,7 @@ public class EditorRules implements XJTreeDelegate {
 
     public class RuleMoveDownAction extends AbstractAction {
         public void actionPerformed(ActionEvent event) {
-            ElementRule targetRule = getEnclosingRuleAtPosition(editor.getCaretPosition());
+            ElementRule targetRule = getEnclosingRuleAtPosition(window.getCaretPosition());
             int nextRuleIndex = getGrammarEngine().getRules().indexOf(targetRule)+1;
             ElementRule sourceRule = getGrammarEngine().getRuleAtIndex(nextRuleIndex);
             if(sourceRule != null) {
@@ -236,7 +236,7 @@ public class EditorRules implements XJTreeDelegate {
         restoreExpandedNodes();
 
         // Select again the row (otherwise, the selection is lost)
-        selectRuleInTreeAtPosition(editor.getCaretPosition());
+        selectRuleInTreeAtPosition(window.getCaretPosition());
     }
 
     public ElementGroup getSelectedGroup() {
@@ -441,12 +441,12 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public void selectNextRule() {
-        ElementRule rule = getEnclosingRuleAtPosition(editor.getCaretPosition());
+        ElementRule rule = getEnclosingRuleAtPosition(window.getCaretPosition());
         int index = getGrammarEngine().getRules().indexOf(rule)+1;
         rule = getGrammarEngine().getRuleAtIndex(index);
         if(rule != null) {
-            editor.setCaretPosition(rule.getStartIndex());
-            editor.rulesCaretPositionDidChange();
+            window.setCaretPosition(rule.getStartIndex());
+            window.rulesCaretPositionDidChange();
         }
     }
 
@@ -468,8 +468,8 @@ public class EditorRules implements XJTreeDelegate {
     }
 
     public void goToRule(ElementRule rule) {
-        editor.goToHistoryRememberCurrentPosition();        
-        editor.setCaretPosition(rule.start.getStartIndex());
+        window.goToHistoryRememberCurrentPosition();
+        window.setCaretPosition(rule.start.getStartIndex());
     }
 
     public void rebuildTree() {
@@ -615,17 +615,17 @@ public class EditorRules implements XJTreeDelegate {
             selectNextRule = false;
             selectNextRule();
         } else
-            selectRuleInTreeAtPosition(editor.getCaretPosition());
+            selectRuleInTreeAtPosition(window.getCaretPosition());
     }
 
     public boolean moveRule(ElementRule sourceRule, ElementRule targetRule, boolean dropAbove) {
         if(sourceRule == null || targetRule == null)
             return false;
 
-        String sourceRuleText = editor.getText().substring(sourceRule.getStartIndex(), sourceRule.getEndIndex()+1);
+        String sourceRuleText = window.getText().substring(sourceRule.getStartIndex(), sourceRule.getEndIndex()+1);
 
         try {
-            Document doc = editor.getTextPane().getDocument();
+            Document doc = window.getTextPane().getDocument();
 
             int removeStartIndex = sourceRule.getStartIndex();
             int targetInsertionIndex = dropAbove ? targetRule.getStartIndex() : targetRule.getEndIndex();
@@ -641,15 +641,15 @@ public class EditorRules implements XJTreeDelegate {
             if(sourceRule.getStartIndex()>targetRule.getStartIndex()) {
                 doc.remove(removeStartIndex, removeLength);
                 doc.insertString(targetInsertionIndex, "\n"+sourceRuleText, null);
-                editor.setCaretPosition(targetInsertionIndex);
+                window.setCaretPosition(targetInsertionIndex);
             } else {
                 doc.insertString(targetInsertionIndex, "\n"+sourceRuleText, null);
                 doc.remove(removeStartIndex, removeLength);
-                editor.setCaretPosition(targetInsertionIndex-removeLength);
+                window.setCaretPosition(targetInsertionIndex-removeLength);
             }
             return true;
         } catch (BadLocationException e) {
-            editor.console.println(e);
+            window.consoleTab.println(e);
             return false;
         }
     }
@@ -778,7 +778,7 @@ public class EditorRules implements XJTreeDelegate {
                     DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
                     selectedObjects.add(node.getUserObject());
                 }
-                JPopupMenu menu = editor.rulesGetContextualMenu(selectedObjects);
+                JPopupMenu menu = window.rulesGetContextualMenu(selectedObjects);
                 if(menu != null)
                     menu.show(e.getComponent(), e.getX(), e.getY());
             }

@@ -1,7 +1,7 @@
 package org.antlr.works.debugger.panels;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.input.DBInputProcessor;
 import org.antlr.works.debugger.input.DBInputProcessorToken;
 import org.antlr.works.debugger.input.DBInputTextTokenInfo;
@@ -48,7 +48,7 @@ public class DBInputTokenPanel implements DBInputConcretePanel {
     protected JScrollPane textScrollPane;
     protected DBInputProcessorToken processorToken;
 
-    public DBInputTokenPanel(Debugger debugger) {
+    public DBInputTokenPanel(DebuggerTab debuggerTab) {
         inputTextPane = new TextPane();
         inputTextPane.setBackground(Color.white);
         inputTextPane.setBorder(null);
@@ -58,7 +58,7 @@ public class DBInputTokenPanel implements DBInputConcretePanel {
 
         TextUtils.createTabs(inputTextPane);
 
-        processorToken = new DBInputProcessorToken(debugger, inputTextPane);
+        processorToken = new DBInputProcessorToken(debuggerTab, inputTextPane);
 
         textScrollPane = new JScrollPane(inputTextPane);
         textScrollPane.setWheelScrollingEnabled(true);

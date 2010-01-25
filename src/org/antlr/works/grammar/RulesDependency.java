@@ -58,7 +58,7 @@ public class RulesDependency extends GrammarDOTTab {
             return false;
 
         ElementRule rule = window.getCurrentRule();
-        List<ElementReference> refs = window.rules.getReferencesInRule(rule);
+        List<ElementReference> refs = window.editorRules.getReferencesInRule(rule);
         if(refs == null || refs.isEmpty()) {
             XJAlert.display(window.getJavaContainer(), "Error", "The selected rule doesn't contain any references");
             return false;
@@ -93,7 +93,7 @@ public class RulesDependency extends GrammarDOTTab {
 
         visitedRules.add(rule.name);
 
-        List<ElementReference> refs = window.rules.getReferencesInRule(rule);
+        List<ElementReference> refs = window.editorRules.getReferencesInRule(rule);
         if(refs == null || refs.isEmpty())
             return;
 

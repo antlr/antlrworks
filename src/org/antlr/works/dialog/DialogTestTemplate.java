@@ -31,49 +31,51 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.dialog;
 
-import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.prefs.Preferences;
-import java.io.File;
-import java.io.IOException;
-import javax.swing.*;
-import com.jgoodies.forms.factories.*;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
+import org.antlr.works.IDE;
+import org.antlr.works.debugger.DebuggerTab;
+import org.antlr.works.debugger.local.DBLocal;
+import org.antlr.works.prefs.AWPrefs;
+import org.antlr.works.utils.TextUtils;
+import org.antlr.works.utils.Utils;
 import org.antlr.xjlib.appkit.frame.XJDialog;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.foundation.XJSystem;
 import org.antlr.xjlib.foundation.XJUtils;
-import org.antlr.works.utils.TextUtils;
-import org.antlr.works.utils.Utils;
-import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.debugger.Debugger;
-import org.antlr.works.debugger.local.DBLocal;
-import org.antlr.works.IDE;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.prefs.Preferences;
 
 public class DialogTestTemplate extends XJDialog {
     public static final String TEXT_FULLY_QUALIFIED_CLASS_NAME = "Enter fully qualified class name here..";
 
-    private Debugger debugger;
+    private DebuggerTab debuggerTab;
 
     private String testRigFullPath;
     private String qualifiedFileName;
     private String grammarIdentifier;
     private String grammarLanguage = "Java";
 
-    public DialogTestTemplate(Debugger debugger, Container parent) {
+    public DialogTestTemplate(DebuggerTab debuggerTab, Container parent) {
         super(parent, true);
 
-        this.debugger = debugger;
-        qualifiedFileName = this.debugger.getDelegate().getDocument().getDocumentPath();
+        this.debuggerTab = debuggerTab;
+        qualifiedFileName = this.debuggerTab.getDelegate().getDocument().getDocumentPath();
         if (qualifiedFileName != null) {
             testRigFullPath = XJUtils.getPathByDeletingPathExtension(qualifiedFileName) + DBLocal.testRigTemplateSuffix + ".st";
             grammarIdentifier = qualifiedFileName.toUpperCase();
         }
-        if (this.debugger.getDelegate().getGrammarEngine() != null)
-            grammarLanguage = this.debugger.getDelegate().getGrammarEngine().getGrammarLanguage();
+        if (this.debuggerTab.getDelegate().getGrammarEngine() != null)
+            grammarLanguage = this.debuggerTab.getDelegate().getGrammarEngine().getGrammarLanguage();
 
         initComponents();
 
@@ -182,7 +184,7 @@ public class DialogTestTemplate extends XJDialog {
                         DBLocal.parserGlueCodeTemplatePath + DBLocal.parserGlueCodeTemplateName + "_python.st");
             }
         } catch (IOException ioe) {
-            this.debugger.getConsole().println(ioe);
+            this.debuggerTab.getConsole().println(ioe);
         }
         return "";
     }
@@ -200,7 +202,7 @@ public class DialogTestTemplate extends XJDialog {
         try {
             XJUtils.writeStringToFile(text, testRigFullPath);
         } catch (IOException ioe) {
-            this.debugger.getConsole().println(ioe);
+            this.debuggerTab.getConsole().println(ioe);
         }
     }
 

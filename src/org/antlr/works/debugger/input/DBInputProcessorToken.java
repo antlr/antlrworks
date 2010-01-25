@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.debugger.input;
 
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.events.DBEventLocation;
 import org.antlr.works.dialog.AWPrefsDialog;
 import org.antlr.works.prefs.AWPrefs;
@@ -60,7 +60,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     public static final Color HIGHLIGHTED_COLOR = new Color(0, 0.5f, 1, 0.4f);
     public static final Color INPUT_BREAKPOINT_COLOR = new Color(1, 0.2f, 0, 0.5f);
 
-    protected Debugger debugger;
+    protected DebuggerTab debuggerTab;
     protected TextPane textPane;
     protected int mouseIndex = -1;
 
@@ -90,8 +90,8 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
 
     protected boolean drawTokensBox;
 
-    public DBInputProcessorToken(Debugger debugger, TextPane textPane) {
-        this.debugger = debugger;
+    public DBInputProcessorToken(DebuggerTab debuggerTab, TextPane textPane) {
+        this.debuggerTab = debuggerTab;
 
         this.textPane = textPane;
         this.textPane.setDelegate(this);
@@ -107,7 +107,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
     }
 
     public void close() {
-        debugger = null;
+        debuggerTab = null;
         textPane.setDelegate(null);
         XJNotificationCenter.defaultCenter().removeObserver(this);
     }
@@ -306,7 +306,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
                         textPane.scrollRectToVisible(r);                        
                     }
                 } catch (BadLocationException e) {
-                    debugger.getConsole().println(e);
+                    debuggerTab.getConsole().println(e);
                 }
             }
         });
@@ -443,7 +443,7 @@ public class DBInputProcessorToken implements DBInputProcessor, TextPaneDelegate
 
             boolean shiftKey = (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) == MouseEvent.SHIFT_DOWN_MASK;
             if(e.getButton() == MouseEvent.BUTTON1 && !shiftKey) {
-                debugger.selectToken(info.token, info.getLocation());
+                debuggerTab.selectToken(info.token, info.getLocation());
             } else {
                 Integer index = info.token.getTokenIndex();
                 if(inputBreakpointIndexes.contains(index))

@@ -63,13 +63,13 @@ public class CheckGrammar implements Runnable {
     }
 
     public void run() {
-        window.getConsole().setMode(Console.MODE_VERBOSE);
+        window.getConsoleTab().setMode(Console.MODE_VERBOSE);
         delegate.checkGrammarDidBegin(this);
         GrammarResult result;
         try {
             result = window.getGrammarEngine().analyze();
         } catch (Exception e) {
-            window.getConsole().println(e);
+            window.getConsoleTab().println(e);
             // Result cannot be null, so report the exception
             result = new GrammarResult(e);
         }

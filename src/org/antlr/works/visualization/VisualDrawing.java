@@ -46,7 +46,7 @@ import java.util.Map;
 
 public class VisualDrawing extends ATEThread {
 
-    protected Visual visual;
+    protected SyntaxDiagramTab syntaxDiagramTab;
 
     protected GFactory factory = new GFactory();
 
@@ -59,15 +59,15 @@ public class VisualDrawing extends ATEThread {
 
     protected Map<ElementRule,List> cacheGraphs = new HashMap<ElementRule, List>();
 
-    public VisualDrawing(Visual visual) {
-        this.visual = visual;
+    public VisualDrawing(SyntaxDiagramTab syntaxDiagramTab) {
+        this.syntaxDiagramTab = syntaxDiagramTab;
         start();
     }
 
     @Override
     public void stop() {
         super.stop();
-        visual = null;
+        syntaxDiagramTab = null;
     }
 
     public void toggleNFAOptimization() {
@@ -112,9 +112,9 @@ public class VisualDrawing extends ATEThread {
     }
 
     private void refreshVisualPanel(List graphs) {
-        visual.panel.setRule(threadLastProcessedRule);
-        visual.panel.setGraphs(graphs);
-        visual.panel.update();
+        syntaxDiagramTab.panel.setRule(threadLastProcessedRule);
+        syntaxDiagramTab.panel.setGraphs(graphs);
+        syntaxDiagramTab.panel.update();
     }
 
     public synchronized boolean threadShouldProcess() {
@@ -136,7 +136,7 @@ public class VisualDrawing extends ATEThread {
         ErrorListener.getThreadInstance().setPrintToConsole(false);
 
         try {
-            visual.getEngineGrammar().createGrammars();
+            syntaxDiagramTab.getEngineGrammar().createGrammars();
         } catch (Exception e) {
             // ignore
         } finally {
@@ -153,10 +153,10 @@ public class VisualDrawing extends ATEThread {
 
         ErrorListener.getThreadInstance().setPrintToConsole(false);
 
-        if(visual.getEngineGrammar().hasGrammar()) {
+        if(syntaxDiagramTab.getEngineGrammar().hasGrammar()) {
             NFAState startState = null;
             try {
-                startState = visual.getEngineGrammar().getRuleStartState(threadRule.name);
+                startState = syntaxDiagramTab.getEngineGrammar().getRuleStartState(threadRule.name);
             } catch (Exception e) {
                 // ignore
             }
@@ -168,7 +168,7 @@ public class VisualDrawing extends ATEThread {
         }
 
         if(error != null) {
-            visual.setPlaceholder(error);
+            syntaxDiagramTab.setPlaceholder(error);
             //visual.getConsole().println(error, Console.LEVEL_ERROR);
             return;
         }
@@ -186,19 +186,19 @@ public class VisualDrawing extends ATEThread {
         List graphs = cacheGraphs.get(rule);
         if(graphs == null) {
             factory.setOptimize(!AWPrefs.getDebugDontOptimizeNFA());
-            factory.setConsole(visual.getConsole());
-            graphs = factory.buildGraphsForRule(visual.getEngineGrammar(), rule.name, rule.errors);
+            factory.setConsole(syntaxDiagramTab.getConsole());
+            graphs = factory.buildGraphsForRule(syntaxDiagramTab.getEngineGrammar(), rule.name, rule.errors);
             if(graphs != null)
                 cacheGraphs.put(rule, graphs);
         }
     }
 
     public void threadReportException(Exception e) {
-        visual.getConsole().println(e);
+        syntaxDiagramTab.getConsole().println(e);
     }
 
     public void threadRun() throws Exception {
-        visual.getConsole().setMode(Console.MODE_QUIET);
+        syntaxDiagramTab.getConsole().setMode(Console.MODE_QUIET);
 
         if(threadShouldProcess()) {
             threadPrepareProcess();

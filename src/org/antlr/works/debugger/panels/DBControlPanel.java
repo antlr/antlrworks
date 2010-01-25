@@ -1,6 +1,6 @@
 package org.antlr.works.debugger.panels;
 
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.events.DBEvent;
 import org.antlr.works.debugger.tivo.DBPlayerContextInfo;
 import org.antlr.works.debugger.tivo.DBRecorder;
@@ -65,12 +65,12 @@ public class DBControlPanel extends JPanel {
 
     protected JLabel infoLabel;
 
-    protected Debugger debugger;
+    protected DebuggerTab debuggerTab;
 
-    public DBControlPanel(Debugger debugger) {
+    public DBControlPanel(DebuggerTab debuggerTab) {
         super(new BorderLayout());
 
-        this.debugger = debugger;
+        this.debuggerTab = debuggerTab;
 
         Toolbar box = Toolbar.createHorizontalToolbar();
         box.addElement(stopButton = createStopButton());
@@ -96,7 +96,7 @@ public class DBControlPanel extends JPanel {
         AWPrefs.getPreferences().unbindFromPreferences(breakLTButton, AWPrefs.PREF_DEBUG_BREAK_LT);
         AWPrefs.getPreferences().unbindFromPreferences(breakExceptionButton, AWPrefs.PREF_DEBUG_BREAK_EXCEPTION);
 
-        debugger = null;
+        debuggerTab = null;
     }
 
     public JButton createStopButton() {
@@ -105,7 +105,7 @@ public class DBControlPanel extends JPanel {
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                debugger.debuggerStop(false);
+                debuggerTab.debuggerStop(false);
                 StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_STOP);
             }
         });
@@ -117,7 +117,7 @@ public class DBControlPanel extends JPanel {
         button.setToolTipText("Step Back");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                debugger.getRecorder().stepBackward(getBreakEvent());
+                debuggerTab.getRecorder().stepBackward(getBreakEvent());
                 updateInterfaceLater();
                 StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_STEP_BACK);
             }
@@ -130,7 +130,7 @@ public class DBControlPanel extends JPanel {
         button.setToolTipText("Step Forward");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                debugger.getRecorder().stepForward(getBreakEvent());
+                debuggerTab.getRecorder().stepForward(getBreakEvent());
                 updateInterfaceLater();
                 StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_STEP_FORWARD);
             }
@@ -143,7 +143,7 @@ public class DBControlPanel extends JPanel {
         button.setToolTipText("Step Over");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                debugger.getRecorder().stepOver();
+                debuggerTab.getRecorder().stepOver();
                 updateInterfaceLater();
                 StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_STEP_OVER);
             }
@@ -157,8 +157,8 @@ public class DBControlPanel extends JPanel {
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                debugger.resetGrammarLocation();
-                debugger.getRecorder().goToStart();
+                debuggerTab.resetGrammarLocation();
+                debuggerTab.getRecorder().goToStart();
                 updateInterfaceLater();
                 StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_GOTO_START);
             }
@@ -172,7 +172,7 @@ public class DBControlPanel extends JPanel {
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                debugger.getRecorder().goToEnd();
+                debuggerTab.getRecorder().goToEnd();
                 updateInterfaceLater();
                 StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_GOTO_END);
             }
@@ -186,7 +186,7 @@ public class DBControlPanel extends JPanel {
         button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                debugger.getRecorder().fastForward();
+                debuggerTab.getRecorder().fastForward();
                 updateInterfaceLater();
                 StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_FAST_FORWARD);
             }
@@ -254,17 +254,17 @@ public class DBControlPanel extends JPanel {
         StringBuilder info = new StringBuilder();
 
         String status = "-";
-        switch(debugger.getRecorder().getStatus()) {
+        switch(debuggerTab.getRecorder().getStatus()) {
             case DBRecorder.STATUS_STOPPED: status = "Stopped"; break;
             case DBRecorder.STATUS_STOPPING: status = "Stopping"; break;
             case DBRecorder.STATUS_LAUNCHING: status = "Launching"; break;
             case DBRecorder.STATUS_RUNNING: status = "Running"; break;
-            case DBRecorder.STATUS_BREAK: status = "Break on "+DBEvent.getEventName(debugger.getRecorder().getStoppedOnEvent()); break;
+            case DBRecorder.STATUS_BREAK: status = "Break on "+DBEvent.getEventName(debuggerTab.getRecorder().getStoppedOnEvent()); break;
         }
 
         info.append(status);
 
-        DBPlayerContextInfo context = debugger.getPlayer().getContextInfo();
+        DBPlayerContextInfo context = debuggerTab.getPlayer().getContextInfo();
         if(context.isBacktracking()) {
             info.append(" (backtrack ");
             info.append(context.getBacktrack());
@@ -276,11 +276,11 @@ public class DBControlPanel extends JPanel {
     }
 
     public void updateInterface() {
-        stopButton.setEnabled(debugger.getRecorder().getStatus() != DBRecorder.STATUS_STOPPED);
+        stopButton.setEnabled(debuggerTab.getRecorder().getStatus() != DBRecorder.STATUS_STOPPED);
 
-        boolean enabled = debugger.getRecorder().isAlive();
-        boolean atBeginning = debugger.getRecorder().isAtBeginning();
-        boolean atEnd = debugger.getRecorder().isAtEnd();
+        boolean enabled = debuggerTab.getRecorder().isAlive();
+        boolean atBeginning = debuggerTab.getRecorder().isAtBeginning();
+        boolean atEnd = debuggerTab.getRecorder().isAtEnd();
 
         backButton.setEnabled(enabled && !atBeginning);
         forwardButton.setEnabled(enabled && !atEnd);

@@ -34,7 +34,7 @@ package org.antlr.works.dialog;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.grammar.element.ElementRule;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.utils.TextUtils;
@@ -52,12 +52,12 @@ import java.util.prefs.Preferences;
 
 public class DebuggerInputDialog extends XJDialog {
 
-    private Debugger debugger;
+    private DebuggerTab debuggerTab;
 
-    public DebuggerInputDialog(Debugger debugger, Container parent) {
+    public DebuggerInputDialog(DebuggerTab debuggerTab, Container parent) {
         super(parent, true);
 
-        this.debugger = debugger;
+        this.debuggerTab = debuggerTab;
 
         initComponents();
         setSize(600, 400);
@@ -84,10 +84,10 @@ public class DebuggerInputDialog extends XJDialog {
         inputTextArea.setText(AWPrefs.getDebuggerInputText());
 
         rulesCombo.removeAllItems();
-        for (ElementRule rule : debugger.getSortedRules()) {
+        for (ElementRule rule : debuggerTab.getSortedRules()) {
             rulesCombo.addItem(rule.name);
         }
-        rulesCombo.setSelectedItem(debugger.getStartRule());
+        rulesCombo.setSelectedItem(debuggerTab.getStartRule());
 
         Utils.fillComboWithEOL(eolCombo);
         eolCombo.setSelectedIndex(AWPrefs.getDebuggerEOL());
@@ -118,7 +118,7 @@ public class DebuggerInputDialog extends XJDialog {
                     " The text is "+text.length()+" bytes but the preferences can only hold "+Preferences.MAX_VALUE_LENGTH+" bytes. It will be truncated.");
             text = text.substring(0, Preferences.MAX_VALUE_LENGTH-1);
         }
-        debugger.setStartRule(getRule());
+        debuggerTab.setStartRule(getRule());
         AWPrefs.setDebuggerInputText(text);
         AWPrefs.setDebuggerEOL(eolCombo.getSelectedIndex());
         AWPrefs.setDebuggerInputMode(textInputRadio.isSelected()?0:1);

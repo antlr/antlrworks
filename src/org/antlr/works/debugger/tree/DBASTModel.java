@@ -2,7 +2,7 @@ package org.antlr.works.debugger.tree;
 
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
-import org.antlr.works.debugger.Debugger;
+import org.antlr.works.debugger.DebuggerTab;
 
 import java.util.*;
 /*
@@ -46,14 +46,14 @@ public class DBASTModel {
 
     public List<DBASTModelListener> listeners = new ArrayList<DBASTModelListener>();
 
-    private Debugger debugger;
+    private DebuggerTab debuggerTab;
 
-    public DBASTModel(Debugger debugger) {
-        this.debugger = debugger;
+    public DBASTModel(DebuggerTab debuggerTab) {
+        this.debuggerTab = debuggerTab;
     }
 
     public void close() {
-        debugger = null;
+        debuggerTab = null;
     }
 
     public void addListener(DBASTModelListener listener) {
@@ -138,11 +138,11 @@ public class DBASTModel {
         ASTNode newRoot = getTreeNode(newRootID);
         ASTNode oldRoot = getTreeNode(oldRootID);
         if(newRoot == null) {
-            debugger.warning(this, "[becomeRoot] New root node "+newRootID+" not found, ignoring.");
+            debuggerTab.warning(this, "[becomeRoot] New root node "+newRootID+" not found, ignoring.");
             return;
         }
         if(oldRoot == null) {
-            debugger.warning(this, "[becomeRoot] Old root node "+oldRootID+" not found, ignoring.");
+            debuggerTab.warning(this, "[becomeRoot] Old root node "+oldRootID+" not found, ignoring.");
             return;
         }
         oldRoot.becomeParent(newRoot);
@@ -153,11 +153,11 @@ public class DBASTModel {
         ASTNode root = getTreeNode(rootID);
         ASTNode child = getTreeNode(childID);
         if(root == null) {
-            debugger.warning(this, "[addChild] Root node "+rootID+" not found, ignoring.");
+            debuggerTab.warning(this, "[addChild] Root node "+rootID+" not found, ignoring.");
             return;
         }
         if(child == null) {
-            debugger.warning(this, "[addChild] Child node "+childID+" not found, ignoring.");
+            debuggerTab.warning(this, "[addChild] Child node "+childID+" not found, ignoring.");
             return;
         }
 

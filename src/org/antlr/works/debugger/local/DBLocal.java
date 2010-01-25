@@ -37,8 +37,8 @@ import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.antlr.works.IDE;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.debugger.Debugger;
 import org.antlr.works.debugger.DebuggerEngine;
+import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.tivo.DBRecorder;
 import org.antlr.works.dialog.DebuggerInputDialog;
 import org.antlr.works.dialog.DialogTestTemplate;
@@ -95,7 +95,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected int options;
 
     protected CodeGenerate codeGenerator;
-    protected Debugger debugger;
+    protected DebuggerTab debuggerTab;
 
     protected int inputMode;
     protected int lastInputMode;
@@ -116,8 +116,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected int debugPort = -1;
     protected boolean debugPortChanged = true;
 
-    public DBLocal(Debugger debugger) {
-        this.debugger = debugger;
+    public DBLocal(DebuggerTab debuggerTab) {
+        this.debuggerTab = debuggerTab;
     }
 
     public void close() {
@@ -126,7 +126,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             codeGenerator.close();
         }
         codeGenerator = null;
-        debugger = null;
+        debuggerTab = null;
     }
 
     public boolean canDebugAgain() {
@@ -156,7 +156,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     public void showProgress() {
         if(progress == null)
-            progress = new XJDialogProgress(debugger.getContainer());
+            progress = new XJDialogProgress(debuggerTab.getContainer());
         progress.setInfo("Preparing...");
         progress.setIndeterminate(false);
         progress.setProgress(0);
@@ -171,19 +171,19 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     private boolean optionBuild() {
-        return (options & Debugger.OPTION_BUILD) > 0 || debugPortChanged;
+        return (options & DebuggerTab.OPTION_BUILD) > 0 || debugPortChanged;
     }
 
     private boolean optionAgain() {
-        return (options & Debugger.OPTION_AGAIN) > 0;
+        return (options & DebuggerTab.OPTION_AGAIN) > 0;
     }
 
     private boolean optionRun() {
-        return (options & Debugger.OPTION_RUN) > 0;
+        return (options & DebuggerTab.OPTION_RUN) > 0;
     }
 
     public void showEditTestRig() {
-        DialogTestTemplate dialog = new DialogTestTemplate(debugger, debugger.getContainer());
+        DialogTestTemplate dialog = new DialogTestTemplate(debuggerTab, debuggerTab.getContainer());
         dialog.runModal();
     }
 
@@ -240,7 +240,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
                 public void run() {
                     hideProgress();
 
-                    DebuggerInputDialog dialog = new DebuggerInputDialog(debugger, debugger.getContainer());
+                    DebuggerInputDialog dialog = new DebuggerInputDialog(debuggerTab, debuggerTab.getContainer());
                     dialog.setInputText(rawInputText);
                     if(dialog.runModal() == XJDialog.BUTTON_OK) {
                         rawInputText = dialog.getRawInputText();
@@ -254,7 +254,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
                 }
             });
         } catch (Exception e) {
-            debugger.getConsole().println(e);
+            debuggerTab.getConsole().println(e);
         }
     }
 
@@ -278,8 +278,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                if(XJAlert.displayAlert(debugger.getContainer(), error.title, error.message, "Show Console", "OK", 1, 1) == 0) {
-                    debugger.selectConsoleTab();
+                if(XJAlert.displayAlert(debuggerTab.getContainer(), error.title, error.message, "Show Console", "OK", 1, 1) == 0) {
+                    debuggerTab.selectConsoleTab();
                 }
             }
         });
@@ -296,7 +296,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             public void run() {
                 boolean didRun = false;
                 if(!cancelled()) {
-                    didRun = debugger.debuggerLocalDidRun(optionBuild());
+                    didRun = debuggerTab.debuggerLocalDidRun(optionBuild());
                     if (optionRun() && didRun) {
                         runThroughRecorder();
                     }
@@ -310,23 +310,23 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         long timeout = AWPrefs.getDebugLaunchTimeout()*1000;
 
         // wait for debugger to be alive, but make sure to have a timeout.
-        while (!debugger.getRecorder().isAlive()) {
+        while (!debuggerTab.getRecorder().isAlive()) {
             if (System.currentTimeMillis()-t > timeout) return;
         }
 
-        debugger.getRecorder().goToEnd();
+        debuggerTab.getRecorder().goToEnd();
 
         // wait for the recorder to go to the end. Make sure it wasn't stopped
-        while (!debugger.getRecorder().isAtEnd() && debugger.getRecorder().getStatus() != DBRecorder.STATUS_STOPPED);
+        while (!debuggerTab.getRecorder().isAtEnd() && debuggerTab.getRecorder().getStatus() != DBRecorder.STATUS_STOPPED);
 
-        debugger.getRecorder().requestStop();
-        debugger.selectConsoleTab();
+        debuggerTab.getRecorder().requestStop();
+        debuggerTab.selectConsoleTab();
     }
 
     protected boolean prepare() {
         String testRigFullPath = "";
         String grammarIdentifier = "";
-        String qualifiedFileName = debugger.getDelegate().getDocument().getDocumentPath();
+        String qualifiedFileName = debuggerTab.getDelegate().getDocument().getDocumentPath();
         if (qualifiedFileName != null) {
             testRigFullPath = XJUtils.getPathByDeletingPathExtension(qualifiedFileName) + testRigTemplateSuffix + ".st";
             grammarIdentifier = qualifiedFileName.toUpperCase();
@@ -335,7 +335,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             testTemplateMode = AWPrefs.getTestRigTemplateMode(grammarIdentifier);
             testTemplateText = getTestRigTemplateFromFile(testRigFullPath);
             testTemplateClass = AWPrefs.getTestRigTemplateClass(grammarIdentifier);
-            codeGenerator = debugger.getDelegate().getCodeGenerate();
+            codeGenerator = debuggerTab.getDelegate().getCodeGenerate();
             grammarGeneratedFiles = codeGenerator.getGeneratedFileNames();
 
             fileRemoteParser = XJUtils.concatPath(codeGenerator.getOutputPath(), remoteParserClassName+".java");
@@ -345,7 +345,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             outputFileDir = XJUtils.concatPath(codeGenerator.getOutputPath(), "classes");
             new File(outputFileDir).mkdirs();
         } catch(Exception e) {
-            debugger.getConsole().println(e);
+            debuggerTab.getConsole().println(e);
             String msg = ErrorListener.getThreadInstance().getFirstErrorMessage();
             StringBuilder sb = new StringBuilder("Error while preparing the grammar:\n");
             if(msg != null) {
@@ -382,9 +382,9 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     protected void analyzeGrammar() {
         String errorMessage = null;
         try {
-            debugger.getDelegate().getGrammarEngine().analyze();
+            debuggerTab.getDelegate().getGrammarEngine().analyze();
         } catch (Exception e) {
-            debugger.getConsole().println(e);
+            debuggerTab.getConsole().println(e);
             errorMessage = e.getLocalizedMessage();
         }
         if(errorMessage != null) {
@@ -398,10 +398,10 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             if(!codeGenerator.generate())
                 errorMessage = codeGenerator.getLastError();
         } catch (Exception e) {
-            debugger.getConsole().println(e);
+            debuggerTab.getConsole().println(e);
             errorMessage = e.toString();
         } catch (OutOfMemoryError e) {
-            debugger.getConsole().println(e);
+            debuggerTab.getConsole().println(e);
             errorMessage = e.toString();
         }
 
@@ -442,22 +442,22 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     protected String getLexerName() throws Exception {
-        String lexer = debugger.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.LEXER);
+        String lexer = debuggerTab.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.LEXER);
         if(lexer == null) {
             // The lexer name can be null if the grammar is a treeparser or a parser
             // Try to lookup the name used by tokenVocab and use it as the lexer name
-            lexer = debugger.getDelegate().getTokenVocab();
+            lexer = debuggerTab.getDelegate().getTokenVocab();
         }
         return lexer;
     }
 
     protected void generateGlueCode() {
         try {
-            boolean isTreeGrammar = debugger.getDelegate().getGrammarEngine().getType() == ElementGrammarName.TREEPARSER;
+            boolean isTreeGrammar = debuggerTab.getDelegate().getGrammarEngine().getType() == ElementGrammarName.TREEPARSER;
             String templateName = isTreeGrammar ? treeParserGlueCodeTemplateName : parserGlueCodeTemplateName;
             String lexerName = isTreeGrammar ? (getLexerName()+"Lexer") : getLexerName();
-            String parserName = isTreeGrammar ? (debugger.getDelegate().getTokenVocab()+"Parser") :
-                    (debugger.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.PARSER));
+            String parserName = isTreeGrammar ? (debuggerTab.getDelegate().getTokenVocab()+"Parser") :
+                    (debuggerTab.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.PARSER));
             StringTemplateGroup group;
             StringTemplate glueCode;
             if (AWPrefs.TEST_RIG_MODE_TEXT.equals(testTemplateMode)) {
@@ -483,11 +483,11 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             glueCode.setAttribute(ST_ATTR_JAVA_LEXER, lexerName);
             glueCode.setAttribute(ST_ATTR_START_SYMBOL, startRule);
             glueCode.setAttribute(ST_ATTR_DEBUG_PORT, AWPrefs.getDebugDefaultLocalPort());
-            glueCode.setAttribute(ST_ATTR_GRAMMAR_NAME, debugger.getDelegate().getGrammarName());
+            glueCode.setAttribute(ST_ATTR_GRAMMAR_NAME, debuggerTab.getDelegate().getGrammarName());
 
             XJUtils.writeStringToFile(glueCode.toString(), fileRemoteParser);
         } catch(Exception e) {
-            debugger.getConsole().println(e);
+            debuggerTab.getConsole().println(e);
             reportError("Error while generating the glue-code:\n"+e.toString());
         }
     }
@@ -496,7 +496,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
      * Returns a string of import statement based on the package declaration inside any @header block
      */
     private String getCustomImports() {
-        List<ElementBlock> blocks = debugger.getBlocks();
+        List<ElementBlock> blocks = debuggerTab.getBlocks();
         if(blocks == null || blocks.isEmpty()) {
             return "";
         }
@@ -542,21 +542,21 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
 
     protected void compileGlueCode() {
         try {
-            boolean isTreeGrammar = debugger.getDelegate().getGrammarEngine().getType() == ElementGrammarName.TREEPARSER;
+            boolean isTreeGrammar = debuggerTab.getDelegate().getGrammarEngine().getType() == ElementGrammarName.TREEPARSER;
             String lexerName = XJUtils.concatPath(codeGenerator.getOutputPath(), (isTreeGrammar ? (getLexerName()+"Lexer.java") : (getLexerName()+".java")));
-            String parserName = XJUtils.concatPath(codeGenerator.getOutputPath(), (isTreeGrammar ? (debugger.getDelegate().getTokenVocab()+"Parser.java") :
-                    (debugger.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.PARSER)+".java")));
+            String parserName = XJUtils.concatPath(codeGenerator.getOutputPath(), (isTreeGrammar ? (debuggerTab.getDelegate().getTokenVocab()+"Parser.java") :
+                    (debuggerTab.getDelegate().getGrammarEngine().getGeneratedClassName(ElementGrammarName.PARSER)+".java")));
             compileFiles(new String[] { lexerName});
             compileFiles(new String[] { parserName});
             compileFiles(new String[] { fileRemoteParser});
         } catch (Exception e) {
-            debugger.getConsole().println(e);
+            debuggerTab.getConsole().println(e);
             reportError("Error :\n"+e.toString());
         }
     }
 
     protected void compileFiles(String[] files) {
-        String error = DebuggerEngine.compileFiles(debugger.getConsole(), files, outputFileDir, this);
+        String error = DebuggerEngine.compileFiles(debuggerTab.getConsole(), files, outputFileDir, this);
         if(error != null)
             reportError(error);
     }
@@ -565,7 +565,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         try {
             XJUtils.writeStringToFile(inputText, fileRemoteParserInputTextFile);
         } catch (IOException e) {
-            debugger.getConsole().println(e);
+            debuggerTab.getConsole().println(e);
             reportError("Error while generating the input text:\n"+e.toString());
         }
     }
@@ -574,7 +574,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         try {
             XJUtils.writeStringToFile(testTemplateText, fileRemoteParserTemplateTextFile);
         } catch (IOException e) {
-            debugger.getConsole().println(e);
+            debuggerTab.getConsole().println(e);
             reportError("Error while generating the test template text file:\n"+e.toString());
         }
     }
@@ -620,7 +620,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
             return false;
 
         String classPath = DebuggerEngine.getClassPath(outputFileDir);
-        IDE.debugVerbose(debugger.getConsole(), getClass(), "Launch with path: "+classPath);
+        IDE.debugVerbose(debuggerTab.getConsole(), getClass(), "Launch with path: "+classPath);
 
         try {
             String classNameToRun = remoteParserClassName;
@@ -629,8 +629,8 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
                 classNameToRun = testTemplateClass;
             }
             remoteParserProcess = Runtime.getRuntime().exec(new String[] { "java", "-classpath", classPath, classNameToRun});
-            new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher", debugger.getOutputPanel()).start();
-            new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher", debugger.getOutputPanel()).start();
+            new StreamWatcher(remoteParserProcess.getErrorStream(), "Launcher", debuggerTab.getOutputPanel()).start();
+            new StreamWatcher(remoteParserProcess.getInputStream(), "Launcher", debuggerTab.getOutputPanel()).start();
         } catch (IOException e) {
             reportError("Cannot launch the remote parser:\n"+e.toString()+"\nIt is possible that some errors prevented the parser from launching. Check the output panel of the debugger and any other output console in your system to see if an error has been reported from the parser and try again.");
             return false;
@@ -655,11 +655,11 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
     }
 
     public synchronized void streamWatcherDidReceiveString(String string) {
-        debugger.getConsole().print(string, Console.LEVEL_NORMAL);
+        debuggerTab.getConsole().print(string, Console.LEVEL_NORMAL);
     }
 
     public synchronized void streamWatcherException(Exception e) {
-        debugger.getConsole().println(e);
+        debuggerTab.getConsole().println(e);
     }
 
     protected static class ErrorReporter {
