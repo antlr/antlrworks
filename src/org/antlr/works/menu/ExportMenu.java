@@ -74,7 +74,7 @@ public class ExportMenu {
 
         try {
             FileWriter writer = new FileWriter(file);
-            writer.write(window.getActionDebugger().getEventsAsString());
+            writer.write(window.getDebugMenu().getEventsAsString());
             writer.close();
         } catch (IOException e) {
             XJAlert.display(window.getJavaContainer(), "Error", "Cannot save text file: "+file+"\nError: "+e);

@@ -20,7 +20,10 @@ import org.antlr.works.find.FindAndReplaceDelegate;
 import org.antlr.works.find.Usages;
 import org.antlr.works.grammar.GrammarAutoIndent;
 import org.antlr.works.grammar.decisiondfa.DecisionDFAEngine;
-import org.antlr.works.grammar.element.*;
+import org.antlr.works.grammar.element.ElementImport;
+import org.antlr.works.grammar.element.ElementReference;
+import org.antlr.works.grammar.element.ElementRule;
+import org.antlr.works.grammar.element.Jumpable;
 import org.antlr.works.grammar.engine.GrammarEngine;
 import org.antlr.works.grammar.engine.GrammarEngineDelegate;
 import org.antlr.works.grammar.engine.GrammarEngineImpl;
@@ -38,7 +41,6 @@ import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
 import org.antlr.xjlib.appkit.menu.XJMenu;
 import org.antlr.xjlib.appkit.menu.XJMenuItem;
 import org.antlr.xjlib.appkit.menu.XJMenuItemCheck;
-import org.antlr.xjlib.appkit.swing.XJTree;
 import org.antlr.xjlib.appkit.text.XJURLLabel;
 import org.antlr.xjlib.appkit.undo.XJUndo;
 import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
@@ -54,8 +56,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.print.PrinterException;
@@ -101,66 +101,65 @@ public class GrammarWindow
         FindMenuDelegate,
         XJNotificationObserver {
 
-    /* GrammarWindowTab */
+    /* Tabs */
 
     private static final int CLOSING_INDEX_LIMIT = 4;
     private final Map<Integer, GrammarWindowTab> indexToEditorTab = new HashMap<Integer, GrammarWindowTab>();
     private final List<GrammarWindowTab> tabs = new ArrayList<GrammarWindowTab>();
 
-    public SyntaxDiagramTab syntaxDiagramTab;
-    public InterpreterTab interpreterTab;
-    public DebuggerTab debuggerTab;
-    public ConsoleTab consoleTab;
+    public final SyntaxDiagramTab syntaxDiagramTab;
+    public final InterpreterTab interpreterTab;
+    private final DebuggerTab debuggerTab;
+    public final ConsoleTab consoleTab;
 
     /* Components of the window */
 
-    public GrammarWindowMenu menu;
-    public GrammarWindowToolbar toolbar;
+    private final GrammarWindowMenu menu;
+    private final GrammarWindowToolbar toolbar;
 
+    private final GrammarEngine grammarEngine;
+    public final EditorRules editorRules;
+
+    private final FindAndReplace findAndReplace;
+    public final DecisionDFAEngine decisionDFAEngine;
+
+    private final GoToRule goToRule;
+    public final GoToHistory goToHistory;
+
+    private ConsoleStatus consoleStatus;
+    private GrammarMemoryStatus memoryStatus;
     public AutoCompletionMenu autoCompletionMenu;
-    public GrammarEngine grammarEngine;
-    public EditorRules editorRules;
 
-    public FindAndReplace findAndReplace;
-    public DecisionDFAEngine decisionDFAEngine;
+    /* TextEditor Managers */
 
-    public GoToRule goToRule;
-    public GoToHistory goToHistory;
-
-    public ConsoleStatus consoleStatus;
-    public GrammarMemoryStatus memoryStatus;
-
-    /* Managers */
-
-    public EditorGutterColumnManager gutterColumnManager;
-    public EditorFoldingManager foldingManager;
-    public EditorUnderlyingManager underlyingManager;
-    public EditorAnalysisManager analysisManager;
+    private EditorGutterColumnManager gutterColumnManager;
+    private EditorFoldingManager foldingManager;
+    private EditorUnderlyingManager underlyingManager;
+    private EditorAnalysisManager analysisManager;
 
     /* Editors */
 
-    public EditorIdeas editorIdeas;
-    public EditorTips editorTips;
-    public EditorInspector editorInspector;
-    public EditorPersistence editorPersistence;
-    public EditorATEEditorKit editorKit;
+    public final EditorIdeas editorIdeas;
+    public final EditorTips editorTips;
+    public final EditorInspector editorInspector;
+    private final EditorPersistence editorPersistence;
+    private EditorATEEditorKit editorKit;
     public ATEPanel textEditor;
 
     /* Swing */
-
-    private XJTree rulesTree;
 
     private MouseListener ml;
     private ChangeListener cl;
 
     private JSplitPane horizontalSplit;
     private JTabbedPane bottomTab;
-
     private Box statusBar;
 
     private JLabel infoLabel;
     private JLabel cursorLabel;
     private JLabel writableLabel;
+
+    private XJDialogProgress progress;
 
     /* Other */
 
@@ -172,45 +171,68 @@ public class GrammarWindow
 
     private AfterParseOperations afterParserOp;
 
-    /* Progress */
-    private XJDialogProgress progress;
-
     public GrammarWindow() {
+        createTextEditor();
+        createStatusBar();
+        resetAutoCompletion();
+        
+        syntaxDiagramTab = new SyntaxDiagramTab(this);
+        interpreterTab = new InterpreterTab(this);
         debuggerTab = new DebuggerTab(new GrammarDebuggerDelegate(this));
+        consoleTab = new ConsoleTab(this);
+        consoleTab.makeCurrent();
+
         menu = new GrammarWindowMenu(this);
-        toolbar = new GrammarWindowToolbar(this);
+        toolbar = new GrammarWindowToolbar(this);        
+        afterParserOp = new AfterParseOperations();
+        grammarEngine = new GrammarEngineImpl(this);
+        decisionDFAEngine = new DecisionDFAEngine(this);
+        goToRule = new GoToRule(this, this, getTextPane());
+        goToHistory = new GoToHistory();
+        findAndReplace = new FindAndReplace(this);
+                                                 
+        editorIdeas = new EditorIdeas(this);
+        editorTips = new EditorTips(this);
+        editorInspector = new EditorInspector(grammarEngine, decisionDFAEngine, this);
+        editorPersistence = new EditorPersistence(this);
+        editorRules = new EditorRules(this);
+
+        textEditor.setParserEngine(grammarEngine.getSyntaxEngine());
+        editorRules.setKeyBindings(textEditor.getKeyBindings());
     }
 
     @Override
     public void awake() {
         super.awake();
         
-        menu.awake();
-
         debuggerTab.awake();
-        toolbar.awake();
+        interpreterTab.awake();
 
-        create();
-        
+        menu.awake();
+        toolbar.awake();
+        editorIdeas.awake();
+        editorTips.awake();
+
+        assemble();
+        applyPrefs();        
+    }
+
+    public void assemble() {
         bottomTab = new JTabbedPane();
         bottomTab.setTabPlacement(JTabbedPane.BOTTOM);
 
         bottomTab.addTab("Syntax Diagram", syntaxDiagramTab.getTabComponent());
         bottomTab.addTab("Interpreter", interpreterTab.getTabComponent());
         bottomTab.addTab("Console", consoleTab.getTabComponent());
-        bottomTab.addTab("DebuggerTab", debuggerTab.getTabComponent());
+        bottomTab.addTab("Debugger", debuggerTab.getTabComponent());
 
         bottomTab.addMouseListener(ml = new BottomTabbedPaneMouseListener());
         bottomTab.addChangeListener(cl = new BottomTabbedPaneChangeListener());
 
-        assemble();
-    }
-
-    public void assemble() {
-        JSplitPane verticalSplit = new JSplitPane();
+        final JSplitPane verticalSplit = new JSplitPane();
         verticalSplit.setBorder(null);
         verticalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        verticalSplit.setLeftComponent(rulesTree);
+        verticalSplit.setLeftComponent(editorRules.getComponent());
         verticalSplit.setRightComponent(textEditor);
         verticalSplit.setContinuousLayout(true);
         verticalSplit.setOneTouchExpandable(true);
@@ -225,32 +247,138 @@ public class GrammarWindow
         horizontalSplit.setOneTouchExpandable(true);
         horizontalSplit.setResizeWeight(0.7);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        final JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.addComponentListener(new MainPanelComponentListener());
         mainPanel.setBorder(null);
         mainPanel.add(toolbar.getToolbar(), BorderLayout.NORTH);
         mainPanel.add(horizontalSplit, BorderLayout.CENTER);
+        mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         XJNotificationCenter.defaultCenter().addObserver(this, AWPrefsDialog.NOTIF_PREFS_APPLIED);
         XJNotificationCenter.defaultCenter().addObserver(this, DebuggerTab.NOTIF_DEBUG_STARTED);
         XJNotificationCenter.defaultCenter().addObserver(this, DebuggerTab.NOTIF_DEBUG_STOPPED);
 
-        setContentPanel(mainPanel);
-    }
+        registerUndo(this, getTextPane());
 
-    public void setContentPanel(JPanel panel) {
-        getContentPane().add(panel);
+        getContentPane().add(mainPanel);
         pack();
     }
 
-    public void notificationFire(Object source, String name) {
-        if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
-            notificationPrefsChanged();
-        } else if(name.equals(DebuggerTab.NOTIF_DEBUG_STARTED)) {
-            notificationDebuggerStarted();
-        } else if(name.equals(DebuggerTab.NOTIF_DEBUG_STOPPED)) {
-            //notificationDebuggerStopped();
+    private void createTextEditor() {
+        textEditor = new ATEPanel(this);
+        textEditor.setEditorKit(editorKit = new EditorATEEditorKit(this));
+        textEditor.setSyntaxColoring(true);
+        textEditor.setDelegate(this);
+
+        gutterColumnManager = new EditorGutterColumnManager(this);
+        textEditor.setGutterColumnManager(gutterColumnManager);
+
+        foldingManager = new EditorFoldingManager(this);
+        textEditor.setFoldingManager(foldingManager);
+
+        underlyingManager = new EditorUnderlyingManager(this);
+        textEditor.setUnderlyingManager(underlyingManager);
+
+        analysisManager = new EditorAnalysisManager(this);
+        textEditor.setAnalysisManager(analysisManager);
+    }
+
+    private void createStatusBar() {
+        infoLabel = new JLabel();
+        cursorLabel = new JLabel();
+        writableLabel = new JLabel();
+        consoleStatus = new ConsoleStatus();
+        memoryStatus = new GrammarMemoryStatus();
+
+        statusBar = new GrammarStatusBar();
+        statusBar.setPreferredSize(new Dimension(0, 30));
+
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(infoLabel);
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(createSeparator());
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(cursorLabel);
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(createSeparator());
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(writableLabel);
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(createSeparator());
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(consoleStatus.getPanel());
+        statusBar.add(Box.createHorizontalStrut(5));
+        statusBar.add(createSeparator());
+        statusBar.add(Box.createHorizontalGlue());
+        statusBar.add(memoryStatus);
+    }
+
+    private void resetAutoCompletion() {
+        if(autoCompletionMenu != null) {
+            autoCompletionMenu.close();
         }
+        autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), this);
+    }
+
+    private static JComponent createSeparator() {
+        JSeparator s = new JSeparator(SwingConstants.VERTICAL);
+        Dimension d = s.getMaximumSize();
+        d.width = 2;
+        s.setMaximumSize(d);
+        return s;
+    }
+
+    @Override
+    public boolean close(boolean force) {
+        if(!super.close(force)) return false;
+
+        XJNotificationCenter.defaultCenter().removeObserver(this);
+
+        goToRule.close();
+
+        autoCompletionMenu.close();
+
+        decisionDFAEngine.close();
+        interpreterTab.close();
+
+        consoleTab.close();
+        editorIdeas.close();
+        editorTips.close();
+        editorInspector.close();
+
+        editorPersistence.close();
+        grammarEngine.close();
+
+        editorRules.close();
+        syntaxDiagramTab.close();
+
+        afterParserOp.stop();
+        afterParserOp = null;
+
+        gutterColumnManager.close();
+        foldingManager.close();
+        underlyingManager.close();
+        analysisManager.close();
+
+        textEditor.close();
+        editorKit.close();
+
+        consoleStatus = null;
+        memoryStatus.close();
+        memoryStatus = null;
+
+        menu.close();
+
+        debuggerTab.close();
+        toolbar.close();
+
+        bottomTab.removeMouseListener(ml);
+        bottomTab.removeChangeListener(cl);
+
+        ml = null;
+        cl = null;
+
+        return true;
     }
 
     @Override
@@ -293,7 +421,6 @@ public class GrammarWindow
 
     @Override
     public void becomingVisibleForTheFirstTime() {
-        super.becomingVisibleForTheFirstTime();
         componentDidAwake();
         debuggerTab.componentShouldLayout(getSize());
     }
@@ -318,77 +445,27 @@ public class GrammarWindow
         this.menu.handleMenuSelected(menu);
     }
 
-    @Override
-    public boolean close(boolean force) {
-        XJNotificationCenter.defaultCenter().removeObserver(this);
-
-        goToRule.close();
-
-        autoCompletionMenu.close();
-
-        decisionDFAEngine.close();
-        interpreterTab.close();
-
-        consoleTab.close();
-        editorIdeas.close();
-        editorTips.close();
-        editorInspector.close();
-
-        editorPersistence.close();
-        grammarEngine.close();
-
-        editorRules.close();
-        syntaxDiagramTab.close();
-
-        afterParserOp.stop();
-        afterParserOp = null;
-
-        gutterColumnManager.close();
-        foldingManager.close();
-        underlyingManager.close();
-        analysisManager.close();
-
-        textEditor.close();
-        editorKit.close();
-
-        consoleStatus = null;
-        memoryStatus.close();
-        memoryStatus = null;
-
-        rulesTree.close();
-        rulesTree = null;
-
-        menu.close();
-
-        debuggerTab.close();
-        toolbar.close();
-
-        bottomTab.removeMouseListener(ml);
-        bottomTab.removeChangeListener(cl);
-
-        ml = null;
-        cl = null;
-
-        return super.close(force);
+    public SyntaxDiagramTab getSyntaxDiagramTab() {
+        return syntaxDiagramTab;
     }
 
-    public void selectTab(Component c) {
-        if(bottomTab.getSelectedComponent() != c) {
-            bottomTab.setSelectedComponent(c);
-            refreshMainMenuBar();
-        }
-        makeBottomTabVisible();
+    public InterpreterTab getInterpreterTab() {
+        return interpreterTab;
+    }
+
+    public ConsoleTab getConsoleTab() {
+        return consoleTab;
     }
 
     public GrammarWindowTab getSelectedTab() {
         int index = bottomTab.getSelectedIndex();
         switch(index) {
             case 0:
-                return getComponentSD();
+                return getSyntaxDiagramTab();
             case 1:
-                return getComponentInterpreter();
+                return getInterpreterTab();
             case 2:
-                return getComponentConsole();
+                return getConsoleTab();
             case 3:
                 return debuggerTab;
             default:
@@ -416,7 +493,15 @@ public class GrammarWindow
         selectTab(tab.getTabComponent());
     }
 
-    public int getSimilarTab(GrammarWindowTab tab) {
+    private void selectTab(Component c) {
+        if(bottomTab.getSelectedComponent() != c) {
+            bottomTab.setSelectedComponent(c);
+            refreshMainMenuBar();
+        }
+        makeBottomTabVisible();
+    }
+
+    private int getSimilarTab(GrammarWindowTab tab) {
         for (int i = 0; i < tabs.size(); i++) {
             GrammarWindowTab t = tabs.get(i);
             if(t.getTabName().equals(tab.getTabName()))
@@ -439,175 +524,30 @@ public class GrammarWindow
         }
     }
 
-    public DebuggerTab getDebugger() {
+    public boolean documentWillSave() {
+        AWPrefs.setLastSavedDocument(getFilePath());
+        if(!isFileWritable()) {
+            XJAlert.display(getJavaContainer(), "Cannot Save", "This file cannot be saved. Check the file permission on the disk and try again.");
+            return false;
+        }
+        return true;
+    }
+
+    public DebuggerTab getDebuggerTab() {
         return debuggerTab;
     }
 
-    public DebugMenu getActionDebugger() {
-        return menu.getActionDebugger();
+    public DebugMenu getDebugMenu() {
+        return menu.getDebugMenu();
     }
 
     public ActionRefactor getActionRefactor() {
+        // todo rename this
         return menu.getActionRefactor();
     }
 
-    public GoToMenu getActionGoTo() {
-        return menu.getActionGoTo();
-    }
-
-    public void create() {
-        initCore();
-
-        createInterface();
-
-        initEditor();
-        initManagers();
-        editorRules = new EditorRules(this, rulesTree);
-        syntaxDiagramTab = new SyntaxDiagramTab(this);
-        initAutoCompletion();
-        initTools();
-
-        awakeInstances();
-
-        register();
-    }
-
-    public SyntaxDiagramTab getComponentSD() {
-        return syntaxDiagramTab;
-    }
-
-    public InterpreterTab getComponentInterpreter() {
-        return interpreterTab;
-    }
-
-    public ConsoleTab getComponentConsole() {
-        return consoleTab;
-    }
-
-    protected void initTools() {
-        goToRule = new GoToRule(this, this, getTextPane());
-        goToHistory = new GoToHistory();
-        findAndReplace = new FindAndReplace(this);
-    }
-
-    protected void initAutoCompletion() {
-        if(autoCompletionMenu != null) {
-            autoCompletionMenu.close();
-        }
-        autoCompletionMenu = new AutoCompletionMenu(this, getTextPane(), this);
-    }
-
-    protected void initCore() {
-        afterParserOp = new AfterParseOperations();
-
-        grammarEngine = new GrammarEngineImpl(this);
-
-        decisionDFAEngine = new DecisionDFAEngine(this);
-        interpreterTab = new InterpreterTab(this);
-    }
-
-    protected void initEditor() {
-        consoleTab = new ConsoleTab(this);
-        consoleTab.makeCurrent();
-
-        editorIdeas = new EditorIdeas(this);
-        editorTips = new EditorTips(this);
-        editorInspector = new EditorInspector(grammarEngine, decisionDFAEngine, this);
-
-        editorPersistence = new EditorPersistence(this);
-    }
-
-    protected void initManagers() {
-        gutterColumnManager = new EditorGutterColumnManager(this);
-        textEditor.setGutterColumnManager(gutterColumnManager);
-
-        foldingManager = new EditorFoldingManager(this);
-        textEditor.setFoldingManager(foldingManager);
-
-        underlyingManager = new EditorUnderlyingManager(this);
-        textEditor.setUnderlyingManager(underlyingManager);
-
-        analysisManager = new EditorAnalysisManager(this);
-        textEditor.setAnalysisManager(analysisManager);
-    }
-
-    protected void awakeInstances() {
-        editorIdeas.awake();
-        editorTips.awake();
-
-        interpreterTab.awake();
-
-        editorRules.setKeyBindings(textEditor.getKeyBindings());
-
-        textEditor.setParserEngine(grammarEngine.getSyntaxEngine());
-    }
-
-    protected void createTextEditor() {
-        textEditor = new ATEPanel(this);
-        textEditor.setEditorKit(editorKit = new EditorATEEditorKit(this));
-        textEditor.setSyntaxColoring(true);
-        textEditor.setDelegate(this);
-        applyPrefs();
-    }
-
-    protected void createRulesPane() {
-        rulesTree = new RuleTree();
-
-        rulesTree.setBorder(null);
-        // Apparently, if I don't set the tooltip here, nothing is displayed (weird)
-        rulesTree.setToolTipText("");
-        rulesTree.setDragEnabled(true);
-
-        JScrollPane rulesScrollPane = new JScrollPane(rulesTree);
-        rulesScrollPane.setWheelScrollingEnabled(true);
-    }
-
-    protected void createStatusBar() {
-        infoLabel = new JLabel();
-        cursorLabel = new JLabel();
-        writableLabel = new JLabel();
-        consoleStatus = new ConsoleStatus();
-        memoryStatus = new GrammarMemoryStatus();
-
-        statusBar = new GrammarStatusBar();
-        statusBar.setPreferredSize(new Dimension(0, 30));
-
-        statusBar.add(Box.createHorizontalStrut(5));
-        statusBar.add(infoLabel);
-        statusBar.add(Box.createHorizontalStrut(5));
-        statusBar.add(createSeparator());
-        statusBar.add(Box.createHorizontalStrut(5));
-        statusBar.add(cursorLabel);
-        statusBar.add(Box.createHorizontalStrut(5));
-        statusBar.add(createSeparator());
-        statusBar.add(Box.createHorizontalStrut(5));
-        statusBar.add(writableLabel);
-        statusBar.add(Box.createHorizontalStrut(5));
-        statusBar.add(createSeparator());
-        statusBar.add(Box.createHorizontalStrut(5));
-        statusBar.add(consoleStatus.getPanel());
-        statusBar.add(Box.createHorizontalStrut(5));
-        statusBar.add(createSeparator());
-        statusBar.add(Box.createHorizontalGlue());
-        statusBar.add(memoryStatus);
-    }
-
-    protected static JComponent createSeparator() {
-        JSeparator s = new JSeparator(SwingConstants.VERTICAL);
-        Dimension d = s.getMaximumSize();
-        d.width = 2;
-        s.setMaximumSize(d);
-        return s;
-    }
-
-    protected void createInterface() {
-        createTextEditor();
-        createRulesPane();
-        createStatusBar();
-    }
-
-    protected void register() {
-        registerUndo(this, getTextPane());
+    public GoToMenu getGoToMenu() {
+        return menu.getGoToMenu();
     }
 
     public void applyPrefs() {
@@ -618,17 +558,13 @@ public class GrammarWindow
         textEditor.refresh();
         // Need to re-create the auto-completion pop-up because the vstyle is in prefs
         // and requires new key bindings
-        initAutoCompletion();
+        resetAutoCompletion();
         applyFont();
     }
 
     public void applyFont() {
         getTextPane().setFont(new Font(AWPrefs.getEditorFont(), Font.PLAIN, AWPrefs.getEditorFontSize()));
         getTextPane().setTabSize(AWPrefs.getEditorTabSize());
-    }
-
-    public ConsoleTab getConsoleTab() {
-        return consoleTab;
     }
 
     public ATETextPane getTextPane() {
@@ -656,15 +592,11 @@ public class GrammarWindow
         }
     }
 
-    public void gotoToRule(String name) {
+    private void gotoToRule(String name) {
         int index = grammarEngine.getFirstDeclarationPosition(name);
         if(index != -1) {
             setCaretPosition(index);
         }
-    }
-
-    public void toggleAutoIndent() {
-        textEditor.setAutoIndent(!textEditor.autoIndent());
     }
 
     public void toggleSyntaxColoring() {
@@ -699,11 +631,6 @@ public class GrammarWindow
         return syntaxDiagramTab.isEnabled();
     }
 
-    public void toggleNFAOptimization() {
-        syntaxDiagramTab.toggleNFAOptimization();
-        updateVisualization(false);
-    }
-
     public void toggleIdeas() {
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_TOGGLE_IDEAS);
         editorIdeas.toggleEnabled();
@@ -711,19 +638,6 @@ public class GrammarWindow
 
     public boolean isIdeasEnabled() {
         return editorIdeas.isEnabled();
-    }
-
-    public void toggleTips() {
-        editorTips.toggleEnabled();
-    }
-
-    public void toggleUnderlying() {
-        textEditor.setUnderlying(!textEditor.isUnderlying());
-        textEditor.refresh();
-    }
-
-    public void toggleAnalysis() {
-        textEditor.toggleAnalysis();
     }
 
     public void changeUpdate() {
@@ -797,7 +711,7 @@ public class GrammarWindow
         }
     }
 
-    public void setText(String text) {
+    public synchronized void setText(String text) {
         textEditor.setText(text);
         grammarChanged();
         textEditor.parse();
@@ -858,7 +772,7 @@ public class GrammarWindow
     }
 
     public void createFile(String name) {
-        // todo to implement
+        // not used anymore
     }
 
     public void createRuleAtIndex(boolean lexer, String name, String content) {
@@ -883,10 +797,6 @@ public class GrammarWindow
 
     public void selectTextRange(int start, int end) {
         textEditor.selectTextRange(start, end);
-    }
-
-    public void deselectTextRange() {
-        textEditor.deselectTextRange();
     }
 
     public void setDebuggerLocation(int index) {
@@ -983,6 +893,14 @@ public class GrammarWindow
         return grammarEngine;
     }
 
+    public List<ElementRule> getRules() {
+        return editorRules.getRules();
+    }
+
+    public List<ElementRule> getSortedRules() {
+        return editorRules.getSortedRules();
+    }
+
     public List<ElementRule> getNaturalRules() {
         return editorRules.isSorted()? editorRules.getSortedRules(): editorRules.getRules();
     }
@@ -990,18 +908,9 @@ public class GrammarWindow
     public EditorRules getEditorRules() {
         return editorRules;
     }
-    
-    public List<ElementRule> getRules() {
-        return editorRules.getRules();
-    }
 
-    public void addTab(Usages usage) {
-
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public List<ElementRule> getSortedRules() {
-        return editorRules.getSortedRules();
+    public void addUsagesTab(Usages usage) {
+        addTab(usage);
     }
 
     public List<ATEToken> getTokens() {
@@ -1065,21 +974,11 @@ public class GrammarWindow
         return editorRules.getEnclosingRuleAtPosition(getCaretPosition());
     }
 
-    public ElementAction getCurrentAction() {
-        List<ElementAction> actions = grammarEngine.getActions();
-        int position = getCaretPosition();
-        for (ElementAction action : actions) {
-            if (action.containsIndex(position))
-                return action;
-        }
-        return null;
-    }
-
     public void setCaretPosition(int position) {
         setCaretPosition(position, AWPrefs.getSmoothScrolling());
     }
 
-    public void setCaretPosition(int position, boolean animate) {
+    private void setCaretPosition(int position, boolean animate) {
         ElementRule rule = editorRules.getEnclosingRuleAtPosition(position);
         if(rule != null && !rule.isExpanded()) {
             foldingManager.toggleFolding(rule);
@@ -1168,7 +1067,7 @@ public class GrammarWindow
         if(ref == null) {
             ref = getImportAtPosition(getCaretPosition());
         }
-        getActionGoTo().goToDeclaration(ref);
+        getGoToMenu().goToDeclaration(ref);
     }
 
     public void goToDeclaration(final Jumpable ref) {
@@ -1213,10 +1112,6 @@ public class GrammarWindow
 
     public void rulesCaretPositionDidChange() {
         updateVisualization(false);
-    }
-
-    public void rulesDidSelectRule() {
-        updateVisualization(true);
     }
 
     public void rulesDidChange() {
@@ -1317,14 +1212,27 @@ public class GrammarWindow
         return highlightedReference;
     }
 
+    public void notificationFire(Object source, String name) {
+        if(name.equals(AWPrefsDialog.NOTIF_PREFS_APPLIED)) {
+            notificationPrefsChanged();
+        } else if(name.equals(DebuggerTab.NOTIF_DEBUG_STARTED)) {
+            notificationDebuggerStarted();
+        } else if(name.equals(DebuggerTab.NOTIF_DEBUG_STOPPED)) {
+            notificationDebuggerStopped();
+        }
+    }
 
-    public void notificationPrefsChanged() {
+    private void notificationPrefsChanged() {
         applyPrefs();
     }
 
-    public void notificationDebuggerStarted() {
+    private void notificationDebuggerStarted() {
         getMainMenuBar().refresh();
         editorIdeas.hide();
+    }
+
+    private void notificationDebuggerStopped() {
+        // nothing to do
     }
 
     public void setEditable(boolean flag) {
@@ -1372,10 +1280,6 @@ public class GrammarWindow
         // window, if a component is hidden, the ideas have to be also hidden otherwise
         // they are floating above the new visible component which is weird.
         editorIdeas.hide();
-    }
-
-    public void componentIsSelected() {
-        getTextPane().requestFocusInWindow();
     }
 
     public void componentDocumentContentChanged() {
@@ -1480,7 +1384,7 @@ public class GrammarWindow
             editorIdeas.display(point);
         }
         if(highlightedReference != null) {
-            getActionGoTo().goToDeclaration(highlightedReference);
+            getGoToMenu().goToDeclaration(highlightedReference);
             highlightedReference = null;
         }
     }
@@ -1552,15 +1456,6 @@ public class GrammarWindow
         interpreterTab.setRules(getNaturalRules());
     }
 
-    public boolean componentDocumentWillSave() {
-        AWPrefs.setLastSavedDocument(getFilePath());
-        if(!isFileWritable()) {
-            XJAlert.display(getJavaContainer(), "Cannot Save", "This file cannot be saved. Check the file permission on the disk and try again.");
-            return false;
-        }
-        return true;
-    }
-
     public void print() {
         try {
             textEditor.print();
@@ -1630,6 +1525,10 @@ public class GrammarWindow
         selectTab(consoleTab.getContainer());
     }
 
+    public void selectDebuggerTab() {
+        selectTab(debuggerTab.getContainer());
+    }
+
     /** This class is used to perform after parsing operations in another
      * thread than the main event thread.
      */
@@ -1644,31 +1543,10 @@ public class GrammarWindow
         }
     }
 
-    protected static class RuleTree extends XJTree {
-
-        @Override
-        public String getToolTipText(MouseEvent e) {
-            TreePath path = getPathForLocation(e.getX(), e.getY());
-            if(path == null)
-                return "";
-
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-            EditorRules.RuleTreeUserObject n = (EditorRules.RuleTreeUserObject) node.getUserObject();
-            if(n == null)
-                return "";
-
-            ElementRule r = n.rule;
-            if(r == null || !r.hasErrors())
-                return "";
-            else
-                return r.getErrorMessageHTML();
-        }
-    }
-
     protected class ConsoleStatus {
 
-        public Box box;
-        public XJURLLabel label;
+        public final Box box;
+        public final XJURLLabel label;
         public boolean visible;
         public int currentDisplayedLevel;
 
@@ -1756,13 +1634,13 @@ public class GrammarWindow
         }
     }
 
-    public class BottomTabbedPaneChangeListener implements ChangeListener {
+    private class BottomTabbedPaneChangeListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             refreshMainMenuBar();
         }
     }
 
-    protected class MainPanelComponentListener extends ComponentAdapter {
+    private class MainPanelComponentListener extends ComponentAdapter {
 
         @Override
         public void componentHidden(ComponentEvent e) {

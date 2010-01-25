@@ -130,7 +130,7 @@ public class GrammarWindowMenu implements XJMenuItemDelegate {
 
     private FindMenu actionFind;
     private org.antlr.works.menu.GrammarMenu actionGrammar;
-    private GoToMenu actionGoTo;
+    private GoToMenu goToMenu;
     private GenerateMenu actionGenerate;
     private DebugMenu debugMenu;
     private ExportMenu actionExport;
@@ -147,7 +147,7 @@ public class GrammarWindowMenu implements XJMenuItemDelegate {
 
         actionFind = new FindMenu(window);
         actionGrammar = new org.antlr.works.menu.GrammarMenu(window);
-        actionGoTo = new GoToMenu(window);
+        goToMenu = new GoToMenu(window);
         actionGenerate = new GenerateMenu(window);
         debugMenu = new DebugMenu(window);
         actionExport = new ExportMenu(window);
@@ -237,11 +237,11 @@ public class GrammarWindowMenu implements XJMenuItemDelegate {
         String language = null;
         String menuItemName;
 
-        if (window.getDebugger() != null) {
-            if (window.getDebugger().getDelegate().getDocument() != null)
-                grammarName = window.getDebugger().getDelegate().getDocument().getDocumentName();
-            if (window.getDebugger().getDelegate().getGrammarEngine() != null)
-                language = window.getDebugger().getDelegate().getGrammarEngine().getGrammarLanguage();
+        if (window.getDebuggerTab() != null) {
+            if (window.getDebuggerTab().getDelegate().getDocument() != null)
+                grammarName = window.getDebuggerTab().getDelegate().getDocument().getDocumentName();
+            if (window.getDebuggerTab().getDelegate().getGrammarEngine() != null)
+                language = window.getDebuggerTab().getDelegate().getGrammarEngine().getGrammarLanguage();
         }
 
         if (grammarName != null && !"".equals(grammarName))
@@ -708,35 +708,35 @@ public class GrammarWindowMenu implements XJMenuItemDelegate {
     public void handleMenuGoTo(int itemTag) {
         switch(itemTag) {
             case MI_GOTO_RULE:
-                actionGoTo.goToRule();
+                goToMenu.goToRule();
                 break;
 
             case MI_GOTO_DECLARATION:
-                actionGoTo.goToDeclaration();
+                goToMenu.goToDeclaration();
                 break;
 
             case MI_GOTO_LINE:
-                actionGoTo.goToLine();
+                goToMenu.goToLine();
                 break;
 
             case MI_GOTO_CHARACTER:
-                actionGoTo.goToCharacter();
+                goToMenu.goToCharacter();
                 break;
 
             case MI_GOTO_BACK:
-                actionGoTo.goToBackward();
+                goToMenu.goToBackward();
                 break;
 
             case MI_GOTO_FORWARD:
-                actionGoTo.goToForward();
+                goToMenu.goToForward();
                 break;
 
             case MI_PREV_BREAKPOINT:
-                actionGoTo.goToBreakpoint(-1);
+                goToMenu.goToBreakpoint(-1);
                 break;
 
             case MI_NEXT_BREAKPOINT:
-                actionGoTo.goToBreakpoint(1);
+                goToMenu.goToBreakpoint(1);
                 break;
         }
     }
@@ -837,11 +837,11 @@ public class GrammarWindowMenu implements XJMenuItemDelegate {
         return actionRefactor;
     }
 
-    public DebugMenu getActionDebugger() {
+    public DebugMenu getDebugMenu() {
         return debugMenu;
     }
 
-    public GoToMenu getActionGoTo() {
-        return actionGoTo;
+    public GoToMenu getGoToMenu() {
+        return goToMenu;
     }
 }

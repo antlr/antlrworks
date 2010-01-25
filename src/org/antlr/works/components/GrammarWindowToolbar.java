@@ -92,7 +92,7 @@ public class GrammarWindowToolbar implements XJNotificationObserver {
         } else if(name.equals(DebuggerTab.NOTIF_DEBUG_STOPPED)) {
             find.setEnabled(true);
             debug.setEnabled(true);
-            debugAgain.setEnabled(window.getDebugger().canDebugAgain());
+            debugAgain.setEnabled(window.getDebuggerTab().canDebugAgain());
         }
     }
 
@@ -172,13 +172,13 @@ public class GrammarWindowToolbar implements XJNotificationObserver {
 
         debug.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                window.getActionDebugger().debug();
+                window.getDebugMenu().debug();
             }
         });
 
         debugAgain.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                window.getActionDebugger().debugAgain();
+                window.getDebugMenu().debugAgain();
             }
         });
 

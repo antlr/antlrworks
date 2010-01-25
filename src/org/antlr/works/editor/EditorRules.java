@@ -82,10 +82,18 @@ public class EditorRules implements XJTreeDelegate {
 
     private TreeSelectionListener tsl;
     private MouseListener ml;
+    private JScrollPane rulesScrollPane;
 
-    public EditorRules(GrammarWindow window, XJTree rulesTree) {
+    public EditorRules(GrammarWindow window) {
         this.window = window;
-        this.rulesTree = rulesTree;
+
+        rulesTree = new RuleTree();
+        rulesTree.setBorder(null);
+        // Apparently, if I don't set the tooltip here, nothing is displayed (weird)
+        rulesTree.setToolTipText("");
+        rulesTree.setDragEnabled(true);
+        rulesScrollPane = new JScrollPane(rulesTree);
+        rulesScrollPane.setWheelScrollingEnabled(true);
 
         rulesTree.setDelegate(this);
         rulesTree.setEnableDragAndDrop();
@@ -108,11 +116,16 @@ public class EditorRules implements XJTreeDelegate {
 
     public void close() {
         window = null;
+        rulesTree.close();
         rulesTree.removeMouseListener(ml);
         rulesTree.removeTreeSelectionListener(tsl);
         rulesTree.setCellRenderer(null);
         rulesTree.setDelegate(null);
         rulesTree = null;
+    }
+
+    public JScrollPane getComponent() {
+        return rulesScrollPane;
     }
 
     public void setKeyBindings(ATEKeyBindings keyBindings) {
@@ -829,4 +842,24 @@ public class EditorRules implements XJTreeDelegate {
         }
     }
 
+    public static class RuleTree extends XJTree {
+
+        @Override
+        public String getToolTipText(MouseEvent e) {
+            TreePath path = getPathForLocation(e.getX(), e.getY());
+            if(path == null)
+                return "";
+
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+            RuleTreeUserObject n = (RuleTreeUserObject) node.getUserObject();
+            if(n == null)
+                return "";
+
+            ElementRule r = n.rule;
+            if(r == null || !r.hasErrors())
+                return "";
+            else
+                return r.getErrorMessageHTML();
+        }
+    }
 }

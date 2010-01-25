@@ -497,7 +497,7 @@ public class STWindow extends XJWindow
         return ((ATEStringTemplateSyntaxParser)getTextEditor().getParserEngine().getParser()).templateRules;
     }
 
-    public void addTab(Usages usage) {
+    public void addUsagesTab(Usages usage) {
         // really used?
     }
 

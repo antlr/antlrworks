@@ -61,7 +61,7 @@ public class GrammarDocument extends XJDocument {
     public boolean save(boolean saveAs) {
         // Make sure the document can be saved before calling the super class method to do
         // the actual job
-        if(getWindow().componentDocumentWillSave()) {
+        if(getWindow().documentWillSave()) {
             if(documentPath != null && !saveAs && AWPrefs.getBackupFileEnabled()) {
                 // Create the backup file if needed
                 File backup = new File(documentPath+"~");

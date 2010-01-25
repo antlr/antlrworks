@@ -47,7 +47,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 public class GrammarDebuggerDelegate implements DebuggerDelegate {
-    private GrammarWindow window;
+
+    private final GrammarWindow window;
 
     public GrammarDebuggerDelegate(GrammarWindow window) {
         this.window = window;
@@ -62,7 +63,7 @@ public class GrammarDebuggerDelegate implements DebuggerDelegate {
     }
 
     public void debuggerStarted() {
-        window.selectTab(window.debuggerTab.getTabComponent());
+        window.selectDebuggerTab();
 
         ((ConsoleTab)getConsole()).makeCurrent();
 

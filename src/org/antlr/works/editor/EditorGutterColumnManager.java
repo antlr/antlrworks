@@ -43,8 +43,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public class EditorGutterColumnManager extends ATEGutterColumnManager {
 
-    private GrammarWindow window;
-    private Map<Integer,ATEGutterItem> breakpoints = new HashMap<Integer,ATEGutterItem>();
+    private final GrammarWindow window;
+    private final Map<Integer,ATEGutterItem> breakpoints = new HashMap<Integer,ATEGutterItem>();
 
     private static final String RULES = "rules";
     private static final String BREAKPOINTS = "breakpoints";
@@ -104,12 +104,6 @@ public class EditorGutterColumnManager extends ATEGutterColumnManager {
             }
             return sortedItems;
         }
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        window = null;
     }
 
     public Set<Integer> getBreakpoints() {

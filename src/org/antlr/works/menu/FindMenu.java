@@ -71,7 +71,7 @@ public class FindMenu {
             return;
 
         Usages usage = new Usages(delegate, token);
-        delegate.addTab(usage);
+        delegate.addUsagesTab(usage);
 
         for (ATEToken ateToken : delegate.getTokens()) {
             if (ateToken.getAttribute().equals(token.getAttribute())) {

@@ -53,43 +53,43 @@ public class DebugMenu {
     }
 
     public void run() {
-        window.getDebugger().launchLocalDebugger(DebuggerTab.OPTION_RUN);
+        window.getDebuggerTab().launchLocalDebugger(DebuggerTab.OPTION_RUN);
     }
 
     public void debug() {
-        window.getDebugger().launchLocalDebugger(DebuggerTab.OPTION_NONE);
+        window.getDebuggerTab().launchLocalDebugger(DebuggerTab.OPTION_NONE);
     }
 
     public void debugAgain() {
-        window.getDebugger().launchLocalDebugger(DebuggerTab.OPTION_AGAIN);
+        window.getDebuggerTab().launchLocalDebugger(DebuggerTab.OPTION_AGAIN);
     }
 
     public void debugRemote() {
-        window.getDebugger().launchRemoteDebugger();
+        window.getDebuggerTab().launchRemoteDebugger();
     }
 
     public void toggleInputTokens() {
-        window.getDebugger().toggleInputTokensBox();
+        window.getDebuggerTab().toggleInputTokensBox();
         StatisticsAW.shared().recordEvent(StatisticsAW.EVENT_DEBUGGER_TOGGLE_INPUT_TOKENS);
     }
 
     public void showEditTestRig() {
-        window.getDebugger().showEditTestRig();
+        window.getDebuggerTab().showEditTestRig();
     }
 
     public boolean isInputTokenVisible() {
-        return window.getDebugger().isInputTokenVisible();
+        return window.getDebuggerTab().isInputTokenVisible();
     }
 
     public boolean isRunning() {
-        return window.getDebugger().isRunning();
+        return window.getDebuggerTab().isRunning();
     }
 
     public boolean canDebugAgain() {
-        return window.getDebugger().canDebugAgain();
+        return window.getDebuggerTab().canDebugAgain();
     }
 
     public String getEventsAsString() {
-        return window.getDebugger().getEventsAsString();
+        return window.getDebuggerTab().getEventsAsString();
     }
 }

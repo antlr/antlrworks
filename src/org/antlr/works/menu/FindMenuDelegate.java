@@ -52,7 +52,7 @@ public interface FindMenuDelegate {
 
     EditorRules getEditorRules();
 
-    void addTab(Usages usage);
+    void addUsagesTab(Usages usage);
 
     void selectTextRange(int startIndex, int endIndex);
 
