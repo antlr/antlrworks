@@ -81,7 +81,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     protected TextPaneListener textPaneListener;
 
-    protected ATEParserDaemon parserDaemon;
+    public ATEParserDaemon parserDaemon;
 
     protected boolean syntaxColoring = false;
     protected int caretPosition;

@@ -14,13 +14,15 @@ public class ATEParserDaemon extends Thread {
    
     public void markDirty() { this.dirty = true; }
 
+    public boolean isDirty() { return dirty; }
+
     public void shutDown() { done = true; }
     
     @Override
     public void run() {
         while ( !done ) {
             while ( !dirty ) {
-                try { Thread.sleep(4000); }
+                try { Thread.sleep(1000); }
                 catch (InterruptedException ie) { throw new RuntimeException(ie); }
             }
             if ( engine!=null ) {

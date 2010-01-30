@@ -260,7 +260,7 @@ public class ATERenderingView extends PlainView {
         if(p0 == p1)
             return x;
 
-        if(!textEditor.isSyntaxColoring()) {
+        if(!textEditor.isSyntaxColoring() || textEditor.parserDaemon.isDirty() ) {
             return super.drawUnselectedText(g, x, y, p0, p1);
         }
 
