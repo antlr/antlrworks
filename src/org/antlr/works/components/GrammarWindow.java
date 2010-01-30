@@ -644,6 +644,7 @@ public class GrammarWindow
         ateChangeUpdate(-1, -1, false);
     }
 
+    /** Being group that can be undone as one unit */
     public void beginGroupChange(String name) {
         disableTextPane(false);
         beginTextPaneUndoGroup(name);
@@ -1155,6 +1156,7 @@ public class GrammarWindow
         if(windowFirstDisplay) {
             windowFirstDisplay = false;
             afterParseOperations();
+            // ask Swing to update a component on main thread; can't do from this thread (might not be main that is)
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     updateVisualization(true);
