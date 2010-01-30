@@ -1,7 +1,6 @@
 package org.antlr.works.ate.syntax.java;
 
-import org.antlr.works.ate.syntax.language.ATELanguageSyntaxLexer;
-import org.antlr.works.ate.syntax.misc.ATEToken;
+import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 
 /*
 
@@ -34,30 +33,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ATEJavaSyntaxLexer extends ATELanguageSyntaxLexer {
-
-    public ATEJavaSyntaxLexer() {
-    }
-
-    protected void tokenize() {
-        while(nextCharacter()) {
-            ATEToken token = null;
-
-            if(c0 == '\'')
-                token = matchSingleQuoteString();
-            else if(c0 == '\"')
-                token = matchDoubleQuoteString();
-            else if(c0 == '/' && c1 == '/')
-                token = matchSingleComment();
-            else if(c0 == '/' && c1 == '*')
-                token = matchComplexComment();
-            else if(isLetter())
-                token = matchID();
-            else if(!isWhitespace())
-                token = createNewToken(TOKEN_CHAR);
-
-            addToken(token);
-        }
-    }
-
+public class ATEJavaSyntaxLexer extends ATESyntaxLexer {
 }

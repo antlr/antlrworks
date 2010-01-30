@@ -31,8 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+/** Catch stdin, stdout. */
 public interface StreamWatcherDelegate {
-    public void streamWatcherDidStarted();
+    public void streamWatcherDidStart();
     public void streamWatcherDidReceiveString(String string);
     public void streamWatcherException(Exception e);
 }

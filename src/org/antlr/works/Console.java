@@ -246,11 +246,11 @@ public class Console {
             return getGrammarText();
         }
 
-        public void ateEngineWillParse() {
+        public void ateEngineBeforeParsing() {
             // ignored
         }
 
-        public void ateEngineDidParse() {
+        public void ateEngineAfterParsing() {
             // ignored
         }
     }

@@ -651,7 +651,7 @@ public class DBLocal implements Runnable, XJDialogProgressDelegate, StreamWatche
         return true;
     }
 
-    public void streamWatcherDidStarted() {
+    public void streamWatcherDidStart() {
     }
 
     public synchronized void streamWatcherDidReceiveString(String string) {

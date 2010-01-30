@@ -720,7 +720,7 @@ public class STWindow extends XJWindow
         }
 
         @Override
-        public void ateEngineDidParse() {
+        public void ateEngineAfterParsing() {
             stRulesPanel.refreshRules();
         }
 

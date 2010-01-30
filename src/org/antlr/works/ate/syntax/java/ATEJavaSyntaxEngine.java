@@ -1,6 +1,6 @@
 package org.antlr.works.ate.syntax.java;
 
-import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
+import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +35,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ATEJavaSyntaxEngine extends ATELanguageSyntaxEngine {
+public class ATEJavaSyntaxEngine extends ATESyntaxEngine {
 
     private static final Set<String> s;
 

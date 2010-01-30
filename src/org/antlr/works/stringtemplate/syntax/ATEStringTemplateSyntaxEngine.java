@@ -1,11 +1,10 @@
 package org.antlr.works.stringtemplate.syntax;
 
-import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
+import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
 import org.antlr.works.prefs.AWPrefs;
-import org.antlr.works.stringtemplate.element.ElementTemplateExpressionBlock;
 import org.antlr.works.stringtemplate.element.ElementTemplateArgumentBlock;
 import org.antlr.works.stringtemplate.element.ElementTemplateCommentScope;
 
@@ -14,7 +13,6 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.util.HashSet;
 import java.util.Set;
-import java.awt.*;
 
 /*
 
@@ -47,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class ATEStringTemplateSyntaxEngine extends ATELanguageSyntaxEngine {
+public class ATEStringTemplateSyntaxEngine extends ATESyntaxEngine {
 
     protected SimpleAttributeSet blockAttr;
     protected SimpleAttributeSet labelAttr;

@@ -62,11 +62,11 @@ public class ATEPanelAdapter implements ATEPanelDelegate {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void ateEngineWillParse() {
+    public void ateEngineBeforeParsing() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void ateEngineDidParse() {
+    public void ateEngineAfterParsing() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

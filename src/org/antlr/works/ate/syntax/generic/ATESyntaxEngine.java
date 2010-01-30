@@ -35,8 +35,12 @@ import org.antlr.works.ate.syntax.misc.ATELine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
 import javax.swing.text.AttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public abstract class ATESyntaxEngine {
 
@@ -46,10 +50,16 @@ public abstract class ATESyntaxEngine {
     protected ATESyntaxParser parser;
 
     protected List<ATEToken> tokens;
+    protected SimpleAttributeSet commentAttr;
+    protected SimpleAttributeSet stringAttr;
+    protected SimpleAttributeSet keywordAttr;
 
     public ATESyntaxEngine() {
         lexer = createLexer();
         parser = createParser();
+        stringAttr = new SimpleAttributeSet();
+        keywordAttr = new SimpleAttributeSet();
+        commentAttr = new SimpleAttributeSet();
     }
 
     public void close() {
@@ -84,12 +94,33 @@ public abstract class ATESyntaxEngine {
         return parser;
     }
 
-    public abstract ATESyntaxLexer createLexer();
-    public abstract ATESyntaxParser createParser();
-    public abstract AttributeSet getAttributeForToken(ATEToken token);
+    public ATESyntaxLexer createLexer() {
+        return new ATESyntaxLexer();
+    }
 
-    public void refreshColoring() {
+    public ATESyntaxParser createParser() {
+        // No parser need for generic computer language
+        return null;
+    }
 
+    public AttributeSet getAttributeForToken(ATEToken token) {
+        AttributeSet attr = null;
+        switch(token.type) {
+            case ATESyntaxLexer.TOKEN_COMPLEX_COMMENT:
+            case ATESyntaxLexer.TOKEN_SINGLE_COMMENT:
+                attr = commentAttr;
+                break;
+            case ATESyntaxLexer.TOKEN_DOUBLE_QUOTE_STRING:
+            case ATESyntaxLexer.TOKEN_SINGLE_QUOTE_STRING:
+                attr = stringAttr;
+                break;
+            default:
+                Set<String> s = getKeywords();
+                if(s != null && s.contains(token.getAttribute()))
+                    attr = keywordAttr;
+                break;
+        }
+        return attr;
     }
 
     public void processSyntax() {
@@ -104,9 +135,38 @@ public abstract class ATESyntaxEngine {
     }
 
     public void process() {
-        delegate.ateEngineWillParse();
+        delegate.ateEngineBeforeParsing();
         processSyntax();
-        delegate.ateEngineDidParse();
+        delegate.ateEngineAfterParsing();
     }
 
+    public void applyCommentAttribute(SimpleAttributeSet commentAttr) {
+        StyleConstants.setForeground(commentAttr, Color.lightGray);
+        StyleConstants.setItalic(commentAttr, true);
+    }
+
+    public void applyStringAttribute(SimpleAttributeSet stringAttr) {
+        StyleConstants.setForeground(stringAttr, new Color(0, 0.5f, 0));
+        StyleConstants.setBold(stringAttr, true);
+    }
+
+    public void applyKeywordAttribute(SimpleAttributeSet keywordAttr) {
+        StyleConstants.setForeground(keywordAttr, new Color(0, 0, 0.5f));
+        StyleConstants.setBold(keywordAttr, true);
+    }
+
+    public void refreshColoring() {
+        applyCommentAttribute(commentAttr);
+        applyStringAttribute(stringAttr);
+        applyKeywordAttribute(keywordAttr);
+    }
+
+    /** Returns the set of keyword for the language.
+     * Note: this method is called very often
+     *
+     * @return The set of keywords
+     */
+    public Set<String> getKeywords() {
+        return null;
+    }
 }

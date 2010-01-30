@@ -31,9 +31,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.grammar.syntax;
 
+import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.generic.ATESyntaxLexer;
 import org.antlr.works.ate.syntax.generic.ATESyntaxParser;
-import org.antlr.works.ate.syntax.language.ATELanguageSyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.element.ElementToken;
 import org.antlr.works.prefs.AWPrefs;
@@ -44,7 +44,7 @@ import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.util.Set;
 
-public class GrammarSyntaxEngine extends ATELanguageSyntaxEngine {
+public class GrammarSyntaxEngine extends ATESyntaxEngine {
 
     public static final Color COLOR_PARSER = new Color(0.42f, 0, 0.42f);
     public static final Color COLOR_LEXER = new Color(0, 0, 0.5f);

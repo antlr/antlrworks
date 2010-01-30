@@ -746,7 +746,17 @@ public class GrammarWindow
             if(!output.exists()) {
                 output.mkdirs();
             }
-            params = Utils.concat(params, new String[] { "-o", output.getAbsolutePath(), "-lib", getFileFolder() });
+            if ( getFileFolder() !=null ) {
+                params = Utils.concat(params,
+                                      new String[] {
+                                          "-o", output.getAbsolutePath(),
+                                          "-lib", getFileFolder() });
+            }
+            else {
+                params = Utils.concat(params,
+                                      new String[] {
+                                          "-o", output.getAbsolutePath()});
+            }
         }
         if(params.length > 0) {
             return new Tool(params);
@@ -1134,11 +1144,11 @@ public class GrammarWindow
 
     /** Parser delegate methods
      */
-    public void ateEngineWillParse() {
+    public void ateEngineBeforeParsing() {
         editorPersistence.store();
     }
 
-    public void ateEngineDidParse() {
+    public void ateEngineAfterParsing() {
         updateInformation();
         updateCursorInfo();
 

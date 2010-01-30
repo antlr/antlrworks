@@ -41,6 +41,6 @@ public interface ATEPanelDelegate {
     public void ateMouseExited();
     public void ateMouseMoved(MouseEvent event);
     public void ateInvokePopUp(Component component, int x, int y);
-    public void ateEngineWillParse();
-    public void ateEngineDidParse();
+    public void ateEngineBeforeParsing();
+    public void ateEngineAfterParsing();
 }

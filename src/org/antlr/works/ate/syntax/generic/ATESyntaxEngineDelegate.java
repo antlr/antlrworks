@@ -34,6 +34,6 @@ public interface ATESyntaxEngineDelegate {
 
     String getText();
 
-    void ateEngineWillParse();
-    void ateEngineDidParse();
+    void ateEngineBeforeParsing();
+    void ateEngineAfterParsing();
 }

@@ -58,7 +58,7 @@ public class StreamWatcher extends Thread {
     public void run() {
         try {
             if(delegate != null)
-                delegate.streamWatcherDidStarted();
+                delegate.streamWatcherDidStart();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;

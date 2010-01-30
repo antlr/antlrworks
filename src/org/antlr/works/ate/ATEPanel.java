@@ -375,7 +375,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     public void loadText(String text) {
         setEnableRecordChange(false);
         try {
-            ateEngineWillParse();
+            ateEngineBeforeParsing();
 
             textPane.setText(normalizeText(text));
             if(engine != null)
@@ -385,7 +385,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             textPane.moveCaretPosition(0);
             textPane.getCaret().setSelectionVisible(true);
 
-            ateEngineDidParse();
+            ateEngineAfterParsing();
         } catch(Exception e) {
             e.printStackTrace();
         } finally {
@@ -517,14 +517,14 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         return getTextPane().getText();
     }
 
-    public void ateEngineWillParse() {
+    public void ateEngineBeforeParsing() {
         if(delegate != null)
-            delegate.ateEngineWillParse();
+            delegate.ateEngineBeforeParsing();
     }
 
-    public void ateEngineDidParse() {
+    public void ateEngineAfterParsing() {
         if(delegate != null)
-            delegate.ateEngineDidParse();
+            delegate.ateEngineAfterParsing();
     }
 
     public void ateAutoIndent(int offset, int length) {

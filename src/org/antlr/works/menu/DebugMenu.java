@@ -3,6 +3,8 @@ package org.antlr.works.menu;
 import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.stats.StatisticsAW;
+import org.antlr.works.utils.Console;
+import org.antlr.works.utils.StreamWatcher;
 
 /*
 
@@ -53,7 +55,15 @@ public class DebugMenu {
     }
 
     public void run() {
-        window.getDebuggerTab().launchLocalDebugger(DebuggerTab.OPTION_RUN);
+        //window.getDebuggerTab().launchLocalDebugger(DebuggerTab.OPTION_RUN);
+//        Process p = Runtime.getRuntime().exec(args);
+//        setProcess(p);
+//        esw = new StreamWatcher(p.getErrorStream(), "ANTLR[error]", delegate);
+//        esw.start();
+//        new StreamWatcher(p.getInputStream(), "ANTLR[stdout]", delegate).start();
+//        result = p.waitFor();
+        window.getConsoleTab().print("TODO: run and send output to this console", Console.LEVEL_NORMAL);
+
     }
 
     public void debug() {
