@@ -517,7 +517,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     /** Request a reparse */
     public void parse() {
-        parserDaemon.setDirty();
+        parserDaemon.markDirty();
     }
 
     public String getText() {
@@ -627,6 +627,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
             }
         }
 
+        /** Key press comes here */
         public void insertUpdate(DocumentEvent e) {
             changeUpdate(e.getOffset(), e.getLength(), true);
         }

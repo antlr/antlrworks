@@ -462,11 +462,13 @@ public class ATERenderingView extends PlainView {
             this.modelPos = modelPos;
         }
 
-        public int renderTextPortion(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute)
-                throws BadLocationException
+        public int renderTextPortion(Graphics g, int x, int y, int start, int end,
+                                     int max, Document doc, AttributeSet attribute)
+            throws BadLocationException
         {
-            if(g == null)
-                return 0;
+            if(g == null) return 0;
+
+            //System.err.println("renderTextPortion: x,y="+x+","+y+" start/end="+start+"/"+end);
 
             int length = end - start;
             if(start + length > max)

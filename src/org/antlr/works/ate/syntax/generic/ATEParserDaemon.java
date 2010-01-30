@@ -12,7 +12,7 @@ public class ATEParserDaemon extends Thread {
         this.engine = engine;
     }
    
-    public void setDirty() { this.dirty = true; }
+    public void markDirty() { this.dirty = true; }
 
     public void shutDown() { done = true; }
     
@@ -20,10 +20,13 @@ public class ATEParserDaemon extends Thread {
     public void run() {
         while ( !done ) {
             while ( !dirty ) {
-                try { Thread.sleep(1000); }
+                try { Thread.sleep(4000); }
                 catch (InterruptedException ie) { throw new RuntimeException(ie); }
             }
-            if ( engine!=null ) engine.process();
+            if ( engine!=null ) {
+                engine.process();
+                dirty = false;
+            }
         }
     }
 }
