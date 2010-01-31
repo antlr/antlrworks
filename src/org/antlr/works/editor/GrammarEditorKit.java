@@ -41,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorATEEditorKit extends StyledEditorKit
+public class GrammarEditorKit extends StyledEditorKit
         implements ViewFactory, ATERenderingViewDelegate {
 
     private GrammarWindow window;
@@ -56,7 +56,7 @@ public class EditorATEEditorKit extends StyledEditorKit
     private final HighlightedReferenceStartToken highlightedReferenceStartToken = new HighlightedReferenceStartToken();
     private final HighlightedReferenceToken highlightedReferenceToken = new HighlightedReferenceToken();
 
-    public EditorATEEditorKit(GrammarWindow window) {
+    public GrammarEditorKit(GrammarWindow window) {
         this.window = window;
     }
 

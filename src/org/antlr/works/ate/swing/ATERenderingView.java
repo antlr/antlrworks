@@ -365,9 +365,27 @@ public class ATERenderingView extends PlainView {
     }
 
     public interface TextOperation {
+        /**
+         * Renders a portion of text at the specified location (x,y) and characters
+         * range (start, end) using the specified attribute (attribute).
+         *
+         * @param g The graphic context
+         * @param x The x-coordinate where to start drawing the text
+         * @param y The y-coordinate where to start drawing the text
+         * @param start The starting index of the character
+         * @param end The ending index of the character
+         * @param max The maximum length of the text
+         * @param doc The document to display
+         * @param attribute The attributes to use
+         * @return The next x-coordinate
+         * @throws BadLocationException If the location is incorrect, this exception is thrown
+         */
         int renderTextPortion(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute) throws BadLocationException;
     }
 
+    /**
+     * Default class that knows how to render a portion of text
+     */
     public class DisplayOperation implements TextOperation {
 
         public int renderTextPortion(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute)
@@ -391,6 +409,12 @@ public class ATERenderingView extends PlainView {
         }
     }
 
+    /**
+     * Class that knows how to render a portion of text given
+     * an array of tokens fetched from a delegate object. The tokens
+     * are used to render the text with different attribute, given
+     * the token.
+     */
     public class DisplayDelegateOperation extends DisplayOperation {
 
         public int renderTextPortion(Graphics g, int x, int y, int start, int end, int max, Document doc, AttributeSet attribute) throws BadLocationException {

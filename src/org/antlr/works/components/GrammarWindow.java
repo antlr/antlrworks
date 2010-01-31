@@ -143,7 +143,7 @@ public class GrammarWindow
     public final EditorTips editorTips;
     public final EditorInspector editorInspector;
     private final EditorPersistence editorPersistence;
-    private EditorATEEditorKit editorKit;
+    private GrammarEditorKit editorKit;
     public ATEPanel textEditor;
 
     /* Swing */
@@ -266,7 +266,7 @@ public class GrammarWindow
 
     private void createTextEditor() {
         textEditor = new ATEPanel(this);
-        textEditor.setEditorKit(editorKit = new EditorATEEditorKit(this));
+        textEditor.setEditorKit(editorKit = new GrammarEditorKit(this));
         textEditor.setSyntaxColoring(true);
         textEditor.setDelegate(this);
 
