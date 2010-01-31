@@ -6,7 +6,6 @@ import org.antlr.works.ate.folding.ATEFoldingManager;
 import org.antlr.works.ate.gutter.ATEGutterColumnManager;
 import org.antlr.works.ate.swing.ATEAutoIndentation;
 import org.antlr.works.ate.swing.ATEKeyBindings;
-import org.antlr.works.ate.syntax.generic.ATEParserDaemon;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngineDelegate;
 import org.antlr.works.ate.syntax.misc.ATELine;
@@ -81,8 +80,6 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
 
     protected TextPaneListener textPaneListener;
 
-    public ATEParserDaemon parserDaemon;
-
     protected boolean syntaxColoring = false;
     protected int caretPosition;
 
@@ -116,10 +113,6 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         this.engine = engine;
         this.engine.setDelegate(this);
         this.engine.refreshColoring();
-        // kill any old daemon and start new one with this new engine
-        if ( parserDaemon!=null ) parserDaemon.shutDown(); 
-        parserDaemon = new ATEParserDaemon(engine);
-        parserDaemon.start();
     }
 
     public ATESyntaxEngine getParserEngine() {
@@ -296,7 +289,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         // which needs an immediate effect (in this case, the gutter
         // has to be repainted)
         gutter.markDirty();
-        parse(); // request a reparse
+        parse();
     }
 
     public int getSelectionStart() {
@@ -515,9 +508,9 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         return gutter;
     }
 
-    /** Request a reparse */
     public void parse() {
-        parserDaemon.markDirty();
+        if(engine != null)
+            engine.process();
     }
 
     public String getText() {

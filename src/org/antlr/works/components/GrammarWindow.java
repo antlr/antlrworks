@@ -1156,7 +1156,6 @@ public class GrammarWindow
         if(windowFirstDisplay) {
             windowFirstDisplay = false;
             afterParseOperations();
-            // ask Swing to update a component on main thread; can't do from this thread (might not be main that is)
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     updateVisualization(true);
