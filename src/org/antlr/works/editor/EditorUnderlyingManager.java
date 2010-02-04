@@ -1,8 +1,11 @@
 package org.antlr.works.editor;
 
+import org.antlr.works.ate.ATETextPane;
 import org.antlr.works.ate.ATEUnderlyingManager;
 import org.antlr.works.components.GrammarWindow;
 
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.util.List;
 /*
@@ -61,8 +64,21 @@ public class EditorUnderlyingManager extends ATEUnderlyingManager {
         if(items == null)
             return;
 
+        ATETextPane pane = textEditor.getTextPane();
+        Rectangle visibleRect = pane.getVisibleRect();
         for(EditorInspectorItem item : items) {
-            drawUnderlineAtIndexes(g, item.color, item.startIndex, item.endIndex, item.shape);
+            try {
+                // only draw lines for visible errors
+                // TODO: redraw upon scroll
+                Rectangle r1 = pane.modelToView(item.startIndex);
+                Rectangle r2 = pane.modelToView(item.endIndex);
+                if ( r1.y>=visibleRect.y && r2.y<=(visibleRect.y+visibleRect.height) ) {
+                    drawUnderlineAtIndexes(g, item.color, item.startIndex, item.endIndex, item.shape);
+                }
+            }
+            catch (BadLocationException ble) {
+                System.err.println("eh? bad model location for ");
+            }
         }
     }
 
