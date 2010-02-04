@@ -60,6 +60,7 @@ public abstract class ATEUnderlyingManager {
     }
 
     public void paint(Graphics g) {
+        System.out.println("ATEUnder.paint: ready="+underlyingShape.isReady());
         if(!underlying)
             return;
 
@@ -173,6 +174,8 @@ public abstract class ATEUnderlyingManager {
         public boolean isReady() {
             return ready;
         }
+
+        public void setReady(boolean r) { ready = r; }
 
         public void reset() {
             shapes.clear();

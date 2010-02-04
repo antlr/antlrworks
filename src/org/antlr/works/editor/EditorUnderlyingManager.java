@@ -61,11 +61,13 @@ public class EditorUnderlyingManager extends ATEUnderlyingManager {
     }
 
     private void renderItems(Graphics g, List<EditorInspectorItem> items) {
+        System.out.println("render errors");
         if(items == null)
             return;
 
         ATETextPane pane = textEditor.getTextPane();
         Rectangle visibleRect = pane.getVisibleRect();
+        int n = 0;
         for(EditorInspectorItem item : items) {
             try {
                 // only draw lines for visible errors
@@ -73,6 +75,7 @@ public class EditorUnderlyingManager extends ATEUnderlyingManager {
                 Rectangle r1 = pane.modelToView(item.startIndex);
                 Rectangle r2 = pane.modelToView(item.endIndex);
                 if ( r1.y>=visibleRect.y && r2.y<=(visibleRect.y+visibleRect.height) ) {
+                    n++;
                     drawUnderlineAtIndexes(g, item.color, item.startIndex, item.endIndex, item.shape);
                 }
             }
@@ -80,6 +83,7 @@ public class EditorUnderlyingManager extends ATEUnderlyingManager {
                 System.err.println("eh? bad model location for ");
             }
         }
+        System.out.println("drew "+n+" red lines");
     }
 
 }
