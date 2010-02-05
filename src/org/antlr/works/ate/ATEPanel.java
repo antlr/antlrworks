@@ -181,7 +181,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     }
 
     public boolean isUnderlying() {
-        return underlyingManager.underlying;
+        return underlyingManager.isUnderlying();
     }
 
     public void setFoldingEnabled(boolean flag) {
@@ -486,22 +486,6 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         JScrollPane textScrollPane = new JScrollPane(textPane);
         textScrollPane.setWheelScrollingEnabled(true);
         textScrollPane.setRowHeaderView(gutter);
-        textScrollPane.getVerticalScrollBar().addAdjustmentListener(
-            new AdjustmentListener() {
-                public void adjustmentValueChanged(AdjustmentEvent ae){
-                    int value = ae.getValue();
-                    System.out.println("scroll value "+value);
-                    //underlyingManager.underlyingShape.setReady(false);
-                    //textPane.textEditor.textPaneDidPaint(textPane.getGraphics());
-                    underlyingManager.underlyingShape = new ATEUnderlyingManager.UnderlyingShape();
-
-                    //if ( value!=0 && textPane.getGraphics()!=null )
-                      //  textPane.paintComponent(textPane.getGraphics());
-                    //repaint();
-                }
-            }
-        );
-
 
         // Analysis column
         analysisColumn = new ATEAnalysisColumn(this);

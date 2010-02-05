@@ -221,11 +221,13 @@ public class GrammarPropertiesImpl implements GrammarProperties {
     }
 
     public List<ElementRule> getDuplicateRules() {
-        return duplicateRules;
+        // Return a new array to prevent concurrent modification
+        return new ArrayList<ElementRule>(duplicateRules);
     }
 
     public List<ElementReference> getUndefinedReferences() {
-        return undefinedReferences;
+        // Return a new array to prevent concurrent modification
+        return new ArrayList<ElementReference>(undefinedReferences);
     }
 
     public void reset() {

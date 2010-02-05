@@ -1,5 +1,7 @@
 package org.antlr.works.ate;
 
+import org.antlr.works.ate.syntax.misc.ATEThread;
+
 import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
@@ -38,16 +40,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 public abstract class ATEUnderlyingManager {
 
-    protected ATEPanel textEditor;
-    protected UnderlyingShape underlyingShape;
-    protected boolean underlying = true;
+    private ATEPanel textEditor;
+    private UnderlyingShape underlyingShape;
+    private boolean underlying = true;
+
+    // Thread using to redraw the underlying shapes
+    private final UnderlyingRenderingThread renderingThread;
+    private Rectangle oldVisibleRect;
 
     public ATEUnderlyingManager(ATEPanel textEditor) {
         this.textEditor = textEditor;
         underlyingShape = new UnderlyingShape();
+        renderingThread = new UnderlyingRenderingThread();
     }
 
     public void close() {
+        renderingThread.stop();
         textEditor = null;
     }
 
@@ -55,12 +63,15 @@ public abstract class ATEUnderlyingManager {
         underlying = flag;
     }
 
+    public boolean isUnderlying() {
+        return underlying;
+    }
+
     public void reset() {
         underlyingShape.reset();
     }
 
     public void paint(Graphics g) {
-        System.out.println("ATEUnder.paint: ready="+underlyingShape.isReady());
         if(!underlying)
             return;
 
@@ -68,17 +79,25 @@ public abstract class ATEUnderlyingManager {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-        if(underlyingShape.isReady()) {
-            underlyingShape.draw(g2d);
-            return;
+        renderingThread.g2d = g2d;
+
+        // Let's see if we need to render the shape
+        boolean needToRender = false;
+
+        // Check if visible rectangle has changed
+        final Rectangle vr = textEditor.getTextPane().getVisibleRect();
+        if(oldVisibleRect == null || !oldVisibleRect.equals(vr)) {
+            oldVisibleRect = vr;
+            needToRender = true;
         }
 
-        underlyingShape.begin();
-
-        render(g);
-
-        underlyingShape.end();
-        underlyingShape.draw(g2d);
+        if(underlyingShape.isReady() && !needToRender) {
+            // use cached shape
+            underlyingShape.draw(g2d);
+        } else {
+            // ask the thread to render the new shape
+            renderingThread.awakeThread();
+        }
     }
 
     public abstract void render(Graphics g);
@@ -91,6 +110,10 @@ public abstract class ATEUnderlyingManager {
         try {
             Rectangle r1 = textEditor.textPane.modelToView(start);
             Rectangle r2 = textEditor.textPane.modelToView(end);
+
+            Rectangle v = textEditor.getTextPane().getVisibleRect();
+
+            if(!v.intersects(r1) && !v.intersects(r2)) return;
 
             g.setColor(c);
 
@@ -175,12 +198,30 @@ public abstract class ATEUnderlyingManager {
             return ready;
         }
 
-        public void setReady(boolean r) { ready = r; }
-
         public void reset() {
             shapes.clear();
             ready = false;
         }
     }
 
+    private class UnderlyingRenderingThread extends ATEThread {
+
+        private Graphics2D g2d;
+
+        private UnderlyingRenderingThread() {
+            start();
+        }
+
+        @Override
+        protected void threadRun() throws Exception {
+            underlyingShape.begin();
+
+            render(g2d);
+
+            underlyingShape.end();
+
+            // Ask the pane to repaint itself (this will happen later in the event thread).
+            textEditor.getTextPane().repaint();
+        }
+    }
 }

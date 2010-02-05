@@ -126,12 +126,12 @@ public abstract class AbstractTest extends TestCase {
 
     private class MySyntaxEngineDelegate implements ATESyntaxEngineDelegate {
 
-        public void ateEngineDidParse() {
-
+        public void ateEngineBeforeParsing() {
+            //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public void ateEngineWillParse() {
-
+        public void ateEngineAfterParsing() {
+            //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public String getText() {

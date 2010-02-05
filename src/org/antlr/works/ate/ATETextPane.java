@@ -135,7 +135,6 @@ public class ATETextPane extends JTextPane
 
     @Override
     public void paintComponent(Graphics g) {
-        System.out.println("ATETextPane.paintComponent");
         super.paintComponent(g);
         paintDestinationCursor(g);
         textEditor.textPaneDidPaint(g);
