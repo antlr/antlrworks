@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.ate.ATEUnderlyingManager;
+import org.antlr.works.ate.ATEOverlayManager;
 import org.antlr.works.components.GrammarWindow;
 
 import java.awt.*;
@@ -36,11 +36,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public class EditorUnderlyingManager extends ATEUnderlyingManager {
+public class EditorOverlayManager extends ATEOverlayManager {
 
     protected GrammarWindow window;
 
-    public EditorUnderlyingManager(GrammarWindow window) {
+    public EditorOverlayManager(GrammarWindow window) {
         super(window.textEditor);
         this.window = window;
     }

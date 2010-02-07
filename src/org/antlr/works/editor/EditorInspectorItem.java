@@ -1,6 +1,6 @@
 package org.antlr.works.editor;
 
-import org.antlr.works.ate.ATEUnderlyingManager;
+import org.antlr.works.ate.ATEOverlayManager;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.editor.idea.IdeaAction;
 import org.antlr.works.editor.idea.IdeaActionDelegate;
@@ -55,7 +55,7 @@ public class EditorInspectorItem implements IdeaActionDelegate {
     public int startLineNumber;
     public Color color;
     public String description;
-    public int shape = ATEUnderlyingManager.SHAPE_SAW_TOOTH;
+    public int shape = ATEOverlayManager.SHAPE_SAW_TOOTH;
 
     public void setAttributes(ATEToken token, int startIndex, int endIndex, int startLineNumber, Color color, String description) {
         this.token = token;

@@ -4,7 +4,7 @@ import org.antlr.analysis.DFA;
 import org.antlr.analysis.NFAState;
 import org.antlr.tool.Grammar;
 import org.antlr.tool.Rule;
-import org.antlr.works.ate.ATEUnderlyingManager;
+import org.antlr.works.ate.ATEOverlayManager;
 import org.antlr.works.components.GrammarWindow;
 import org.antlr.works.grammar.antlr.ANTLRGrammarEngine;
 
@@ -177,7 +177,7 @@ public class DecisionDFAEngine {
                 if(p != null) {
                     DecisionDFAItem item = new DecisionDFAItem(window);
                     item.setAttributes(null, p.x+columnIndex-1, p.x+columnIndex, lineIndex-1, c, title+" ("+info+")");
-                    item.shape = ATEUnderlyingManager.SHAPE_RECT;
+                    item.shape = ATEOverlayManager.SHAPE_RECT;
                     items.add(item);                    
                 }
             }

@@ -72,7 +72,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
     protected ATEGutterColumnManager gutterColumnsManager;
 
     protected ATEFoldingManager foldingManager;
-    protected ATEUnderlyingManager underlyingManager;
+    protected ATEOverlayManager underlyingManager;
     protected ATEAnalysisManager analysisManager;
 
     protected ATESyntaxEngine engine;
@@ -131,7 +131,7 @@ public class ATEPanel extends JPanel implements XJSmoothScrolling.ScrollingDeleg
         this.foldingManager = manager;
     }
 
-    public void setUnderlyingManager(ATEUnderlyingManager manager) {
+    public void setUnderlyingManager(ATEOverlayManager manager) {
         this.underlyingManager = manager;
     }
 

@@ -134,7 +134,7 @@ public class GrammarWindow
 
     private EditorGutterColumnManager gutterColumnManager;
     private EditorFoldingManager foldingManager;
-    private EditorUnderlyingManager underlyingManager;
+    private EditorOverlayManager underlyingManager;
     private EditorAnalysisManager analysisManager;
 
     /* Editors */
@@ -276,7 +276,7 @@ public class GrammarWindow
         foldingManager = new EditorFoldingManager(this);
         textEditor.setFoldingManager(foldingManager);
 
-        underlyingManager = new EditorUnderlyingManager(this);
+        underlyingManager = new EditorOverlayManager(this);
         textEditor.setUnderlyingManager(underlyingManager);
 
         analysisManager = new EditorAnalysisManager(this);

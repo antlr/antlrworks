@@ -38,7 +38,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-public abstract class ATEUnderlyingManager {
+public abstract class ATEOverlayManager {
 
     private ATEPanel textEditor;
     private UnderlyingShape underlyingShape;
@@ -48,7 +48,7 @@ public abstract class ATEUnderlyingManager {
     private final UnderlyingRenderingThread renderingThread;
     private Rectangle oldVisibleRect;
 
-    public ATEUnderlyingManager(ATEPanel textEditor) {
+    public ATEOverlayManager(ATEPanel textEditor) {
         this.textEditor = textEditor;
         underlyingShape = new UnderlyingShape();
         renderingThread = new UnderlyingRenderingThread();
