@@ -67,7 +67,7 @@ import java.util.StringTokenizer;
 
 public class InterpreterTab extends GrammarWindowTab implements Runnable, AWTreePanelDelegate {
 
-    public static class FilteringTokenStream extends CommonTokenStream {
+    public static class FilteringTokenStream extends BufferedTokenStream {
         public FilteringTokenStream(TokenSource src) { super(src); }
         Set<Integer> hide = new HashSet<Integer>();
         protected void sync(int i) {
