@@ -1,3 +1,8 @@
+Version 1.4 - 05/09/2010
+
+Bug fix:
+    [AW-261] - Errors highlighting speed improvement
+
 Version 1.3.1 - 11/17/2009
 
 Bug fix:

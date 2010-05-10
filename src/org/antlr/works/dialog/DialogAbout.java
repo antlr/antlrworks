@@ -53,7 +53,7 @@ public class DialogAbout extends XJPanel {
         initComponents();
 
         appIconButton.setIcon(IconManager.shared().getIconApplication());
-        copyrightLabel.setText("Copyright (c) 2005-2009 Jean Bovet & Terence Parr");
+        copyrightLabel.setText("Copyright (c) 2005-2010 Jean Bovet & Terence Parr");
 
         versionLabel.setText("Version "+XJApplication.getAppVersionLong());
 
@@ -68,7 +68,7 @@ public class DialogAbout extends XJPanel {
 
         resetAcknowledge();
         addAcknowledge("Contributions by RP Talusan <rp_talusan@yahoo.com>");
-        addAcknowledge("ANTLR and StringTemplate are (c) 1989-2009 Terence Parr");
+        addAcknowledge("ANTLR and StringTemplate are (c) 1989-2010 Terence Parr");
         addAcknowledge("gUnit is (c) 2008-2009 Leon Jen-Yuan Su");
         addAcknowledge("Application & Mac OS X document icons are (c) Simon Bovet");
         addAcknowledge("Portion of the GUI uses JGoodies, (c) 2002-2004 Karsten Lentzsch");
