@@ -60,10 +60,24 @@ import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class InterpreterTab extends GrammarWindowTab implements Runnable, AWTreePanelDelegate {
+
+	public static class FilteringTokenStream extends CommonTokenStream {
+		public FilteringTokenStream(TokenSource src) { super(src); }
+		Set<Integer> hide = new HashSet<Integer>();
+		protected void sync(int i) {
+			super.sync(i);
+			if ( hide.contains(get(i).getType()) ) get(i).setChannel(Token.HIDDEN_CHANNEL);
+		}
+		public void setTokenTypeChannel(int ttype, int channel) {
+			hide.add(ttype);
+		}
+	}
 
     protected JPanel panel;
     protected JSplitPane splitPane;
@@ -292,12 +306,14 @@ public class InterpreterTab extends GrammarWindowTab implements Runnable, AWTree
         }
 
         Interpreter lexEngine = new CustomInterpreter(lexer, input);
-        CommonTokenStream tokens = new CommonTokenStream(lexEngine);
+
+
+        FilteringTokenStream tokens = new FilteringTokenStream(lexEngine);
 
         StringTokenizer tk = new StringTokenizer(tokensToIgnoreLabel.getText(), " ");
         while ( tk.hasMoreTokens() ) {
             String tokenName = tk.nextToken();
-            tokens.setTokenTypeChannel(lexer.getTokenType(tokenName), 99);
+            tokens.setTokenTypeChannel(lexer.getTokenType(tokenName), Token.HIDDEN_CHANNEL);
         }
 
         Interpreter parseEngine = new CustomInterpreter(parser, tokens);
