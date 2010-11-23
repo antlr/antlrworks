@@ -75,9 +75,10 @@ public class DBRecorderEventListener implements DebugEventListener {
         event(DBEventFactory.createExitSubRule(decisionNumber));
     }
 
-    public void enterDecision(int decisionNumber) {
-        event(DBEventFactory.createEnterDecision(decisionNumber));
-    }
+	public void enterDecision(int decisionNumber, boolean couldBacktrack) {
+		// couldBacktrack ignored for now
+		event(DBEventFactory.createEnterDecision(decisionNumber));
+	}
 
     public void exitDecision(int decisionNumber) {
         event(DBEventFactory.createExitDecision(decisionNumber));

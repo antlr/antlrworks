@@ -65,8 +65,11 @@ public class StatisticsManager {
             String rawLine = rawLines.get(index);
             if(type.equals(StatisticsReporter.TYPE_GRAMMAR))
                 return GrammarReport.toString(rawLine);
-            else if(type.equals(StatisticsReporter.TYPE_RUNTIME))
-                return Profiler.toString(rawLine);
+            else if(type.equals(StatisticsReporter.TYPE_RUNTIME)) {
+				// TJP removed 11/23/10 since we don't use anymore
+                //return Profiler.toString(rawLine);
+				return null;
+			}
             else
                 return StatisticsAW.shared().getReadableString();
         }
