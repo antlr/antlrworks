@@ -21,7 +21,7 @@
     <groupId>org.antlr</groupId>
     <artifactId>antlrworks</artifactId>
     <packaging>jar</packaging>
-    <version>1.3.3-SNAPSHOT</version>
+    <version>1.4.1-SNAPSHOT</version>
 
     <!--
 
@@ -341,13 +341,13 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr-runtime</artifactId>
-            <version>3.2</version>
+            <version>3.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr</artifactId>
-            <version>3.2</version>
+            <version>3.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

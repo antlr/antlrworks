@@ -7,16 +7,10 @@
     - main/build.properties
     - main/resources/properties/strings.properties
     - main/plugin/src/org/antlr/works/plugin/properties/strings.properties
-    - main/plugin/src/org/antlr/works/plugin/intellij/META-INF/plugin.xml
 - update history in:
     - main/History
-    - main/plugin/src/org/antlr/works/plugin/intellij/META-INF/plugin.xml
 - update online files (ask Terence for the path):
-    - doc/readme.txt
-    - doc/release.txt
-    - update.xml (used by AW to get notified when a new version is available)
-    - update_osx.xml (same but for AW running on Mac OS X)
-    - index.html (version, links)
+    - ReadMe.txt
 - build ANTLRWorks by running ant on the main build file:
     $ cd main
     $ ant
