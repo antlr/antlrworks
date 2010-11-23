@@ -22,9 +22,6 @@
     - antlrworks-1.x.zip
     - antlrworks-1.x-src.zip
     - antlrworks-1.x.jar
-- publish the plugin:
-    - the plugin is located in dist
-    - update the plugin on http://plugins.intellij.net/
 - branch the release in p4 (main -> release/1.x)    
 
 ***** Tools
@@ -41,9 +38,6 @@ Windows Prefs:
     - HKEY_CURRENT_USER\Software\JavaSoft\Prefs\org\antlr\works
 
 ***** Debugging
-
-To debug plugin in IntelliJ:
-    - set flag org.antlr.works.debug.plugin to true: -Dorg.antlr.works.debug.plugin=true
 
 Problem with syntax diagram path?
 Look into:
