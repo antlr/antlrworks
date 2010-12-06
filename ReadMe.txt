@@ -10,7 +10,9 @@
 - update history in:
     - main/History
 - update online files (ask Terence for the path):
-    - ReadMe.txt
+    - index.html
+    - update.xml and such files for new versions
+    - push release notes and such to doc dir
 - build ANTLRWorks by running ant on the main build file:
     $ cd main
     $ ant
