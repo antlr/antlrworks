@@ -1,3 +1,7 @@
+Version 1.4.2 - 12/13/2010
+
+TJP made workaround of bug in ANTLR 3.3's remote debug protocol.
+
 Version 1.4.1 - 11/30/2010
 
 TJP updated to compile with ANTLR 3.3.
