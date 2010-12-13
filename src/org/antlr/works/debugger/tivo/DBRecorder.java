@@ -81,7 +81,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
 				return;
 			}
 			if ( elements[0].equals("enterDecision") ) {
-				elements[2] = "false"; // protocol doesn't send in 3.3 antlr; pretend
+				line += "\tfalse"; // protocol doesn't send in 3.3 antlr; pretend
 			}
 			super.dispatch(line);
 		}
