@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.antlr.works.debugger.tivo;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.debug.DebugEventListener;
 import org.antlr.runtime.debug.RemoteDebugEventSocketListener;
 import org.antlr.works.debugger.DebuggerTab;
 import org.antlr.works.debugger.events.*;
@@ -60,6 +61,31 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
     protected DebuggerTab debuggerTab;
     protected int status = STATUS_STOPPED;
     protected boolean cancelled;
+
+	public static class FixBugRemoteDebugEventSocketListener
+		extends RemoteDebugEventSocketListener
+	{
+		public FixBugRemoteDebugEventSocketListener(DebugEventListener listener,
+													String machine,
+													int port)
+			throws java.io.IOException
+		{
+			super(listener, machine, port);
+
+		}
+
+		protected void dispatch(String line) {
+			//System.out.println("event: "+line);
+			String[] elements = getEventElements(line);
+			if ( elements==null || elements[0]==null ) {
+				return;
+			}
+			if ( elements[0].equals("enterDecision") ) {
+				elements[2] = "false"; // protocol doesn't send in 3.3 antlr; pretend
+			}
+			super.dispatch(line);
+		}
+	}
 
     protected String address;
     protected int port;
@@ -379,7 +405,7 @@ public class DBRecorder implements Runnable, XJDialogProgressDelegate {
         while((System.currentTimeMillis()-t) < timeout && !cancelled) {
             listener = null;
             try {
-                listener = new RemoteDebugEventSocketListener(eventListener,
+                listener = new FixBugRemoteDebugEventSocketListener(eventListener,
                         DBRecorder.this.address, DBRecorder.this.port);
             } catch (IOException e) {
                 listener = null;
