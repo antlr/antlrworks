@@ -162,33 +162,39 @@ public class XJUtils {
         os.close();
     }
 
-    public static String getStringFromFile(String file) throws IOException {
-        char [] data = null;
-        FileReader fr = null;
-        try {
-            File f = new File(file);
-            int max = (int)f.length();
-            data = new char[max];
-            fr = new FileReader(f);
-            int count = 0;
-            while(count < max) {
-                int actual = fr.read(data, count, max-count);
-                if(actual == -1) break;
-                count += actual;
-            }
-        } catch(IOException e) {
-            throw e;
-        } finally {
-            if ( fr!=null ) {
-                try {
-                    fr.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return new String(data);
-    }
+	public static String getStringFromFile(String file) throws IOException {
+		char [] data = null;
+		FileReader fr = null;
+		try {
+			File f = new File(file);
+			int max = (int)f.length(); // Will overshoot for multi-byte characters
+			char [] tmp = new char[max];
+			fr = new FileReader(f);
+			int count = 0;
+			while(count < max) {
+				int actual = fr.read(tmp, count, max-count);
+				if(actual == -1) break;
+				count += actual;
+			}
+			if (count == max) {
+				data = tmp;
+			} else {
+				data = new char[count];
+				System.arraycopy(tmp,0,data,0,count);
+			}
+		} catch(IOException e) {
+			throw e;
+		} finally {
+			if ( fr!=null ) {
+				try {
+					fr.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return new String(data);
+	}
 
     public static final String VERSION_EA = "ea";
     public static final String VERSION_BETA = "b";
