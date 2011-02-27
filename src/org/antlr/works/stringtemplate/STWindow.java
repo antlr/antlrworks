@@ -1,40 +1,22 @@
 package org.antlr.works.stringtemplate;
 
-import org.antlr.works.ate.ATEPanel;
-import org.antlr.works.ate.ATEPanelAdapter;
-import org.antlr.works.ate.ATETextPane;
-import org.antlr.works.ate.syntax.misc.ATELine;
-import org.antlr.works.ate.syntax.misc.ATEToken;
-import org.antlr.works.editor.EditorRules;
-import org.antlr.works.editor.GrammarWindowTab;
-import org.antlr.works.editor.completion.AutoCompletionMenu;
-import org.antlr.works.editor.completion.AutoCompletionMenuDelegate;
-import org.antlr.works.editor.navigation.GoToHistory;
-import org.antlr.works.editor.navigation.GoToRule;
-import org.antlr.works.editor.navigation.GoToRuleDelegate;
-import org.antlr.works.find.FindAndReplace;
-import org.antlr.works.find.FindAndReplaceDelegate;
-import org.antlr.works.find.Usages;
+import org.antlr.works.ate.*;
+import org.antlr.works.ate.syntax.misc.*;
+import org.antlr.works.editor.*;
+import org.antlr.works.editor.completion.*;
+import org.antlr.works.editor.navigation.*;
+import org.antlr.works.find.*;
 import org.antlr.works.grammar.element.Jumpable;
 import org.antlr.works.grammar.engine.GrammarEngine;
-import org.antlr.works.menu.ActionRefactor;
-import org.antlr.works.menu.FindMenuDelegate;
-import org.antlr.works.menu.GoToMenu;
-import org.antlr.works.menu.GoToMenuDelegate;
+import org.antlr.works.menu.*;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsAW;
-import org.antlr.works.stringtemplate.element.ElementTemplateReference;
-import org.antlr.works.stringtemplate.element.ElementTemplateRule;
+import org.antlr.works.stringtemplate.element.*;
 import org.antlr.works.stringtemplate.menu.ContextualStringTemplateMenuFactory;
-import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxEngine;
-import org.antlr.works.stringtemplate.syntax.ATEStringTemplateSyntaxParser;
+import org.antlr.works.stringtemplate.syntax.*;
 import org.antlr.xjlib.appkit.frame.XJWindow;
-import org.antlr.xjlib.appkit.menu.XJMainMenuBar;
-import org.antlr.xjlib.appkit.menu.XJMenu;
-import org.antlr.xjlib.appkit.menu.XJMenuItem;
-import org.antlr.xjlib.appkit.menu.XJMenuItemCheck;
-import org.antlr.xjlib.appkit.undo.XJUndo;
-import org.antlr.xjlib.appkit.undo.XJUndoDelegate;
+import org.antlr.xjlib.appkit.menu.*;
+import org.antlr.xjlib.appkit.undo.*;
 import org.antlr.xjlib.appkit.utils.XJAlert;
 import org.antlr.xjlib.foundation.XJUtils;
 
@@ -84,8 +66,6 @@ public class STWindow extends XJWindow
 
     private STWindowToolbar toolbar;
 
-    private JPanel toolbarPanel;
-
     private JPanel mainPanel;
 
     private final java.util.List<GrammarWindowTab> tabs = new ArrayList<GrammarWindowTab>();
@@ -113,13 +93,13 @@ public class STWindow extends XJWindow
         stringTemplateMenu = new STWindowMenu(this);
         toolbar = new STWindowToolbar(this);
 
-        toolbarPanel = new JPanel(new BorderLayout());
-        toolbarPanel.setBorder(null);
+//        toolbarPanel = new JPanel(new BorderLayout());
+//        toolbarPanel.setBorder(null);
 
         createTextEditor();
 
         stRulesPanel = new STRulePanel(this);
-        
+
         create();
         assemble();
         super.awake();
@@ -142,7 +122,8 @@ public class STWindow extends XJWindow
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(null);
-        mainPanel.add(toolbarPanel, BorderLayout.NORTH);
+		mainPanel.add(toolbar.getToolbar(), BorderLayout.NORTH);
+        //mainPanel.add(toolbarPanel, BorderLayout.NORTH);
         mainPanel.add(verticalSplit, BorderLayout.CENTER);
 
         setContentPanel(mainPanel);
@@ -218,9 +199,10 @@ public class STWindow extends XJWindow
         }
         return true;
     }
-    
+
     @Override
     public boolean close(boolean force) {
+		if(!super.close(force)) return false;
         goToRule.close();
 
         autoCompletionMenu.close();
@@ -231,7 +213,7 @@ public class STWindow extends XJWindow
 
         stringTemplateMenu.close();
         toolbar.close();
-        return super.close(force);
+		return true;
     }
 
 //    public void createFile(String name) {
@@ -737,5 +719,5 @@ public class STWindow extends XJWindow
                 m.show(component,  x, y);
         }
     }
-    
+
 }
