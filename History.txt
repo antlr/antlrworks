@@ -1,3 +1,7 @@
+February 27, 2011
+
+* Got toolbar back in ST window.
+
 Dec 15, 2010
 
 * Antlrworks adds null bytes to the end of any document containing Swedish
