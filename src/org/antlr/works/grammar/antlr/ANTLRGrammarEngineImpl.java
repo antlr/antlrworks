@@ -32,9 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.grammar.antlr;
 
-import antlr.RecognitionException;
 import antlr.TokenStreamException;
 import org.antlr.analysis.NFAState;
+import org.antlr.runtime.RecognitionException;
 import org.antlr.tool.*;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 import org.antlr.works.grammar.element.ElementGrammarName;

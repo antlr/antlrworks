@@ -1,3 +1,7 @@
+August 8, 2011.
+
+* Build with ANTLR 3.4 not 3.3
+
 February 27, 2011
 
 * Got toolbar back in ST window.
@@ -6,7 +10,7 @@ Dec 15, 2010
 
 * Antlrworks adds null bytes to the end of any document containing Swedish
   (and probably other accented) characters on open, rendering the grammar invalid.
-  Patch by Pop Qvarnstršm.
+  Patch by Pop Qvarnstrï¿½m.
 
 Version 1.4.2 - 12/13/2010
 
