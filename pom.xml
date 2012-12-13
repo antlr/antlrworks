@@ -7,6 +7,12 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <!--
 
         Standard elements for a maven project defines the way that antlrworks
@@ -21,18 +27,34 @@
     <groupId>org.antlr</groupId>
     <artifactId>antlrworks</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
 
     <!--
-
         Name of the porject as seen by IDEs and so on.
       -->
     <name>ANTLRWorks</name>
+    <description>ANTLRWorks 1</description>
 
     <!--
         Home URL of the project.
       -->
     <url>http://antlr.org</url>
+
+  <!--
+    Make sure that the build is not platform dependent (I.E show that
+    all the files in the source tree are in UTF-8 format.
+    -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java5.home>${env.JAVA5_HOME}</java5.home>
+        <java6.home>${env.JAVA6_HOME}</java6.home>
+        <bootclasspath.java5>${java5.home}/lib/rt.jar</bootclasspath.java5>
+        <bootclasspath.java6>${java6.home}/lib/rt.jar</bootclasspath.java6>
+        <bootclasspath.compile>${bootclasspath.java5}</bootclasspath.compile>
+        <bootclasspath.testCompile>${bootclasspath.java6}</bootclasspath.testCompile>
+        <antlr3.version>3.5-SNAPSHOT</antlr3.version>
+        <st4.version>4.0.7-SNAPSHOT</st4.version>
+    </properties>
 
     <!--
         Where you can view the license that this project is issued under.
@@ -46,256 +68,59 @@
     </licenses>
 
     <!--
-
         Where to go to browse the source code for this project.
       -->
     <scm>
-        <url>http://fisheye2.cenqua.com/browse/antlrworks</url>
-        <connection>http://fisheye2.cenqua.com/browse/antlrworks</connection>
+        <url>git://github.com/antlr/antlrworks.git</url>
+        <connection>scm:git:git://github.com/antlr/antlrworks.git</connection>
+        <developerConnection>scm:git:git@github.com:antlr/antlrworks.git</developerConnection>
     </scm>
 
-    <!--
-  
-      Definition of the ANTLR repositories. Note that you can only deploy
-      to the repositories via scp, and so the server must already know about
-      your public key. Only ANTLR developers are allowed to deploy to the
-      release and snapshot repositories, which are synced with the Maven central
-      repository in the case of the release repository and made available
-      to developers as a daily snapshot at http://antlr.org/antlr-snapshot
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/antlr/antlrworks/issues</url>
+    </issueManagement>
 
-    -->
-    <distributionManagement>
+    <dependencies>
 
-        <repository>
-            <id>antlr-repo</id>
-            <name>ANTLR Testing repository</name>
-            <url>scpexe://antlr.org/home/mavensync/antlr-repo</url>
-        </repository>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr-runtime</artifactId>
+            <version>${antlr3.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>${antlr3.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>forms</artifactId>
+            <version>1.2.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.apple</groupId>
+            <artifactId>AppleJavaExtensions</artifactId>
+            <version>1.4</version>
+            <scope>compile</scope>
+        </dependency>
 
-        <snapshotRepository>
-            <id>antlr-snapshot</id>
-            <name>ANTLR Testing Snapshot Repository</name>
-            <url>scpexe://antlr.org/home/mavensync/antlr-snapshot</url>
-        </snapshotRepository>
-
-    </distributionManagement>
-
-    <!--
-
-    Inform Maven of the ANTLR snapshot repository, which it will
-    need to consult to get the latest snapshot build of the runtime
-    and tool directories if it was not built and installed locally.
-    -->
-    <repositories>
-
-        <!--
-        This is the ANTLR repository.
-        -->
-        <repository>
-            <id>antlr-snapshot</id>
-            <name>ANTLR Testing Snapshot Repository</name>
-            <url>http://antlr.org/antlr-snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-
-    </repositories>
-
-    <!-- =============================================================================
-       =============================================================================
-
-      We select either a MAC or non-mac profile because Apple really wants you to
-      use the Aqua look and feel, but of course that jar isn't available outside
-      Apple MACS which basically breaks the portability of Java.
-
-    -->
-    <profiles>
-
-        <!--
-
-           What to do if this is NOT a macbuild, in which case we don't want to include
-           the MAC specific source code.
-
-           Perhaps there is a simpler way than using profiles and duplicating the
-           build section in the profile, but I could not spot how to do this obviously in Maven.
-           The only thing we change is the exclude stuff however, so it isn't particularly
-           complicated.
-
-        -->
-        <profile>
-            <id>notmac</id>
-            <activation>
-                <os>
-                    <family>!mac</family>
-                </os>
-            </activation>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <source>1.5</source>
-                            <target>1.5</target>
-                            <excludes>
-                                <exclude>**/MacOS/*</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-
-                    <!--
-
-                      Define how we build our uber-jar with all the dependencies when
-                      this is a build that isn't targetted at mac. In that case we can use
-                      the standard assembly target, which basically unpacks the depedent
-                      jars and puts them all back together, including the classes we build
-                      here, then makes a single jar, which is just what we want.
-                    -->
-
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <!--
-
-                              Specify that we want the resulting jar to be executable
-                              via java -jar, which we do by modifying the manifest
-                              of course.
-                            -->
-                            <archive>
-
-                                <manifest>
-                                    <mainClass>org.antlr.works.IDE</mainClass>
-                                </manifest>
-                            </archive>
-
-                        </configuration>
-
-                        <!--
-
-                          We don't want the standard jar at all and we don't want to
-                          have to specifically ask for the uber jar, so we attach the
-                          running of this plgin to the execution of the package life-cycle
-                          phase.
-                        -->
-                        <executions>
-                            <execution>
-                                <id>make-assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>attached</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-
-                    </plugin>
-
-                </plugins>
-            </build>
-
-        </profile>
-
-        <!--
-
-          What to do if this IS a mac build, in which case we do not exclude any
-          of the source code.
-
-
-          Somewhere in here, we need to add the CLASSPATH that gives us the MAC specifc
-          Java jars.
-        -->
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <source>1.5</source>
-                            <target>1.5</target>
-                        </configuration>
-                    </plugin>
-
-                    <!--
-
-                      Define how we build our uber-jar with all the dependencies when
-                      this is a build that isn't targetted at mac. In that case we can use
-                      the standard assembly target, which basically unpacks the depedent
-                      jars and puts them all back together, including the classes we build
-                      here, then makes a single jar, which is just what we want.
-                    -->
-
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <!--
-
-                              Specify that we want the resulting jar to be executable
-                              via java -jar, which we do by modifying the manifest
-                              of course.
-                            -->
-                            <archive>
-
-                                <manifest>
-                                    <mainClass>org.antlr.works.IDE</mainClass>
-                                </manifest>
-                            </archive>
-
-                        </configuration>
-
-                        <!--
-
-                          We don't want the standard jar at all and we don't want to
-                          have to specifically ask for the uber jar, so we attach the
-                          running of this plgin to the execution of the package life-cycle
-                          phase.
-                        -->
-                        <executions>
-                            <execution>
-                                <id>make-assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>attached</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-
-                    </plugin>
-
-                </plugins>
-            </build>
-
-        </profile>
-
-    </profiles>
+    </dependencies>
 
     <build>
-
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions>
 
         <defaultGoal>install</defaultGoal>
 
         <!--
-
             The root of the source code
         -->
         <sourceDirectory>src</sourceDirectory>
@@ -328,35 +153,155 @@
             </testResource>
         </testResources>
 
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <mainClass>org.antlr.works.IDE</mainClass>
+                        </manifest>
+                        <manifestSections>
+                            <manifestSection>
+                                <name>org/antlr/</name>
+                                <manifestEntries>
+                                    <Implementation-Title>ANTLR 3</Implementation-Title>
+                                    <Implementation-Version>${antlr3.version}</Implementation-Version>
+                                    <Implementation-Vendor-Id>org.antlr</Implementation-Vendor-Id>
+                                </manifestEntries>
+                            </manifestSection>
+                        </manifestSections>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <sourceDirectory>src</sourceDirectory>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <source>1.5</source>
+                            <target>1.5</target>
+                            <compilerArgument>-Xlint:-serial</compilerArgument>
+                            <compilerArguments>
+                                <bootclasspath>${bootclasspath.compile}</bootclasspath>
+                                <Xlint/>
+                            </compilerArguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <source>1.6</source>
+                            <target>1.6</target>
+                            <compilerArgument>-Xlint:-serial</compilerArgument>
+                            <compilerArguments>
+                                <bootclasspath>${bootclasspath.testCompile}</bootclasspath>
+                                <Xlint/>
+                            </compilerArguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <findbugsXmlOutput>true</findbugsXmlOutput>
+                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+                    <xmlOutput>true</xmlOutput>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <quiet>true</quiet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.0</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <minimizeJar>true</minimizeJar>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <createSourcesJar>true</createSourcesJar>
+                            <shadedClassifierName>complete</shadedClassifierName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
     </build>
 
-    <dependencies>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr-runtime</artifactId>
-            <version>3.3</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr</artifactId>
-            <version>3.3</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.jgoodies</groupId>
-            <artifactId>forms</artifactId>
-            <version>1.2.1</version>
-            <scope>compile</scope>
-        </dependency>
-
-
-    </dependencies>
 </project>
