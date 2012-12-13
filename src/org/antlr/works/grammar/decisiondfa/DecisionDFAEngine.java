@@ -171,7 +171,13 @@ public class DecisionDFAEngine {
                     info += "cyclic";
                 }
                 if(info.length() > 0) info += ", ";
-                info += dfa.getNumberOfStates()+" states";
+
+                if (dfa.getNumberOfStates() != 0) {
+                    info += dfa.getNumberOfStates()+" states";
+                }
+                else {
+                    info += "<=" + dfa.getMaxStateNumber() + " states";
+                }
 
                 Point p = window.textEditor.getLineTextPositionsAtLineIndex(lineIndex-1);
                 if(p != null) {
