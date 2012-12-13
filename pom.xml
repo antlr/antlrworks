@@ -296,6 +296,14 @@
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <createSourcesJar>true</createSourcesJar>
                             <shadedClassifierName>complete</shadedClassifierName>
+                            <filters>
+                                <filter>
+                                    <artifact>com.apple:AppleJavaExtensions</artifact>
+                                    <excludes>
+                                        <exclude>**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
