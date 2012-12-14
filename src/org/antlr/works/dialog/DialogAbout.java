@@ -38,6 +38,7 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.works.utils.IconManager;
 import org.antlr.xjlib.appkit.app.XJApplication;
 import org.antlr.xjlib.appkit.frame.XJPanel;
+import org.stringtemplate.v4.ST;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -53,17 +54,18 @@ public class DialogAbout extends XJPanel {
         initComponents();
 
         appIconButton.setIcon(IconManager.shared().getIconApplication());
-        copyrightLabel.setText("Copyright (c) 2005-2010 Jean Bovet & Terence Parr");
+        copyrightLabel.setText("Copyright (c) 2005-2012 Jean Bovet & Terence Parr");
 
         versionLabel.setText("Version "+XJApplication.getAppVersionLong());
 
         infoTable.setModel(tableModel);
         infoTable.getParent().setBackground(Color.white);
-        
+
         tableModel.addInfo("ANTLRWorks", XJApplication.getAppVersionShort());
-        tableModel.addInfo("ANTLR", new Tool().VERSION);
-        tableModel.addInfo("StringTemplate", StringTemplate.VERSION);
-        tableModel.addInfo("Java", System.getProperty("java.version")+" ("+System.getProperty("java.vendor")+")");
+		tableModel.addInfo("ANTLR", new Tool().VERSION);
+		tableModel.addInfo("StringTemplate v3", StringTemplate.VERSION);
+		tableModel.addInfo("StringTemplate v4", ST.VERSION);
+		tableModel.addInfo("Java", System.getProperty("java.version")+" ("+System.getProperty("java.vendor")+")");
         tableModel.fireTableDataChanged();
 
         resetAcknowledge();
