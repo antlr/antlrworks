@@ -27,7 +27,7 @@
     <groupId>org.antlr</groupId>
     <artifactId>antlrworks</artifactId>
     <packaging>jar</packaging>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5-rc-2</version>
 
     <!--
         Name of the porject as seen by IDEs and so on.
@@ -52,8 +52,8 @@
         <bootclasspath.java6>${java6.home}/lib/rt.jar</bootclasspath.java6>
         <bootclasspath.compile>${bootclasspath.java5}</bootclasspath.compile>
         <bootclasspath.testCompile>${bootclasspath.java6}</bootclasspath.testCompile>
-        <antlr3.version>3.5-SNAPSHOT</antlr3.version>
-        <st4.version>4.0.7-SNAPSHOT</st4.version>
+        <antlr3.version>3.5-rc-2</antlr3.version>
+        <st4.version>4.0.7-rc-2</st4.version>
     </properties>
 
     <!--
