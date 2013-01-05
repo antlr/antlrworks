@@ -117,6 +117,89 @@
 
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>sonatype-oss-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-compile</id>
+                                <configuration>
+                                    <compilerArguments>
+                                        <bootclasspath>${bootclasspath.compile}</bootclasspath>
+                                    </compilerArguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-testCompile</id>
+                                <configuration>
+                                    <compilerArguments>
+                                        <bootclasspath>${bootclasspath.testCompile}</bootclasspath>
+                                    </compilerArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>2.0</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <minimizeJar>true</minimizeJar>
+                                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                    <createSourcesJar>true</createSourcesJar>
+                                    <shadedClassifierName>complete</shadedClassifierName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>osxappbundle-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <configuration>
+                            <mainClass>org.antlr.works.IDE</mainClass>
+                            <javaApplicationStub>${basedir}/osx/ANTLRWorks.app/Contents/MacOS/JavaApplicationStub</javaApplicationStub>
+                            <dictionaryFile>${aw1.basedir}/osx/Info.plist</dictionaryFile>
+                            <iconFile>${basedir}/osx/ANTLRWorks.app/Contents/Resources/app.icns</iconFile>
+                            <jvmVersion>1.5+</jvmVersion>
+                            <additionalResources>
+                                <fileSet>
+                                    <directory>${basedir}/osx</directory>
+                                    <includes>
+                                        <include>ANTLRWorks.app/Contents/Resources/doc.icns</include>
+                                    </includes>
+                                </fileSet>
+                            </additionalResources>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>bundle</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
 
         <defaultGoal>install</defaultGoal>
@@ -197,7 +280,6 @@
                             <target>1.5</target>
                             <compilerArgument>-Xlint:-serial</compilerArgument>
                             <compilerArguments>
-                                <bootclasspath>${bootclasspath.compile}</bootclasspath>
                                 <Xlint/>
                             </compilerArguments>
                         </configuration>
@@ -209,7 +291,6 @@
                             <target>1.6</target>
                             <compilerArgument>-Xlint:-serial</compilerArgument>
                             <compilerArguments>
-                                <bootclasspath>${bootclasspath.testCompile}</bootclasspath>
                                 <Xlint/>
                             </compilerArguments>
                         </configuration>
@@ -237,99 +318,27 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <!-- override the version inherited from the parent -->
                 <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <!-- override the version inherited from the parent -->
                 <version>2.9</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <quiet>true</quiet>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <quiet>true</quiet>
+                </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
+                <!-- override the version inherited from the parent -->
                 <version>1.4</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.0</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <minimizeJar>true</minimizeJar>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <createSourcesJar>true</createSourcesJar>
-                            <shadedClassifierName>complete</shadedClassifierName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>osxappbundle-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
-                <configuration>
-                    <mainClass>org.antlr.works.IDE</mainClass>
-                    <javaApplicationStub>${basedir}/osx/ANTLRWorks.app/Contents/MacOS/JavaApplicationStub</javaApplicationStub>
-                    <dictionaryFile>${aw1.basedir}/osx/Info.plist</dictionaryFile>
-                    <iconFile>${basedir}/osx/ANTLRWorks.app/Contents/Resources/app.icns</iconFile>
-                    <jvmVersion>1.5+</jvmVersion>
-                    <additionalResources>
-                        <fileSet>
-                            <directory>${basedir}/osx</directory>
-                            <includes>
-                                <include>ANTLRWorks.app/Contents/Resources/doc.icns</include>
-                            </includes>
-                        </fileSet>
-                    </additionalResources>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
 
     </build>
