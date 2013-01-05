@@ -71,7 +71,7 @@
         Where to go to browse the source code for this project.
       -->
     <scm>
-        <url>git://github.com/antlr/antlrworks.git</url>
+        <url>https://github.com/antlr/antlrworks</url>
         <connection>scm:git:git://github.com/antlr/antlrworks.git</connection>
         <developerConnection>scm:git:git@github.com:antlr/antlrworks.git</developerConnection>
     </scm>
