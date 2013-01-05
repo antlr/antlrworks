@@ -54,6 +54,7 @@
         <bootclasspath.testCompile>${bootclasspath.java6}</bootclasspath.testCompile>
         <antlr3.version>3.5-rc-2</antlr3.version>
         <st4.version>4.0.7-rc-2</st4.version>
+        <aw1.basedir>${basedir}</aw1.basedir>
     </properties>
 
     <!--
@@ -297,6 +298,35 @@
                             <createSourcesJar>true</createSourcesJar>
                             <shadedClassifierName>complete</shadedClassifierName>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>osxappbundle-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <configuration>
+                    <mainClass>org.antlr.works.IDE</mainClass>
+                    <javaApplicationStub>${basedir}/osx/ANTLRWorks.app/Contents/MacOS/JavaApplicationStub</javaApplicationStub>
+                    <dictionaryFile>${aw1.basedir}/osx/Info.plist</dictionaryFile>
+                    <iconFile>${basedir}/osx/ANTLRWorks.app/Contents/Resources/app.icns</iconFile>
+                    <jvmVersion>1.5+</jvmVersion>
+                    <additionalResources>
+                        <fileSet>
+                            <directory>${basedir}/osx</directory>
+                            <includes>
+                                <include>ANTLRWorks.app/Contents/Resources/doc.icns</include>
+                            </includes>
+                        </fileSet>
+                    </additionalResources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

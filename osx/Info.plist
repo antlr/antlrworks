@@ -26,29 +26,29 @@
 	<key>CFBundleGetInfoString</key>
 	<string>(c) 2005-2008 Jean Bovet</string>
 	<key>CFBundleIconFile</key>
-	<string>app.icns</string>
+	<string>${iconFile}</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.antlr.works</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>ANTLRWorks</string>
+	<string>${bundleName}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>@VERSION@</string>
+	<string>${version}</string>
 	<key>CFBundleSignature</key>
 	<string>ATLW</string>
 	<key>CFBundleVersion</key>
-	<string>@VERSION@</string>
+	<string>${version}</string>
 	<key>Java</key>
 	<dict>
 		<key>ClassPath</key>
-		<string>$JAVAROOT/antlrworks.jar</string>
+		${classpath}
 		<key>JVMVersion</key>
 		<string>1.5+</string>
 		<key>MainClass</key>
-		<string>org.antlr.works.IDE</string>
+		<string>${mainClass}</string>
 	</dict>
 </dict>
 </plist>
