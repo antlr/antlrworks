@@ -111,7 +111,7 @@
             <groupId>com.apple</groupId>
             <artifactId>AppleJavaExtensions</artifactId>
             <version>1.4</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
@@ -296,14 +296,6 @@
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <createSourcesJar>true</createSourcesJar>
                             <shadedClassifierName>complete</shadedClassifierName>
-                            <filters>
-                                <filter>
-                                    <artifact>com.apple:AppleJavaExtensions</artifact>
-                                    <excludes>
-                                        <exclude>**</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                         </configuration>
                     </execution>
                 </executions>
