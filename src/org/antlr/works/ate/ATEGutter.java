@@ -266,6 +266,7 @@ public class ATEGutter extends JComponent {
             revalidate();
         }
 
+        ATEUtilities.prepareForText(g);
         paintGutter(g, r);
         paintFolding((Graphics2D)g, r);
         paintItems((Graphics2D)g, r);

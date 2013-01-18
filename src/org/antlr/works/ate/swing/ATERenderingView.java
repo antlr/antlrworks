@@ -2,6 +2,7 @@ package org.antlr.works.ate.swing;
 
 import org.antlr.works.ate.ATEPanel;
 import org.antlr.works.ate.ATETextPane;
+import org.antlr.works.ate.ATEUtilities;
 import org.antlr.works.ate.syntax.generic.ATESyntaxEngine;
 import org.antlr.works.ate.syntax.misc.ATEToken;
 
@@ -210,6 +211,12 @@ public class ATERenderingView extends PlainView {
             // What should we do? Currently nothing because it should not happen.
             return -1;
         }
+    }
+
+    @Override
+    public void paint(Graphics g, Shape a) {
+        ATEUtilities.prepareForText(g);
+        super.paint(g, a);
     }
 
     /**

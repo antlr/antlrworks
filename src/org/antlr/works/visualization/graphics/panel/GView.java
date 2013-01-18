@@ -31,6 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.antlr.works.visualization.graphics.panel;
 
+import org.antlr.works.ate.ATEUtilities;
 import org.antlr.works.visualization.graphics.GContext;
 import org.antlr.works.visualization.graphics.graph.GGraphAbstract;
 import org.antlr.works.visualization.graphics.graph.GGraphGroup;
@@ -313,6 +314,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        ATEUtilities.prepareForText(g);
         if(!canDraw()) {
             paintPlaceholder(g);
             return;
@@ -338,6 +340,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
                 // Create a new cache image.
                 cachedImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
                 Graphics2D gCache = (Graphics2D)cachedImage.getGraphics();
+                ATEUtilities.prepareForText(gCache);
                 gCache.setColor(Color.white);
                 gCache.fillRect(0, 0, width, height);
                 render(gCache);
@@ -345,6 +348,7 @@ public class GView extends JPanel implements XJMenuItemDelegate {
             } else if(cachedImageRerender) {
                 // Only render the cachedImage without re-creating it again
                 Graphics2D gCache = (Graphics2D)cachedImage.getGraphics();
+                ATEUtilities.prepareForText(gCache);
                 gCache.setColor(Color.white);
                 gCache.fillRect(0, 0, width, height);
                 render(gCache);

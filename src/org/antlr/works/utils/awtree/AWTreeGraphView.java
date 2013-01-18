@@ -2,6 +2,7 @@ package org.antlr.works.utils.awtree;
 
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.ParseTree;
+import org.antlr.works.ate.ATEUtilities;
 import org.antlr.xjlib.appkit.gview.GView;
 import org.antlr.xjlib.appkit.gview.base.Rect;
 import org.antlr.xjlib.appkit.gview.object.GElement;
@@ -14,6 +15,7 @@ import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+
 /*
 
 [The "BSD licence"]
@@ -212,6 +214,7 @@ public class AWTreeGraphView extends GView {
     public void paintComponent(Graphics g) {
         if(g2d != g) {
             g2d = (Graphics2D)g;
+            ATEUtilities.prepareForText(g2d);
             g2d.setFont(DEFAULT_FONT);
             fontMetrics = g2d.getFontMetrics();
         }
