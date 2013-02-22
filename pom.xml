@@ -162,6 +162,15 @@
                                     <shadedArtifactAttached>true</shadedArtifactAttached>
                                     <createSourcesJar>true</createSourcesJar>
                                     <shadedClassifierName>complete</shadedClassifierName>
+                                    <filters>
+                                        <filter>
+                                            <artifact>org.antlr:antlr</artifact>
+                                            <includes>
+                                                <!-- Make sure the minimizer doesn't exclude any files required for the dynamically loaded targets. -->
+                                                <include>**</include>
+                                            </includes>
+                                        </filter>
+                                    </filters>
                                 </configuration>
                             </execution>
                         </executions>
