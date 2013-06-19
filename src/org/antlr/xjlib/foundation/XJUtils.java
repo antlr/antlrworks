@@ -158,7 +158,7 @@ public class XJUtils {
 
     public static void writeStringToFile(String text, String file) throws IOException {
         OutputStream os = new FileOutputStream(file);
-        os.write(text.getBytes());
+        os.write(text.getBytes("UTF8"));
         os.close();
     }
 
