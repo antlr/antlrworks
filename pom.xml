@@ -170,6 +170,13 @@
                                                 <include>**</include>
                                             </includes>
                                         </filter>
+                                        <filter>
+                                            <artifact>org.antlr:antlr-runtime</artifact>
+                                            <includes>
+                                                <!-- Make sure the minimizer doesn't exclude any files required for the debug runtime. -->
+                                                <include>**</include>
+                                            </includes>
+                                        </filter>
                                     </filters>
                                 </configuration>
                             </execution>
