@@ -52,8 +52,6 @@
         <bootclasspath.java6>${java6.home}/lib/rt.jar</bootclasspath.java6>
         <bootclasspath.compile>${bootclasspath.java5}</bootclasspath.compile>
         <bootclasspath.testCompile>${bootclasspath.java6}</bootclasspath.testCompile>
-        <antlr3.version>3.5</antlr3.version>
-        <st4.version>4.0.7</st4.version>
         <aw1.basedir>${basedir}</aw1.basedir>
     </properties>
 
@@ -93,13 +91,19 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr-runtime</artifactId>
-            <version>${antlr3.version}</version>
+            <version>3.5.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr</artifactId>
-            <version>${antlr3.version}</version>
+            <version>3.5.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>stringtemplate</artifactId>
+            <version>3.2.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -129,17 +133,27 @@
                             <execution>
                                 <id>default-compile</id>
                                 <configuration>
-                                    <compilerArguments>
-                                        <bootclasspath>${bootclasspath.compile}</bootclasspath>
-                                    </compilerArguments>
+                                    <source>1.5</source>
+                                    <target>1.5</target>
+                                    <compilerArgs>
+                                        <arg>-Xlint</arg>
+                                        <arg>-Xlint:-serial</arg>
+                                        <arg>-bootclasspath</arg>
+                                        <arg>${bootclasspath.compile}</arg>
+                                    </compilerArgs>
                                 </configuration>
                             </execution>
                             <execution>
                                 <id>default-testCompile</id>
                                 <configuration>
-                                    <compilerArguments>
-                                        <bootclasspath>${bootclasspath.testCompile}</bootclasspath>
-                                    </compilerArguments>
+                                    <source>1.6</source>
+                                    <target>1.6</target>
+                                    <compilerArgs>
+                                        <arg>-Xlint</arg>
+                                        <arg>-Xlint:-serial</arg>
+                                        <arg>-bootclasspath</arg>
+                                        <arg>${bootclasspath.testCompile}</arg>
+                                    </compilerArgs>
                                 </configuration>
                             </execution>
                         </executions>
@@ -148,7 +162,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-shade-plugin</artifactId>
-                        <version>2.0</version>
+                        <version>2.1</version>
                         <inherited>false</inherited>
                         <executions>
                             <execution>
@@ -186,11 +200,11 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>osxappbundle-maven-plugin</artifactId>
-                        <version>1.0-alpha-2</version>
+                        <version>1.0-alpha-1</version>
                         <configuration>
                             <mainClass>org.antlr.works.IDE</mainClass>
                             <javaApplicationStub>${basedir}/osx/ANTLRWorks.app/Contents/MacOS/JavaApplicationStub</javaApplicationStub>
-                            <dictionaryFile>${aw1.basedir}/osx/Info.plist</dictionaryFile>
+                            <dictionaryFile>osx/Info.plist</dictionaryFile>
                             <iconFile>${basedir}/osx/ANTLRWorks.app/Contents/Resources/app.icns</iconFile>
                             <jvmVersion>1.5+</jvmVersion>
                             <additionalResources>
@@ -281,11 +295,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.1</version>
                 <configuration>
                     <sourceDirectory>src</sourceDirectory>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
+                    <compilerArgs>
+                        <arg>-Xlint</arg>
+                        <arg>-Xlint:-serial</arg>
+                    </compilerArgs>
                 </configuration>
 
                 <executions>
@@ -294,10 +312,6 @@
                         <configuration>
                             <source>1.5</source>
                             <target>1.5</target>
-                            <compilerArgument>-Xlint:-serial</compilerArgument>
-                            <compilerArguments>
-                                <Xlint/>
-                            </compilerArguments>
                         </configuration>
                     </execution>
                     <execution>
@@ -305,10 +319,6 @@
                         <configuration>
                             <source>1.6</source>
                             <target>1.6</target>
-                            <compilerArgument>-Xlint:-serial</compilerArgument>
-                            <compilerArguments>
-                                <Xlint/>
-                            </compilerArguments>
                         </configuration>
                     </execution>
                 </executions>
@@ -316,8 +326,19 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <!-- override the version inherited from the parent -->
+                <version>2.4.1</version>
+                <configuration>
+                    <arguments>-Psonatype-oss-release ${release.arguments}</arguments>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12.4</version>
+                <!-- override the version inherited from the parent -->
+                <version>2.16</version>
             </plugin>
 
             <plugin>
@@ -342,7 +363,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <!-- override the version inherited from the parent -->
-                <version>2.9</version>
+                <version>2.9.1</version>
                 <configuration>
                     <quiet>true</quiet>
                 </configuration>
