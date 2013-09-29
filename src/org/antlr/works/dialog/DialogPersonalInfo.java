@@ -34,6 +34,7 @@ package org.antlr.works.dialog;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.*;
+import org.antlr.works.IDE;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.works.stats.StatisticsReporter;
 import org.antlr.works.utils.IconManager;
@@ -64,7 +65,7 @@ public class DialogPersonalInfo extends XJDialog {
 
         setSize(780, 550);
         iconButton.setIcon(IconManager.shared().getIconApplication());
-        setTitle(Localizable.getLocalizedString(Localizable.APP_NAME)+" "+Localizable.getLocalizedString(Localizable.APP_VERSION_LONG));
+        setTitle(Localizable.getLocalizedString(Localizable.APP_NAME)+" "+IDE.VERSION);
 
         // FIX AW-19
         setCancelButton(cancelButton);

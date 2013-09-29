@@ -80,11 +80,11 @@ public class Statistics extends XJApplicationDelegate implements DialogReportsDe
     }
 
     public String appVersionShort() {
-        return Localizable.getLocalizedString(Localizable.APP_VERSION_SHORT);
+        return IDE.VERSION;
     }
 
     public String appVersionLong() {
-        return Localizable.getLocalizedString(Localizable.APP_VERSION_LONG);
+        return IDE.VERSION;
     }
 
     public Class appPreferencesClass() {

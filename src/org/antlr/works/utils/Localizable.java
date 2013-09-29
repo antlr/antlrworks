@@ -40,8 +40,6 @@ public class Localizable {
     public static final String DOCUMENT_TYPE = "GrammarDocumentType";
 
     public static final String APP_NAME = "AppName";
-    public static final String APP_VERSION_SHORT = "AppVersionShort";
-    public static final String APP_VERSION_LONG = "AppVersionLong";
 
     public static final String SPLASH_INFO = "SplashInfo";
     public static final String SPLASH_VERSION = "SplashVersion";
