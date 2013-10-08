@@ -52,6 +52,8 @@
         <bootclasspath.java6>${java6.home}/lib/rt.jar</bootclasspath.java6>
         <bootclasspath.compile>${bootclasspath.java5}</bootclasspath.compile>
         <bootclasspath.testCompile>${bootclasspath.java6}</bootclasspath.testCompile>
+        <!-- This property is used for dependencies and for the MANIFEST.MF customization -->
+        <antlr3.version>3.5.1</antlr3.version>
         <aw1.basedir>${basedir}</aw1.basedir>
     </properties>
 
@@ -92,13 +94,13 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr-runtime</artifactId>
-            <version>3.5.1</version>
+            <version>${antlr3.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr</artifactId>
-            <version>3.5.1</version>
+            <version>${antlr3.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -286,6 +288,14 @@
                                     <Implementation-Title>ANTLR 3</Implementation-Title>
                                     <Implementation-Version>${antlr3.version}</Implementation-Version>
                                     <Implementation-Vendor-Id>org.antlr</Implementation-Vendor-Id>
+                                </manifestEntries>
+                            </manifestSection>
+                            <manifestSection>
+                                <name>org/antlr/works/</name>
+                                <manifestEntries>
+                                    <Implementation-Title>${project.name}</Implementation-Title>
+                                    <Implementation-Version>${project.version}</Implementation-Version>
+                                    <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
                                 </manifestEntries>
                             </manifestSection>
                         </manifestSections>

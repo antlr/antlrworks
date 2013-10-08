@@ -80,6 +80,12 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
 
     public static SplashScreen sc;
 
+	public static final String VERSION;
+	static {
+		String version = IDE.class.getPackage().getImplementationVersion();
+		VERSION = version != null ? version : "1.x";
+	}
+
     public static void main(String[] args) {
         // Needs to specify the Mac OS X property here (starting from Tiger)
         // before any other line of code (the usual XJApplication won't work
@@ -421,11 +427,11 @@ public class IDE extends XJApplicationDelegate implements XJMenuItemDelegate {
     }
 
     public String appVersionShort() {
-        return Localizable.getLocalizedString(Localizable.APP_VERSION_SHORT);
+        return VERSION;
     }
 
     public String appVersionLong() {
-        return Localizable.getLocalizedString(Localizable.APP_VERSION_LONG);
+        return VERSION;
     }
 
     public boolean displayNewDocumentWizard(XJDocument document) {

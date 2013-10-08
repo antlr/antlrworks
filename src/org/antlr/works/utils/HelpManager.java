@@ -33,6 +33,7 @@ package org.antlr.works.utils;
 
 import org.antlr.Tool;
 import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.works.IDE;
 import org.antlr.works.dialog.DialogReports;
 import org.antlr.works.prefs.AWPrefs;
 import org.antlr.xjlib.appkit.app.XJApplication;
@@ -86,7 +87,7 @@ public class HelpManager implements XJScheduledTimerDelegate {
 
 
         XJUpdateManager um = new XJUpdateManager(parent, null);
-        um.checkForUpdates(Localizable.getLocalizedString(Localizable.APP_VERSION_SHORT),
+        um.checkForUpdates(IDE.VERSION,
                            url,
                            AWPrefs.getDownloadPath(),
                            automatic);

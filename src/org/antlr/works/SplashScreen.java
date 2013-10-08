@@ -54,7 +54,7 @@ public class SplashScreen extends JWindow {
 
         appNameLabel.setText(Localizable.getLocalizedString(Localizable.APP_NAME));
         infoLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_INFO));
-        versionLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_VERSION));
+        versionLabel.setText(String.format(Localizable.getLocalizedString(Localizable.SPLASH_VERSION), IDE.VERSION));
         copyrightLabel.setText(Localizable.getLocalizedString(Localizable.SPLASH_COPYRIGHT));
 
         backgroundPanel.setBorder(BorderFactory.createLineBorder(Color.black));
