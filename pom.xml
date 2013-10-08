@@ -27,7 +27,7 @@
     <groupId>org.antlr</groupId>
     <artifactId>antlrworks</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.2-SNAPSHOT</version>
+    <version>1.5.2</version>
 
     <!--
         Name of the porject as seen by IDEs and so on.
@@ -75,7 +75,7 @@
         <url>https://github.com/antlr/antlrworks</url>
         <connection>scm:git:git://github.com/antlr/antlrworks.git</connection>
         <developerConnection>scm:git:git@github.com:antlr/antlrworks.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>1.5.2</tag>
   </scm>
 
     <issueManagement>
