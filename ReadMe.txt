@@ -46,3 +46,5 @@ Look into:
 - GGraphGroup (where the path is created)
 - FAFactory (where the optimized FA is created)
 - GFactory (where everything is assembled before display)
+
+Join the chat at https://gitter.im/antlr/antlrworks
