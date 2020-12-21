@@ -1,5 +1,6 @@
+# ANTLRWorks
 
-***** Release check-list
+## Release check-list
 - make sure all the bugs are resolved in http://www.antlr.org/jira/browse/AW
 - make sure ANTLRWorks is compiled against the correct version of ANTLR and ST sources
 - update the ANTLR and ST jar files in main/lib
@@ -26,11 +27,11 @@
     - antlrworks-1.x.jar
 - branch the release in p4 (main -> release/1.x)    
 
-***** Tools
+## Tools
 http://pmd.sourceforge.net/
 http://findbugs.sourceforge.net/
 
-***** Info
+## Info
 Enable project document: set prefs PREF_PROJET_DOCUMENT to true
 DOT: /Applications/Graphviz.app/Contents/MacOS/dot
 JavaC Windows Classpath example: C:\\Program Files\\Java\\jdk1.5.0_03\\bin\\javac
@@ -39,7 +40,7 @@ Windows Prefs:
     - Command "regedit.exe"
     - HKEY_CURRENT_USER\Software\JavaSoft\Prefs\org\antlr\works
 
-***** Debugging
+## Debugging
 
 Problem with syntax diagram path?
 Look into:
